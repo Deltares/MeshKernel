@@ -28,35 +28,46 @@
 #pragma once
 
 #include <memory>
-#include <utility>
-#include <vector>
 
-#include "MeshKernel/UndoAction.hpp"
+#include "MeshKernel/BaseMeshUndoAction.hpp"
+#include "MeshKernel/Entities.hpp"
 
 namespace meshkernel
 {
-    /// @brief A composite of multiple undo actions
-    class CompoundUndoAction : public UndoAction
+    /// @brief Forward declaration of the unstructured mesh
+    class Mesh;
+
+    /// @brief Action to add an edge to an unstructured mesh.
+    class ResetEdgeAction : public BaseMeshUndoAction<ResetEdgeAction, Mesh>
     {
     public:
-        /// @brief Allocate a CompoundUndoAction and return a unique_ptr to the newly create object.
-        static std::unique_ptr<CompoundUndoAction> Create();
+        /// @brief Allocate a ResetEdgeAction and return a unique_ptr to the newly create object.
+        static std::unique_ptr<ResetEdgeAction> Create(Mesh& mesh, const UInt id, const Edge& initial, const Edge& updated);
 
-        /// @brief Add an undo action to the compound action
-        void Add(UndoActionPtr&& action);
+        /// @brief Constructor
+        ResetEdgeAction(Mesh& mesh, const UInt id, const Edge& initial, const Edge& updated);
 
-        /// @brief Print the compound undo action to the stream
+        /// @brief Get the edge identifier
+        UInt EdgeId() const;
+
+        /// @brief Get the initial edge
+        const Edge& InitialEdge() const;
+
+        /// @brief Get the initial edge
+        const Edge& UpdatedEdge() const;
+
+        /// @brief Print the reset edge action to the stream
         void Print(std::ostream& out = std::cout) const override;
 
     private:
-        /// @brief Commit all undo actions.
-        void DoCommit();
+        /// @brief The edge identifier
+        UInt m_edgeId;
 
-        /// @brief Restore all undo actions, in reverse order.
-        void DoRestore();
+        /// @brief The initial edge
+        Edge m_initialEdge;
 
-        /// @brief A sequence of all the undo actions
-        std::vector<UndoActionPtr> m_undoActions;
+        /// @brief The updated edge
+        Edge m_updatedEdge;
     };
 
 } // namespace meshkernel

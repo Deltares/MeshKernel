@@ -2,6 +2,9 @@
 
 #include "MeshKernel/AddEdgeAction.hpp"
 #include "MeshKernel/AddNodeAction.hpp"
+#include "MeshKernel/DeleteEdgeAction.hpp"
+#include "MeshKernel/DeleteNodeAction.hpp"
+
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Mesh2D.hpp"

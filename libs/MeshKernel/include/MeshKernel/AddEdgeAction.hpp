@@ -30,9 +30,7 @@
 #include <memory>
 
 #include "MeshKernel/BaseMeshUndoAction.hpp"
-#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
-#include "MeshKernel/Point.hpp"
 
 namespace meshkernel
 {
@@ -49,11 +47,14 @@ namespace meshkernel
         /// @brief Constructor
         AddEdgeAction(Mesh& mesh, const UInt id, const UInt start, const UInt end);
 
-        /// @brief Get the edge indentifier
+        /// @brief Get the edge identifier
         UInt EdgeId() const;
 
         /// @brief Get the edge
         const Edge& GetEdge() const;
+
+        /// @brief Print the add edge action to the stream
+        void Print(std::ostream& out = std::cout) const override;
 
     private:
         /// @brief The edge identifier

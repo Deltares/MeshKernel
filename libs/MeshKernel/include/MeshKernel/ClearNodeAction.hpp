@@ -28,35 +28,43 @@
 #pragma once
 
 #include <memory>
-#include <utility>
 #include <vector>
 
-#include "MeshKernel/UndoAction.hpp"
+#include "MeshKernel/BaseMeshUndoAction.hpp"
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Point.hpp"
 
 namespace meshkernel
 {
-    /// @brief A composite of multiple undo actions
-    class CompoundUndoAction : public UndoAction
+    /// @brief Forward declaration of the unstructured mesh
+    class Mesh;
+
+    /// @brief Action to clear a node from an unstructured mesh.
+    class ClearNodeAction : public BaseMeshUndoAction<ClearNodeAction, Mesh>
     {
     public:
-        /// @brief Allocate a CompoundUndoAction and return a unique_ptr to the newly create object.
-        static std::unique_ptr<CompoundUndoAction> Create();
+        /// @brief Allocate a ClearNodeAction and return a unique_ptr to the newly create object.
+        static std::unique_ptr<ClearNodeAction> Create(Mesh& mesh, const UInt id, const Point& node);
 
-        /// @brief Add an undo action to the compound action
-        void Add(UndoActionPtr&& action);
+        /// @brief Constructor
+        ClearNodeAction(Mesh& mesh, const UInt id, const Point& node);
 
-        /// @brief Print the compound undo action to the stream
+        /// @brief Get the node identifier
+        UInt NodeId() const;
+
+        /// @brief Get the node location
+        const Point& Node() const;
+
+        /// @brief Print the clear node action to the stream
         void Print(std::ostream& out = std::cout) const override;
 
     private:
-        /// @brief Commit all undo actions.
-        void DoCommit();
+        /// @brief The node identifier
+        UInt m_nodeId;
 
-        /// @brief Restore all undo actions, in reverse order.
-        void DoRestore();
-
-        /// @brief A sequence of all the undo actions
-        std::vector<UndoActionPtr> m_undoActions;
+        /// @brief The cleared node location
+        Point m_node;
     };
 
 } // namespace meshkernel

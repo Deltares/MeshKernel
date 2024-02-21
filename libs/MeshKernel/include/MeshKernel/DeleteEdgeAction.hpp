@@ -49,11 +49,14 @@ namespace meshkernel
         /// @brief Constructor
         DeleteEdgeAction(Mesh& mesh, const UInt id, const UInt start, const UInt end);
 
-        /// @brief Get the edge indentifier
+        /// @brief Get the edge identifier
         UInt EdgeId() const;
 
         /// @brief Get the edge
         const Edge& GetEdge() const;
+
+        /// @brief Print the delete edge action to the stream
+        void Print(std::ostream& out = std::cout) const override;
 
     private:
         /// @brief The edge identifier

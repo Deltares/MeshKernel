@@ -32,6 +32,7 @@ set(
   ${SRC_DIR}/AddNodeAction.cpp
   ${SRC_DIR}/AveragingInterpolation.cpp
   ${SRC_DIR}/CasulliRefinement.cpp
+  ${SRC_DIR}/ClearNodeAction.cpp
   ${SRC_DIR}/CompoundUndoAction.cpp
   ${SRC_DIR}/ConnectMeshes.cpp
   ${SRC_DIR}/Contacts.cpp
@@ -57,6 +58,7 @@ set(
   ${SRC_DIR}/PolygonalEnclosure.cpp
   ${SRC_DIR}/Polygons.cpp
   ${SRC_DIR}/RemoveDisconnectedRegions.cpp
+  ${SRC_DIR}/ResetEdgeAction.cpp
   ${SRC_DIR}/SamplesHessianCalculator.cpp
   ${SRC_DIR}/Smoother.cpp
   ${SRC_DIR}/SplineAlgorithms.cpp
@@ -111,6 +113,7 @@ set(
   ${DOMAIN_INC_DIR}/BilinearInterpolationOnGriddedSamples.hpp
   ${DOMAIN_INC_DIR}/BoundingBox.hpp
   ${DOMAIN_INC_DIR}/CasulliRefinement.hpp
+  ${DOMAIN_INC_DIR}/ClearNodeAction.hpp
   ${DOMAIN_INC_DIR}/CompoundUndoAction.hpp
   ${DOMAIN_INC_DIR}/ConnectMeshes.hpp
   ${DOMAIN_INC_DIR}/Constants.hpp
@@ -146,6 +149,7 @@ set(
   ${DOMAIN_INC_DIR}/ProjectionConversions.hpp
   ${DOMAIN_INC_DIR}/RangeCheck.hpp
   ${DOMAIN_INC_DIR}/RemoveDisconnectedRegions.hpp
+  ${DOMAIN_INC_DIR}/ResetEdgeAction.hpp
   ${DOMAIN_INC_DIR}/SamplesHessianCalculator.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
   ${DOMAIN_INC_DIR}/SplineAlgorithms.hpp

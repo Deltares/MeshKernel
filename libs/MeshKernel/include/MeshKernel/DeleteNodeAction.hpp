@@ -54,7 +54,7 @@ namespace meshkernel
 
         void Add(std::unique_ptr<DeleteEdgeAction>&& action);
 
-        /// @brief Get the node indentifier
+        /// @brief Get the node identifier
         UInt NodeId() const;
 
         /// @brief Get the node location
@@ -63,6 +63,9 @@ namespace meshkernel
         // // How best to commit and restore all edge deletions
         // void CommitEdges() const;
         // void RestoreEdges() const;
+
+        /// @brief Print the delete node action to the stream
+        void Print(std::ostream& out = std::cout) const override;
 
     private:
         /// @brief Commit the action of deleting a node and all connecting edges

@@ -17,3 +17,8 @@ const meshkernel::Edge& meshkernel::DeleteEdgeAction::GetEdge() const
 {
     return m_edge;
 }
+
+void meshkernel::DeleteEdgeAction::Print(std::ostream& out) const
+{
+    out << "DeleteEdgeAction: state " << to_string(State()) << ", edgeId = " << m_edgeId << " edge = {" << m_edge.first << ", " << m_edge.second << "}" << std::endl;
+}

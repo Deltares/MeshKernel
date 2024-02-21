@@ -10,7 +10,6 @@ std::unique_ptr<meshkernel::DeleteNodeAction> meshkernel::DeleteNodeAction::Crea
 }
 
 meshkernel::DeleteNodeAction::DeleteNodeAction(Mesh& mesh, const UInt id, const Point& node) : m_mesh(mesh), m_nodeId(id), m_node(node) {}
-// meshkernel::DeleteNodeAction::DeleteNodeAction(Mesh& mesh, const UInt id, const Point& node) : BaseMeshUndoAction<DeleteNodeAction, Mesh>(mesh), m_nodeId(id), m_node(node) {}
 
 void meshkernel::DeleteNodeAction::Add(std::unique_ptr<DeleteEdgeAction>&& action)
 {
@@ -67,3 +66,15 @@ void meshkernel::DeleteNodeAction::DoRestore()
 //         action->Restore();
 //     }
 // }
+
+void meshkernel::DeleteNodeAction::Print(std::ostream& out) const
+{
+    out << "DeleteNodeAction: state " << to_string(State()) << ", nodeId = " << m_nodeId << " node = {" << m_node.x << ", " << m_node.y << "}" << std::endl;
+
+    for (const std::unique_ptr<DeleteEdgeAction>& action : m_deletedEdges)
+    {
+        // Provide some indentation
+        out << "  ";
+        action->Print(out);
+    }
+}

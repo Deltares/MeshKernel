@@ -31,11 +31,14 @@
 #include "MeshKernel/AddEdgeAction.hpp"
 #include "MeshKernel/AddNodeAction.hpp"
 #include "MeshKernel/BoundingBox.hpp"
+#include "MeshKernel/ClearNodeAction.hpp"
+#include "MeshKernel/CompoundUndoAction.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/DeleteEdgeAction.hpp"
 #include "MeshKernel/DeleteNodeAction.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/ResetEdgeAction.hpp"
 #include "Utilities/RTreeBase.hpp"
 
 /// \namespace meshkernel
@@ -207,12 +210,12 @@ namespace meshkernel
         /// @brief Merges two mesh nodes
         /// @param[in] startNode The index of the first node to be merged
         /// @param[in] endNode The second of the second node to be merged
-        void MergeTwoNodes(UInt startNode, UInt endNode);
+        std::unique_ptr<CompoundUndoAction> MergeTwoNodes(UInt startNode, UInt endNode);
 
         /// @brief Merge close mesh nodes inside a polygon (MERGENODESINPOLYGON)
         /// @param[in] polygons Polygon where to perform the merging
         /// @param[in] mergingDistance The distance below which two nodes will be merged
-        void MergeNodesInPolygon(const Polygons& polygons, double mergingDistance);
+        std::unique_ptr<CompoundUndoAction> MergeNodesInPolygon(const Polygons& polygons, double mergingDistance);
 
         /// @brief Connect two existing nodes, checking if the nodes are already connected.
         /// If the nodes are not connected a new edge is formed, otherwise UInt invalid value is returned. (connectdbn)
@@ -229,7 +232,7 @@ namespace meshkernel
         /// @brief Insert a new node in the mesh (setnewpoint)
         /// @param[in] newPoint The coordinate of the new point
         /// @return The index of the new node and the pointer to the action
-        std::tuple<UInt, std::shared_ptr<AddNodeAction>> InsertNode2(const Point& newPoint);
+        [[nodiscard]] std::tuple<UInt, std::unique_ptr<AddNodeAction>> InsertNode2(const Point& newPoint);
 
         /// @brief
         void Commit(AddNodeAction& action);
@@ -241,11 +244,17 @@ namespace meshkernel
         /// @param[in] startNode The start node index
         /// @param[in] endNode The end node index
         /// @return The index of the new edge and the action to connect two nodes
-        std::tuple<UInt, std::shared_ptr<AddEdgeAction>> ConnectNodes2(UInt startNode, UInt endNode);
+        [[nodiscard]] std::tuple<UInt, std::unique_ptr<AddEdgeAction>> ConnectNodes2(UInt startNode, UInt endNode);
 
         void Commit(AddEdgeAction& action);
 
         void Restore(AddEdgeAction& action);
+
+        [[nodiscard]] std::unique_ptr<ResetEdgeAction> ResetEdge(UInt edgeId, UInt startNode, UInt endNode);
+
+        void Commit(ResetEdgeAction& action);
+
+        void Restore(ResetEdgeAction& action);
 
         /// @brief Delete a node
         /// @param[in] node The index of the node to delete
@@ -292,17 +301,28 @@ namespace meshkernel
         /// @brief Deletes an edge
         /// @param[in] edge The edge index
         /// @return The action to delete the edge
-        std::unique_ptr<DeleteEdgeAction> DeleteEdge2(UInt edge);
+        [[nodiscard]] std::unique_ptr<DeleteEdgeAction> DeleteEdge2(UInt edge);
 
         ///
         void Commit(const DeleteEdgeAction& action);
 
         void Restore(const DeleteEdgeAction& action);
 
+        /// @brief Clears a node, sets it to the invalid value but does not unlink any edges
+        /// @param[in] node The node index
+        /// @return The action to clear the node.
+        // Can this be private
+        [[nodiscard]] std::unique_ptr<ClearNodeAction> ClearNode(UInt node);
+
+        ///
+        void Commit(ClearNodeAction& action);
+
+        void Restore(ClearNodeAction& action);
+
         /// @brief Deletes an edge
         /// @param[in] edge The edge index
         /// @return The action to delete the node and any connecting edges
-        std::unique_ptr<DeleteNodeAction> DeleteNode2(UInt node);
+        [[nodiscard]] std::unique_ptr<DeleteNodeAction> DeleteNode2(UInt node);
 
         ///
         void Commit(DeleteNodeAction& action);

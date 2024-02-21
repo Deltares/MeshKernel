@@ -48,11 +48,14 @@ namespace meshkernel
         /// @brief Constructor
         AddNodeAction(Mesh& mesh, const UInt id, const Point& p);
 
-        /// @brief Get the node indentifier
+        /// @brief Get the node identifier
         UInt NodeId() const;
 
         /// @brief Get the node location
         const Point& Node() const;
+
+        /// @brief Print the add node action to the stream
+        void Print(std::ostream& out = std::cout) const override;
 
     private:
         /// @brief The node identifier

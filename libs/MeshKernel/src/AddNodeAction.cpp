@@ -17,3 +17,8 @@ const meshkernel::Point& meshkernel::AddNodeAction::Node() const
 {
     return m_node;
 }
+
+void meshkernel::AddNodeAction::Print(std::ostream& out) const
+{
+    out << "AddNodeAction: state " << to_string(State()) << ", nodeId = " << m_nodeId << " node = {" << m_node.x << ", " << m_node.y << "}" << std::endl;
+}

@@ -27,7 +27,9 @@
 
 #pragma once
 
+#include <iostream>
 #include <memory>
+#include <string>
 
 namespace meshkernel
 {
@@ -45,6 +47,9 @@ namespace meshkernel
             Committed, ///< The action has been applied.
             Restored   ///< The action has been undone, the state immediately before the action occurred has been restored.
         };
+
+        /// @brief Return the string representation of the ActionState enum value
+        static std::string to_string(const ActionState state);
 
         /// @brief Default constructor
         UndoAction() = default;
@@ -75,6 +80,9 @@ namespace meshkernel
 
         /// @brief Get the current state of the undo action.
         ActionState State() const;
+
+        /// @brief Print the undo action to the stream
+        virtual void Print(std::ostream& out = std::cout) const;
 
     private:
         /// @brief Operation to apply the changes required by the UndoAction
