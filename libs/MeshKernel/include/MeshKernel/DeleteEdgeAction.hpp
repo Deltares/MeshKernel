@@ -27,35 +27,40 @@
 
 #pragma once
 
-#include <utility>
-#include <vector>
+#include <memory>
 
-#include "UndoAction.hpp"
+#include "MeshKernel/BaseMeshUndoAction.hpp"
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Point.hpp"
 
 namespace meshkernel
 {
+    /// @brief Forward declaration of the unstructured mesh
+    class Mesh;
 
-    class UndoActionStack
+    /// @brief Action to delete an edge from an unstructured mesh.
+    class DeleteEdgeAction : public BaseMeshUndoAction<DeleteEdgeAction, Mesh>
     {
     public:
-        // When adding a new transaction, should probably delete all restored transactions
-        // When adding new transactions, could check the size of the committed list and remove transactions more than some number ago
-        // e.g. keep the undo list no longer than 10
+        /// @brief Allocate a DeleteEdgeAction and return a unique_ptr to the newly create object.
+        static std::unique_ptr<DeleteEdgeAction> Create(Mesh& mesh, const UInt id, const UInt start, const UInt end);
 
-        // When adding a new transaction, should probably delete all restored transactions
-        // actions should be moved so that there can only be a single reference to the same transaction
-        void Add(UndoActionPtr&& transaction);
+        /// @brief Constructor
+        DeleteEdgeAction(Mesh& mesh, const UInt id, const UInt start, const UInt end);
 
-        /// @brief Undo the action at the top of the committed stack
-        bool Undo();
+        /// @brief Get the edge indentifier
+        UInt EdgeId() const;
 
-        /// @brief Redo the action at the top of the restored stack
-        // Another name
-        bool Commit();
+        /// @brief Get the edge
+        const Edge& GetEdge() const;
 
     private:
-        std::vector<UndoActionPtr> m_committed;
-        std::vector<UndoActionPtr> m_restored;
+        /// @brief The edge identifier
+        UInt m_edgeId;
+
+        /// @brief The deleted edge
+        Edge m_edge;
     };
 
 } // namespace meshkernel

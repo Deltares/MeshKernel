@@ -1,10 +1,17 @@
 #include "MeshKernel/UndoActionStack.hpp"
 
-void meshkernel::UndoActionStack::Add(UndoActionPtr&& transaction)
+void meshkernel::UndoActionStack::Add(UndoActionPtr&& action)
 {
-    m_committed.emplace_back(std::move(transaction));
-    // ??
-    m_restored.reserve(m_committed.size());
+    if (action != nullptr)
+    {
+        m_committed.emplace_back(std::move(action));
+        // TODO Do I need to do this?
+        m_restored.reserve(m_committed.size());
+    }
+    else
+    {
+        // Logging message
+    }
 }
 
 bool meshkernel::UndoActionStack::Undo()

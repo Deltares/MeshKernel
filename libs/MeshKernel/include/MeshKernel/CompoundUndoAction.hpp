@@ -35,19 +35,24 @@
 
 namespace meshkernel
 {
-    /// @brief
+    /// @brief A composite of multiple undo actions
     class CompoundUndoAction : public UndoAction
     {
     public:
-        static std::unique_ptr<CompoundUndoAction> Create ();
+        /// @brief Allocate a CompoundUndoAction and return a unique_ptr to the newly create object.
+        static std::unique_ptr<CompoundUndoAction> Create();
 
+        /// @brief Add an undo action to the compound action
         void Add(UndoActionPtr&& action);
 
     private:
+        /// @brief Commit all undo actions.
         void DoCommit();
 
+        /// @brief Restore all undo actions, in reverse order.
         void DoRestore();
 
+        /// @brief A sequence of all the undo actions
         std::vector<UndoActionPtr> m_undoActions;
     };
 

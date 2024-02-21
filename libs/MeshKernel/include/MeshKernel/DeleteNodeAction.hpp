@@ -28,25 +28,31 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "MeshKernel/BaseMeshUndoAction.hpp"
 #include "MeshKernel/Constants.hpp"
+#include "MeshKernel/DeleteEdgeAction.hpp"
+#include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Point.hpp"
+#include "MeshKernel/UndoAction.hpp"
 
 namespace meshkernel
 {
     /// @brief Forward declaration of the unstructured mesh
     class Mesh;
 
-    /// @brief Action to add a node to an unstructured mesh.
-    class AddNodeAction : public BaseMeshUndoAction<AddNodeAction, Mesh>
+    /// @brief Action to delete a node from an unstructured mesh.
+    class DeleteNodeAction : public UndoAction
     {
     public:
-        /// @brief Allocate a AddNodeAction and return a unique_ptr to the newly create object.
-        static std::unique_ptr<AddNodeAction> Create(Mesh& mesh, const UInt id, const Point& point);
+        /// @brief Allocate a DeleteNodeAction and return a unique_ptr to the newly create object.
+        static std::unique_ptr<DeleteNodeAction> Create(Mesh& mesh, const UInt id, const Point& node);
 
         /// @brief Constructor
-        AddNodeAction(Mesh& mesh, const UInt id, const Point& p);
+        DeleteNodeAction(Mesh& mesh, const UInt id, const Point& node);
+
+        void Add(std::unique_ptr<DeleteEdgeAction>&& action);
 
         /// @brief Get the node indentifier
         UInt NodeId() const;
@@ -54,12 +60,28 @@ namespace meshkernel
         /// @brief Get the node location
         const Point& Node() const;
 
+        // // How best to commit and restore all edge deletions
+        // void CommitEdges() const;
+        // void RestoreEdges() const;
+
     private:
+        /// @brief Commit the action of deleting a node and all connecting edges
+        void DoCommit();
+
+        /// @brief The action of restoring a node and all connecting edges
+        void DoRestore();
+
+        /// @brief The unstructured mesh from which the node will be deleted.
+        Mesh& m_mesh;
+
         /// @brief The node identifier
         UInt m_nodeId;
 
-        /// @brief The added node location
+        /// @brief The deleted node location
         Point m_node;
+
+        /// @brief Sequence of delete edge actions.
+        std::vector<std::unique_ptr<DeleteEdgeAction>> m_deletedEdges;
     };
 
 } // namespace meshkernel

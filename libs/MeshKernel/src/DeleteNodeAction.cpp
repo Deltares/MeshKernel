@@ -1,0 +1,69 @@
+#include "MeshKernel/DeleteNodeAction.hpp"
+#include "MeshKernel/Mesh.hpp"
+
+#include <ranges>
+#include <utility>
+
+std::unique_ptr<meshkernel::DeleteNodeAction> meshkernel::DeleteNodeAction::Create(Mesh& mesh, const UInt id, const Point& node)
+{
+    return std::make_unique<DeleteNodeAction>(mesh, id, node);
+}
+
+meshkernel::DeleteNodeAction::DeleteNodeAction(Mesh& mesh, const UInt id, const Point& node) : m_mesh(mesh), m_nodeId(id), m_node(node) {}
+// meshkernel::DeleteNodeAction::DeleteNodeAction(Mesh& mesh, const UInt id, const Point& node) : BaseMeshUndoAction<DeleteNodeAction, Mesh>(mesh), m_nodeId(id), m_node(node) {}
+
+void meshkernel::DeleteNodeAction::Add(std::unique_ptr<DeleteEdgeAction>&& action)
+{
+    if (action != nullptr)
+    {
+        m_deletedEdges.emplace_back(std::move(action));
+    }
+}
+
+meshkernel::UInt meshkernel::DeleteNodeAction::NodeId() const
+{
+    return m_nodeId;
+}
+
+const meshkernel::Point& meshkernel::DeleteNodeAction::Node() const
+{
+    return m_node;
+}
+
+void meshkernel::DeleteNodeAction::DoCommit()
+{
+    // This does seem to be exposing some information about the implementation
+    // having to delete the edges first then the node, same for restore
+    for (const std::unique_ptr<DeleteEdgeAction>& action : m_deletedEdges)
+    {
+        action->Commit();
+    }
+
+    m_mesh.Commit(*this);
+}
+
+void meshkernel::DeleteNodeAction::DoRestore()
+{
+    m_mesh.Restore(*this);
+
+    for (const std::unique_ptr<DeleteEdgeAction>& action : m_deletedEdges | std::views::reverse)
+    {
+        action->Restore();
+    }
+}
+
+// void meshkernel::DeleteNodeAction::CommitEdges() const
+// {
+//     for (const std::unique_ptr<DeleteEdgeAction>& action : m_deletedEdges)
+//     {
+//         action->Commit();
+//     }
+// }
+
+// void meshkernel::DeleteNodeAction::RestoreEdges() const
+// {
+//     for (const std::unique_ptr<DeleteEdgeAction>& action : m_deletedEdges | std::views::reverse)
+//     {
+//         action->Restore();
+//     }
+// }

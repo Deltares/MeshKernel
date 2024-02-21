@@ -28,12 +28,14 @@
 #pragma once
 #include <memory>
 
+#include "MeshKernel/AddEdgeAction.hpp"
+#include "MeshKernel/AddNodeAction.hpp"
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Definitions.hpp"
+#include "MeshKernel/DeleteEdgeAction.hpp"
+#include "MeshKernel/DeleteNodeAction.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
-#include "MeshKernel/AddNodeAction.hpp"
-#include "MeshKernel/AddEdgeAction.hpp"
 #include "Utilities/RTreeBase.hpp"
 
 /// \namespace meshkernel
@@ -224,23 +226,26 @@ namespace meshkernel
         /// @return The index of the new node
         UInt InsertNode(const Point& newPoint);
 
+        /// @brief Insert a new node in the mesh (setnewpoint)
+        /// @param[in] newPoint The coordinate of the new point
+        /// @return The index of the new node and the pointer to the action
         std::tuple<UInt, std::shared_ptr<AddNodeAction>> InsertNode2(const Point& newPoint);
 
-        void commit (AddNodeAction& action);
+        /// @brief
+        void Commit(AddNodeAction& action);
 
-        void restore (AddNodeAction& action);
+        void Restore(AddNodeAction& action);
 
-        std::tuple<UInt, std::shared_ptr<AddEdgeAction>> InsertEdge2(UInt startNode, UInt endNode);
-
-        void commit (AddEdgeAction& action);
-
-        void restore (AddEdgeAction& action);
-
-        /// @brief Insert a new edge, assuming two nodes are not already connected
+        /// @brief Connect two existing nodes, checking if the nodes are already connected.
+        /// If the nodes are not connected a new edge is formed, otherwise UInt invalid value is returned. (connectdbn)
         /// @param[in] startNode The start node index
         /// @param[in] endNode The end node index
-        /// @return The index of the new edge
-        UInt InsertEdge(UInt startNode, UInt endNode);
+        /// @return The index of the new edge and the action to connect two nodes
+        std::tuple<UInt, std::shared_ptr<AddEdgeAction>> ConnectNodes2(UInt startNode, UInt endNode);
+
+        void Commit(AddEdgeAction& action);
+
+        void Restore(AddEdgeAction& action);
 
         /// @brief Delete a node
         /// @param[in] node The index of the node to delete
@@ -283,6 +288,26 @@ namespace meshkernel
         /// @brief Deletes an edge
         /// @param[in] edge The edge index
         void DeleteEdge(UInt edge);
+
+        /// @brief Deletes an edge
+        /// @param[in] edge The edge index
+        /// @return The action to delete the edge
+        std::unique_ptr<DeleteEdgeAction> DeleteEdge2(UInt edge);
+
+        ///
+        void Commit(const DeleteEdgeAction& action);
+
+        void Restore(const DeleteEdgeAction& action);
+
+        /// @brief Deletes an edge
+        /// @param[in] edge The edge index
+        /// @return The action to delete the node and any connecting edges
+        std::unique_ptr<DeleteNodeAction> DeleteNode2(UInt node);
+
+        ///
+        void Commit(DeleteNodeAction& action);
+
+        void Restore(DeleteNodeAction& action);
 
         /// @brief Find the common node two edges share
         /// This method uses return parameters since the success is evaluated in a hot loop
@@ -441,6 +466,12 @@ namespace meshkernel
 
     private:
         static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate
+
+        /// @brief Insert a new edge, assuming two nodes are not already connected
+        /// @param[in] startNode The start node index
+        /// @param[in] endNode The end node index
+        /// @return The index of the new edge
+        UInt InsertEdge(UInt startNode, UInt endNode);
 
         /// @brief Set nodes and edges that are not connected to be invalid.
         void SetUnconnectedNodesAndEdgesToInvalid();

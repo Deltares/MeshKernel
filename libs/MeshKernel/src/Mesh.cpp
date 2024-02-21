@@ -470,60 +470,56 @@ meshkernel::UInt Mesh::InsertNode(const Point& newPoint)
 
 std::tuple<meshkernel::UInt, std::shared_ptr<meshkernel::AddNodeAction>> Mesh::InsertNode2(const Point& newPoint)
 {
-    const auto newSize = GetNumNodes() + 1;
     const auto newNodeIndex = GetNumNodes();
 
-    std::shared_ptr<AddNodeAction> action = AddNodeAction::create (*this, newNodeIndex, newPoint);
+    m_nodes.resize(newNodeIndex + 1);
+    m_nodesNumEdges.resize(newNodeIndex + 1);
+    m_nodesEdges.resize(newNodeIndex + 1);
 
-    m_nodes.resize(newSize);
-    m_nodesNumEdges.resize(newSize);
-    m_nodesEdges.resize(newSize);
-
-    m_nodes[newNodeIndex] = newPoint;
-    m_nodesNumEdges[newNodeIndex] = 0;
-
-    m_nodesRTreeRequiresUpdate = true;
+    std::shared_ptr<AddNodeAction> action = AddNodeAction::Create(*this, newNodeIndex, newPoint);
+    Commit(*action);
 
     return {newNodeIndex, action};
 }
 
-void Mesh::commit(AddNodeAction& action)
+void Mesh::Commit(AddNodeAction& action)
 {
-    m_nodes [action.NodeId ()] = action.Node ();
+    m_nodes[action.NodeId()] = action.Node();
+    // TODO is this necessary, will it be set in Administrate?
+    m_nodesNumEdges[action.NodeId()] = 0;
+    m_nodesRTreeRequiresUpdate = true;
 }
 
-void Mesh::restore(AddNodeAction& action)
+void Mesh::Restore(AddNodeAction& action)
 {
-    m_nodes [action.NodeId ()] = Point(constants::missing::doubleValue, constants::missing::doubleValue);
+    m_nodes[action.NodeId()] = Point(constants::missing::doubleValue, constants::missing::doubleValue);
+    // TODO is this necessary, will it be set in Administrate?
+    m_nodesNumEdges[action.NodeId()] = 0;
+    m_nodesRTreeRequiresUpdate = true;
 }
 
-
-std::tuple<meshkernel::UInt, std::shared_ptr<meshkernel::AddEdgeAction>> Mesh::InsertEdge2(UInt startNode, UInt endNode)
+std::tuple<meshkernel::UInt, std::shared_ptr<meshkernel::AddEdgeAction>> Mesh::ConnectNodes2(UInt startNode, UInt endNode)
 {
     // increment the edges container
     const auto newEdgeIndex = GetNumEdges();
     m_edges.resize(newEdgeIndex + 1);
-    m_edges[newEdgeIndex].first = startNode;
-    m_edges[newEdgeIndex].second = endNode;
 
-    std::shared_ptr<AddEdgeAction> action = AddEdgeAction::Create (*this, newEdgeIndex, startNode, endNode);
-
-    m_edgesRTreeRequiresUpdate = true;
-
+    std::shared_ptr<AddEdgeAction> action = AddEdgeAction::Create(*this, newEdgeIndex, startNode, endNode);
+    Commit(*action);
     return {newEdgeIndex, action};
-
 }
 
-void Mesh::commit (AddEdgeAction& action)
+void Mesh::Commit(AddEdgeAction& action)
 {
-    m_edges [action.EdgeId ()] = action.GetEdge ();
+    m_edges[action.EdgeId()] = action.GetEdge();
+    m_edgesRTreeRequiresUpdate = true;
 }
 
-void Mesh::restore (AddEdgeAction& action)
+void Mesh::Restore(AddEdgeAction& action)
 {
-    m_edges [action.EdgeId ()] = {constants::missing::uintValue, constants::missing::uintValue};
+    m_edges[action.EdgeId()] = {constants::missing::uintValue, constants::missing::uintValue};
+    m_edgesRTreeRequiresUpdate = true;
 }
-
 
 void Mesh::DeleteNode(UInt node)
 {
@@ -555,17 +551,79 @@ void Mesh::DeleteEdge(UInt edge)
     m_edgesRTreeRequiresUpdate = true;
 }
 
+std::unique_ptr<meshkernel::DeleteEdgeAction> Mesh::DeleteEdge2(UInt edge)
+{
+    if (edge == constants::missing::uintValue) [[unlikely]]
+    {
+        throw std::invalid_argument("Mesh::DeleteEdge: The index of the edge to be deleted does not exist.");
+    }
+
+    std::unique_ptr<meshkernel::DeleteEdgeAction> action = DeleteEdgeAction::Create(*this, edge, m_edges[edge].first, m_edges[edge].second);
+
+    Commit(*action);
+    return action;
+}
+
+void Mesh::Commit(const DeleteEdgeAction& action)
+{
+    m_edges[action.EdgeId()] = {constants::missing::uintValue, constants::missing::uintValue};
+    m_edgesRTreeRequiresUpdate = true;
+}
+
+void Mesh::Restore(const DeleteEdgeAction& action)
+{
+    m_edges[action.EdgeId()] = action.GetEdge();
+    m_edgesRTreeRequiresUpdate = true;
+}
+
+std::unique_ptr<meshkernel::DeleteNodeAction> Mesh::DeleteNode2(UInt node)
+{
+    if (node >= GetNumNodes()) [[unlikely]]
+    {
+        throw std::invalid_argument("Mesh::DeleteNode: The index of the node to be deleted does not exist.");
+    }
+
+    std::unique_ptr<DeleteNodeAction> action = DeleteNodeAction::Create(*this, node, m_nodes[node]);
+
+    for (UInt e = 0; e < m_nodesEdges[node].size(); e++)
+    {
+        const auto edgeIndex = m_nodesEdges[node][e];
+        action->Add(DeleteEdge2(edgeIndex));
+    }
+
+    // m_nodes[node] = {constants::missing::doubleValue, constants::missing::doubleValue};
+    // m_nodesRTreeRequiresUpdate = true;
+    Commit(*action);
+    return action;
+}
+
+void Mesh::Commit(DeleteNodeAction& action)
+{
+    // action.CommitEdges();
+    m_nodes[action.NodeId()] = {constants::missing::doubleValue, constants::missing::doubleValue};
+    m_nodesRTreeRequiresUpdate = true;
+}
+
+void Mesh::Restore(DeleteNodeAction& action)
+{
+    m_nodes[action.NodeId()] = action.Node();
+    // TODO DO we need to assign the m_nodesNumEdges the length of the deleted edges array?
+    // action.RestoreEdges();
+    m_nodesRTreeRequiresUpdate = true;
+}
+
 void Mesh::ComputeEdgesLengths()
 {
     auto const numEdges = GetNumEdges();
     m_edgeLengths.resize(numEdges, constants::missing::doubleValue);
 
+    // TODO could be openmp loop
     for (UInt e = 0; e < numEdges; e++)
     {
         auto const first = m_edges[e].first;
         auto const second = m_edges[e].second;
 
-        if (first != constants::missing::uintValue && second != constants::missing::uintValue)
+        if (first != constants::missing::uintValue && second != constants::missing::uintValue) [[likely]]
         {
             m_edgeLengths[e] = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
         }

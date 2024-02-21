@@ -31,47 +31,37 @@
 
 namespace meshkernel
 {
-
+    /// @brief
+    ///
+    /// Uses CRTP to reduce the amount of duplicate code.
     template <typename DerivedUndoAction, class Mesh>
     class BaseMeshUndoAction : public UndoAction
     {
     public:
+        /// @brief Constructor
         BaseMeshUndoAction(Mesh& mesh) : mesh_(mesh) {}
 
     private:
+        /// @brief Apply the action on the mesh
         void DoCommit();
 
+        /// @brief Restore the action on the mesh
         void DoRestore();
 
+        /// @brief The mesh on which actions are to be committed and restored.
         Mesh& mesh_;
     };
-
-    // template <typename DerivedUndoAction, class Mesh>
-    // class BaseMeshUndoAction : public UndoAction
-    // {
-    // public:
-    //     BaseMeshUndoAction(Mesh& mesh) : mesh_(mesh) {}
-
-    // private:
-    //     void doCommit();
-
-    //     void doRestore();
-
-    //     Mesh& mesh_;
-    // };
 
 } // namespace meshkernel
 
 template <typename DerivedUndoAction, class Mesh>
 void meshkernel::BaseMeshUndoAction<DerivedUndoAction, Mesh>::DoCommit()
 {
-    mesh_.commit(*static_cast<DerivedUndoAction*>(this));
-    // mesh_.commit(static_cast<DerivedUndoAction&>(*this));
+    mesh_.Commit(*static_cast<DerivedUndoAction*>(this));
 }
 
 template <typename DerivedUndoAction, class Mesh>
 void meshkernel::BaseMeshUndoAction<DerivedUndoAction, Mesh>::DoRestore()
 {
-    mesh_.restore(*static_cast<DerivedUndoAction*>(this));
-    // mesh_.restore(static_cast<DerivedUndoAction&>(*this));
+    mesh_.Restore(*static_cast<DerivedUndoAction*>(this));
 }

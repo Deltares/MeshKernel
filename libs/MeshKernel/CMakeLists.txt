@@ -28,11 +28,16 @@ set(UTILITIES_INC_DIR ${DOMAIN_INC_DIR}/Utilities)
 # list of target sources
 set(
   SRC_LIST
+  ${SRC_DIR}/AddEdgeAction.cpp
+  ${SRC_DIR}/AddNodeAction.cpp
   ${SRC_DIR}/AveragingInterpolation.cpp
   ${SRC_DIR}/CasulliRefinement.cpp
+  ${SRC_DIR}/CompoundUndoAction.cpp
   ${SRC_DIR}/ConnectMeshes.cpp
   ${SRC_DIR}/Contacts.cpp
   ${SRC_DIR}/Definitions.cpp
+  ${SRC_DIR}/DeleteEdgeAction.cpp
+  ${SRC_DIR}/DeleteNodeAction.cpp
   ${SRC_DIR}/Entities.cpp
   ${SRC_DIR}/FlipEdges.cpp
   ${SRC_DIR}/Hessian.cpp
@@ -60,9 +65,6 @@ set(
   ${SRC_DIR}/TriangulationWrapper.cpp
   ${SRC_DIR}/UndoAction.cpp
   ${SRC_DIR}/UndoActionStack.cpp
-  ${SRC_DIR}/CompoundUndoAction.cpp
-  ${SRC_DIR}/AddEdgeAction.cpp
-  ${SRC_DIR}/AddNodeAction.cpp
 )
 
 set(
@@ -102,14 +104,20 @@ set(
 # list of target headers
 set(
   INC_LIST
+  ${DOMAIN_INC_DIR}/AddEdgeAction.hpp
+  ${DOMAIN_INC_DIR}/AddNodeAction.hpp
   ${DOMAIN_INC_DIR}/AveragingInterpolation.hpp
+  ${DOMAIN_INC_DIR}/BaseMeshUndoAction.hpp
   ${DOMAIN_INC_DIR}/BilinearInterpolationOnGriddedSamples.hpp
   ${DOMAIN_INC_DIR}/BoundingBox.hpp
   ${DOMAIN_INC_DIR}/CasulliRefinement.hpp
+  ${DOMAIN_INC_DIR}/CompoundUndoAction.hpp
   ${DOMAIN_INC_DIR}/ConnectMeshes.hpp
   ${DOMAIN_INC_DIR}/Constants.hpp
   ${DOMAIN_INC_DIR}/Contacts.hpp
   ${DOMAIN_INC_DIR}/Definitions.hpp
+  ${DOMAIN_INC_DIR}/DeleteEdgeAction.hpp
+  ${DOMAIN_INC_DIR}/DeleteNodeAction.hpp
   ${DOMAIN_INC_DIR}/Entities.hpp
   ${DOMAIN_INC_DIR}/Exceptions.hpp
   ${DOMAIN_INC_DIR}/FlipEdges.hpp
@@ -144,13 +152,9 @@ set(
   ${DOMAIN_INC_DIR}/Splines.hpp
   ${DOMAIN_INC_DIR}/TriangulationInterpolation.hpp
   ${DOMAIN_INC_DIR}/TriangulationWrapper.hpp
-  ${DOMAIN_INC_DIR}/Vector.hpp
   ${DOMAIN_INC_DIR}/UndoAction.hpp
-  ${DOMAIN_INC_DIR}/BaseMeshUndoAction.hpp
   ${DOMAIN_INC_DIR}/UndoActionStack.hpp
-  ${DOMAIN_INC_DIR}/CompoundUndoAction.hpp
-  ${DOMAIN_INC_DIR}/AddEdgeAction.hpp
-  ${DOMAIN_INC_DIR}/AddNodeAction.hpp
+  ${DOMAIN_INC_DIR}/Vector.hpp
 )
 
 set(

@@ -39,6 +39,7 @@ namespace meshkernel
     class UndoAction
     {
     public:
+        /// @brief The current state of an UndoAction
         enum ActionState
         {
             Committed, ///< The action has been applied.
@@ -89,6 +90,7 @@ namespace meshkernel
         ActionState m_state = Committed;
     };
 
+    /// @brief Typedef of the pointer to an UndoAction.
     using UndoActionPtr = std::unique_ptr<UndoAction>;
 
 } // namespace meshkernel

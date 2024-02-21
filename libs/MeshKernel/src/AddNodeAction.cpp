@@ -1,7 +1,7 @@
 #include "MeshKernel/AddNodeAction.hpp"
 #include "MeshKernel/Mesh.hpp"
 
-std::unique_ptr<meshkernel::AddNodeAction> meshkernel::AddNodeAction::create(Mesh& mesh, const UInt id, const Point& point)
+std::unique_ptr<meshkernel::AddNodeAction> meshkernel::AddNodeAction::Create(Mesh& mesh, const UInt id, const Point& point)
 {
     return std::make_unique<AddNodeAction>(mesh, id, point);
 }

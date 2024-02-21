@@ -36,21 +36,30 @@
 
 namespace meshkernel
 {
+    /// @brief Forward declaration of the unstructured mesh
     class Mesh;
 
+    /// @brief Action to add an edge to an unstructured mesh.
     class AddEdgeAction : public BaseMeshUndoAction<AddEdgeAction, Mesh>
     {
     public:
+        /// @brief Allocate a AddEdgeAction and return a unique_ptr to the newly create object.
         static std::unique_ptr<AddEdgeAction> Create(Mesh& mesh, const UInt id, const UInt start, const UInt end);
 
+        /// @brief Constructor
         AddEdgeAction(Mesh& mesh, const UInt id, const UInt start, const UInt end);
 
+        /// @brief Get the edge indentifier
         UInt EdgeId() const;
 
+        /// @brief Get the edge
         const Edge& GetEdge() const;
 
     private:
+        /// @brief The edge identifier
         UInt m_edgeId;
+
+        /// @brief The added edge
         Edge m_edge;
     };
 
