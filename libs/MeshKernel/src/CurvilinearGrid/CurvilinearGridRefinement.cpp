@@ -130,7 +130,7 @@ void CurvilinearGridRefinement::Compute()
                 {
                     for (Eigen::Index n = 0; n < localNRefinement + 1; ++n)
                     {
-                        refinedGrid(refinedM + m, refinedN + n) = localGrid(m, n);
+                        refinedGrid(refinedN + n, refinedM + m) = localGrid(n, m);
                     }
                 }
             }
