@@ -68,5 +68,5 @@ CurvilinearGridNodeIndices CurvilinearGridLine::GetNodeIndexFromCoordinate(UInt 
     auto const mCoordinate = IsMGridLine() ? coordinate : m_constantCoordinate;
     auto const nCoordinate = IsMGridLine() ? m_constantCoordinate : coordinate;
 
-    return {mCoordinate, nCoordinate};
+    return {nCoordinate, mCoordinate};
 }

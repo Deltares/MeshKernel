@@ -302,8 +302,8 @@ TEST_F(CartesianApiTestFixture, GenerateOrthogonalCurvilinearGridThroughApi)
 
     // Assert
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(3, curvilinearGrid.num_m);
-    ASSERT_EQ(7, curvilinearGrid.num_n);
+    ASSERT_EQ(3, curvilinearGrid.num_n);
+    ASSERT_EQ(7, curvilinearGrid.num_m);
 }
 
 TEST_F(CartesianApiTestFixture, RefineCompute_OnCurvilinearGrid_ShouldRefine)
@@ -339,8 +339,8 @@ TEST_F(CartesianApiTestFixture, DerefineCompute_OnCurvilinearGrid_ShouldDeRefine
     errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    ASSERT_EQ(5, curvilinearGrid.num_m);
-    ASSERT_EQ(4, curvilinearGrid.num_n);
+    ASSERT_EQ(4, curvilinearGrid.num_m);
+    ASSERT_EQ(5, curvilinearGrid.num_n);
 }
 
 TEST_F(CartesianApiTestFixture, Orthogonalize_CurvilinearGrid_ShouldOrthogonalize)

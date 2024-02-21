@@ -10,10 +10,11 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGrid_ShouldRefine)
 {
     // Set-up
     lin_alg::Matrix<Point> grid(4, 4);
-    grid << Point{0, 0}, Point{0, 10}, Point{0, 20}, Point{0, 30},
-        Point{10, 0}, Point{10, 10}, Point{10, 20}, Point{10, 30},
-        Point{20, 0}, Point{20, 10}, Point{20, 20}, Point{20, 30},
-        Point{30, 0}, Point{30, 10}, Point{30, 20}, Point{30, 30};
+
+    grid << Point{0, 0}, Point{10, 0}, Point{20, 0}, Point{30, 0},
+        Point{0, 10}, Point{10, 10}, Point{20, 10}, Point{30, 10},
+        Point{0, 20}, Point{10, 20}, Point{20, 20}, Point{30, 20},
+        Point{0, 30}, Point{10, 30}, Point{20, 30}, Point{30, 30};
 
     CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
     CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGrid, 10);
@@ -30,23 +31,23 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGrid_ShouldRefine)
     ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 0).x, tolerance);
     ASSERT_NEAR(10.0, curvilinearGrid.GetNode(1, 0).x, tolerance);
 
-    ASSERT_NEAR(11.0, curvilinearGrid.GetNode(2, 0).x, tolerance);
-    ASSERT_NEAR(12.0, curvilinearGrid.GetNode(3, 0).x, tolerance);
-    ASSERT_NEAR(13.0, curvilinearGrid.GetNode(4, 0).x, tolerance);
-    ASSERT_NEAR(14.0, curvilinearGrid.GetNode(5, 0).x, tolerance);
-    ASSERT_NEAR(15.0, curvilinearGrid.GetNode(6, 0).x, tolerance);
-    ASSERT_NEAR(16.0, curvilinearGrid.GetNode(7, 0).x, tolerance);
-    ASSERT_NEAR(17.0, curvilinearGrid.GetNode(8, 0).x, tolerance);
-    ASSERT_NEAR(18.0, curvilinearGrid.GetNode(9, 0).x, tolerance);
-    ASSERT_NEAR(19.0, curvilinearGrid.GetNode(10, 0).x, tolerance);
+    ASSERT_NEAR(11.0, curvilinearGrid.GetNode(0, 2).x, tolerance);
+    ASSERT_NEAR(12.0, curvilinearGrid.GetNode(0, 3).x, tolerance);
+    ASSERT_NEAR(13.0, curvilinearGrid.GetNode(0, 4).x, tolerance);
+    ASSERT_NEAR(14.0, curvilinearGrid.GetNode(0, 5).x, tolerance);
+    ASSERT_NEAR(15.0, curvilinearGrid.GetNode(0, 6).x, tolerance);
+    ASSERT_NEAR(16.0, curvilinearGrid.GetNode(0, 7).x, tolerance);
+    ASSERT_NEAR(17.0, curvilinearGrid.GetNode(0, 8).x, tolerance);
+    ASSERT_NEAR(18.0, curvilinearGrid.GetNode(0, 9).x, tolerance);
+    ASSERT_NEAR(19.0, curvilinearGrid.GetNode(0, 10).x, tolerance);
 
-    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(11, 0).x, tolerance);
-    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(12, 0).x, tolerance);
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(0, 11).x, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(0, 12).x, tolerance);
 
     ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 0).y, tolerance);
-    ASSERT_NEAR(10.0, curvilinearGrid.GetNode(0, 1).y, tolerance);
-    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(0, 2).y, tolerance);
-    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(0, 3).y, tolerance);
+    ASSERT_NEAR(10.0, curvilinearGrid.GetNode(1, 0).y, tolerance);
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(2, 0).y, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(3, 0).y, tolerance);
 }
 
 TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGridWithMissingFaces_ShouldRefine)

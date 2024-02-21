@@ -211,7 +211,7 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstN
     Projection const polygonProjection = m_polygon.GetProjection();
 
     const auto result = DiscretizeTransfinite(sideOne, sideTwo, sideThree, sideFour,
-                                              polygonProjection, numMNodes - 1, numNNodes - 1);
+                                              polygonProjection, numNNodes - 1, numMNodes - 1);
 
     return std::make_unique<CurvilinearGrid>(result, polygonProjection);
 }
@@ -294,8 +294,8 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstN
     }
 
     // set dimensions of blocks
-    std::vector<UInt> numM{n1, n3, n2};
-    std::vector<UInt> numN{n3, n2, n1};
+    std::vector<UInt> numN{n1, n3, n2};
+    std::vector<UInt> numM{n3, n2, n1};
 
     // set pointers of block corners
     std::vector<UInt> cornerPoints{firstNode, secondNode, thirdNode};
@@ -387,8 +387,8 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstN
                                                   sideThree,
                                                   sideFour,
                                                   polygonProjection,
-                                                  numM[t],
-                                                  numN[t]);
+                                                  numN[t],
+                                                  numM[t]);
 
         // add to grid
         if (t == 0)
@@ -404,8 +404,6 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstN
         }
         if (t == 1)
         {
-            // std::cout << "result:    " << result.rows() << ' ' << result.cols() << std::endl;
-            // std::cout << "gridNodes: " << gridNodes.rows() << ' ' << gridNodes.cols() << std::endl;
             for (UInt i = 0; i < result.rows(); ++i)
             {
                 for (UInt j = 0; j < result.cols(); ++j)

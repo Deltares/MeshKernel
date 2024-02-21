@@ -211,8 +211,8 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute(
                                                                    sideThree,
                                                                    sideFour,
                                                                    m_splines->m_projection,
-                                                                   m_numM,
-                                                                   m_numN);
+                                                                   m_numN,
+                                                                   m_numM);
 
             // assign the points
             for (UInt k = 0; k < numMPoints; k++)

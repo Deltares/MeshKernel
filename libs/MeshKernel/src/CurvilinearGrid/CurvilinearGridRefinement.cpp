@@ -68,7 +68,7 @@ void CurvilinearGridRefinement::Compute()
     std::vector<Point> rightRefinement(m_refinement);
 
     // The refined grid
-    lin_alg::Matrix<Point> refinedGrid(maxM, maxN);
+    lin_alg::Matrix<Point> refinedGrid(maxN, maxM);
 
     UInt refinedM = 0;
     for (UInt currentM = 0; currentM < m_grid.NumM() - 1; ++currentM)
@@ -90,10 +90,10 @@ void CurvilinearGridRefinement::Compute()
             }
 
             // Only if all grid nodes of the face are valid, perform transfinite interpolation
-            if (m_grid.GetNode(currentM, currentN).IsValid() &&
-                m_grid.GetNode(currentM + 1, currentN).IsValid() &&
-                m_grid.GetNode(currentM, currentN + 1).IsValid() &&
-                m_grid.GetNode(currentM + 1, currentN + 1).IsValid())
+            if (m_grid.GetNode(currentN, currentM).IsValid() &&
+                m_grid.GetNode(currentN, currentM + 1).IsValid() &&
+                m_grid.GetNode(currentN + 1, currentM).IsValid() &&
+                m_grid.GetNode(currentN + 1, currentM + 1).IsValid())
             {
                 // Calculate m-direction spline points
                 bottomRefinement.clear();
@@ -123,8 +123,8 @@ void CurvilinearGridRefinement::Compute()
                                                              bottomRefinement,
                                                              topRefinement,
                                                              m_grid.m_projection,
-                                                             localMRefinement,
-                                                             localNRefinement);
+                                                             localNRefinement,
+                                                             localMRefinement);
                 // Copy the local grid into the refined grid
                 for (Eigen::Index m = 0; m < localMRefinement + 1; ++m)
                 {

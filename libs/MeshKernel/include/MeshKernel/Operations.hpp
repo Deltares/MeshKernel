@@ -521,16 +521,16 @@ namespace meshkernel
     /// @param[in] bottomDiscretization The third side of the area.
     /// @param[in] upperDiscretization  The fourth side of the area.
     /// @param[in] projection           The projection to use.
-    /// @param[in] numM                 The number of columns to generate (horizontal direction).
-    /// @param[in] numN                 The number of rows to generate (vertical direction).
+    /// @param[in] numN                 The number of rows to generate (horizontal direction).
+    /// @param[in] numM                 The number of columns to generate (vertical direction).
     /// @returns The resulting dicretization (expressed as number of points).
     [[nodiscard]] lin_alg::Matrix<Point> DiscretizeTransfinite(const std::vector<Point>& leftDiscretization,
                                                                const std::vector<Point>& rightDiscretization,
                                                                const std::vector<Point>& bottomDiscretization,
                                                                const std::vector<Point>& upperDiscretization,
                                                                const Projection& projection,
-                                                               UInt numM,
-                                                               UInt numN);
+                                                               UInt numN,
+                                                               UInt numM);
 
     /// @brief Computes the edge centers
     /// @param[in] nodes The vector of edge nodes.
