@@ -69,10 +69,10 @@ namespace meshkernel
 
     private:
         /// @brief Commit the action of deleting a node and all connecting edges
-        void DoCommit();
+        void DoCommit() override;
 
         /// @brief The action of restoring a node and all connecting edges
-        void DoRestore();
+        void DoRestore() override;
 
         /// @brief The unstructured mesh from which the node will be deleted.
         Mesh& m_mesh;

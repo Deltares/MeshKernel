@@ -43,10 +43,10 @@ namespace meshkernel
 
     private:
         /// @brief Apply the action on the mesh
-        void DoCommit();
+        void DoCommit() override;
 
         /// @brief Restore the action on the mesh
-        void DoRestore();
+        void DoRestore() override;
 
         /// @brief The mesh on which actions are to be committed and restored.
         Mesh& mesh_;

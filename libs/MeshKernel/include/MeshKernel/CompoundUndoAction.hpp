@@ -50,10 +50,10 @@ namespace meshkernel
 
     private:
         /// @brief Commit all undo actions.
-        void DoCommit();
+        void DoCommit() override;
 
         /// @brief Restore all undo actions, in reverse order.
-        void DoRestore();
+        void DoRestore() override;
 
         /// @brief A sequence of all the undo actions
         std::vector<UndoActionPtr> m_undoActions;
