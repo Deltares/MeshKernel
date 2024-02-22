@@ -60,6 +60,9 @@ namespace meshkernel
         /// @brief Get the node location
         const Point& Node() const;
 
+        /// \brief Compute the approximate amount of memory being used, in bytes.
+        std::uint64_t MemorySize() const override;
+
         // // How best to commit and restore all edge deletions
         // void CommitEdges() const;
         // void RestoreEdges() const;

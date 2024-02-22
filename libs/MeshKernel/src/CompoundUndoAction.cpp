@@ -33,6 +33,18 @@ void meshkernel::CompoundUndoAction::DoRestore()
     }
 }
 
+std::uint64_t meshkernel::CompoundUndoAction::MemorySize() const
+{
+    std::uint64_t size = sizeof(*this) + static_cast<std::uint64_t>(m_undoActions.size()) * sizeof(UndoActionPtr);
+
+    for (const UndoActionPtr& action : m_undoActions)
+    {
+        size += action->MemorySize();
+    }
+
+    return size;
+}
+
 void meshkernel::CompoundUndoAction::Print(std::ostream& out) const
 {
     out << "CompoundUndoAction: " << m_undoActions.size() << std::endl;

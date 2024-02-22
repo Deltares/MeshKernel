@@ -31,46 +31,28 @@
 
 #include "MeshKernel/BaseMeshUndoAction.hpp"
 #include "MeshKernel/Constants.hpp"
-#include "MeshKernel/Vector.hpp"
+#include "MeshKernel/Point.hpp"
 
 namespace meshkernel
 {
     /// @brief Forward declaration of the unstructured mesh
-    class Mesh;
+    class Mesh2D;
 
-    /// @brief Action to move a node in an unstructured mesh.
-    class MoveNodeAction : public BaseMeshUndoAction<MoveNodeAction, Mesh>
+    /// @brief Action to add a node to an unstructured mesh.
+    class SphericalCoordinateOffsetAction : public BaseMeshUndoAction<AddNodeAction, Mesh2D>
     {
     public:
-        /// @brief Simple struct, combining the id of the node to be displaced and the displacement vector
-        struct NodeDisplacement
-        {
-            /// @brief Displacement vector.
-            Vector m_displacement;
-
-            /// @brief Id of the node to be displaced.
-            UInt m_nodeId;
-        };
-
-        /// @brief Typedef for array of node displacements
-        using DisplacementVector = std::vector<NodeDisplacement>;
-
-        /// @brief Const iterator over the displacement vector.
-        using const_iterator = DisplacementVector::const_iterator;
-
-        /// @brief Allocate a MoveNodeAction and return a unique_ptr to the newly create object.
-        static std::unique_ptr<MoveNodeAction> Create(Mesh& mesh);
+        /// @brief Allocate a AddNodeAction and return a unique_ptr to the newly create object.
+        static std::unique_ptr<SphericalCoordinateOffsetAction> Create(Mesh2D& mesh, const double minx, const double maxx);
 
         /// @brief Constructor
-        MoveNodeAction(Mesh& mesh);
+        SphericalCoordinateOffsetAction(Mesh& mesh, const double minx, const double maxx);
 
-        /// @brief Set the amount of displacement for node
-        void AddDisplacement(const UInt nodeId, const double xDisplacement, const double yDisplacement);
+        /// @brief Get the minimum x-value
+        double MinX() const;
 
-        // TODO How best to apply and and revert displacements?
-        // 1. iterate over internals, the mesh can then use use it as it wants
-        // 2. implement 2 functions apply and revert taking node array and apply (or revert) displacements
-        //    then all implementation details can be hidden
+        /// @brief Get the maximum x-value
+        double MaxX() const;
 
         /// @brief Return iterator pointing to the first element of the displacement vector
         const_iterator begin() const;
@@ -81,22 +63,38 @@ namespace meshkernel
         /// \brief Compute the approximate amount of memory being used, in bytes.
         std::uint64_t MemorySize() const override;
 
-        /// @brief Print the move node action to the stream
+        /// @brief Print the add node action to the stream
         void Print(std::ostream& out = std::cout) const override;
 
     private:
-        /// @brief Vector of node displacements.
-        DisplacementVector m_displacements;
+        /// @brief Minimum x-value
+        double m_xMin;
+
+        /// @brief Maximum x-value
+        double m_xMax;
+
+        /// @brief List of identifiers of transformed node.
+        std::vector<UInt> m_offsetNodes;
     };
 
 } // namespace meshkernel
 
-inline meshkernel::MoveNodeAction::const_iterator meshkernel::MoveNodeAction::begin() const
+inline double meshkernel::SphericalCoordinateOffsetAction::MinX() const
 {
-    return m_displacements.begin();
+    return m_xMin;
 }
 
-inline meshkernel::MoveNodeAction::const_iterator meshkernel::MoveNodeAction::end() const
+inline double meshkernel::SphericalCoordinateOffsetAction::MaxX() const
 {
-    return m_displacements.end();
+    return m_xMax;
+}
+
+inline meshkernel::SphericalCoordinateOffsetAction::const_iterator meshkernel::SphericalCoordinateOffsetAction::begin() const
+{
+    return m_offsetNode.begin();
+}
+
+inline meshkernel::SphericalCoordinateOffsetAction::const_iterator meshkernel::SphericalCoordinateOffsetAction::end() const
+{
+    return m_offsetNode.end();
 }

@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -80,6 +81,9 @@ namespace meshkernel
 
         /// @brief Get the current state of the undo action.
         ActionState State() const;
+
+        /// \brief Compute the approximate amount of memory being used, in bytes.
+        virtual std::uint64_t MemorySize() const;
 
         /// @brief Print the undo action to the stream
         virtual void Print(std::ostream& out = std::cout) const;

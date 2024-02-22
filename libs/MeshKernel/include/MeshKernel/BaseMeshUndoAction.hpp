@@ -41,6 +41,9 @@ namespace meshkernel
         /// @brief Constructor
         BaseMeshUndoAction(Mesh& mesh) : mesh_(mesh) {}
 
+        /// \brief Compute the approximate amount of memory being used, in bytes.
+        std::uint64_t MemorySize() const override;
+
     private:
         /// @brief Apply the action on the mesh
         void DoCommit() override;
@@ -64,4 +67,10 @@ template <typename DerivedUndoAction, class Mesh>
 void meshkernel::BaseMeshUndoAction<DerivedUndoAction, Mesh>::DoRestore()
 {
     mesh_.Restore(*static_cast<DerivedUndoAction*>(this));
+}
+
+template <typename DerivedUndoAction, class Mesh>
+std::uint64_t meshkernel::BaseMeshUndoAction<DerivedUndoAction, Mesh>::MemorySize() const
+{
+    return sizeof(*static_cast<const DerivedUndoAction*>(this));
 }

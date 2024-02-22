@@ -62,6 +62,7 @@ set(
   ${SRC_DIR}/ResetEdgeAction.cpp
   ${SRC_DIR}/SamplesHessianCalculator.cpp
   ${SRC_DIR}/Smoother.cpp
+  ${SRC_DIR}/SphericalCoordinateOffsetAction.cpp
   ${SRC_DIR}/SplineAlgorithms.cpp
   ${SRC_DIR}/Splines.cpp
   ${SRC_DIR}/TriangulationInterpolation.cpp
@@ -154,6 +155,7 @@ set(
   ${DOMAIN_INC_DIR}/ResetEdgeAction.hpp
   ${DOMAIN_INC_DIR}/SamplesHessianCalculator.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
+  ${DOMAIN_INC_DIR}/SphericalCoordinateOffsetAction.hpp
   ${DOMAIN_INC_DIR}/SplineAlgorithms.hpp
   ${DOMAIN_INC_DIR}/Splines.hpp
   ${DOMAIN_INC_DIR}/TriangulationInterpolation.hpp

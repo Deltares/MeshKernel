@@ -17,6 +17,12 @@ void meshkernel::MoveNodeAction::AddDisplacement(const UInt nodeId, const double
     }
 }
 
+std::uint64_t meshkernel::MoveNodeAction::MemorySize() const
+{
+    std::uint64_t size = sizeof(*this) + m_displacements.size() * sizeof(NodeDisplacement);
+    return size;
+}
+
 void meshkernel::MoveNodeAction::Print(std::ostream& out) const
 {
     out << "MoveNodeAction: state " << to_string(State()) << std::endl;

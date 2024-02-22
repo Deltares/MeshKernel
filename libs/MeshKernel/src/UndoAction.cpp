@@ -39,3 +39,8 @@ void meshkernel::UndoAction::Print(std::ostream& out [[maybe_unused]]) const
 {
     // do nothing for the default
 }
+
+std::uint64_t meshkernel::UndoAction::MemorySize() const
+{
+    return sizeof(*this);
+}

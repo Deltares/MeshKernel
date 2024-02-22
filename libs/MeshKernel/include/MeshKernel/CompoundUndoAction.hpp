@@ -45,6 +45,9 @@ namespace meshkernel
         /// @brief Add an undo action to the compound action
         void Add(UndoActionPtr&& action);
 
+        /// \brief Compute the approximate amount of memory being used, in bytes.
+        std::uint64_t MemorySize() const override;
+
         /// @brief Print the compound undo action to the stream
         void Print(std::ostream& out = std::cout) const override;
 
