@@ -187,6 +187,9 @@ namespace meshkernel
         /// @brief Set all nodes to a new set of values.
         void SetNodes(const std::vector<Point>& newValues);
 
+        // TODO change this
+        // 1. Should be ResetNode
+        // 2. Should return an UndoAction
         /// @brief Set the node to a new value, this value may be the in-valid value.
         void SetNode(const UInt index, const Point& newValue);
 
@@ -197,6 +200,9 @@ namespace meshkernel
         // TODO get rid of this function
         const std::vector<Edge>& Edges() const;
 
+        // TODO change this
+        // 1. Is this the same as ResetEdge
+        // 2. If not then also return an UndoAction
         /// @brief Set the edge
         void SetEdge(const UInt index, const Edge& edge);
 
@@ -211,29 +217,29 @@ namespace meshkernel
         /// @brief Merges two mesh nodes
         /// @param[in] startNode The index of the first node to be merged
         /// @param[in] endNode The second of the second node to be merged
-        std::unique_ptr<CompoundUndoAction> MergeTwoNodes(UInt startNode, UInt endNode);
+        [[nodiscard]] std::unique_ptr<CompoundUndoAction> MergeTwoNodes(UInt startNode, UInt endNode);
 
         /// @brief Merge close mesh nodes inside a polygon (MERGENODESINPOLYGON)
         /// @param[in] polygons Polygon where to perform the merging
         /// @param[in] mergingDistance The distance below which two nodes will be merged
-        std::unique_ptr<CompoundUndoAction> MergeNodesInPolygon(const Polygons& polygons, double mergingDistance);
+        [[nodiscard]] std::unique_ptr<CompoundUndoAction> MergeNodesInPolygon(const Polygons& polygons, double mergingDistance);
 
-        /// @brief Connect two existing nodes, checking if the nodes are already connected.
-        /// If the nodes are not connected a new edge is formed, otherwise UInt invalid value is returned. (connectdbn)
-        /// @param[in] startNode The start node index
-        /// @param[in] endNode The end node index
-        /// @return The index of the new edge
-        UInt ConnectNodes(UInt startNode, UInt endNode);
+        // /// @brief Connect two existing nodes, checking if the nodes are already connected.
+        // /// If the nodes are not connected a new edge is formed, otherwise UInt invalid value is returned. (connectdbn)
+        // /// @param[in] startNode The start node index
+        // /// @param[in] endNode The end node index
+        // /// @return The index of the new edge
+        // UInt ConnectNodes(UInt startNode, UInt endNode);
 
-        /// @brief Insert a new node in the mesh (setnewpoint)
-        /// @param[in] newPoint The coordinate of the new point
-        /// @return The index of the new node
-        UInt InsertNode(const Point& newPoint);
+        // /// @brief Insert a new node in the mesh (setnewpoint)
+        // /// @param[in] newPoint The coordinate of the new point
+        // /// @return The index of the new node
+        // UInt InsertNode(const Point& newPoint);
 
         /// @brief Insert a new node in the mesh (setnewpoint)
         /// @param[in] newPoint The coordinate of the new point
         /// @return The index of the new node and the pointer to the action
-        [[nodiscard]] std::tuple<UInt, std::unique_ptr<AddNodeAction>> InsertNode2(const Point& newPoint);
+        [[nodiscard]] std::tuple<UInt, std::unique_ptr<AddNodeAction>> InsertNode(const Point& newPoint);
 
         /// @brief
         void Commit(AddNodeAction& action);
@@ -245,7 +251,7 @@ namespace meshkernel
         /// @param[in] startNode The start node index
         /// @param[in] endNode The end node index
         /// @return The index of the new edge and the action to connect two nodes
-        [[nodiscard]] std::tuple<UInt, std::unique_ptr<AddEdgeAction>> ConnectNodes2(UInt startNode, UInt endNode);
+        [[nodiscard]] std::tuple<UInt, std::unique_ptr<AddEdgeAction>> ConnectNodes(UInt startNode, UInt endNode);
 
         void Commit(AddEdgeAction& action);
 
@@ -257,9 +263,19 @@ namespace meshkernel
 
         void Restore(ResetEdgeAction& action);
 
-        /// @brief Delete a node
-        /// @param[in] node The index of the node to delete
-        void DeleteNode(UInt node);
+        // /// @brief Delete a node
+        // /// @param[in] node The index of the node to delete
+        // void DeleteNode(UInt node);
+
+        /// @brief Deletes an edge
+        /// @param[in] edge The edge index
+        /// @return The action to delete the node and any connecting edges
+        [[nodiscard]] std::unique_ptr<DeleteNodeAction> DeleteNode(UInt node);
+
+        ///
+        void Commit(DeleteNodeAction& action);
+
+        void Restore(DeleteNodeAction& action);
 
         /// @brief Find the edge sharing two nodes
         /// @param[in] firstNodeIndex The index of the first node
@@ -276,7 +292,7 @@ namespace meshkernel
         /// @brief Move a node to a new location
         /// @param[in] newPoint The new location
         /// @param[in] nodeindex The index of the node to move
-        std::unique_ptr<MoveNodeAction> MoveNode(Point newPoint, UInt nodeindex);
+        [[nodiscard]] std::unique_ptr<MoveNodeAction> MoveNode(Point newPoint, UInt nodeindex);
 
         void Commit(MoveNodeAction& action);
 
@@ -299,20 +315,21 @@ namespace meshkernel
         /// @returns The index of the closest edge
         [[nodiscard]] UInt FindEdgeCloseToAPoint(Point point);
 
-        /// @brief Deletes an edge
-        /// @param[in] edge The edge index
-        void DeleteEdge(UInt edge);
+        // /// @brief Deletes an edge
+        // /// @param[in] edge The edge index
+        // void DeleteEdge(UInt edge);
 
         /// @brief Deletes an edge
         /// @param[in] edge The edge index
         /// @return The action to delete the edge
-        [[nodiscard]] std::unique_ptr<DeleteEdgeAction> DeleteEdge2(UInt edge);
+        [[nodiscard]] std::unique_ptr<DeleteEdgeAction> DeleteEdge(UInt edge);
 
         ///
         void Commit(const DeleteEdgeAction& action);
 
         void Restore(const DeleteEdgeAction& action);
 
+        // TODO Could be same as ResetNode, where the value is the invalid value
         /// @brief Clears a node, sets it to the invalid value but does not unlink any edges
         /// @param[in] node The node index
         /// @return The action to clear the node.
@@ -323,16 +340,6 @@ namespace meshkernel
         void Commit(ClearNodeAction& action);
 
         void Restore(ClearNodeAction& action);
-
-        /// @brief Deletes an edge
-        /// @param[in] edge The edge index
-        /// @return The action to delete the node and any connecting edges
-        [[nodiscard]] std::unique_ptr<DeleteNodeAction> DeleteNode2(UInt node);
-
-        ///
-        void Commit(DeleteNodeAction& action);
-
-        void Restore(DeleteNodeAction& action);
 
         /// @brief Find the common node two edges share
         /// This method uses return parameters since the success is evaluated in a hot loop

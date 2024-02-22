@@ -70,12 +70,14 @@ Mesh1D::Mesh1D(Network1D& network1d, double minFaceSize)
     m_nodes = nodes;
     m_projection = network1d.m_projection;
 
+    DeleteInvalidNodesAndEdges();
     // Perform node administration to fill the internal arrays
     AdministrateNodesEdges();
 
     // If there are computational nodes at a distance smaller than  the threshold, these are eliminated
     const Polygons polygon{};
-    MergeNodesInPolygon(polygon, minFaceSize);
+    // The merge action can be ignored in this case becuase we will not need to undo any merge operation
+    [[maybe_unused]] auto mergeAction = MergeNodesInPolygon(polygon, minFaceSize);
 }
 
 Point Mesh1D::ComputeProjectedNode(UInt node, double distanceFactor) const

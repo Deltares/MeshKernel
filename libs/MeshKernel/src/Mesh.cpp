@@ -307,7 +307,7 @@ std::unique_ptr<meshkernel::CompoundUndoAction> Mesh::MergeTwoNodes(UInt firstNo
     auto edgeIndex = FindEdge(firstNodeIndex, secondNodeIndex);
     if (edgeIndex != constants::missing::uintValue)
     {
-        action->Add(DeleteEdge2(edgeIndex));
+        action->Add(DeleteEdge(edgeIndex));
     }
 
     // check if there is another edge starting at firstEdgeOtherNode and ending at secondNode
@@ -325,7 +325,7 @@ std::unique_ptr<meshkernel::CompoundUndoAction> Mesh::MergeTwoNodes(UInt firstNo
                 const auto secondNodeSecondEdge = OtherNodeOfEdge(secondEdge, firstEdgeOtherNode);
                 if (secondNodeSecondEdge == secondNodeIndex)
                 {
-                    action->Add(DeleteEdge2(secondEdgeIndex));
+                    action->Add(DeleteEdge(secondEdgeIndex));
                 }
             }
         }
@@ -441,16 +441,16 @@ std::unique_ptr<meshkernel::CompoundUndoAction> Mesh::MergeNodesInPolygon(const 
     return action;
 }
 
-meshkernel::UInt Mesh::ConnectNodes(UInt startNode, UInt endNode)
-{
-    const auto edgeIndex = FindEdge(startNode, endNode);
+// meshkernel::UInt Mesh::ConnectNodes(UInt startNode, UInt endNode)
+// {
+//     const auto edgeIndex = FindEdge(startNode, endNode);
 
-    // The nodes are already connected
-    if (edgeIndex != constants::missing::uintValue)
-        return constants::missing::uintValue;
+//     // The nodes are already connected
+//     if (edgeIndex != constants::missing::uintValue)
+//         return constants::missing::uintValue;
 
-    return InsertEdge(startNode, endNode);
-}
+//     return InsertEdge(startNode, endNode);
+// }
 
 meshkernel::UInt Mesh::InsertEdge(UInt startNode, UInt endNode)
 {
@@ -465,24 +465,24 @@ meshkernel::UInt Mesh::InsertEdge(UInt startNode, UInt endNode)
     return newEdgeIndex;
 }
 
-meshkernel::UInt Mesh::InsertNode(const Point& newPoint)
-{
-    const auto newSize = GetNumNodes() + 1;
-    const auto newNodeIndex = GetNumNodes();
+// meshkernel::UInt Mesh::InsertNode(const Point& newPoint)
+// {
+//     const auto newSize = GetNumNodes() + 1;
+//     const auto newNodeIndex = GetNumNodes();
 
-    m_nodes.resize(newSize);
-    m_nodesNumEdges.resize(newSize);
-    m_nodesEdges.resize(newSize);
+//     m_nodes.resize(newSize);
+//     m_nodesNumEdges.resize(newSize);
+//     m_nodesEdges.resize(newSize);
 
-    m_nodes[newNodeIndex] = newPoint;
-    m_nodesNumEdges[newNodeIndex] = 0;
+//     m_nodes[newNodeIndex] = newPoint;
+//     m_nodesNumEdges[newNodeIndex] = 0;
 
-    m_nodesRTreeRequiresUpdate = true;
+//     m_nodesRTreeRequiresUpdate = true;
 
-    return newNodeIndex;
-}
+//     return newNodeIndex;
+// }
 
-std::tuple<meshkernel::UInt, std::unique_ptr<meshkernel::AddNodeAction>> Mesh::InsertNode2(const Point& newPoint)
+std::tuple<meshkernel::UInt, std::unique_ptr<meshkernel::AddNodeAction>> Mesh::InsertNode(const Point& newPoint)
 {
     const auto newNodeIndex = GetNumNodes();
 
@@ -513,7 +513,7 @@ void Mesh::Restore(AddNodeAction& action)
     m_nodesRTreeRequiresUpdate = true;
 }
 
-std::tuple<meshkernel::UInt, std::unique_ptr<meshkernel::AddEdgeAction>> Mesh::ConnectNodes2(UInt startNode, UInt endNode)
+std::tuple<meshkernel::UInt, std::unique_ptr<meshkernel::AddEdgeAction>> Mesh::ConnectNodes(UInt startNode, UInt endNode)
 {
     // increment the edges container
     const auto newEdgeIndex = GetNumEdges();
@@ -555,37 +555,37 @@ void Mesh::Restore(ResetEdgeAction& action)
     m_edgesRTreeRequiresUpdate = true;
 }
 
-void Mesh::DeleteNode(UInt node)
-{
-    if (node >= GetNumNodes())
-    {
-        throw std::invalid_argument("Mesh::DeleteNode: The index of the node to be deleted does not exist.");
-    }
+// void Mesh::DeleteNode(UInt node)
+// {
+//     if (node >= GetNumNodes())
+//     {
+//         throw std::invalid_argument("Mesh::DeleteNode: The index of the node to be deleted does not exist.");
+//     }
 
-    for (UInt e = 0; e < m_nodesEdges[node].size(); e++)
-    {
-        const auto edgeIndex = m_nodesEdges[node][e];
-        DeleteEdge(edgeIndex);
-    }
+//     for (UInt e = 0; e < m_nodesEdges[node].size(); e++)
+//     {
+//         const auto edgeIndex = m_nodesEdges[node][e];
+//         DeleteEdge(edgeIndex);
+//     }
 
-    m_nodes[node] = {constants::missing::doubleValue, constants::missing::doubleValue};
-    m_nodesRTreeRequiresUpdate = true;
-}
+//     m_nodes[node] = {constants::missing::doubleValue, constants::missing::doubleValue};
+//     m_nodesRTreeRequiresUpdate = true;
+// }
 
-void Mesh::DeleteEdge(UInt edge)
-{
-    if (edge == constants::missing::uintValue)
-    {
-        throw std::invalid_argument("Mesh::DeleteEdge: The index of the edge to be deleted does not exist.");
-    }
+// void Mesh::DeleteEdge(UInt edge)
+// {
+//     if (edge == constants::missing::uintValue)
+//     {
+//         throw std::invalid_argument("Mesh::DeleteEdge: The index of the edge to be deleted does not exist.");
+//     }
 
-    m_edges[edge].first = constants::missing::uintValue;
-    m_edges[edge].second = constants::missing::uintValue;
+//     m_edges[edge].first = constants::missing::uintValue;
+//     m_edges[edge].second = constants::missing::uintValue;
 
-    m_edgesRTreeRequiresUpdate = true;
-}
+//     m_edgesRTreeRequiresUpdate = true;
+// }
 
-std::unique_ptr<meshkernel::DeleteEdgeAction> Mesh::DeleteEdge2(UInt edge)
+std::unique_ptr<meshkernel::DeleteEdgeAction> Mesh::DeleteEdge(UInt edge)
 {
     if (edge == constants::missing::uintValue) [[unlikely]]
     {
@@ -634,7 +634,7 @@ void Mesh::Restore(ClearNodeAction& action)
     m_nodesRTreeRequiresUpdate = true;
 }
 
-std::unique_ptr<meshkernel::DeleteNodeAction> Mesh::DeleteNode2(UInt node)
+std::unique_ptr<meshkernel::DeleteNodeAction> Mesh::DeleteNode(UInt node)
 {
     if (node >= GetNumNodes()) [[unlikely]]
     {
@@ -646,7 +646,7 @@ std::unique_ptr<meshkernel::DeleteNodeAction> Mesh::DeleteNode2(UInt node)
     for (UInt e = 0; e < m_nodesEdges[node].size(); e++)
     {
         const auto edgeIndex = m_nodesEdges[node][e];
-        action->Add(DeleteEdge2(edgeIndex));
+        action->Add(DeleteEdge(edgeIndex));
     }
 
     Commit(*action);

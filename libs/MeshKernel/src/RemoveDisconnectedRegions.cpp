@@ -110,9 +110,13 @@ void meshkernel::RemoveDisconnectedRegions::LabelAllDomainRegions(const Mesh2D& 
     }
 }
 
-void meshkernel::RemoveDisconnectedRegions::RemoveDetachedRegions(Mesh2D& mesh, const UInt regionId, std::vector<UInt>& elementRegionId, UInt& numberOfElementsRemoved) const
+std::unique_ptr<meshkernel::UndoAction> meshkernel::RemoveDisconnectedRegions::RemoveDetachedRegions(Mesh2D& mesh,
+                                                                                                     const UInt regionId,
+                                                                                                     std::vector<UInt>& elementRegionId,
+                                                                                                     UInt& numberOfElementsRemoved) const
 {
     numberOfElementsRemoved = 0;
+    std::unique_ptr<meshkernel::CompoundUndoAction> removalAction = CompoundUndoAction::Create();
 
     // Loop over all element region ids, deleting all those that do not have the same region id as the master id.
     for (UInt i = 0; i < elementRegionId.size(); ++i)
@@ -120,14 +124,16 @@ void meshkernel::RemoveDisconnectedRegions::RemoveDetachedRegions(Mesh2D& mesh, 
         if (elementRegionId[i] != regionId)
         {
             ++numberOfElementsRemoved;
-            std::ranges::for_each(mesh.m_facesEdges[i], [&mesh](const UInt edge)
-                                  { mesh.DeleteEdge(edge); });
+            std::ranges::for_each(mesh.m_facesEdges[i], [&mesh, &removalAction](const UInt edge)
+                                  { removalAction->Add(mesh.DeleteEdge(edge)); });
             elementRegionId[i] = constants::missing::uintValue;
         }
     }
+
+    return removalAction;
 }
 
-void meshkernel::RemoveDisconnectedRegions::Compute(Mesh2D& mesh) const
+std::unique_ptr<meshkernel::UndoAction> meshkernel::RemoveDisconnectedRegions::Compute(Mesh2D& mesh) const
 {
     // Label the elements of each discontiguous region of the mesh with a unique identifier for the region.
     // A mapping between the identifier for the region and the number of elements in the same region is retained
@@ -138,6 +144,8 @@ void meshkernel::RemoveDisconnectedRegions::Compute(Mesh2D& mesh) const
     // List of number of elements labeled with number
     // the domain (index) is the region id and the range, regionCount[id], is the element count.
     std::vector<std::pair<UInt, UInt>> regionCount;
+
+    std::unique_ptr<meshkernel::CompoundUndoAction> removalAction = CompoundUndoAction::Create();
 
     // Generate region identifier for all elements in the mesh and a mapping between the region id the the number of elements.
     LabelAllDomainRegions(mesh, elementRegionId, regionCount);
@@ -162,7 +170,9 @@ void meshkernel::RemoveDisconnectedRegions::Compute(Mesh2D& mesh) const
 
         UInt numberOfElementsRemoved = 0;
         // Remove all elements from the regions that do not have the main region id.
-        RemoveDetachedRegions(mesh, mainRegionId, elementRegionId, numberOfElementsRemoved);
+        removalAction->Add(RemoveDetachedRegions(mesh, mainRegionId, elementRegionId, numberOfElementsRemoved));
         mesh.Administrate();
     }
+
+    return removalAction;
 }
