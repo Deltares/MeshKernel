@@ -1,9 +1,12 @@
 #include <gtest/gtest.h>
 
+#include <iterator>
+
 #include "MeshKernel/AddEdgeAction.hpp"
 #include "MeshKernel/AddNodeAction.hpp"
 #include "MeshKernel/DeleteEdgeAction.hpp"
 #include "MeshKernel/DeleteNodeAction.hpp"
+#include "MeshKernel/MoveNodeAction.hpp"
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
@@ -39,6 +42,50 @@ TEST(UndoTests, ExpectedNode)
     EXPECT_EQ(nodeId, action->NodeId());
     EXPECT_EQ(node.x, action->Node().x);
     EXPECT_EQ(node.y, action->Node().y);
+}
+
+TEST(UndoTests, MoveNodeActionTest)
+{
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
+
+    std::unique_ptr<mk::MoveNodeAction> action = mk::MoveNodeAction::Create(*mesh);
+
+    action->AddDisplacement(1, 0.25, 0.25);
+    action->AddDisplacement(2, 0.5, 0.25);
+    action->AddDisplacement(3, 0.25, 0.5);
+    action->AddDisplacement(4, 0.5, 0.5);
+    action->AddDisplacement(23, -1.5, -1.5);
+
+    auto iter = action->begin();
+
+    ASSERT_EQ(std::distance(action->begin(), action->end()), 5);
+
+    EXPECT_EQ(iter->m_nodeId, 1);
+    EXPECT_EQ(iter->m_displacement.x(), 0.25);
+    EXPECT_EQ(iter->m_displacement.y(), 0.25);
+
+    ++iter;
+    EXPECT_EQ(iter->m_nodeId, 2);
+    EXPECT_EQ(iter->m_displacement.x(), 0.5);
+    EXPECT_EQ(iter->m_displacement.y(), 0.25);
+
+    ++iter;
+    EXPECT_EQ(iter->m_nodeId, 3);
+    EXPECT_EQ(iter->m_displacement.x(), 0.25);
+    EXPECT_EQ(iter->m_displacement.y(), 0.5);
+
+    ++iter;
+    EXPECT_EQ(iter->m_nodeId, 4);
+    EXPECT_EQ(iter->m_displacement.x(), 0.5);
+    EXPECT_EQ(iter->m_displacement.y(), 0.5);
+
+    ++iter;
+    EXPECT_EQ(iter->m_nodeId, 23);
+    EXPECT_EQ(iter->m_displacement.x(), -1.5);
+    EXPECT_EQ(iter->m_displacement.y(), -1.5);
+
+    ++iter;
+    EXPECT_TRUE(iter == action->end());
 }
 
 TEST(UndoTests, AddNodeToMesh)
@@ -261,4 +308,56 @@ TEST(UndoTests, ConnectNodeToCornersInMesh)
 
     EXPECT_EQ(edgeAction4->GetEdge().first, mesh->GetEdge(edgeId4).first);
     EXPECT_EQ(edgeAction4->GetEdge().second, mesh->GetEdge(edgeId4).second);
+}
+
+TEST(UndoTests, MoveNodeMeshTest)
+{
+    auto mesh = MakeRectangularMeshForTesting(11, 11, 1.0, meshkernel::Projection::cartesian);
+    const size_t size = 13;
+
+    std::vector<mk::Point> originalNodes(mesh->Nodes());
+
+    mk::Point node(6.5, 6.5);
+    // Id of node (5.0, 5.0)
+    mk::UInt nodeId = 60;
+
+    std::unique_ptr<mk::MoveNodeAction> action = mesh->MoveNode(node, nodeId);
+
+    ASSERT_EQ(static_cast<size_t>(std::distance(action->begin(), action->end())), size);
+
+    std::vector<mk::UInt> expectedNode{38, 48, 49, 50, 58, 59, 60, 61, 62, 70, 71, 72, 82};
+    std::vector<double> expectedDispX{0.01207305389, 0.375, 0.8172859213, 0.375, 0.01207305389, 0.8172859213, 1.5, 0.8172859213, 0.01207305389, 0.375, 0.8172859213, 0.375, 0.01207305389};
+    std::vector<double> expectedDispY{0.01207305389, 0.375, 0.8172859213, 0.375, 0.01207305389, 0.8172859213, 1.5, 0.8172859213, 0.01207305389, 0.375, 0.8172859213, 0.375, 0.01207305389};
+
+    size_t count = 0;
+
+    const double tolerance = 1.0e-8;
+
+    // Check contents of the move node action
+    for (auto iter = action->begin(); iter != action->end(); ++iter)
+    {
+        EXPECT_EQ(iter->m_nodeId, expectedNode[count]);
+        EXPECT_NEAR(iter->m_displacement.x(), expectedDispX[count], tolerance);
+        EXPECT_NEAR(iter->m_displacement.y(), expectedDispY[count], tolerance);
+        ++count;
+    }
+
+    // Check that the action has been applied to the mesh
+    for (auto iter = action->begin(); iter != action->end(); ++iter)
+    {
+        mk::Point expectedPoint = originalNodes[iter->m_nodeId] + iter->m_displacement;
+        EXPECT_NEAR(mesh->Node(iter->m_nodeId).x, expectedPoint.x, tolerance);
+        EXPECT_NEAR(mesh->Node(iter->m_nodeId).y, expectedPoint.y, tolerance);
+    }
+
+    // Restore the original mesh
+    action->Restore();
+
+    // Check that the mesh nodes are the same as in the original mesh.
+    for (auto iter = action->begin(); iter != action->end(); ++iter)
+    {
+        mk::Point expectedPoint = originalNodes[iter->m_nodeId];
+        EXPECT_NEAR(mesh->Node(iter->m_nodeId).x, expectedPoint.x, tolerance);
+        EXPECT_NEAR(mesh->Node(iter->m_nodeId).y, expectedPoint.y, tolerance);
+    }
 }
