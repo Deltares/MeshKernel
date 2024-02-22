@@ -38,6 +38,7 @@
 #include "MeshKernel/DeleteNodeAction.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/MoveNodeAction.hpp"
 #include "MeshKernel/ResetEdgeAction.hpp"
 #include "Utilities/RTreeBase.hpp"
 
@@ -250,7 +251,7 @@ namespace meshkernel
 
         void Restore(AddEdgeAction& action);
 
-        [[nodiscard]] std::unique_ptr<ResetEdgeAction> ResetEdge(UInt edgeId, UInt startNode, UInt endNode);
+        [[nodiscard]] std::unique_ptr<ResetEdgeAction> ResetEdge(UInt edgeId, const Edge& edge);
 
         void Commit(ResetEdgeAction& action);
 
@@ -275,7 +276,11 @@ namespace meshkernel
         /// @brief Move a node to a new location
         /// @param[in] newPoint The new location
         /// @param[in] nodeindex The index of the node to move
-        void MoveNode(Point newPoint, UInt nodeindex);
+        std::unique_ptr<MoveNodeAction> MoveNode(Point newPoint, UInt nodeindex);
+
+        void Commit(MoveNodeAction& action);
+
+        void Restore(MoveNodeAction& action);
 
         /// @brief Get the index of a node close to a point
         /// @param[in] point The starting point from where to start the search

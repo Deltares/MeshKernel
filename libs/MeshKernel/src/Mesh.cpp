@@ -354,11 +354,11 @@ std::unique_ptr<meshkernel::CompoundUndoAction> Mesh::MergeTwoNodes(UInt firstNo
 
             if (m_edges[edgeIndex].first == firstNodeIndex)
             {
-                action->Add(ResetEdge(edgeIndex, secondNodeIndex, m_edges[edgeIndex].second));
+                action->Add(ResetEdge(edgeIndex, {secondNodeIndex, m_edges[edgeIndex].second}));
             }
             else if (m_edges[edgeIndex].second == firstNodeIndex)
             {
-                action->Add(ResetEdge(edgeIndex, m_edges[edgeIndex].first, secondNodeIndex));
+                action->Add(ResetEdge(edgeIndex, {m_edges[edgeIndex].first, secondNodeIndex}));
             }
 
             numSecondNodeEdges++;
@@ -536,9 +536,9 @@ void Mesh::Restore(AddEdgeAction& action)
     m_edgesRTreeRequiresUpdate = true;
 }
 
-std::unique_ptr<meshkernel::ResetEdgeAction> Mesh::ResetEdge(UInt edgeId, UInt startNode, UInt endNode)
+std::unique_ptr<meshkernel::ResetEdgeAction> Mesh::ResetEdge(UInt edgeId, const Edge& edge)
 {
-    std::unique_ptr<meshkernel::ResetEdgeAction> action = ResetEdgeAction::Create(*this, edgeId, m_edges[edgeId], Edge(startNode, endNode));
+    std::unique_ptr<meshkernel::ResetEdgeAction> action = ResetEdgeAction::Create(*this, edgeId, m_edges[edgeId], edge);
     Commit(*action);
     return action;
 }
@@ -836,12 +836,14 @@ meshkernel::UInt Mesh::FindEdgeCloseToAPoint(Point point)
     throw AlgorithmError("Could not find the closest edge to a point.");
 }
 
-void Mesh::MoveNode(Point newPoint, UInt nodeindex)
+std::unique_ptr<meshkernel::MoveNodeAction> Mesh::MoveNode(Point newPoint, UInt nodeindex)
 {
     if (nodeindex >= m_nodes.size())
     {
         throw ConstraintError("Invalid node index: {}", nodeindex);
     }
+
+    std::unique_ptr<MoveNodeAction> action = MoveNodeAction::Create(*this);
 
     const Point nodeToMove = m_nodes[nodeindex];
     const auto dx = GetDx(nodeToMove, newPoint, m_projection);
@@ -860,13 +862,30 @@ void Mesh::MoveNode(Point newPoint, UInt nodeindex)
         {
             const auto factor = 0.5 * (1.0 + std::cos(std::sqrt(distanceCurrentNodeFromNewPointSquared * distanceNodeToMoveFromNewPointSquaredInv) * M_PI));
 
-            m_nodes[n].x += dx * factor;
-            m_nodes[n].y += dy * factor;
+            action->AddDisplacement(n, dx * factor, dy * factor);
         }
     }
 
+    Commit(*action);
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
+    return action;
+}
+
+void Mesh::Commit(MoveNodeAction& action)
+{
+    for (auto iter = action.begin(); iter != action.end(); ++iter)
+    {
+        m_nodes[iter->m_nodeId] += iter->m_displacement;
+    }
+}
+
+void Mesh::Restore(MoveNodeAction& action)
+{
+    for (auto iter = action.begin(); iter != action.end(); ++iter)
+    {
+        m_nodes[iter->m_nodeId] -= iter->m_displacement;
+    }
 }
 
 bool Mesh::IsFaceOnBoundary(UInt face) const
