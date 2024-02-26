@@ -335,7 +335,7 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstN
 
         // backward
         auto cornerIndex = cornerPoints[t];
-        for (UInt i = 0; i < numN[t] + 1; ++i)
+        for (UInt i = 0; i < numM[t] + 1; ++i)
         {
             sideOne[i] = polygonNodes[cornerIndex];
             if (cornerIndex == 0 || cornerIndex < start)
@@ -354,7 +354,7 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstN
 
         // forward
         cornerIndex = cornerPoints[t];
-        for (UInt i = 0; i < numM[t] + 1; ++i)
+        for (UInt i = 0; i < numN[t] + 1; ++i)
         {
             sideThree[i] = polygonNodes[cornerIndex];
             cornerIndex += 1;
@@ -369,19 +369,18 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstN
         }
 
         // fill side four
-        for (UInt i = 0; i < numM[t] + 1; ++i)
+        for (UInt i = 0; i < numN[t] + 1; ++i)
         {
-            double localXia = static_cast<double>(i) / static_cast<double>(numM[t]);
+            double localXia = static_cast<double>(i) / static_cast<double>(numN[t]);
             sideFour[i] = polygonNodes[iLeft[t]] * (1.0 - localXia) + triangleCenter * localXia;
         }
 
         // fill side two
-        for (UInt i = 0; i < numN[t] + 1; ++i)
+        for (UInt i = 0; i < numM[t] + 1; ++i)
         {
-            double localXia = static_cast<double>(i) / static_cast<double>(numN[t]);
+            double localXia = static_cast<double>(i) / static_cast<double>(numM[t]);
             sideTwo[i] = polygonNodes[iRight[t]] * (1.0 - localXia) + triangleCenter * localXia;
         }
-
         const auto result = DiscretizeTransfinite(sideOne,
                                                   sideTwo,
                                                   sideThree,
@@ -389,7 +388,6 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstN
                                                   polygonProjection,
                                                   numN[t],
                                                   numM[t]);
-
         // add to grid
         if (t == 0)
         {
@@ -421,7 +419,7 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstN
                 for (UInt j = 0; j < result.rows(); ++j)
                 {
                     const auto jIndex = n2 + n3 - j;
-                    gridNodes(i, jIndex) = result(j, i);
+                    gridNodes(jIndex, i) = result(i, j);
                 }
             }
         }

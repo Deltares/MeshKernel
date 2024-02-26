@@ -1278,8 +1278,8 @@ namespace meshkernel
         const auto [sideFourAdimensional, totalLengthFour] = ComputeAdimensionalDistancesFromPointSerie(upperDiscretization, projection);
 
         // now compute the adimensional distance of each point to be filled
-        const auto numNPoints = numN + 1;
         const auto numMPoints = numM + 1;
+        const auto numNPoints = numN + 1;
 
         lin_alg::Matrix<double> iWeightFactor(numNPoints, numMPoints);
         lin_alg::Matrix<double> jWeightFactor(numNPoints, numMPoints);
@@ -1426,13 +1426,13 @@ namespace meshkernel
                                        weightTwo(n, m) +
                                        weightTwo(n + 1, m));
 
-                    result(m, n).x = wa *
+                    result(n, m).x = wa *
                                      (weightThree(n, m - 1) * weightOne(n, m) +
                                       weightThree(n, m + 1) * weightOne(n, m + 1) +
                                       weightThree(n - 1, m) * weightTwo(n, m) +
                                       weightThree(n + 1, m) * weightTwo(n + 1, m));
 
-                    result(m, n).y = wa * (weightFour(n, m - 1) * weightOne(n, m) +
+                    result(n, m).y = wa * (weightFour(n, m - 1) * weightOne(n, m) +
                                            weightFour(n, m + 1) * weightOne(n, m + 1) +
                                            weightFour(n - 1, m) * weightTwo(n, m) +
                                            weightFour(n + 1, m) * weightTwo(n + 1, m));

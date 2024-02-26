@@ -18,17 +18,17 @@ TEST(CurvilinearLineAttraction, Compute_OnMLine_ShouldAttractMLines)
     // Asserts
     constexpr double tolerance = 1e-6;
 
-    ASSERT_NEAR(80178.014482303217, curvilinearGrid->GetNode(0, 2).x, tolerance);
-    ASSERT_NEAR(80266.910680413363, curvilinearGrid->GetNode(1, 2).x, tolerance);
+    ASSERT_NEAR(80178.014482303217, curvilinearGrid->GetNode(2, 0).x, tolerance);
+    ASSERT_NEAR(80266.910680413363, curvilinearGrid->GetNode(2, 1).x, tolerance);
     ASSERT_NEAR(80322.584162464715, curvilinearGrid->GetNode(2, 2).x, tolerance);
-    ASSERT_NEAR(80350.500795549306, curvilinearGrid->GetNode(3, 2).x, tolerance);
-    ASSERT_NEAR(80362.879671417410, curvilinearGrid->GetNode(4, 2).x, tolerance);
+    ASSERT_NEAR(80350.500795549306, curvilinearGrid->GetNode(2, 3).x, tolerance);
+    ASSERT_NEAR(80362.879671417410, curvilinearGrid->GetNode(2, 4).x, tolerance);
 
-    ASSERT_NEAR(367069.60110549850, curvilinearGrid->GetNode(0, 2).y, tolerance);
-    ASSERT_NEAR(366937.57246542675, curvilinearGrid->GetNode(1, 2).y, tolerance);
+    ASSERT_NEAR(367069.60110549850, curvilinearGrid->GetNode(2, 0).y, tolerance);
+    ASSERT_NEAR(366937.57246542675, curvilinearGrid->GetNode(2, 1).y, tolerance);
     ASSERT_NEAR(366803.23746104678, curvilinearGrid->GetNode(2, 2).y, tolerance);
-    ASSERT_NEAR(366683.98469820933, curvilinearGrid->GetNode(3, 2).y, tolerance);
-    ASSERT_NEAR(366555.11052078847, curvilinearGrid->GetNode(4, 2).y, tolerance);
+    ASSERT_NEAR(366683.98469820933, curvilinearGrid->GetNode(2, 3).y, tolerance);
+    ASSERT_NEAR(366555.11052078847, curvilinearGrid->GetNode(2, 4).y, tolerance);
 }
 
 TEST(CurvilinearLineAttraction, Compute_OnNLine_ShouldAttractNLines)
