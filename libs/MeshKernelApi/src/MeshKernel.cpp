@@ -1395,7 +1395,7 @@ namespace meshkernelapi
 
             const auto minEdgeLength = meshKernelState[meshKernelId].m_mesh2d->ComputeMinEdgeLength(polygon);
             const auto searchRadius = std::max(1e-6, minEdgeLength * 0.1);
-            meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, searchRadius);
+            [[maybe_unused]] auto undoAction = meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, searchRadius);
         }
         catch (...)
         {
@@ -1418,7 +1418,7 @@ namespace meshkernelapi
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, mergingDistance);
+            [[maybe_unused]] auto undoAction = meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, mergingDistance);
         }
         catch (...)
         {
@@ -1436,7 +1436,8 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
-            meshKernelState[meshKernelId].m_mesh2d->MergeTwoNodes(firstNode, secondNode);
+
+            [[maybe_unused]] auto undoAction = meshKernelState[meshKernelId].m_mesh2d->MergeTwoNodes(firstNode, secondNode);
         }
         catch (...)
         {
@@ -1527,7 +1528,9 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            new_edge_index = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->ConnectNodes(startNode, endNode));
+            auto [edgeId, action] = meshKernelState[meshKernelId].m_mesh2d->ConnectNodes(startNode, endNode);
+
+            new_edge_index = static_cast<int>(edgeId);
         }
         catch (...)
         {
@@ -1548,7 +1551,9 @@ namespace meshkernelapi
 
             meshkernel::Point const nodeCoordinateVector{xCoordinate, yCoordinate};
 
-            nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->InsertNode(nodeCoordinateVector));
+            auto [nodeId, action] = meshKernelState[meshKernelId].m_mesh2d->InsertNode(nodeCoordinateVector);
+
+            nodeIndex = static_cast<int>(nodeId);
         }
         catch (...)
         {
@@ -1567,7 +1572,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshKernelState[meshKernelId].m_mesh2d->DeleteNode(nodeIndex);
+            [[maybe_unused]] auto undoAction = meshKernelState[meshKernelId].m_mesh2d->DeleteNode(nodeIndex);
         }
         catch (...)
         {
@@ -1588,7 +1593,7 @@ namespace meshkernelapi
 
             meshkernel::Point newPosition{xCoordinate, yCoordinate};
 
-            meshKernelState[meshKernelId].m_mesh2d->MoveNode(newPosition, nodeIndex);
+            [[maybe_unused]] auto undoAction = meshKernelState[meshKernelId].m_mesh2d->MoveNode(newPosition, nodeIndex);
         }
         catch (...)
         {
@@ -1620,7 +1625,7 @@ namespace meshkernelapi
             meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Edges, boundingBox);
             const auto edgeIndex = meshKernelState[meshKernelId].m_mesh2d->FindEdgeCloseToAPoint(point);
 
-            meshKernelState[meshKernelId].m_mesh2d->DeleteEdge(edgeIndex);
+            [[maybe_unused]] auto undoAction = meshKernelState[meshKernelId].m_mesh2d->DeleteEdge(edgeIndex);
         }
         catch (...)
         {
@@ -2283,7 +2288,7 @@ namespace meshkernelapi
 
             const meshkernel::FlipEdges flipEdges(*meshKernelState[meshKernelId].m_mesh2d, landBoundary, triangulateFaces, projectToLandBoundary);
 
-            flipEdges.Compute();
+            [[maybe_unused]] auto undoAction = flipEdges.Compute();
         }
         catch (...)
         {

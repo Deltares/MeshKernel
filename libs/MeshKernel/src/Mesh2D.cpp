@@ -219,8 +219,10 @@ bool Mesh2D::HasTriangleNoAcuteAngles(const std::vector<UInt>& faceNodes, const 
     return true;
 }
 
-void Mesh2D::DeleteDegeneratedTriangles()
+std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteDegeneratedTriangles()
 {
+    std::unique_ptr<CompoundUndoAction> action = CompoundUndoAction::Create();
+
     Administrate();
 
     // assume the max amount of degenerated triangles is 10% of the actual faces
@@ -260,7 +262,7 @@ void Mesh2D::DeleteDegeneratedTriangles()
             for (UInt e = 0; e < constants::geometric::numNodesInTriangle; ++e)
             {
                 const auto edge = m_facesEdges[f][e];
-                m_edges[edge] = {constants::missing::uintValue, constants::missing::uintValue};
+                action->Add(ResetEdge(edge, {constants::missing::uintValue, constants::missing::uintValue}));
             }
             // save degenerated face index
             degeneratedTriangles.emplace_back(f);
@@ -274,12 +276,13 @@ void Mesh2D::DeleteDegeneratedTriangles()
         const auto secondNode = m_facesNodes[face][1];
         const auto thirdNode = m_facesNodes[face][2];
 
-        m_nodes[thirdNode] = m_facesMassCenters[face];
-        MergeTwoNodes(secondNode, firstNode);
-        MergeTwoNodes(thirdNode, firstNode);
+        action->Add(ResetNode(thirdNode, m_facesMassCenters[face]));
+        action->Add(MergeTwoNodes(secondNode, firstNode));
+        action->Add(MergeTwoNodes(thirdNode, firstNode));
     }
 
     Administrate();
+    return action;
 }
 
 bool Mesh2D::HasDuplicateNodes(const UInt numClosingEdges, const std::vector<UInt>& nodes, std::vector<UInt>& sortedNodes) const
@@ -787,22 +790,56 @@ void Mesh2D::ComputeFaceClosedPolygon(UInt faceIndex, std::vector<Point>& polygo
     polygonNodesCache.push_back(polygonNodesCache.front());
 }
 
-void Mesh2D::OffsetSphericalCoordinates(double minx, double maxx)
+std::unique_ptr<meshkernel::SphericalCoordinatesOffsetAction> Mesh2D::OffsetSphericalCoordinates(double minx, double maxx)
 {
+    std::unique_ptr<SphericalCoordinatesOffsetAction> action;
+
     if (m_projection == Projection::spherical && maxx - minx > 180.0)
     {
+        action = SphericalCoordinatesOffsetAction::Create(*this, minx, maxx);
+
         for (UInt n = 0; n < GetNumNodes(); ++n)
         {
             if (m_nodes[n].x - 360.0 >= minx)
             {
-                m_nodes[n].x -= 360.0;
+                action->AddDecrease(n);
             }
 
             if (m_nodes[n].x < minx)
             {
-                m_nodes[n].x += 360.0;
+                action->AddIncrease(n);
             }
         }
+
+        Commit(*action);
+    }
+
+    return action;
+}
+
+void Mesh2D::Commit(SphericalCoordinatesOffsetAction& action)
+{
+    for (auto iter = action.BeginDecrease(); iter != action.EndDecrease(); ++iter)
+    {
+        m_nodes[*iter] -= 360.0;
+    }
+
+    for (auto iter = action.BeginIncrease(); iter != action.EndIncrease(); ++iter)
+    {
+        m_nodes[*iter] += 360.0;
+    }
+}
+
+void Mesh2D::Restore(SphericalCoordinatesOffsetAction& action)
+{
+    for (auto iter = action.BeginDecrease(); iter != action.EndDecrease(); ++iter)
+    {
+        m_nodes[*iter] += 360.0;
+    }
+
+    for (auto iter = action.BeginIncrease(); iter != action.EndIncrease(); ++iter)
+    {
+        m_nodes[*iter] -= 360.0;
     }
 }
 
@@ -997,8 +1034,10 @@ void Mesh2D::DeleteSmallFlowEdges(double smallFlowEdgesThreshold)
     }
 }
 
-void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
+std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
 {
+    std::unique_ptr<CompoundUndoAction> action = CompoundUndoAction::Create();
+
     // On the second part, the small triangles at the boundaries are checked
     std::vector<std::vector<UInt>> smallTrianglesNodes;
     for (UInt face = 0; face < GetNumFaces(); ++face)
@@ -1085,7 +1124,7 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
 
         if (numInternalEdges == 1)
         {
-            MergeTwoNodes(firstNodeToMerge, nodeToPreserve);
+            action->Add(MergeTwoNodes(firstNodeToMerge, nodeToPreserve));
             nodesMerged = true;
         }
 
@@ -1101,7 +1140,7 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
 
         if (numInternalEdges == 1)
         {
-            MergeTwoNodes(secondNodeToMerge, nodeToPreserve);
+            action->Add(MergeTwoNodes(secondNodeToMerge, nodeToPreserve));
             nodesMerged = true;
         }
     }
@@ -1110,6 +1149,8 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
     {
         Administrate();
     }
+
+    return action;
 }
 
 void Mesh2D::ComputeNodeNeighbours()

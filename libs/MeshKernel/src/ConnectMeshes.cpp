@@ -254,8 +254,7 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::ConnectMeshes::Compute(Mesh2
                 if (adjacentEdgeIndicator[boundaryEdgeId] && adjacentEdgeIndicator[irregularEdgeId])
                 {
                     adjacentEdgeIndicator[boundaryEdgeId] = false;
-                    // TODO should return action
-                    mesh.SetEdge(boundaryEdgeId, {missingValue, missingValue});
+                    conectMeshesAction->Add(mesh.ResetEdge(boundaryEdgeId, {missingValue, missingValue}));
                 }
             }
         }

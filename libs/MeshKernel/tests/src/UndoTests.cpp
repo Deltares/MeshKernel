@@ -94,7 +94,7 @@ TEST(UndoTests, AddNodeToMesh)
 
     mk::Point node(0.5, 0.5);
 
-    auto [nodeId, action] = mesh->InsertNode2(node);
+    auto [nodeId, action] = mesh->InsertNode(node);
     EXPECT_EQ(mk::UndoAction::Committed, action->State());
     EXPECT_EQ(4, action->NodeId());
     EXPECT_EQ(node.x, action->Node().x);
@@ -111,7 +111,7 @@ TEST(UndoTests, AddNodeThenUndoInMesh)
 
     mk::Point node(0.5, 0.5);
 
-    auto [nodeId, action] = mesh->InsertNode2(node);
+    auto [nodeId, action] = mesh->InsertNode(node);
 
     EXPECT_EQ(mk::UndoAction::Committed, action->State());
     EXPECT_EQ(4, action->NodeId());
@@ -136,8 +136,8 @@ TEST(UndoTests, ConnectAddedNodeInMesh)
 
     mk::Point node(0.5, 0.5);
 
-    auto [nodeId, addNodeAction] = mesh->InsertNode2(node);
-    auto [edgeId, addEdgeAction] = mesh->ConnectNodes2(0, nodeId);
+    auto [nodeId, addNodeAction] = mesh->InsertNode(node);
+    auto [edgeId, addEdgeAction] = mesh->ConnectNodes(0, nodeId);
 
     EXPECT_EQ(mk::UndoAction::Committed, addNodeAction->State());
     EXPECT_EQ(mk::UndoAction::Committed, addEdgeAction->State());
@@ -163,8 +163,8 @@ TEST(UndoTests, ConnectAddedNodeThenUndoInMesh)
 
     mk::Point node(0.5, 0.5);
 
-    auto [nodeId, addNodeAction] = mesh->InsertNode2(node);
-    auto [edgeId, addEdgeAction] = mesh->ConnectNodes2(0, nodeId);
+    auto [nodeId, addNodeAction] = mesh->InsertNode(node);
+    auto [edgeId, addEdgeAction] = mesh->ConnectNodes(0, nodeId);
 
     EXPECT_EQ(mk::UndoAction::Committed, addNodeAction->State());
     EXPECT_EQ(mk::UndoAction::Committed, addEdgeAction->State());
@@ -200,7 +200,7 @@ TEST(UndoTests, DeleteAddedNodeToMesh)
     // First add the node
     ////////////////////////////////
 
-    auto [nodeId, action] = mesh->InsertNode2(node);
+    auto [nodeId, action] = mesh->InsertNode(node);
     EXPECT_EQ(mk::UndoAction::Committed, action->State());
     EXPECT_EQ(4, action->NodeId());
     EXPECT_EQ(node.x, action->Node().x);
@@ -214,7 +214,7 @@ TEST(UndoTests, DeleteAddedNodeToMesh)
     // Next delete the node
     ////////////////////////////////
 
-    std::unique_ptr<mk::DeleteNodeAction> deleteAction = mesh->DeleteNode2(nodeId);
+    std::unique_ptr<mk::DeleteNodeAction> deleteAction = mesh->DeleteNode(nodeId);
     EXPECT_EQ(mk::UndoAction::Committed, deleteAction->State());
 
     EXPECT_EQ(nodeId, deleteAction->NodeId());
@@ -256,11 +256,11 @@ TEST(UndoTests, ConnectNodeToCornersInMesh)
 
     mk::Point node(0.5, 0.5);
 
-    auto [nodeId, nodeAction] = mesh->InsertNode2(node);
-    auto [edgeId1, edgeAction1] = mesh->ConnectNodes2(0, nodeId);
-    auto [edgeId2, edgeAction2] = mesh->ConnectNodes2(1, nodeId);
-    auto [edgeId3, edgeAction3] = mesh->ConnectNodes2(2, nodeId);
-    auto [edgeId4, edgeAction4] = mesh->ConnectNodes2(3, nodeId);
+    auto [nodeId, nodeAction] = mesh->InsertNode(node);
+    auto [edgeId1, edgeAction1] = mesh->ConnectNodes(0, nodeId);
+    auto [edgeId2, edgeAction2] = mesh->ConnectNodes(1, nodeId);
+    auto [edgeId3, edgeAction3] = mesh->ConnectNodes(2, nodeId);
+    auto [edgeId4, edgeAction4] = mesh->ConnectNodes(3, nodeId);
 
     mesh->Administrate();
 
@@ -268,7 +268,7 @@ TEST(UndoTests, ConnectNodeToCornersInMesh)
     EXPECT_EQ(8, mesh->GetNumValidEdges());
 
     // Deleting the node, should also result in deleting of the 4 connecting edges
-    std::unique_ptr<mk::DeleteNodeAction> deleteNodeAction = mesh->DeleteNode2(nodeId);
+    std::unique_ptr<mk::DeleteNodeAction> deleteNodeAction = mesh->DeleteNode(nodeId);
     mesh->Administrate();
 
     EXPECT_EQ(4, mesh->GetNumValidNodes());

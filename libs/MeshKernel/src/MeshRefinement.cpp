@@ -750,9 +750,7 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::RefineFacesBySplittingEd
             auto [newEdgeIndex, connectAction] = m_mesh.ConnectNodes(m_edgeMask[e], m_mesh.GetEdge(e).second);
             refineFacesAction->Add(std::move(connectAction));
 
-            // const auto newEdgeIndex = m_mesh.ConnectNodes(m_edgeMask[e], m_mesh.GetEdge(e).second);
-            // TODO SetEdge should return action
-            m_mesh.SetEdge(e, {m_mesh.GetEdge(e).first, m_edgeMask[e]});
+            refineFacesAction->Add(m_mesh.ResetEdge(e, {m_mesh.GetEdge(e).first, m_edgeMask[e]}));
             m_brotherEdges.resize(m_mesh.GetNumEdges());
             m_brotherEdges[newEdgeIndex] = e;
             m_brotherEdges[e] = newEdgeIndex;

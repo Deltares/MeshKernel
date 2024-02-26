@@ -25,6 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
+#include <MeshKernel/CompoundUndoAction.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
@@ -972,12 +973,14 @@ std::tuple<double, meshkernel::Point, meshkernel::UInt, double> LandBoundaries::
     return {minimumDistance, pointOnLandBoundary, nearestLandBoundaryNodeIndex, edgeRatio};
 }
 
-void LandBoundaries::SnapMeshToLandBoundaries() const
+std::unique_ptr<meshkernel::UndoAction> LandBoundaries::SnapMeshToLandBoundaries() const
 {
     if (m_landBoundary.IsEmpty() || m_meshNodesLandBoundarySegments.empty())
     {
-        return;
+        return nullptr;
     }
+
+    std::unique_ptr<CompoundUndoAction> action = CompoundUndoAction::Create();
 
     const auto numNodes = m_mesh.GetNumNodes();
     for (UInt n = 0; n < numNodes; ++n)
@@ -995,7 +998,9 @@ void LandBoundaries::SnapMeshToLandBoundaries() const
                         nearestLandBoundaryNodeIndex,
                         edgeRatio] = NearestLandBoundarySegment(meshNodeToLandBoundarySegment, m_mesh.Node(n));
 
-            m_mesh.SetNode(n, pointOnLandBoundary);
+            action->Add(m_mesh.ResetNode(n, pointOnLandBoundary));
         }
     }
+
+    return action;
 }

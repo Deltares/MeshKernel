@@ -31,7 +31,6 @@
 #include "MeshKernel/AddEdgeAction.hpp"
 #include "MeshKernel/AddNodeAction.hpp"
 #include "MeshKernel/BoundingBox.hpp"
-#include "MeshKernel/ClearNodeAction.hpp"
 #include "MeshKernel/CompoundUndoAction.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/DeleteEdgeAction.hpp"
@@ -40,6 +39,7 @@
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/MoveNodeAction.hpp"
 #include "MeshKernel/ResetEdgeAction.hpp"
+#include "MeshKernel/ResetNodeAction.hpp"
 #include "Utilities/RTreeBase.hpp"
 
 /// \namespace meshkernel
@@ -187,11 +187,12 @@ namespace meshkernel
         /// @brief Set all nodes to a new set of values.
         void SetNodes(const std::vector<Point>& newValues);
 
-        // TODO change this
-        // 1. Should be ResetNode
-        // 2. Should return an UndoAction
         /// @brief Set the node to a new value, this value may be the in-valid value.
-        void SetNode(const UInt index, const Point& newValue);
+        std::unique_ptr<ResetNodeAction> ResetNode(const UInt index, const Point& newValue);
+
+        void Commit(ResetNodeAction& action);
+
+        void Restore(ResetNodeAction& action);
 
         /// @brief Get the edge
         const Edge& GetEdge(const UInt index) const;
@@ -200,11 +201,11 @@ namespace meshkernel
         // TODO get rid of this function
         const std::vector<Edge>& Edges() const;
 
-        // TODO change this
-        // 1. Is this the same as ResetEdge
-        // 2. If not then also return an UndoAction
-        /// @brief Set the edge
-        void SetEdge(const UInt index, const Edge& edge);
+        // // TODO change this
+        // // 1. Is this the same as ResetEdge
+        // // 2. If not then also return an UndoAction
+        // /// @brief Set the edge
+        // void SetEdge(const UInt index, const Edge& edge);
 
         /// @brief Set all edges to a new set of values.
         void SetEdges(const std::vector<Edge>& newValues);
@@ -329,17 +330,17 @@ namespace meshkernel
 
         void Restore(const DeleteEdgeAction& action);
 
-        // TODO Could be same as ResetNode, where the value is the invalid value
-        /// @brief Clears a node, sets it to the invalid value but does not unlink any edges
-        /// @param[in] node The node index
-        /// @return The action to clear the node.
-        // Can this be private
-        [[nodiscard]] std::unique_ptr<ClearNodeAction> ClearNode(UInt node);
+        // // TODO Could be same as ResetNode, where the value is the invalid value
+        // /// @brief Clears a node, sets it to the invalid value but does not unlink any edges
+        // /// @param[in] node The node index
+        // /// @return The action to clear the node.
+        // // Can this be private
+        // [[nodiscard]] std::unique_ptr<ClearNodeAction> ClearNode(UInt node);
 
-        ///
-        void Commit(ClearNodeAction& action);
+        // ///
+        // void Commit(ClearNodeAction& action);
 
-        void Restore(ClearNodeAction& action);
+        // void Restore(ClearNodeAction& action);
 
         /// @brief Find the common node two edges share
         /// This method uses return parameters since the success is evaluated in a hot loop
@@ -499,11 +500,11 @@ namespace meshkernel
     private:
         static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate
 
-        /// @brief Insert a new edge, assuming two nodes are not already connected
-        /// @param[in] startNode The start node index
-        /// @param[in] endNode The end node index
-        /// @return The index of the new edge
-        UInt InsertEdge(UInt startNode, UInt endNode);
+        // /// @brief Insert a new edge, assuming two nodes are not already connected
+        // /// @param[in] startNode The start node index
+        // /// @param[in] endNode The end node index
+        // /// @return The index of the new edge
+        // UInt InsertEdge(UInt startNode, UInt endNode);
 
         /// @brief Set nodes and edges that are not connected to be invalid.
         void SetUnconnectedNodesAndEdgesToInvalid();
@@ -536,16 +537,6 @@ inline const meshkernel::Point& meshkernel::Mesh::Node(const UInt index) const
     return m_nodes[index];
 }
 
-inline void meshkernel::Mesh::SetNode(const UInt index, const Point& newValue)
-{
-    if (index >= GetNumNodes())
-    {
-        throw ConstraintError("The node index, {}, is not in range.", index);
-    }
-
-    m_nodes[index] = newValue;
-}
-
 inline void meshkernel::Mesh::SetNodes(const std::vector<Point>& newValues)
 {
     m_nodes = newValues;
@@ -569,15 +560,15 @@ inline const std::vector<meshkernel::Edge>& meshkernel::Mesh::Edges() const
     return m_edges;
 }
 
-inline void meshkernel::Mesh::SetEdge(const UInt index, const Edge& edge)
-{
-    if (index >= GetNumEdges())
-    {
-        throw ConstraintError("The edge index, {}, is not in range.", index);
-    }
+// inline void meshkernel::Mesh::SetEdge(const UInt index, const Edge& edge)
+// {
+//     if (index >= GetNumEdges())
+//     {
+//         throw ConstraintError("The edge index, {}, is not in range.", index);
+//     }
 
-    m_edges[index] = edge;
-}
+//     m_edges[index] = edge;
+// }
 
 inline void meshkernel::Mesh::SetEdges(const std::vector<Edge>& newValues)
 {

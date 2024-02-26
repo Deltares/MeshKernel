@@ -50,8 +50,9 @@ FlipEdges::FlipEdges(Mesh2D& mesh,
     }
 }
 
-void FlipEdges::Compute() const
+std::unique_ptr<meshkernel::UndoAction> FlipEdges::Compute() const
 {
+    std::unique_ptr<CompoundUndoAction> action = CompoundUndoAction::Create();
 
     m_mesh.Administrate();
 
@@ -90,7 +91,7 @@ void FlipEdges::Compute() const
             if (NumEdgesLeftFace != constants::geometric::numNodesInTriangle ||
                 NumEdgesRightFace != constants::geometric::numNodesInTriangle)
             {
-                return;
+                return action;
             }
 
             UInt nodeLeft = constants::missing::uintValue;
@@ -125,7 +126,7 @@ void FlipEdges::Compute() const
             }
 
             // Flip the edges
-            m_mesh.SetEdge(e, {nodeLeft, nodeRight});
+            action->Add(m_mesh.ResetEdge(e, {nodeLeft, nodeRight}));
             numFlippedEdges++;
 
             // Find the other edges
@@ -238,6 +239,7 @@ void FlipEdges::Compute() const
 
     // Perform mesh administration
     m_mesh.Administrate();
+    return action;
 }
 
 void FlipEdges::DeleteEdgeFromNode(UInt edge, UInt firstNode) const

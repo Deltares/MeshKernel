@@ -25,7 +25,7 @@ TEST(FlipEdges, FlipEdgesWithLandBoundary)
     // execute flipedges
     meshkernel::FlipEdges flipEdges(*mesh, landBoundaries, true, true);
 
-    flipEdges.Compute();
+    [[maybe_unused]] auto undoAction = flipEdges.Compute();
 
     // check the values
     ASSERT_EQ(16, mesh->GetNumEdges());
@@ -45,7 +45,7 @@ TEST(FlipEdges, FlipEdgesMediumTriangularMesh)
     // execute flipedges
     meshkernel::FlipEdges flipEdges(*mesh, landBoundaries, true, false);
 
-    flipEdges.Compute();
+    [[maybe_unused]] auto undoAction = flipEdges.Compute();
 
     // get the number of edges
     ASSERT_EQ(697, mesh->GetNumEdges());

@@ -271,15 +271,25 @@ namespace meshkernel
                                       ProjectionToString(transformation.TransformationProjection()), ProjectionToString(mesh.m_projection));
             }
 
+            std::vector<Point> nodes(mesh.Nodes());
+
 #pragma omp parallel for
             for (int i = 0; i < static_cast<int>(mesh.GetNumNodes()); ++i)
             {
+                if (nodes[i].IsValid())
+                {
+                    nodes[i] = transformation(nodes[i]);
+                }
+
+#if 0
                 if (mesh.Node(i).IsValid())
                 {
                     mesh.SetNode(i, transformation(mesh.Node(i)));
                 }
+#endif
             }
 
+            mesh.SetNodes(nodes);
             mesh.Administrate();
         }
     };

@@ -111,9 +111,9 @@ void OrthogonalizationAndSmoothing::Compute()
             for (auto innerIter = 0; innerIter < m_orthogonalizationParameters.inner_iterations; innerIter++)
             {
                 Solve();
-
             } // inner iteration
-        }     // boundary iter
+
+        } // boundary iter
 
         // update mu
         FinalizeOuterIteration();
@@ -219,6 +219,7 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 
 void OrthogonalizationAndSmoothing::Solve()
 {
+
 #pragma omp parallel for
     for (int n = 0; n < static_cast<int>(m_mesh.GetNumNodes()); n++)
     {
@@ -235,7 +236,7 @@ void OrthogonalizationAndSmoothing::Solve()
     // TODO: Not implemented yet ComputeCoordinates();
 
     // project on land boundary
-    m_landBoundaries->SnapMeshToLandBoundaries();
+    [[maybe_unused]] auto action = m_landBoundaries->SnapMeshToLandBoundaries();
 }
 
 void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
@@ -303,7 +304,9 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 
             if (distanceSecondPoint < distanceThirdPoint)
             {
-                m_mesh.SetNode(n, normalSecondPoint);
+                // TODO may need to refactor this (undo action allocation), if performance becomes a problem
+                // Copy nodes at start, then set all nodes at once (SetNodes, this has no associated aciton yet).
+                [[maybe_unused]] auto action = m_mesh.ResetNode(n, normalSecondPoint);
 
                 if (ratioSecondPoint > 0.5 && m_mesh.m_nodesTypes[n] != 3)
                 {
@@ -312,7 +315,9 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
             }
             else
             {
-                m_mesh.SetNode(n, normalThirdPoint);
+                // TODO may need to refactor this (undo action allocation), if performance becomes a problem
+                [[maybe_unused]] auto action = m_mesh.ResetNode(n, normalThirdPoint);
+
                 if (ratioThirdPoint > 0.5 && m_mesh.m_nodesTypes[n] != 3)
                 {
                     nearestPoints[n] = rightNode;

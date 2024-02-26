@@ -309,7 +309,7 @@ TEST(Mesh2D, NodeMerging)
 
     // 2. Act
     meshkernel::Polygons polygon;
-    mesh->MergeNodesInPolygon(polygon, 0.001);
+    [[maybe_unused]] auto action = mesh->MergeNodesInPolygon(polygon, 0.001);
 
     // 3. Assert
     ASSERT_EQ(mesh->GetNumValidNodes(), n * m);

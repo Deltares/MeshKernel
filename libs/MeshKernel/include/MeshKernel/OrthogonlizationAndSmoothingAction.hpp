@@ -28,43 +28,51 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 
 #include "MeshKernel/BaseMeshUndoAction.hpp"
-#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
-#include "MeshKernel/Point.hpp"
 
 namespace meshkernel
 {
     /// @brief Forward declaration of the unstructured mesh
-    class Mesh;
+    class Mesh2D;
 
-    /// @brief Action to clear a node from an unstructured mesh.
-    class ClearNodeAction : public BaseMeshUndoAction<ClearNodeAction, Mesh>
+    /// @brief Action to add an node to an unstructured mesh.
+    class OrthogonalizationAndSmoothingAction : public BaseMeshUndoAction<OrthogonalizationAndSmoothingAction, Mesh2D>
     {
     public:
-        /// @brief Allocate a ClearNodeAction and return a unique_ptr to the newly create object.
-        static std::unique_ptr<ClearNodeAction> Create(Mesh& mesh, const UInt id, const Point& node);
+        /// @brief Allocate a ResetNodeAction and return a unique_ptr to the newly create object.
+        static std::unique_ptr<OrthogonalizationAndSmoothingAction> Create(Mesh2D& mesh, const std::vector<Point>& nodes, const std::vector<Edge>& edges);
 
         /// @brief Constructor
-        ClearNodeAction(Mesh& mesh, const UInt id, const Point& node);
+        OrthogonalizationAndSmoothingAction(Mesh2D& mesh, const std::vector<Point>& nodes, const std::vector<Edge>& edges);
 
-        /// @brief Get the node identifier
-        UInt NodeId() const;
+        const std::vector<Point>& OriginalNodes() const;
 
-        /// @brief Get the node location
-        const Point& Node() const;
+        const std::vector<Edge>& OriginalEdges() const;
 
-        /// @brief Print the clear node action to the stream
+        void SetTransformed
+
+            /// @brief Get the number of bytes used by this object.
+            std::uint64_t
+            MemorySize() const override;
+
+        /// @brief Print the reset node action to the stream
         void Print(std::ostream& out = std::cout) const override;
 
     private:
-        /// @brief The node identifier
-        UInt m_nodeId;
-
-        /// @brief The cleared node location
-        Point m_node;
+        std::vector<Point> m_originalNodes;
+        std::vector<Point> m_originalEdges;
     };
 
 } // namespace meshkernel
+
+inline const std::vector<Point>& meshkernel::OrthogonalizationAndSmoothingAction::OriginalNodes() const
+{
+    return m_originalNodes;
+}
+
+inline const std::vector<Edge>& meshkernel::OrthogonalizationAndSmoothingAction::OriginalEdges() const
+{
+    return m_originalEdges;
+}

@@ -292,7 +292,7 @@ TEST(Mesh, NodeMerging)
 
     // 2. Act
     meshkernel::Polygons polygon;
-    mesh->MergeNodesInPolygon(polygon, 0.001);
+    [[maybe_unused]] auto action = mesh->MergeNodesInPolygon(polygon, 0.001);
 
     // 3. Assert
     ASSERT_EQ(mesh->GetNumValidNodes(), n * m);
@@ -358,9 +358,9 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     // insert nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
     meshkernel::Point newPoint{10.0, 10.0};
 
-    const auto newNodeIndex = mesh->InsertNode(newPoint);
+    auto [newNodeIndex, insertAction] = mesh->InsertNode(newPoint);
 
-    mesh->ConnectNodes(0, newNodeIndex);
+    [[maybe_unused]] auto connectAction = mesh->ConnectNodes(0, newNodeIndex);
 
     // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
     mesh->Administrate();
@@ -379,10 +379,10 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
 
     meshkernel::Point newPoint{10.0, 10.0};
     mesh->BuildTree(meshkernel::Location::Nodes);
-    mesh->InsertNode(newPoint);
+    [[maybe_unused]] auto [nodeId, indertAction] = mesh->InsertNode(newPoint);
 
     // delete nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
-    mesh->DeleteNode(0);
+    [[maybe_unused]] auto deleteAction = mesh->DeleteNode(0);
 
     // when m_nodesRTreeRequiresUpdate
     mesh->DeleteInvalidNodesAndEdges();
@@ -402,10 +402,10 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 
     meshkernel::Point newPoint{10.0, 10.0};
 
-    const auto newNodeIndex = mesh->InsertNode(newPoint);
+    auto [newNodeIndex, insertAction] = mesh->InsertNode(newPoint);
 
     // connect nodes modifies the number of edges, m_nodesRTreeRequiresUpdate is set to true
-    mesh->ConnectNodes(0, newNodeIndex);
+    [[maybe_unused]] auto connectAction = mesh->ConnectNodes(0, newNodeIndex);
 
     // re-do mesh adminstration
     mesh->Administrate();
@@ -424,7 +424,7 @@ TEST(Mesh, DeleteEdgeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     mesh->BuildTree(meshkernel::Location::Edges);
 
     // DeleteEdge modifies the number of edges, m_edgesRTreeRequiresUpdate is set to true
-    mesh->DeleteEdge(0);
+    [[maybe_unused]] auto action = mesh->DeleteEdge(0);
 
     // re-do mesh administration
     mesh->Administrate();
@@ -445,7 +445,7 @@ TEST(Mesh, InsertUnconnectedNodeInMeshIsSetToInvalid)
     // insert nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
     meshkernel::Point newPoint{10.0, 10.0};
 
-    mesh->InsertNode(newPoint);
+    [[maybe_unused]] auto [nodeId, action] = mesh->InsertNode(newPoint);
 
     // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
     mesh->Administrate();
@@ -472,8 +472,8 @@ TEST(Mesh, EdgeConnectedToInvalidNodeInMeshIsSetToInvalid)
 
     meshkernel::Point newPoint{meshkernel::constants::missing::doubleValue,
                                meshkernel::constants::missing::doubleValue};
-    meshkernel::UInt nodeIndex = mesh->InsertNode(newPoint);
-    meshkernel::UInt edgeIndex = mesh->ConnectNodes(0, nodeIndex);
+    auto [nodeIndex, nodeAction] = mesh->InsertNode(newPoint);
+    auto [edgeIndex, edgeAction] = mesh->ConnectNodes(0, nodeIndex);
 
     EXPECT_EQ(mesh->GetEdge(edgeIndex).first, 0);
     EXPECT_EQ(mesh->GetEdge(edgeIndex).second, nodeIndex);

@@ -323,6 +323,7 @@ std::unique_ptr<meshkernel::CompoundUndoAction> Mesh::MergeTwoNodes(UInt firstNo
                 const auto secondEdgeIndex = m_nodesEdges[firstEdgeOtherNode][nn];
                 auto secondEdge = m_edges[secondEdgeIndex];
                 const auto secondNodeSecondEdge = OtherNodeOfEdge(secondEdge, firstEdgeOtherNode);
+
                 if (secondNodeSecondEdge == secondNodeIndex)
                 {
                     action->Add(DeleteEdge(secondEdgeIndex));
@@ -374,7 +375,7 @@ std::unique_ptr<meshkernel::CompoundUndoAction> Mesh::MergeTwoNodes(UInt firstNo
     m_nodesNumEdges[firstNodeIndex] = 0;
 
     // Set the node to be invalid
-    action->Add(ClearNode(firstNodeIndex));
+    action->Add(ResetNode(firstNodeIndex, {constants::missing::doubleValue, constants::missing::doubleValue}));
 
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
@@ -452,18 +453,18 @@ std::unique_ptr<meshkernel::CompoundUndoAction> Mesh::MergeNodesInPolygon(const 
 //     return InsertEdge(startNode, endNode);
 // }
 
-meshkernel::UInt Mesh::InsertEdge(UInt startNode, UInt endNode)
-{
-    // increment the edges container
-    const auto newEdgeIndex = GetNumEdges();
-    m_edges.resize(newEdgeIndex + 1);
-    m_edges[newEdgeIndex].first = startNode;
-    m_edges[newEdgeIndex].second = endNode;
+// meshkernel::UInt Mesh::InsertEdge(UInt startNode, UInt endNode)
+// {
+//     // increment the edges container
+//     const auto newEdgeIndex = GetNumEdges();
+//     m_edges.resize(newEdgeIndex + 1);
+//     m_edges[newEdgeIndex].first = startNode;
+//     m_edges[newEdgeIndex].second = endNode;
 
-    m_edgesRTreeRequiresUpdate = true;
+//     m_edgesRTreeRequiresUpdate = true;
 
-    return newEdgeIndex;
-}
+//     return newEdgeIndex;
+// }
 
 // meshkernel::UInt Mesh::InsertNode(const Point& newPoint)
 // {
@@ -515,6 +516,13 @@ void Mesh::Restore(AddNodeAction& action)
 
 std::tuple<meshkernel::UInt, std::unique_ptr<meshkernel::AddEdgeAction>> Mesh::ConnectNodes(UInt startNode, UInt endNode)
 {
+    const UInt edgeId = FindEdge(startNode, endNode);
+
+    if (edgeId != constants::missing::uintValue)
+    {
+        return {constants::missing::uintValue, nullptr};
+    }
+
     // increment the edges container
     const auto newEdgeIndex = GetNumEdges();
     m_edges.resize(newEdgeIndex + 1);
@@ -533,6 +541,32 @@ void Mesh::Commit(AddEdgeAction& action)
 void Mesh::Restore(AddEdgeAction& action)
 {
     m_edges[action.EdgeId()] = {constants::missing::uintValue, constants::missing::uintValue};
+    m_edgesRTreeRequiresUpdate = true;
+}
+
+std::unique_ptr<meshkernel::ResetNodeAction> Mesh::ResetNode(const UInt nodeId, const Point& newValue)
+{
+    if (nodeId >= GetNumNodes())
+    {
+        throw ConstraintError("The node index, {}, is not in range.", nodeId);
+    }
+
+    std::unique_ptr<ResetNodeAction> action = ResetNodeAction::Create(*this, nodeId, m_nodes[nodeId], newValue);
+    Commit(*action);
+    return action;
+}
+
+void Mesh::Commit(ResetNodeAction& action)
+{
+    m_nodes[action.NodeId()] = action.UpdatedNode();
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+}
+
+void Mesh::Restore(ResetNodeAction& action)
+{
+    m_nodes[action.NodeId()] = action.InitialNode();
+    m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
 }
 
@@ -610,29 +644,29 @@ void Mesh::Restore(const DeleteEdgeAction& action)
     m_edgesRTreeRequiresUpdate = true;
 }
 
-std::unique_ptr<meshkernel::ClearNodeAction> Mesh::ClearNode(UInt node)
-{
-    if (node >= GetNumNodes()) [[unlikely]]
-    {
-        throw ConstraintError("The index, {}, of the node to be cleared does not exist.", node);
-    }
+// std::unique_ptr<meshkernel::ClearNodeAction> Mesh::ClearNode(UInt node)
+// {
+//     if (node >= GetNumNodes()) [[unlikely]]
+//     {
+//         throw ConstraintError("The index, {}, of the node to be cleared does not exist.", node);
+//     }
 
-    std::unique_ptr<meshkernel::ClearNodeAction> action = ClearNodeAction::Create(*this, node, m_nodes[node]);
-    Commit(*action);
-    return action;
-}
+//     std::unique_ptr<meshkernel::ClearNodeAction> action = ClearNodeAction::Create(*this, node, m_nodes[node]);
+//     Commit(*action);
+//     return action;
+// }
 
-void Mesh::Commit(ClearNodeAction& action)
-{
-    m_nodes[action.NodeId()] = {constants::missing::doubleValue, constants::missing::doubleValue};
-    m_nodesRTreeRequiresUpdate = true;
-}
+// void Mesh::Commit(ClearNodeAction& action)
+// {
+//     m_nodes[action.NodeId()] = {constants::missing::doubleValue, constants::missing::doubleValue};
+//     m_nodesRTreeRequiresUpdate = true;
+// }
 
-void Mesh::Restore(ClearNodeAction& action)
-{
-    m_nodes[action.NodeId()] = {constants::missing::doubleValue, constants::missing::doubleValue};
-    m_nodesRTreeRequiresUpdate = true;
-}
+// void Mesh::Restore(ClearNodeAction& action)
+// {
+//     m_nodes[action.NodeId()] = {constants::missing::doubleValue, constants::missing::doubleValue};
+//     m_nodesRTreeRequiresUpdate = true;
+// }
 
 std::unique_ptr<meshkernel::DeleteNodeAction> Mesh::DeleteNode(UInt node)
 {

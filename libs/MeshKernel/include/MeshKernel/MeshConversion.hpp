@@ -76,9 +76,21 @@ namespace meshkernel
                                       sourceMesh.GetNumNodes(), targetMesh.GetNumNodes());
             }
 
+            std::vector<Point> targetNodes(targetMesh.Nodes());
+
 #pragma omp parallel for
             for (int i = 0; i < static_cast<int>(sourceMesh.GetNumNodes()); ++i)
             {
+                if (sourceMesh.Node(i).IsValid())
+                {
+                    targetNodes[i] = conversion(sourceMesh.Node(i));
+                }
+                else
+                {
+                    targetNodes[i] = sourceMesh.Node(i);
+                }
+
+#if 0
                 if (sourceMesh.Node(i).IsValid())
                 {
                     targetMesh.SetNode(i, conversion(sourceMesh.Node(i)));
@@ -87,8 +99,10 @@ namespace meshkernel
                 {
                     targetMesh.SetNode(i, sourceMesh.Node(i));
                 }
+#endif
             }
 
+            targetMesh.SetNodes(targetNodes);
             targetMesh.Administrate();
         }
 
@@ -102,15 +116,24 @@ namespace meshkernel
                                       ProjectionToString(conversion.SourceProjection()), ProjectionToString(mesh.m_projection));
             }
 
+            std::vector<Point> nodes(mesh.Nodes());
+
 #pragma omp parallel for
             for (int i = 0; i < static_cast<int>(mesh.GetNumNodes()); ++i)
             {
+                if (nodes[i].IsValid())
+                {
+                    nodes[i] = conversion(nodes[i]);
+                }
+#if 0
                 if (mesh.Node(i).IsValid())
                 {
                     mesh.SetNode(i, conversion(mesh.Node(i)));
                 }
+#endif
             }
 
+            mesh.SetNodes(nodes);
             mesh.m_projection = conversion.TargetProjection();
             mesh.Administrate();
         }
