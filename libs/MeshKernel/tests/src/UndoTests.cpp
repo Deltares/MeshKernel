@@ -300,30 +300,30 @@ TEST(UndoTests, AddAndRemoveEdgeFromMeshTest)
     mk::UInt start = 0;
     mk::UInt end = 3;
 
-    auto [edgeId, connectNodesAction ] = mesh->ConnectNodes (0, 3);
+    auto [edgeId, connectNodesAction] = mesh->ConnectNodes(0, 3);
 
     EXPECT_EQ(edgeId, connectNodesAction->EdgeId());
     EXPECT_EQ(start, connectNodesAction->GetEdge().first);
     EXPECT_EQ(end, connectNodesAction->GetEdge().second);
 
-    EXPECT_EQ (mesh->GetNumEdges (), 5);
-    EXPECT_EQ (mesh->GetNumValidEdges (), 5);
-    EXPECT_EQ (mesh->GetEdge (4).first, start);
-    EXPECT_EQ (mesh->GetEdge (4).second, end);
+    EXPECT_EQ(mesh->GetNumEdges(), 5);
+    EXPECT_EQ(mesh->GetNumValidEdges(), 5);
+    EXPECT_EQ(mesh->GetEdge(4).first, start);
+    EXPECT_EQ(mesh->GetEdge(4).second, end);
 
-    std::unique_ptr<mk::DeleteEdgeAction> deleteEdgeAction = mesh->DeleteEdge (connectNodesAction->EdgeId ());
+    std::unique_ptr<mk::DeleteEdgeAction> deleteEdgeAction = mesh->DeleteEdge(connectNodesAction->EdgeId());
 
     EXPECT_EQ(edgeId, deleteEdgeAction->EdgeId());
     EXPECT_EQ(start, deleteEdgeAction->GetEdge().first);
     EXPECT_EQ(end, deleteEdgeAction->GetEdge().second);
 
-    EXPECT_EQ (mesh->GetNumEdges (), 5);
-    EXPECT_EQ (mesh->GetNumValidEdges (), 4);
-    EXPECT_EQ (mesh->GetEdge (4).first, mk::constants::missing::uintValue);
-    EXPECT_EQ (mesh->GetEdge (4).second, mk::constants::missing::uintValue);
+    EXPECT_EQ(mesh->GetNumEdges(), 5);
+    EXPECT_EQ(mesh->GetNumValidEdges(), 4);
+    EXPECT_EQ(mesh->GetEdge(4).first, mk::constants::missing::uintValue);
+    EXPECT_EQ(mesh->GetEdge(4).second, mk::constants::missing::uintValue);
 
     // Restore the deleted edge
-    deleteEdgeAction->Restore ();
+    deleteEdgeAction->Restore();
 
     // The undo action contents should not change
     EXPECT_EQ(edgeId, deleteEdgeAction->EdgeId());
@@ -331,21 +331,21 @@ TEST(UndoTests, AddAndRemoveEdgeFromMeshTest)
     EXPECT_EQ(end, deleteEdgeAction->GetEdge().second);
 
     // The edge should be restored
-    EXPECT_EQ (mesh->GetNumEdges (), 5);
-    EXPECT_EQ (mesh->GetNumValidEdges (), 5);
-    EXPECT_EQ (mesh->GetEdge (4).first, start);
-    EXPECT_EQ (mesh->GetEdge (4).second, end);
+    EXPECT_EQ(mesh->GetNumEdges(), 5);
+    EXPECT_EQ(mesh->GetNumValidEdges(), 5);
+    EXPECT_EQ(mesh->GetEdge(4).first, start);
+    EXPECT_EQ(mesh->GetEdge(4).second, end);
 
     // Restore the node connection, i.e. remove the added edge
-    connectNodesAction->Restore ();
+    connectNodesAction->Restore();
 
     // The contents of the undo action should not change
     EXPECT_EQ(edgeId, connectNodesAction->EdgeId());
     EXPECT_EQ(start, connectNodesAction->GetEdge().first);
     EXPECT_EQ(end, connectNodesAction->GetEdge().second);
 
-    EXPECT_EQ (mesh->GetNumEdges (), 5);
-    EXPECT_EQ (mesh->GetNumValidEdges (), 4);
-    EXPECT_EQ (mesh->GetEdge (4).first, mk::constants::missing::uintValue);
-    EXPECT_EQ (mesh->GetEdge (4).second, mk::constants::missing::uintValue);
+    EXPECT_EQ(mesh->GetNumEdges(), 5);
+    EXPECT_EQ(mesh->GetNumValidEdges(), 4);
+    EXPECT_EQ(mesh->GetEdge(4).first, mk::constants::missing::uintValue);
+    EXPECT_EQ(mesh->GetEdge(4).second, mk::constants::missing::uintValue);
 }

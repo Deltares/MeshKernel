@@ -205,17 +205,21 @@ TEST(UndoActionConstructionTests, SphericalCoordinatesOffsetActionTest)
 class TestUndoAction : public mk::UndoAction
 {
 public:
+    /// @brief How many objects were created
     static int s_created;
+    /// @brief How many objects are committed
     static int s_committed;
+    /// @brief How many objects are restored
     static int s_restored;
 
-    static std::unique_ptr<TestUndoAction> Create(const int value)
+    static std::unique_ptr<TestUndoAction> Create(const int value, std::vector<int>& undoActionValues)
     {
-        return std::make_unique<TestUndoAction>(value);
+        return std::make_unique<TestUndoAction>(value, undoActionValues);
     }
 
-    TestUndoAction(const int value) : m_value(value)
+    TestUndoAction(const int value, std::vector<int>& undoActionValues) : m_value(value), m_undoActionValues (undoActionValues)
     {
+        m_undoActionValues[s_created] = m_value;
         ++s_created;
         // Objects must be created in the committed state.
         ++s_committed;
@@ -229,17 +233,20 @@ public:
 private:
     void DoCommit() override
     {
+        m_undoActionValues[s_committed] = m_value;
         ++s_committed;
         --s_restored;
     }
 
     void DoRestore() override
     {
+        m_undoActionValues[s_restored] = m_value;
         --s_committed;
         ++s_restored;
     }
 
     int m_value;
+    std::vector<int>& m_undoActionValues;
 };
 
 int TestUndoAction::s_created = 0;
@@ -249,11 +256,22 @@ int TestUndoAction::s_restored = 0;
 TEST(UndoActionConstructionTests, CompoundUndoActionTest)
 {
     std::unique_ptr<mk::CompoundUndoAction> compoundAction = mk::CompoundUndoAction::Create();
-    std::vector<int> expectedValues{1, 10, 3, 21};
+
+    const std::vector<int> expectedValues{1, 10, 3, 21};
+    // Values will be assigned in the order depending on the creation, restore or committed call
+    // creation and committed should be in same order as expectedValues.
+    // restored values should be in reverse.
+    std::vector<int> undoActionValues(expectedValues.size ());
 
     for (int value : expectedValues)
     {
-        compoundAction->Add(TestUndoAction::Create(value));
+        compoundAction->Add(TestUndoAction::Create(value, undoActionValues));
+    }
+
+    // Expect values to be in created order
+    for (size_t i = 0; i < undoActionValues.size (); ++i)
+    {
+        EXPECT_EQ (undoActionValues[i], expectedValues[i]);
     }
 
     ////////////////////////////////
@@ -280,8 +298,17 @@ TEST(UndoActionConstructionTests, CompoundUndoActionTest)
     ////////////////////////////////
     compoundAction->Restore();
 
+    // Expect values to be in reverse created order
+    for (size_t i = 0; i < undoActionValues.size (); ++i)
+    {
+        EXPECT_EQ (undoActionValues[i], expectedValues[undoActionValues.size () - i - 1]);
+    }
+
+    // Number of created TestUndoAction object should not change
     EXPECT_EQ(TestUndoAction::s_created, static_cast<int>(expectedValues.size()));
+    // After restore, there should be zero committed TestUndoAction objects
     EXPECT_EQ(TestUndoAction::s_committed, 0);
+    // After restore all TestUndoAction objects should be restored
     EXPECT_EQ(TestUndoAction::s_restored, static_cast<int>(expectedValues.size()));
 
     ////////////////////////////////
@@ -289,7 +316,16 @@ TEST(UndoActionConstructionTests, CompoundUndoActionTest)
     ////////////////////////////////
     compoundAction->Commit();
 
+    // Expect values to be in created order
+    for (size_t i = 0; i < undoActionValues.size (); ++i)
+    {
+        EXPECT_EQ (undoActionValues[i], expectedValues[i]);
+    }
+
+    // Number of created TestUndoAction object should not change
     ASSERT_EQ(TestUndoAction::s_created, static_cast<int>(expectedValues.size()));
+    // After commit all TestUndoAction objects should be committed
     EXPECT_EQ(TestUndoAction::s_committed, static_cast<int>(expectedValues.size()));
+    // After restore, there should be zero restored TestUndoAction objects
     EXPECT_EQ(TestUndoAction::s_restored, 0);
 }
