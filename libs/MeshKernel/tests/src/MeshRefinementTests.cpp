@@ -55,7 +55,7 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_OnFourByFourWithFourSamples_
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
-    meshRefinement.Compute();
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     // 3 Validation edges connecting hanging nodes
 
@@ -148,7 +148,7 @@ TEST(MeshRefinement, RefinementOnAFourByFourMeshWithSamplesShouldRefine)
     MeshRefinement meshRefinement(*mesh,
                                   std::move(interpolator),
                                   meshRefinementParameters);
-    meshRefinement.Compute();
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     // Assert number of edges and nodes
     ASSERT_EQ(60, mesh->GetNumEdges());
@@ -252,7 +252,7 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_SmallTriangualMeshTwoSamples
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
-    meshRefinement.Compute();
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     // edges connecting hanging nodes
     ASSERT_EQ(10, mesh->GetEdge(32).first);
@@ -293,7 +293,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
     meshRefinementParameters.use_mass_center_when_refining = 0;
 
     MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
-    meshRefinement.Compute();
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     // total number of edges
     ASSERT_EQ(15, mesh->GetNumNodes());
@@ -377,7 +377,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerFace)
 
     MeshRefinement meshRefinement(*mesh, std::move(interpolator), meshRefinementParameters);
 
-    meshRefinement.Compute();
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     // assert on number of nodes and edges
     ASSERT_EQ(49, mesh->GetNumNodes());
@@ -449,7 +449,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
-    meshRefinement.Compute();
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     // total number of edges
     ASSERT_EQ(461, mesh->GetNumNodes());
@@ -517,7 +517,7 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_OnWindowOfRefinementFile_Sho
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
-    meshRefinement.Compute();
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     // total number of edges
     ASSERT_EQ(413, mesh->GetNumNodes());
@@ -578,7 +578,7 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
 
     MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
 
-    meshRefinement.Compute();
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     // total number of edges
     ASSERT_EQ(30, mesh->GetNumNodes());
@@ -635,7 +635,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
     meshRefinementParameters.use_mass_center_when_refining = 0;
 
     MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
-    meshRefinement.Compute();
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     // assert on number of nodes and edges
     ASSERT_EQ(48, mesh->GetNumNodes());
@@ -677,7 +677,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     MeshRefinement meshRefinement(*mesh,
                                   std::move(interpolator),
                                   meshRefinementParameters);
-    meshRefinement.Compute();
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     ASSERT_EQ(60, mesh->GetNumEdges());
     ASSERT_EQ(32, mesh->GetNumNodes());
@@ -725,7 +725,7 @@ TEST(MeshRefinement, RefinementFileBasedOnLevels_OnSphericalMesh_ShouldRefine)
     // Execute
     const auto polygon = Polygons();
     MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
-    meshRefinement.Compute();
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     // Assert, we passed from 36 to 49 nodes
     ASSERT_EQ(121, mesh->GetNumNodes());
@@ -755,7 +755,7 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
 
     const auto polygon = Polygons();
     MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
-    meshRefinement.Compute();
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     mesh->ComputeEdgesLengths();
 
@@ -791,7 +791,7 @@ TEST(MeshRefinement, RefineElongatedFaces)
     MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
 
     // Execute
-    meshRefinement.Compute();
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     // Assert circumcenters are correctly computed
     constexpr double tolerance = 1e-6;
@@ -843,7 +843,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefin
     MeshRefinement meshRefinement(*mesh, std::move(interpolator), meshRefinementParameters, true);
 
     // Execute
-    meshRefinement.Compute();
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     // Assert: all bathy values are positive and we are in land, so nothing gets refined
     ASSERT_EQ(4, mesh->GetNumEdges());
@@ -870,7 +870,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRe
     MeshRefinement meshRefinement(*mesh, std::move(interpolator), meshRefinementParameters, true);
 
     // Execute
-    meshRefinement.Compute();
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     // Assert: all depth values are positive and we are in land, so nothing gets refined
     ASSERT_EQ(12, mesh->GetNumEdges());
@@ -899,7 +899,7 @@ TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine
                                   meshRefinementParameters, true);
 
     // Execute
-    meshRefinement.Compute();
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     // Assert: nothing gets refined
     ASSERT_EQ(4, mesh->GetNumEdges());
@@ -969,7 +969,7 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
                                   meshRefinementParameters, false);
 
     // Execute
-    meshRefinement.Compute();
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     // Assert
     ASSERT_EQ(numNodes, mesh->GetNumNodes());
@@ -1039,7 +1039,7 @@ TEST(MeshRefinement, CasulliRefinement)
 
     CasulliRefinement meshRefinement;
 
-    meshRefinement.Compute(mesh);
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute(mesh);
 
     std::vector<meshkernel::UInt> validNodeMap(mesh.GetValidNodeMapping());
     std::vector<meshkernel::UInt> validEdgeMap(mesh.GetValidEdgeMapping());
@@ -1122,7 +1122,7 @@ TEST(MeshRefinement, CasulliPatchRefinement)
 
     CasulliRefinement meshRefinement;
 
-    meshRefinement.Compute(mesh, polygon);
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute(mesh, polygon);
 
     constexpr double tolerance = 1.0e-12;
 

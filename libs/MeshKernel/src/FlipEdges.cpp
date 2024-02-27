@@ -25,6 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
+#include <MeshKernel/CompoundUndoAction.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
@@ -58,7 +59,7 @@ std::unique_ptr<meshkernel::UndoAction> FlipEdges::Compute() const
 
     if (m_triangulateFaces)
     {
-        m_mesh.TriangulateFaces();
+        action->Add(m_mesh.TriangulateFaces());
         m_mesh.Administrate();
     }
 

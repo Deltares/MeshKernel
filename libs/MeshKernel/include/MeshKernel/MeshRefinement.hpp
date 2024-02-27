@@ -129,7 +129,7 @@ namespace meshkernel
         ///    -# Compute if a face should be split, ComputeIfFaceShouldBeSplit
         ///    -# Compute face by splitting edges, RefineFacesBySplittingEdges
         /// 5. Connect hanging nodes if requested, DeleteIsolatedHangingnodes, connect_hanging_nodes
-        std::unique_ptr<UndoAction> Compute();
+        [[nodiscard]] std::unique_ptr<UndoAction> Compute();
 
     private:
         /// @brief Finds if two edges are brothers, sharing an hanging node. Can be moved to Mesh2D

@@ -51,22 +51,6 @@ void meshkernel::DeleteNodeAction::DoRestore()
     }
 }
 
-// void meshkernel::DeleteNodeAction::CommitEdges() const
-// {
-//     for (const std::unique_ptr<DeleteEdgeAction>& action : m_deletedEdges)
-//     {
-//         action->Commit();
-//     }
-// }
-
-// void meshkernel::DeleteNodeAction::RestoreEdges() const
-// {
-//     for (const std::unique_ptr<DeleteEdgeAction>& action : m_deletedEdges | std::views::reverse)
-//     {
-//         action->Restore();
-//     }
-// }
-
 std::uint64_t meshkernel::DeleteNodeAction::MemorySize() const
 {
     std::uint64_t size = sizeof(*this) + m_deletedEdges.size() * sizeof(std::unique_ptr<DeleteEdgeAction>);

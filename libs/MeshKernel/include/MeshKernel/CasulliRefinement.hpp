@@ -43,7 +43,7 @@ namespace meshkernel
         /// @brief Compute the Casulli refinement for the entire mesh.
         ///
         /// @param [in, out] mesh Mesh to be refined
-        static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh);
 
         /// @brief Compute the Casulli refinement for the part of the mesh inside the polygon
         ///

@@ -221,7 +221,7 @@ bool Mesh2D::HasTriangleNoAcuteAngles(const std::vector<UInt>& faceNodes, const 
 
 std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteDegeneratedTriangles()
 {
-    std::unique_ptr<CompoundUndoAction> action = CompoundUndoAction::Create();
+    std::unique_ptr<CompoundUndoAction> undoAction = CompoundUndoAction::Create();
 
     Administrate();
 
@@ -262,7 +262,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteDegeneratedTriangles()
             for (UInt e = 0; e < constants::geometric::numNodesInTriangle; ++e)
             {
                 const auto edge = m_facesEdges[f][e];
-                action->Add(ResetEdge(edge, {constants::missing::uintValue, constants::missing::uintValue}));
+                undoAction->Add(ResetEdge(edge, {constants::missing::uintValue, constants::missing::uintValue}));
             }
             // save degenerated face index
             degeneratedTriangles.emplace_back(f);
@@ -276,13 +276,13 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteDegeneratedTriangles()
         const auto secondNode = m_facesNodes[face][1];
         const auto thirdNode = m_facesNodes[face][2];
 
-        action->Add(ResetNode(thirdNode, m_facesMassCenters[face]));
-        action->Add(MergeTwoNodes(secondNode, firstNode));
-        action->Add(MergeTwoNodes(thirdNode, firstNode));
+        undoAction->Add(ResetNode(thirdNode, m_facesMassCenters[face]));
+        undoAction->Add(MergeTwoNodes(secondNode, firstNode));
+        undoAction->Add(MergeTwoNodes(thirdNode, firstNode));
     }
 
     Administrate();
-    return action;
+    return undoAction;
 }
 
 bool Mesh2D::HasDuplicateNodes(const UInt numClosingEdges, const std::vector<UInt>& nodes, std::vector<UInt>& sortedNodes) const
@@ -792,52 +792,52 @@ void Mesh2D::ComputeFaceClosedPolygon(UInt faceIndex, std::vector<Point>& polygo
 
 std::unique_ptr<meshkernel::SphericalCoordinatesOffsetAction> Mesh2D::OffsetSphericalCoordinates(double minx, double maxx)
 {
-    std::unique_ptr<SphericalCoordinatesOffsetAction> action;
+    std::unique_ptr<SphericalCoordinatesOffsetAction> undoAction;
 
     if (m_projection == Projection::spherical && maxx - minx > 180.0)
     {
-        action = SphericalCoordinatesOffsetAction::Create(*this, minx, maxx);
+        undoAction = SphericalCoordinatesOffsetAction::Create(*this, minx, maxx);
 
         for (UInt n = 0; n < GetNumNodes(); ++n)
         {
             if (m_nodes[n].x - 360.0 >= minx)
             {
-                action->AddDecrease(n);
+                undoAction->AddDecrease(n);
             }
 
             if (m_nodes[n].x < minx)
             {
-                action->AddIncrease(n);
+                undoAction->AddIncrease(n);
             }
         }
 
-        Commit(*action);
+        Commit(*undoAction);
     }
 
-    return action;
+    return undoAction;
 }
 
-void Mesh2D::Commit(SphericalCoordinatesOffsetAction& action)
+void Mesh2D::Commit(SphericalCoordinatesOffsetAction& undoAction)
 {
-    for (auto iter = action.BeginDecrease(); iter != action.EndDecrease(); ++iter)
+    for (auto iter = undoAction.BeginDecrease(); iter != undoAction.EndDecrease(); ++iter)
     {
         m_nodes[*iter] -= 360.0;
     }
 
-    for (auto iter = action.BeginIncrease(); iter != action.EndIncrease(); ++iter)
+    for (auto iter = undoAction.BeginIncrease(); iter != undoAction.EndIncrease(); ++iter)
     {
         m_nodes[*iter] += 360.0;
     }
 }
 
-void Mesh2D::Restore(SphericalCoordinatesOffsetAction& action)
+void Mesh2D::Restore(SphericalCoordinatesOffsetAction& undoAction)
 {
-    for (auto iter = action.BeginDecrease(); iter != action.EndDecrease(); ++iter)
+    for (auto iter = undoAction.BeginDecrease(); iter != undoAction.EndDecrease(); ++iter)
     {
         m_nodes[*iter] += 360.0;
     }
 
-    for (auto iter = action.BeginIncrease(); iter != action.EndIncrease(); ++iter)
+    for (auto iter = undoAction.BeginIncrease(); iter != undoAction.EndIncrease(); ++iter)
     {
         m_nodes[*iter] -= 360.0;
     }
@@ -1018,25 +1018,31 @@ std::vector<meshkernel::Point> Mesh2D::GetFlowEdgesCenters(const std::vector<UIn
     return result;
 }
 
-void Mesh2D::DeleteSmallFlowEdges(double smallFlowEdgesThreshold)
+std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteSmallFlowEdges(double smallFlowEdgesThreshold)
 {
-    DeleteDegeneratedTriangles();
+    std::unique_ptr<CompoundUndoAction> undoAction = CompoundUndoAction::Create();
+
+    undoAction->Add(DeleteDegeneratedTriangles());
 
     auto edges = GetEdgesCrossingSmallFlowEdges(smallFlowEdgesThreshold);
+
     if (!edges.empty())
     {
         // invalidate the edges
         for (const auto& e : edges)
         {
-            m_edges[e] = {constants::missing::uintValue, constants::missing::uintValue};
+            undoAction->Add(DeleteEdge(e));
         }
+
         Administrate();
     }
+
+    return undoAction;
 }
 
 std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
 {
-    std::unique_ptr<CompoundUndoAction> action = CompoundUndoAction::Create();
+    std::unique_ptr<CompoundUndoAction> undoAction = CompoundUndoAction::Create();
 
     // On the second part, the small triangles at the boundaries are checked
     std::vector<std::vector<UInt>> smallTrianglesNodes;
@@ -1124,7 +1130,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteSmallTrianglesAtBoundaries
 
         if (numInternalEdges == 1)
         {
-            action->Add(MergeTwoNodes(firstNodeToMerge, nodeToPreserve));
+            undoAction->Add(MergeTwoNodes(firstNodeToMerge, nodeToPreserve));
             nodesMerged = true;
         }
 
@@ -1140,7 +1146,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteSmallTrianglesAtBoundaries
 
         if (numInternalEdges == 1)
         {
-            action->Add(MergeTwoNodes(secondNodeToMerge, nodeToPreserve));
+            undoAction->Add(MergeTwoNodes(secondNodeToMerge, nodeToPreserve));
             nodesMerged = true;
         }
     }
@@ -1150,7 +1156,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteSmallTrianglesAtBoundaries
         Administrate();
     }
 
-    return action;
+    return undoAction;
 }
 
 void Mesh2D::ComputeNodeNeighbours()

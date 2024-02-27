@@ -54,6 +54,9 @@ namespace meshkernel
     class Mesh2D final : public Mesh
     {
     public:
+        using Mesh::Commit;
+        using Mesh::Restore;
+
         /// Enumerator describing the different options to delete a mesh
         enum DeleteMeshOptions
         {
@@ -128,9 +131,9 @@ namespace meshkernel
         /// @param[in] maxx
         std::unique_ptr<SphericalCoordinatesOffsetAction> OffsetSphericalCoordinates(double minx, double maxx);
 
-        void Commit(SphericalCoordinatesOffsetAction& action);
+        void Commit(SphericalCoordinatesOffsetAction& undoAction);
 
-        void Restore(SphericalCoordinatesOffsetAction& action);
+        void Restore(SphericalCoordinatesOffsetAction& undoAction);
 
         /// @brief For a face create a closed polygon and fill local mapping caches (get_cellpolygon)
         /// @param[in]  faceIndex              The face index
@@ -190,7 +193,7 @@ namespace meshkernel
         /// -   All small flow edges are flagged with invalid indices and removed
         ///     from the mesh. Removal occors in the \ref Mesh2D::Administrate method.
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
-        void DeleteSmallFlowEdges(double smallFlowEdgesThreshold);
+        [[nodiscard]] std::unique_ptr<meshkernel::UndoAction> DeleteSmallFlowEdges(double smallFlowEdgesThreshold);
 
         /// @brief Deletes small triangles at the boundaries (removesmallflowlinks, part 2)
         ///
@@ -209,7 +212,7 @@ namespace meshkernel
         /// where the internal angle is closer to 90 degrees).
         /// @param[in] minFractionalAreaTriangles Small triangles at the boundaries will be eliminated.
         /// This threshold is the ration of the face area to the average area of neighboring faces.
-        std::unique_ptr<UndoAction> DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles);
+        [[nodiscard]] std::unique_ptr<UndoAction> DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles);
 
         /// @brief Computes m_nodesNodes, see class members
         void ComputeNodeNeighbours();
@@ -230,11 +233,10 @@ namespace meshkernel
         void ClassifyNodes();
 
         /// @brief Deletes coinciding triangles
-        std::unique_ptr<UndoAction> DeleteDegeneratedTriangles();
+        [[nodiscard]] std::unique_ptr<UndoAction> DeleteDegeneratedTriangles();
 
         /// @brief Transform non-triangular faces in triangular faces
-        // TODO make nodiscard
-        std::unique_ptr<UndoAction> TriangulateFaces();
+        [[nodiscard]] std::unique_ptr<UndoAction> TriangulateFaces();
 
         /// @brief Make a dual face around the node, enlarged by a factor
         /// @param[in] node The node index
@@ -267,8 +269,7 @@ namespace meshkernel
         [[nodiscard]] std::vector<UInt> GetHangingEdges() const;
 
         /// @brief Deletes the hanging edges
-        // TODO nodiscard
-        std::unique_ptr<UndoAction> DeleteHangingEdges();
+        [[nodiscard]] std::unique_ptr<UndoAction> DeleteHangingEdges();
 
         /// @brief For a collection of points, compute the face indices including them.
         /// @param[in] points The input point vector.
@@ -280,8 +281,7 @@ namespace meshkernel
         ///                           If this Polygons instance contains multiple polygons, the first one will be taken.
         /// @param[in] deletionOption The deletion option
         /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
-        // TOOD nodiscard
-        std::unique_ptr<UndoAction> DeleteMesh(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion);
+        [[nodiscard]] std::unique_ptr<UndoAction> DeleteMesh(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion);
 
         /// @brief Inquire if a segment is crossing a face
         /// @param[in] firstPoint The first point of the segment

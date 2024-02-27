@@ -45,9 +45,8 @@ namespace meshkernel
     class RemoveDisconnectedRegions final
     {
     public:
-        // TODO nodiscard
         /// @brief Remove the disconnected regions.
-        std::unique_ptr<UndoAction> Compute(Mesh2D& mesh) const;
+        [[nodiscard]] std::unique_ptr<UndoAction> Compute(Mesh2D& mesh) const;
 
     private:
         /// @brief Get the neighbour element along an edge.
@@ -73,7 +72,7 @@ namespace meshkernel
         void LabelAllDomainRegions(const Mesh2D& mesh, std::vector<UInt>& elementRegionId, std::vector<std::pair<UInt, UInt>>& regionCount) const;
 
         /// @brief Remove elements from regions that do not have the main region identifier.
-        std::unique_ptr<UndoAction> RemoveDetachedRegions(Mesh2D& mesh, const UInt regionId, std::vector<UInt>& elementRegionId, UInt& numberOfElementsRemoved) const;
+        [[nodiscard]] std::unique_ptr<UndoAction> RemoveDetachedRegions(Mesh2D& mesh, const UInt regionId, std::vector<UInt>& elementRegionId, UInt& numberOfElementsRemoved) const;
     };
 
 } // namespace meshkernel

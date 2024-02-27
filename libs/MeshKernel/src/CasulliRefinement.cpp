@@ -2,6 +2,7 @@
 
 #include "MeshKernel/AddNodeAction.hpp"
 #include "MeshKernel/CasulliRefinement.hpp"
+#include "MeshKernel/CompoundUndoAction.hpp"
 #include "MeshKernel/Exceptions.hpp"
 
 std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(Mesh2D& mesh)

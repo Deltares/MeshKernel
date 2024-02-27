@@ -62,7 +62,7 @@ namespace meshkernel
         static std::unique_ptr<MoveNodeAction> Create(Mesh& mesh);
 
         /// @brief Constructor
-        MoveNodeAction(Mesh& mesh);
+        explicit MoveNodeAction(Mesh& mesh);
 
         /// @brief Set the amount of displacement for node
         void AddDisplacement(const UInt nodeId, const double xDisplacement, const double yDisplacement);

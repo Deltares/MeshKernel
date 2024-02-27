@@ -1,4 +1,5 @@
 #include "MeshKernel/ConnectMeshes.hpp"
+#include "MeshKernel/CompoundUndoAction.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/RangeCheck.hpp"

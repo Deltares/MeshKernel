@@ -604,7 +604,7 @@ TEST(Mesh, DeleteSmallFlowEdge)
     ASSERT_EQ(8, mesh->GetNumFaces());
 
     // After merging the number of faces is reduced
-    mesh->DeleteSmallFlowEdges(1.0);
+    [[maybe_unused]] auto undoAction = mesh->DeleteSmallFlowEdges(1.0);
 
     ASSERT_EQ(3, mesh->GetNumFaces());
 }
@@ -617,7 +617,7 @@ TEST(Mesh, DeleteSmallTrianglesAtBoundaries)
     ASSERT_EQ(2, mesh->GetNumFaces());
 
     // After merging
-    mesh->DeleteSmallTrianglesAtBoundaries(0.6);
+    [[maybe_unused]] auto undoAction = mesh->DeleteSmallTrianglesAtBoundaries(0.6);
 
     ASSERT_EQ(1, mesh->GetNumFaces());
 
@@ -664,7 +664,7 @@ TEST(Mesh, DeleteHangingEdge)
     ASSERT_EQ(1, hangingEdges.size());
 
     // Execute
-    mesh.DeleteHangingEdges();
+    [[maybe_unused]] auto undoAction = mesh.DeleteHangingEdges();
     hangingEdges = mesh.GetHangingEdges();
 
     // Assert
@@ -704,7 +704,7 @@ TEST_P(MeshDeletion, expected_results)
     const meshkernel::Polygons polygon(polygonNodes, meshkernel::Projection::cartesian);
 
     // Execute
-    mesh->DeleteMesh(polygon, deleteOption, invertSelection);
+    [[maybe_unused]] auto undoAction = mesh->DeleteMesh(polygon, deleteOption, invertSelection);
 
     // Assert
     ASSERT_EQ(numNodes, mesh->GetNumValidNodes());
@@ -766,7 +766,7 @@ TEST_P(MeshDeletionWithInnerPolygons, expected_results)
     const meshkernel::Polygons polygon(polygonNodes, meshkernel::Projection::cartesian);
 
     // Execute
-    mesh->DeleteMesh(polygon, deleteOption, invertSelection);
+    [[maybe_unused]] auto undoAction = mesh->DeleteMesh(polygon, deleteOption, invertSelection);
 
     // Assert
     const auto nodes = mesh->Nodes();

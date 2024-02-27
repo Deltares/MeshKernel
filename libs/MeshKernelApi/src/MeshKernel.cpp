@@ -185,7 +185,7 @@ namespace meshkernelapi
             const meshkernel::Polygons meshKernelPolygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             const auto deletionOptionEnum = static_cast<meshkernel::Mesh2D::DeleteMeshOptions>(deletionOption);
 
-            meshKernelState[meshKernelId].m_mesh2d->DeleteMesh(meshKernelPolygon, deletionOptionEnum, invertDeletionBool);
+            [[maybe_unused]] auto undoAction = meshKernelState[meshKernelId].m_mesh2d->DeleteMesh(meshKernelPolygon, deletionOptionEnum, invertDeletionBool);
         }
         catch (...)
         {
@@ -726,7 +726,8 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
-            meshKernelState[meshKernelId].m_mesh2d->DeleteHangingEdges();
+
+            [[maybe_unused]] auto undoAction = meshKernelState[meshKernelId].m_mesh2d->DeleteHangingEdges();
         }
         catch (...)
         {
@@ -1767,7 +1768,7 @@ namespace meshkernelapi
             meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
                                                       std::move(averaging),
                                                       meshRefinementParameters);
-            meshRefinement.Compute();
+            [[maybe_unused]] auto undoAction = meshRefinement.Compute();
         }
         catch (...)
         {
@@ -1819,7 +1820,7 @@ namespace meshkernelapi
             meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
                                                       std::move(averaging),
                                                       meshRefinementParameters);
-            meshRefinement.Compute();
+            [[maybe_unused]] auto undoAction = meshRefinement.Compute();
         }
         catch (...)
         {
@@ -1851,7 +1852,7 @@ namespace meshkernelapi
                                                       std::move(interpolant),
                                                       meshRefinementParameters,
                                                       useNodalRefinement);
-            meshRefinement.Compute();
+            [[maybe_unused]] auto undoAction = meshRefinement.Compute();
         }
         catch (...)
         {
@@ -1881,7 +1882,7 @@ namespace meshkernelapi
             const auto polygon = meshkernel::Polygons(points, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d, polygon, meshRefinementParameters);
-            meshRefinement.Compute();
+            [[maybe_unused]] auto undoAction = meshRefinement.Compute();
         }
         catch (...)
         {
@@ -1905,7 +1906,7 @@ namespace meshkernelapi
             }
 
             meshkernel::RemoveDisconnectedRegions removeDisconnectedRegions;
-            removeDisconnectedRegions.Compute(*meshKernelState[meshKernelId].m_mesh2d);
+            [[maybe_unused]] auto undoAction = removeDisconnectedRegions.Compute(*meshKernelState[meshKernelId].m_mesh2d);
         }
         catch (...)
         {
@@ -2074,7 +2075,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshkernel::CasulliRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d);
+            [[maybe_unused]] auto undoAction = meshkernel::CasulliRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d);
         }
         catch (...)
         {
@@ -2484,8 +2485,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshKernelState[meshKernelId].m_mesh2d->DeleteSmallFlowEdges(smallFlowEdgesThreshold);
-            meshKernelState[meshKernelId].m_mesh2d->DeleteSmallTrianglesAtBoundaries(minFractionalAreaTriangles);
+            [[maybe_unused]] auto undoAction1 = meshKernelState[meshKernelId].m_mesh2d->DeleteSmallFlowEdges(smallFlowEdgesThreshold);
+            [[maybe_unused]] auto undoAction2 = meshKernelState[meshKernelId].m_mesh2d->DeleteSmallTrianglesAtBoundaries(minFractionalAreaTriangles);
         }
         catch (...)
         {
@@ -2665,7 +2666,7 @@ namespace meshkernelapi
             }
 
             const auto mergedMeshes = meshkernel::Mesh2D::Merge(*meshKernelState[meshKernelId].m_mesh2d, *meshToConnect);
-            meshkernel::ConnectMeshes::Compute(*mergedMeshes, searchFraction);
+            [[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMeshes, searchFraction);
             meshKernelState[meshKernelId].m_mesh2d->SetNodes(mergedMeshes->Nodes());
             meshKernelState[meshKernelId].m_mesh2d->SetEdges(mergedMeshes->Edges());
             meshKernelState[meshKernelId].m_mesh2d->m_projection = mergedMeshes->m_projection;

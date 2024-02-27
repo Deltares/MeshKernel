@@ -59,7 +59,7 @@ namespace meshkernel
         /// @param [in] separationFraction The fraction of the shortest edge to use when determining neighbour edge closeness
         /// @note separationFraction should be in the interval (0, max], where max = DefaultMaximumSeparationFraction,
         /// If the value is outside of this range then a RangeError will be thrown.
-        static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh, const double separationFraction = DefaultMaximumSeparationFraction);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh, const double separationFraction = DefaultMaximumSeparationFraction);
 
     private:
         /// @brief The maximum number of hanging nodes along a single element edge

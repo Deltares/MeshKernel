@@ -19,7 +19,7 @@ void meshkernel::CompoundUndoAction::Add(UndoActionPtr&& action)
 
 void meshkernel::CompoundUndoAction::DoCommit()
 {
-    for (UndoActionPtr& action : m_undoActions)
+    for (const UndoActionPtr& action : m_undoActions)
     {
         action->Commit();
     }
@@ -27,7 +27,7 @@ void meshkernel::CompoundUndoAction::DoCommit()
 
 void meshkernel::CompoundUndoAction::DoRestore()
 {
-    for (UndoActionPtr& action : m_undoActions | std::views::reverse)
+    for (const UndoActionPtr& action : m_undoActions | std::views::reverse)
     {
         action->Restore();
     }
@@ -35,7 +35,7 @@ void meshkernel::CompoundUndoAction::DoRestore()
 
 std::uint64_t meshkernel::CompoundUndoAction::MemorySize() const
 {
-    std::uint64_t size = sizeof(*this) + static_cast<std::uint64_t>(m_undoActions.size()) * sizeof(UndoActionPtr);
+    std::uint64_t size = sizeof(*this) + m_undoActions.size() * sizeof(UndoActionPtr);
 
     for (const UndoActionPtr& action : m_undoActions)
     {

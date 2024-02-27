@@ -429,7 +429,7 @@ TEST(Mesh2D, DeleteSmallFlowEdge)
     ASSERT_EQ(8, mesh->GetNumFaces());
 
     // After merging the number of faces is reduced
-    mesh->DeleteSmallFlowEdges(1.0);
+    [[maybe_unused]] auto undoAction = mesh->DeleteSmallFlowEdges(1.0);
 
     ASSERT_EQ(3, mesh->GetNumFaces());
 }
@@ -442,7 +442,7 @@ TEST(Mesh2D, DeleteSmallTrianglesAtBoundaries)
     ASSERT_EQ(2, mesh->GetNumFaces());
 
     // After merging
-    mesh->DeleteSmallTrianglesAtBoundaries(0.6);
+    [[maybe_unused]] auto undoAction = mesh->DeleteSmallTrianglesAtBoundaries(0.6);
 
     ASSERT_EQ(1, mesh->GetNumFaces());
 
@@ -489,7 +489,7 @@ TEST(Mesh2D, DeleteHangingEdge)
     ASSERT_EQ(1, hangingEdges.size());
 
     // Execute
-    mesh->DeleteHangingEdges();
+    [[maybe_unused]] auto undoAction = mesh->DeleteHangingEdges();
     hangingEdges = mesh->GetHangingEdges();
 
     // Assert
@@ -941,7 +941,7 @@ TEST(Mesh2D, RemoveSingleIsland)
     meshkernel::RemoveDisconnectedRegions removeDisconnectedRegions;
 
     // Remove all smaller disconnected "island" regions.
-    removeDisconnectedRegions.Compute(*mesh);
+    [[maybe_unused]] auto undoAction = removeDisconnectedRegions.Compute(*mesh);
     EXPECT_EQ(mesh->GetNumFaces(), 100);
 }
 
@@ -953,7 +953,7 @@ TEST(Mesh2D, RemoveMultipleIslands)
     meshkernel::RemoveDisconnectedRegions removeDisconnectedRegions;
 
     // Remove all smaller disconnected "island" regions.
-    removeDisconnectedRegions.Compute(*mesh);
+    [[maybe_unused]] auto undoAction = removeDisconnectedRegions.Compute(*mesh);
     EXPECT_EQ(mesh->GetNumFaces(), 100);
 }
 
@@ -978,7 +978,7 @@ TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersected_ShouldNotDeleteFaces)
     const auto deletion_option = meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected;
 
     // Execute
-    mesh->DeleteMesh(polygon, deletion_option, false);
+    [[maybe_unused]] auto undoAction = mesh->DeleteMesh(polygon, deletion_option, false);
 
     // Assert
     EXPECT_EQ(mesh->GetNumFaces(), 9);
@@ -1005,7 +1005,7 @@ TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersectedSpherical_ShouldNotDeleteFaces)
     const auto deletion_option = meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected;
 
     // Execute
-    mesh->DeleteMesh(polygon, deletion_option, false);
+    [[maybe_unused]] auto undoAction = mesh->DeleteMesh(polygon, deletion_option, false);
 
     // Assert
     EXPECT_EQ(mesh->GetNumFaces(), 9);
@@ -1033,7 +1033,7 @@ TEST(Mesh2D, DeleteMesh_WithLargeSphericalPolygon_ShouldDeleteInnerMeshFaces)
     const auto deletion_option = meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected;
 
     // Execute
-    mesh->DeleteMesh(polygon, deletion_option, false);
+    [[maybe_unused]] auto undoAction = mesh->DeleteMesh(polygon, deletion_option, false);
 
     // Assert
     EXPECT_EQ(mesh->GetNumFaces(), 7);
@@ -1060,7 +1060,7 @@ TEST(Mesh2D, DeleteMesh_WithPolygonAndIncludedCircumcenters_ShouldDeleteInnerFac
     const auto deletion_option = meshkernel::Mesh2D::DeleteMeshOptions::FacesWithIncludedCircumcenters;
 
     // Execute
-    mesh->DeleteMesh(polygon, deletion_option, false);
+    [[maybe_unused]] auto undoAction = mesh->DeleteMesh(polygon, deletion_option, false);
 
     // Assert
     EXPECT_EQ(mesh->GetNumFaces(), 12);

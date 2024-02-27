@@ -22,7 +22,7 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
     auto connectedGrid = ReadLegacyMesh2DFromFile(testDataDir + connectedGridName);
 
     // Connect hanging nodes
-    meshkernel::ConnectMeshes::Compute(*unconnectedGrid);
+    [[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*unconnectedGrid);
 
     // Check mesh (active) entity counts are the same
     ASSERT_EQ(unconnectedGrid->GetNumValidNodes(), connectedGrid->GetNumNodes());
@@ -192,7 +192,7 @@ TEST(Mesh2DConnectDD, MergeMeshes)
     std::shared_ptr<meshkernel::Mesh2D> mesh2 = generateMesh(origin, delta, 9, 9);
 
     const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
-    meshkernel::ConnectMeshes::Compute(*mergedMesh);
+    [[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
     EXPECT_EQ(mergedMesh->GetNumFaces(), mesh1->GetNumFaces() + mesh2->GetNumFaces() + ExtraFaces);
     EXPECT_EQ(mergedMesh->GetNumValidNodes(), mesh1->GetNumNodes() + mesh2->GetNumNodes() - NodeDifference);
@@ -267,7 +267,7 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallNegativeOffset)
 
     const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
 
-    meshkernel::ConnectMeshes::Compute(*mergedMesh);
+    [[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
     EXPECT_EQ(mergedMesh->GetNumValidNodes(), 15);
     EXPECT_EQ(mergedMesh->GetNumFaces(), 8);
@@ -307,7 +307,7 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesNoOffset)
 
     const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
 
-    meshkernel::ConnectMeshes::Compute(*mergedMesh);
+    [[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
     EXPECT_EQ(mergedMesh->GetNumValidNodes(), 15);
     EXPECT_EQ(mergedMesh->GetNumValidEdges(), 22);
@@ -347,7 +347,7 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallPositiveOffset)
 
     const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
 
-    meshkernel::ConnectMeshes::Compute(*mergedMesh);
+    [[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
     EXPECT_EQ(mergedMesh->GetNumValidNodes(), 15);
     EXPECT_EQ(mergedMesh->GetNumValidEdges(), 22);
@@ -387,7 +387,7 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallNegativeOffset)
     const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
 
     // Need to increase the search distance fraction
-    meshkernel::ConnectMeshes::Compute(*mergedMesh);
+    [[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
     // 8 triangles and 16 quadrilaterals
     EXPECT_EQ(mergedMesh->GetNumFaces(), 24);
@@ -556,7 +556,7 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallPositiveOffset)
     const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
 
     // Need to increase the search distance fraction
-    meshkernel::ConnectMeshes::Compute(*mergedMesh);
+    [[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
     // 8 triangles and 16 quadrilaterals
     EXPECT_EQ(mergedMesh->GetNumFaces(), 24);
@@ -726,8 +726,8 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesErrorInSeparationFraction)
 
     const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
 
-    EXPECT_THROW(meshkernel::ConnectMeshes::Compute(*mergedMesh, 0.5), meshkernel::RangeError);
-    EXPECT_THROW(meshkernel::ConnectMeshes::Compute(*mergedMesh, 1.5), meshkernel::RangeError);
-    EXPECT_THROW(meshkernel::ConnectMeshes::Compute(*mergedMesh, -0.5), meshkernel::RangeError);
-    EXPECT_THROW(meshkernel::ConnectMeshes::Compute(*mergedMesh, 0.0), meshkernel::RangeError);
+    EXPECT_THROW([[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh, 0.5), meshkernel::RangeError);
+    EXPECT_THROW([[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh, 1.5), meshkernel::RangeError);
+    EXPECT_THROW([[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh, -0.5), meshkernel::RangeError);
+    EXPECT_THROW([[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh, 0.0), meshkernel::RangeError);
 }

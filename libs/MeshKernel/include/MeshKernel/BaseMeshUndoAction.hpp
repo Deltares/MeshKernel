@@ -39,7 +39,7 @@ namespace meshkernel
     {
     public:
         /// @brief Constructor
-        BaseMeshUndoAction(Mesh& mesh) : mesh_(mesh) {}
+        explicit BaseMeshUndoAction(Mesh& mesh) : mesh_(mesh) {}
 
         /// \brief Compute the approximate amount of memory being used, in bytes.
         std::uint64_t MemorySize() const override;
