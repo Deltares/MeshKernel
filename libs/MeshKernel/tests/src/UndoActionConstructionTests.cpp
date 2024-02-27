@@ -217,7 +217,7 @@ public:
         return std::make_unique<TestUndoAction>(value, undoActionValues);
     }
 
-    TestUndoAction(const int value, std::vector<int>& undoActionValues) : m_value(value), m_undoActionValues (undoActionValues)
+    TestUndoAction(const int value, std::vector<int>& undoActionValues) : m_value(value), m_undoActionValues(undoActionValues)
     {
         m_undoActionValues[s_created] = m_value;
         ++s_created;
@@ -261,7 +261,7 @@ TEST(UndoActionConstructionTests, CompoundUndoActionTest)
     // Values will be assigned in the order depending on the creation, restore or committed call
     // creation and committed should be in same order as expectedValues.
     // restored values should be in reverse.
-    std::vector<int> undoActionValues(expectedValues.size ());
+    std::vector<int> undoActionValues(expectedValues.size());
 
     for (int value : expectedValues)
     {
@@ -269,9 +269,9 @@ TEST(UndoActionConstructionTests, CompoundUndoActionTest)
     }
 
     // Expect values to be in created order
-    for (size_t i = 0; i < undoActionValues.size (); ++i)
+    for (size_t i = 0; i < undoActionValues.size(); ++i)
     {
-        EXPECT_EQ (undoActionValues[i], expectedValues[i]);
+        EXPECT_EQ(undoActionValues[i], expectedValues[i]);
     }
 
     ////////////////////////////////
@@ -299,9 +299,9 @@ TEST(UndoActionConstructionTests, CompoundUndoActionTest)
     compoundAction->Restore();
 
     // Expect values to be in reverse created order
-    for (size_t i = 0; i < undoActionValues.size (); ++i)
+    for (size_t i = 0; i < undoActionValues.size(); ++i)
     {
-        EXPECT_EQ (undoActionValues[i], expectedValues[undoActionValues.size () - i - 1]);
+        EXPECT_EQ(undoActionValues[i], expectedValues[undoActionValues.size() - i - 1]);
     }
 
     // Number of created TestUndoAction object should not change
@@ -317,9 +317,9 @@ TEST(UndoActionConstructionTests, CompoundUndoActionTest)
     compoundAction->Commit();
 
     // Expect values to be in created order
-    for (size_t i = 0; i < undoActionValues.size (); ++i)
+    for (size_t i = 0; i < undoActionValues.size(); ++i)
     {
-        EXPECT_EQ (undoActionValues[i], expectedValues[i]);
+        EXPECT_EQ(undoActionValues[i], expectedValues[i]);
     }
 
     // Number of created TestUndoAction object should not change

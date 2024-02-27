@@ -9,6 +9,7 @@
 #include "MeshKernel/MoveNodeAction.hpp"
 #include "MeshKernel/ResetEdgeAction.hpp"
 #include "MeshKernel/ResetNodeAction.hpp"
+#include "MeshKernel/UndoActionStack.hpp"
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
@@ -34,6 +35,43 @@ TEST(UndoTests, AddNodeToMesh)
     EXPECT_EQ(5, mesh->GetNumValidNodes());
     EXPECT_EQ(node.x, mesh->Node(action->NodeId()).x);
     EXPECT_EQ(node.y, mesh->Node(action->NodeId()).y);
+}
+
+TEST(UndoTests, ResetNodeInMesh)
+{
+    auto mesh = MakeRectangularMeshForTesting(3, 3, 1.0, meshkernel::Projection::cartesian);
+
+    std::vector<mk::Point> originalNodes(mesh->Nodes());
+
+    mk::UInt nodeId = 4;
+    mk::Point initialNode = mesh->Node(nodeId);
+    mk::Point updatedNode(1.5, 1.5);
+
+    std::unique_ptr<mk::ResetNodeAction> action = mesh->ResetNode(nodeId, updatedNode);
+    EXPECT_EQ(mk::UndoAction::Committed, action->State());
+    EXPECT_EQ(nodeId, action->NodeId());
+    EXPECT_EQ(updatedNode.x, action->UpdatedNode().x);
+    EXPECT_EQ(updatedNode.y, action->UpdatedNode().y);
+    EXPECT_EQ(updatedNode.x, mesh->Node(action->NodeId()).x);
+    EXPECT_EQ(updatedNode.y, mesh->Node(action->NodeId()).y);
+    EXPECT_EQ(initialNode.x, action->InitialNode().x);
+    EXPECT_EQ(initialNode.y, action->InitialNode().y);
+    EXPECT_EQ(9, mesh->GetNumNodes());
+    EXPECT_EQ(9, mesh->GetNumValidNodes());
+
+    action->Restore();
+    EXPECT_EQ(mk::UndoAction::Restored, action->State());
+
+    for (size_t i = 0; i < originalNodes.size(); ++i)
+    {
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
+    }
+
+    EXPECT_EQ(initialNode.x, mesh->Node(action->NodeId()).x);
+    EXPECT_EQ(initialNode.y, mesh->Node(action->NodeId()).y);
+    EXPECT_EQ(9, mesh->GetNumNodes());
+    EXPECT_EQ(9, mesh->GetNumValidNodes());
 }
 
 TEST(UndoTests, AddNodeThenUndoInMesh)
@@ -248,9 +286,10 @@ TEST(UndoTests, MoveNodeMeshTest)
 
     std::vector<mk::Point> originalNodes(mesh->Nodes());
 
-    mk::Point node(6.5, 6.5);
     // Id of node (5.0, 5.0)
     mk::UInt nodeId = 60;
+    // Location to where node 60 should be moved.
+    mk::Point node(6.5, 6.5);
 
     std::unique_ptr<mk::MoveNodeAction> action = mesh->MoveNode(node, nodeId);
 
@@ -348,4 +387,112 @@ TEST(UndoTests, AddAndRemoveEdgeFromMeshTest)
     EXPECT_EQ(mesh->GetNumValidEdges(), 4);
     EXPECT_EQ(mesh->GetEdge(4).first, mk::constants::missing::uintValue);
     EXPECT_EQ(mesh->GetEdge(4).second, mk::constants::missing::uintValue);
+}
+
+
+TEST(UndoTests, AddAndResetEdgeInMeshTest)
+{
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
+
+    mk::UInt initialStart = 0;
+    mk::UInt initialEnd = 3;
+
+    mk::UInt updatedStart = 1;
+    mk::UInt updatedEnd = 2;
+
+    auto [edgeId, connectNodesAction] = mesh->ConnectNodes(initialStart, initialEnd);
+
+    EXPECT_EQ(edgeId, connectNodesAction->EdgeId());
+    EXPECT_EQ(initialStart, connectNodesAction->GetEdge().first);
+    EXPECT_EQ(initialEnd, connectNodesAction->GetEdge().second);
+
+    EXPECT_EQ(mesh->GetNumEdges(), 5);
+    EXPECT_EQ(mesh->GetNumValidEdges(), 5);
+    EXPECT_EQ(mesh->GetEdge(edgeId).first, initialStart);
+    EXPECT_EQ(mesh->GetEdge(edgeId).second, initialEnd);
+
+    std::unique_ptr<mk::ResetEdgeAction> resetEdgeAction = mesh->ResetEdge(edgeId, {updatedStart, updatedEnd});
+
+    EXPECT_EQ(edgeId, resetEdgeAction->EdgeId());
+    EXPECT_EQ(initialStart, resetEdgeAction->InitialEdge().first);
+    EXPECT_EQ(initialEnd, resetEdgeAction->InitialEdge().second);
+    EXPECT_EQ(updatedStart, resetEdgeAction->UpdatedEdge().first);
+    EXPECT_EQ(updatedEnd, resetEdgeAction->UpdatedEdge().second);
+
+    EXPECT_EQ(mesh->GetNumEdges(), 5);
+    EXPECT_EQ(mesh->GetNumValidEdges(), 5);
+    EXPECT_EQ(mesh->GetEdge(edgeId).first, updatedStart);
+    EXPECT_EQ(mesh->GetEdge(edgeId).second, updatedEnd);
+
+    ////////////////////////////////
+    // Restore the resetting of the edge
+    resetEdgeAction->Restore ();
+
+    EXPECT_EQ(mesh->GetNumEdges(), 5);
+    EXPECT_EQ(mesh->GetNumValidEdges(), 5);
+    EXPECT_EQ(mesh->GetEdge(edgeId).first, initialStart);
+    EXPECT_EQ(mesh->GetEdge(edgeId).second, initialEnd);
+
+    ////////////////////////////////
+    // Remove the added edge
+    connectNodesAction->Restore ();
+
+    EXPECT_EQ(mesh->GetNumEdges(), 5);
+    EXPECT_EQ(mesh->GetNumValidEdges(), 4);
+    EXPECT_EQ(mesh->GetEdge(edgeId).first, mk::constants::missing::uintValue);
+    EXPECT_EQ(mesh->GetEdge(edgeId).second, mk::constants::missing::uintValue);
+
+}
+
+TEST(UndoTests, AddAndResetEdgeInMeshTestUsingStack)
+{
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
+    mk::UndoActionStack undoActionStack;
+
+    mk::UInt initialStart = 0;
+    mk::UInt initialEnd = 3;
+
+    mk::UInt updatedStart = 1;
+    mk::UInt updatedEnd = 2;
+
+    // Connect diagonally opposite nodes
+    auto [edgeId, connectNodesAction] = mesh->ConnectNodes(initialStart, initialEnd);
+    undoActionStack.Add (std::move(connectNodesAction));
+
+    EXPECT_EQ(mesh->GetNumEdges(), 5);
+    EXPECT_EQ(mesh->GetNumValidEdges(), 5);
+    EXPECT_EQ(mesh->GetEdge(edgeId).first, initialStart);
+    EXPECT_EQ(mesh->GetEdge(edgeId).second, initialEnd);
+
+    // Reset to other set of diagonnally opposite nodes
+    undoActionStack.Add (mesh->ResetEdge(edgeId, {updatedStart, updatedEnd}));
+
+    EXPECT_EQ(mesh->GetNumEdges(), 5);
+    EXPECT_EQ(mesh->GetNumValidEdges(), 5);
+    EXPECT_EQ(mesh->GetEdge(edgeId).first, updatedStart);
+    EXPECT_EQ(mesh->GetEdge(edgeId).second, updatedEnd);
+
+    ////////////////////////////////
+    // Restore the resetting of the edge
+    EXPECT_TRUE (undoActionStack.Undo ());
+
+    EXPECT_EQ(mesh->GetNumEdges(), 5);
+    EXPECT_EQ(mesh->GetNumValidEdges(), 5);
+    EXPECT_EQ(mesh->GetEdge(edgeId).first, initialStart);
+    EXPECT_EQ(mesh->GetEdge(edgeId).second, initialEnd);
+
+    ////////////////////////////////
+    // Remove the added edge
+    EXPECT_TRUE (undoActionStack.Undo ());
+
+    EXPECT_EQ(mesh->GetNumEdges(), 5);
+    EXPECT_EQ(mesh->GetNumValidEdges(), 4);
+    EXPECT_EQ(mesh->GetEdge(edgeId).first, mk::constants::missing::uintValue);
+    EXPECT_EQ(mesh->GetEdge(edgeId).second, mk::constants::missing::uintValue);
+
+    ////////////////////////////////
+    // Nothing else to undo
+    EXPECT_FALSE (undoActionStack.Undo ());
+
+
 }

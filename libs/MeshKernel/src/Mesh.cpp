@@ -306,6 +306,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeTwoNodes(UInt firstNodeIndex,
     std::unique_ptr<CompoundUndoAction> undoAction = CompoundUndoAction::Create();
 
     auto edgeIndex = FindEdge(firstNodeIndex, secondNodeIndex);
+
     if (edgeIndex != constants::missing::uintValue)
     {
         undoAction->Add(DeleteEdge(edgeIndex));
@@ -317,6 +318,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeTwoNodes(UInt firstNodeIndex,
         const auto firstEdgeIndex = m_nodesEdges[firstNodeIndex][n];
         const auto& firstEdge = m_edges[firstEdgeIndex];
         const auto firstEdgeOtherNode = OtherNodeOfEdge(firstEdge, firstNodeIndex);
+
         if (firstEdgeOtherNode != constants::missing::uintValue && firstEdgeOtherNode != secondNodeIndex)
         {
             for (UInt nn = 0; nn < m_nodesNumEdges[firstEdgeOtherNode]; nn++)
@@ -336,9 +338,11 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeTwoNodes(UInt firstNodeIndex,
     // add all valid edges starting at secondNode
     std::vector<UInt> secondNodeEdges(m_maximumNumberOfEdgesPerNode, constants::missing::uintValue);
     UInt numSecondNodeEdges = 0;
+
     for (UInt n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
     {
         edgeIndex = m_nodesEdges[secondNodeIndex][n];
+
         if (m_edges[edgeIndex].first != constants::missing::uintValue)
         {
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;
@@ -350,6 +354,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeTwoNodes(UInt firstNodeIndex,
     for (UInt n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
     {
         edgeIndex = m_nodesEdges[firstNodeIndex][n];
+
         if (m_edges[edgeIndex].first != constants::missing::uintValue)
         {
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;

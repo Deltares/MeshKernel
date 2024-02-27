@@ -188,7 +188,7 @@ namespace meshkernel
         void SetNodes(const std::vector<Point>& newValues);
 
         /// @brief Set the node to a new value, this value may be the in-valid value.
-        std::unique_ptr<ResetNodeAction> ResetNode(const UInt index, const Point& newValue);
+        [[nodiscard]] std::unique_ptr<ResetNodeAction> ResetNode(const UInt index, const Point& newValue);
 
         void Commit(ResetNodeAction& undoAction);
 
