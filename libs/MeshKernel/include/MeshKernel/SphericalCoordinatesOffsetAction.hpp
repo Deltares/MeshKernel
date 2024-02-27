@@ -57,10 +57,10 @@ namespace meshkernel
         /// @brief Get the maximum x-value
         double MaxX() const;
 
-        /// @brief Add index of node whose valud is to be decreased
+        /// @brief Add index of node whose value is to be decreased
         void AddDecrease(const UInt nodeId);
 
-        /// @brief Add index of node whose valud is to be increased
+        /// @brief Add index of node whose value is to be increased
         void AddIncrease(const UInt nodeId);
 
         /// @brief Return iterator pointing to the first element of the nodes

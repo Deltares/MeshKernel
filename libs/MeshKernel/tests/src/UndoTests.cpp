@@ -7,6 +7,8 @@
 #include "MeshKernel/DeleteEdgeAction.hpp"
 #include "MeshKernel/DeleteNodeAction.hpp"
 #include "MeshKernel/MoveNodeAction.hpp"
+#include "MeshKernel/ResetEdgeAction.hpp"
+#include "MeshKernel/ResetNodeAction.hpp"
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
@@ -16,77 +18,6 @@
 #include "TestUtils/MakeMeshes.hpp"
 
 namespace mk = meshkernel;
-
-TEST(UndoTests, ExpectedEdge)
-{
-    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
-
-    mk::UInt edgeId = 10;
-    mk::UInt start = 20;
-    mk::UInt end = 30;
-
-    std::unique_ptr<mk::AddEdgeAction> action = mk::AddEdgeAction::Create(*mesh, edgeId, start, end);
-    EXPECT_EQ(edgeId, action->EdgeId());
-    EXPECT_EQ(start, action->GetEdge().first);
-    EXPECT_EQ(end, action->GetEdge().second);
-}
-
-TEST(UndoTests, ExpectedNode)
-{
-    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
-
-    mk::UInt nodeId = 10;
-    mk::Point node(0.5, 0.5);
-
-    std::unique_ptr<mk::AddNodeAction> action = mk::AddNodeAction::Create(*mesh, nodeId, node);
-    EXPECT_EQ(nodeId, action->NodeId());
-    EXPECT_EQ(node.x, action->Node().x);
-    EXPECT_EQ(node.y, action->Node().y);
-}
-
-TEST(UndoTests, MoveNodeActionTest)
-{
-    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
-
-    std::unique_ptr<mk::MoveNodeAction> action = mk::MoveNodeAction::Create(*mesh);
-
-    action->AddDisplacement(1, 0.25, 0.25);
-    action->AddDisplacement(2, 0.5, 0.25);
-    action->AddDisplacement(3, 0.25, 0.5);
-    action->AddDisplacement(4, 0.5, 0.5);
-    action->AddDisplacement(23, -1.5, -1.5);
-
-    auto iter = action->begin();
-
-    ASSERT_EQ(std::distance(action->begin(), action->end()), 5);
-
-    EXPECT_EQ(iter->m_nodeId, 1);
-    EXPECT_EQ(iter->m_displacement.x(), 0.25);
-    EXPECT_EQ(iter->m_displacement.y(), 0.25);
-
-    ++iter;
-    EXPECT_EQ(iter->m_nodeId, 2);
-    EXPECT_EQ(iter->m_displacement.x(), 0.5);
-    EXPECT_EQ(iter->m_displacement.y(), 0.25);
-
-    ++iter;
-    EXPECT_EQ(iter->m_nodeId, 3);
-    EXPECT_EQ(iter->m_displacement.x(), 0.25);
-    EXPECT_EQ(iter->m_displacement.y(), 0.5);
-
-    ++iter;
-    EXPECT_EQ(iter->m_nodeId, 4);
-    EXPECT_EQ(iter->m_displacement.x(), 0.5);
-    EXPECT_EQ(iter->m_displacement.y(), 0.5);
-
-    ++iter;
-    EXPECT_EQ(iter->m_nodeId, 23);
-    EXPECT_EQ(iter->m_displacement.x(), -1.5);
-    EXPECT_EQ(iter->m_displacement.y(), -1.5);
-
-    ++iter;
-    EXPECT_TRUE(iter == action->end());
-}
 
 TEST(UndoTests, AddNodeToMesh)
 {
@@ -360,4 +291,61 @@ TEST(UndoTests, MoveNodeMeshTest)
         EXPECT_NEAR(mesh->Node(iter->m_nodeId).x, expectedPoint.x, tolerance);
         EXPECT_NEAR(mesh->Node(iter->m_nodeId).y, expectedPoint.y, tolerance);
     }
+}
+
+TEST(UndoTests, AddAndRemoveEdgeFromMeshTest)
+{
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
+
+    mk::UInt start = 0;
+    mk::UInt end = 3;
+
+    auto [edgeId, connectNodesAction ] = mesh->ConnectNodes (0, 3);
+
+    EXPECT_EQ(edgeId, connectNodesAction->EdgeId());
+    EXPECT_EQ(start, connectNodesAction->GetEdge().first);
+    EXPECT_EQ(end, connectNodesAction->GetEdge().second);
+
+    EXPECT_EQ (mesh->GetNumEdges (), 5);
+    EXPECT_EQ (mesh->GetNumValidEdges (), 5);
+    EXPECT_EQ (mesh->GetEdge (4).first, start);
+    EXPECT_EQ (mesh->GetEdge (4).second, end);
+
+    std::unique_ptr<mk::DeleteEdgeAction> deleteEdgeAction = mesh->DeleteEdge (connectNodesAction->EdgeId ());
+
+    EXPECT_EQ(edgeId, deleteEdgeAction->EdgeId());
+    EXPECT_EQ(start, deleteEdgeAction->GetEdge().first);
+    EXPECT_EQ(end, deleteEdgeAction->GetEdge().second);
+
+    EXPECT_EQ (mesh->GetNumEdges (), 5);
+    EXPECT_EQ (mesh->GetNumValidEdges (), 4);
+    EXPECT_EQ (mesh->GetEdge (4).first, mk::constants::missing::uintValue);
+    EXPECT_EQ (mesh->GetEdge (4).second, mk::constants::missing::uintValue);
+
+    // Restore the deleted edge
+    deleteEdgeAction->Restore ();
+
+    // The undo action contents should not change
+    EXPECT_EQ(edgeId, deleteEdgeAction->EdgeId());
+    EXPECT_EQ(start, deleteEdgeAction->GetEdge().first);
+    EXPECT_EQ(end, deleteEdgeAction->GetEdge().second);
+
+    // The edge should be restored
+    EXPECT_EQ (mesh->GetNumEdges (), 5);
+    EXPECT_EQ (mesh->GetNumValidEdges (), 5);
+    EXPECT_EQ (mesh->GetEdge (4).first, start);
+    EXPECT_EQ (mesh->GetEdge (4).second, end);
+
+    // Restore the node connection, i.e. remove the added edge
+    connectNodesAction->Restore ();
+
+    // The contents of the undo action should not change
+    EXPECT_EQ(edgeId, connectNodesAction->EdgeId());
+    EXPECT_EQ(start, connectNodesAction->GetEdge().first);
+    EXPECT_EQ(end, connectNodesAction->GetEdge().second);
+
+    EXPECT_EQ (mesh->GetNumEdges (), 5);
+    EXPECT_EQ (mesh->GetNumValidEdges (), 4);
+    EXPECT_EQ (mesh->GetEdge (4).first, mk::constants::missing::uintValue);
+    EXPECT_EQ (mesh->GetEdge (4).second, mk::constants::missing::uintValue);
 }

@@ -305,7 +305,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
             if (distanceSecondPoint < distanceThirdPoint)
             {
                 // TODO may need to refactor this (undo action allocation), if performance becomes a problem
-                // Copy nodes at start, then set all nodes at once (SetNodes, this has no associated aciton yet).
+                // Copy nodes at start, then set all nodes at once (SetNodes, this has no associated action yet).
                 [[maybe_unused]] auto action = m_mesh.ResetNode(n, normalSecondPoint);
 
                 if (ratioSecondPoint > 0.5 && m_mesh.m_nodesTypes[n] != 3)

@@ -76,7 +76,7 @@ Mesh1D::Mesh1D(Network1D& network1d, double minFaceSize)
 
     // If there are computational nodes at a distance smaller than  the threshold, these are eliminated
     const Polygons polygon{};
-    // The merge action can be ignored in this case becuase we will not need to undo any merge operation
+    // The merge action can be ignored in this case because we will not need to undo any merge operation
     [[maybe_unused]] auto mergeAction = MergeNodesInPolygon(polygon, minFaceSize);
 }
 

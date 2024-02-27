@@ -183,7 +183,7 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
     const std::vector<Point> polygon;
     Polygons polygons(polygon, projection);
 
-    // The merge action can be ignored in this case becuase we will not need to undo any merge operation
+    // The merge action can be ignored in this case because we will not need to undo any merge operation
     [[maybe_unused]] auto mergeAction = mesh2d->MergeNodesInPolygon(polygons, mergingDistance);
 
     constexpr double tolerance = 1.0e-6;

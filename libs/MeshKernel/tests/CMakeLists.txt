@@ -53,6 +53,7 @@ set(
   ${SRC_DIR}/SplineAlgorithmTests.cpp
   ${SRC_DIR}/SplineTests.cpp
   ${SRC_DIR}/TriangleInterpolationTests.cpp
+  ${SRC_DIR}/UndoActionConstructionTests.cpp
   ${SRC_DIR}/UndoTests.cpp
 )
 

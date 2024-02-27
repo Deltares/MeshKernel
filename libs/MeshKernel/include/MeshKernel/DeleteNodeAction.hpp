@@ -52,6 +52,9 @@ namespace meshkernel
         /// @brief Constructor
         DeleteNodeAction(Mesh& mesh, const UInt id, const Point& node);
 
+        /// @brief Add a delete edge action
+        ///
+        /// When a node is deleted, all connected edges must be removed.
         void Add(std::unique_ptr<DeleteEdgeAction>&& action);
 
         /// @brief Get the node identifier
