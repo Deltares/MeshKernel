@@ -112,7 +112,7 @@ namespace meshkernel
         Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
 
         /// @brief Perform complete administration
-        void Administrate() override;
+        void Administrate(CompoundUndoAction* undoAction = nullptr) override;
 
         /// @brief Compute face circumcenters
         void ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters = false);

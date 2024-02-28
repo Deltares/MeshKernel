@@ -238,7 +238,7 @@ void Mesh::DeleteInvalidNodesAndEdges()
     m_edges.erase(endEdgeVector, m_edges.end());
 }
 
-void Mesh::SetUnconnectedNodesAndEdgesToInvalid()
+void Mesh::SetUnconnectedNodesAndEdgesToInvalid(CompoundUndoAction* undoAction)
 {
     // Mask nodes connected to valid edges
     std::vector<bool> connectedNodes(m_nodes.size(), false);
@@ -260,19 +260,53 @@ void Mesh::SetUnconnectedNodesAndEdgesToInvalid()
 
     for (UInt n = 0; n < m_nodes.size(); ++n)
     {
-        nodeIsValid[n] = m_nodes[n].IsValid();
+        if (undoAction == nullptr)
+        {
+            nodeIsValid[n] = m_nodes[n].IsValid();
+        }
+        else
+        {
+            undoAction->Add (ResetNode (n, {constants::missing::doubleValue, constants::missing::doubleValue}));
+        }
     }
 
     // Flag invalid edges
-    for (Edge& edge : m_edges)
+    for (UInt e = 0; e < m_edges.size (); ++e)
     {
+        Edge& edge = m_edges [e];
+
         if (edge.first == constants::missing::uintValue ||
             edge.second == constants::missing::uintValue ||
             !nodeIsValid[edge.first] || !nodeIsValid[edge.second])
         {
-            edge = {constants::missing::uintValue, constants::missing::uintValue};
+            if (undoAction == nullptr)
+            {
+                edge = {constants::missing::uintValue, constants::missing::uintValue};
+            }
+            else
+            {
+                undoAction->Add (ResetEdge (e, {constants::missing::uintValue, constants::missing::uintValue}));
+            }
         }
     }
+
+    // // Flag invalid edges
+    // for (Edge& edge : m_edges)
+    // {
+    //     if (edge.first == constants::missing::uintValue ||
+    //         edge.second == constants::missing::uintValue ||
+    //         !nodeIsValid[edge.first] || !nodeIsValid[edge.second])
+    //     {
+    //         if (undoAction == nullptr)
+    //         {
+    //             edge = {constants::missing::uintValue, constants::missing::uintValue};
+    //         }
+    //         else
+    //         {
+    //             undoAction->Add (ResetEdge ());
+    //         }
+    //     }
+    // }
 }
 
 std::unique_ptr<meshkernel::UndoAction> Mesh::MergeTwoNodes(UInt firstNodeIndex, UInt secondNodeIndex)
@@ -1084,14 +1118,14 @@ meshkernel::UInt Mesh::GetLocationsIndices(UInt index, Location meshLocation)
     }
 }
 
-void Mesh::Administrate()
+void Mesh::Administrate(CompoundUndoAction* undoAction)
 {
-    AdministrateNodesEdges();
+    AdministrateNodesEdges(undoAction);
 }
 
-void Mesh::AdministrateNodesEdges()
+void Mesh::AdministrateNodesEdges(CompoundUndoAction* undoAction)
 {
-    SetUnconnectedNodesAndEdgesToInvalid();
+    SetUnconnectedNodesAndEdgesToInvalid(undoAction);
 
     // return if there are no nodes or no edges
     if (m_nodes.empty() || m_edges.empty())

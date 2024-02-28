@@ -426,12 +426,24 @@ TEST(Mesh2D, DeleteSmallFlowEdge)
     // Setup a mesh with eight triangles
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/RemoveSmallFlowEdgesTests/remove_small_flow_edges_net.nc");
 
+    std::vector<meshkernel::Point> originalNodes (mesh->Nodes ());
+    std::vector<meshkernel::edge> originalEdges (mesh->Edges ());
+
     ASSERT_EQ(8, mesh->GetNumFaces());
 
     // After merging the number of faces is reduced
-    [[maybe_unused]] auto undoAction = mesh->DeleteSmallFlowEdges(1.0);
+    auto undoAction = mesh->DeleteSmallFlowEdges(1.0);
 
     ASSERT_EQ(3, mesh->GetNumFaces());
+
+    undoAction->Restore ();
+    mesh->Administrate ();
+
+    ASSERT_EQ(8, mesh->GetNumFaces());
+    ASSERT_EQ(originalEdges.size (), mesh->GetNumEdges ());
+
+    for (size_t i = 0; i < original)
+
 }
 
 TEST(Mesh2D, DeleteSmallTrianglesAtBoundaries)

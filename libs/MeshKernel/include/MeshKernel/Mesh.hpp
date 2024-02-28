@@ -31,6 +31,7 @@
 #include "MeshKernel/AddEdgeAction.hpp"
 #include "MeshKernel/AddNodeAction.hpp"
 #include "MeshKernel/BoundingBox.hpp"
+#include "MeshKernel/CompoundUndoAction.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/DeleteEdgeAction.hpp"
 #include "MeshKernel/DeleteNodeAction.hpp"
@@ -335,10 +336,10 @@ namespace meshkernel
         void DeleteInvalidNodesAndEdges();
 
         /// @brief Perform complete administration
-        virtual void Administrate();
+        virtual void Administrate(CompoundUndoAction* undoAction = nullptr);
 
         /// @brief Perform node and edges administration
-        void AdministrateNodesEdges();
+        void AdministrateNodesEdges(CompoundUndoAction* undoAction = nullptr);
 
         /// @brief Sort mesh edges around a node in counterclockwise order (Sort_links_ccw)
         /// @param[in] startNode The first node index where to perform edge sorting.
@@ -466,14 +467,8 @@ namespace meshkernel
     private:
         static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate
 
-        // /// @brief Insert a new edge, assuming two nodes are not already connected
-        // /// @param[in] startNode The start node index
-        // /// @param[in] endNode The end node index
-        // /// @return The index of the new edge
-        // UInt InsertEdge(UInt startNode, UInt endNode);
-
         /// @brief Set nodes and edges that are not connected to be invalid.
-        void SetUnconnectedNodesAndEdgesToInvalid();
+        void SetUnconnectedNodesAndEdgesToInvalid(CompoundUndoAction* undoAction);
 
         /// @brief Find all nodes that are connected to an edge.
         ///

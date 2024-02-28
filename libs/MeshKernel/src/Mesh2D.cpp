@@ -150,9 +150,9 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
     DoAdministration();
 }
 
-void Mesh2D::DoAdministration()
+void Mesh2D::DoAdministration(CompoundUndoAction* undoAction)
 {
-    AdministrateNodesEdges();
+    AdministrateNodesEdges(undoAction);
 
     // face administration
     ResizeAndInitializeFaceVectors();
@@ -185,9 +185,9 @@ void Mesh2D::DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector
     ClassifyNodes();
 }
 
-void Mesh2D::Administrate()
+void Mesh2D::Administrate(CompoundUndoAction* undoAction)
 {
-    DoAdministration();
+    DoAdministration(undoAction);
 }
 
 bool Mesh2D::HasTriangleNoAcuteAngles(const std::vector<UInt>& faceNodes, const std::vector<Point>& nodes) const
@@ -223,7 +223,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteDegeneratedTriangles()
 {
     std::unique_ptr<CompoundUndoAction> undoAction = CompoundUndoAction::Create();
 
-    Administrate();
+    Administrate(undoAction);
 
     // assume the max amount of degenerated triangles is 10% of the actual faces
     std::vector<UInt> degeneratedTriangles;
@@ -281,7 +281,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteDegeneratedTriangles()
         undoAction->Add(MergeTwoNodes(thirdNode, firstNode));
     }
 
-    Administrate();
+    Administrate(undoAction);
     return undoAction;
 }
 
@@ -1034,7 +1034,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteSmallFlowEdges(double smal
             undoAction->Add(DeleteEdge(e));
         }
 
-        Administrate();
+        Administrate(undoAction);
     }
 
     return undoAction;
@@ -1153,7 +1153,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteSmallTrianglesAtBoundaries
 
     if (nodesMerged)
     {
-        Administrate();
+        Administrate(undoAction);
     }
 
     return undoAction;
@@ -1759,7 +1759,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMesh(const Polygons& polyg
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
 
-    Administrate();
+    Administrate(deleteMeshAction);
     return deleteMeshAction;
 }
 
@@ -1767,7 +1767,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces(const Polygons& 
 {
     std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
 
-    Administrate();
+    Administrate(deleteMeshAction);
 
     for (UInt e = 0u; e < GetNumEdges(); ++e)
     {
@@ -1821,7 +1821,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces(const Polygons& 
             deleteMeshAction->Add(DeleteEdge(e));
         }
     }
-    Administrate();
+    Administrate(deleteMeshAction);
 
     return deleteMeshAction;
 }

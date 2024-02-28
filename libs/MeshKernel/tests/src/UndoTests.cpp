@@ -389,7 +389,6 @@ TEST(UndoTests, AddAndRemoveEdgeFromMeshTest)
     EXPECT_EQ(mesh->GetEdge(4).second, mk::constants::missing::uintValue);
 }
 
-
 TEST(UndoTests, AddAndResetEdgeInMeshTest)
 {
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
@@ -426,7 +425,7 @@ TEST(UndoTests, AddAndResetEdgeInMeshTest)
 
     ////////////////////////////////
     // Restore the resetting of the edge
-    resetEdgeAction->Restore ();
+    resetEdgeAction->Restore();
 
     EXPECT_EQ(mesh->GetNumEdges(), 5);
     EXPECT_EQ(mesh->GetNumValidEdges(), 5);
@@ -435,13 +434,12 @@ TEST(UndoTests, AddAndResetEdgeInMeshTest)
 
     ////////////////////////////////
     // Remove the added edge
-    connectNodesAction->Restore ();
+    connectNodesAction->Restore();
 
     EXPECT_EQ(mesh->GetNumEdges(), 5);
     EXPECT_EQ(mesh->GetNumValidEdges(), 4);
     EXPECT_EQ(mesh->GetEdge(edgeId).first, mk::constants::missing::uintValue);
     EXPECT_EQ(mesh->GetEdge(edgeId).second, mk::constants::missing::uintValue);
-
 }
 
 TEST(UndoTests, AddAndResetEdgeInMeshTestUsingStack)
@@ -457,7 +455,7 @@ TEST(UndoTests, AddAndResetEdgeInMeshTestUsingStack)
 
     // Connect diagonally opposite nodes
     auto [edgeId, connectNodesAction] = mesh->ConnectNodes(initialStart, initialEnd);
-    undoActionStack.Add (std::move(connectNodesAction));
+    undoActionStack.Add(std::move(connectNodesAction));
 
     EXPECT_EQ(mesh->GetNumEdges(), 5);
     EXPECT_EQ(mesh->GetNumValidEdges(), 5);
@@ -465,7 +463,7 @@ TEST(UndoTests, AddAndResetEdgeInMeshTestUsingStack)
     EXPECT_EQ(mesh->GetEdge(edgeId).second, initialEnd);
 
     // Reset to other set of diagonnally opposite nodes
-    undoActionStack.Add (mesh->ResetEdge(edgeId, {updatedStart, updatedEnd}));
+    undoActionStack.Add(mesh->ResetEdge(edgeId, {updatedStart, updatedEnd}));
 
     EXPECT_EQ(mesh->GetNumEdges(), 5);
     EXPECT_EQ(mesh->GetNumValidEdges(), 5);
@@ -474,7 +472,7 @@ TEST(UndoTests, AddAndResetEdgeInMeshTestUsingStack)
 
     ////////////////////////////////
     // Restore the resetting of the edge
-    EXPECT_TRUE (undoActionStack.Undo ());
+    EXPECT_TRUE(undoActionStack.Undo());
 
     EXPECT_EQ(mesh->GetNumEdges(), 5);
     EXPECT_EQ(mesh->GetNumValidEdges(), 5);
@@ -483,7 +481,7 @@ TEST(UndoTests, AddAndResetEdgeInMeshTestUsingStack)
 
     ////////////////////////////////
     // Remove the added edge
-    EXPECT_TRUE (undoActionStack.Undo ());
+    EXPECT_TRUE(undoActionStack.Undo());
 
     EXPECT_EQ(mesh->GetNumEdges(), 5);
     EXPECT_EQ(mesh->GetNumValidEdges(), 4);
@@ -492,7 +490,5 @@ TEST(UndoTests, AddAndResetEdgeInMeshTestUsingStack)
 
     ////////////////////////////////
     // Nothing else to undo
-    EXPECT_FALSE (undoActionStack.Undo ());
-
-
+    EXPECT_FALSE(undoActionStack.Undo());
 }
