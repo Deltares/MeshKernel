@@ -172,7 +172,7 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::RemoveDisconnectedRegions::C
         UInt numberOfElementsRemoved = 0;
         // Remove all elements from the regions that do not have the main region id.
         removalAction->Add(RemoveDetachedRegions(mesh, mainRegionId, elementRegionId, numberOfElementsRemoved));
-        mesh.Administrate();
+        mesh.Administrate(removalAction.get());
     }
 
     return removalAction;

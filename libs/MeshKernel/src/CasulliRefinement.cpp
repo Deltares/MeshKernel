@@ -190,7 +190,7 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Administr
         }
     }
 
-    mesh.Administrate();
+    mesh.Administrate(administrateAction.get ());
     return administrateAction;
 }
 

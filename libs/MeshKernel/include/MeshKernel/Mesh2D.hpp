@@ -31,6 +31,7 @@
 #include <utility>
 #include <vector>
 
+#include <MeshKernel/CompoundUndoAction.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Polygon.hpp>
@@ -438,7 +439,7 @@ namespace meshkernel
 
         /// @brief Perform complete administration
         /// @param[in] face_mappings_given True if face mappings are given, false otherwise
-        void DoAdministration();
+        void DoAdministration(CompoundUndoAction* undoAction = nullptr);
     };
 
 } // namespace meshkernel

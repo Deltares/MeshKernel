@@ -6,6 +6,7 @@ void meshkernel::UndoActionStack::Add(UndoActionPtr&& action)
     {
         m_committed.emplace_back(std::move(action));
         // TODO Do I need to do this?
+        // If we have a fixed maximum number of undo's then reserve in the constructor.
         m_restored.reserve(m_committed.size());
     }
     else

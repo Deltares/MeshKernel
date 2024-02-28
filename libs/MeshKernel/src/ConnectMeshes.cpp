@@ -266,7 +266,7 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::ConnectMeshes::Compute(Mesh2
     }
 
     conectMeshesAction->Add(MergeNodes(mesh, nodesToMerge, mergeIndicator));
-    mesh.Administrate();
+    mesh.Administrate(conectMeshesAction.get ());
     return conectMeshesAction;
 }
 

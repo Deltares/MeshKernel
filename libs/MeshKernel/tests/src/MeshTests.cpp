@@ -604,9 +604,15 @@ TEST(Mesh, DeleteSmallFlowEdge)
     ASSERT_EQ(8, mesh->GetNumFaces());
 
     // After merging the number of faces is reduced
-    [[maybe_unused]] auto undoAction = mesh->DeleteSmallFlowEdges(1.0);
+    auto undoAction = mesh->DeleteSmallFlowEdges(1.0);
 
     ASSERT_EQ(3, mesh->GetNumFaces());
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+    ASSERT_EQ(8, mesh->GetNumFaces());
 }
 
 TEST(Mesh, DeleteSmallTrianglesAtBoundaries)
@@ -617,7 +623,7 @@ TEST(Mesh, DeleteSmallTrianglesAtBoundaries)
     ASSERT_EQ(2, mesh->GetNumFaces());
 
     // After merging
-    [[maybe_unused]] auto undoAction = mesh->DeleteSmallTrianglesAtBoundaries(0.6);
+    auto undoAction = mesh->DeleteSmallTrianglesAtBoundaries(0.6);
 
     ASSERT_EQ(1, mesh->GetNumFaces());
 
@@ -633,6 +639,12 @@ TEST(Mesh, DeleteSmallTrianglesAtBoundaries)
     ASSERT_NEAR(300.48181152343750, mesh->Node(2).y, tolerance);
     ASSERT_NEAR(295.33038330078125, mesh->Node(3).y, tolerance);
     ASSERT_NEAR(398.59295654296875, mesh->Node(4).y, tolerance);
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+    ASSERT_EQ(2, mesh->GetNumFaces());
 }
 
 TEST(Mesh, DeleteHangingEdge)
@@ -664,11 +676,19 @@ TEST(Mesh, DeleteHangingEdge)
     ASSERT_EQ(1, hangingEdges.size());
 
     // Execute
-    [[maybe_unused]] auto undoAction = mesh.DeleteHangingEdges();
+    auto undoAction = mesh.DeleteHangingEdges();
     hangingEdges = mesh.GetHangingEdges();
 
     // Assert
     ASSERT_EQ(0, hangingEdges.size());
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh.Administrate();
+    // Assert
+    ASSERT_EQ(1, mesh.GetNumFaces());
+    ASSERT_EQ(4, mesh.GetNumEdges());
 }
 
 class MeshDeletion : public ::testing::TestWithParam<std::tuple<meshkernel::Mesh2D::DeleteMeshOptions, bool, int>>
@@ -694,6 +714,9 @@ TEST_P(MeshDeletion, expected_results)
     // Setup
     auto mesh = MakeRectangularMeshForTesting(4, 4, 1.0, meshkernel::Projection::cartesian);
 
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
     std::vector<meshkernel::Point> polygonNodes{
         {-0.5, -1.0},
         {0.8, -1.0},
@@ -704,10 +727,30 @@ TEST_P(MeshDeletion, expected_results)
     const meshkernel::Polygons polygon(polygonNodes, meshkernel::Projection::cartesian);
 
     // Execute
-    [[maybe_unused]] auto undoAction = mesh->DeleteMesh(polygon, deleteOption, invertSelection);
+    auto undoAction = mesh->DeleteMesh(polygon, deleteOption, invertSelection);
 
     // Assert
     ASSERT_EQ(numNodes, mesh->GetNumValidNodes());
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
+
+    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
+    }
+
+    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+    }
 }
 
 INSTANTIATE_TEST_SUITE_P(Mesh, MeshDeletion, ::testing::ValuesIn(MeshDeletion::GetData()));
@@ -763,14 +806,37 @@ TEST_P(MeshDeletionWithInnerPolygons, expected_results)
     // Setup
     auto mesh = MakeRectangularMeshForTesting(7, 7, 1.0, meshkernel::Projection::cartesian);
 
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
     const meshkernel::Polygons polygon(polygonNodes, meshkernel::Projection::cartesian);
 
     // Execute
-    [[maybe_unused]] auto undoAction = mesh->DeleteMesh(polygon, deleteOption, invertSelection);
+    auto undoAction = mesh->DeleteMesh(polygon, deleteOption, invertSelection);
 
     // Assert
     const auto nodes = mesh->Nodes();
     ASSERT_EQ(numNodes, mesh->GetNumValidNodes());
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
+
+    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
+    }
+
+    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+    }
 }
 
 INSTANTIATE_TEST_SUITE_P(Mesh, MeshDeletionWithInnerPolygons, ::testing::ValuesIn(MeshDeletionWithInnerPolygons::GetData()));

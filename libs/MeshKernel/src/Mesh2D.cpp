@@ -223,7 +223,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteDegeneratedTriangles()
 {
     std::unique_ptr<CompoundUndoAction> undoAction = CompoundUndoAction::Create();
 
-    Administrate(undoAction);
+    Administrate(undoAction.get());
 
     // assume the max amount of degenerated triangles is 10% of the actual faces
     std::vector<UInt> degeneratedTriangles;
@@ -281,7 +281,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteDegeneratedTriangles()
         undoAction->Add(MergeTwoNodes(thirdNode, firstNode));
     }
 
-    Administrate(undoAction);
+    Administrate(undoAction.get());
     return undoAction;
 }
 
@@ -1034,7 +1034,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteSmallFlowEdges(double smal
             undoAction->Add(DeleteEdge(e));
         }
 
-        Administrate(undoAction);
+        Administrate(undoAction.get());
     }
 
     return undoAction;
@@ -1153,7 +1153,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteSmallTrianglesAtBoundaries
 
     if (nodesMerged)
     {
-        Administrate(undoAction);
+        Administrate(undoAction.get());
     }
 
     return undoAction;
@@ -1759,7 +1759,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMesh(const Polygons& polyg
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
 
-    Administrate(deleteMeshAction);
+    Administrate(deleteMeshAction.get());
     return deleteMeshAction;
 }
 
@@ -1767,7 +1767,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces(const Polygons& 
 {
     std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
 
-    Administrate(deleteMeshAction);
+    Administrate(deleteMeshAction.get());
 
     for (UInt e = 0u; e < GetNumEdges(); ++e)
     {
@@ -1821,7 +1821,8 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces(const Polygons& 
             deleteMeshAction->Add(DeleteEdge(e));
         }
     }
-    Administrate(deleteMeshAction);
+
+    Administrate(deleteMeshAction.get());
 
     return deleteMeshAction;
 }
