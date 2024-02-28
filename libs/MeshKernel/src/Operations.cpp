@@ -1426,16 +1426,20 @@ namespace meshkernel
                                        weightTwo(n, m) +
                                        weightTwo(n + 1, m));
 
-                    result(n, m).x = wa *
-                                     (weightThree(n, m - 1) * weightOne(n, m) +
-                                      weightThree(n, m + 1) * weightOne(n, m + 1) +
-                                      weightThree(n - 1, m) * weightTwo(n, m) +
-                                      weightThree(n + 1, m) * weightTwo(n + 1, m));
+                    const auto x_coord = wa *
+                                         (weightThree(n, m - 1) * weightOne(n, m) +
+                                          weightThree(n, m + 1) * weightOne(n, m + 1) +
+                                          weightThree(n - 1, m) * weightTwo(n, m) +
+                                          weightThree(n + 1, m) * weightTwo(n + 1, m));
 
-                    result(n, m).y = wa * (weightFour(n, m - 1) * weightOne(n, m) +
-                                           weightFour(n, m + 1) * weightOne(n, m + 1) +
-                                           weightFour(n - 1, m) * weightTwo(n, m) +
-                                           weightFour(n + 1, m) * weightTwo(n + 1, m));
+                    const auto y_coord = wa * (weightFour(n, m - 1) * weightOne(n, m) +
+                                               weightFour(n, m + 1) * weightOne(n, m + 1) +
+                                               weightFour(n - 1, m) * weightTwo(n, m) +
+                                               weightFour(n + 1, m) * weightTwo(n + 1, m));
+
+                    result(n, m).x = x_coord;
+
+                    result(n, m).y = y_coord;
                 }
             }
         }
