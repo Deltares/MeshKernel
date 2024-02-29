@@ -30,7 +30,8 @@
 #include <utility>
 #include <vector>
 
-#include "UndoAction.hpp"
+#include "MeshKernel/Definitions.hpp"
+#include "MeshKernel/UndoAction.hpp"
 
 namespace meshkernel
 {
@@ -41,6 +42,9 @@ namespace meshkernel
         // When adding a new transaction, should probably delete all restored transactions
         // When adding new transactions, could check the size of the committed list and remove transactions more than some number ago
         // e.g. keep the undo list no longer than 10
+
+        /// @brief Constructor
+        UndoActionStack();
 
         // When adding a new transaction, should probably delete all restored transactions
         // actions should be moved so that there can only be a single reference to the same transaction
@@ -54,6 +58,9 @@ namespace meshkernel
         bool Commit();
 
     private:
+        /// @brief The initial reserved size of the committed and restored undo-action arrays
+        static const UInt DefaultReserveSize = 10;
+
         std::vector<UndoActionPtr> m_committed;
         std::vector<UndoActionPtr> m_restored;
     };

@@ -1,13 +1,16 @@
 #include "MeshKernel/UndoActionStack.hpp"
 
+meshkernel::UndoActionStack::UndoActionStack()
+{
+    m_committed.reserve(DefaultReserveSize);
+    m_restored.reserve(DefaultReserveSize);
+}
+
 void meshkernel::UndoActionStack::Add(UndoActionPtr&& action)
 {
     if (action != nullptr)
     {
         m_committed.emplace_back(std::move(action));
-        // TODO Do I need to do this?
-        // If we have a fixed maximum number of undo's then reserve in the constructor.
-        m_restored.reserve(m_committed.size());
     }
     else
     {
@@ -21,7 +24,9 @@ bool meshkernel::UndoActionStack::Undo()
 
     if (m_committed.size() > 0)
     {
+        // Perform undo operation
         m_committed.back()->Restore();
+        // Now move to restored stack
         m_restored.emplace_back(std::move(m_committed.back()));
         m_committed.pop_back();
         didUndo = true;
@@ -36,7 +41,9 @@ bool meshkernel::UndoActionStack::Commit()
 
     if (m_restored.size() > 0)
     {
+        // Perform commit (redo) operation
         m_restored.back()->Commit();
+        // Now move to committed stack
         m_committed.emplace_back(std::move(m_restored.back()));
         m_restored.pop_back();
         didCommit = true;

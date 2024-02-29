@@ -145,7 +145,7 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
     CheckGridsConnectedCorrectly(*connectedGrid, *unconnectedGrid);
 
     ////////////////////////////////
-    // Test the undo action has been computed correctly
+    // Test the undo action has been performed correctly
     undoAction->Restore();
     // Recompute faces
     unconnectedGrid->Administrate();
@@ -153,7 +153,7 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
     CheckGridsDisconnectedCorrectly(originalNodes, originalEdges, *unconnectedGrid);
 
     ////////////////////////////////
-    // Test the commit action has been computed correctly
+    // Test the commit (redo) action has been performed correctly
     // The merged grid should be in the state it was directly after the connect call
     undoAction->Commit();
     // Recompute faces
