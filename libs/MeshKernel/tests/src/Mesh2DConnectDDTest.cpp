@@ -11,52 +11,38 @@
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
-void CheckConnectGrids(const std::string& unconnectedGridName, const std::string& connectedGridName)
+void CheckGridsConnectedCorrectly(const meshkernel::Mesh2D& connectedGrid,
+                                  const meshkernel::Mesh2D& unconnectedGrid)
 {
-    static const std::string testDataDir = TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/";
-
-    // Grid to connect hanging node across the DD boundary.
-    auto unconnectedGrid = ReadLegacyMesh2DFromFile(testDataDir + unconnectedGridName);
-
-    // Expected grid after connecting hanging nodes.
-    auto connectedGrid = ReadLegacyMesh2DFromFile(testDataDir + connectedGridName);
-
-    // Connect hanging nodes
-    [[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*unconnectedGrid);
-
-    // Check mesh (active) entity counts are the same
-    ASSERT_EQ(unconnectedGrid->GetNumValidNodes(), connectedGrid->GetNumNodes());
-    ASSERT_EQ(unconnectedGrid->GetNumValidEdges(), connectedGrid->GetNumEdges());
-    ASSERT_EQ(unconnectedGrid->GetNumFaces(), connectedGrid->GetNumFaces());
 
     constexpr double tolerance = 1.0e-10;
 
     meshkernel::UInt count = 0;
 
     // Check nodes
-    for (meshkernel::UInt i = 0; i < unconnectedGrid->GetNumNodes(); ++i)
+    for (meshkernel::UInt i = 0; i < unconnectedGrid.GetNumNodes(); ++i)
     {
-        if (unconnectedGrid->Node(i).IsValid())
+        if (unconnectedGrid.Node(i).IsValid())
         {
-            EXPECT_NEAR(unconnectedGrid->Node(i).x, connectedGrid->Node(count).x, tolerance);
-            EXPECT_NEAR(unconnectedGrid->Node(i).y, connectedGrid->Node(count).y, tolerance);
+            EXPECT_NEAR(unconnectedGrid.Node(i).x, connectedGrid.Node(count).x, tolerance);
+            EXPECT_NEAR(unconnectedGrid.Node(i).y, connectedGrid.Node(count).y, tolerance);
             ++count;
         }
     }
 
     count = 0;
 
-    for (meshkernel::UInt i = 0; i < unconnectedGrid->GetNumEdges(); ++i)
+    for (meshkernel::UInt i = 0; i < unconnectedGrid.GetNumEdges(); ++i)
     {
-        if (unconnectedGrid->GetEdge(i).first != meshkernel::constants::missing::uintValue)
+        if (unconnectedGrid.GetEdge(i).first != meshkernel::constants::missing::uintValue)
         {
-            EXPECT_TRUE(meshkernel::IsEqual(connectedGrid->Node(connectedGrid->GetEdge(count).first),
-                                            unconnectedGrid->Node(unconnectedGrid->GetEdge(i).first),
+            EXPECT_TRUE(meshkernel::IsEqual(connectedGrid.Node(connectedGrid.GetEdge(count).first),
+                                            unconnectedGrid.Node(unconnectedGrid.GetEdge(i).first),
                                             tolerance))
                 << "edge.first indexes incorrect node";
 
-            EXPECT_TRUE(meshkernel::IsEqual(connectedGrid->Node(connectedGrid->GetEdge(count).second),
-                                            unconnectedGrid->Node(unconnectedGrid->GetEdge(i).second),
+            EXPECT_TRUE(meshkernel::IsEqual(connectedGrid.Node(connectedGrid.GetEdge(count).second),
+                                            unconnectedGrid.Node(unconnectedGrid.GetEdge(i).second),
                                             tolerance))
                 << "edge.second indexes incorrect node";
 
@@ -64,14 +50,14 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
         }
     }
 
-    std::vector<meshkernel::UInt> edgeMap(unconnectedGrid->GetNumEdges(), meshkernel::constants::missing::uintValue);
-    std::vector<meshkernel::UInt> edgeMapInv(unconnectedGrid->GetNumValidEdges());
+    std::vector<meshkernel::UInt> edgeMap(unconnectedGrid.GetNumEdges(), meshkernel::constants::missing::uintValue);
+    std::vector<meshkernel::UInt> edgeMapInv(unconnectedGrid.GetNumValidEdges());
 
     count = 0;
 
-    for (meshkernel::UInt i = 0; i < unconnectedGrid->GetNumEdges(); ++i)
+    for (meshkernel::UInt i = 0; i < unconnectedGrid.GetNumEdges(); ++i)
     {
-        if (unconnectedGrid->GetEdge(i).first != meshkernel::constants::missing::uintValue && unconnectedGrid->GetEdge(i).second != meshkernel::constants::missing::uintValue)
+        if (unconnectedGrid.GetEdge(i).first != meshkernel::constants::missing::uintValue && unconnectedGrid.GetEdge(i).second != meshkernel::constants::missing::uintValue)
         {
             edgeMap[i] = count;
             edgeMapInv[count] = i;
@@ -82,21 +68,98 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
     count = 0;
 
     // Check edge-faces
-    for (meshkernel::UInt i = 0; i < unconnectedGrid->GetNumEdges(); ++i)
+    for (meshkernel::UInt i = 0; i < unconnectedGrid.GetNumEdges(); ++i)
     {
         if (edgeMap[i] != meshkernel::constants::missing::uintValue)
         {
-            EXPECT_EQ(unconnectedGrid->m_edgesFaces[i][0], connectedGrid->m_edgesFaces[count][0]);
-            EXPECT_EQ(unconnectedGrid->m_edgesFaces[i][1], connectedGrid->m_edgesFaces[count][1]);
+            EXPECT_EQ(unconnectedGrid.m_edgesFaces[i][0], connectedGrid.m_edgesFaces[count][0]);
+            EXPECT_EQ(unconnectedGrid.m_edgesFaces[i][1], connectedGrid.m_edgesFaces[count][1]);
             ++count;
         }
     }
 
     // Check number of nodes for each face
-    for (meshkernel::UInt i = 0; i < unconnectedGrid->GetNumFaces(); ++i)
+    for (meshkernel::UInt i = 0; i < unconnectedGrid.GetNumFaces(); ++i)
     {
-        EXPECT_EQ(unconnectedGrid->m_numFacesNodes[i], connectedGrid->m_numFacesNodes[i]);
+        EXPECT_EQ(unconnectedGrid.m_numFacesNodes[i], connectedGrid.m_numFacesNodes[i]);
     }
+}
+
+void CheckGridsDisconnectedCorrectly(const std::vector<meshkernel::Point>& originalNodes,
+                                     const std::vector<meshkernel::Edge>& originalEdges,
+                                     const meshkernel::Mesh2D& unconnectedGrid)
+{
+    meshkernel::UInt count = 0;
+
+    ASSERT_EQ(originalNodes.size(), unconnectedGrid.GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), unconnectedGrid.GetNumValidEdges());
+
+    count = 0;
+
+    for (size_t i = 0; i < unconnectedGrid.Nodes().size(); ++i)
+    {
+        if (unconnectedGrid.Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, unconnectedGrid.Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, unconnectedGrid.Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (size_t i = 0; i < unconnectedGrid.Edges().size(); ++i)
+    {
+        if (unconnectedGrid.IsValidEdge(i))
+        {
+            // Check valid edges
+            EXPECT_EQ(originalEdges[count].first, unconnectedGrid.GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, unconnectedGrid.GetEdge(i).second);
+            ++count;
+        }
+    }
+}
+
+void CheckConnectGrids(const std::string& unconnectedGridName, const std::string& connectedGridName)
+{
+    static const std::string testDataDir = TEST_FOLDER + "/data/ConnectCurvilinearQuadsDDType/";
+
+    // Grid to connect hanging node across the DD boundary.
+    auto unconnectedGrid = ReadLegacyMesh2DFromFile(testDataDir + unconnectedGridName);
+
+    const std::vector<meshkernel::Point> originalNodes(unconnectedGrid->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(unconnectedGrid->Edges());
+
+    // Expected grid after connecting hanging nodes.
+    auto connectedGrid = ReadLegacyMesh2DFromFile(testDataDir + connectedGridName);
+
+    // Connect hanging nodes
+    auto undoAction = meshkernel::ConnectMeshes::Compute(*unconnectedGrid);
+
+    // Check mesh (active) entity counts are the same
+    ASSERT_EQ(unconnectedGrid->GetNumValidNodes(), connectedGrid->GetNumNodes());
+    ASSERT_EQ(unconnectedGrid->GetNumValidEdges(), connectedGrid->GetNumEdges());
+    ASSERT_EQ(unconnectedGrid->GetNumFaces(), connectedGrid->GetNumFaces());
+
+    CheckGridsConnectedCorrectly(*connectedGrid, *unconnectedGrid);
+
+    ////////////////////////////////
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    unconnectedGrid->Administrate();
+
+    CheckGridsDisconnectedCorrectly(originalNodes, originalEdges, *unconnectedGrid);
+
+    ////////////////////////////////
+    // Test the commit action has been computed correctly
+    // The merged grid should be in the state it was directly after the connect call
+    undoAction->Commit();
+    // Recompute faces
+    unconnectedGrid->Administrate();
+
+    CheckGridsConnectedCorrectly(*connectedGrid, *unconnectedGrid);
 }
 
 std::shared_ptr<meshkernel::Mesh2D> generateMesh(const meshkernel::Point& origin, const meshkernel::Vector& delta, const int n, const int m)
@@ -192,10 +255,47 @@ TEST(Mesh2DConnectDD, MergeMeshes)
     std::shared_ptr<meshkernel::Mesh2D> mesh2 = generateMesh(origin, delta, 9, 9);
 
     const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
-    [[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
+
+    const std::vector<meshkernel::Point> originalNodes(mergedMesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mergedMesh->Edges());
+
+    auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
     EXPECT_EQ(mergedMesh->GetNumFaces(), mesh1->GetNumFaces() + mesh2->GetNumFaces() + ExtraFaces);
     EXPECT_EQ(mergedMesh->GetNumValidNodes(), mesh1->GetNumNodes() + mesh2->GetNumNodes() - NodeDifference);
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mergedMesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mergedMesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mergedMesh->GetNumValidEdges());
+
+    size_t count = 0;
+
+    for (size_t i = 0; i < mergedMesh->Nodes().size(); ++i)
+    {
+        if (mergedMesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mergedMesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mergedMesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (size_t i = 0; i < mergedMesh->Edges().size(); ++i)
+    {
+        if (mergedMesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mergedMesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mergedMesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(Mesh2DConnectDD, MergeOneEmptyMesh)
@@ -267,7 +367,10 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallNegativeOffset)
 
     const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
 
-    [[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
+    const std::vector<meshkernel::Point> originalNodes(mergedMesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mergedMesh->Edges());
+
+    auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
     EXPECT_EQ(mergedMesh->GetNumValidNodes(), 15);
     EXPECT_EQ(mergedMesh->GetNumFaces(), 8);
@@ -287,6 +390,39 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallNegativeOffset)
     EXPECT_EQ(mergedMesh->m_nodesNumEdges[9], 3);
     EXPECT_EQ(mergedMesh->m_nodesNumEdges[10], 4);
     EXPECT_EQ(mergedMesh->m_nodesNumEdges[11], 3);
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mergedMesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mergedMesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mergedMesh->GetNumValidEdges());
+
+    size_t count = 0;
+
+    for (size_t i = 0; i < mergedMesh->Nodes().size(); ++i)
+    {
+        if (mergedMesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mergedMesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mergedMesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (size_t i = 0; i < mergedMesh->Edges().size(); ++i)
+    {
+        if (mergedMesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mergedMesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mergedMesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(Mesh2DConnectDD, MergeTwoSameMeshesNoOffset)
@@ -307,7 +443,10 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesNoOffset)
 
     const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
 
-    [[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
+    const std::vector<meshkernel::Point> originalNodes(mergedMesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mergedMesh->Edges());
+
+    auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
     EXPECT_EQ(mergedMesh->GetNumValidNodes(), 15);
     EXPECT_EQ(mergedMesh->GetNumValidEdges(), 22);
@@ -327,6 +466,39 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesNoOffset)
     EXPECT_EQ(mergedMesh->m_nodesNumEdges[9], 3);
     EXPECT_EQ(mergedMesh->m_nodesNumEdges[10], 4);
     EXPECT_EQ(mergedMesh->m_nodesNumEdges[11], 3);
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mergedMesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mergedMesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mergedMesh->GetNumValidEdges());
+
+    size_t count = 0;
+
+    for (size_t i = 0; i < mergedMesh->Nodes().size(); ++i)
+    {
+        if (mergedMesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mergedMesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mergedMesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (size_t i = 0; i < mergedMesh->Edges().size(); ++i)
+    {
+        if (mergedMesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mergedMesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mergedMesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallPositiveOffset)
@@ -347,7 +519,10 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallPositiveOffset)
 
     const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
 
-    [[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
+    const std::vector<meshkernel::Point> originalNodes(mergedMesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mergedMesh->Edges());
+
+    auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
     EXPECT_EQ(mergedMesh->GetNumValidNodes(), 15);
     EXPECT_EQ(mergedMesh->GetNumValidEdges(), 22);
@@ -367,6 +542,39 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallPositiveOffset)
     EXPECT_EQ(mergedMesh->m_nodesNumEdges[9], 3);
     EXPECT_EQ(mergedMesh->m_nodesNumEdges[10], 4);
     EXPECT_EQ(mergedMesh->m_nodesNumEdges[11], 3);
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mergedMesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mergedMesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mergedMesh->GetNumValidEdges());
+
+    size_t count = 0;
+
+    for (size_t i = 0; i < mergedMesh->Nodes().size(); ++i)
+    {
+        if (mergedMesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mergedMesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mergedMesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (size_t i = 0; i < mergedMesh->Edges().size(); ++i)
+    {
+        if (mergedMesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mergedMesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mergedMesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallNegativeOffset)
@@ -386,8 +594,11 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallNegativeOffset)
 
     const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
 
+    const std::vector<meshkernel::Point> originalNodes(mergedMesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mergedMesh->Edges());
+
     // Need to increase the search distance fraction
-    [[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
+    auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
     // 8 triangles and 16 quadrilaterals
     EXPECT_EQ(mergedMesh->GetNumFaces(), 24);
@@ -536,6 +747,39 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallNegativeOffset)
             EXPECT_EQ(expectedEdges[i].second, mergedMesh->GetEdge(i).second);
         }
     }
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mergedMesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mergedMesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mergedMesh->GetNumValidEdges());
+
+    size_t count = 0;
+
+    for (size_t i = 0; i < mergedMesh->Nodes().size(); ++i)
+    {
+        if (mergedMesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mergedMesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mergedMesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (size_t i = 0; i < mergedMesh->Edges().size(); ++i)
+    {
+        if (mergedMesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mergedMesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mergedMesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallPositiveOffset)
@@ -555,8 +799,11 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallPositiveOffset)
 
     const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
 
+    const std::vector<meshkernel::Point> originalNodes(mergedMesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mergedMesh->Edges());
+
     // Need to increase the search distance fraction
-    [[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
+    auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
     // 8 triangles and 16 quadrilaterals
     EXPECT_EQ(mergedMesh->GetNumFaces(), 24);
@@ -703,6 +950,39 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallPositiveOffset)
         {
             EXPECT_EQ(expectedEdges[i].first, mergedMesh->GetEdge(i).first);
             EXPECT_EQ(expectedEdges[i].second, mergedMesh->GetEdge(i).second);
+        }
+    }
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mergedMesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mergedMesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mergedMesh->GetNumValidEdges());
+
+    size_t count = 0;
+
+    for (size_t i = 0; i < mergedMesh->Nodes().size(); ++i)
+    {
+        if (mergedMesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mergedMesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mergedMesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (size_t i = 0; i < mergedMesh->Edges().size(); ++i)
+    {
+        if (mergedMesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mergedMesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mergedMesh->GetEdge(i).second);
+            ++count;
         }
     }
 }
