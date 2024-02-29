@@ -1,5 +1,6 @@
 #include "MeshKernel/CompoundUndoAction.hpp"
 #include "MeshKernel/Definitions.hpp"
+#include "MeshKernel/Exceptions.hpp"
 
 #include <iomanip>
 #include <ranges>
@@ -13,6 +14,11 @@ void meshkernel::CompoundUndoAction::Add(UndoActionPtr&& action)
 {
     if (action != nullptr)
     {
+        if (action->State() == UndoAction::Restored)
+        {
+            throw ConstraintError("Cannot add an action in the {} state.", UndoAction::to_string(action->State()));
+        }
+
         m_undoActions.emplace_back(std::move(action));
     }
 }

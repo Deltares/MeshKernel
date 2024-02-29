@@ -10,6 +10,7 @@
 #include "MeshKernel/MoveNodeAction.hpp"
 #include "MeshKernel/ResetEdgeAction.hpp"
 #include "MeshKernel/ResetNodeAction.hpp"
+#include "MeshKernel/UndoAction.hpp"
 #include "MeshKernel/UndoActionStack.hpp"
 
 #include "MeshKernel/Constants.hpp"
@@ -19,18 +20,9 @@
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 
+#include "MockUndoAction.hpp"
+
 namespace mk = meshkernel;
-
-/// @brief Mock class for UndoAction's
-class MockUndoAction : public mk::UndoAction
-{
-public:
-    /// @brief Mock the DoCommit function
-    MOCK_METHOD(void, DoCommit, (), (override));
-
-    /// @brief Mock the DoRestore function
-    MOCK_METHOD(void, DoRestore, (), (override));
-};
 
 TEST(UndoStackTests, CheckSimpleUndo)
 {
@@ -415,4 +407,16 @@ TEST(UndoStackTests, CheckMultipleUndoCycles)
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Committed);
+}
+
+TEST(UndoStackTests, AddingRestoredAction)
+{
+
+    mk::UndoActionStack undoActionStack;
+
+    std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
+    // Restore action before adding to stack
+    undoAction1->Restore();
+
+    EXPECT_THROW(undoActionStack.Add(std::move(undoAction1)), mk::ConstraintError);
 }

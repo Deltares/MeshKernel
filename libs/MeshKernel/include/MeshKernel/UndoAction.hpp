@@ -35,10 +35,11 @@
 namespace meshkernel
 {
 
-    // All undo actions must be created in the committed state
-    // actions should not be copyable/moveable
-    // change of state
-    // Each action should be applied/restored as a single atomic action.
+    /// @brief A single unit of work performed, usually, on a mesh that can be undone and re-applied.
+    ///
+    /// Each undo-action and, possible, subsequent restore-action should be atomic, that is: an indivisble
+    /// and irreducible series of performed operations, most likely, on a mesh.
+    /// All undo-action's must be created in the commited state.
     class UndoAction
     {
     public:

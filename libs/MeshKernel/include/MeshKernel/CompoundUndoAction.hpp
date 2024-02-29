@@ -40,6 +40,8 @@ namespace meshkernel
     {
     public:
         // TODO how to make std::vector<std::unique_ptr<const UndoAction>>
+        //
+        /// @brief Iterator over composite undo actions.
         using const_iterator = std::vector<std::unique_ptr<UndoAction>>::const_iterator;
 
         /// @brief Allocate a CompoundUndoAction and return a unique_ptr to the newly create object.

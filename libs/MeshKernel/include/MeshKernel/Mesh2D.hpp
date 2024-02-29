@@ -132,8 +132,12 @@ namespace meshkernel
         /// @param[in] maxx
         std::unique_ptr<SphericalCoordinatesOffsetAction> OffsetSphericalCoordinates(double minx, double maxx);
 
+        /// @brief Apply the coordinate offset action
         void Commit(SphericalCoordinatesOffsetAction& undoAction);
 
+        /// @brief Undo the coordinate offset action
+        ///
+        /// Restore mesh to state before coordinate offset action was applied
         void Restore(SphericalCoordinatesOffsetAction& undoAction);
 
         /// @brief For a face create a closed polygon and fill local mapping caches (get_cellpolygon)

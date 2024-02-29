@@ -36,10 +36,12 @@
 namespace meshkernel
 {
 
+    /// @brief A stack of UndoActions.
+    ///
+    /// Actions can be undo and subsequently re-done.
     class UndoActionStack
     {
     public:
-        // When adding a new transaction, should probably delete all restored transactions
         // When adding new transactions, could check the size of the committed list and remove transactions more than some number ago
         // e.g. keep the undo list no longer than 10
 
@@ -53,22 +55,35 @@ namespace meshkernel
         /// @brief Constructor
         UndoActionStack();
 
-        // When adding a new transaction, should probably delete all restored transactions
-        // actions should be moved so that there can only be a single reference to the same transaction
+        /// @brief Add an UndoAction.
+        ///
+        /// All added undo-actions must be in the committed state, if not then a ConstraintError
+        /// will be raised.
+        /// No null undo-actions will be added to the stack.
+        /// All actions that have be restored will be deleted.
         void Add(UndoActionPtr&& transaction);
 
         /// @brief Undo the action at the top of the committed stack
+        ///
+        /// The undo-action will be moved to the restored stack in case it should be re-done.
+        /// \returns true if an undo-action was performed, false otherwise
         bool Undo();
 
-        /// @brief Redo the action at the top of the restored stack
         // Another name
+        /// @brief Redo the action at the top of the restored stack.
+        ///
+        /// The undo-action will be moved to the committed stack in case it needs to be undone.
+        /// \returns true if an redo-action was performed, false otherwise
         bool Commit();
 
     private:
         /// @brief The initial reserved size of the committed and restored undo-action arrays
         static const UInt DefaultReserveSize = 10;
 
+        /// @brief Stack of committed undo actions
         std::vector<UndoActionPtr> m_committed;
+
+        /// @brief Stack of restored undo actions
         std::vector<UndoActionPtr> m_restored;
     };
 

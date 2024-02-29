@@ -19,6 +19,8 @@
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 
+#include "MockUndoAction.hpp"
+
 namespace mk = meshkernel;
 
 // Tests in this file test only basic functionality of the specific undo action
@@ -328,4 +330,14 @@ TEST(UndoActionConstructionTests, CompoundUndoActionTest)
     EXPECT_EQ(TestUndoAction::s_committed, static_cast<int>(expectedValues.size()));
     // After restore, there should be zero restored TestUndoAction objects
     EXPECT_EQ(TestUndoAction::s_restored, 0);
+}
+
+TEST(UndoActionConstructionTests, CompoundUndoActionAddRestoredTest)
+{
+    std::unique_ptr<mk::CompoundUndoAction> compoundAction = mk::CompoundUndoAction::Create();
+
+    std::unique_ptr<mk::UndoAction> simpleAction = std::make_unique<MockUndoAction>();
+    simpleAction->Restore();
+
+    EXPECT_THROW(compoundAction->Add(std::move(simpleAction)), mk::ConstraintError);
 }

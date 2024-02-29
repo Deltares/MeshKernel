@@ -1,4 +1,5 @@
 #include "MeshKernel/UndoActionStack.hpp"
+#include "MeshKernel/Exceptions.hpp"
 
 meshkernel::UndoActionStack::UndoActionStack()
 {
@@ -10,6 +11,12 @@ void meshkernel::UndoActionStack::Add(UndoActionPtr&& action)
 {
     if (action != nullptr)
     {
+
+        if (action->State() == UndoAction::Restored)
+        {
+            throw ConstraintError("Cannot add an action in the {} state.", UndoAction::to_string(action->State()));
+        }
+
         m_committed.emplace_back(std::move(action));
         m_restored.clear();
     }
