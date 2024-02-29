@@ -20,7 +20,6 @@
 #include "TestUtils/MakeMeshes.hpp"
 
 namespace mk = meshkernel;
-using ::testing::AtLeast;
 
 /// @brief Mock class for UndoAction's
 class MockUndoAction : public mk::UndoAction
