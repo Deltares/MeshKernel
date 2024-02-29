@@ -11,6 +11,7 @@ void meshkernel::UndoActionStack::Add(UndoActionPtr&& action)
     if (action != nullptr)
     {
         m_committed.emplace_back(std::move(action));
+        m_restored.clear();
     }
     else
     {

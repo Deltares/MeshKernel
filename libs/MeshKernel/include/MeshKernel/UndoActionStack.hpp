@@ -43,6 +43,13 @@ namespace meshkernel
         // When adding new transactions, could check the size of the committed list and remove transactions more than some number ago
         // e.g. keep the undo list no longer than 10
 
+        // Add info about the action, both short and long form
+        // Perhaps Short for for menu items, long form for tooltips?
+        // long form for any exceptions?
+
+        // Do we need a clear function? If there are operations on a mesh that
+        // are not undo-able then the all undo actions should be removed.
+
         /// @brief Constructor
         UndoActionStack();
 

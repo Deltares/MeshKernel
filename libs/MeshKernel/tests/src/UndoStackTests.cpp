@@ -54,6 +54,9 @@ TEST(UndoStackTests, CheckSimpleUndo)
     EXPECT_CALL(*rawUndoAction1, DoRestore()).Times(0);
     EXPECT_CALL(*rawUndoAction2, DoRestore()).Times(1);
 
+    EXPECT_CALL(*rawUndoAction1, DoCommit()).Times(0);
+    EXPECT_CALL(*rawUndoAction2, DoCommit()).Times(0);
+
     // Should call the DoRestore for the last action added to the stack, which is undoAction2
     undoActionStack.Undo();
 
@@ -160,6 +163,10 @@ TEST(UndoStackTests, CheckMultipleAllUndo)
     EXPECT_CALL(*rawUndoAction2, DoRestore()).Times(1);
     EXPECT_CALL(*rawUndoAction3, DoRestore()).Times(1);
 
+    EXPECT_CALL(*rawUndoAction1, DoCommit()).Times(0);
+    EXPECT_CALL(*rawUndoAction2, DoCommit()).Times(0);
+    EXPECT_CALL(*rawUndoAction3, DoCommit()).Times(0);
+
     EXPECT_TRUE(undoActionStack.Undo());
     EXPECT_TRUE(undoActionStack.Undo());
     EXPECT_TRUE(undoActionStack.Undo());
@@ -215,6 +222,59 @@ TEST(UndoStackTests, CheckMultipleUndoWithSingleRedo)
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Restored);
+}
+
+TEST(UndoStackTests, CheckMultipleUndoWithSingleRedoIntermediateAdd)
+{
+    // A test on the basic multiple undo's with single redo
+
+    mk::UndoActionStack undoActionStack;
+
+    std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
+    // Have to use raw pointers, since the pointer value will be "moved" from the unique_ptr when adding to the undo stack
+    MockUndoAction* rawUndoAction1 = undoAction1.get();
+    std::unique_ptr<MockUndoAction> undoAction2 = std::make_unique<MockUndoAction>();
+    MockUndoAction* rawUndoAction2 = undoAction2.get();
+    std::unique_ptr<MockUndoAction> undoAction3 = std::make_unique<MockUndoAction>();
+    MockUndoAction* rawUndoAction3 = undoAction3.get();
+    std::unique_ptr<MockUndoAction> undoAction4 = std::make_unique<MockUndoAction>();
+    MockUndoAction* rawUndoAction4 = undoAction4.get();
+
+    undoActionStack.Add(std::move(undoAction1));
+    undoActionStack.Add(std::move(undoAction2));
+    undoActionStack.Add(std::move(undoAction3));
+
+    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Committed);
+
+    EXPECT_CALL(*rawUndoAction1, DoRestore()).Times(0);
+    EXPECT_CALL(*rawUndoAction2, DoRestore()).Times(1);
+    EXPECT_CALL(*rawUndoAction3, DoRestore()).Times(1);
+    EXPECT_CALL(*rawUndoAction4, DoRestore()).Times(1);
+
+    // Should call the DoRestore for the last action added to the stack, which is undoAction2
+    undoActionStack.Undo();
+    undoActionStack.Undo();
+    // At this point, the raw pointers rawUndoAction2 and rawUndoAction3 are invlaid.
+    // Since the unique_ptr's have been destroyed and, therefore, contents deallocated.
+    rawUndoAction2 = nullptr;
+    rawUndoAction3 = nullptr;
+
+    undoActionStack.Add(std::move(undoAction4));
+
+    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
+
+    EXPECT_CALL(*rawUndoAction1, DoCommit()).Times(0);
+
+    // There should be no actions in the restored state.
+    EXPECT_FALSE(undoActionStack.Commit());
+    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction4->State(), mk::UndoAction::Committed);
+
+    undoActionStack.Undo();
+    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction4->State(), mk::UndoAction::Restored);
 }
 
 TEST(UndoStackTests, CheckMultipleUndoWithMultipleRedo)
