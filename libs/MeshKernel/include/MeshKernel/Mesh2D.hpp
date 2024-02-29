@@ -442,7 +442,7 @@ namespace meshkernel
                                                    const std::vector<UInt>& numFaceNodes);
 
         /// @brief Perform complete administration
-        /// @param[in] face_mappings_given True if face mappings are given, false otherwise
+        /// @param[in,out] undoAction, if not null then collect any undo actions generated during the administration.
         void DoAdministration(CompoundUndoAction* undoAction = nullptr);
     };
 

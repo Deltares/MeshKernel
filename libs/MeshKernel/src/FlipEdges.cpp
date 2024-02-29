@@ -55,12 +55,12 @@ std::unique_ptr<meshkernel::UndoAction> FlipEdges::Compute() const
 {
     std::unique_ptr<CompoundUndoAction> action = CompoundUndoAction::Create();
 
-    m_mesh.Administrate(action.get ());
+    m_mesh.Administrate(action.get());
 
     if (m_triangulateFaces)
     {
         action->Add(m_mesh.TriangulateFaces());
-        m_mesh.Administrate(action.get ());
+        m_mesh.Administrate(action.get());
     }
 
     const UInt MaxIter = 10;
@@ -239,7 +239,7 @@ std::unique_ptr<meshkernel::UndoAction> FlipEdges::Compute() const
     }
 
     // Perform mesh administration
-    m_mesh.Administrate(action.get ());
+    m_mesh.Administrate(action.get());
     return action;
 }
 

@@ -39,7 +39,7 @@ namespace meshkernel
     ///
     /// Each undo-action and, possible, subsequent restore-action should be atomic, that is: an indivisble
     /// and irreducible series of performed operations, most likely, on a mesh.
-    /// All undo-action's must be created in the commited state.
+    /// All undo-action's must be created in the committed state.
     class UndoAction
     {
     public:

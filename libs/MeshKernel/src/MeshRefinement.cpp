@@ -79,7 +79,7 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::Compute()
     std::unique_ptr<meshkernel::CompoundUndoAction> refinementAction = CompoundUndoAction::Create();
 
     // administrate mesh once more
-    m_mesh.Administrate(refinementAction.get ());
+    m_mesh.Administrate(refinementAction.get());
 
     // all faces and edges refined
     m_faceMask.resize(m_mesh.GetNumFaces(), 1);
@@ -191,7 +191,7 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::Compute()
         // TODO return action
         m_mesh.OffsetSphericalCoordinates(lowerLeft.x, upperRight.x);
 
-        m_mesh.Administrate(refinementAction.get ());
+        m_mesh.Administrate(refinementAction.get());
 
         m_faceMask.resize(m_mesh.GetNumFaces());
         m_edgeMask.resize(m_mesh.GetNumEdges());
@@ -203,7 +203,7 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::Compute()
     if (m_meshRefinementParameters.connect_hanging_nodes == 1)
     {
         refinementAction->Add(ConnectHangingNodes());
-        m_mesh.Administrate(refinementAction.get ());
+        m_mesh.Administrate(refinementAction.get());
     }
 
     return refinementAction;
