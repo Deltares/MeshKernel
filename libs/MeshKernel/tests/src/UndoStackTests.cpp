@@ -312,8 +312,9 @@ TEST(UndoStackTests, CheckMultipleUndoCycles)
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Restored);
 
-    EXPECT_TRUE(undoActionStack.Undo()); // action2.Undo
-    EXPECT_TRUE(undoActionStack.Undo()); // action1.Undo
+    EXPECT_TRUE(undoActionStack.Undo());  // action2.Undo
+    EXPECT_TRUE(undoActionStack.Undo());  // action1.Undo
+    EXPECT_FALSE(undoActionStack.Undo()); // no action undone
 
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Restored);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Restored);
@@ -337,10 +338,11 @@ TEST(UndoStackTests, CheckMultipleUndoCycles)
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Committed);
 
-    EXPECT_TRUE(undoActionStack.Undo());   // action3.Undo
-    EXPECT_TRUE(undoActionStack.Undo());   // action2.Undo
-    EXPECT_TRUE(undoActionStack.Commit()); // action2.Restore
-    EXPECT_TRUE(undoActionStack.Commit()); // action3.Restore
+    EXPECT_TRUE(undoActionStack.Undo());    // action3.Undo
+    EXPECT_TRUE(undoActionStack.Undo());    // action2.Undo
+    EXPECT_TRUE(undoActionStack.Commit());  // action2.Restore
+    EXPECT_TRUE(undoActionStack.Commit());  // action3.Restore
+    EXPECT_FALSE(undoActionStack.Commit()); // no action restored
 
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
