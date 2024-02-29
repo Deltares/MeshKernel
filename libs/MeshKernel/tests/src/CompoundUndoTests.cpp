@@ -99,13 +99,13 @@ TEST(CompoundUndoTests, MergeNodesInPolygonInMesh)
     // Undoing merge should restore the original mesh.
     undoActionStack.Undo();
 
-    for (size_t i = 0; i < originalNodes.size(); ++i)
+    for (mk::UInt i = 0; i < originalNodes.size(); ++i)
     {
         EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
         EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
     }
 
-    for (size_t i = 0; i < originalEdges.size(); ++i)
+    for (mk::UInt i = 0; i < originalEdges.size(); ++i)
     {
         EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
         EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);

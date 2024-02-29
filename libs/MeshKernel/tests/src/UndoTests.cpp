@@ -62,7 +62,7 @@ TEST(UndoTests, ResetNodeInMesh)
     action->Restore();
     EXPECT_EQ(mk::UndoAction::Restored, action->State());
 
-    for (size_t i = 0; i < originalNodes.size(); ++i)
+    for (mk::UInt i = 0; i < originalNodes.size(); ++i)
     {
         EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
         EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
@@ -282,7 +282,7 @@ TEST(UndoTests, ConnectNodeToCornersInMesh)
 TEST(UndoTests, MoveNodeMeshTest)
 {
     auto mesh = MakeRectangularMeshForTesting(11, 11, 1.0, meshkernel::Projection::cartesian);
-    const size_t size = 13;
+    const mk::UInt size = 13;
 
     std::vector<mk::Point> originalNodes(mesh->Nodes());
 
@@ -293,13 +293,13 @@ TEST(UndoTests, MoveNodeMeshTest)
 
     std::unique_ptr<mk::MoveNodeAction> action = mesh->MoveNode(node, nodeId);
 
-    ASSERT_EQ(static_cast<size_t>(std::distance(action->begin(), action->end())), size);
+    ASSERT_EQ(static_cast<mk::UInt>(std::distance(action->begin(), action->end())), size);
 
     std::vector<mk::UInt> expectedNode{38, 48, 49, 50, 58, 59, 60, 61, 62, 70, 71, 72, 82};
     std::vector<double> expectedDispX{0.01207305389, 0.375, 0.8172859213, 0.375, 0.01207305389, 0.8172859213, 1.5, 0.8172859213, 0.01207305389, 0.375, 0.8172859213, 0.375, 0.01207305389};
     std::vector<double> expectedDispY{0.01207305389, 0.375, 0.8172859213, 0.375, 0.01207305389, 0.8172859213, 1.5, 0.8172859213, 0.01207305389, 0.375, 0.8172859213, 0.375, 0.01207305389};
 
-    size_t count = 0;
+    mk::UInt count = 0;
 
     const double tolerance = 1.0e-8;
 

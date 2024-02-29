@@ -51,11 +51,8 @@ namespace meshkernel
 
         const std::vector<Edge>& OriginalEdges() const;
 
-        void SetTransformed
-
-            /// @brief Get the number of bytes used by this object.
-            std::uint64_t
-            MemorySize() const override;
+        /// @brief Get the number of bytes used by this object.
+        std::uint64_t MemorySize() const override;
 
         /// @brief Print the reset node action to the stream
         void Print(std::ostream& out = std::cout) const override;

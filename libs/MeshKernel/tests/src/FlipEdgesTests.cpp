@@ -41,9 +41,9 @@ TEST(FlipEdges, FlipEdgesWithLandBoundary)
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -56,7 +56,7 @@ TEST(FlipEdges, FlipEdgesWithLandBoundary)
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -113,9 +113,9 @@ TEST(FlipEdges, FlipEdgesMediumTriangularMesh)
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -128,7 +128,7 @@ TEST(FlipEdges, FlipEdgesMediumTriangularMesh)
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {

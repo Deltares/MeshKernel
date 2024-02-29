@@ -1,4 +1,5 @@
 #include "MeshKernel/DeleteNodeAction.hpp"
+#include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh.hpp"
 
 #include <ranges>
@@ -15,6 +16,11 @@ void meshkernel::DeleteNodeAction::Add(std::unique_ptr<DeleteEdgeAction>&& actio
 {
     if (action != nullptr)
     {
+        if (action->State() == UndoAction::Restored)
+        {
+            throw ConstraintError("Cannot add an action in the {} state.", UndoAction::to_string(action->State()));
+        }
+
         m_deletedEdges.emplace_back(std::move(action));
     }
 }

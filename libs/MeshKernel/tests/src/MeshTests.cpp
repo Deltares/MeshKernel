@@ -740,13 +740,13 @@ TEST_P(MeshDeletion, expected_results)
     ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
     ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
         EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
     }
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
         EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
@@ -826,13 +826,13 @@ TEST_P(MeshDeletionWithInnerPolygons, expected_results)
     ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
     ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
         EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
     }
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
         EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);

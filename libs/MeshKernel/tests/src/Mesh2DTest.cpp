@@ -519,13 +519,13 @@ TEST(Mesh2D, DeleteHangingEdge)
     ASSERT_EQ(1, mesh->GetNumFaces());
     ASSERT_EQ(4, mesh->GetNumValidEdges());
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         EXPECT_EQ(nodes[i].x, mesh->Node(i).x);
         EXPECT_EQ(nodes[i].y, mesh->Node(i).y);
     }
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         EXPECT_EQ(edges[i].first, mesh->GetEdge(i).first);
         EXPECT_EQ(edges[i].second, mesh->GetEdge(i).second);
@@ -991,13 +991,13 @@ TEST(Mesh2D, RemoveSingleIsland)
     ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
     ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
         EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
     }
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
         EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
@@ -1027,13 +1027,13 @@ TEST(Mesh2D, RemoveMultipleIslands)
     ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
     ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
         EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
     }
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
         EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
@@ -1075,13 +1075,13 @@ TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersected_ShouldNotDeleteFaces)
     ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
     ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
         EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
     }
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
         EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
@@ -1123,13 +1123,13 @@ TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersectedSpherical_ShouldNotDeleteFaces)
     ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
     ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
         EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
     }
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
         EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
@@ -1172,13 +1172,13 @@ TEST(Mesh2D, DeleteMesh_WithLargeSphericalPolygon_ShouldDeleteInnerMeshFaces)
     ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
     ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
         EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
     }
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
         EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
@@ -1220,13 +1220,13 @@ TEST(Mesh2D, DeleteMesh_WithPolygonAndIncludedCircumcenters_ShouldDeleteInnerFac
     ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
     ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
         EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
     }
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
         EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);

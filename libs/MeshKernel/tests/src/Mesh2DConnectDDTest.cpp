@@ -96,7 +96,7 @@ void CheckGridsDisconnectedCorrectly(const std::vector<meshkernel::Point>& origi
 
     count = 0;
 
-    for (size_t i = 0; i < unconnectedGrid.Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < unconnectedGrid.Nodes().size(); ++i)
     {
         if (unconnectedGrid.Node(i).IsValid())
         {
@@ -109,7 +109,7 @@ void CheckGridsDisconnectedCorrectly(const std::vector<meshkernel::Point>& origi
 
     count = 0;
 
-    for (size_t i = 0; i < unconnectedGrid.Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < unconnectedGrid.Edges().size(); ++i)
     {
         if (unconnectedGrid.IsValidEdge(i))
         {
@@ -272,9 +272,9 @@ TEST(Mesh2DConnectDD, MergeMeshes)
     ASSERT_EQ(originalNodes.size(), mergedMesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mergedMesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mergedMesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mergedMesh->Nodes().size(); ++i)
     {
         if (mergedMesh->Node(i).IsValid())
         {
@@ -287,7 +287,7 @@ TEST(Mesh2DConnectDD, MergeMeshes)
 
     count = 0;
 
-    for (size_t i = 0; i < mergedMesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mergedMesh->Edges().size(); ++i)
     {
         if (mergedMesh->IsValidEdge(i))
         {
@@ -399,9 +399,9 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallNegativeOffset)
     ASSERT_EQ(originalNodes.size(), mergedMesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mergedMesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mergedMesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mergedMesh->Nodes().size(); ++i)
     {
         if (mergedMesh->Node(i).IsValid())
         {
@@ -414,7 +414,7 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallNegativeOffset)
 
     count = 0;
 
-    for (size_t i = 0; i < mergedMesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mergedMesh->Edges().size(); ++i)
     {
         if (mergedMesh->IsValidEdge(i))
         {
@@ -475,9 +475,9 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesNoOffset)
     ASSERT_EQ(originalNodes.size(), mergedMesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mergedMesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mergedMesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mergedMesh->Nodes().size(); ++i)
     {
         if (mergedMesh->Node(i).IsValid())
         {
@@ -490,7 +490,7 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesNoOffset)
 
     count = 0;
 
-    for (size_t i = 0; i < mergedMesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mergedMesh->Edges().size(); ++i)
     {
         if (mergedMesh->IsValidEdge(i))
         {
@@ -551,9 +551,9 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallPositiveOffset)
     ASSERT_EQ(originalNodes.size(), mergedMesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mergedMesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mergedMesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mergedMesh->Nodes().size(); ++i)
     {
         if (mergedMesh->Node(i).IsValid())
         {
@@ -566,7 +566,7 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallPositiveOffset)
 
     count = 0;
 
-    for (size_t i = 0; i < mergedMesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mergedMesh->Edges().size(); ++i)
     {
         if (mergedMesh->IsValidEdge(i))
         {
@@ -756,9 +756,9 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallNegativeOffset)
     ASSERT_EQ(originalNodes.size(), mergedMesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mergedMesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mergedMesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mergedMesh->Nodes().size(); ++i)
     {
         if (mergedMesh->Node(i).IsValid())
         {
@@ -771,7 +771,7 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallNegativeOffset)
 
     count = 0;
 
-    for (size_t i = 0; i < mergedMesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mergedMesh->Edges().size(); ++i)
     {
         if (mergedMesh->IsValidEdge(i))
         {
@@ -961,9 +961,9 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallPositiveOffset)
     ASSERT_EQ(originalNodes.size(), mergedMesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mergedMesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mergedMesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mergedMesh->Nodes().size(); ++i)
     {
         if (mergedMesh->Node(i).IsValid())
         {
@@ -976,7 +976,7 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallPositiveOffset)
 
     count = 0;
 
-    for (size_t i = 0; i < mergedMesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mergedMesh->Edges().size(); ++i)
     {
         if (mergedMesh->IsValidEdge(i))
         {

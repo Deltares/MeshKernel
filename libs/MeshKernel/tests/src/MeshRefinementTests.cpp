@@ -125,9 +125,9 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_OnFourByFourWithFourSamples_
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -140,7 +140,7 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_OnFourByFourWithFourSamples_
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -265,9 +265,9 @@ TEST(MeshRefinement, RefinementOnAFourByFourMeshWithSamplesShouldRefine)
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -280,7 +280,7 @@ TEST(MeshRefinement, RefinementOnAFourByFourMeshWithSamplesShouldRefine)
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -353,9 +353,9 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_SmallTriangualMeshTwoSamples
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -368,7 +368,7 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_SmallTriangualMeshTwoSamples
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -440,9 +440,9 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -455,7 +455,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -572,9 +572,9 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerFace)
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -587,7 +587,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerFace)
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -676,9 +676,9 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -691,7 +691,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -783,9 +783,9 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_OnWindowOfRefinementFile_Sho
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -798,7 +798,7 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_OnWindowOfRefinementFile_Sho
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -874,9 +874,9 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -889,7 +889,7 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -941,9 +941,9 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -956,7 +956,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -1042,9 +1042,9 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -1057,7 +1057,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -1114,9 +1114,9 @@ TEST(MeshRefinement, RefinementFileBasedOnLevels_OnSphericalMesh_ShouldRefine)
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -1129,7 +1129,7 @@ TEST(MeshRefinement, RefinementFileBasedOnLevels_OnSphericalMesh_ShouldRefine)
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -1159,7 +1159,7 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
     mesh->ComputeEdgesLengths();
 
     // if the circumcenters are wrongly computed, some edges will be smaller than half cell size
-    for (size_t i = 0; i < mesh->GetNumEdges(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->GetNumEdges(); ++i)
     {
         ASSERT_GT(mesh->m_edgeLengths[i], 0.4);
     }
@@ -1172,9 +1172,9 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -1187,7 +1187,7 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -1264,9 +1264,9 @@ TEST(MeshRefinement, RefineElongatedFaces)
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -1279,7 +1279,7 @@ TEST(MeshRefinement, RefineElongatedFaces)
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -1327,9 +1327,9 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefin
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -1342,7 +1342,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefin
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -1390,9 +1390,9 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRe
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -1405,7 +1405,7 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRe
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -1455,9 +1455,9 @@ TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -1470,7 +1470,7 @@ TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -1562,9 +1562,9 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
     ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh->Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
     {
         if (mesh->Node(i).IsValid())
         {
@@ -1577,7 +1577,7 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
 
     count = 0;
 
-    for (size_t i = 0; i < mesh->Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
         if (mesh->IsValidEdge(i))
         {
@@ -1661,7 +1661,7 @@ TEST(MeshRefinement, CasulliRefinement)
 
     ASSERT_EQ(expectedPoints.size(), mesh.GetNumValidNodes());
 
-    for (size_t i = 0; i < expectedPoints.size(); ++i)
+    for (meshkernel::UInt i = 0; i < expectedPoints.size(); ++i)
     {
         EXPECT_NEAR(expectedPoints[i].x, mesh.Node(validNodeMap[i]).x, tolerance);
         EXPECT_NEAR(expectedPoints[i].y, mesh.Node(validNodeMap[i]).y, tolerance);
@@ -1669,7 +1669,7 @@ TEST(MeshRefinement, CasulliRefinement)
 
     ASSERT_EQ(expectedEdgesStart.size(), mesh.GetNumValidEdges());
 
-    for (size_t i = 0; i < expectedEdgesStart.size(); ++i)
+    for (meshkernel::UInt i = 0; i < expectedEdgesStart.size(); ++i)
     {
         EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).first, validNodeMap[expectedEdgesStart[i]]);
         EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).second, validNodeMap[expectedEdgesEnd[i]]);
@@ -1683,9 +1683,9 @@ TEST(MeshRefinement, CasulliRefinement)
     ASSERT_EQ(originalNodes.size(), mesh.GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh.GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh.Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh.Nodes().size(); ++i)
     {
         if (mesh.Node(i).IsValid())
         {
@@ -1698,7 +1698,7 @@ TEST(MeshRefinement, CasulliRefinement)
 
     count = 0;
 
-    for (size_t i = 0; i < mesh.Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh.Edges().size(); ++i)
     {
         if (mesh.IsValidEdge(i))
         {
@@ -1807,9 +1807,9 @@ TEST(MeshRefinement, CasulliPatchRefinement)
     ASSERT_EQ(originalNodes.size(), mesh.GetNumValidNodes());
     ASSERT_EQ(originalEdges.size(), mesh.GetNumValidEdges());
 
-    size_t count = 0;
+    meshkernel::UInt count = 0;
 
-    for (size_t i = 0; i < mesh.Nodes().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh.Nodes().size(); ++i)
     {
         if (mesh.Node(i).IsValid())
         {
@@ -1822,7 +1822,7 @@ TEST(MeshRefinement, CasulliPatchRefinement)
 
     count = 0;
 
-    for (size_t i = 0; i < mesh.Edges().size(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh.Edges().size(); ++i)
     {
         if (mesh.IsValidEdge(i))
         {
