@@ -22,16 +22,21 @@
 namespace mk = meshkernel;
 using ::testing::AtLeast;
 
+/// @brief Mock class for UndoAction's
 class MockUndoAction : public mk::UndoAction
 {
 public:
+    /// @brief Mock the DoCommit function
     MOCK_METHOD(void, DoCommit, (), (override));
 
+    /// @brief Mock the DoRestore function
     MOCK_METHOD(void, DoRestore, (), (override));
 };
 
 TEST(UndoStackTests, CheckSimpleUndo)
 {
+    // A test on the basic undo functionality
+
     mk::UndoActionStack undoActionStack;
 
     std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
@@ -59,6 +64,8 @@ TEST(UndoStackTests, CheckSimpleUndo)
 
 TEST(UndoStackTests, CheckSimpleUndoWithRedo)
 {
+    // A test on the basic undo and commit (redo) functionality
+
     mk::UndoActionStack undoActionStack;
 
     std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
@@ -94,6 +101,8 @@ TEST(UndoStackTests, CheckSimpleUndoWithRedo)
 
 TEST(UndoStackTests, CheckMultipleUndo)
 {
+    // A test on the basic multiple undo's functionality
+
     mk::UndoActionStack undoActionStack;
 
     std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
@@ -127,6 +136,9 @@ TEST(UndoStackTests, CheckMultipleUndo)
 
 TEST(UndoStackTests, CheckMultipleAllUndo)
 {
+    // A test on the basic multiple undo's functionality
+    // And no further undo is performed if requested
+
     mk::UndoActionStack undoActionStack;
 
     std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
@@ -162,6 +174,8 @@ TEST(UndoStackTests, CheckMultipleAllUndo)
 
 TEST(UndoStackTests, CheckMultipleUndoWithSingleRedo)
 {
+    // A test on the basic multiple undo's with single redo
+
     mk::UndoActionStack undoActionStack;
 
     std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
@@ -206,6 +220,9 @@ TEST(UndoStackTests, CheckMultipleUndoWithSingleRedo)
 
 TEST(UndoStackTests, CheckMultipleUndoWithMultipleRedo)
 {
+    // A test on the basic multiple undo's with multiple redo's
+    // Should return to the original state with all actions committed.
+
     mk::UndoActionStack undoActionStack;
 
     std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
@@ -253,6 +270,9 @@ TEST(UndoStackTests, CheckMultipleUndoWithMultipleRedo)
 
 TEST(UndoStackTests, CheckMultipleUndoCycles)
 {
+    // A test on the basic multiple undo's with multiple redo's cycles
+    // Should return to the original state with all actions committed.
+
     mk::UndoActionStack undoActionStack;
 
     std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
@@ -272,12 +292,12 @@ TEST(UndoStackTests, CheckMultipleUndoCycles)
     EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Committed);
 
     EXPECT_CALL(*rawUndoAction1, DoRestore()).Times(1);
-    EXPECT_CALL(*rawUndoAction2, DoRestore()).Times(2);
-    EXPECT_CALL(*rawUndoAction3, DoRestore()).Times(1);
+    EXPECT_CALL(*rawUndoAction2, DoRestore()).Times(3);
+    EXPECT_CALL(*rawUndoAction3, DoRestore()).Times(2);
 
     EXPECT_CALL(*rawUndoAction1, DoCommit()).Times(1);
-    EXPECT_CALL(*rawUndoAction2, DoCommit()).Times(2);
-    EXPECT_CALL(*rawUndoAction3, DoCommit()).Times(1);
+    EXPECT_CALL(*rawUndoAction2, DoCommit()).Times(3);
+    EXPECT_CALL(*rawUndoAction3, DoCommit()).Times(2);
 
     // Should call the DoRestore for the last two actions added to the stack
     EXPECT_TRUE(undoActionStack.Undo()); // action3.Undo
@@ -312,6 +332,15 @@ TEST(UndoStackTests, CheckMultipleUndoCycles)
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Restored);
 
+    EXPECT_TRUE(undoActionStack.Commit()); // action3.Restore
+
+    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Committed);
+
+    EXPECT_TRUE(undoActionStack.Undo());   // action3.Undo
+    EXPECT_TRUE(undoActionStack.Undo());   // action2.Undo
+    EXPECT_TRUE(undoActionStack.Commit()); // action2.Restore
     EXPECT_TRUE(undoActionStack.Commit()); // action3.Restore
 
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
