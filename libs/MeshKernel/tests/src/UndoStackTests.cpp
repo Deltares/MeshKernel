@@ -248,7 +248,7 @@ TEST(UndoStackTests, CheckMultipleUndoWithSingleRedoIntermediateAdd)
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Committed);
 
-    EXPECT_CALL(*rawUndoAction1, DoRestore()).Times(0);
+    EXPECT_CALL(*rawUndoAction1, DoRestore()).Times(1);
     EXPECT_CALL(*rawUndoAction2, DoRestore()).Times(1);
     EXPECT_CALL(*rawUndoAction3, DoRestore()).Times(1);
     EXPECT_CALL(*rawUndoAction4, DoRestore()).Times(1);
@@ -272,9 +272,17 @@ TEST(UndoStackTests, CheckMultipleUndoWithSingleRedoIntermediateAdd)
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction4->State(), mk::UndoAction::Committed);
 
-    undoActionStack.Undo();
+    EXPECT_TRUE(undoActionStack.Undo());
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction4->State(), mk::UndoAction::Restored);
+
+    EXPECT_TRUE(undoActionStack.Undo());
+    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Restored);
+    EXPECT_EQ(rawUndoAction4->State(), mk::UndoAction::Restored);
+
+    // Attempt to undo.
+    // There should be no other actions to undo.
+    EXPECT_FALSE(undoActionStack.Undo());
 }
 
 TEST(UndoStackTests, CheckMultipleUndoWithMultipleRedo)
