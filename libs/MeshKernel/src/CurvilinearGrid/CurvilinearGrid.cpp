@@ -397,7 +397,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 continue;
             }
 
-            // Left side
+            // Bottom side
             if (m == 0 && n == 0)
             {
                 m_gridNodesTypes(n, m) = NodeType::BottomLeft;
@@ -405,7 +405,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
             }
             if (m == 0 && n == NumN() - 1)
             {
-                m_gridNodesTypes(n, m) = NodeType::UpperLeft;
+                m_gridNodesTypes(n, m) = NodeType::BottomRight;
                 continue;
             }
             if (m == 0 && !m_gridNodes(n - 1, m).IsValid())
@@ -415,18 +415,18 @@ void CurvilinearGrid::ComputeGridNodeTypes()
             }
             if (m == 0 && !m_gridNodes(n + 1, m).IsValid())
             {
-                m_gridNodesTypes(n, m) = NodeType::UpperLeft;
+                m_gridNodesTypes(n, m) = NodeType::BottomRight;
                 continue;
             }
             if (m == 0)
             {
-                m_gridNodesTypes(n, m) = NodeType::Left;
+                m_gridNodesTypes(n, m) = NodeType::Bottom;
                 continue;
             }
-            // Right side
+            // Upper side
             if (m == NumM() - 1 && n == 0)
             {
-                m_gridNodesTypes(n, m) = NodeType::BottomRight;
+                m_gridNodesTypes(n, m) = NodeType::UpperLeft;
                 continue;
             }
             if (m == NumM() - 1 && n == NumN() - 1)
@@ -436,7 +436,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
             }
             if (m == NumM() - 1 && !m_gridNodes(n - 1, m).IsValid())
             {
-                m_gridNodesTypes(n, m) = NodeType::BottomRight;
+                m_gridNodesTypes(n, m) = NodeType::UpperLeft;
                 continue;
             }
             if (m == NumM() - 1 && !m_gridNodes(n + 1, m).IsValid())
@@ -446,7 +446,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
             }
             if (m == NumM() - 1)
             {
-                m_gridNodesTypes(n, m) = NodeType::Right;
+                m_gridNodesTypes(n, m) = NodeType::Up;
                 continue;
             }
             // Bottom side
@@ -457,18 +457,18 @@ void CurvilinearGrid::ComputeGridNodeTypes()
             }
             if (n == 0 && !m_gridNodes(n, m + 1).IsValid())
             {
-                m_gridNodesTypes(n, m) = NodeType::BottomRight;
+                m_gridNodesTypes(n, m) = NodeType::UpperRight;
                 continue;
             }
             if (n == 0)
             {
-                m_gridNodesTypes(n, m) = NodeType::Bottom;
+                m_gridNodesTypes(n, m) = NodeType::Left;
                 continue;
             }
             // Upper side
             if (n == NumN() - 1 && !m_gridNodes(n, m - 1).IsValid())
             {
-                m_gridNodesTypes(n, m) = NodeType::UpperLeft;
+                m_gridNodesTypes(n, m) = NodeType::BottomRight;
                 continue;
             }
             if (n == NumN() - 1 && !m_gridNodes(n, m + 1).IsValid())
@@ -478,14 +478,14 @@ void CurvilinearGrid::ComputeGridNodeTypes()
             }
             if (n == NumN() - 1)
             {
-                m_gridNodesTypes(n, m) = NodeType::Up;
+                m_gridNodesTypes(n, m) = NodeType::Right;
                 continue;
             }
 
-            auto const isTopLeftFaceValid = m_gridFacesMask(n, m - 1);
-            auto const isTopRightFaceValid = m_gridFacesMask(n, m);
+            auto const isBottomRightFaceValid = m_gridFacesMask(n, m - 1);
             auto const isBottomLeftFaceValid = m_gridFacesMask(n - 1, m - 1);
-            auto const isBottomRightFaceValid = m_gridFacesMask(n - 1, m);
+            auto const isTopRightFaceValid = m_gridFacesMask(n, m);
+            auto const isTopLeftFaceValid = m_gridFacesMask(n - 1, m);
 
             if (isTopRightFaceValid &&
                 isTopLeftFaceValid &&
