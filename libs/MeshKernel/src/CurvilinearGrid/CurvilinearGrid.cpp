@@ -918,19 +918,19 @@ meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
     // First loop over lower boundary (i,0)
     for (Eigen::Index i = 0; i < NumM(); ++i)
     {
-        lowerLeft.x = std::min(lowerLeft.x, m_gridNodes(i, 0).x);
-        lowerLeft.y = std::min(lowerLeft.y, m_gridNodes(i, 0).y);
-        upperRight.x = std::max(upperRight.x, m_gridNodes(i, 0).x);
-        upperRight.y = std::max(upperRight.y, m_gridNodes(i, 0).y);
+        lowerLeft.x = std::min(lowerLeft.x, m_gridNodes(0, i).x);
+        lowerLeft.y = std::min(lowerLeft.y, m_gridNodes(0, i).y);
+        upperRight.x = std::max(upperRight.x, m_gridNodes(0, i).x);
+        upperRight.y = std::max(upperRight.y, m_gridNodes(0, i).y);
     }
 
     // First loop over right boundary (last,i)
     for (Eigen::Index i = 0; i < NumN(); ++i)
     {
-        lowerLeft.x = std::min(lowerLeft.x, m_gridNodes(last, i).x);
-        lowerLeft.y = std::min(lowerLeft.y, m_gridNodes(last, i).y);
-        upperRight.x = std::max(upperRight.x, m_gridNodes(last, i).x);
-        upperRight.y = std::max(upperRight.y, m_gridNodes(last, i).y);
+        lowerLeft.x = std::min(lowerLeft.x, m_gridNodes(i, last).x);
+        lowerLeft.y = std::min(lowerLeft.y, m_gridNodes(i, last).y);
+        upperRight.x = std::max(upperRight.x, m_gridNodes(i, last).x);
+        upperRight.y = std::max(upperRight.y, m_gridNodes(i, last).y);
     }
 
     // This assumes that each column has the same number of points
@@ -939,19 +939,19 @@ meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
     // First loop over upper boundary (i,last)
     for (Eigen::Index i = 0; i < NumM(); ++i)
     {
-        lowerLeft.x = std::min(lowerLeft.x, m_gridNodes(i, last).x);
-        lowerLeft.y = std::min(lowerLeft.y, m_gridNodes(i, last).y);
-        upperRight.x = std::max(upperRight.x, m_gridNodes(i, last).x);
-        upperRight.y = std::max(upperRight.y, m_gridNodes(i, last).y);
+        lowerLeft.x = std::min(lowerLeft.x, m_gridNodes(last, i).x);
+        lowerLeft.y = std::min(lowerLeft.y, m_gridNodes(last, i).y);
+        upperRight.x = std::max(upperRight.x, m_gridNodes(last, i).x);
+        upperRight.y = std::max(upperRight.y, m_gridNodes(last, i).y);
     }
 
     // First loop over left boundary (0,i)
     for (Eigen::Index i = 0; i < NumN(); ++i)
     {
-        lowerLeft.x = std::min(lowerLeft.x, m_gridNodes(0, i).x);
-        lowerLeft.y = std::min(lowerLeft.y, m_gridNodes(0, i).y);
-        upperRight.x = std::max(upperRight.x, m_gridNodes(0, i).x);
-        upperRight.y = std::max(upperRight.y, m_gridNodes(0, i).y);
+        lowerLeft.x = std::min(lowerLeft.x, m_gridNodes(i, 0).x);
+        lowerLeft.y = std::min(lowerLeft.y, m_gridNodes(i, 0).y);
+        upperRight.x = std::max(upperRight.x, m_gridNodes(i, 0).x);
+        upperRight.y = std::max(upperRight.y, m_gridNodes(i, 0).y);
     }
 
     return BoundingBox(lowerLeft, upperRight);
