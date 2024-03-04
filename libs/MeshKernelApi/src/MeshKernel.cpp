@@ -167,6 +167,8 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_undo_state(int meshKernelId, bool& undone)
     {
         lastExitCode = meshkernel::ExitCode::Success;
+        undone = false;
+
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -186,6 +188,8 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_redo_state(int meshKernelId, bool& redone)
     {
         lastExitCode = meshkernel::ExitCode::Success;
+        redone = false;
+
         try
         {
             if (!meshKernelState.contains(meshKernelId))
