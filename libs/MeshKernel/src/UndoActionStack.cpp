@@ -1,24 +1,28 @@
 #include "MeshKernel/UndoActionStack.hpp"
 #include "MeshKernel/Exceptions.hpp"
 
-meshkernel::UndoActionStack::UndoActionStack()
-{
-    m_committed.reserve(DefaultReserveSize);
-    m_restored.reserve(DefaultReserveSize);
-}
+#include <algorithm>
+
+const meshkernel::UInt meshkernel::UndoActionStack::MaxUndoSize = 10;
 
 void meshkernel::UndoActionStack::Add(UndoActionPtr&& action)
 {
     if (action != nullptr)
     {
-
         if (action->State() == UndoAction::Restored)
         {
             throw ConstraintError("Cannot add an action in the {} state.", UndoAction::to_string(action->State()));
         }
 
         m_committed.emplace_back(std::move(action));
+        // Clear the restored actions. Adding a new undo action means that they cannot be re-done
         m_restored.clear();
+
+        if (m_committed.size() > MaxUndoSize)
+        {
+            // If the number of undo-actions is greater than the maximum, then remove the first item in the list.
+            m_committed.pop_front();
+        }
     }
     else
     {
@@ -58,4 +62,14 @@ bool meshkernel::UndoActionStack::Commit()
     }
 
     return didCommit;
+}
+
+std::uint64_t meshkernel::UndoActionStack::MemorySize() const
+{
+    std::uint64_t committedSize = std::accumulate(m_committed.begin(), m_committed.end(), 0, [](const UInt partialSum, const std::unique_ptr<UndoAction>& action)
+                                                  { return partialSum + action->MemorySize(); });
+    std::uint64_t restoredSize = std::accumulate(m_restored.begin(), m_restored.end(), 0, [](const UInt partialSum, const std::unique_ptr<UndoAction>& action)
+                                                 { return partialSum + action->MemorySize(); });
+
+    return sizeof(*this) + committedSize + restoredSize;
 }

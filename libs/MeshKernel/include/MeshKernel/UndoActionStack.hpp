@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <cstdint>
+#include <list>
 #include <utility>
 #include <vector>
 
@@ -42,8 +44,8 @@ namespace meshkernel
     class UndoActionStack
     {
     public:
-        // When adding new transactions, could check the size of the committed list and remove transactions more than some number ago
-        // e.g. keep the undo list no longer than 10
+        /// @brief Maximum number of undo action items
+        static const UInt MaxUndoSize;
 
         // Add info about the action, both short and long form
         // Perhaps Short for for menu items, long form for tooltips?
@@ -52,15 +54,13 @@ namespace meshkernel
         // Do we need a clear function? If there are operations on a mesh that
         // are not undo-able then the all undo actions should be removed.
 
-        /// @brief Constructor
-        UndoActionStack();
-
         /// @brief Add an UndoAction.
         ///
         /// All added undo-actions must be in the committed state, if not then a ConstraintError
         /// will be raised.
         /// No null undo-actions will be added to the stack.
-        /// All actions that have be restored will be deleted.
+        /// All restored items will be removed, since after adding a new undo-action they are no
+        /// longer restore-able.
         void Add(UndoActionPtr&& transaction);
 
         /// @brief Undo the action at the top of the committed stack
@@ -76,15 +76,25 @@ namespace meshkernel
         /// \returns true if an redo-action was performed, false otherwise
         bool Commit();
 
-    private:
-        /// @brief The initial reserved size of the committed and restored undo-action arrays
-        static const UInt DefaultReserveSize = 10;
+        /// @brief Get the number of undo action items
+        ///
+        /// The total includes both the number of committed and restored actions.
+        UInt Size() const;
 
+        /// \brief Compute the approximate amount of memory being used, in bytes, for all undo actions.
+        std::uint64_t MemorySize() const;
+
+    private:
         /// @brief Stack of committed undo actions
-        std::vector<UndoActionPtr> m_committed;
+        std::list<UndoActionPtr> m_committed;
 
         /// @brief Stack of restored undo actions
-        std::vector<UndoActionPtr> m_restored;
+        std::list<UndoActionPtr> m_restored;
     };
 
 } // namespace meshkernel
+
+inline meshkernel::UInt meshkernel::UndoActionStack::Size() const
+{
+    return m_committed.size() + m_restored.size();
+}

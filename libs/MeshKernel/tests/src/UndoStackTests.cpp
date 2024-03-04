@@ -38,6 +38,7 @@ TEST(UndoStackTests, CheckSimpleUndo)
 
     undoActionStack.Add(std::move(undoAction1));
     undoActionStack.Add(std::move(undoAction2));
+    EXPECT_EQ(undoActionStack.Size(), 2);
 
     // Check state is correct
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
@@ -54,6 +55,9 @@ TEST(UndoStackTests, CheckSimpleUndo)
 
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Restored);
+
+    // Still 2 items
+    EXPECT_EQ(undoActionStack.Size(), 2);
 }
 
 TEST(UndoStackTests, CheckSimpleUndoWithRedo)
@@ -70,6 +74,7 @@ TEST(UndoStackTests, CheckSimpleUndoWithRedo)
 
     undoActionStack.Add(std::move(undoAction1));
     undoActionStack.Add(std::move(undoAction2));
+    EXPECT_EQ(undoActionStack.Size(), 2);
 
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
@@ -79,6 +84,7 @@ TEST(UndoStackTests, CheckSimpleUndoWithRedo)
 
     // Should call the DoRestore for the last action added to the stack, which is undoAction2
     undoActionStack.Undo();
+    EXPECT_EQ(undoActionStack.Size(), 2);
 
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Restored);
@@ -88,6 +94,7 @@ TEST(UndoStackTests, CheckSimpleUndoWithRedo)
 
     // Should call the DoCommit for the last action that was undone
     undoActionStack.Commit();
+    EXPECT_EQ(undoActionStack.Size(), 2);
 
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
@@ -110,6 +117,7 @@ TEST(UndoStackTests, CheckMultipleUndo)
     undoActionStack.Add(std::move(undoAction1));
     undoActionStack.Add(std::move(undoAction2));
     undoActionStack.Add(std::move(undoAction3));
+    EXPECT_EQ(undoActionStack.Size(), 3);
 
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
@@ -126,6 +134,7 @@ TEST(UndoStackTests, CheckMultipleUndo)
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Restored);
     EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Restored);
+    EXPECT_EQ(undoActionStack.Size(), 3);
 }
 
 TEST(UndoStackTests, CheckMultipleAllUndo)
@@ -235,6 +244,7 @@ TEST(UndoStackTests, CheckMultipleUndoWithSingleRedoIntermediateAdd)
     undoActionStack.Add(std::move(undoAction1));
     undoActionStack.Add(std::move(undoAction2));
     undoActionStack.Add(std::move(undoAction3));
+    EXPECT_EQ(undoActionStack.Size(), 3);
 
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
@@ -254,6 +264,8 @@ TEST(UndoStackTests, CheckMultipleUndoWithSingleRedoIntermediateAdd)
     rawUndoAction3 = nullptr;
 
     undoActionStack.Add(std::move(undoAction4));
+    // The two undo actions that have been restored should have been removed
+    EXPECT_EQ(undoActionStack.Size(), 2);
 
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
 
@@ -275,6 +287,7 @@ TEST(UndoStackTests, CheckMultipleUndoWithSingleRedoIntermediateAdd)
     // Attempt to undo.
     // There should be no other actions to undo.
     EXPECT_FALSE(undoActionStack.Undo());
+    EXPECT_EQ(undoActionStack.Size(), 2);
 }
 
 TEST(UndoStackTests, CheckMultipleUndoWithMultipleRedo)
@@ -295,6 +308,7 @@ TEST(UndoStackTests, CheckMultipleUndoWithMultipleRedo)
     undoActionStack.Add(std::move(undoAction1));
     undoActionStack.Add(std::move(undoAction2));
     undoActionStack.Add(std::move(undoAction3));
+    EXPECT_EQ(undoActionStack.Size(), 3);
 
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
@@ -307,6 +321,7 @@ TEST(UndoStackTests, CheckMultipleUndoWithMultipleRedo)
     // Should call the DoRestore for the last two actions added to the stack
     undoActionStack.Undo();
     undoActionStack.Undo();
+    EXPECT_EQ(undoActionStack.Size(), 3);
 
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Restored);
@@ -318,9 +333,12 @@ TEST(UndoStackTests, CheckMultipleUndoWithMultipleRedo)
 
     // Should call the DoCommit for the last two action that was undone
     EXPECT_TRUE(undoActionStack.Commit());
+    EXPECT_EQ(undoActionStack.Size(), 3);
     EXPECT_TRUE(undoActionStack.Commit());
+    EXPECT_EQ(undoActionStack.Size(), 3);
     // Should not perform any other commit (redo) actions
     EXPECT_FALSE(undoActionStack.Commit());
+    EXPECT_EQ(undoActionStack.Size(), 3);
 
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
@@ -345,6 +363,7 @@ TEST(UndoStackTests, CheckMultipleUndoCycles)
     undoActionStack.Add(std::move(undoAction1));
     undoActionStack.Add(std::move(undoAction2));
     undoActionStack.Add(std::move(undoAction3));
+    EXPECT_EQ(undoActionStack.Size(), 3);
 
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
@@ -361,12 +380,14 @@ TEST(UndoStackTests, CheckMultipleUndoCycles)
     // Should call the DoRestore for the last two actions added to the stack
     EXPECT_TRUE(undoActionStack.Undo()); // action3.Undo
     EXPECT_TRUE(undoActionStack.Undo()); // action2.Undo
+    EXPECT_EQ(undoActionStack.Size(), 3);
 
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Restored);
     EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Restored);
 
     EXPECT_TRUE(undoActionStack.Commit()); // action2.Restore
+    EXPECT_EQ(undoActionStack.Size(), 3);
 
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
@@ -375,6 +396,7 @@ TEST(UndoStackTests, CheckMultipleUndoCycles)
     EXPECT_TRUE(undoActionStack.Undo());  // action2.Undo
     EXPECT_TRUE(undoActionStack.Undo());  // action1.Undo
     EXPECT_FALSE(undoActionStack.Undo()); // no action undone
+    EXPECT_EQ(undoActionStack.Size(), 3);
 
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Restored);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Restored);
@@ -407,6 +429,7 @@ TEST(UndoStackTests, CheckMultipleUndoCycles)
     EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
     EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(undoActionStack.Size(), 3);
 }
 
 TEST(UndoStackTests, AddingRestoredAction)
@@ -419,4 +442,44 @@ TEST(UndoStackTests, AddingRestoredAction)
     undoAction1->Restore();
 
     EXPECT_THROW(undoActionStack.Add(std::move(undoAction1)), mk::ConstraintError);
+}
+
+TEST(UndoStackTests, MemorySizeStackTest)
+{
+    mk::UndoActionStack undoActionStack;
+    std::uint64_t expectedSize = sizeof(undoActionStack);
+
+    // Fill undo actions to maximum
+    for (mk::UInt i = 0; i < mk::UndoActionStack::MaxUndoSize; ++i)
+    {
+        std::unique_ptr<MockUndoAction> undoAction = std::make_unique<MockUndoAction>();
+        expectedSize += undoAction->MemorySize();
+        undoActionStack.Add(std::move(undoAction));
+    }
+
+    // Check the memory-size
+    EXPECT_EQ(undoActionStack.MemorySize(), expectedSize);
+}
+
+TEST(UndoStackTests, ExeedingMaximumUndoActions)
+{
+    mk::UndoActionStack undoActionStack;
+
+    EXPECT_EQ(undoActionStack.Size(), 0);
+
+    // Fill undo actions to maximum
+    for (mk::UInt i = 0; i < mk::UndoActionStack::MaxUndoSize; ++i)
+    {
+        undoActionStack.Add(std::make_unique<MockUndoAction>());
+        EXPECT_EQ(undoActionStack.Size(), i + 1);
+    }
+
+    // Check the size
+    EXPECT_EQ(undoActionStack.Size(), mk::UndoActionStack::MaxUndoSize);
+
+    // Now add another undo action. The number on the stack should not increase.
+    undoActionStack.Add(std::make_unique<MockUndoAction>());
+
+    // Check the size
+    EXPECT_EQ(undoActionStack.Size(), mk::UndoActionStack::MaxUndoSize);
 }
