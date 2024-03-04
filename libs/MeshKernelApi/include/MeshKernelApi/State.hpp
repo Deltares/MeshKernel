@@ -35,6 +35,7 @@
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
+#include <MeshKernel/UndoActionStack.hpp>
 
 namespace meshkernelapi
 {
@@ -70,6 +71,8 @@ namespace meshkernelapi
 
         // Exclusively owned state
         meshkernel::Projection m_projection{meshkernel::Projection::cartesian}; ///< Projection used by the meshes
+
+        meshkernel::UndoActionStack m_undoStack; ///< Stack of undo actions
     };
 
 } // namespace meshkernelapi

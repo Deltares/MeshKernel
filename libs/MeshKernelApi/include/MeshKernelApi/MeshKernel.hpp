@@ -58,6 +58,12 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_allocate_state(int projectionType, int& meshKernelId);
 
+        /// @brief Attempt to undo by one undo-action.
+        MKERNEL_API int mkernel_undo_state(int meshKernelId, bool& undone);
+
+        /// @brief Attempt to redo by one undo-action.
+        MKERNEL_API int mkernel_redo_state(int meshKernelId, bool& redone);
+
         /// @brief Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
         ///
         /// \see meshkernel::Contacts::ComputeBoundaryContacts
