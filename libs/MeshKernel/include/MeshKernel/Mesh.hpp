@@ -439,7 +439,7 @@ namespace meshkernel
                                 UInt& numInvalidEdges) const;
 
         /// @brief Invalidate any not connected to any edge.
-        void InvalidateUnconnectedNodes(const std::vector<bool>& connectedNodes,
+        void InvalidateUnConnectedNodes(const std::vector<bool>& connectedNodes,
                                         UInt& numInvalidNodes);
     };
 } // namespace meshkernel

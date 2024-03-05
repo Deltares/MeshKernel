@@ -159,7 +159,7 @@ void Mesh::FindConnectedNodes(std::vector<bool>& connectedNodes, UInt& numInvali
     }
 }
 
-void Mesh::InvalidateUnconnectedNodes(const std::vector<bool>& connectedNodes, UInt& numInvalidNodes)
+void Mesh::InvalidateUnConnectedNodes(const std::vector<bool>& connectedNodes, UInt& numInvalidNodes)
 {
     numInvalidNodes = 0;
 
@@ -188,7 +188,7 @@ void Mesh::DeleteInvalidNodesAndEdges()
     UInt numInvalidNodes = 0;
 
     FindConnectedNodes(connectedNodes, numInvalidEdges);
-    InvalidateUnconnectedNodes(connectedNodes, numInvalidNodes);
+    InvalidateUnConnectedNodes(connectedNodes, numInvalidNodes);
 
     // If nothing to invalidate return
     if (numInvalidEdges == 0 && numInvalidNodes == 0)
@@ -246,7 +246,7 @@ void Mesh::SetUnconnectedNodesAndEdgesToInvalid()
     UInt numInvalidNodes = 0;
 
     FindConnectedNodes(connectedNodes, numInvalidEdges);
-    InvalidateUnconnectedNodes(connectedNodes, numInvalidNodes);
+    InvalidateUnConnectedNodes(connectedNodes, numInvalidNodes);
 
     // If there is nothing to invalidate then return
     if (numInvalidEdges == 0 && numInvalidNodes == 0)
