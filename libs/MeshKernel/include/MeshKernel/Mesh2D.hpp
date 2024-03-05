@@ -34,6 +34,7 @@
 #include <MeshKernel/CompoundUndoAction.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/OrthogonalizationAndSmoothingAction.hpp>
 #include <MeshKernel/Polygon.hpp>
 #include <MeshKernel/SphericalCoordinatesOffsetAction.hpp>
 #include <MeshKernel/UndoAction.hpp>
@@ -139,6 +140,14 @@ namespace meshkernel
         ///
         /// Restore mesh to state before coordinate offset action was applied
         void Restore(SphericalCoordinatesOffsetAction& undoAction);
+
+        /// @brief Apply the orthogonalisation and smoothing action
+        void Commit(OrthogonalizationAndSmoothingAction& undoAction);
+
+        /// @brief Undo the orthogonalisation and smoothing action
+        ///
+        /// Restore mesh to state before orthogonalisation and smoothing action was applied
+        void Restore(OrthogonalizationAndSmoothingAction& undoAction);
 
         /// @brief For a face create a closed polygon and fill local mapping caches (get_cellpolygon)
         /// @param[in]  faceIndex              The face index

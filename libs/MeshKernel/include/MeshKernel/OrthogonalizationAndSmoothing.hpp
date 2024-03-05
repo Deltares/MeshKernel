@@ -28,6 +28,7 @@
 #pragma once
 
 #include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/OrthogonalizationAndSmoothingAction.hpp>
 #include <MeshKernel/Parameters.hpp>
 
 namespace meshkernel
@@ -101,7 +102,7 @@ namespace meshkernel
         void Initialize();
 
         /// @brief Executes the entire algorithm
-        void Compute();
+        std::unique_ptr<OrthogonalizationAndSmoothingAction> Compute();
 
         /// @brief Prepares the outer iteration, calculates orthogonalizer and smoother coefficients and assable the linear system
         void PrepareOuterIteration();

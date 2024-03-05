@@ -5,6 +5,7 @@
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
+#include <MeshKernel/OrthogonalizationAndSmoothingAction.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Smoother.hpp>
@@ -554,4 +555,85 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
     ASSERT_NEAR(41.1073150612170, mesh->Node(2).y, tolerance);
     ASSERT_NEAR(41.1046638488770, mesh->Node(3).y, tolerance);
     ASSERT_NEAR(41.1039962768555, mesh->Node(4).y, tolerance);
+}
+
+TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSphericalWithUndo)
+{
+    std::vector<Point> nodes{{41.1019592, 41.1072273},
+                             {41.1044655, 41.1043587},
+                             {41.1051979, 41.1073151},
+                             {41.1080132, 41.1046638},
+                             {41.1014137, 41.1039963}};
+
+    std::vector<Edge> edges{{4, 0},
+                            {4, 1},
+                            {1, 0},
+                            {1, 3},
+                            {3, 2},
+                            {2, 1},
+                            {0, 2}};
+
+    auto mesh = std::make_shared<Mesh2D>(edges, nodes, Projection::spherical);
+
+    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    OrthogonalizationParameters orthogonalizationParameters;
+    orthogonalizationParameters.outer_iterations = 2;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 1.0;
+    orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
+
+    // no enclosing polygon
+    auto polygon = std::make_unique<Polygons>();
+    std::vector<Point> landBoundary{};
+    auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
+
+    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
+    auto smoother = std::make_unique<Smoother>(*mesh);
+
+    const std::vector<meshkernel::Point> meshNodes = mesh->Nodes();
+    const std::vector<meshkernel::Edge> meshEdges = mesh->Edges();
+
+    OrthogonalizationAndSmoothing orthogonalization(*mesh,
+                                                    std::move(smoother),
+                                                    std::move(orthogonalizer),
+                                                    std::move(polygon),
+                                                    std::move(landboundaries),
+                                                    projectToLandBoundaryOption,
+                                                    orthogonalizationParameters);
+
+    orthogonalization.Initialize();
+    auto undoAction = orthogonalization.Compute();
+
+    constexpr double tolerance = 1e-3;
+
+    ASSERT_NEAR(41.1019592285156, mesh->Node(0).x, tolerance);
+    ASSERT_NEAR(41.1044654597059, mesh->Node(1).x, tolerance);
+    ASSERT_NEAR(41.1051978230878, mesh->Node(2).x, tolerance);
+    ASSERT_NEAR(41.1080131530762, mesh->Node(3).x, tolerance);
+    ASSERT_NEAR(41.1014137268066, mesh->Node(4).x, tolerance);
+
+    ASSERT_NEAR(41.1072273254395, mesh->Node(0).y, tolerance);
+    ASSERT_NEAR(41.1043586701373, mesh->Node(1).y, tolerance);
+    ASSERT_NEAR(41.1073150612170, mesh->Node(2).y, tolerance);
+    ASSERT_NEAR(41.1046638488770, mesh->Node(3).y, tolerance);
+    ASSERT_NEAR(41.1039962768555, mesh->Node(4).y, tolerance);
+
+    undoAction->Restore();
+
+    EXPECT_EQ(meshNodes.size(), mesh->GetNumNodes());
+    EXPECT_EQ(meshEdges.size(), mesh->GetNumEdges());
+
+    for (meshkernel::UInt i = 0; i < meshNodes.size(); ++i)
+    {
+        EXPECT_EQ(meshNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(meshNodes[i].y, mesh->Node(i).y);
+    }
+
+    for (meshkernel::UInt i = 0; i < meshEdges.size(); ++i)
+    {
+        EXPECT_EQ(meshEdges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(meshEdges[i].second, mesh->GetEdge(i).second);
+    }
 }

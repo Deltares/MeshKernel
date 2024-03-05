@@ -101,8 +101,11 @@ void OrthogonalizationAndSmoothing::Initialize()
     }
 }
 
-void OrthogonalizationAndSmoothing::Compute()
+std::unique_ptr<meshkernel::OrthogonalizationAndSmoothingAction> OrthogonalizationAndSmoothing::Compute()
 {
+    std::unique_ptr<OrthogonalizationAndSmoothingAction> undoAction =
+        OrthogonalizationAndSmoothingAction::Create(m_mesh, m_mesh.Nodes(), m_mesh.Edges());
+
     for (auto outerIter = 0; outerIter < m_orthogonalizationParameters.outer_iterations; outerIter++)
     {
         PrepareOuterIteration();
@@ -118,6 +121,8 @@ void OrthogonalizationAndSmoothing::Compute()
         // update mu
         FinalizeOuterIteration();
     } // outer iter
+
+    return undoAction;
 }
 
 void OrthogonalizationAndSmoothing::PrepareOuterIteration()

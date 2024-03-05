@@ -31,6 +31,7 @@
 
 #include "MeshKernel/BaseMeshUndoAction.hpp"
 #include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Point.hpp"
 
 namespace meshkernel
 {
@@ -38,6 +39,7 @@ namespace meshkernel
     class Mesh2D;
 
     /// @brief Action to add an node to an unstructured mesh.
+    // class OrthogonalizationAndSmoothingAction : public UndoAction
     class OrthogonalizationAndSmoothingAction : public BaseMeshUndoAction<OrthogonalizationAndSmoothingAction, Mesh2D>
     {
     public:
@@ -47,9 +49,11 @@ namespace meshkernel
         /// @brief Constructor
         OrthogonalizationAndSmoothingAction(Mesh2D& mesh, const std::vector<Point>& nodes, const std::vector<Edge>& edges);
 
-        const std::vector<Point>& OriginalNodes() const;
-
-        const std::vector<Edge>& OriginalEdges() const;
+        /// @brief Swap the stored nodes and edges with those given.
+        ///
+        /// Only the first m_nodes.size and m_edges.size will be swapped.
+        /// leaving the remaining nodes and edges untouched.
+        void Swap(std::vector<Point>& nodes, std::vector<Edge>& edges);
 
         /// @brief Get the number of bytes used by this object.
         std::uint64_t MemorySize() const override;
@@ -58,18 +62,19 @@ namespace meshkernel
         void Print(std::ostream& out = std::cout) const override;
 
     private:
-        std::vector<Point> m_originalNodes;
-        std::vector<Point> m_originalEdges;
+        /// @brief Set of nodes.
+        ///
+        /// State depends on the state of the action:
+        /// 1. When ActionState::Committed: nodes contain state before orthogonalisation and smoothing
+        /// 2. When ActionState::Restored:  nodes contain state after orthogonalisation and smoothing
+        std::vector<Point> m_nodes;
+
+        /// @brief Set of edges.
+        ///
+        /// State depends on the state of the action:
+        /// 1. When ActionState::Committed: edges contain state before orthogonalisation and smoothing
+        /// 2. When ActionState::Restored:  edges contain state after orthogonalisation and smoothing
+        std::vector<Edge> m_edges;
     };
 
 } // namespace meshkernel
-
-inline const std::vector<Point>& meshkernel::OrthogonalizationAndSmoothingAction::OriginalNodes() const
-{
-    return m_originalNodes;
-}
-
-inline const std::vector<Edge>& meshkernel::OrthogonalizationAndSmoothingAction::OriginalEdges() const
-{
-    return m_originalEdges;
-}

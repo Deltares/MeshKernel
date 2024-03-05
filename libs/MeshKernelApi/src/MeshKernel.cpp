@@ -815,7 +815,6 @@ namespace meshkernelapi
                                                                        std::move(landBoundary),
                                                                        static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
                                                                        orthogonalizationParameters);
-            ortogonalization.Initialize();
             ortogonalization.Compute();
         }
         catch (...)
@@ -863,7 +862,6 @@ namespace meshkernelapi
                                                                                                                                 std::move(landBoundary),
                                                                                                                                 static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
                                                                                                                                 orthogonalizationParameters);
-            meshKernelState[meshKernelId].m_meshOrthogonalization->Initialize();
         }
         catch (...)
         {
