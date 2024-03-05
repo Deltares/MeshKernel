@@ -74,7 +74,7 @@ namespace meshkernel
         bool Commit();
 
         /// @brief Clear all undo actions.
-        void Clear ();
+        void Clear();
 
         /// @brief Get the number of undo action items
         ///

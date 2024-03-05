@@ -64,10 +64,10 @@ bool meshkernel::UndoActionStack::Commit()
     return didCommit;
 }
 
-void meshkernel::UndoActionStack::Clear ()
+void meshkernel::UndoActionStack::Clear()
 {
-    m_committed.clear ();
-    m_restored.clear ();
+    m_committed.clear();
+    m_restored.clear();
 }
 
 std::uint64_t meshkernel::UndoActionStack::MemorySize() const

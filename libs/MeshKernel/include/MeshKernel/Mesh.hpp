@@ -319,10 +319,6 @@ namespace meshkernel
         /// @returns The index of the closest edge
         [[nodiscard]] UInt FindEdgeCloseToAPoint(Point point);
 
-        // /// @brief Deletes an edge
-        // /// @param[in] edge The edge index
-        // void DeleteEdge(UInt edge);
-
         /// @brief Deletes an edge
         /// @param[in] edge The edge index
         /// @return The undoAction to delete the edge
