@@ -277,7 +277,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithUnd
     std::vector<Point> landBoundary;
     auto landBoundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
-    const std::vector<meshkernel::Point> meshNodes = mesh->Nodes ();
+    const std::vector<meshkernel::Point> meshNodes = mesh->Nodes();
 
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
                                                     std::move(smoother),
@@ -315,7 +315,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithUnd
     ASSERT_NEAR(1608.7015489976982, mesh->Node(8).y, tolerance);
     ASSERT_NEAR(1631.412199601948, mesh->Node(9).y, tolerance);
 
-    undoAction->Restore ();
+    undoAction->Restore();
 
     EXPECT_EQ(meshNodes.size(), mesh->GetNumNodes());
 

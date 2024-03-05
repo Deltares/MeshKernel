@@ -226,7 +226,6 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-
     MKERNEL_API int mkernel_mesh2d_delete(int meshKernelId, const GeometryList& polygon, int deletionOption, int invertDeletion)
     {
         lastExitCode = meshkernel::ExitCode::Success;
@@ -836,7 +835,7 @@ namespace meshkernelapi
                                                                        std::move(landBoundary),
                                                                        static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
                                                                        orthogonalizationParameters);
-            ortogonalization.Initialize();
+            meshKernelState[meshKernelId].m_undoStack.Add(ortogonalization.Initialize());
             ortogonalization.Compute();
         }
         catch (...)
@@ -884,7 +883,7 @@ namespace meshkernelapi
                                                                                                                                 std::move(landBoundary),
                                                                                                                                 static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
                                                                                                                                 orthogonalizationParameters);
-            meshKernelState[meshKernelId].m_meshOrthogonalization->Initialize();
+            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_meshOrthogonalization->Initialize());
         }
         catch (...)
         {

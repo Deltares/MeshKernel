@@ -122,7 +122,6 @@ void OrthogonalizationAndSmoothing::Compute()
         // update mu
         FinalizeOuterIteration();
     } // outer iter
-
 }
 
 void OrthogonalizationAndSmoothing::PrepareOuterIteration()
