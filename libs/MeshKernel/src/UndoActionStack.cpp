@@ -9,7 +9,7 @@ void meshkernel::UndoActionStack::Add(UndoActionPtr&& action)
 {
     if (action != nullptr)
     {
-        if (action->State() == UndoAction::Restored)
+        if (action->State() != UndoAction::Committed)
         {
             throw ConstraintError("Cannot add an action in the {} state.", UndoAction::to_string(action->State()));
         }
@@ -62,6 +62,12 @@ bool meshkernel::UndoActionStack::Commit()
     }
 
     return didCommit;
+}
+
+void meshkernel::UndoActionStack::Clear ()
+{
+    m_committed.clear ();
+    m_restored.clear ();
 }
 
 std::uint64_t meshkernel::UndoActionStack::MemorySize() const

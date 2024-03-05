@@ -51,9 +51,6 @@ namespace meshkernel
         // Perhaps Short for for menu items, long form for tooltips?
         // long form for any exceptions?
 
-        // Do we need a clear function? If there are operations on a mesh that
-        // are not undo-able then the all undo actions should be removed.
-
         /// @brief Add an UndoAction.
         ///
         /// All added undo-actions must be in the committed state, if not then a ConstraintError
@@ -75,6 +72,9 @@ namespace meshkernel
         /// The undo-action will be moved to the committed stack in case it needs to be undone.
         /// \returns true if an redo-action was performed, false otherwise
         bool Commit();
+
+        /// @brief Clear all undo actions.
+        void Clear ();
 
         /// @brief Get the number of undo action items
         ///

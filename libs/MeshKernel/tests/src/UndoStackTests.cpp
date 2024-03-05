@@ -459,6 +459,10 @@ TEST(UndoStackTests, MemorySizeStackTest)
 
     // Check the memory-size
     EXPECT_EQ(undoActionStack.MemorySize(), expectedSize);
+
+    // Clear all undo actions form stack
+    undoActionStack.Clear ();
+    EXPECT_EQ(undoActionStack.Size(), 0);
 }
 
 TEST(UndoStackTests, ExeedingMaximumUndoActions)
@@ -482,4 +486,8 @@ TEST(UndoStackTests, ExeedingMaximumUndoActions)
 
     // Check the size
     EXPECT_EQ(undoActionStack.Size(), mk::UndoActionStack::MaxUndoSize);
+
+    // Clear all undo actions form stack
+    undoActionStack.Clear ();
+    EXPECT_EQ(undoActionStack.Size(), 0);
 }
