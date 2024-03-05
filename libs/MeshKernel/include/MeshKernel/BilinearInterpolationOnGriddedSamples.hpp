@@ -149,7 +149,7 @@ namespace meshkernel
         std::ranges::fill(m_nodeResults, constants::missing::doubleValue);
         for (UInt n = 0; n < numNodes; ++n)
         {
-            const auto node = m_mesh.m_nodes[n];
+            const auto node = m_mesh.Node(n);
             m_nodeResults[n] = Interpolation(node);
         }
 
@@ -157,7 +157,7 @@ namespace meshkernel
         std::ranges::fill(m_edgeResults, constants::missing::doubleValue);
         for (UInt e = 0; e < numEdges; ++e)
         {
-            const auto& [first, second] = m_mesh.m_edges[e];
+            const auto& [first, second] = m_mesh.GetEdge(e);
             m_edgeResults[e] = 0.5 * (m_nodeResults[first] + m_nodeResults[second]);
         }
 

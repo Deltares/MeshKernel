@@ -40,8 +40,12 @@ namespace meshkernelapi
         double* node_y = nullptr;
         /// @brief The number of 1d nodes
         int num_nodes;
+        /// @brief The number of valid 1d nodes
+        int num_valid_nodes;
         /// @brief The number of 1d edges
         int num_edges;
+        /// @brief The number of valid 1d edges
+        int num_valid_edges;
     };
 
 } // namespace meshkernelapi

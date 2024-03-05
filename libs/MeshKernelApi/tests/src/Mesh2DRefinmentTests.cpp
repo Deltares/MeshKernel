@@ -556,8 +556,8 @@ TEST(MeshRefinement, RefineGridUsingApi_CasulliRefinement_ShouldRefine)
     meshkernelapi::Mesh2D mesh2d{};
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     // Check number of nodes and edges is correct.
-    EXPECT_EQ(576, mesh2d.num_nodes);
-    EXPECT_EQ(1104, mesh2d.num_edges);
+    EXPECT_EQ(576, mesh2d.num_valid_nodes);
+    EXPECT_EQ(1104, mesh2d.num_valid_edges);
 }
 
 class MeshRefinementSampleValueTypes : public ::testing::TestWithParam<meshkernel::InterpolationValues>

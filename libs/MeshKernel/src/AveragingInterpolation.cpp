@@ -78,7 +78,7 @@ void AveragingInterpolation::Compute()
         for (UInt n = 0; n < m_mesh.GetNumNodes(); ++n)
         {
             m_mesh.MakeDualFace(n, m_relativeSearchRadius, dualFacePolygon);
-            const auto result = ComputeOnPolygon(dualFacePolygon, m_mesh.m_nodes[n]);
+            const auto result = ComputeOnPolygon(dualFacePolygon, m_mesh.Node(n));
             m_nodeResults[n] = result;
         }
     }
@@ -91,7 +91,7 @@ void AveragingInterpolation::Compute()
 
         for (UInt e = 0; e < m_mesh.GetNumEdges(); ++e)
         {
-            const auto& [first, second] = m_mesh.m_edges[e];
+            const auto& [first, second] = m_mesh.GetEdge(e);
 
             const auto& firstValue = m_nodeResults[first];
             const auto& secondValue = m_nodeResults[second];
@@ -116,7 +116,7 @@ void AveragingInterpolation::Compute()
 
             for (UInt n = 0; n < m_mesh.GetNumFaceEdges(f); ++n)
             {
-                polygonNodesCache.emplace_back(m_mesh.m_facesMassCenters[f] + (m_mesh.m_nodes[m_mesh.m_facesNodes[f][n]] - m_mesh.m_facesMassCenters[f]) * m_relativeSearchRadius);
+                polygonNodesCache.emplace_back(m_mesh.m_facesMassCenters[f] + (m_mesh.Node(m_mesh.m_facesNodes[f][n]) - m_mesh.m_facesMassCenters[f]) * m_relativeSearchRadius);
             }
             polygonNodesCache.emplace_back(polygonNodesCache[0]);
 

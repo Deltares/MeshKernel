@@ -68,8 +68,14 @@ namespace meshkernelapi
         /// @brief The number of mesh nodes
         int num_nodes = 0;
 
+        /// @brief The number of valid mesh nodes
+        int num_valid_nodes = 0;
+
         /// @brief The number of edges
         int num_edges = 0;
+
+        /// @brief The number of valid edges
+        int num_valid_edges = 0;
 
         /// @brief The number of faces
         int num_faces = 0;

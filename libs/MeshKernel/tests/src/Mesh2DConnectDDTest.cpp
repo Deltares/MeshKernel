@@ -24,32 +24,72 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
     // Connect hanging nodes
     meshkernel::ConnectMeshes::Compute(*unconnectedGrid);
 
-    // Check mesh entity counts are the same
-    ASSERT_EQ(unconnectedGrid->GetNumNodes(), connectedGrid->GetNumNodes());
-    ASSERT_EQ(unconnectedGrid->GetNumEdges(), connectedGrid->GetNumEdges());
+    // Check mesh (active) entity counts are the same
+    ASSERT_EQ(unconnectedGrid->GetNumValidNodes(), connectedGrid->GetNumNodes());
+    ASSERT_EQ(unconnectedGrid->GetNumValidEdges(), connectedGrid->GetNumEdges());
     ASSERT_EQ(unconnectedGrid->GetNumFaces(), connectedGrid->GetNumFaces());
 
     constexpr double tolerance = 1.0e-10;
 
+    meshkernel::UInt count = 0;
+
     // Check nodes
     for (meshkernel::UInt i = 0; i < unconnectedGrid->GetNumNodes(); ++i)
     {
-        EXPECT_NEAR(unconnectedGrid->m_nodes[i].x, connectedGrid->m_nodes[i].x, tolerance);
-        EXPECT_NEAR(unconnectedGrid->m_nodes[i].y, connectedGrid->m_nodes[i].y, tolerance);
+        if (unconnectedGrid->Node(i).IsValid())
+        {
+            EXPECT_NEAR(unconnectedGrid->Node(i).x, connectedGrid->Node(count).x, tolerance);
+            EXPECT_NEAR(unconnectedGrid->Node(i).y, connectedGrid->Node(count).y, tolerance);
+            ++count;
+        }
     }
 
-    // Check edges
+    count = 0;
+
     for (meshkernel::UInt i = 0; i < unconnectedGrid->GetNumEdges(); ++i)
     {
-        EXPECT_EQ(unconnectedGrid->m_edges[i].first, connectedGrid->m_edges[i].first);
-        EXPECT_EQ(unconnectedGrid->m_edges[i].second, connectedGrid->m_edges[i].second);
+        if (unconnectedGrid->GetEdge(i).first != meshkernel::constants::missing::uintValue)
+        {
+            EXPECT_TRUE(meshkernel::IsEqual(connectedGrid->Node(connectedGrid->GetEdge(count).first),
+                                            unconnectedGrid->Node(unconnectedGrid->GetEdge(i).first),
+                                            tolerance))
+                << "edge.first indexes incorrect node";
+
+            EXPECT_TRUE(meshkernel::IsEqual(connectedGrid->Node(connectedGrid->GetEdge(count).second),
+                                            unconnectedGrid->Node(unconnectedGrid->GetEdge(i).second),
+                                            tolerance))
+                << "edge.second indexes incorrect node";
+
+            ++count;
+        }
     }
+
+    std::vector<meshkernel::UInt> edgeMap(unconnectedGrid->GetNumEdges(), meshkernel::constants::missing::uintValue);
+    std::vector<meshkernel::UInt> edgeMapInv(unconnectedGrid->GetNumValidEdges());
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < unconnectedGrid->GetNumEdges(); ++i)
+    {
+        if (unconnectedGrid->GetEdge(i).first != meshkernel::constants::missing::uintValue && unconnectedGrid->GetEdge(i).second != meshkernel::constants::missing::uintValue)
+        {
+            edgeMap[i] = count;
+            edgeMapInv[count] = i;
+            ++count;
+        }
+    }
+
+    count = 0;
 
     // Check edge-faces
     for (meshkernel::UInt i = 0; i < unconnectedGrid->GetNumEdges(); ++i)
     {
-        EXPECT_EQ(unconnectedGrid->m_edgesFaces[i][0], connectedGrid->m_edgesFaces[i][0]);
-        EXPECT_EQ(unconnectedGrid->m_edgesFaces[i][1], connectedGrid->m_edgesFaces[i][1]);
+        if (edgeMap[i] != meshkernel::constants::missing::uintValue)
+        {
+            EXPECT_EQ(unconnectedGrid->m_edgesFaces[i][0], connectedGrid->m_edgesFaces[count][0]);
+            EXPECT_EQ(unconnectedGrid->m_edgesFaces[i][1], connectedGrid->m_edgesFaces[count][1]);
+            ++count;
+        }
     }
 
     // Check number of nodes for each face
@@ -155,7 +195,7 @@ TEST(Mesh2DConnectDD, MergeMeshes)
     meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
     EXPECT_EQ(mergedMesh->GetNumFaces(), mesh1->GetNumFaces() + mesh2->GetNumFaces() + ExtraFaces);
-    EXPECT_EQ(mergedMesh->GetNumNodes(), mesh1->GetNumNodes() + mesh2->GetNumNodes() - NodeDifference);
+    EXPECT_EQ(mergedMesh->GetNumValidNodes(), mesh1->GetNumNodes() + mesh2->GetNumNodes() - NodeDifference);
 }
 
 TEST(Mesh2DConnectDD, MergeOneEmptyMesh)
@@ -179,7 +219,7 @@ TEST(Mesh2DConnectDD, MergeOneEmptyMesh)
     const auto anotherMergedMesh = meshkernel::Mesh2D::Merge(mesh2, *mesh1);
 
     EXPECT_EQ(anotherMergedMesh->GetNumFaces(), mesh1->GetNumFaces());
-    EXPECT_EQ(anotherMergedMesh->GetNumNodes(), mesh1->GetNumNodes());
+    EXPECT_EQ(anotherMergedMesh->GetNumValidNodes(), mesh1->GetNumNodes());
 }
 
 TEST(Mesh2DConnectDD, MergeTwoEmptyMeshes)
@@ -229,24 +269,24 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallNegativeOffset)
 
     meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
-    EXPECT_EQ(mergedMesh->GetNumNodes(), 15);
+    EXPECT_EQ(mergedMesh->GetNumValidNodes(), 15);
     EXPECT_EQ(mergedMesh->GetNumFaces(), 8);
-    EXPECT_EQ(mergedMesh->GetNumEdges(), 22);
+    EXPECT_EQ(mergedMesh->GetNumValidEdges(), 22);
 
     const double tolerance = 1.0e-8;
 
     // Only comparing the nodes that were along the overlapping edge
-    EXPECT_NEAR(mergedMesh->m_nodes[6].x, 19.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[7].x, 19.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[8].x, 19.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).x, 19.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(10).x, 19.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(11).x, 19.0, tolerance);
 
-    EXPECT_NEAR(mergedMesh->m_nodes[6].y, 0.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[7].y, 10.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[8].y, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).y, 0.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(10).y, 10.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(11).y, 20.0, tolerance);
 
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[6], 3);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[7], 4);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[8], 3);
+    EXPECT_EQ(mergedMesh->m_nodesNumEdges[9], 3);
+    EXPECT_EQ(mergedMesh->m_nodesNumEdges[10], 4);
+    EXPECT_EQ(mergedMesh->m_nodesNumEdges[11], 3);
 }
 
 TEST(Mesh2DConnectDD, MergeTwoSameMeshesNoOffset)
@@ -269,24 +309,24 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesNoOffset)
 
     meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
-    EXPECT_EQ(mergedMesh->GetNumNodes(), 15);
+    EXPECT_EQ(mergedMesh->GetNumValidNodes(), 15);
+    EXPECT_EQ(mergedMesh->GetNumValidEdges(), 22);
     EXPECT_EQ(mergedMesh->GetNumFaces(), 8);
-    EXPECT_EQ(mergedMesh->GetNumEdges(), 22);
 
-    const double tolerance = 1.0e-8;
+    const double tolerance = 1.0e-10;
 
     // Only comparing the nodes that were along the overlapping edge
-    EXPECT_NEAR(mergedMesh->m_nodes[6].x, 20.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[7].x, 20.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[8].x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(10).x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(11).x, 20.0, tolerance);
 
-    EXPECT_NEAR(mergedMesh->m_nodes[6].y, 0.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[7].y, 10.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[8].y, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).y, 0.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(10).y, 10.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(11).y, 20.0, tolerance);
 
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[6], 3);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[7], 4);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[8], 3);
+    EXPECT_EQ(mergedMesh->m_nodesNumEdges[9], 3);
+    EXPECT_EQ(mergedMesh->m_nodesNumEdges[10], 4);
+    EXPECT_EQ(mergedMesh->m_nodesNumEdges[11], 3);
 }
 
 TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallPositiveOffset)
@@ -309,24 +349,24 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallPositiveOffset)
 
     meshkernel::ConnectMeshes::Compute(*mergedMesh);
 
-    EXPECT_EQ(mergedMesh->GetNumNodes(), 15);
+    EXPECT_EQ(mergedMesh->GetNumValidNodes(), 15);
+    EXPECT_EQ(mergedMesh->GetNumValidEdges(), 22);
     EXPECT_EQ(mergedMesh->GetNumFaces(), 8);
-    EXPECT_EQ(mergedMesh->GetNumEdges(), 22);
 
     const double tolerance = 1.0e-8;
 
     // Only comparing the nodes that were along the overlapping edge
-    EXPECT_NEAR(mergedMesh->m_nodes[6].x, 21.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[7].x, 21.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[8].x, 21.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).x, 21.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(10).x, 21.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(11).x, 21.0, tolerance);
 
-    EXPECT_NEAR(mergedMesh->m_nodes[6].y, 0.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[7].y, 10.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[8].y, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).y, 0.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(10).y, 10.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(11).y, 20.0, tolerance);
 
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[6], 3);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[7], 4);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[8], 3);
+    EXPECT_EQ(mergedMesh->m_nodesNumEdges[9], 3);
+    EXPECT_EQ(mergedMesh->m_nodesNumEdges[10], 4);
+    EXPECT_EQ(mergedMesh->m_nodesNumEdges[11], 3);
 }
 
 TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallNegativeOffset)
@@ -351,80 +391,149 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallNegativeOffset)
 
     // 8 triangles and 16 quadrilaterals
     EXPECT_EQ(mergedMesh->GetNumFaces(), 24);
-    EXPECT_EQ(mergedMesh->GetNumNodes(), 31);
-    EXPECT_EQ(mergedMesh->GetNumEdges(), 54);
+    EXPECT_EQ(mergedMesh->GetNumValidNodes(), 31);
+    EXPECT_EQ(mergedMesh->GetNumValidEdges(), 54);
 
-    const double tolerance = 1.0e-8;
+    const double tolerance = 1.0e-10;
 
     // Only comparing the nodes that were along the irregular edge and the
     // edge where the node was created in order to free the hanging nodes
-    EXPECT_NEAR(mergedMesh->m_nodes[14].x, 29.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[15].x, 29.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[16].x, 29.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[17].x, 29.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[8].x, 20.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[9].x, 20.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[30].x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(8).x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(16).x, 29.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(17).x, 29.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(18).x, 29.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(19).x, 29.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(32).x, 20.0, tolerance);
 
-    EXPECT_NEAR(mergedMesh->m_nodes[14].y, 0.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[15].y, 3.1, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[16].y, 6.2, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[17].y, 9.3, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[8].y, 0.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[9].y, 10.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[30].y, 5.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(8).y, 0.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).y, 10.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(16).y, 0.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(17).y, 3.1, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(18).y, 6.2, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(19).y, 9.3, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(32).y, 5.0, tolerance);
 
     const meshkernel::UInt nullValue = meshkernel::constants::missing::uintValue;
 
     // Allocate enough space for all edge, but will only check the edges around what was the irregular edge
-    std::vector<meshkernel::Edge> expectedEdges(54, {nullValue, nullValue});
+    std::vector<meshkernel::Edge> expectedEdges(mergedMesh->GetNumEdges(), {nullValue, nullValue});
 
-    // Only checking the edges connected to the (initial) irregular edge and the
-    // edge where the node was created in order to free the hanging nodes
+    expectedEdges[0].first = 0;
+    expectedEdges[0].second = 4;
+    expectedEdges[1].first = 1;
+    expectedEdges[1].second = 5;
+    expectedEdges[2].first = 2;
+    expectedEdges[2].second = 6;
+    expectedEdges[3].first = 3;
+    expectedEdges[3].second = 7;
     expectedEdges[4].first = 4;
     expectedEdges[4].second = 8;
     expectedEdges[5].first = 5;
     expectedEdges[5].second = 9;
+    expectedEdges[6].first = 6;
+    expectedEdges[6].second = 10;
+    expectedEdges[7].first = 7;
+    expectedEdges[7].second = 11;
     expectedEdges[8].first = 8;
-    expectedEdges[8].second = 14;
+    expectedEdges[8].second = 16;
     expectedEdges[9].first = 9;
-    expectedEdges[9].second = 17;
-    expectedEdges[18].first = 10;
-    expectedEdges[18].second = 9;
+    expectedEdges[9].second = 19;
+    expectedEdges[10].first = 10;
+    expectedEdges[10].second = 14;
+    expectedEdges[11].first = 11;
+    expectedEdges[11].second = 15;
+    expectedEdges[12].first = 1;
+    expectedEdges[12].second = 0;
+    expectedEdges[13].first = 2;
+    expectedEdges[13].second = 1;
+    expectedEdges[14].first = 3;
+    expectedEdges[14].second = 2;
+    expectedEdges[15].first = 5;
+    expectedEdges[15].second = 4;
+    expectedEdges[16].first = 6;
+    expectedEdges[16].second = 5;
+    expectedEdges[17].first = 7;
+    expectedEdges[17].second = 6;
+    expectedEdges[19].first = 10;
+    expectedEdges[19].second = 9;
+    expectedEdges[20].first = 11;
+    expectedEdges[20].second = 10;
+    expectedEdges[22].first = 14;
+    expectedEdges[22].second = 19;
     expectedEdges[23].first = 15;
-    expectedEdges[23].second = 19;
+    expectedEdges[23].second = 14;
     expectedEdges[24].first = 16;
     expectedEdges[24].second = 20;
-    expectedEdges[34].first = 15;
-    expectedEdges[34].second = 14;
-    expectedEdges[35].first = 16;
-    expectedEdges[35].second = 15;
+    expectedEdges[25].first = 17;
+    expectedEdges[25].second = 21;
+    expectedEdges[26].first = 18;
+    expectedEdges[26].second = 22;
+    expectedEdges[27].first = 19;
+    expectedEdges[27].second = 23;
+    expectedEdges[28].first = 20;
+    expectedEdges[28].second = 24;
+    expectedEdges[29].first = 21;
+    expectedEdges[29].second = 25;
+    expectedEdges[30].first = 22;
+    expectedEdges[30].second = 26;
+    expectedEdges[31].first = 23;
+    expectedEdges[31].second = 27;
+    expectedEdges[32].first = 24;
+    expectedEdges[32].second = 28;
+    expectedEdges[33].first = 25;
+    expectedEdges[33].second = 29;
+    expectedEdges[34].first = 26;
+    expectedEdges[34].second = 30;
+    expectedEdges[35].first = 27;
+    expectedEdges[35].second = 31;
     expectedEdges[36].first = 17;
     expectedEdges[36].second = 16;
-    expectedEdges[46].first = 16;
-    expectedEdges[46].second = 30;
-    expectedEdges[47].first = 16;
-    expectedEdges[47].second = 9;
-    expectedEdges[48].first = 15;
-    expectedEdges[48].second = 30;
-    expectedEdges[49].first = 15;
-    expectedEdges[49].second = 8;
-    expectedEdges[50].first = 30;
-    expectedEdges[50].second = 9;
-    expectedEdges[51].first = 30;
+    expectedEdges[37].first = 18;
+    expectedEdges[37].second = 17;
+    expectedEdges[38].first = 19;
+    expectedEdges[38].second = 18;
+    expectedEdges[39].first = 21;
+    expectedEdges[39].second = 20;
+    expectedEdges[40].first = 22;
+    expectedEdges[40].second = 21;
+    expectedEdges[41].first = 23;
+    expectedEdges[41].second = 22;
+    expectedEdges[42].first = 25;
+    expectedEdges[42].second = 24;
+    expectedEdges[43].first = 26;
+    expectedEdges[43].second = 25;
+    expectedEdges[44].first = 27;
+    expectedEdges[44].second = 26;
+    expectedEdges[45].first = 29;
+    expectedEdges[45].second = 28;
+    expectedEdges[46].first = 30;
+    expectedEdges[46].second = 29;
+    expectedEdges[47].first = 31;
+    expectedEdges[47].second = 30;
+    expectedEdges[48].first = 18;
+    expectedEdges[48].second = 32;
+    expectedEdges[49].first = 18;
+    expectedEdges[49].second = 9;
+    expectedEdges[50].first = 17;
+    expectedEdges[50].second = 32;
+    expectedEdges[51].first = 17;
     expectedEdges[51].second = 8;
-    expectedEdges[52].first = 30;
-    expectedEdges[52].second = 5;
-    expectedEdges[53].first = 30;
-    expectedEdges[53].second = 4;
+    expectedEdges[52].first = 32;
+    expectedEdges[52].second = 9;
+    expectedEdges[53].first = 32;
+    expectedEdges[53].second = 8;
+    expectedEdges[54].first = 32;
+    expectedEdges[54].second = 5;
+    expectedEdges[55].first = 32;
+    expectedEdges[55].second = 4;
 
     for (meshkernel::UInt i = 0; i < mergedMesh->GetNumEdges(); ++i)
     {
-
         if (expectedEdges[i].first != nullValue)
         {
-            EXPECT_EQ(expectedEdges[i].first, mergedMesh->m_edges[i].first);
-            EXPECT_EQ(expectedEdges[i].second, mergedMesh->m_edges[i].second);
+            EXPECT_EQ(expectedEdges[i].first, mergedMesh->GetEdge(i).first);
+            EXPECT_EQ(expectedEdges[i].second, mergedMesh->GetEdge(i).second);
         }
     }
 }
@@ -451,80 +560,149 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallPositiveOffset)
 
     // 8 triangles and 16 quadrilaterals
     EXPECT_EQ(mergedMesh->GetNumFaces(), 24);
-    EXPECT_EQ(mergedMesh->GetNumNodes(), 31);
-    EXPECT_EQ(mergedMesh->GetNumEdges(), 54);
+    EXPECT_EQ(mergedMesh->GetNumValidNodes(), 31);
+    EXPECT_EQ(mergedMesh->GetNumValidEdges(), 54);
 
     const double tolerance = 1.0e-8;
 
     // Only comparing the nodes that were along the irregular edge and the
     // edge where the node was created in order to free the hanging nodes
-    EXPECT_NEAR(mergedMesh->m_nodes[14].x, 31.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[15].x, 31.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[16].x, 31.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[17].x, 31.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[8].x, 20.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[9].x, 20.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[30].x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(8).x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).x, 20.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(16).x, 31.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(17).x, 31.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(18).x, 31.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(19).x, 31.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(32).x, 20.0, tolerance);
 
-    EXPECT_NEAR(mergedMesh->m_nodes[14].y, 0.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[15].y, 3.1, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[16].y, 6.2, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[17].y, 9.3, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[8].y, 0.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[9].y, 10.0, tolerance);
-    EXPECT_NEAR(mergedMesh->m_nodes[30].y, 5.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(8).y, 0.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(9).y, 10.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(16).y, 0.0, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(17).y, 3.1, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(18).y, 6.2, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(19).y, 9.3, tolerance);
+    EXPECT_NEAR(mergedMesh->Node(32).y, 5.0, tolerance);
 
     const meshkernel::UInt nullValue = meshkernel::constants::missing::uintValue;
 
     // Allocate enough space for all edge, but will only check the edges around what was the irregular edge
-    std::vector<meshkernel::Edge> expectedEdges(54, {nullValue, nullValue});
+    std::vector<meshkernel::Edge> expectedEdges(mergedMesh->GetNumEdges(), {nullValue, nullValue});
 
-    // Only checking the edges connected to the (initial) irregular edge and the
-    // edge where the node was created in order to free the hanging nodes
+    expectedEdges[0].first = 0;
+    expectedEdges[0].second = 4;
+    expectedEdges[1].first = 1;
+    expectedEdges[1].second = 5;
+    expectedEdges[2].first = 2;
+    expectedEdges[2].second = 6;
+    expectedEdges[3].first = 3;
+    expectedEdges[3].second = 7;
     expectedEdges[4].first = 4;
     expectedEdges[4].second = 8;
     expectedEdges[5].first = 5;
     expectedEdges[5].second = 9;
+    expectedEdges[6].first = 6;
+    expectedEdges[6].second = 10;
+    expectedEdges[7].first = 7;
+    expectedEdges[7].second = 11;
     expectedEdges[8].first = 8;
-    expectedEdges[8].second = 14;
+    expectedEdges[8].second = 16;
     expectedEdges[9].first = 9;
-    expectedEdges[9].second = 17;
-    expectedEdges[18].first = 10;
-    expectedEdges[18].second = 9;
+    expectedEdges[9].second = 19;
+    expectedEdges[10].first = 10;
+    expectedEdges[10].second = 14;
+    expectedEdges[11].first = 11;
+    expectedEdges[11].second = 15;
+    expectedEdges[12].first = 1;
+    expectedEdges[12].second = 0;
+    expectedEdges[13].first = 2;
+    expectedEdges[13].second = 1;
+    expectedEdges[14].first = 3;
+    expectedEdges[14].second = 2;
+    expectedEdges[15].first = 5;
+    expectedEdges[15].second = 4;
+    expectedEdges[16].first = 6;
+    expectedEdges[16].second = 5;
+    expectedEdges[17].first = 7;
+    expectedEdges[17].second = 6;
+    expectedEdges[19].first = 10;
+    expectedEdges[19].second = 9;
+    expectedEdges[20].first = 11;
+    expectedEdges[20].second = 10;
+    expectedEdges[22].first = 14;
+    expectedEdges[22].second = 19;
     expectedEdges[23].first = 15;
-    expectedEdges[23].second = 19;
+    expectedEdges[23].second = 14;
     expectedEdges[24].first = 16;
     expectedEdges[24].second = 20;
-    expectedEdges[34].first = 15;
-    expectedEdges[34].second = 14;
-    expectedEdges[35].first = 16;
-    expectedEdges[35].second = 15;
+    expectedEdges[25].first = 17;
+    expectedEdges[25].second = 21;
+    expectedEdges[26].first = 18;
+    expectedEdges[26].second = 22;
+    expectedEdges[27].first = 19;
+    expectedEdges[27].second = 23;
+    expectedEdges[28].first = 20;
+    expectedEdges[28].second = 24;
+    expectedEdges[29].first = 21;
+    expectedEdges[29].second = 25;
+    expectedEdges[30].first = 22;
+    expectedEdges[30].second = 26;
+    expectedEdges[31].first = 23;
+    expectedEdges[31].second = 27;
+    expectedEdges[32].first = 24;
+    expectedEdges[32].second = 28;
+    expectedEdges[33].first = 25;
+    expectedEdges[33].second = 29;
+    expectedEdges[34].first = 26;
+    expectedEdges[34].second = 30;
+    expectedEdges[35].first = 27;
+    expectedEdges[35].second = 31;
     expectedEdges[36].first = 17;
     expectedEdges[36].second = 16;
-    expectedEdges[46].first = 16;
-    expectedEdges[46].second = 30;
-    expectedEdges[47].first = 16;
-    expectedEdges[47].second = 9;
-    expectedEdges[48].first = 15;
-    expectedEdges[48].second = 30;
-    expectedEdges[49].first = 15;
-    expectedEdges[49].second = 8;
-    expectedEdges[50].first = 30;
-    expectedEdges[50].second = 9;
-    expectedEdges[51].first = 30;
+    expectedEdges[37].first = 18;
+    expectedEdges[37].second = 17;
+    expectedEdges[38].first = 19;
+    expectedEdges[38].second = 18;
+    expectedEdges[39].first = 21;
+    expectedEdges[39].second = 20;
+    expectedEdges[40].first = 22;
+    expectedEdges[40].second = 21;
+    expectedEdges[41].first = 23;
+    expectedEdges[41].second = 22;
+    expectedEdges[42].first = 25;
+    expectedEdges[42].second = 24;
+    expectedEdges[43].first = 26;
+    expectedEdges[43].second = 25;
+    expectedEdges[44].first = 27;
+    expectedEdges[44].second = 26;
+    expectedEdges[45].first = 29;
+    expectedEdges[45].second = 28;
+    expectedEdges[46].first = 30;
+    expectedEdges[46].second = 29;
+    expectedEdges[47].first = 31;
+    expectedEdges[47].second = 30;
+    expectedEdges[48].first = 18;
+    expectedEdges[48].second = 32;
+    expectedEdges[49].first = 18;
+    expectedEdges[49].second = 9;
+    expectedEdges[50].first = 17;
+    expectedEdges[50].second = 32;
+    expectedEdges[51].first = 17;
     expectedEdges[51].second = 8;
-    expectedEdges[52].first = 30;
-    expectedEdges[52].second = 5;
-    expectedEdges[53].first = 30;
-    expectedEdges[53].second = 4;
+    expectedEdges[52].first = 32;
+    expectedEdges[52].second = 9;
+    expectedEdges[53].first = 32;
+    expectedEdges[53].second = 8;
+    expectedEdges[54].first = 32;
+    expectedEdges[54].second = 5;
+    expectedEdges[55].first = 32;
+    expectedEdges[55].second = 4;
 
     for (meshkernel::UInt i = 0; i < mergedMesh->GetNumEdges(); ++i)
     {
-
         if (expectedEdges[i].first != nullValue)
         {
-            EXPECT_EQ(expectedEdges[i].first, mergedMesh->m_edges[i].first);
-            EXPECT_EQ(expectedEdges[i].second, mergedMesh->m_edges[i].second);
+            EXPECT_EQ(expectedEdges[i].first, mergedMesh->GetEdge(i).first);
+            EXPECT_EQ(expectedEdges[i].second, mergedMesh->GetEdge(i).second);
         }
     }
 }
