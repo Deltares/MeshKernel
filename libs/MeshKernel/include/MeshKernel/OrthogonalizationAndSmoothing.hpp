@@ -28,7 +28,7 @@
 #pragma once
 
 #include <MeshKernel/LandBoundaries.hpp>
-#include <MeshKernel/OrthogonalizationAndSmoothingAction.hpp>
+#include <MeshKernel/UndoAction.hpp>
 #include <MeshKernel/Parameters.hpp>
 
 namespace meshkernel
@@ -99,10 +99,10 @@ namespace meshkernel
                                       const OrthogonalizationParameters& orthogonalizationParameters);
 
         /// @brief Initializes the object
-        void Initialize();
+        [[nodiscard]] std::unique_ptr<UndoAction> Initialize();
 
         /// @brief Executes the entire algorithm
-        std::unique_ptr<OrthogonalizationAndSmoothingAction> Compute();
+        void Compute();
 
         /// @brief Prepares the outer iteration, calculates orthogonalizer and smoother coefficients and assable the linear system
         void PrepareOuterIteration();

@@ -44,16 +44,16 @@ namespace meshkernel
     {
     public:
         /// @brief Allocate a ResetNodeAction and return a unique_ptr to the newly create object.
-        static std::unique_ptr<OrthogonalizationAndSmoothingAction> Create(Mesh2D& mesh, const std::vector<Point>& nodes, const std::vector<Edge>& edges);
+        static std::unique_ptr<OrthogonalizationAndSmoothingAction> Create(Mesh2D& mesh, const std::vector<Point>& nodes);
 
         /// @brief Constructor
-        OrthogonalizationAndSmoothingAction(Mesh2D& mesh, const std::vector<Point>& nodes, const std::vector<Edge>& edges);
+        OrthogonalizationAndSmoothingAction(Mesh2D& mesh, const std::vector<Point>& nodes);
 
-        /// @brief Swap the stored nodes and edges with those given.
+        /// @brief Swap the stored nodes with those given.
         ///
-        /// Only the first m_nodes.size and m_edges.size will be swapped.
-        /// leaving the remaining nodes and edges untouched.
-        void Swap(std::vector<Point>& nodes, std::vector<Edge>& edges);
+        /// Only the first m_nodes.size will be swapped.
+        /// leaving the remaining nodes untouched.
+        void Swap(std::vector<Point>& nodes);
 
         /// @brief Get the number of bytes used by this object.
         std::uint64_t MemorySize() const override;
@@ -64,17 +64,10 @@ namespace meshkernel
     private:
         /// @brief Set of nodes.
         ///
-        /// State depends on the state of the action:
-        /// 1. When ActionState::Committed: nodes contain state before orthogonalisation and smoothing
-        /// 2. When ActionState::Restored:  nodes contain state after orthogonalisation and smoothing
+        /// Value of the node depends on the state of the action:
+        /// 1. When ActionState::Committed: m_nodes contain mesh node state before orthogonalisation and smoothing
+        /// 2. When ActionState::Restored:  m_nodes contain mesh node state after orthogonalisation and smoothing
         std::vector<Point> m_nodes;
-
-        /// @brief Set of edges.
-        ///
-        /// State depends on the state of the action:
-        /// 1. When ActionState::Committed: edges contain state before orthogonalisation and smoothing
-        /// 2. When ActionState::Restored:  edges contain state after orthogonalisation and smoothing
-        std::vector<Edge> m_edges;
     };
 
 } // namespace meshkernel

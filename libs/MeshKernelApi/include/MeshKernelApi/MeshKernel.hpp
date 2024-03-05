@@ -70,6 +70,11 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_redo_state(int meshKernelId, bool& redone);
 
+        /// @brief Clear the undo state.
+        /// @param[in] meshKernelId The id of the mesh state.
+        /// @returns Error code
+        MKERNEL_API int mkernel_clear_undo_state(int meshKernelId);
+
         /// @brief Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
         ///
         /// \see meshkernel::Contacts::ComputeBoundaryContacts

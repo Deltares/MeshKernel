@@ -56,8 +56,10 @@ OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(Mesh2D& mesh,
     m_orthogonalizationParameters = orthogonalizationParameters;
 }
 
-void OrthogonalizationAndSmoothing::Initialize()
+std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initialize()
 {
+    std::unique_ptr<OrthogonalizationAndSmoothingAction> undoAction = OrthogonalizationAndSmoothingAction::Create(m_mesh, m_mesh.Nodes());
+
     // Sets the node mask
     m_mesh.Administrate();
     const auto nodeMask = m_mesh.NodeMaskFromPolygon(*m_polygons, true);
@@ -99,13 +101,12 @@ void OrthogonalizationAndSmoothing::Initialize()
 
         m_localCoordinates.resize(m_localCoordinatesIndices.back() - 1, {constants::missing::doubleValue, constants::missing::doubleValue});
     }
+
+    return undoAction;
 }
 
-std::unique_ptr<meshkernel::OrthogonalizationAndSmoothingAction> OrthogonalizationAndSmoothing::Compute()
+void OrthogonalizationAndSmoothing::Compute()
 {
-    std::unique_ptr<OrthogonalizationAndSmoothingAction> undoAction =
-        OrthogonalizationAndSmoothingAction::Create(m_mesh, m_mesh.Nodes(), m_mesh.Edges());
-
     for (auto outerIter = 0; outerIter < m_orthogonalizationParameters.outer_iterations; outerIter++)
     {
         PrepareOuterIteration();
@@ -122,7 +123,6 @@ std::unique_ptr<meshkernel::OrthogonalizationAndSmoothingAction> Orthogonalizati
         FinalizeOuterIteration();
     } // outer iter
 
-    return undoAction;
 }
 
 void OrthogonalizationAndSmoothing::PrepareOuterIteration()
@@ -175,7 +175,8 @@ void OrthogonalizationAndSmoothing::FinalizeOuterIteration()
 
 void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 {
-    const double max_aptf = std::max(m_orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary, m_orthogonalizationParameters.orthogonalization_to_smoothing_factor);
+    const double max_aptf = std::max(m_orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary,
+                                     m_orthogonalizationParameters.orthogonalization_to_smoothing_factor);
 #pragma omp parallel for
     for (int n = 0; n < static_cast<int>(m_mesh.GetNumNodes()); n++)
     {
