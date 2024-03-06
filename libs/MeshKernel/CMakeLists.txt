@@ -51,9 +51,9 @@ set(
   ${SRC_DIR}/MeshRefinement.cpp
   ${SRC_DIR}/MoveNodeAction.cpp
   ${SRC_DIR}/Network1D.cpp
+  ${SRC_DIR}/NodeTranslationAction.cpp
   ${SRC_DIR}/Operations.cpp
   ${SRC_DIR}/OrthogonalizationAndSmoothing.cpp
-  ${SRC_DIR}/OrthogonalizationAndSmoothingAction.cpp
   ${SRC_DIR}/Orthogonalizer.cpp
   ${SRC_DIR}/Polygon.cpp
   ${SRC_DIR}/PolygonalEnclosure.cpp
@@ -141,9 +141,9 @@ set(
   ${DOMAIN_INC_DIR}/MeshTransformation.hpp
   ${DOMAIN_INC_DIR}/MoveNodeAction.hpp
   ${DOMAIN_INC_DIR}/Network1D.hpp
+  ${DOMAIN_INC_DIR}/NodeTranslationAction.hpp
   ${DOMAIN_INC_DIR}/Operations.hpp
   ${DOMAIN_INC_DIR}/OrthogonalizationAndSmoothing.hpp
-  ${DOMAIN_INC_DIR}/OrthogonalizationAndSmoothingAction.hpp
   ${DOMAIN_INC_DIR}/Orthogonalizer.hpp
   ${DOMAIN_INC_DIR}/Parameters.hpp
   ${DOMAIN_INC_DIR}/Point.hpp

@@ -5,10 +5,10 @@
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
-#include <MeshKernel/OrthogonalizationAndSmoothingAction.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Smoother.hpp>
+#include <MeshKernel/UndoAction.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
@@ -231,7 +231,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
                                                     projectToLandBoundaryOption,
                                                     orthogonalizationParameters);
 
-    [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
+    auto undoAction = orthogonalization.Initialize();
     orthogonalization.Compute();
 
     constexpr double tolerance = 1.8;

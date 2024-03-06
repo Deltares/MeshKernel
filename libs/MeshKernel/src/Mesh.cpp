@@ -849,6 +849,16 @@ void Mesh::Restore(MoveNodeAction& undoAction)
     }
 }
 
+void Mesh::Commit(NodeTranslationAction& undoAction)
+{
+    undoAction.Swap(m_nodes);
+}
+
+void Mesh::Restore(NodeTranslationAction& undoAction)
+{
+    undoAction.Swap(m_nodes);
+}
+
 bool Mesh::IsFaceOnBoundary(UInt face) const
 {
 

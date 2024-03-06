@@ -38,6 +38,7 @@
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/MoveNodeAction.hpp"
+#include "MeshKernel/NodeTranslationAction.hpp"
 #include "MeshKernel/ResetEdgeAction.hpp"
 #include "MeshKernel/ResetNodeAction.hpp"
 #include "MeshKernel/UndoAction.hpp"
@@ -301,6 +302,14 @@ namespace meshkernel
         ///
         /// Restore mesh to state before node was moved
         void Restore(MoveNodeAction& undoAction);
+
+        /// @brief Apply the node translation action
+        void Commit(NodeTranslationAction& undoAction);
+
+        /// @brief Undo the node translation action
+        ///
+        /// Restore mesh to state before node was translated
+        void Restore(NodeTranslationAction& undoAction);
 
         /// @brief Get the index of a node close to a point
         /// @param[in] point The starting point from where to start the search

@@ -28,26 +28,32 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "MeshKernel/BaseMeshUndoAction.hpp"
-#include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Point.hpp"
 
 namespace meshkernel
 {
     /// @brief Forward declaration of the unstructured mesh
-    class Mesh2D;
+    class Mesh;
 
-    /// @brief Action to add an node to an unstructured mesh.
-    // class OrthogonalizationAndSmoothingAction : public UndoAction
-    class OrthogonalizationAndSmoothingAction : public BaseMeshUndoAction<OrthogonalizationAndSmoothingAction, Mesh2D>
+    /// @brief Undo action for all operations that translate nodes
+    ///
+    /// \note This does not keep track of any changes in edge information
+    class NodeTranslationAction : public BaseMeshUndoAction<NodeTranslationAction, Mesh>
     {
     public:
         /// @brief Allocate a ResetNodeAction and return a unique_ptr to the newly create object.
-        static std::unique_ptr<OrthogonalizationAndSmoothingAction> Create(Mesh2D& mesh, const std::vector<UInt>& nodeIndices);
+        ///
+        /// Assumes all nodes are to be translated.
+        static std::unique_ptr<NodeTranslationAction> Create(Mesh& mesh);
+
+        /// @brief Allocate a ResetNodeAction and return a unique_ptr to the newly create object.
+        static std::unique_ptr<NodeTranslationAction> Create(Mesh& mesh, const std::vector<UInt>& nodeIndices);
 
         /// @brief Constructor
-        OrthogonalizationAndSmoothingAction(Mesh2D& mesh, const std::vector<UInt>& nodeIndices);
+        NodeTranslationAction(Mesh& mesh, const std::vector<UInt>& nodeIndices);
 
         /// @brief Swap the stored nodes with those given.
         void Swap(std::vector<Point>& nodes);
@@ -59,14 +65,14 @@ namespace meshkernel
         void Print(std::ostream& out = std::cout) const override;
 
     private:
-        /// @brief Set of nodes moved during the orthogonalisation procedure.
+        /// @brief Set of nodes moved during the translation procedure.
         ///
         /// Value of the node depends on the state of the action:
-        /// 1. When ActionState::Committed: m_nodes contain mesh node state before orthogonalisation and smoothing
-        /// 2. When ActionState::Restored:  m_nodes contain mesh node state after orthogonalisation and smoothing
+        /// 1. When ActionState::Committed: m_nodes contain mesh node state before translation
+        /// 2. When ActionState::Restored:  m_nodes contain mesh node state after translation
         std::vector<Point> m_nodes;
 
-        /// @brief Indices of nodes moved during the orthogonalisation procedure.
+        /// @brief Indices of nodes moved during the translation procedure.
         ///
         /// This array may be empty if all nodes have been moved.
         std::vector<UInt> m_nodeIndices;

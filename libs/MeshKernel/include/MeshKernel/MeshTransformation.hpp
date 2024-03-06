@@ -29,10 +29,12 @@
 
 #include <cmath>
 #include <concepts>
+#include <memory>
 
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh.hpp"
+#include "MeshKernel/NodeTranslationAction.hpp"
 #include "MeshKernel/Point.hpp"
 #include "MeshKernel/Vector.hpp"
 
@@ -263,7 +265,7 @@ namespace meshkernel
     public:
         /// @brief Apply a transformation to a mesh with a Cartesian projection
         template <TransformationFunction Transformation>
-        static void Compute(Mesh& mesh, Transformation transformation)
+        static std::unique_ptr<UndoAction> Compute(Mesh& mesh, Transformation transformation)
         {
             if (mesh.m_projection != transformation.TransformationProjection())
             {
@@ -271,6 +273,7 @@ namespace meshkernel
                                       ProjectionToString(transformation.TransformationProjection()), ProjectionToString(mesh.m_projection));
             }
 
+            std::unique_ptr<NodeTranslationAction> undoAction = NodeTranslationAction::Create(mesh);
             std::vector<Point> nodes(mesh.Nodes());
 
 #pragma omp parallel for
@@ -291,6 +294,7 @@ namespace meshkernel
 
             mesh.SetNodes(nodes);
             mesh.Administrate();
+            return undoAction;
         }
     };
 

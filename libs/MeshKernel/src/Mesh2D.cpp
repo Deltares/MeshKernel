@@ -827,16 +827,6 @@ void Mesh2D::Restore(SphericalCoordinatesOffsetAction& undoAction)
     undoAction.UndoOffset(m_nodes);
 }
 
-void Mesh2D::Commit(OrthogonalizationAndSmoothingAction& undoAction)
-{
-    undoAction.Swap(m_nodes);
-}
-
-void Mesh2D::Restore(OrthogonalizationAndSmoothingAction& undoAction)
-{
-    undoAction.Swap(m_nodes);
-}
-
 meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
                                                  const std::vector<UInt>& edgesNumFaces) const
 {

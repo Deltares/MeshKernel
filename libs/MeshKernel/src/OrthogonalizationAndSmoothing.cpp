@@ -29,6 +29,7 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/NodeTranslationAction.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
@@ -80,7 +81,7 @@ std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initializ
     }
 
     nodeIndices.resize(nodesMovedCount);
-    std::unique_ptr<OrthogonalizationAndSmoothingAction> undoAction = OrthogonalizationAndSmoothingAction::Create(m_mesh, nodeIndices);
+    std::unique_ptr<NodeTranslationAction> undoAction = NodeTranslationAction::Create(m_mesh, nodeIndices);
 
     // TODO: calculate volume weights for areal smoother
     m_mumax = (1.0 - m_orthogonalizationParameters.areal_to_angle_smoothing_factor) * 0.5;
