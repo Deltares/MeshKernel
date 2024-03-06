@@ -1,5 +1,6 @@
 #include <chrono>
 #include <gtest/gtest.h>
+#include <memory>
 #include <random>
 
 #include "MeshKernel/Constants.hpp"
@@ -7,6 +8,7 @@
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/MeshTransformation.hpp"
 #include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/UndoAction.hpp"
 
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
@@ -186,12 +188,26 @@ TEST(MeshTransformationTest, MeshTranslationTest)
 
     mk::Translation translation(vec);
 
-    mk::MeshTransformation::Compute(*mesh, translation);
+    const std::vector<mk::Point> meshPoints(mesh->Nodes());
+
+    std::unique_ptr<mk::UndoAction> undoAction = mk::MeshTransformation::Compute(*mesh, translation);
 
     for (mk::UInt i = 0; i < mesh->GetNumNodes(); ++i)
     {
         EXPECT_EQ(originalMesh->Node(i).x + vec.x(), mesh->Node(i).x);
         EXPECT_EQ(originalMesh->Node(i).y + vec.y(), mesh->Node(i).y);
+    }
+
+    undoAction->Restore();
+
+    ASSERT_EQ(mesh->GetNumNodes(), static_cast<mk::UInt>(meshPoints.size()));
+
+    constexpr double tolerance = 1.0e-10;
+
+    for (mk::UInt i = 0; i < meshPoints.size(); ++i)
+    {
+        EXPECT_NEAR(meshPoints[i].x, mesh->Node(i).x, tolerance);
+        EXPECT_NEAR(meshPoints[i].y, mesh->Node(i).y, tolerance);
     }
 }
 
@@ -214,7 +230,9 @@ TEST(MeshTransformationTest, MeshRotationTest)
     double cosTheta = std::cos(theta * M_PI / 180.0);
     double sinTheta = std::sin(theta * M_PI / 180.0);
 
-    mk::MeshTransformation::Compute(*mesh, rotation);
+    const std::vector<mk::Point> meshPoints(mesh->Nodes());
+
+    std::unique_ptr<mk::UndoAction> undoAction = mk::MeshTransformation::Compute(*mesh, rotation);
 
     for (mk::UInt i = 0; i < mesh->GetNumNodes(); ++i)
     {
@@ -222,6 +240,18 @@ TEST(MeshTransformationTest, MeshRotationTest)
                            originalMesh->Node(i).x * sinTheta + originalMesh->Node(i).y * cosTheta};
         EXPECT_EQ(expected.x, mesh->Node(i).x);
         EXPECT_EQ(expected.y, mesh->Node(i).y);
+    }
+
+    undoAction->Restore();
+
+    ASSERT_EQ(mesh->GetNumNodes(), static_cast<mk::UInt>(meshPoints.size()));
+
+    constexpr double tolerance = 1.0e-10;
+
+    for (mk::UInt i = 0; i < meshPoints.size(); ++i)
+    {
+        EXPECT_NEAR(meshPoints[i].x, mesh->Node(i).x, tolerance);
+        EXPECT_NEAR(meshPoints[i].y, mesh->Node(i).y, tolerance);
     }
 }
 
@@ -235,11 +265,11 @@ TEST(MeshTransformationTest, IncorrectProjectionTest)
     mk::Rotation rotation(45.0);
 
     // Should throw an exception with spherical coordinate system
-    EXPECT_THROW(mk::MeshTransformation::Compute(*mesh, rotation), mk::MeshKernelError);
+    EXPECT_THROW([[maybe_unused]] auto action = mk::MeshTransformation::Compute(*mesh, rotation), mk::MeshKernelError);
 
     // Change projection to Projection::sphericalAccurate
     mesh->m_projection = mk::Projection::sphericalAccurate;
 
     // Should throw an exception with spherical-accurate coordinate system
-    EXPECT_THROW(mk::MeshTransformation::Compute(*mesh, rotation), mk::MeshKernelError);
+    EXPECT_THROW([[maybe_unused]] auto action = mk::MeshTransformation::Compute(*mesh, rotation), mk::MeshKernelError);
 }

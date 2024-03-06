@@ -265,7 +265,7 @@ namespace meshkernel
     public:
         /// @brief Apply a transformation to a mesh with a Cartesian projection
         template <TransformationFunction Transformation>
-        static std::unique_ptr<UndoAction> Compute(Mesh& mesh, Transformation transformation)
+        [[nodiscard]] static std::unique_ptr<UndoAction> Compute(Mesh& mesh, Transformation transformation)
         {
             if (mesh.m_projection != transformation.TransformationProjection())
             {

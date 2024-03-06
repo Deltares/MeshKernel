@@ -49,8 +49,7 @@ void meshkernel::SphericalCoordinatesOffsetAction::UndoOffset(std::vector<Point>
 /// \brief Compute the approximate amount of memory being used, in bytes.
 std::uint64_t meshkernel::SphericalCoordinatesOffsetAction::MemorySize() const
 {
-    std::uint64_t size = sizeof(*this) +
-                         static_cast<std::uint64_t>(m_offsetNodesDecrease.size() + m_offsetNodesIncrease.size()) * sizeof(UInt);
+    std::uint64_t size = sizeof(*this) + static_cast<std::uint64_t>(m_offsetNodesDecrease.size() + m_offsetNodesIncrease.size()) * sizeof(UInt);
     return size;
 }
 

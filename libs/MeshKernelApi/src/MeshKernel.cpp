@@ -2096,7 +2096,7 @@ namespace meshkernelapi
             // Translate origin back to centre of rotation
             transformation.compose(meshkernel::Translation(meshkernel::Vector(centreX, centreY)));
 
-            meshkernel::MeshTransformation::Compute(*meshKernelState[meshKernelId].m_mesh2d, transformation);
+            meshKernelState[meshKernelId].m_undoStack.Add(meshkernel::MeshTransformation::Compute(*meshKernelState[meshKernelId].m_mesh2d, transformation));
         }
         catch (...)
         {
@@ -2117,7 +2117,7 @@ namespace meshkernelapi
             }
 
             meshkernel::Translation translation(meshkernel::Vector(translationX, translationY));
-            meshkernel::MeshTransformation::Compute(*meshKernelState[meshKernelId].m_mesh2d, translation);
+            meshKernelState[meshKernelId].m_undoStack.Add(meshkernel::MeshTransformation::Compute(*meshKernelState[meshKernelId].m_mesh2d, translation));
         }
         catch (...)
         {
