@@ -44,15 +44,12 @@ namespace meshkernel
     {
     public:
         /// @brief Allocate a ResetNodeAction and return a unique_ptr to the newly create object.
-        static std::unique_ptr<OrthogonalizationAndSmoothingAction> Create(Mesh2D& mesh, const std::vector<Point>& nodes);
+        static std::unique_ptr<OrthogonalizationAndSmoothingAction> Create(Mesh2D& mesh, const std::vector<UInt>& nodeIndices);
 
         /// @brief Constructor
-        OrthogonalizationAndSmoothingAction(Mesh2D& mesh, const std::vector<Point>& nodes);
+        OrthogonalizationAndSmoothingAction(Mesh2D& mesh, const std::vector<UInt>& nodeIndices);
 
         /// @brief Swap the stored nodes with those given.
-        ///
-        /// Only the first m_nodes.size will be swapped.
-        /// leaving the remaining nodes untouched.
         void Swap(std::vector<Point>& nodes);
 
         /// @brief Get the number of bytes used by this object.
@@ -68,6 +65,11 @@ namespace meshkernel
         /// 1. When ActionState::Committed: m_nodes contain mesh node state before orthogonalisation and smoothing
         /// 2. When ActionState::Restored:  m_nodes contain mesh node state after orthogonalisation and smoothing
         std::vector<Point> m_nodes;
+
+        /// @brief Index of nodes moved during the orthogonalisation procedure.
+        ///
+        /// This array may be empty if all nodes have been moved.
+        std::vector<UInt> m_nodeIndices;
     };
 
 } // namespace meshkernel

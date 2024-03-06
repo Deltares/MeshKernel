@@ -58,11 +58,12 @@ OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(Mesh2D& mesh,
 
 std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initialize()
 {
-    std::unique_ptr<OrthogonalizationAndSmoothingAction> undoAction = OrthogonalizationAndSmoothingAction::Create(m_mesh, m_mesh.Nodes());
-
     // Sets the node mask
     m_mesh.Administrate();
     const auto nodeMask = m_mesh.NodeMaskFromPolygon(*m_polygons, true);
+
+    std::vector<UInt> nodeIndices(m_mesh.GetNumNodes(), constants::missing::uintValue);
+    UInt nodesMovedCount = 0;
 
     // Flag nodes outside the polygon as corner points
     for (UInt n = 0; n < nodeMask.size(); n++)
@@ -71,7 +72,15 @@ std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initializ
         {
             m_mesh.m_nodesTypes[n] = 3;
         }
+        else
+        {
+            nodeIndices[nodesMovedCount] = n;
+            ++nodesMovedCount;
+        }
     }
+
+    nodeIndices.resize(nodesMovedCount);
+    std::unique_ptr<OrthogonalizationAndSmoothingAction> undoAction = OrthogonalizationAndSmoothingAction::Create(m_mesh, nodeIndices);
 
     // TODO: calculate volume weights for areal smoother
     m_mumax = (1.0 - m_orthogonalizationParameters.areal_to_angle_smoothing_factor) * 0.5;

@@ -194,6 +194,9 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     // now build node-edge mapping
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
+    // The original mesh nodes
+    const std::vector<meshkernel::Point> meshNodes(mesh->Nodes());
+
     const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
@@ -255,6 +258,16 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     ASSERT_NEAR(405.390188082498, mesh->Node(7).y, tolerance);
     ASSERT_NEAR(319.410057398020, mesh->Node(8).y, tolerance);
     ASSERT_NEAR(327.001109057344, mesh->Node(9).y, tolerance);
+
+    undoAction->Restore();
+
+    constexpr double nodeTolerance = 1.0e-10;
+
+    for (meshkernel::UInt i = 0; i < meshNodes.size(); ++i)
+    {
+        EXPECT_NEAR(meshNodes[i].x, mesh->Node(i).x, nodeTolerance);
+        EXPECT_NEAR(meshNodes[i].y, mesh->Node(i).y, nodeTolerance);
+    }
 }
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithUndo)
