@@ -262,12 +262,12 @@ namespace meshkernel
         /// @brief Get the array of nodes at an m-dimension index
         /// @param [in] m the m-dimension index
         /// @return a vector of N nodes
-        std::vector<Point> GetNodeVectorAtM(UInt m) const { return lin_alg::MatrixColToSTLVector(m_gridNodes, m); }
+        std::vector<Point> GetNodeVectorAtM(UInt m) const { return lin_alg::MatrixRowToSTLVector(m_gridNodes, m); }
 
         /// @brief Get the array of nodes at an n-dimension index
         /// @param [in] n the n-dimension index
         /// @return a vector of M nodes
-        std::vector<Point> GetNodeVectorAtN(UInt n) const { return lin_alg::MatrixRowToSTLVector(m_gridNodes, n); }
+        std::vector<Point> GetNodeVectorAtN(UInt n) const { return lin_alg::MatrixColToSTLVector(m_gridNodes, n); }
 
     private:
         /// @brief Remove invalid nodes.

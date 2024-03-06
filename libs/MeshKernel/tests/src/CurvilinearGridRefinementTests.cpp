@@ -11,10 +11,10 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGrid_ShouldRefine)
     // Set-up
     lin_alg::Matrix<Point> grid(4, 4);
 
-    grid << Point{0, 0}, Point{10, 0}, Point{20, 0}, Point{30, 0},
-        Point{0, 10}, Point{10, 10}, Point{20, 10}, Point{30, 10},
-        Point{0, 20}, Point{10, 20}, Point{20, 20}, Point{30, 20},
-        Point{0, 30}, Point{10, 30}, Point{20, 30}, Point{30, 30};
+    grid << Point{0, 0}, Point{0, 10}, Point{0, 20}, Point{0, 30},
+        Point{10, 0}, Point{10, 10}, Point{10, 20}, Point{10, 30},
+        Point{20, 0}, Point{20, 10}, Point{20, 20}, Point{20, 30},
+        Point{30, 0}, Point{30, 10}, Point{30, 20}, Point{30, 30};
 
     CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
     CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGrid, 10);
@@ -24,8 +24,8 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGrid_ShouldRefine)
     curvilinearGridRefinement.Compute();
 
     // Assert
-    ASSERT_EQ(13, curvilinearGrid.NumM());
-    ASSERT_EQ(4, curvilinearGrid.NumN());
+    ASSERT_EQ(4, curvilinearGrid.NumM());
+    ASSERT_EQ(13, curvilinearGrid.NumN());
 
     constexpr double tolerance = 1e-12;
     ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 0).x, tolerance);

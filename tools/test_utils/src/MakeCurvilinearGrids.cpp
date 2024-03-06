@@ -24,11 +24,11 @@ size_t CurvilinearGridCountValidNodes(meshkernel::CurvilinearGrid const& curvili
 {
     size_t validNodes = 0;
     size_t index = 0;
-    for (meshkernel::UInt m = 0; m < curvilinearGrid.NumM(); ++m)
+    for (meshkernel::UInt n = 0; n < curvilinearGrid.NumN(); ++n)
     {
-        for (meshkernel::UInt n = 0; n < curvilinearGrid.NumN(); ++n)
+        for (meshkernel::UInt m = 0; m < curvilinearGrid.NumM(); ++m)
         {
-            if (curvilinearGrid.GetNode(m, n).IsValid())
+            if (curvilinearGrid.GetNode(n, m).IsValid())
             {
                 validNodes++;
             }

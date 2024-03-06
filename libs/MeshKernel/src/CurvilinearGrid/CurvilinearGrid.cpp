@@ -643,29 +643,29 @@ bool CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& fi
 
         if (gridLineType == BoundaryGridLineType::Left)
         {
-            lin_alg::InsertCol(m_gridNodes,
-                               lin_alg::ColVector<Point>(NumN()),
+            lin_alg::InsertRow(m_gridNodes,
+                               lin_alg::RowVector<Point>(NumM()),
                                0);
             gridSizeChanged = true;
         }
         if (gridLineType == BoundaryGridLineType::Right)
-        {
-            lin_alg::InsertCol(m_gridNodes,
-                               lin_alg::ColVector<Point>(NumN()),
-                               NumM());
-            gridSizeChanged = true;
-        }
-        if (gridLineType == BoundaryGridLineType::Up)
         {
             lin_alg::InsertRow(m_gridNodes,
                                lin_alg::RowVector<Point>(NumM()),
                                NumN());
             gridSizeChanged = true;
         }
+        if (gridLineType == BoundaryGridLineType::Up)
+        {
+            lin_alg::InsertCol(m_gridNodes,
+                               lin_alg::ColVector<Point>(NumN()),
+                               NumM());
+            gridSizeChanged = true;
+        }
         if (gridLineType == BoundaryGridLineType::Bottom)
         {
-            lin_alg::InsertRow(m_gridNodes,
-                               lin_alg::RowVector<Point>(NumM()),
+            lin_alg::InsertCol(m_gridNodes,
+                               lin_alg::ColVector<Point>(NumN()),
                                0);
             gridSizeChanged = true;
         }
@@ -721,38 +721,11 @@ void CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices const& firstNode, Curvi
     // Allocation depends on directions
     if (gridLineType == BoundaryGridLineType::Left)
     {
-        auto const firstNewNodeCoordinates = m_gridNodes(firstNode.m_n, firstNode.m_m) * 2.0 - m_gridNodes(firstNode.m_n, firstNode.m_m + 1);
-        auto const secondNewNodeCoordinates = m_gridNodes(secondNode.m_n, secondNode.m_m) * 2.0 - m_gridNodes(secondNode.m_n, secondNode.m_m + 1);
-        auto const isGridLineAdded = AddGridLineAtBoundary(firstNode, secondNode);
-        if (isGridLineAdded)
-        {
-            m_gridNodes(firstNode.m_n, 0) = firstNewNodeCoordinates;
-            m_gridNodes(secondNode.m_n, 0) = secondNewNodeCoordinates;
-            return;
-        }
-
-        m_gridNodes(firstNode.m_n, firstNode.m_m - 1) = firstNewNodeCoordinates;
-        m_gridNodes(secondNode.m_n, secondNode.m_m - 1) = secondNewNodeCoordinates;
-        return;
-    }
-    if (gridLineType == BoundaryGridLineType::Right)
-    {
-        auto const firstNewNodeCoordinates = m_gridNodes(firstNode.m_n, firstNode.m_m) * 2.0 - m_gridNodes(firstNode.m_n, firstNode.m_m - 1);
-        auto const secondNewNodeCoordinates = m_gridNodes(secondNode.m_n, secondNode.m_m) * 2.0 - m_gridNodes(secondNode.m_n, secondNode.m_m - 1);
-        AddGridLineAtBoundary(firstNode, secondNode);
-        m_gridNodes(firstNode.m_n, firstNode.m_m + 1) = firstNewNodeCoordinates;
-        m_gridNodes(secondNode.m_n, secondNode.m_m + 1) = secondNewNodeCoordinates;
-
-        return;
-    }
-    if (gridLineType == BoundaryGridLineType::Bottom)
-    {
         auto const firstNewNodeCoordinates = m_gridNodes(firstNode.m_n, firstNode.m_m) * 2.0 - m_gridNodes(firstNode.m_n + 1, firstNode.m_m);
         auto const secondNewNodeCoordinates = m_gridNodes(secondNode.m_n, secondNode.m_m) * 2.0 - m_gridNodes(secondNode.m_n + 1, secondNode.m_m);
         auto const isGridLineAdded = AddGridLineAtBoundary(firstNode, secondNode);
         if (isGridLineAdded)
         {
-            // Assign the new coordinates
             m_gridNodes(0, firstNode.m_m) = firstNewNodeCoordinates;
             m_gridNodes(0, secondNode.m_m) = secondNewNodeCoordinates;
             return;
@@ -760,15 +733,42 @@ void CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices const& firstNode, Curvi
 
         m_gridNodes(firstNode.m_n - 1, firstNode.m_m) = firstNewNodeCoordinates;
         m_gridNodes(secondNode.m_n - 1, secondNode.m_m) = secondNewNodeCoordinates;
+        return;
     }
-
-    if (gridLineType == BoundaryGridLineType::Up)
+    if (gridLineType == BoundaryGridLineType::Right)
     {
         auto const firstNewNodeCoordinates = m_gridNodes(firstNode.m_n, firstNode.m_m) * 2.0 - m_gridNodes(firstNode.m_n - 1, firstNode.m_m);
         auto const secondNewNodeCoordinates = m_gridNodes(secondNode.m_n, secondNode.m_m) * 2.0 - m_gridNodes(secondNode.m_n - 1, secondNode.m_m);
         AddGridLineAtBoundary(firstNode, secondNode);
         m_gridNodes(firstNode.m_n + 1, firstNode.m_m) = firstNewNodeCoordinates;
         m_gridNodes(secondNode.m_n + 1, secondNode.m_m) = secondNewNodeCoordinates;
+
+        return;
+    }
+    if (gridLineType == BoundaryGridLineType::Bottom)
+    {
+        auto const firstNewNodeCoordinates = m_gridNodes(firstNode.m_n, firstNode.m_m) * 2.0 - m_gridNodes(firstNode.m_n, firstNode.m_m + 1);
+        auto const secondNewNodeCoordinates = m_gridNodes(secondNode.m_n, secondNode.m_m) * 2.0 - m_gridNodes(secondNode.m_n, secondNode.m_m + 1);
+        auto const isGridLineAdded = AddGridLineAtBoundary(firstNode, secondNode);
+        if (isGridLineAdded)
+        {
+            // Assign the new coordinates
+            m_gridNodes(firstNode.m_n, 0) = firstNewNodeCoordinates;
+            m_gridNodes(secondNode.m_n, 0) = secondNewNodeCoordinates;
+            return;
+        }
+
+        m_gridNodes(firstNode.m_n, firstNode.m_m - 1) = firstNewNodeCoordinates;
+        m_gridNodes(secondNode.m_n, secondNode.m_m - 1) = secondNewNodeCoordinates;
+    }
+
+    if (gridLineType == BoundaryGridLineType::Up)
+    {
+        auto const firstNewNodeCoordinates = m_gridNodes(firstNode.m_n, firstNode.m_m) * 2.0 - m_gridNodes(firstNode.m_n, firstNode.m_m - 1);
+        auto const secondNewNodeCoordinates = m_gridNodes(secondNode.m_n, secondNode.m_m) * 2.0 - m_gridNodes(secondNode.m_n, secondNode.m_m - 1);
+        AddGridLineAtBoundary(firstNode, secondNode);
+        m_gridNodes(firstNode.m_n, firstNode.m_m + 1) = firstNewNodeCoordinates;
+        m_gridNodes(secondNode.m_n, secondNode.m_m + 1) = secondNewNodeCoordinates;
     }
 }
 
