@@ -59,14 +59,14 @@ namespace meshkernel
         void Print(std::ostream& out = std::cout) const override;
 
     private:
-        /// @brief Set of nodes.
+        /// @brief Set of nodes moved during the orthogonalisation procedure.
         ///
         /// Value of the node depends on the state of the action:
         /// 1. When ActionState::Committed: m_nodes contain mesh node state before orthogonalisation and smoothing
         /// 2. When ActionState::Restored:  m_nodes contain mesh node state after orthogonalisation and smoothing
         std::vector<Point> m_nodes;
 
-        /// @brief Index of nodes moved during the orthogonalisation procedure.
+        /// @brief Indices of nodes moved during the orthogonalisation procedure.
         ///
         /// This array may be empty if all nodes have been moved.
         std::vector<UInt> m_nodeIndices;
