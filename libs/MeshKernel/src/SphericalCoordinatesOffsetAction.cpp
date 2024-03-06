@@ -20,6 +20,32 @@ void meshkernel::SphericalCoordinatesOffsetAction::AddIncrease(const UInt nodeId
     m_offsetNodesIncrease.push_back(nodeId);
 }
 
+void meshkernel::SphericalCoordinatesOffsetAction::ApplyOffset(std::vector<Point>& nodes) const
+{
+    for (UInt index : m_offsetNodesDecrease)
+    {
+        nodes[index].x -= 360.0;
+    }
+
+    for (UInt index : m_offsetNodesIncrease)
+    {
+        nodes[index].x += 360.0;
+    }
+}
+
+void meshkernel::SphericalCoordinatesOffsetAction::UndoOffset(std::vector<Point>& nodes) const
+{
+    for (UInt index : m_offsetNodesDecrease)
+    {
+        nodes[index].x += 360.0;
+    }
+
+    for (UInt index : m_offsetNodesIncrease)
+    {
+        nodes[index].x -= 360.0;
+    }
+}
+
 /// \brief Compute the approximate amount of memory being used, in bytes.
 std::uint64_t meshkernel::SphericalCoordinatesOffsetAction::MemorySize() const
 {

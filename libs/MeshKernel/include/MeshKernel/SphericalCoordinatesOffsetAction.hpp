@@ -42,9 +42,6 @@ namespace meshkernel
     class SphericalCoordinatesOffsetAction : public BaseMeshUndoAction<SphericalCoordinatesOffsetAction, Mesh2D>
     {
     public:
-        /// @brief Typedef of const iterator.
-        using const_iterator = std::vector<UInt>::const_iterator;
-
         /// @brief Allocate a AddNodeAction and return a unique_ptr to the newly create object.
         static std::unique_ptr<SphericalCoordinatesOffsetAction> Create(Mesh2D& mesh, const double minx, const double maxx);
 
@@ -63,17 +60,11 @@ namespace meshkernel
         /// @brief Add index of node whose value is to be increased
         void AddIncrease(const UInt nodeId);
 
-        /// @brief Return iterator pointing to the first element of the nodes
-        const_iterator BeginDecrease() const;
+        /// @brief Apply the offset action to the nodes
+        void ApplyOffset(std::vector<Point>& nodes) const;
 
-        /// @brief Return iterator pointing to one-past-the-end element of the
-        const_iterator EndDecrease() const;
-
-        /// @brief Return iterator pointing to the first element of the nodes
-        const_iterator BeginIncrease() const;
-
-        /// @brief Return iterator pointing to one-past-the-end element of the
-        const_iterator EndIncrease() const;
+        /// @brief Revert the offset action to the nodes
+        void UndoOffset(std::vector<Point>& nodes) const;
 
         /// \brief Compute the approximate amount of memory being used, in bytes.
         std::uint64_t MemorySize() const override;
@@ -105,24 +96,4 @@ inline double meshkernel::SphericalCoordinatesOffsetAction::MinX() const
 inline double meshkernel::SphericalCoordinatesOffsetAction::MaxX() const
 {
     return m_xMax;
-}
-
-inline meshkernel::SphericalCoordinatesOffsetAction::const_iterator meshkernel::SphericalCoordinatesOffsetAction::BeginDecrease() const
-{
-    return m_offsetNodesDecrease.begin();
-}
-
-inline meshkernel::SphericalCoordinatesOffsetAction::const_iterator meshkernel::SphericalCoordinatesOffsetAction::EndDecrease() const
-{
-    return m_offsetNodesDecrease.end();
-}
-
-inline meshkernel::SphericalCoordinatesOffsetAction::const_iterator meshkernel::SphericalCoordinatesOffsetAction::BeginIncrease() const
-{
-    return m_offsetNodesIncrease.begin();
-}
-
-inline meshkernel::SphericalCoordinatesOffsetAction::const_iterator meshkernel::SphericalCoordinatesOffsetAction::EndIncrease() const
-{
-    return m_offsetNodesIncrease.end();
 }

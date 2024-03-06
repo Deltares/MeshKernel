@@ -819,28 +819,12 @@ std::unique_ptr<meshkernel::SphericalCoordinatesOffsetAction> Mesh2D::OffsetSphe
 
 void Mesh2D::Commit(SphericalCoordinatesOffsetAction& undoAction)
 {
-    for (auto iter = undoAction.BeginDecrease(); iter != undoAction.EndDecrease(); ++iter)
-    {
-        m_nodes[*iter] -= 360.0;
-    }
-
-    for (auto iter = undoAction.BeginIncrease(); iter != undoAction.EndIncrease(); ++iter)
-    {
-        m_nodes[*iter] += 360.0;
-    }
+    undoAction.ApplyOffset(m_nodes);
 }
 
 void Mesh2D::Restore(SphericalCoordinatesOffsetAction& undoAction)
 {
-    for (auto iter = undoAction.BeginDecrease(); iter != undoAction.EndDecrease(); ++iter)
-    {
-        m_nodes[*iter] += 360.0;
-    }
-
-    for (auto iter = undoAction.BeginIncrease(); iter != undoAction.EndIncrease(); ++iter)
-    {
-        m_nodes[*iter] -= 360.0;
-    }
+    undoAction.UndoOffset(m_nodes);
 }
 
 void Mesh2D::Commit(OrthogonalizationAndSmoothingAction& undoAction)

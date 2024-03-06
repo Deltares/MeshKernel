@@ -168,9 +168,26 @@ TEST(UndoActionConstructionTests, SphericalCoordinatesOffsetActionTest)
 
     std::unique_ptr<mk::SphericalCoordinatesOffsetAction> action = mk::SphericalCoordinatesOffsetAction::Create(*mesh, minX, maxX);
 
-    std::vector<mk::UInt> nodesToIncrease{0, 10, 20, 30};
-    std::vector<mk::UInt> nodesToDecrease{1, 11, 21, 31, 41};
+    std::vector<mk::UInt> nodesToIncrease{0, 1, 2, 4};
+    std::vector<mk::UInt> nodesToDecrease{5, 6, 8};
 
+    std::vector<mk::Point> originalNodes{{0.0, 0.0}, {1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0}, {7.0, 8.0}, {9.0, 10.0}, {11.0, 12.0}, {13.0, 14.0}, {15.0, 16.0}, {17.0, 18.0}};
+    std::vector<mk::Point> transformedNodes(originalNodes);
+    // The expected nodeal values after the offset has been applied
+    std::vector<mk::Point> expectedNodes(originalNodes);
+
+    // Generated the expected data.
+    for (mk::UInt i = 0; i < nodesToIncrease.size(); ++i)
+    {
+        expectedNodes[nodesToIncrease[i]].x += 360.0;
+    }
+
+    for (mk::UInt i = 0; i < nodesToDecrease.size(); ++i)
+    {
+        expectedNodes[nodesToDecrease[i]].x -= 360.0;
+    }
+
+    // Set up offset
     for (mk::UInt nodeId : nodesToIncrease)
     {
         action->AddIncrease(nodeId);
@@ -184,23 +201,28 @@ TEST(UndoActionConstructionTests, SphericalCoordinatesOffsetActionTest)
     EXPECT_EQ(action->MinX(), minX);
     EXPECT_EQ(action->MaxX(), maxX);
 
-    ASSERT_EQ(static_cast<size_t>(std::distance(action->BeginDecrease(), action->EndDecrease())), nodesToDecrease.size());
+    constexpr double tolerance = 1.0e-10;
 
-    mk::UInt count = 0;
+    action->ApplyOffset(transformedNodes);
 
-    for (auto iter = action->BeginDecrease(); iter != action->EndDecrease(); ++iter)
+    // Number of nodes should not have changed
+    ASSERT_EQ(transformedNodes.size(), expectedNodes.size());
+
+    for (mk::UInt i = 0; i < expectedNodes.size(); ++i)
     {
-        EXPECT_EQ(nodesToDecrease[count], *iter);
-        ++count;
+        EXPECT_NEAR(transformedNodes[i].x, expectedNodes[i].x, tolerance);
+        EXPECT_NEAR(transformedNodes[i].y, expectedNodes[i].y, tolerance);
     }
 
-    ASSERT_EQ(static_cast<size_t>(std::distance(action->BeginIncrease(), action->EndIncrease())), nodesToIncrease.size());
-    count = 0;
+    action->UndoOffset(transformedNodes);
 
-    for (auto iter = action->BeginIncrease(); iter != action->EndIncrease(); ++iter)
+    // Number of nodes should not have changed
+    ASSERT_EQ(transformedNodes.size(), originalNodes.size());
+
+    for (mk::UInt i = 0; i < originalNodes.size(); ++i)
     {
-        EXPECT_EQ(nodesToIncrease[count], *iter);
-        ++count;
+        EXPECT_NEAR(transformedNodes[i].x, originalNodes[i].x, tolerance);
+        EXPECT_NEAR(transformedNodes[i].y, originalNodes[i].y, tolerance);
     }
 }
 
