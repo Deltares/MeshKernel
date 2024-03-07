@@ -1,4 +1,4 @@
-#include "MeshKernel/CompoundUndoAction.hpp"
+#include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Exceptions.hpp"
 

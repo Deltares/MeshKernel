@@ -34,8 +34,8 @@
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh.hpp"
-#include "MeshKernel/NodeTranslationAction.hpp"
 #include "MeshKernel/Point.hpp"
+#include "MeshKernel/UndoActions/NodeTranslationAction.hpp"
 #include "MeshKernel/Vector.hpp"
 
 namespace meshkernel

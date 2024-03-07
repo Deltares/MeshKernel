@@ -1,6 +1,6 @@
 #include "MeshKernel/RemoveDisconnectedRegions.hpp"
-#include "MeshKernel/CompoundUndoAction.hpp"
 #include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
 
 #include <queue>
 

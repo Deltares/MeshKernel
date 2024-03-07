@@ -28,65 +28,46 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 
-#include "MeshKernel/BaseMeshUndoAction.hpp"
-#include "MeshKernel/Constants.hpp"
-#include "MeshKernel/DeleteEdgeAction.hpp"
 #include "MeshKernel/Entities.hpp"
-#include "MeshKernel/Point.hpp"
-#include "MeshKernel/UndoAction.hpp"
+#include "MeshKernel/UndoActions/BaseMeshUndoAction.hpp"
 
 namespace meshkernel
 {
     /// @brief Forward declaration of the unstructured mesh
     class Mesh;
 
-    /// @brief Action to delete a node from an unstructured mesh.
-    class DeleteNodeAction : public UndoAction
+    /// @brief Action to add an node to an unstructured mesh.
+    class ResetNodeAction : public BaseMeshUndoAction<ResetNodeAction, Mesh>
     {
     public:
-        /// @brief Allocate a DeleteNodeAction and return a unique_ptr to the newly create object.
-        static std::unique_ptr<DeleteNodeAction> Create(Mesh& mesh, const UInt id, const Point& node);
+        /// @brief Allocate a ResetNodeAction and return a unique_ptr to the newly create object.
+        static std::unique_ptr<ResetNodeAction> Create(Mesh& mesh, const UInt id, const Point& initial, const Point& updated);
 
         /// @brief Constructor
-        DeleteNodeAction(Mesh& mesh, const UInt id, const Point& node);
-
-        /// @brief Add a delete edge action
-        ///
-        /// When a node is deleted, all connected edges must be removed.
-        void Add(std::unique_ptr<DeleteEdgeAction>&& action);
+        ResetNodeAction(Mesh& mesh, const UInt id, const Point& initial, const Point& updated);
 
         /// @brief Get the node identifier
         UInt NodeId() const;
 
-        /// @brief Get the node location
-        const Point& Node() const;
+        /// @brief Get the initial node
+        const Point& InitialNode() const;
 
-        /// \brief Compute the approximate amount of memory being used, in bytes.
-        std::uint64_t MemorySize() const override;
+        /// @brief Get the initial node
+        const Point& UpdatedNode() const;
 
-        /// @brief Print the delete node action to the stream
+        /// @brief Print the reset node action to the stream
         void Print(std::ostream& out = std::cout) const override;
 
     private:
-        /// @brief Commit the action of deleting a node and all connecting edges
-        void DoCommit() override;
-
-        /// @brief The action of restoring a node and all connecting edges
-        void DoRestore() override;
-
-        /// @brief The unstructured mesh from which the node will be deleted.
-        Mesh& m_mesh;
-
         /// @brief The node identifier
         UInt m_nodeId;
 
-        /// @brief The deleted node location
-        Point m_node;
+        /// @brief The initial node
+        Point m_initialNode;
 
-        /// @brief Sequence of delete edge actions.
-        std::vector<std::unique_ptr<DeleteEdgeAction>> m_deletedEdges;
+        /// @brief The updated node
+        Point m_updatedNode;
     };
 
 } // namespace meshkernel

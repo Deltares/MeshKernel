@@ -1,4 +1,4 @@
-#include "MeshKernel/DeleteNodeAction.hpp"
+#include "MeshKernel/UndoActions/DeleteNodeAction.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh.hpp"
 

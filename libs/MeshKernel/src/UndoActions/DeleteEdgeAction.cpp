@@ -1,4 +1,4 @@
-#include "MeshKernel/DeleteEdgeAction.hpp"
+#include "MeshKernel/UndoActions/DeleteEdgeAction.hpp"
 #include "MeshKernel/Mesh.hpp"
 
 std::unique_ptr<meshkernel::DeleteEdgeAction> meshkernel::DeleteEdgeAction::Create(Mesh& mesh, const UInt id, const UInt start, const UInt end)

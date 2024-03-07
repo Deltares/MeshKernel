@@ -29,45 +29,40 @@
 
 #include <memory>
 
-#include "MeshKernel/BaseMeshUndoAction.hpp"
-#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Point.hpp"
+#include "MeshKernel/UndoActions/BaseMeshUndoAction.hpp"
 
 namespace meshkernel
 {
     /// @brief Forward declaration of the unstructured mesh
     class Mesh;
 
-    /// @brief Action to add an edge to an unstructured mesh.
-    class ResetEdgeAction : public BaseMeshUndoAction<ResetEdgeAction, Mesh>
+    /// @brief Action to add a node to an unstructured mesh.
+    class AddNodeAction : public BaseMeshUndoAction<AddNodeAction, Mesh>
     {
     public:
-        /// @brief Allocate a ResetEdgeAction and return a unique_ptr to the newly create object.
-        static std::unique_ptr<ResetEdgeAction> Create(Mesh& mesh, const UInt id, const Edge& initial, const Edge& updated);
+        /// @brief Allocate a AddNodeAction and return a unique_ptr to the newly create object.
+        static std::unique_ptr<AddNodeAction> Create(Mesh& mesh, const UInt id, const Point& point);
 
         /// @brief Constructor
-        ResetEdgeAction(Mesh& mesh, const UInt id, const Edge& initial, const Edge& updated);
+        AddNodeAction(Mesh& mesh, const UInt id, const Point& p);
 
-        /// @brief Get the edge identifier
-        UInt EdgeId() const;
+        /// @brief Get the node identifier
+        UInt NodeId() const;
 
-        /// @brief Get the initial edge
-        const Edge& InitialEdge() const;
+        /// @brief Get the node location
+        const Point& Node() const;
 
-        /// @brief Get the initial edge
-        const Edge& UpdatedEdge() const;
-
-        /// @brief Print the reset edge action to the stream
+        /// @brief Print the add node action to the stream
         void Print(std::ostream& out = std::cout) const override;
 
     private:
-        /// @brief The edge identifier
-        UInt m_edgeId;
+        /// @brief The node identifier
+        UInt m_nodeId;
 
-        /// @brief The initial edge
-        Edge m_initialEdge;
-
-        /// @brief The updated edge
-        Edge m_updatedEdge;
+        /// @brief The added node location
+        Point m_node;
     };
 
 } // namespace meshkernel

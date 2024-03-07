@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include "MeshKernel/UndoAction.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 namespace meshkernel
 {

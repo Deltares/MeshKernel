@@ -8,7 +8,7 @@
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/MeshTransformation.hpp"
 #include "MeshKernel/Polygons.hpp"
-#include "MeshKernel/UndoAction.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"

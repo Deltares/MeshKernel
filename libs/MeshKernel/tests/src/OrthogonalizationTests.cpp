@@ -8,7 +8,7 @@
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Smoother.hpp>
-#include <MeshKernel/UndoAction.hpp>
+#include <MeshKernel/UndoActions/UndoAction.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 

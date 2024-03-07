@@ -2,14 +2,14 @@
 
 #include <iterator>
 
-#include "MeshKernel/AddEdgeAction.hpp"
-#include "MeshKernel/AddNodeAction.hpp"
-#include "MeshKernel/DeleteEdgeAction.hpp"
-#include "MeshKernel/DeleteNodeAction.hpp"
 #include "MeshKernel/Polygons.hpp"
-#include "MeshKernel/ResetEdgeAction.hpp"
-#include "MeshKernel/ResetNodeAction.hpp"
-#include "MeshKernel/UndoActionStack.hpp"
+#include "MeshKernel/UndoActions/AddEdgeAction.hpp"
+#include "MeshKernel/UndoActions/AddNodeAction.hpp"
+#include "MeshKernel/UndoActions/DeleteEdgeAction.hpp"
+#include "MeshKernel/UndoActions/DeleteNodeAction.hpp"
+#include "MeshKernel/UndoActions/ResetEdgeAction.hpp"
+#include "MeshKernel/UndoActions/ResetNodeAction.hpp"
+#include "MeshKernel/UndoActions/UndoActionStack.hpp"
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"

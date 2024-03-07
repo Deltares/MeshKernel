@@ -25,7 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include <MeshKernel/CompoundUndoAction.hpp>
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
@@ -33,6 +32,7 @@
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
+#include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
 
 using meshkernel::FlipEdges;
 using meshkernel::Mesh2D;

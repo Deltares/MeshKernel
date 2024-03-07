@@ -1,4 +1,4 @@
-#include "MeshKernel/ResetEdgeAction.hpp"
+#include "MeshKernel/UndoActions/ResetEdgeAction.hpp"
 #include "MeshKernel/Mesh.hpp"
 
 std::unique_ptr<meshkernel::ResetEdgeAction> meshkernel::ResetEdgeAction::Create(Mesh& mesh, const UInt id, const Edge& initial, const Edge& updated)

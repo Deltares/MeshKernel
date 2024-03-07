@@ -26,7 +26,6 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernel/Mesh2D.hpp"
-#include "MeshKernel/CompoundUndoAction.hpp"
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
@@ -36,6 +35,7 @@
 #include "MeshKernel/Polygon.hpp"
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/TriangulationWrapper.hpp"
+#include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
 #include "MeshKernel/Utilities/RTree.hpp"
 
 using meshkernel::Mesh2D;

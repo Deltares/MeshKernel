@@ -31,7 +31,7 @@
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/LandBoundary.hpp>
-#include <MeshKernel/UndoAction.hpp>
+#include <MeshKernel/UndoActions/UndoAction.hpp>
 
 #include <memory>
 

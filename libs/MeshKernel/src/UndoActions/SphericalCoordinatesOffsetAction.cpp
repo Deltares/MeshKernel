@@ -1,4 +1,4 @@
-#include "MeshKernel/SphericalCoordinatesOffsetAction.hpp"
+#include "MeshKernel/UndoActions/SphericalCoordinatesOffsetAction.hpp"
 #include "MeshKernel/Mesh2D.hpp"
 
 std::unique_ptr<meshkernel::SphericalCoordinatesOffsetAction>

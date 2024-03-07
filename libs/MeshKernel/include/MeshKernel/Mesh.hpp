@@ -28,20 +28,20 @@
 #pragma once
 #include <memory>
 
-#include "MeshKernel/AddEdgeAction.hpp"
-#include "MeshKernel/AddNodeAction.hpp"
 #include "MeshKernel/BoundingBox.hpp"
-#include "MeshKernel/CompoundUndoAction.hpp"
 #include "MeshKernel/Definitions.hpp"
-#include "MeshKernel/DeleteEdgeAction.hpp"
-#include "MeshKernel/DeleteNodeAction.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
-#include "MeshKernel/MeshConversionAction.hpp"
-#include "MeshKernel/NodeTranslationAction.hpp"
-#include "MeshKernel/ResetEdgeAction.hpp"
-#include "MeshKernel/ResetNodeAction.hpp"
-#include "MeshKernel/UndoAction.hpp"
+#include "MeshKernel/UndoActions/AddEdgeAction.hpp"
+#include "MeshKernel/UndoActions/AddNodeAction.hpp"
+#include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
+#include "MeshKernel/UndoActions/DeleteEdgeAction.hpp"
+#include "MeshKernel/UndoActions/DeleteNodeAction.hpp"
+#include "MeshKernel/UndoActions/MeshConversionAction.hpp"
+#include "MeshKernel/UndoActions/NodeTranslationAction.hpp"
+#include "MeshKernel/UndoActions/ResetEdgeAction.hpp"
+#include "MeshKernel/UndoActions/ResetNodeAction.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 #include "Utilities/RTreeBase.hpp"
 
 /// \namespace meshkernel

@@ -32,8 +32,8 @@
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh.hpp"
-#include "MeshKernel/MeshConversionAction.hpp"
 #include "MeshKernel/Point.hpp"
+#include "MeshKernel/UndoActions/MeshConversionAction.hpp"
 
 namespace meshkernel
 {

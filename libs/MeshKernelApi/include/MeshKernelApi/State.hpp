@@ -35,7 +35,7 @@
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
-#include <MeshKernel/UndoActionStack.hpp>
+#include <MeshKernel/UndoActions/UndoActionStack.hpp>
 
 namespace meshkernelapi
 {

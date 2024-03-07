@@ -30,7 +30,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "MeshKernel/UndoAction.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 /// @brief Mock class for UndoAction's
 class MockUndoAction : public meshkernel::UndoAction

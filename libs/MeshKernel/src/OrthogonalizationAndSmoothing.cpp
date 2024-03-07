@@ -29,12 +29,12 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/NodeTranslationAction.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Smoother.hpp>
+#include <MeshKernel/UndoActions/NodeTranslationAction.hpp>
 
 using meshkernel::Mesh2D;
 using meshkernel::OrthogonalizationAndSmoothing;

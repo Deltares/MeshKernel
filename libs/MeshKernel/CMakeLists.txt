@@ -17,6 +17,7 @@ set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 set(AVERAGING_STRATEGIES_SRC_DIR ${SRC_DIR}/AveragingStrategies)
 set(CURVILINEAR_GRID_SRC_DIR ${SRC_DIR}/CurvilinearGrid)
 set(UTILITIES_SRC_DIR ${SRC_DIR}/Utilities)
+set(UNDO_SRC_DIR ${PROJECT_SOURCE_DIR}/src/UndoActions)
 
 # include directories
 set(INC_DIR ${PROJECT_SOURCE_DIR}/include)
@@ -24,20 +25,16 @@ set(DOMAIN_INC_DIR ${INC_DIR}/MeshKernel)
 set(AVERAGING_STRATEGIES_INC_DIR ${DOMAIN_INC_DIR}/AveragingStrategies)
 set(CURVILINEAR_GRID_INC_DIR ${DOMAIN_INC_DIR}/CurvilinearGrid)
 set(UTILITIES_INC_DIR ${DOMAIN_INC_DIR}/Utilities)
+set(UNDO_INC_DIR ${DOMAIN_INC_DIR}/UndoActions)
 
 # list of target sources
 set(
   SRC_LIST
-  ${SRC_DIR}/AddEdgeAction.cpp
-  ${SRC_DIR}/AddNodeAction.cpp
   ${SRC_DIR}/AveragingInterpolation.cpp
   ${SRC_DIR}/CasulliRefinement.cpp
-  ${SRC_DIR}/CompoundUndoAction.cpp
   ${SRC_DIR}/ConnectMeshes.cpp
   ${SRC_DIR}/Contacts.cpp
   ${SRC_DIR}/Definitions.cpp
-  ${SRC_DIR}/DeleteEdgeAction.cpp
-  ${SRC_DIR}/DeleteNodeAction.cpp
   ${SRC_DIR}/Entities.cpp
   ${SRC_DIR}/FlipEdges.cpp
   ${SRC_DIR}/Hessian.cpp
@@ -48,10 +45,8 @@ set(
   ${SRC_DIR}/Mesh2D.cpp
   ${SRC_DIR}/Mesh2DGenerateGlobal.cpp
   ${SRC_DIR}/Mesh2DIntersections.cpp
-  ${SRC_DIR}/MeshConversionAction.cpp
   ${SRC_DIR}/MeshRefinement.cpp
   ${SRC_DIR}/Network1D.cpp
-  ${SRC_DIR}/NodeTranslationAction.cpp
   ${SRC_DIR}/Operations.cpp
   ${SRC_DIR}/OrthogonalizationAndSmoothing.cpp
   ${SRC_DIR}/Orthogonalizer.cpp
@@ -59,17 +54,28 @@ set(
   ${SRC_DIR}/PolygonalEnclosure.cpp
   ${SRC_DIR}/Polygons.cpp
   ${SRC_DIR}/RemoveDisconnectedRegions.cpp
-  ${SRC_DIR}/ResetEdgeAction.cpp
-  ${SRC_DIR}/ResetNodeAction.cpp
   ${SRC_DIR}/SamplesHessianCalculator.cpp
   ${SRC_DIR}/Smoother.cpp
-  ${SRC_DIR}/SphericalCoordinatesOffsetAction.cpp
   ${SRC_DIR}/SplineAlgorithms.cpp
   ${SRC_DIR}/Splines.cpp
   ${SRC_DIR}/TriangulationInterpolation.cpp
   ${SRC_DIR}/TriangulationWrapper.cpp
-  ${SRC_DIR}/UndoAction.cpp
-  ${SRC_DIR}/UndoActionStack.cpp
+)
+
+set(
+  UNDO_SRC_LIST
+  ${UNDO_SRC_DIR}/AddEdgeAction.cpp
+  ${UNDO_SRC_DIR}/AddNodeAction.cpp
+  ${UNDO_SRC_DIR}/CompoundUndoAction.cpp
+  ${UNDO_SRC_DIR}/DeleteEdgeAction.cpp
+  ${UNDO_SRC_DIR}/DeleteNodeAction.cpp
+  ${UNDO_SRC_DIR}/MeshConversionAction.cpp
+  ${UNDO_SRC_DIR}/NodeTranslationAction.cpp
+  ${UNDO_SRC_DIR}/ResetEdgeAction.cpp
+  ${UNDO_SRC_DIR}/ResetNodeAction.cpp
+  ${UNDO_SRC_DIR}/SphericalCoordinatesOffsetAction.cpp
+  ${UNDO_SRC_DIR}/UndoAction.cpp
+  ${UNDO_SRC_DIR}/UndoActionStack.cpp
 )
 
 set(
@@ -109,20 +115,14 @@ set(
 # list of target headers
 set(
   INC_LIST
-  ${DOMAIN_INC_DIR}/AddEdgeAction.hpp
-  ${DOMAIN_INC_DIR}/AddNodeAction.hpp
   ${DOMAIN_INC_DIR}/AveragingInterpolation.hpp
-  ${DOMAIN_INC_DIR}/BaseMeshUndoAction.hpp
   ${DOMAIN_INC_DIR}/BilinearInterpolationOnGriddedSamples.hpp
   ${DOMAIN_INC_DIR}/BoundingBox.hpp
   ${DOMAIN_INC_DIR}/CasulliRefinement.hpp
-  ${DOMAIN_INC_DIR}/CompoundUndoAction.hpp
   ${DOMAIN_INC_DIR}/ConnectMeshes.hpp
   ${DOMAIN_INC_DIR}/Constants.hpp
   ${DOMAIN_INC_DIR}/Contacts.hpp
   ${DOMAIN_INC_DIR}/Definitions.hpp
-  ${DOMAIN_INC_DIR}/DeleteEdgeAction.hpp
-  ${DOMAIN_INC_DIR}/DeleteNodeAction.hpp
   ${DOMAIN_INC_DIR}/Entities.hpp
   ${DOMAIN_INC_DIR}/Exceptions.hpp
   ${DOMAIN_INC_DIR}/FlipEdges.hpp
@@ -136,12 +136,10 @@ set(
   ${DOMAIN_INC_DIR}/Mesh2DGenerateGlobal.hpp
   ${DOMAIN_INC_DIR}/Mesh2DIntersections.hpp
   ${DOMAIN_INC_DIR}/MeshConversion.hpp
-  ${DOMAIN_INC_DIR}/MeshConversionAction.hpp
   ${DOMAIN_INC_DIR}/MeshInterpolation.hpp
   ${DOMAIN_INC_DIR}/MeshRefinement.hpp
   ${DOMAIN_INC_DIR}/MeshTransformation.hpp
   ${DOMAIN_INC_DIR}/Network1D.hpp
-  ${DOMAIN_INC_DIR}/NodeTranslationAction.hpp
   ${DOMAIN_INC_DIR}/Operations.hpp
   ${DOMAIN_INC_DIR}/OrthogonalizationAndSmoothing.hpp
   ${DOMAIN_INC_DIR}/Orthogonalizer.hpp
@@ -153,19 +151,32 @@ set(
   ${DOMAIN_INC_DIR}/ProjectionConversions.hpp
   ${DOMAIN_INC_DIR}/RangeCheck.hpp
   ${DOMAIN_INC_DIR}/RemoveDisconnectedRegions.hpp
-  ${DOMAIN_INC_DIR}/ResetEdgeAction.hpp
-  ${DOMAIN_INC_DIR}/ResetNodeAction.hpp
   ${DOMAIN_INC_DIR}/SamplesHessianCalculator.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
-  ${DOMAIN_INC_DIR}/SphericalCoordinatesOffsetAction.hpp
   ${DOMAIN_INC_DIR}/SplineAlgorithms.hpp
   ${DOMAIN_INC_DIR}/Splines.hpp
   ${DOMAIN_INC_DIR}/TriangulationInterpolation.hpp
   ${DOMAIN_INC_DIR}/TriangulationWrapper.hpp
-  ${DOMAIN_INC_DIR}/UndoAction.hpp
-  ${DOMAIN_INC_DIR}/UndoActionStack.hpp
   ${DOMAIN_INC_DIR}/Vector.hpp
 )
+
+set(
+  UNDO_INC_LIST
+  ${UNDO_INC_DIR}/AddEdgeAction.hpp
+  ${UNDO_INC_DIR}/AddNodeAction.hpp
+  ${UNDO_INC_DIR}/BaseMeshUndoAction.hpp
+  ${UNDO_INC_DIR}/DeleteEdgeAction.hpp
+  ${UNDO_INC_DIR}/DeleteNodeAction.hpp
+  ${UNDO_INC_DIR}/MeshConversionAction.hpp
+  ${UNDO_INC_DIR}/NodeTranslationAction.hpp
+  ${UNDO_INC_DIR}/ResetEdgeAction.hpp
+  ${UNDO_INC_DIR}/ResetNodeAction.hpp
+  ${UNDO_INC_DIR}/SphericalCoordinatesOffsetAction.hpp
+  ${UNDO_INC_DIR}/UndoActionStack.hpp
+  ${UNDO_INC_DIR}/CompoundUndoAction.hpp
+  ${UNDO_INC_DIR}/UndoAction.hpp
+)
+
 
 set(
   AVERAGING_STRATEGIES_INC_LIST
@@ -217,6 +228,7 @@ target_sources(
   ${TARGET_NAME}
   PRIVATE
     ${SRC_LIST}
+    ${UNDO_SRC_LIST}
     ${AVERAGING_STRATEGIES_SRC_LIST}
     ${CURVILINEAR_GRID_SRC_LIST}
   PUBLIC
@@ -225,6 +237,7 @@ target_sources(
         ${INC_DIR}
       FILES
         ${INC_LIST}
+        ${UNDO_INC_LIST}
         ${AVERAGING_STRATEGIES_INC_LIST}
         ${CURVILINEAR_GRID_INC_LIST}
         ${UTILITIES_INC_LIST}
@@ -297,11 +310,13 @@ install(TARGETS ${TARGET_NAME} FILE_SET HEADERS DESTINATION "include")
 
 # group the sources in IDE tree
 source_group("Source Files" FILES ${SRC_LIST})
+source_group("Source Files/UndoActions" FILES ${UNDO_SRC_LIST})
 source_group("Source Files/AveragingStrategies" FILES ${AVERAGING_STRATEGIES_SRC_LIST})
 source_group("Source Files/CurvilinearGrid" FILES ${CURVILINEAR_GRID_SRC_LIST})
 
 # group the headers in IDE tree
 source_group("Header Files" FILES ${INC_LIST})
+source_group("Header Files/UndoActions" FILES ${UNDO_INC_LIST})
 source_group("Header Files/AveragingStrategies" FILES ${AVERAGING_STRATEGIES_INC_LIST})
 source_group("Header Files/CurvilinearGrid" FILES ${CURVILINEAR_GRID_INC_LIST})
 source_group("Header Files/Utilities" FILES ${UTILITIES_INC_LIST})

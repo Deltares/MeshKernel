@@ -26,10 +26,10 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernel/ConnectMeshes.hpp"
-#include "MeshKernel/CompoundUndoAction.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/RangeCheck.hpp"
+#include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
 
 #include <ranges>
 

@@ -29,23 +29,25 @@
 
 #include <memory>
 
-#include "MeshKernel/BaseMeshUndoAction.hpp"
+#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Point.hpp"
+#include "MeshKernel/UndoActions/BaseMeshUndoAction.hpp"
 
 namespace meshkernel
 {
     /// @brief Forward declaration of the unstructured mesh
     class Mesh;
 
-    /// @brief Action to add an edge to an unstructured mesh.
-    class AddEdgeAction : public BaseMeshUndoAction<AddEdgeAction, Mesh>
+    /// @brief Action to delete an edge from an unstructured mesh.
+    class DeleteEdgeAction : public BaseMeshUndoAction<DeleteEdgeAction, Mesh>
     {
     public:
-        /// @brief Allocate a AddEdgeAction and return a unique_ptr to the newly create object.
-        static std::unique_ptr<AddEdgeAction> Create(Mesh& mesh, const UInt id, const UInt start, const UInt end);
+        /// @brief Allocate a DeleteEdgeAction and return a unique_ptr to the newly create object.
+        static std::unique_ptr<DeleteEdgeAction> Create(Mesh& mesh, const UInt id, const UInt start, const UInt end);
 
         /// @brief Constructor
-        AddEdgeAction(Mesh& mesh, const UInt id, const UInt start, const UInt end);
+        DeleteEdgeAction(Mesh& mesh, const UInt id, const UInt start, const UInt end);
 
         /// @brief Get the edge identifier
         UInt EdgeId() const;
@@ -53,14 +55,14 @@ namespace meshkernel
         /// @brief Get the edge
         const Edge& GetEdge() const;
 
-        /// @brief Print the add edge action to the stream
+        /// @brief Print the delete edge action to the stream
         void Print(std::ostream& out = std::cout) const override;
 
     private:
         /// @brief The edge identifier
         UInt m_edgeId;
 
-        /// @brief The added edge
+        /// @brief The deleted edge
         Edge m_edge;
     };
 

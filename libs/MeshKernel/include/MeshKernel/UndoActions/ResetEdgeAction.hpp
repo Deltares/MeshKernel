@@ -29,45 +29,45 @@
 
 #include <memory>
 
-#include "MeshKernel/BaseMeshUndoAction.hpp"
 #include "MeshKernel/Entities.hpp"
+#include "MeshKernel/UndoActions/BaseMeshUndoAction.hpp"
 
 namespace meshkernel
 {
     /// @brief Forward declaration of the unstructured mesh
     class Mesh;
 
-    /// @brief Action to add an node to an unstructured mesh.
-    class ResetNodeAction : public BaseMeshUndoAction<ResetNodeAction, Mesh>
+    /// @brief Action to add an edge to an unstructured mesh.
+    class ResetEdgeAction : public BaseMeshUndoAction<ResetEdgeAction, Mesh>
     {
     public:
-        /// @brief Allocate a ResetNodeAction and return a unique_ptr to the newly create object.
-        static std::unique_ptr<ResetNodeAction> Create(Mesh& mesh, const UInt id, const Point& initial, const Point& updated);
+        /// @brief Allocate a ResetEdgeAction and return a unique_ptr to the newly create object.
+        static std::unique_ptr<ResetEdgeAction> Create(Mesh& mesh, const UInt id, const Edge& initial, const Edge& updated);
 
         /// @brief Constructor
-        ResetNodeAction(Mesh& mesh, const UInt id, const Point& initial, const Point& updated);
+        ResetEdgeAction(Mesh& mesh, const UInt id, const Edge& initial, const Edge& updated);
 
-        /// @brief Get the node identifier
-        UInt NodeId() const;
+        /// @brief Get the edge identifier
+        UInt EdgeId() const;
 
-        /// @brief Get the initial node
-        const Point& InitialNode() const;
+        /// @brief Get the initial edge
+        const Edge& InitialEdge() const;
 
-        /// @brief Get the initial node
-        const Point& UpdatedNode() const;
+        /// @brief Get the initial edge
+        const Edge& UpdatedEdge() const;
 
-        /// @brief Print the reset node action to the stream
+        /// @brief Print the reset edge action to the stream
         void Print(std::ostream& out = std::cout) const override;
 
     private:
-        /// @brief The node identifier
-        UInt m_nodeId;
+        /// @brief The edge identifier
+        UInt m_edgeId;
 
-        /// @brief The initial node
-        Point m_initialNode;
+        /// @brief The initial edge
+        Edge m_initialEdge;
 
-        /// @brief The updated node
-        Point m_updatedNode;
+        /// @brief The updated edge
+        Edge m_updatedEdge;
     };
 
 } // namespace meshkernel

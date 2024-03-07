@@ -27,10 +27,10 @@
 
 #include <algorithm>
 
-#include "MeshKernel/AddNodeAction.hpp"
 #include "MeshKernel/CasulliRefinement.hpp"
-#include "MeshKernel/CompoundUndoAction.hpp"
 #include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/UndoActions/AddNodeAction.hpp"
+#include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
 
 std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(Mesh2D& mesh)
 {

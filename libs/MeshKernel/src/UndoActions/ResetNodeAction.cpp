@@ -1,4 +1,4 @@
-#include "MeshKernel/ResetNodeAction.hpp"
+#include "MeshKernel/UndoActions/ResetNodeAction.hpp"
 #include "MeshKernel/Mesh.hpp"
 
 std::unique_ptr<meshkernel::ResetNodeAction> meshkernel::ResetNodeAction::Create(Mesh& mesh, const UInt id, const Point& initial, const Point& updated)

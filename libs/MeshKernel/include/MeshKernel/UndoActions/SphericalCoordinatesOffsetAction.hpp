@@ -29,9 +29,9 @@
 
 #include <memory>
 
-#include "MeshKernel/BaseMeshUndoAction.hpp"
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Point.hpp"
+#include "MeshKernel/UndoActions/BaseMeshUndoAction.hpp"
 
 namespace meshkernel
 {

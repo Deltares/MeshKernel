@@ -1,4 +1,4 @@
-#include "MeshKernel/UndoAction.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 std::string meshkernel::UndoAction::to_string(const ActionState state)
 {

@@ -30,8 +30,8 @@
 #include <memory>
 #include <vector>
 
-#include "MeshKernel/BaseMeshUndoAction.hpp"
 #include "MeshKernel/Point.hpp"
+#include "MeshKernel/UndoActions/BaseMeshUndoAction.hpp"
 
 namespace meshkernel
 {

@@ -1,7 +1,7 @@
 #include "MeshKernel/Mesh2DGenerateGlobal.hpp"
-#include "MeshKernel/CompoundUndoAction.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
 #include <cmath>
 
 using namespace meshkernel;

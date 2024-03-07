@@ -31,12 +31,12 @@
 #include <utility>
 #include <vector>
 
-#include <MeshKernel/CompoundUndoAction.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Polygon.hpp>
-#include <MeshKernel/SphericalCoordinatesOffsetAction.hpp>
-#include <MeshKernel/UndoAction.hpp>
+#include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
+#include <MeshKernel/UndoActions/SphericalCoordinatesOffsetAction.hpp>
+#include <MeshKernel/UndoActions/UndoAction.hpp>
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library

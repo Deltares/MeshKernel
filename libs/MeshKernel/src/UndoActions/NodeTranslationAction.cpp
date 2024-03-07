@@ -1,4 +1,4 @@
-#include "MeshKernel/NodeTranslationAction.hpp"
+#include "MeshKernel/UndoActions/NodeTranslationAction.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh.hpp"
 

@@ -32,7 +32,7 @@
 
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Polygons.hpp"
-#include "MeshKernel/UndoAction.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 namespace meshkernel
 {

@@ -30,7 +30,7 @@
 #include <memory>
 
 #include "MeshKernel/Constants.hpp"
-#include <MeshKernel/UndoAction.hpp>
+#include <MeshKernel/UndoActions/UndoAction.hpp>
 
 namespace meshkernel
 {

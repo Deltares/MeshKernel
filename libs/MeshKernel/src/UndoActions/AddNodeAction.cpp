@@ -1,4 +1,4 @@
-#include "MeshKernel/AddNodeAction.hpp"
+#include "MeshKernel/UndoActions/AddNodeAction.hpp"
 #include "MeshKernel/Mesh.hpp"
 
 std::unique_ptr<meshkernel::AddNodeAction> meshkernel::AddNodeAction::Create(Mesh& mesh, const UInt id, const Point& point)
