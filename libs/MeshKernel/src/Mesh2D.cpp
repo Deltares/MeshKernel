@@ -817,12 +817,12 @@ std::unique_ptr<meshkernel::SphericalCoordinatesOffsetAction> Mesh2D::OffsetSphe
     return undoAction;
 }
 
-void Mesh2D::Commit(SphericalCoordinatesOffsetAction& undoAction)
+void Mesh2D::Commit(const SphericalCoordinatesOffsetAction& undoAction)
 {
     undoAction.ApplyOffset(m_nodes);
 }
 
-void Mesh2D::Restore(SphericalCoordinatesOffsetAction& undoAction)
+void Mesh2D::Restore(const SphericalCoordinatesOffsetAction& undoAction)
 {
     undoAction.UndoOffset(m_nodes);
 }
@@ -1008,9 +1008,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteSmallFlowEdges(double smal
 
     undoAction->Add(DeleteDegeneratedTriangles());
 
-    auto edges = GetEdgesCrossingSmallFlowEdges(smallFlowEdgesThreshold);
-
-    if (!edges.empty())
+    if (auto edges = GetEdgesCrossingSmallFlowEdges(smallFlowEdgesThreshold); !edges.empty())
     {
         // invalidate the edges
         for (const auto& e : edges)

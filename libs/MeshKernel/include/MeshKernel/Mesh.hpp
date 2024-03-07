@@ -193,12 +193,12 @@ namespace meshkernel
         [[nodiscard]] std::unique_ptr<ResetNodeAction> ResetNode(const UInt index, const Point& newValue);
 
         /// @brief Apply the reset node action
-        void Commit(ResetNodeAction& undoAction);
+        void Commit(const ResetNodeAction& undoAction);
 
         /// @brief Undo the reset node action
         ///
         /// Restore mesh to state before node was reset
-        void Restore(ResetNodeAction& undoAction);
+        void Restore(const ResetNodeAction& undoAction);
 
         /// @brief Get the edge
         const Edge& GetEdge(const UInt index) const;
@@ -231,12 +231,12 @@ namespace meshkernel
         [[nodiscard]] std::tuple<UInt, std::unique_ptr<AddNodeAction>> InsertNode(const Point& newPoint);
 
         /// @brief Apply the add node action
-        void Commit(AddNodeAction& undoAction);
+        void Commit(const AddNodeAction& undoAction);
 
         /// @brief Undo the add node action
         ///
         /// Restore mesh to state before node was added
-        void Restore(AddNodeAction& undoAction);
+        void Restore(const AddNodeAction& undoAction);
 
         /// @brief Connect two existing nodes, checking if the nodes are already connected.
         /// If the nodes are not connected a new edge is formed, otherwise UInt invalid value is returned. (connectdbn)
@@ -271,12 +271,12 @@ namespace meshkernel
 
         ///
         /// @brief Apply the delete node action
-        void Commit(DeleteNodeAction& undoAction);
+        void Commit(const DeleteNodeAction& undoAction);
 
         /// @brief Undo the delete node action
         ///
         /// Restore mesh to state before node was deleted
-        void Restore(DeleteNodeAction& undoAction);
+        void Restore(const DeleteNodeAction& undoAction);
 
         /// @brief Find the edge sharing two nodes
         /// @param[in] firstNodeIndex The index of the first node

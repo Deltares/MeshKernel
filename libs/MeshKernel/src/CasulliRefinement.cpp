@@ -656,7 +656,6 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ComputeNe
         {
             const Point newNode = 0.5 * (edgeCentre + mesh.Node(node1));
 
-            // newNodeId = mesh.InsertNode(newNode);
             std::tie(newNodeId, nodeInsertionAction) = mesh.InsertNode(newNode);
             newEdgeNodesAction->Add(std::move(nodeInsertionAction));
             nodeMask[newNodeId] = NodeMask::NewGeneralNode;
@@ -672,7 +671,6 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ComputeNe
         {
             const Point newNode = 0.5 * (edgeCentre + mesh.Node(node2));
 
-            // newNodeId = mesh.InsertNode(newNode);
             std::tie(newNodeId, nodeInsertionAction) = mesh.InsertNode(newNode);
             newEdgeNodesAction->Add(std::move(nodeInsertionAction));
             nodeMask[newNodeId] = NodeMask::NewGeneralNode;

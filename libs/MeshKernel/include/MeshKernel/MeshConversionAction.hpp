@@ -49,7 +49,7 @@ namespace meshkernel
         static std::unique_ptr<MeshConversionAction> Create(Mesh& mesh);
 
         /// @brief Constructor
-        MeshConversionAction(Mesh& mesh);
+        explicit MeshConversionAction(Mesh& mesh);
 
         /// @brief Swap the stored nodes and the projection with those given.
         void Swap(std::vector<Point>& nodes, Projection& projection);

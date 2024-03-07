@@ -1652,9 +1652,7 @@ TEST(MeshRefinement, CasulliRefinement)
                                                    33, 14, 13, 14, 35, 18, 17, 18, 20, 28,
                                                    29, 22, 31, 24, 26, 25, 32, 34, 27, 35};
 
-    CasulliRefinement meshRefinement;
-
-    auto undoAction = meshRefinement.Compute(mesh);
+    auto undoAction = CasulliRefinement::Compute(mesh);
 
     std::vector<meshkernel::UInt> validNodeMap(mesh.GetValidNodeMapping());
     std::vector<meshkernel::UInt> validEdgeMap(mesh.GetValidEdgeMapping());
@@ -1771,9 +1769,7 @@ TEST(MeshRefinement, CasulliPatchRefinement)
 
     Polygons polygon(patch, Projection::cartesian);
 
-    CasulliRefinement meshRefinement;
-
-    auto undoAction = meshRefinement.Compute(mesh, polygon);
+    auto undoAction = CasulliRefinement::Compute(mesh, polygon);
 
     constexpr double tolerance = 1.0e-12;
 

@@ -189,7 +189,7 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::Compute()
         refinementAction->Add(RefineFacesBySplittingEdges());
 
         // TODO return action
-        m_mesh.OffsetSphericalCoordinates(lowerLeft.x, upperRight.x);
+        refinementAction->Add(m_mesh.OffsetSphericalCoordinates(lowerLeft.x, upperRight.x));
 
         m_mesh.Administrate(refinementAction.get());
 
@@ -228,6 +228,7 @@ void MeshRefinement::ComputeRefinementMaskFromEdgeSize()
 }
 
 #if 0
+// This can be removed
 meshkernel::UInt MeshRefinement::DeleteIsolatedHangingnodes()
 {
     UInt numRemovedIsolatedHangingNodes = 0;
@@ -298,7 +299,7 @@ meshkernel::UInt MeshRefinement::DeleteIsolatedHangingnodes()
                 m_mesh.SetEdge(e, {m_mesh.GetEdge(e).first, otherNodeIndex});
             }
 
-            // change nod adm of other node
+            // change node adm of other node
             for (UInt ee = 0; ee < m_mesh.m_nodesNumEdges[otherNodeIndex]; ++ee)
             {
                 if (m_mesh.m_nodesEdges[otherNodeIndex][ee] == brotherEdgeIndex)
@@ -420,7 +421,6 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::ConnectHangingNodes()
 
                     if (hangingNodeCache[e] != constants::missing::uintValue) // left neighbor
                     {
-                        // TODO return action
                         auto [edgeId1, action1] = m_mesh.ConnectNodes(hangingNodeCache[e], hangingNodeCache[n]);
                         hangingNodeAction->Add(std::move(action1));
                         auto [edgeId2, action2] = m_mesh.ConnectNodes(hangingNodeCache[n], edgeEndNodeCache[ee]);
@@ -430,7 +430,6 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::ConnectHangingNodes()
                     }
                     else if (hangingNodeCache[ee] != constants::missing::uintValue) // right neighbor
                     {
-                        // TODO return action
                         auto [edgeId1, action1] = m_mesh.ConnectNodes(hangingNodeCache[n], hangingNodeCache[ee]);
                         hangingNodeAction->Add(std::move(action1));
                         auto [edgeId2, action2] = m_mesh.ConnectNodes(hangingNodeCache[ee], edgeEndNodeCache[eee]);
@@ -440,7 +439,6 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::ConnectHangingNodes()
                     }
                     else if (hangingNodeCache[eee] != constants::missing::uintValue) // hanging nodes must be opposing
                     {
-                        // TODO return action
                         auto [edgeId, action] = m_mesh.ConnectNodes(hangingNodeCache[n], hangingNodeCache[eee]);
                         hangingNodeAction->Add(std::move(action));
                     }
@@ -463,7 +461,6 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::ConnectHangingNodes()
                         continue;
                     }
                     const auto e = NextCircularForwardIndex(n, numNonHangingNodes);
-                    // TODO return action
                     auto [edgeId, action] = m_mesh.ConnectNodes(hangingNodeCache[n], edgeEndNodeCache[e]);
                     hangingNodeAction->Add(std::move(action));
                     break;
@@ -481,13 +478,11 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::ConnectHangingNodes()
 
                     if (hangingNodeCache[e] != constants::missing::uintValue) // left neighbor
                     {
-                        // TODO return action
                         auto [edgeId, action] = m_mesh.ConnectNodes(hangingNodeCache[n], hangingNodeCache[e]);
                         hangingNodeAction->Add(std::move(action));
                     }
                     else
                     {
-                        // TODO return action
                         auto [edgeId, action] = m_mesh.ConnectNodes(hangingNodeCache[n], hangingNodeCache[ee]);
                         hangingNodeAction->Add(std::move(action));
                     }
@@ -562,7 +557,6 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::RefineFacesBySplittingEd
 
         auto [newNodeIndex, insertAction] = m_mesh.InsertNode(middle);
         refineFacesAction->Add(std::move(insertAction));
-        // const auto newNodeIndex = m_mesh.InsertNode(middle);
         m_edgeMask[e] = static_cast<int>(newNodeIndex);
 
         // set mask on the new node

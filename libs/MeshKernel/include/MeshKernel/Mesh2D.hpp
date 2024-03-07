@@ -130,15 +130,15 @@ namespace meshkernel
         /// @brief Offset the x coordinates if m_projection is spherical
         /// @param[in] minx
         /// @param[in] maxx
-        std::unique_ptr<SphericalCoordinatesOffsetAction> OffsetSphericalCoordinates(double minx, double maxx);
+        [[nodiscard]] std::unique_ptr<SphericalCoordinatesOffsetAction> OffsetSphericalCoordinates(double minx, double maxx);
 
         /// @brief Apply the coordinate offset action
-        void Commit(SphericalCoordinatesOffsetAction& undoAction);
+        void Commit(const SphericalCoordinatesOffsetAction& undoAction);
 
         /// @brief Undo the coordinate offset action
         ///
         /// Restore mesh to state before coordinate offset action was applied
-        void Restore(SphericalCoordinatesOffsetAction& undoAction);
+        void Restore(const SphericalCoordinatesOffsetAction& undoAction);
 
         /// @brief For a face create a closed polygon and fill local mapping caches (get_cellpolygon)
         /// @param[in]  faceIndex              The face index
@@ -394,7 +394,7 @@ namespace meshkernel
         /// @param[in] polygon        The polygon where to perform the operation
         ///                           If this Polygons instance contains multiple polygons, the first one will be taken.
         /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
-        std::unique_ptr<UndoAction> DeleteMeshFaces(const Polygons& polygon, bool invertDeletion);
+        [[nodiscard]] std::unique_ptr<UndoAction> DeleteMeshFaces(const Polygons& polygon, bool invertDeletion);
 
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param[in] startNode The starting node

@@ -26,7 +26,7 @@ meshkernel::NodeTranslationAction::NodeTranslationAction(Mesh& mesh, const std::
                               nodeIndices.size(), mesh.GetNumNodes());
     }
 
-    if (nodeIndices.size() == 0 || nodeIndices.size() * (sizeof(UInt) + sizeof(Point)) > mesh.GetNumNodes() * sizeof(Point))
+    if (nodeIndices.empty() || nodeIndices.size() * (sizeof(UInt) + sizeof(Point)) > mesh.GetNumNodes() * sizeof(Point))
     {
         // save all nodes and only the nodes. No need to save the node indices
         // Based on approximation of total memory required for the action.

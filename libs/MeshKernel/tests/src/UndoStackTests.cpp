@@ -29,10 +29,10 @@ TEST(UndoStackTests, CheckSimpleUndo)
 
     mk::UndoActionStack undoActionStack;
 
-    std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
+    auto undoAction1 = std::make_unique<MockUndoAction>();
     // Have to use raw pointers, since the pointer value will be "moved" from the unique_ptr when adding to the undo stack
     MockUndoAction* rawUndoAction1 = undoAction1.get();
-    std::unique_ptr<MockUndoAction> undoAction2 = std::make_unique<MockUndoAction>();
+    auto undoAction2 = std::make_unique<MockUndoAction>();
     MockUndoAction* rawUndoAction2 = undoAction2.get();
 
     undoActionStack.Add(std::move(undoAction1));
@@ -65,10 +65,10 @@ TEST(UndoStackTests, CheckSimpleUndoWithRedo)
 
     mk::UndoActionStack undoActionStack;
 
-    std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
+    auto undoAction1 = std::make_unique<MockUndoAction>();
     // Have to use raw pointers, since the pointer value will be "moved" from the unique_ptr when adding to the undo stack
     MockUndoAction* rawUndoAction1 = undoAction1.get();
-    std::unique_ptr<MockUndoAction> undoAction2 = std::make_unique<MockUndoAction>();
+    auto undoAction2 = std::make_unique<MockUndoAction>();
     MockUndoAction* rawUndoAction2 = undoAction2.get();
 
     undoActionStack.Add(std::move(undoAction1));
@@ -105,12 +105,12 @@ TEST(UndoStackTests, CheckMultipleUndo)
 
     mk::UndoActionStack undoActionStack;
 
-    std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
+    auto undoAction1 = std::make_unique<MockUndoAction>();
     // Have to use raw pointers, since the pointer value will be "moved" from the unique_ptr when adding to the undo stack
     MockUndoAction* rawUndoAction1 = undoAction1.get();
-    std::unique_ptr<MockUndoAction> undoAction2 = std::make_unique<MockUndoAction>();
+    auto undoAction2 = std::make_unique<MockUndoAction>();
     MockUndoAction* rawUndoAction2 = undoAction2.get();
-    std::unique_ptr<MockUndoAction> undoAction3 = std::make_unique<MockUndoAction>();
+    auto undoAction3 = std::make_unique<MockUndoAction>();
     MockUndoAction* rawUndoAction3 = undoAction3.get();
 
     undoActionStack.Add(std::move(undoAction1));
@@ -143,12 +143,12 @@ TEST(UndoStackTests, CheckMultipleAllUndo)
 
     mk::UndoActionStack undoActionStack;
 
-    std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
+    auto undoAction1 = std::make_unique<MockUndoAction>();
     // Have to use raw pointers, since the pointer value will be "moved" from the unique_ptr when adding to the undo stack
     MockUndoAction* rawUndoAction1 = undoAction1.get();
-    std::unique_ptr<MockUndoAction> undoAction2 = std::make_unique<MockUndoAction>();
+    auto undoAction2 = std::make_unique<MockUndoAction>();
     MockUndoAction* rawUndoAction2 = undoAction2.get();
-    std::unique_ptr<MockUndoAction> undoAction3 = std::make_unique<MockUndoAction>();
+    auto undoAction3 = std::make_unique<MockUndoAction>();
     MockUndoAction* rawUndoAction3 = undoAction3.get();
 
     undoActionStack.Add(std::move(undoAction1));
@@ -184,12 +184,12 @@ TEST(UndoStackTests, CheckMultipleUndoWithSingleRedo)
 
     mk::UndoActionStack undoActionStack;
 
-    std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
+    auto undoAction1 = std::make_unique<MockUndoAction>();
     // Have to use raw pointers, since the pointer value will be "moved" from the unique_ptr when adding to the undo stack
     MockUndoAction* rawUndoAction1 = undoAction1.get();
-    std::unique_ptr<MockUndoAction> undoAction2 = std::make_unique<MockUndoAction>();
+    auto undoAction2 = std::make_unique<MockUndoAction>();
     MockUndoAction* rawUndoAction2 = undoAction2.get();
-    std::unique_ptr<MockUndoAction> undoAction3 = std::make_unique<MockUndoAction>();
+    auto undoAction3 = std::make_unique<MockUndoAction>();
     MockUndoAction* rawUndoAction3 = undoAction3.get();
 
     undoActionStack.Add(std::move(undoAction1));
@@ -230,14 +230,14 @@ TEST(UndoStackTests, CheckMultipleUndoWithSingleRedoIntermediateAdd)
 
     mk::UndoActionStack undoActionStack;
 
-    std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
+    auto undoAction1 = std::make_unique<MockUndoAction>();
     // Have to use raw pointers, since the pointer value will be "moved" from the unique_ptr when adding to the undo stack
     MockUndoAction* rawUndoAction1 = undoAction1.get();
-    std::unique_ptr<MockUndoAction> undoAction2 = std::make_unique<MockUndoAction>();
+    auto undoAction2 = std::make_unique<MockUndoAction>();
     MockUndoAction* rawUndoAction2 = undoAction2.get();
-    std::unique_ptr<MockUndoAction> undoAction3 = std::make_unique<MockUndoAction>();
+    auto undoAction3 = std::make_unique<MockUndoAction>();
     MockUndoAction* rawUndoAction3 = undoAction3.get();
-    std::unique_ptr<MockUndoAction> undoAction4 = std::make_unique<MockUndoAction>();
+    auto undoAction4 = std::make_unique<MockUndoAction>();
     MockUndoAction* rawUndoAction4 = undoAction4.get();
 
     undoActionStack.Add(std::move(undoAction1));
@@ -296,12 +296,12 @@ TEST(UndoStackTests, CheckMultipleUndoWithMultipleRedo)
 
     mk::UndoActionStack undoActionStack;
 
-    std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
+    auto undoAction1 = std::make_unique<MockUndoAction>();
     // Have to use raw pointers, since the pointer value will be "moved" from the unique_ptr when adding to the undo stack
     MockUndoAction* rawUndoAction1 = undoAction1.get();
-    std::unique_ptr<MockUndoAction> undoAction2 = std::make_unique<MockUndoAction>();
+    auto undoAction2 = std::make_unique<MockUndoAction>();
     MockUndoAction* rawUndoAction2 = undoAction2.get();
-    std::unique_ptr<MockUndoAction> undoAction3 = std::make_unique<MockUndoAction>();
+    auto undoAction3 = std::make_unique<MockUndoAction>();
     MockUndoAction* rawUndoAction3 = undoAction3.get();
 
     undoActionStack.Add(std::move(undoAction1));
@@ -351,12 +351,12 @@ TEST(UndoStackTests, CheckMultipleUndoCycles)
 
     mk::UndoActionStack undoActionStack;
 
-    std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
+    auto undoAction1 = std::make_unique<MockUndoAction>();
     // Have to use raw pointers, since the pointer value will be "moved" from the unique_ptr when adding to the undo stack
     MockUndoAction* rawUndoAction1 = undoAction1.get();
-    std::unique_ptr<MockUndoAction> undoAction2 = std::make_unique<MockUndoAction>();
+    auto undoAction2 = std::make_unique<MockUndoAction>();
     MockUndoAction* rawUndoAction2 = undoAction2.get();
-    std::unique_ptr<MockUndoAction> undoAction3 = std::make_unique<MockUndoAction>();
+    auto undoAction3 = std::make_unique<MockUndoAction>();
     MockUndoAction* rawUndoAction3 = undoAction3.get();
 
     undoActionStack.Add(std::move(undoAction1));
@@ -436,7 +436,7 @@ TEST(UndoStackTests, AddingRestoredAction)
 
     mk::UndoActionStack undoActionStack;
 
-    std::unique_ptr<MockUndoAction> undoAction1 = std::make_unique<MockUndoAction>();
+    auto undoAction1 = std::make_unique<MockUndoAction>();
     // Restore action before adding to stack
     undoAction1->Restore();
 
@@ -451,7 +451,7 @@ TEST(UndoStackTests, MemorySizeStackTest)
     // Fill undo actions to maximum
     for (mk::UInt i = 0; i < mk::UndoActionStack::MaxUndoSize; ++i)
     {
-        std::unique_ptr<MockUndoAction> undoAction = std::make_unique<MockUndoAction>();
+        auto undoAction = std::make_unique<MockUndoAction>();
         expectedSize += undoAction->MemorySize();
         undoActionStack.Add(std::move(undoAction));
     }

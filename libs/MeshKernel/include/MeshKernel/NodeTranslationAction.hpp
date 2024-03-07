@@ -56,7 +56,7 @@ namespace meshkernel
         static std::unique_ptr<NodeTranslationAction> Create(Mesh& mesh, const std::vector<UInt>& nodeIndices);
 
         /// @brief Constructor
-        NodeTranslationAction(Mesh& mesh);
+        explicit NodeTranslationAction(Mesh& mesh);
 
         /// @brief Constructor
         NodeTranslationAction(Mesh& mesh, const std::vector<UInt>& nodeIndices);

@@ -132,15 +132,10 @@ TEST(UndoActionConstructionTests, SphericalCoordinatesOffsetActionTest)
     std::vector<mk::Point> expectedNodes(originalNodes);
 
     // Generated the expected data.
-    for (mk::UInt i = 0; i < nodesToIncrease.size(); ++i)
-    {
-        expectedNodes[nodesToIncrease[i]].x += 360.0;
-    }
-
-    for (mk::UInt i = 0; i < nodesToDecrease.size(); ++i)
-    {
-        expectedNodes[nodesToDecrease[i]].x -= 360.0;
-    }
+    std::ranges::for_each(nodesToIncrease, [&expectedNodes = expectedNodes](const mk::UInt pos)
+                          { expectedNodes[pos].x += 360.0; });
+    std::ranges::for_each(nodesToDecrease, [&expectedNodes = expectedNodes](const mk::UInt pos)
+                          { expectedNodes[pos].x -= 360.0; });
 
     // Set up offset
     for (mk::UInt nodeId : nodesToIncrease)
