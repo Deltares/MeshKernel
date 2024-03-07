@@ -797,14 +797,12 @@ meshkernel::UInt Mesh::FindEdgeCloseToAPoint(Point point)
     throw AlgorithmError("Could not find the closest edge to a point.");
 }
 
-std::unique_ptr<meshkernel::MoveNodeAction> Mesh::MoveNode(Point newPoint, UInt nodeindex)
+std::unique_ptr<meshkernel::UndoAction> Mesh::MoveNode(Point newPoint, UInt nodeindex)
 {
     if (nodeindex >= m_nodes.size())
     {
         throw ConstraintError("Invalid node index: {}", nodeindex);
     }
-
-    std::unique_ptr<MoveNodeAction> undoAction = MoveNodeAction::Create(*this);
 
     const Point nodeToMove = m_nodes[nodeindex];
     const auto dx = GetDx(nodeToMove, newPoint, m_projection);
@@ -812,6 +810,11 @@ std::unique_ptr<meshkernel::MoveNodeAction> Mesh::MoveNode(Point newPoint, UInt 
 
     const double distanceNodeToMoveFromNewPointSquared = dx * dx + dy * dy;
     const double distanceNodeToMoveFromNewPointSquaredInv = 1.0 / distanceNodeToMoveFromNewPointSquared;
+
+    std::vector<UInt> movedNodeIndex;
+    std::vector<Vector> nodeDisplacement;
+    movedNodeIndex.reserve(GetNumNodes());
+    nodeDisplacement.reserve(GetNumNodes());
 
     for (UInt n = 0; n < GetNumNodes(); ++n)
     {
@@ -823,30 +826,21 @@ std::unique_ptr<meshkernel::MoveNodeAction> Mesh::MoveNode(Point newPoint, UInt 
         {
             const auto factor = 0.5 * (1.0 + std::cos(std::sqrt(distanceCurrentNodeFromNewPointSquared * distanceNodeToMoveFromNewPointSquaredInv) * M_PI));
 
-            undoAction->AddDisplacement(n, dx * factor, dy * factor);
+            nodeDisplacement.emplace_back(dx * factor, dy * factor);
+            movedNodeIndex.emplace_back(n);
         }
     }
 
-    Commit(*undoAction);
+    std::unique_ptr<NodeTranslationAction> undoAction = NodeTranslationAction::Create(*this, movedNodeIndex);
+
+    for (UInt i = 0; i < movedNodeIndex.size(); ++i)
+    {
+        m_nodes[movedNodeIndex[i]] += nodeDisplacement[i];
+    }
+
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
     return undoAction;
-}
-
-void Mesh::Commit(MoveNodeAction& undoAction)
-{
-    for (auto iter = undoAction.begin(); iter != undoAction.end(); ++iter)
-    {
-        m_nodes[iter->m_nodeId] += iter->m_displacement;
-    }
-}
-
-void Mesh::Restore(MoveNodeAction& undoAction)
-{
-    for (auto iter = undoAction.begin(); iter != undoAction.end(); ++iter)
-    {
-        m_nodes[iter->m_nodeId] -= iter->m_displacement;
-    }
 }
 
 void Mesh::Commit(NodeTranslationAction& undoAction)
@@ -857,6 +851,16 @@ void Mesh::Commit(NodeTranslationAction& undoAction)
 void Mesh::Restore(NodeTranslationAction& undoAction)
 {
     undoAction.Swap(m_nodes);
+}
+
+void Mesh::Commit(MeshConversionAction& undoAction)
+{
+    undoAction.Swap(m_nodes, m_projection);
+}
+
+void Mesh::Restore(MeshConversionAction& undoAction)
+{
+    undoAction.Swap(m_nodes, m_projection);
 }
 
 bool Mesh::IsFaceOnBoundary(UInt face) const

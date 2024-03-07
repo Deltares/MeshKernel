@@ -6,13 +6,15 @@
 
 std::unique_ptr<meshkernel::NodeTranslationAction> meshkernel::NodeTranslationAction::Create(Mesh& mesh)
 {
-    return std::make_unique<NodeTranslationAction>(mesh, std::vector<UInt>());
+    return std::make_unique<NodeTranslationAction>(mesh);
 }
 
 std::unique_ptr<meshkernel::NodeTranslationAction> meshkernel::NodeTranslationAction::Create(Mesh& mesh, const std::vector<UInt>& nodeIndices)
 {
     return std::make_unique<NodeTranslationAction>(mesh, nodeIndices);
 }
+
+meshkernel::NodeTranslationAction::NodeTranslationAction(Mesh& mesh) : NodeTranslationAction(mesh, std::vector<UInt>()) {}
 
 meshkernel::NodeTranslationAction::NodeTranslationAction(Mesh& mesh, const std::vector<UInt>& nodeIndices)
     : BaseMeshUndoAction<NodeTranslationAction, Mesh>(mesh)

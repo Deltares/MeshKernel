@@ -37,7 +37,7 @@
 #include "MeshKernel/DeleteNodeAction.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
-#include "MeshKernel/MoveNodeAction.hpp"
+#include "MeshKernel/MeshConversionAction.hpp"
 #include "MeshKernel/NodeTranslationAction.hpp"
 #include "MeshKernel/ResetEdgeAction.hpp"
 #include "MeshKernel/ResetNodeAction.hpp"
@@ -293,15 +293,7 @@ namespace meshkernel
         /// @brief Move a node to a new location
         /// @param[in] newPoint The new location
         /// @param[in] nodeindex The index of the node to move
-        [[nodiscard]] std::unique_ptr<MoveNodeAction> MoveNode(Point newPoint, UInt nodeindex);
-
-        /// @brief Apply the move node action
-        void Commit(MoveNodeAction& undoAction);
-
-        /// @brief Undo the move node action
-        ///
-        /// Restore mesh to state before node was moved
-        void Restore(MoveNodeAction& undoAction);
+        [[nodiscard]] std::unique_ptr<UndoAction> MoveNode(Point newPoint, UInt nodeindex);
 
         /// @brief Apply the node translation action
         void Commit(NodeTranslationAction& undoAction);
@@ -310,6 +302,14 @@ namespace meshkernel
         ///
         /// Restore mesh to state before node was translated
         void Restore(NodeTranslationAction& undoAction);
+
+        /// @brief Apply the node translation action
+        void Commit(MeshConversionAction& undoAction);
+
+        /// @brief Undo the node translation action
+        ///
+        /// Restore mesh to state before node was translated
+        void Restore(MeshConversionAction& undoAction);
 
         /// @brief Get the index of a node close to a point
         /// @param[in] point The starting point from where to start the search

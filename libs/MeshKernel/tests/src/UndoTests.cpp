@@ -282,8 +282,6 @@ TEST(UndoTests, ConnectNodeToCornersInMesh)
 TEST(UndoTests, MoveNodeMeshTest)
 {
     auto mesh = MakeRectangularMeshForTesting(11, 11, 1.0, meshkernel::Projection::cartesian);
-    const mk::UInt size = 13;
-
     std::vector<mk::Point> originalNodes(mesh->Nodes());
 
     // Id of node (5.0, 5.0)
@@ -291,44 +289,39 @@ TEST(UndoTests, MoveNodeMeshTest)
     // Location to where node 60 should be moved.
     mk::Point node(6.5, 6.5);
 
-    std::unique_ptr<mk::MoveNodeAction> action = mesh->MoveNode(node, nodeId);
-
-    ASSERT_EQ(static_cast<mk::UInt>(std::distance(action->begin(), action->end())), size);
+    std::unique_ptr<mk::UndoAction> action = mesh->MoveNode(node, nodeId);
 
     std::vector<mk::UInt> expectedNode{38, 48, 49, 50, 58, 59, 60, 61, 62, 70, 71, 72, 82};
     std::vector<double> expectedDispX{0.01207305389, 0.375, 0.8172859213, 0.375, 0.01207305389, 0.8172859213, 1.5, 0.8172859213, 0.01207305389, 0.375, 0.8172859213, 0.375, 0.01207305389};
     std::vector<double> expectedDispY{0.01207305389, 0.375, 0.8172859213, 0.375, 0.01207305389, 0.8172859213, 1.5, 0.8172859213, 0.01207305389, 0.375, 0.8172859213, 0.375, 0.01207305389};
 
-    mk::UInt count = 0;
-
     const double tolerance = 1.0e-8;
 
-    // Check contents of the move node action
-    for (auto iter = action->begin(); iter != action->end(); ++iter)
+    // Check expected nodes have been moved
+    for (mk::UInt i = 0; i < expectedNode.size(); ++i)
     {
-        EXPECT_EQ(iter->m_nodeId, expectedNode[count]);
-        EXPECT_NEAR(iter->m_displacement.x(), expectedDispX[count], tolerance);
-        EXPECT_NEAR(iter->m_displacement.y(), expectedDispY[count], tolerance);
-        ++count;
+        EXPECT_NEAR(originalNodes[expectedNode[i]].x + expectedDispX[i], mesh->Node(expectedNode[i]).x, tolerance);
+        EXPECT_NEAR(originalNodes[expectedNode[i]].y + expectedDispY[i], mesh->Node(expectedNode[i]).y, tolerance);
     }
 
-    // Check that the action has been applied to the mesh
-    for (auto iter = action->begin(); iter != action->end(); ++iter)
+    // Check other nodes in mesh have not be touched
+    for (mk::UInt i = 0; i < mesh->GetNumNodes(); ++i)
     {
-        mk::Point expectedPoint = originalNodes[iter->m_nodeId] + iter->m_displacement;
-        EXPECT_NEAR(mesh->Node(iter->m_nodeId).x, expectedPoint.x, tolerance);
-        EXPECT_NEAR(mesh->Node(iter->m_nodeId).y, expectedPoint.y, tolerance);
+        if (std::ranges::find(expectedNode, i) == expectedNode.end())
+        {
+            EXPECT_NEAR(originalNodes[i].x, mesh->Node(i).x, tolerance);
+            EXPECT_NEAR(originalNodes[i].y, mesh->Node(i).y, tolerance);
+        }
     }
 
     // Restore the original mesh
     action->Restore();
 
-    // Check that the mesh nodes are the same as in the original mesh.
-    for (auto iter = action->begin(); iter != action->end(); ++iter)
+    // All nodes should be as they were before begin moved.
+    for (mk::UInt i = 0; i < mesh->GetNumNodes(); ++i)
     {
-        mk::Point expectedPoint = originalNodes[iter->m_nodeId];
-        EXPECT_NEAR(mesh->Node(iter->m_nodeId).x, expectedPoint.x, tolerance);
-        EXPECT_NEAR(mesh->Node(iter->m_nodeId).y, expectedPoint.y, tolerance);
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
     }
 }
 

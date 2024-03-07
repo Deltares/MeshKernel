@@ -32,6 +32,7 @@
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh.hpp"
+#include "MeshKernel/MeshConversionAction.hpp"
 #include "MeshKernel/Point.hpp"
 
 namespace meshkernel
@@ -56,7 +57,7 @@ namespace meshkernel
     public:
         /// @brief Apply a conversion to nodes of a mesh.
         template <ConversionFunctor Conversion>
-        static void Compute(const Mesh& sourceMesh, Mesh& targetMesh, const Conversion& conversion)
+        [[nodiscard]] static std::unique_ptr<UndoAction> Compute(const Mesh& sourceMesh, Mesh& targetMesh, const Conversion& conversion)
         {
             if (sourceMesh.m_projection != conversion.SourceProjection())
             {
@@ -77,6 +78,7 @@ namespace meshkernel
             }
 
             std::vector<Point> targetNodes(targetMesh.Nodes());
+            std::unique_ptr<MeshConversionAction> undoAction = MeshConversionAction::Create(targetMesh);
 
 #pragma omp parallel for
             for (int i = 0; i < static_cast<int>(sourceMesh.GetNumNodes()); ++i)
@@ -104,11 +106,12 @@ namespace meshkernel
 
             targetMesh.SetNodes(targetNodes);
             targetMesh.Administrate();
+            return undoAction;
         }
 
         /// @brief Apply a conversion to nodes of a mesh.
         template <ConversionFunctor Conversion>
-        static void Compute(Mesh& mesh, const Conversion& conversion)
+        [[nodiscard]] static std::unique_ptr<UndoAction> Compute(Mesh& mesh, const Conversion& conversion)
         {
             if (mesh.m_projection != conversion.SourceProjection())
             {
@@ -117,6 +120,7 @@ namespace meshkernel
             }
 
             std::vector<Point> nodes(mesh.Nodes());
+            std::unique_ptr<MeshConversionAction> undoAction = MeshConversionAction::Create(mesh);
 
 #pragma omp parallel for
             for (int i = 0; i < static_cast<int>(mesh.GetNumNodes()); ++i)
@@ -136,6 +140,7 @@ namespace meshkernel
             mesh.SetNodes(nodes);
             mesh.m_projection = conversion.TargetProjection();
             mesh.Administrate();
+            return undoAction;
         }
     };
 

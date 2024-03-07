@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "MeshKernel/BaseMeshUndoAction.hpp"
+#include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Point.hpp"
 
 namespace meshkernel
@@ -38,31 +39,20 @@ namespace meshkernel
     /// @brief Forward declaration of the unstructured mesh
     class Mesh;
 
-    /// @brief Undo action for all operations that translate nodes
+    /// @brief Undo action for all operations that converts ot different projection nodes
     ///
     /// \note This does not keep track of any changes in edge information
-    class NodeTranslationAction : public BaseMeshUndoAction<NodeTranslationAction, Mesh>
+    class MeshConversionAction : public BaseMeshUndoAction<MeshConversionAction, Mesh>
     {
     public:
         /// @brief Allocate a ResetNodeAction and return a unique_ptr to the newly create object.
-        ///
-        /// Assumes all nodes are to be translated.
-        /// \note A NodeTranslationAction needs to be constructed with the untranslated node values.
-        static std::unique_ptr<NodeTranslationAction> Create(Mesh& mesh);
-
-        /// @brief Allocate a ResetNodeAction and return a unique_ptr to the newly create object.
-        ///
-        /// \note A NodeTranslationAction needs to be constructed with the untranslated node values.
-        static std::unique_ptr<NodeTranslationAction> Create(Mesh& mesh, const std::vector<UInt>& nodeIndices);
+        static std::unique_ptr<MeshConversionAction> Create(Mesh& mesh);
 
         /// @brief Constructor
-        NodeTranslationAction(Mesh& mesh);
+        MeshConversionAction(Mesh& mesh);
 
-        /// @brief Constructor
-        NodeTranslationAction(Mesh& mesh, const std::vector<UInt>& nodeIndices);
-
-        /// @brief Swap the stored nodes with those given.
-        void Swap(std::vector<Point>& nodes);
+        /// @brief Swap the stored nodes and the projection with those given.
+        void Swap(std::vector<Point>& nodes, Projection& projection);
 
         /// @brief Get the number of bytes used by this object.
         std::uint64_t MemorySize() const override;
@@ -70,27 +60,20 @@ namespace meshkernel
         /// @brief Print the reset node action to the stream
         void Print(std::ostream& out = std::cout) const override;
 
-    protected:
-        /// @brief Get the number of nodes
-        UInt NumberOfNodes() const;
-
     private:
-        /// @brief Set of nodes moved during the translation procedure.
+        /// @brief Set of nodes moved during the conversion procedure.
         ///
         /// Value of the node depends on the state of the action:
-        /// 1. When ActionState::Committed: m_nodes contain mesh node state before translation
-        /// 2. When ActionState::Restored:  m_nodes contain mesh node state after translation
+        /// 1. When ActionState::Committed: m_nodes contain mesh node state before conversion
+        /// 2. When ActionState::Restored:  m_nodes contain mesh node state after conversion
         std::vector<Point> m_nodes;
 
-        /// @brief Indices of nodes moved during the translation procedure.
+        /// @brief The projection
         ///
-        /// This array may be empty if all nodes have been moved.
-        std::vector<UInt> m_nodeIndices;
+        /// Value of the projection depends on the state of the action:
+        /// 1. When ActionState::Committed: m_projection contain mesh projection state before converison
+        /// 2. When ActionState::Restored:  m_projection contain mesh projection state after conversion
+        Projection m_projection;
     };
 
 } // namespace meshkernel
-
-inline meshkernel::UInt meshkernel::NodeTranslationAction::NumberOfNodes() const
-{
-    return m_nodes.size();
-}

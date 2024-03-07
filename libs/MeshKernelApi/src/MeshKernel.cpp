@@ -713,13 +713,13 @@ namespace meshkernelapi
                 if (sourceProjection == meshkernel::Projection::cartesian)
                 {
                     meshkernel::ConvertCartesianToSpherical conversion(zoneString);
-                    meshkernel::MeshConversion::Compute(*meshKernelState[meshKernelId].m_mesh2d, conversion);
+                    meshKernelState[meshKernelId].m_undoStack.Add(meshkernel::MeshConversion::Compute(*meshKernelState[meshKernelId].m_mesh2d, conversion));
                     meshKernelState[meshKernelId].m_projection = conversion.TargetProjection();
                 }
                 else if (sourceProjection == meshkernel::Projection::spherical)
                 {
                     meshkernel::ConvertSphericalToCartesian conversion(zoneString);
-                    meshkernel::MeshConversion::Compute(*meshKernelState[meshKernelId].m_mesh2d, conversion);
+                    meshKernelState[meshKernelId].m_undoStack.Add(meshkernel::MeshConversion::Compute(*meshKernelState[meshKernelId].m_mesh2d, conversion));
                     meshKernelState[meshKernelId].m_projection = conversion.TargetProjection();
                 }
                 else

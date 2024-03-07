@@ -48,8 +48,8 @@ set(
   ${SRC_DIR}/Mesh2D.cpp
   ${SRC_DIR}/Mesh2DGenerateGlobal.cpp
   ${SRC_DIR}/Mesh2DIntersections.cpp
+  ${SRC_DIR}/MeshConversionAction.cpp
   ${SRC_DIR}/MeshRefinement.cpp
-  ${SRC_DIR}/MoveNodeAction.cpp
   ${SRC_DIR}/Network1D.cpp
   ${SRC_DIR}/NodeTranslationAction.cpp
   ${SRC_DIR}/Operations.cpp
@@ -136,10 +136,10 @@ set(
   ${DOMAIN_INC_DIR}/Mesh2DGenerateGlobal.hpp
   ${DOMAIN_INC_DIR}/Mesh2DIntersections.hpp
   ${DOMAIN_INC_DIR}/MeshConversion.hpp
+  ${DOMAIN_INC_DIR}/MeshConversionAction.hpp
   ${DOMAIN_INC_DIR}/MeshInterpolation.hpp
   ${DOMAIN_INC_DIR}/MeshRefinement.hpp
   ${DOMAIN_INC_DIR}/MeshTransformation.hpp
-  ${DOMAIN_INC_DIR}/MoveNodeAction.hpp
   ${DOMAIN_INC_DIR}/Network1D.hpp
   ${DOMAIN_INC_DIR}/NodeTranslationAction.hpp
   ${DOMAIN_INC_DIR}/Operations.hpp
