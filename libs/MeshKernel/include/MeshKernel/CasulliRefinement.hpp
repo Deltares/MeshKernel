@@ -49,7 +49,7 @@ namespace meshkernel
         ///
         /// @param [in, out] mesh Mesh to be refined
         /// @param [in] polygon Area within which the mesh will be refined
-        static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh, const Polygons& polygon);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh, const Polygons& polygon);
 
     private:
         ///@brief Indicates status of a node.
