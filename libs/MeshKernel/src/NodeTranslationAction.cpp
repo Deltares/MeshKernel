@@ -3,6 +3,7 @@
 #include "MeshKernel/Mesh.hpp"
 
 #include <algorithm>
+#include <ranges>
 
 std::unique_ptr<meshkernel::NodeTranslationAction> meshkernel::NodeTranslationAction::Create(Mesh& mesh)
 {
@@ -39,8 +40,10 @@ meshkernel::NodeTranslationAction::NodeTranslationAction(Mesh& mesh, const std::
         m_nodeIndices = nodeIndices;
 
         // Copy nodes to be saved from mesh.
-        std::transform(nodeIndices.begin(), nodeIndices.end(), m_nodes.begin(), [&mesh = mesh](UInt pos)
-                       { return mesh.Node(pos); });
+        std::ranges::transform(nodeIndices, m_nodes.begin(), [&m = mesh](UInt pos)
+                               { return m.Node(pos); });
+        // std::transform(nodeIndices.begin(), nodeIndices.end(), m_nodes.begin(), [&m = mesh](UInt pos)
+        //                { return m.Node(pos); });
     }
 }
 

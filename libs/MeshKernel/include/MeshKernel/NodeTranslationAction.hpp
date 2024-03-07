@@ -92,5 +92,5 @@ namespace meshkernel
 
 inline meshkernel::UInt meshkernel::NodeTranslationAction::NumberOfNodes() const
 {
-    return m_nodes.size();
+    return static_cast<UInt>(m_nodes.size());
 }

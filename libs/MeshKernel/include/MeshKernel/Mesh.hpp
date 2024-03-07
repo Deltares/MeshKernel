@@ -246,12 +246,12 @@ namespace meshkernel
         [[nodiscard]] std::tuple<UInt, std::unique_ptr<AddEdgeAction>> ConnectNodes(UInt startNode, UInt endNode);
 
         /// @brief Apply the add edge action
-        void Commit(AddEdgeAction& undoAction);
+        void Commit(const AddEdgeAction& undoAction);
 
         /// @brief Undo the add edge action
         ///
         /// Restore mesh to state before edge was added
-        void Restore(AddEdgeAction& undoAction);
+        void Restore(const AddEdgeAction& undoAction);
 
         /// @brief Change the nodes referenced by the edge.
         [[nodiscard]] std::unique_ptr<ResetEdgeAction> ResetEdge(UInt edgeId, const Edge& edge);

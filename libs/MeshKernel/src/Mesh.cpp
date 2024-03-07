@@ -511,13 +511,13 @@ std::tuple<meshkernel::UInt, std::unique_ptr<meshkernel::AddEdgeAction>> Mesh::C
     return {newEdgeIndex, std::move(undoAction)};
 }
 
-void Mesh::Commit(AddEdgeAction& undoAction)
+void Mesh::Commit(const AddEdgeAction& undoAction)
 {
     m_edges[undoAction.EdgeId()] = undoAction.GetEdge();
     m_edgesRTreeRequiresUpdate = true;
 }
 
-void Mesh::Restore(AddEdgeAction& undoAction)
+void Mesh::Restore(const AddEdgeAction& undoAction)
 {
     m_edges[undoAction.EdgeId()] = {constants::missing::uintValue, constants::missing::uintValue};
     m_edgesRTreeRequiresUpdate = true;

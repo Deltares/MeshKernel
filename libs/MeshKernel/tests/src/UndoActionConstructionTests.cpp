@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <iterator>
+#include <ranges>
 
 #include "MeshKernel/AddEdgeAction.hpp"
 #include "MeshKernel/AddNodeAction.hpp"
@@ -132,10 +134,10 @@ TEST(UndoActionConstructionTests, SphericalCoordinatesOffsetActionTest)
     std::vector<mk::Point> expectedNodes(originalNodes);
 
     // Generated the expected data.
-    std::ranges::for_each(nodesToIncrease, [&expectedNodes = expectedNodes](const mk::UInt pos)
-                          { expectedNodes[pos].x += 360.0; });
-    std::ranges::for_each(nodesToDecrease, [&expectedNodes = expectedNodes](const mk::UInt pos)
-                          { expectedNodes[pos].x -= 360.0; });
+    std::ranges::for_each(nodesToIncrease, [&nodes = expectedNodes](const mk::UInt pos)
+                          { nodes[pos].x += 360.0; });
+    std::ranges::for_each(nodesToDecrease, [&nodes = expectedNodes](const mk::UInt pos)
+                          { nodes[pos].x -= 360.0; });
 
     // Set up offset
     for (mk::UInt nodeId : nodesToIncrease)
@@ -262,7 +264,7 @@ TEST(UndoActionConstructionTests, CompoundUndoActionTest)
 
     for (auto iter = compoundAction->begin(); iter != compoundAction->end(); ++iter)
     {
-        const TestUndoAction* testAction = dynamic_cast<const TestUndoAction*>(iter->get());
+        const auto testAction = dynamic_cast<const TestUndoAction*>(iter->get());
         EXPECT_EQ(testAction->Value(), expectedValues[count]);
         ++count;
     }

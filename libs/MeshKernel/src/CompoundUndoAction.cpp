@@ -2,6 +2,7 @@
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Exceptions.hpp"
 
+#include <format>
 #include <iomanip>
 #include <ranges>
 
