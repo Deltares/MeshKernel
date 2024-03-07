@@ -281,12 +281,6 @@ void CurvilinearGridOrthogonalization::Solve()
                     continue;
                 }
 
-                const auto a = m_orthoEqTerms.a(n, m);
-                const auto b = m_orthoEqTerms.b(n, m);
-                const auto c = m_orthoEqTerms.c(n, m);
-                const auto d = m_orthoEqTerms.d(n, m);
-                const auto e = m_orthoEqTerms.e(n, m);
-
                 const auto residual =
                     m_grid.GetNode(n + 1, m) * m_orthoEqTerms.a(n, m) +
                     m_grid.GetNode(n - 1, m) * m_orthoEqTerms.b(n, m) +
@@ -549,18 +543,18 @@ lin_alg::Matrix<bool> CurvilinearGridOrthogonalization::ComputeInvalidHorizontal
                 continue;
             }
 
-            auto lastValidM = m + step;
-            while (lastValidM > 0 &&
-                   lastValidM < m_grid.NumM() &&
-                   m_grid.GetNodeType(n, lastValidM) == CurvilinearGrid::NodeType::InternalValid)
+            auto lastValidN = n + step;
+            while (lastValidN > 0 &&
+                   lastValidN < m_grid.NumN() &&
+                   m_grid.GetNodeType(lastValidN, n) == CurvilinearGrid::NodeType::InternalValid)
             {
-                lastValidM += step;
+                lastValidN += step;
             }
-            const auto start = std::min(m, lastValidM);
-            const auto end = std::max(m, lastValidM);
+            const auto start = std::min(lastValidN, n);
+            const auto end = std::max(lastValidN, n);
             for (auto k = start; k <= end; ++k)
             {
-                invalidBoundaryNodes(n, k) = true;
+                invalidBoundaryNodes(k, m) = true;
             }
         }
     }
@@ -598,18 +592,18 @@ lin_alg::Matrix<bool> CurvilinearGridOrthogonalization::ComputeInvalidVerticalBo
             {
                 continue;
             }
-            auto lastValidN = n + step;
-            while (lastValidN > 0 &&
-                   lastValidN < m_grid.NumN() &&
-                   m_grid.GetNodeType(lastValidN, m) == CurvilinearGrid::NodeType::InternalValid)
+            auto lastValidM = m + step;
+            while (lastValidM > 0 &&
+                   lastValidM < m_grid.NumM() &&
+                   m_grid.GetNodeType(n, lastValidM) == CurvilinearGrid::NodeType::InternalValid)
             {
-                lastValidN += step;
+                lastValidM += step;
             }
-            const auto start = std::min(lastValidN, n);
-            const auto end = std::max(n, lastValidN);
+            const auto start = std::min(lastValidM, m);
+            const auto end = std::max(m, lastValidM);
             for (auto k = start; k <= end; ++k)
             {
-                invalidBoundaryNodes(k, m) = true;
+                invalidBoundaryNodes(n, k) = true;
             }
         }
     }

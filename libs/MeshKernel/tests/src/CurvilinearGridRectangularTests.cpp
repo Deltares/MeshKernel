@@ -512,7 +512,7 @@ TEST(CurvilinearGridUniform, GetRowVector_ReturnsVectorOfLengthNumM)
 TEST(CurvilinearGridUniform, GetColumnVector_ReturnsVectorOfLengthNumN)
 {
     const auto subject = MakeCurvilinearGrid(0., 0., 1., 1., 2, 3);
-    EXPECT_EQ(subject->NumN(), subject->GetNodeVectorAtM(1).size());
+    EXPECT_EQ(subject->NumN(), subject->GetNodeVectorAtN(1).size());
 }
 
 TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerializedNodes)

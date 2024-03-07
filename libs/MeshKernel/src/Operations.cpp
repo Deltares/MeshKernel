@@ -1292,8 +1292,11 @@ namespace meshkernel
                 const double mWeight = double(m) / double(numM);
                 const double nWeight = double(n) / double(numN);
 
-                iWeightFactor(n, m) = (1.0 - nWeight) * sideThreeAdimensional[m] + nWeight * sideFourAdimensional[m];
-                jWeightFactor(n, m) = (1.0 - mWeight) * sideOneAdimensional[n] + mWeight * sideTwoAdimensional[n];
+                const auto ifactor = (1.0 - nWeight) * sideThreeAdimensional[n] + nWeight * sideFourAdimensional[n];
+                const auto jfactor = (1.0 - mWeight) * sideOneAdimensional[m] + mWeight * sideTwoAdimensional[m];
+
+                iWeightFactor(n, m) = ifactor;
+                jWeightFactor(n, m) = jfactor;
             }
         }
 
@@ -1308,15 +1311,17 @@ namespace meshkernel
 
         // border points
         lin_alg::Matrix<Point> result(numNPoints, numMPoints);
-        for (UInt m = 0; m < numMPoints; m++)
-        {
-            result(0, m) = bottomDiscretization[m];
-            result(numN, m) = upperDiscretization[m];
-        }
         for (UInt n = 0; n < numNPoints; n++)
         {
-            result(n, 0) = leftDiscretization[n];
-            result(n, numM) = rightDiscretization[n];
+            auto val = bottomDiscretization[n];
+            result(n, 0) = bottomDiscretization[n];
+            val = upperDiscretization[n];
+            result(n, numM) = upperDiscretization[n];
+        }
+        for (UInt m = 0; m < numMPoints; m++)
+        {
+            result(0, m) = leftDiscretization[m];
+            result(numN, m) = rightDiscretization[m];
         }
 
         // first interpolation
@@ -1324,19 +1329,23 @@ namespace meshkernel
         {
             for (UInt m = 1; m < numM; m++)
             {
-                result(n, m).x = (leftDiscretization[n].x * (1.0 - iWeightFactor(n, m)) +
-                                  rightDiscretization[n].x * iWeightFactor(n, m)) *
-                                     weightOne(n, m) +
-                                 (bottomDiscretization[m].x * (1.0 - jWeightFactor(n, m)) +
-                                  upperDiscretization[m].x * jWeightFactor(n, m)) *
-                                     weightTwo(n, m);
+                const auto x_coord = (leftDiscretization[m].x * (1.0 - iWeightFactor(n, m)) +
+                                      rightDiscretization[m].x * iWeightFactor(n, m)) *
+                                         weightOne(n, m) +
+                                     (bottomDiscretization[n].x * (1.0 - jWeightFactor(n, m)) +
+                                      upperDiscretization[n].x * jWeightFactor(n, m)) *
+                                         weightTwo(n, m);
 
-                result(n, m).y = (leftDiscretization[n].y * (1.0 - iWeightFactor(n, m)) +
-                                  rightDiscretization[n].y * iWeightFactor(n, m)) *
-                                     weightOne(n, m) +
-                                 (bottomDiscretization[m].y * (1.0 - jWeightFactor(n, m)) +
-                                  upperDiscretization[m].y * jWeightFactor(n, m)) *
-                                     weightTwo(n, m);
+                result(n, m).x = x_coord;
+
+                const auto y_coord = (leftDiscretization[m].y * (1.0 - iWeightFactor(n, m)) +
+                                      rightDiscretization[m].y * iWeightFactor(n, m)) *
+                                         weightOne(n, m) +
+                                     (bottomDiscretization[n].y * (1.0 - jWeightFactor(n, m)) +
+                                      upperDiscretization[n].y * jWeightFactor(n, m)) *
+                                         weightTwo(n, m);
+
+                result(n, m).y = y_coord;
             }
         }
 
@@ -1345,19 +1354,11 @@ namespace meshkernel
         {
             for (UInt m = 0; m < numMPoints; m++)
             {
-                weightOne(n, m) = (1.0 - jWeightFactor(n, m)) * sideThreeAdimensional[m] * totalLengthThree +
-                                  jWeightFactor(n, m) * sideFourAdimensional[m] * totalLengthFour;
-                weightTwo(n, m) = (1.0 - iWeightFactor(n, m)) * sideOneAdimensional[n] * totalLengthOne +
-                                  iWeightFactor(n, m) * sideTwoAdimensional[n] * totalLengthTwo;
-            }
-        }
+                weightOne(n, m) = (1.0 - jWeightFactor(n, m)) * sideThreeAdimensional[n] * totalLengthThree +
+                                  jWeightFactor(n, m) * sideFourAdimensional[n] * totalLengthFour;
 
-        for (UInt n = 0; n < numNPoints; n++)
-        {
-            for (UInt m = 1; m < numMPoints; m++)
-            {
-
-                weightThree(n, m) = weightOne(n, m) - weightOne(n, m - 1);
+                weightTwo(n, m) = (1.0 - iWeightFactor(n, m)) * sideOneAdimensional[m] * totalLengthOne +
+                                  iWeightFactor(n, m) * sideTwoAdimensional[m] * totalLengthTwo;
             }
         }
 
@@ -1365,7 +1366,28 @@ namespace meshkernel
         {
             for (UInt m = 0; m < numMPoints; m++)
             {
-                weightFour(n, m) = weightTwo(n, m) - weightTwo(n - 1, m);
+                weightThree(n, m) = weightOne(n, m) - weightOne(n - 1, m);
+            }
+        }
+
+        for (UInt n = 0; n < numNPoints; n++)
+        {
+            for (UInt m = 1; m < numMPoints; m++)
+            {
+                weightFour(n, m) = weightTwo(n, m) - weightTwo(n, m - 1);
+            }
+        }
+
+        for (UInt n = 1; n < numNPoints; n++)
+        {
+            for (UInt m = 1; m < numMPoints - 1; m++)
+            {
+                weightOne(n, m) = 0.25 *
+                                  (weightFour(n, m) +
+                                   weightFour(n, m + 1) +
+                                   weightFour(n - 1, m) +
+                                   weightFour(n - 1, m + 1)) /
+                                  weightThree(n, m);
             }
         }
 
@@ -1373,27 +1395,11 @@ namespace meshkernel
         {
             for (UInt m = 1; m < numMPoints; m++)
             {
-
-                weightOne(n, m) = 0.25 *
-                                  (weightFour(n, m) +
-                                   weightFour(n + 1, m) +
-                                   weightFour(n, m - 1) +
-                                   weightFour(n + 1, m - 1)) /
-                                  weightThree(n, m);
-            }
-        }
-
-        for (UInt n = 1; n < numNPoints; n++)
-        {
-
-            for (UInt m = 1; m < numMPoints - 1; m++)
-            {
-
                 weightTwo(n, m) = 0.25 *
                                   (weightThree(n, m) +
-                                   weightThree(n - 1, m) +
-                                   weightThree(n, m + 1) +
-                                   weightThree(n - 1, m + 1)) /
+                                   weightThree(n, m - 1) +
+                                   weightThree(n + 1, m) +
+                                   weightThree(n + 1, m - 1)) /
                                   weightFour(n, m);
             }
         }
@@ -1422,20 +1428,20 @@ namespace meshkernel
 
                     const double wa = 1.0 /
                                       (weightOne(n, m) +
-                                       weightOne(n, m + 1) +
+                                       weightOne(n + 1, m) +
                                        weightTwo(n, m) +
-                                       weightTwo(n + 1, m));
+                                       weightTwo(n, m + 1));
 
                     const auto x_coord = wa *
-                                         (weightThree(n, m - 1) * weightOne(n, m) +
-                                          weightThree(n, m + 1) * weightOne(n, m + 1) +
-                                          weightThree(n - 1, m) * weightTwo(n, m) +
-                                          weightThree(n + 1, m) * weightTwo(n + 1, m));
+                                         (weightThree(n - 1, m) * weightOne(n, m) +
+                                          weightThree(n + 1, m) * weightOne(n + 1, m) +
+                                          weightThree(n, m - 1) * weightTwo(n, m) +
+                                          weightThree(n, m + 1) * weightTwo(n, m + 1));
 
-                    const auto y_coord = wa * (weightFour(n, m - 1) * weightOne(n, m) +
-                                               weightFour(n, m + 1) * weightOne(n, m + 1) +
-                                               weightFour(n - 1, m) * weightTwo(n, m) +
-                                               weightFour(n + 1, m) * weightTwo(n + 1, m));
+                    const auto y_coord = wa * (weightFour(n - 1, m) * weightOne(n, m) +
+                                               weightFour(n + 1, m) * weightOne(n + 1, m) +
+                                               weightFour(n, m - 1) * weightTwo(n, m) +
+                                               weightFour(n, m + 1) * weightTwo(n, m + 1));
 
                     result(n, m).x = x_coord;
 
