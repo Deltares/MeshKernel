@@ -478,23 +478,6 @@ std::tuple<meshkernel::UInt, std::unique_ptr<meshkernel::AddNodeAction>> Mesh::I
     return {newNodeIndex, std::move(undoAction)};
 }
 
-void Mesh::Commit(const AddNodeAction& undoAction)
-{
-    m_nodes[undoAction.NodeId()] = undoAction.Node();
-    // TODO is this necessary, will it be set in Administrate?
-    m_nodesNumEdges[undoAction.NodeId()] = 0;
-    m_nodesRTreeRequiresUpdate = true;
-}
-
-void Mesh::Restore(const AddNodeAction& undoAction)
-{
-    m_nodes[undoAction.NodeId()] = Point(constants::missing::doubleValue, constants::missing::doubleValue);
-    // TODO is this necessary, will it be set in Administrate?
-    // Need to collect the correct value here for this.
-    m_nodesNumEdges[undoAction.NodeId()] = 0;
-    m_nodesRTreeRequiresUpdate = true;
-}
-
 std::tuple<meshkernel::UInt, std::unique_ptr<meshkernel::AddEdgeAction>> Mesh::ConnectNodes(UInt startNode, UInt endNode)
 {
     if (FindEdge(startNode, endNode) != constants::missing::uintValue)
@@ -511,18 +494,6 @@ std::tuple<meshkernel::UInt, std::unique_ptr<meshkernel::AddEdgeAction>> Mesh::C
     return {newEdgeIndex, std::move(undoAction)};
 }
 
-void Mesh::Commit(const AddEdgeAction& undoAction)
-{
-    m_edges[undoAction.EdgeId()] = undoAction.GetEdge();
-    m_edgesRTreeRequiresUpdate = true;
-}
-
-void Mesh::Restore(const AddEdgeAction& undoAction)
-{
-    m_edges[undoAction.EdgeId()] = {constants::missing::uintValue, constants::missing::uintValue};
-    m_edgesRTreeRequiresUpdate = true;
-}
-
 std::unique_ptr<meshkernel::ResetNodeAction> Mesh::ResetNode(const UInt nodeId, const Point& newValue)
 {
     if (nodeId >= GetNumNodes())
@@ -533,39 +504,6 @@ std::unique_ptr<meshkernel::ResetNodeAction> Mesh::ResetNode(const UInt nodeId, 
     std::unique_ptr<ResetNodeAction> undoAction = ResetNodeAction::Create(*this, nodeId, m_nodes[nodeId], newValue);
     Commit(*undoAction);
     return undoAction;
-}
-
-void Mesh::Commit(const ResetNodeAction& undoAction)
-{
-    m_nodes[undoAction.NodeId()] = undoAction.UpdatedNode();
-    m_nodesRTreeRequiresUpdate = true;
-    m_edgesRTreeRequiresUpdate = true;
-}
-
-void Mesh::Restore(const ResetNodeAction& undoAction)
-{
-    m_nodes[undoAction.NodeId()] = undoAction.InitialNode();
-    m_nodesRTreeRequiresUpdate = true;
-    m_edgesRTreeRequiresUpdate = true;
-}
-
-std::unique_ptr<meshkernel::ResetEdgeAction> Mesh::ResetEdge(UInt edgeId, const Edge& edge)
-{
-    std::unique_ptr<meshkernel::ResetEdgeAction> undoAction = ResetEdgeAction::Create(*this, edgeId, m_edges[edgeId], edge);
-    Commit(*undoAction);
-    return undoAction;
-}
-
-void Mesh::Commit(ResetEdgeAction& undoAction)
-{
-    m_edges[undoAction.EdgeId()] = undoAction.UpdatedEdge();
-    m_edgesRTreeRequiresUpdate = true;
-}
-
-void Mesh::Restore(ResetEdgeAction& undoAction)
-{
-    m_edges[undoAction.EdgeId()] = undoAction.InitialEdge();
-    m_edgesRTreeRequiresUpdate = true;
 }
 
 std::unique_ptr<meshkernel::DeleteEdgeAction> Mesh::DeleteEdge(UInt edge)
@@ -579,18 +517,6 @@ std::unique_ptr<meshkernel::DeleteEdgeAction> Mesh::DeleteEdge(UInt edge)
 
     Commit(*undoAction);
     return undoAction;
-}
-
-void Mesh::Commit(const DeleteEdgeAction& undoAction)
-{
-    m_edges[undoAction.EdgeId()] = {constants::missing::uintValue, constants::missing::uintValue};
-    m_edgesRTreeRequiresUpdate = true;
-}
-
-void Mesh::Restore(const DeleteEdgeAction& undoAction)
-{
-    m_edges[undoAction.EdgeId()] = undoAction.GetEdge();
-    m_edgesRTreeRequiresUpdate = true;
 }
 
 std::unique_ptr<meshkernel::DeleteNodeAction> Mesh::DeleteNode(UInt node)
@@ -610,21 +536,6 @@ std::unique_ptr<meshkernel::DeleteNodeAction> Mesh::DeleteNode(UInt node)
 
     Commit(*undoAction);
     return undoAction;
-}
-
-void Mesh::Commit(const DeleteNodeAction& undoAction)
-{
-    // undoAction.CommitEdges();
-    m_nodes[undoAction.NodeId()] = {constants::missing::doubleValue, constants::missing::doubleValue};
-    m_nodesRTreeRequiresUpdate = true;
-}
-
-void Mesh::Restore(const DeleteNodeAction& undoAction)
-{
-    m_nodes[undoAction.NodeId()] = undoAction.Node();
-    // TODO DO we need to assign the m_nodesNumEdges the length of the deleted edges array?
-    // undoAction.RestoreEdges();
-    m_nodesRTreeRequiresUpdate = true;
 }
 
 void Mesh::ComputeEdgesLengths()
@@ -841,24 +752,11 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MoveNode(Point newPoint, UInt node
     return undoAction;
 }
 
-void Mesh::Commit(NodeTranslationAction& undoAction)
+std::unique_ptr<meshkernel::ResetEdgeAction> Mesh::ResetEdge(UInt edgeId, const Edge& edge)
 {
-    undoAction.Swap(m_nodes);
-}
-
-void Mesh::Restore(NodeTranslationAction& undoAction)
-{
-    undoAction.Swap(m_nodes);
-}
-
-void Mesh::Commit(MeshConversionAction& undoAction)
-{
-    undoAction.Swap(m_nodes, m_projection);
-}
-
-void Mesh::Restore(MeshConversionAction& undoAction)
-{
-    undoAction.Swap(m_nodes, m_projection);
+    std::unique_ptr<meshkernel::ResetEdgeAction> undoAction = ResetEdgeAction::Create(*this, edgeId, m_edges[edgeId], edge);
+    Commit(*undoAction);
+    return undoAction;
 }
 
 bool Mesh::IsFaceOnBoundary(UInt face) const
@@ -1333,4 +1231,108 @@ bool Mesh::IsValidEdge(const UInt edgeId) const
 
     return m_edges[edgeId].first != constants::missing::uintValue && m_edges[edgeId].second != constants::missing::uintValue &&
            m_nodes[m_edges[edgeId].first].IsValid() && m_nodes[m_edges[edgeId].second].IsValid();
+}
+
+//--------------------------------
+
+void Mesh::Commit(const AddNodeAction& undoAction)
+{
+    m_nodes[undoAction.NodeId()] = undoAction.Node();
+    // TODO is this necessary, will it be set in Administrate?
+    m_nodesNumEdges[undoAction.NodeId()] = 0;
+    m_nodesRTreeRequiresUpdate = true;
+}
+
+void Mesh::Commit(const AddEdgeAction& undoAction)
+{
+    m_edges[undoAction.EdgeId()] = undoAction.GetEdge();
+    m_edgesRTreeRequiresUpdate = true;
+}
+
+void Mesh::Commit(const ResetNodeAction& undoAction)
+{
+    m_nodes[undoAction.NodeId()] = undoAction.UpdatedNode();
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+}
+
+void Mesh::Commit(ResetEdgeAction& undoAction)
+{
+    m_edges[undoAction.EdgeId()] = undoAction.UpdatedEdge();
+    m_edgesRTreeRequiresUpdate = true;
+}
+
+void Mesh::Commit(const DeleteEdgeAction& undoAction)
+{
+    m_edges[undoAction.EdgeId()] = {constants::missing::uintValue, constants::missing::uintValue};
+    m_edgesRTreeRequiresUpdate = true;
+}
+
+void Mesh::Commit(const DeleteNodeAction& undoAction)
+{
+    // undoAction.CommitEdges();
+    m_nodes[undoAction.NodeId()] = {constants::missing::doubleValue, constants::missing::doubleValue};
+    m_nodesRTreeRequiresUpdate = true;
+}
+
+void Mesh::Commit(NodeTranslationAction& undoAction)
+{
+    undoAction.Swap(m_nodes);
+}
+
+void Mesh::Commit(MeshConversionAction& undoAction)
+{
+    undoAction.Swap(m_nodes, m_projection);
+}
+
+void Mesh::Restore(const AddNodeAction& undoAction)
+{
+    m_nodes[undoAction.NodeId()] = Point(constants::missing::doubleValue, constants::missing::doubleValue);
+    // TODO is this necessary, will it be set in Administrate?
+    // Need to collect the correct value here for this.
+    m_nodesNumEdges[undoAction.NodeId()] = 0;
+    m_nodesRTreeRequiresUpdate = true;
+}
+
+void Mesh::Restore(const AddEdgeAction& undoAction)
+{
+    m_edges[undoAction.EdgeId()] = {constants::missing::uintValue, constants::missing::uintValue};
+    m_edgesRTreeRequiresUpdate = true;
+}
+
+void Mesh::Restore(const ResetNodeAction& undoAction)
+{
+    m_nodes[undoAction.NodeId()] = undoAction.InitialNode();
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+}
+
+void Mesh::Restore(ResetEdgeAction& undoAction)
+{
+    m_edges[undoAction.EdgeId()] = undoAction.InitialEdge();
+    m_edgesRTreeRequiresUpdate = true;
+}
+
+void Mesh::Restore(const DeleteEdgeAction& undoAction)
+{
+    m_edges[undoAction.EdgeId()] = undoAction.GetEdge();
+    m_edgesRTreeRequiresUpdate = true;
+}
+
+void Mesh::Restore(const DeleteNodeAction& undoAction)
+{
+    m_nodes[undoAction.NodeId()] = undoAction.Node();
+    // TODO DO we need to assign the m_nodesNumEdges the length of the deleted edges array?
+    // undoAction.RestoreEdges();
+    m_nodesRTreeRequiresUpdate = true;
+}
+
+void Mesh::Restore(NodeTranslationAction& undoAction)
+{
+    undoAction.Swap(m_nodes);
+}
+
+void Mesh::Restore(MeshConversionAction& undoAction)
+{
+    undoAction.Swap(m_nodes, m_projection);
 }

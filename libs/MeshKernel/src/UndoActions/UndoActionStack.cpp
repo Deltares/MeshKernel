@@ -72,9 +72,9 @@ void meshkernel::UndoActionStack::Clear()
 
 std::uint64_t meshkernel::UndoActionStack::MemorySize() const
 {
-    std::uint64_t committedSize = std::accumulate(m_committed.begin(), m_committed.end(), 0, [](const std::uint64_t partialSum, const std::unique_ptr<UndoAction>& action)
+    std::uint64_t committedSize = std::accumulate(m_committed.begin(), m_committed.end(), 0u, [](const std::uint64_t partialSum, const std::unique_ptr<UndoAction>& action)
                                                   { return partialSum + action->MemorySize(); });
-    std::uint64_t restoredSize = std::accumulate(m_restored.begin(), m_restored.end(), 0, [](const std::uint64_t partialSum, const std::unique_ptr<UndoAction>& action)
+    std::uint64_t restoredSize = std::accumulate(m_restored.begin(), m_restored.end(), 0u, [](const std::uint64_t partialSum, const std::unique_ptr<UndoAction>& action)
                                                  { return partialSum + action->MemorySize(); });
 
     return sizeof(*this) + committedSize + restoredSize;
