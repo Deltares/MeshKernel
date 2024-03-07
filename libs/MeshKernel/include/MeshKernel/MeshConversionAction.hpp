@@ -39,7 +39,7 @@ namespace meshkernel
     /// @brief Forward declaration of the unstructured mesh
     class Mesh;
 
-    /// @brief Undo action for all operations that converts ot different projection nodes
+    /// @brief Undo action for converting mesh nodes to different projection
     ///
     /// \note This does not keep track of any changes in edge information
     class MeshConversionAction : public BaseMeshUndoAction<MeshConversionAction, Mesh>
@@ -71,7 +71,7 @@ namespace meshkernel
         /// @brief The projection
         ///
         /// Value of the projection depends on the state of the action:
-        /// 1. When ActionState::Committed: m_projection contain mesh projection state before converison
+        /// 1. When ActionState::Committed: m_projection contain mesh projection state before conversion
         /// 2. When ActionState::Restored:  m_projection contain mesh projection state after conversion
         Projection m_projection;
     };
