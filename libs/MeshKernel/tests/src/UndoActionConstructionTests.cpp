@@ -7,7 +7,6 @@
 #include "MeshKernel/CompoundUndoAction.hpp"
 #include "MeshKernel/DeleteEdgeAction.hpp"
 #include "MeshKernel/DeleteNodeAction.hpp"
-#include "MeshKernel/MoveNodeAction.hpp"
 #include "MeshKernel/ResetEdgeAction.hpp"
 #include "MeshKernel/ResetNodeAction.hpp"
 #include "MeshKernel/SphericalCoordinatesOffsetAction.hpp"
@@ -113,50 +112,6 @@ TEST(UndoActionConstructionTests, ResetNodeTest)
     EXPECT_EQ(initial.y, action->InitialNode().y);
     EXPECT_EQ(updated.x, action->UpdatedNode().x);
     EXPECT_EQ(updated.y, action->UpdatedNode().y);
-}
-
-TEST(UndoActionConstructionTests, MoveNodeActionTest)
-{
-    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
-
-    std::unique_ptr<mk::MoveNodeAction> action = mk::MoveNodeAction::Create(*mesh);
-
-    action->AddDisplacement(1, 0.25, 0.25);
-    action->AddDisplacement(2, 0.5, 0.25);
-    action->AddDisplacement(3, 0.25, 0.5);
-    action->AddDisplacement(4, 0.5, 0.5);
-    action->AddDisplacement(23, -1.5, -1.5);
-
-    auto iter = action->begin();
-
-    ASSERT_EQ(std::distance(action->begin(), action->end()), 5);
-
-    EXPECT_EQ(iter->m_nodeId, 1);
-    EXPECT_EQ(iter->m_displacement.x(), 0.25);
-    EXPECT_EQ(iter->m_displacement.y(), 0.25);
-
-    ++iter;
-    EXPECT_EQ(iter->m_nodeId, 2);
-    EXPECT_EQ(iter->m_displacement.x(), 0.5);
-    EXPECT_EQ(iter->m_displacement.y(), 0.25);
-
-    ++iter;
-    EXPECT_EQ(iter->m_nodeId, 3);
-    EXPECT_EQ(iter->m_displacement.x(), 0.25);
-    EXPECT_EQ(iter->m_displacement.y(), 0.5);
-
-    ++iter;
-    EXPECT_EQ(iter->m_nodeId, 4);
-    EXPECT_EQ(iter->m_displacement.x(), 0.5);
-    EXPECT_EQ(iter->m_displacement.y(), 0.5);
-
-    ++iter;
-    EXPECT_EQ(iter->m_nodeId, 23);
-    EXPECT_EQ(iter->m_displacement.x(), -1.5);
-    EXPECT_EQ(iter->m_displacement.y(), -1.5);
-
-    ++iter;
-    EXPECT_TRUE(iter == action->end());
 }
 
 TEST(UndoActionConstructionTests, SphericalCoordinatesOffsetActionTest)

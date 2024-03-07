@@ -6,7 +6,6 @@
 #include "MeshKernel/AddNodeAction.hpp"
 #include "MeshKernel/DeleteEdgeAction.hpp"
 #include "MeshKernel/DeleteNodeAction.hpp"
-#include "MeshKernel/MoveNodeAction.hpp"
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/ResetEdgeAction.hpp"
 #include "MeshKernel/ResetNodeAction.hpp"
