@@ -6,12 +6,12 @@
 
 #include "MeshKernel/UndoActions/AddEdgeAction.hpp"
 #include "MeshKernel/UndoActions/AddNodeAction.hpp"
+#include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
 #include "MeshKernel/UndoActions/DeleteEdgeAction.hpp"
 #include "MeshKernel/UndoActions/DeleteNodeAction.hpp"
 #include "MeshKernel/UndoActions/ResetEdgeAction.hpp"
 #include "MeshKernel/UndoActions/ResetNodeAction.hpp"
 #include "MeshKernel/UndoActions/SphericalCoordinatesOffsetAction.hpp"
-#include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"

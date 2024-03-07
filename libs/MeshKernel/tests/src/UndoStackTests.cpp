@@ -9,8 +9,8 @@
 #include "MeshKernel/UndoActions/DeleteNodeAction.hpp"
 #include "MeshKernel/UndoActions/ResetEdgeAction.hpp"
 #include "MeshKernel/UndoActions/ResetNodeAction.hpp"
-#include "MeshKernel/UndoActions/UndoActionStack.hpp"
 #include "MeshKernel/UndoActions/UndoAction.hpp"
+#include "MeshKernel/UndoActions/UndoActionStack.hpp"
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
