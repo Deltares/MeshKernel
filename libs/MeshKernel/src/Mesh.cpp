@@ -160,7 +160,7 @@ void Mesh::FindConnectedNodes(std::vector<bool>& connectedNodes, UInt& numInvali
     }
 }
 
-void Mesh::InvalidateUnconnectedNodes(const std::vector<bool>& connectedNodes, UInt& numInvalidNodes, CompoundUndoAction* undoAction)
+void Mesh::InvalidateUnConnectedNodes(const std::vector<bool>& connectedNodes, UInt& numInvalidNodes, CompoundUndoAction* undoAction)
 {
     numInvalidNodes = 0;
 
@@ -196,7 +196,7 @@ void Mesh::DeleteInvalidNodesAndEdges()
     UInt numInvalidNodes = 0;
 
     FindConnectedNodes(connectedNodes, numInvalidEdges);
-    InvalidateUnconnectedNodes(connectedNodes, numInvalidNodes);
+    InvalidateUnConnectedNodes(connectedNodes, numInvalidNodes);
 
     // If nothing to invalidate return
     if (numInvalidEdges == 0 && numInvalidNodes == 0)
@@ -245,7 +245,7 @@ void Mesh::DeleteInvalidNodesAndEdges()
     m_edges.erase(endEdgeVector, m_edges.end());
 }
 
-void Mesh::SetUnconnectedNodesAndEdgesToInvalid(CompoundUndoAction* undoAction)
+void Mesh::SetUnConnectedNodesAndEdgesToInvalid(CompoundUndoAction* undoAction)
 {
     // Mask nodes connected to valid edges
     std::vector<bool> connectedNodes(m_nodes.size(), false);
@@ -254,7 +254,7 @@ void Mesh::SetUnconnectedNodesAndEdgesToInvalid(CompoundUndoAction* undoAction)
     UInt numInvalidNodes = 0;
 
     FindConnectedNodes(connectedNodes, numInvalidEdges);
-    InvalidateUnconnectedNodes(connectedNodes, numInvalidNodes, undoAction);
+    InvalidateUnConnectedNodes(connectedNodes, numInvalidNodes, undoAction);
 
     // If there is nothing to invalidate then return
     if (numInvalidEdges == 0 && numInvalidNodes == 0)
@@ -1119,7 +1119,7 @@ void Mesh::Administrate(CompoundUndoAction* undoAction)
 
 void Mesh::AdministrateNodesEdges(CompoundUndoAction* undoAction)
 {
-    SetUnconnectedNodesAndEdgesToInvalid(undoAction);
+    SetUnConnectedNodesAndEdgesToInvalid(undoAction);
 
     // return if there are no nodes or no edges
     if (m_nodes.empty() || m_edges.empty())

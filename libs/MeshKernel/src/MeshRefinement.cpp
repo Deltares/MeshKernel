@@ -290,12 +290,10 @@ meshkernel::UInt MeshRefinement::DeleteIsolatedHangingnodes()
             // update lin admin
             if (m_mesh.GetEdge(e).first == commonNode)
             {
-                // TODO return action
                 m_mesh.SetEdge(e, {otherNodeIndex, m_mesh.GetEdge(e).second});
             }
             else
             {
-                // TODO return action
                 m_mesh.SetEdge(e, {m_mesh.GetEdge(e).first, otherNodeIndex});
             }
 

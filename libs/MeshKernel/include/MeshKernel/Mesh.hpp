@@ -500,7 +500,7 @@ namespace meshkernel
         static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate
 
         /// @brief Set nodes and edges that are not connected to be invalid.
-        void SetUnconnectedNodesAndEdgesToInvalid(CompoundUndoAction* undoAction);
+        void SetUnConnectedNodesAndEdgesToInvalid(CompoundUndoAction* undoAction);
 
         /// @brief Find all nodes that are connected to an edge.
         ///
@@ -510,7 +510,7 @@ namespace meshkernel
                                 UInt& numInvalidEdges) const;
 
         /// @brief Invalidate any not connected to any edge.
-        void InvalidateUnconnectedNodes(const std::vector<bool>& connectedNodes,
+        void InvalidateUnConnectedNodes(const std::vector<bool>& connectedNodes,
                                         UInt& numInvalidNodes,
                                         CompoundUndoAction* undoAction = nullptr);
     };
