@@ -260,12 +260,6 @@ TEST(CurvilinearGridFromSplinesTransfinite, FiveSplines)
     ASSERT_NEAR(59.057723537488684, curvilinearGrid->GetNode(9, 0).y, tolerance);
     ASSERT_NEAR(64.403232044419184, curvilinearGrid->GetNode(10, 0).y, tolerance);
 
-    std::vector<double> res;
-
-    res.push_back(curvilinearGrid->GetNode(0, 1).x);
-    res.push_back(curvilinearGrid->GetNode(1, 1).x);
-    res.push_back(curvilinearGrid->GetNode(2, 1).x);
-
     ASSERT_NEAR(255.89614293923407, curvilinearGrid->GetNode(0, 1).x, tolerance);
     ASSERT_NEAR(251.26839070344425, curvilinearGrid->GetNode(1, 1).x, tolerance);
     ASSERT_NEAR(246.62717589518911, curvilinearGrid->GetNode(2, 1).x, tolerance);

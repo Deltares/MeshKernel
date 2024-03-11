@@ -57,9 +57,9 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute(
     }
 
     CharacteriseSplines();
-
-    const auto numMPoints = m_numM + 1;
     const auto numNPoints = m_numN + 1;
+    const auto numMPoints = m_numM + 1;
+
     const auto maxNumPoints = std::max(numMPoints, numNPoints);
     std::vector<double> distances;
     std::vector<double> adimensionalDistances;
@@ -67,10 +67,10 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute(
     std::vector<Point> points;
 
     // For each side of the plane reserve a vector
-    std::vector<Point> sideOne;
-    std::vector<Point> sideTwo;
-    std::vector<Point> sideThree;
-    std::vector<Point> sideFour;
+    std::vector<Point> bottomSide;
+    std::vector<Point> upperSide;
+    std::vector<Point> leftSide;
+    std::vector<Point> rightSide;
 
     // allocate local vectors
     distances.reserve(maxNumPoints);
@@ -78,10 +78,10 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute(
     points.reserve(maxNumPoints);
     intersectionDistances.resize(numSplines);
 
-    sideOne.reserve(maxNumPoints);
-    sideTwo.reserve(maxNumPoints);
-    sideThree.reserve(maxNumPoints);
-    sideFour.reserve(maxNumPoints);
+    bottomSide.reserve(maxNumPoints);
+    upperSide.reserve(maxNumPoints);
+    leftSide.reserve(maxNumPoints);
+    rightSide.reserve(maxNumPoints);
 
     // Allocate the curvilinear grid. We can have multiple divisions along N and M.
     const auto TotalMColumns = (m_numNSplines - 1) * m_numM;
@@ -164,10 +164,10 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute(
         }
     }
 
-    sideOne.resize(numMPoints);
-    sideTwo.resize(numMPoints);
-    sideThree.resize(numNPoints);
-    sideFour.resize(numNPoints);
+    bottomSide.resize(numMPoints);
+    upperSide.resize(numMPoints);
+    leftSide.resize(numNPoints);
+    rightSide.resize(numNPoints);
     for (UInt i = 0; i < numNSplines - 1; i++)
     {
         for (UInt j = 0; j < numMSplines - 1; j++)
@@ -190,46 +190,47 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute(
                     // k : numNPoints
                     if (k == 0)
                     {
-                        sideOne[l] = val;
+                        bottomSide[l] = val;
                     }
                     if (k == m_numN)
                     {
-                        sideTwo[l] = val;
+                        upperSide[l] = val;
                     }
                     if (l == 0)
                     {
-                        sideThree[k] = val;
+                        leftSide[k] = val;
                     }
                     if (l == m_numM)
                     {
-                        sideFour[k] = val;
+                        rightSide[k] = val;
                     }
                 }
             }
 
             // call transfinite interpolation
-            const auto interpolationResult = DiscretizeTransfinite(sideThree,
-                                                                   sideFour,
-                                                                   sideOne,
-                                                                   sideTwo,
-                                                                   m_splines->m_projection,
-                                                                   m_numN,
-                                                                   m_numM);
+            auto interpolationResult = DiscretizeTransfinite(bottomSide,
+                                                             upperSide,
+                                                             leftSide,
+                                                             rightSide,
+                                                             m_splines->m_projection,
+                                                             m_numM,
+                                                             m_numN);
 
             // assign the points
-            for (UInt k = 0; k < numNPoints; k++)
+            for (UInt k = 0; k < interpolationResult.rows(); k++)
             {
-                for (UInt l = 0; l < numMPoints; l++)
+                for (UInt l = 0; l < interpolationResult.cols(); l++)
                 {
-
-                    const auto m = i * m_numM + l;
                     const auto n = j * m_numN + k;
+                    const auto m = i * m_numM + l;
 
                     if (gridNodes(n, m).IsValid())
                     {
                         continue;
                     }
-                    gridNodes(n, m) = interpolationResult(k, l);
+                    const auto val = interpolationResult(k, l);
+
+                    gridNodes(n, m) = val;
                 }
             }
         }
