@@ -29,7 +29,7 @@
 
 #include <string>
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
@@ -39,7 +39,7 @@
 #include <boost/geometry/srs/epsg.hpp>
 #undef BOOST_ALLOW_DEPRECATED_HEADERS
 
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
 #pragma GCC diagnostic pop
 #endif
 
