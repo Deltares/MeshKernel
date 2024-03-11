@@ -98,23 +98,23 @@ TEST(Mesh2D, TriangulateSamplesWithSkinnyTriangle)
     ASSERT_EQ(5, mesh.GetNumNodes());
     ASSERT_EQ(6, mesh.GetNumEdges());
 
-    ASSERT_EQ(3, mesh.m_edges[0].first);
-    ASSERT_EQ(0, mesh.m_edges[0].second);
+    ASSERT_EQ(3, mesh.GetEdge(0).first);
+    ASSERT_EQ(0, mesh.GetEdge(0).second);
 
-    ASSERT_EQ(0, mesh.m_edges[1].first);
-    ASSERT_EQ(1, mesh.m_edges[1].second);
+    ASSERT_EQ(0, mesh.GetEdge(1).first);
+    ASSERT_EQ(1, mesh.GetEdge(1).second);
 
-    ASSERT_EQ(1, mesh.m_edges[2].first);
-    ASSERT_EQ(3, mesh.m_edges[2].second);
+    ASSERT_EQ(1, mesh.GetEdge(2).first);
+    ASSERT_EQ(3, mesh.GetEdge(2).second);
 
-    ASSERT_EQ(4, mesh.m_edges[3].first);
-    ASSERT_EQ(1, mesh.m_edges[3].second);
+    ASSERT_EQ(4, mesh.GetEdge(3).first);
+    ASSERT_EQ(1, mesh.GetEdge(3).second);
 
-    ASSERT_EQ(1, mesh.m_edges[4].first);
-    ASSERT_EQ(2, mesh.m_edges[4].second);
+    ASSERT_EQ(1, mesh.GetEdge(4).first);
+    ASSERT_EQ(2, mesh.GetEdge(4).second);
 
-    ASSERT_EQ(2, mesh.m_edges[5].first);
-    ASSERT_EQ(4, mesh.m_edges[5].second);
+    ASSERT_EQ(2, mesh.GetEdge(5).first);
+    ASSERT_EQ(4, mesh.GetEdge(5).second);
 }
 
 TEST(Mesh, TriangulateSamples)
@@ -271,7 +271,7 @@ TEST(Mesh, NodeMerging)
             nodes[nodeIndex] = {i + x_distribution(generator), j + y_distribution(generator)};
 
             // add artificial edges
-            auto edge = mesh->m_edges[mesh->m_nodesEdges[originalNodeIndex][0]];
+            auto edge = mesh->GetEdge(mesh->m_nodesEdges[originalNodeIndex][0]);
             auto otherNode = edge.first + edge.second - originalNodeIndex;
 
             edges[edgeIndex] = {nodeIndex, otherNode};
@@ -295,8 +295,8 @@ TEST(Mesh, NodeMerging)
     mesh->MergeNodesInPolygon(polygon, 0.001);
 
     // 3. Assert
-    ASSERT_EQ(mesh->GetNumNodes(), n * m);
-    ASSERT_EQ(mesh->GetNumEdges(), (n - 1) * m + (m - 1) * n);
+    ASSERT_EQ(mesh->GetNumValidNodes(), n * m);
+    ASSERT_EQ(mesh->GetNumValidEdges(), (n - 1) * m + (m - 1) * n);
 }
 
 TEST(Mesh, MillionQuads)
@@ -385,6 +385,7 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     mesh->DeleteNode(0);
 
     // when m_nodesRTreeRequiresUpdate
+    mesh->DeleteInvalidNodesAndEdges();
     mesh->Administrate();
 
     // building a tree based on nodes
@@ -433,6 +434,74 @@ TEST(Mesh, DeleteEdgeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 
     // deleting an edge produces an edges rtree of size 3
     ASSERT_EQ(3, mesh->m_edgesRTree->Size());
+}
+
+TEST(Mesh, InsertUnconnectedNodeInMeshIsSetToInvalid)
+{
+    // Setup
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
+    mesh->BuildTree(meshkernel::Location::Nodes);
+
+    // insert nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
+    meshkernel::Point newPoint{10.0, 10.0};
+
+    mesh->InsertNode(newPoint);
+
+    // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
+    mesh->Administrate();
+
+    // building a tree based on nodes
+    mesh->BuildTree(meshkernel::Location::Nodes);
+
+    // building a tree based on edges
+    mesh->BuildTree(meshkernel::Location::Edges);
+
+    EXPECT_EQ(5, mesh->GetNumNodes());
+    EXPECT_EQ(4, mesh->GetNumValidNodes());
+    EXPECT_EQ(4, mesh->m_nodesRTree->Size());
+    EXPECT_EQ(4, mesh->m_edgesRTree->Size());
+    // Administrate should set the unconnected node to be invalid.
+    EXPECT_FALSE(mesh->Node(4).IsValid());
+}
+
+TEST(Mesh, EdgeConnectedToInvalidNodeInMeshIsSetToInvalid)
+{
+    // Setup
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
+    mesh->BuildTree(meshkernel::Location::Nodes);
+
+    meshkernel::Point newPoint{meshkernel::constants::missing::doubleValue,
+                               meshkernel::constants::missing::doubleValue};
+    meshkernel::UInt nodeIndex = mesh->InsertNode(newPoint);
+    meshkernel::UInt edgeIndex = mesh->ConnectNodes(0, nodeIndex);
+
+    EXPECT_EQ(mesh->GetEdge(edgeIndex).first, 0);
+    EXPECT_EQ(mesh->GetEdge(edgeIndex).second, nodeIndex);
+
+    // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
+    mesh->Administrate();
+
+    // building a tree based on nodes
+    mesh->BuildTree(meshkernel::Location::Nodes);
+
+    // building a tree based on edges
+    mesh->BuildTree(meshkernel::Location::Edges);
+
+    EXPECT_EQ(5, mesh->GetNumNodes());
+    EXPECT_EQ(4, mesh->GetNumValidNodes());
+
+    EXPECT_EQ(5, mesh->GetNumEdges());
+    EXPECT_EQ(4, mesh->GetNumValidEdges());
+
+    EXPECT_EQ(4, mesh->m_nodesRTree->Size());
+    EXPECT_EQ(4, mesh->m_edgesRTree->Size());
+
+    // Administrate should set the unconnected node to be invalid.
+    EXPECT_FALSE(mesh->Node(4).IsValid());
+
+    // Administrate should set the edge connecting an invalid node to be invalid.
+    EXPECT_EQ(mesh->GetEdge(4).first, meshkernel::constants::missing::uintValue);
+    EXPECT_EQ(mesh->GetEdge(4).second, meshkernel::constants::missing::uintValue);
 }
 
 TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
@@ -553,15 +622,17 @@ TEST(Mesh, DeleteSmallTrianglesAtBoundaries)
     ASSERT_EQ(1, mesh->GetNumFaces());
 
     const double tolerance = 1e-8;
-    ASSERT_NEAR(364.17013549804688, mesh->m_nodes[0].x, tolerance);
-    ASSERT_NEAR(295.21142578125000, mesh->m_nodes[1].x, tolerance);
-    ASSERT_NEAR(421.46209716796875, mesh->m_nodes[2].x, tolerance);
-    ASSERT_NEAR(359.79510498046875, mesh->m_nodes[3].x, tolerance);
+    ASSERT_NEAR(364.17013549804688, mesh->Node(0).x, tolerance);
+    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, mesh->Node(1).x, tolerance);
+    ASSERT_NEAR(295.21142578125000, mesh->Node(2).x, tolerance);
+    ASSERT_NEAR(421.46209716796875, mesh->Node(3).x, tolerance);
+    ASSERT_NEAR(359.79510498046875, mesh->Node(4).x, tolerance);
 
-    ASSERT_NEAR(374.00662231445313, mesh->m_nodes[0].y, tolerance);
-    ASSERT_NEAR(300.48181152343750, mesh->m_nodes[1].y, tolerance);
-    ASSERT_NEAR(295.33038330078125, mesh->m_nodes[2].y, tolerance);
-    ASSERT_NEAR(398.59295654296875, mesh->m_nodes[3].y, tolerance);
+    ASSERT_NEAR(374.00662231445313, mesh->Node(0).y, tolerance);
+    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, mesh->Node(1).y, tolerance);
+    ASSERT_NEAR(300.48181152343750, mesh->Node(2).y, tolerance);
+    ASSERT_NEAR(295.33038330078125, mesh->Node(3).y, tolerance);
+    ASSERT_NEAR(398.59295654296875, mesh->Node(4).y, tolerance);
 }
 
 TEST(Mesh, DeleteHangingEdge)
@@ -636,7 +707,7 @@ TEST_P(MeshDeletion, expected_results)
     mesh->DeleteMesh(polygon, deleteOption, invertSelection);
 
     // Assert
-    ASSERT_EQ(numNodes, mesh->GetNumNodes());
+    ASSERT_EQ(numNodes, mesh->GetNumValidNodes());
 }
 
 INSTANTIATE_TEST_SUITE_P(Mesh, MeshDeletion, ::testing::ValuesIn(MeshDeletion::GetData()));
@@ -698,8 +769,8 @@ TEST_P(MeshDeletionWithInnerPolygons, expected_results)
     mesh->DeleteMesh(polygon, deleteOption, invertSelection);
 
     // Assert
-    const auto nodes = mesh->m_nodes;
-    ASSERT_EQ(numNodes, mesh->GetNumNodes());
+    const auto nodes = mesh->Nodes();
+    ASSERT_EQ(numNodes, mesh->GetNumValidNodes());
 }
 
 INSTANTIATE_TEST_SUITE_P(Mesh, MeshDeletionWithInnerPolygons, ::testing::ValuesIn(MeshDeletionWithInnerPolygons::GetData()));

@@ -177,12 +177,15 @@ namespace meshkernelapi
             {
                 throw meshkernel::ConstraintError("The 2d mesh contains no nodes.");
             }
+            meshkernel::range_check::CheckOneOf<int>(deletionOption, meshkernel::GetValidDeletionOptions(), "Deletion");
 
             const auto polygonPoints = ConvertGeometryListToPointVector(polygon);
 
             const bool invertDeletionBool = invertDeletion == 1 ? true : false;
             const meshkernel::Polygons meshKernelPolygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            meshKernelState[meshKernelId].m_mesh2d->DeleteMesh(meshKernelPolygon, deletionOption, invertDeletionBool);
+            const auto deletionOptionEnum = static_cast<meshkernel::Mesh2D::DeleteMeshOptions>(deletionOption);
+
+            meshKernelState[meshKernelId].m_mesh2d->DeleteMesh(meshKernelPolygon, deletionOptionEnum, invertDeletionBool);
         }
         catch (...)
         {
@@ -487,7 +490,9 @@ namespace meshkernelapi
             }
 
             mesh1d.num_nodes = static_cast<int>(meshKernelState[meshKernelId].m_mesh1d->GetNumNodes());
+            mesh1d.num_valid_nodes = static_cast<int>(meshKernelState[meshKernelId].m_mesh1d->GetNumValidNodes());
             mesh1d.num_edges = static_cast<int>(meshKernelState[meshKernelId].m_mesh1d->GetNumEdges());
+            mesh1d.num_valid_edges = static_cast<int>(meshKernelState[meshKernelId].m_mesh1d->GetNumValidEdges());
         }
         catch (...)
         {
@@ -1964,7 +1969,7 @@ namespace meshkernelapi
                                                                                            nodeIndex));
 
             // Set the node coordinate
-            const auto foundNode = meshKernelState[meshKernelId].m_mesh2d->m_nodes[nodeIndex];
+            const auto foundNode = meshKernelState[meshKernelId].m_mesh2d->Node(nodeIndex);
             xCoordinateOut = foundNode.x;
             yCoordinateOut = foundNode.y;
         }
@@ -2656,8 +2661,8 @@ namespace meshkernelapi
 
             const auto mergedMeshes = meshkernel::Mesh2D::Merge(*meshKernelState[meshKernelId].m_mesh2d, *meshToConnect);
             meshkernel::ConnectMeshes::Compute(*mergedMeshes, searchFraction);
-            meshKernelState[meshKernelId].m_mesh2d->m_nodes = mergedMeshes->m_nodes;
-            meshKernelState[meshKernelId].m_mesh2d->m_edges = mergedMeshes->m_edges;
+            meshKernelState[meshKernelId].m_mesh2d->SetNodes(mergedMeshes->Nodes());
+            meshKernelState[meshKernelId].m_mesh2d->SetEdges(mergedMeshes->Edges());
             meshKernelState[meshKernelId].m_mesh2d->m_projection = mergedMeshes->m_projection;
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
         }

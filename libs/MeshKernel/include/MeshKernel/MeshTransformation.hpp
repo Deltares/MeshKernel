@@ -274,9 +274,9 @@ namespace meshkernel
 #pragma omp parallel for
             for (int i = 0; i < static_cast<int>(mesh.GetNumNodes()); ++i)
             {
-                if (mesh.m_nodes[i].IsValid())
+                if (mesh.Node(i).IsValid())
                 {
-                    mesh.m_nodes[i] = transformation(mesh.m_nodes[i]);
+                    mesh.SetNode(i, transformation(mesh.Node(i)));
                 }
             }
 

@@ -60,56 +60,56 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_OnFourByFourWithFourSamples_
     // 3 Validation edges connecting hanging nodes
 
     // bottom side
-    ASSERT_EQ(5, mesh->m_edges[73].first);
-    ASSERT_EQ(25, mesh->m_edges[73].second);
+    ASSERT_EQ(5, mesh->GetEdge(73).first);
+    ASSERT_EQ(25, mesh->GetEdge(73).second);
 
-    ASSERT_EQ(10, mesh->m_edges[72].first);
-    ASSERT_EQ(25, mesh->m_edges[72].second);
+    ASSERT_EQ(10, mesh->GetEdge(72).first);
+    ASSERT_EQ(25, mesh->GetEdge(72).second);
 
-    ASSERT_EQ(10, mesh->m_edges[77].first);
-    ASSERT_EQ(28, mesh->m_edges[77].second);
+    ASSERT_EQ(10, mesh->GetEdge(77).first);
+    ASSERT_EQ(28, mesh->GetEdge(77).second);
 
-    ASSERT_EQ(15, mesh->m_edges[76].first);
-    ASSERT_EQ(28, mesh->m_edges[76].second);
+    ASSERT_EQ(15, mesh->GetEdge(76).first);
+    ASSERT_EQ(28, mesh->GetEdge(76).second);
 
     // right side
-    ASSERT_EQ(21, mesh->m_edges[81].first);
-    ASSERT_EQ(35, mesh->m_edges[81].second);
+    ASSERT_EQ(21, mesh->GetEdge(81).first);
+    ASSERT_EQ(35, mesh->GetEdge(81).second);
 
-    ASSERT_EQ(22, mesh->m_edges[80].first);
-    ASSERT_EQ(35, mesh->m_edges[80].second);
+    ASSERT_EQ(22, mesh->GetEdge(80).first);
+    ASSERT_EQ(35, mesh->GetEdge(80).second);
 
-    ASSERT_EQ(22, mesh->m_edges[83].first);
-    ASSERT_EQ(36, mesh->m_edges[83].second);
+    ASSERT_EQ(22, mesh->GetEdge(83).first);
+    ASSERT_EQ(36, mesh->GetEdge(83).second);
 
-    ASSERT_EQ(23, mesh->m_edges[82].first);
-    ASSERT_EQ(36, mesh->m_edges[82].second);
+    ASSERT_EQ(23, mesh->GetEdge(82).first);
+    ASSERT_EQ(36, mesh->GetEdge(82).second);
 
     // upper side
-    ASSERT_EQ(19, mesh->m_edges[79].first);
-    ASSERT_EQ(30, mesh->m_edges[79].second);
+    ASSERT_EQ(19, mesh->GetEdge(79).first);
+    ASSERT_EQ(30, mesh->GetEdge(79).second);
 
-    ASSERT_EQ(14, mesh->m_edges[78].first);
-    ASSERT_EQ(30, mesh->m_edges[78].second);
+    ASSERT_EQ(14, mesh->GetEdge(78).first);
+    ASSERT_EQ(30, mesh->GetEdge(78).second);
 
-    ASSERT_EQ(14, mesh->m_edges[75].first);
-    ASSERT_EQ(27, mesh->m_edges[75].second);
+    ASSERT_EQ(14, mesh->GetEdge(75).first);
+    ASSERT_EQ(27, mesh->GetEdge(75).second);
 
-    ASSERT_EQ(9, mesh->m_edges[74].first);
-    ASSERT_EQ(27, mesh->m_edges[74].second);
+    ASSERT_EQ(9, mesh->GetEdge(74).first);
+    ASSERT_EQ(27, mesh->GetEdge(74).second);
 
     // left side
-    ASSERT_EQ(3, mesh->m_edges[71].first);
-    ASSERT_EQ(32, mesh->m_edges[71].second);
+    ASSERT_EQ(3, mesh->GetEdge(71).first);
+    ASSERT_EQ(32, mesh->GetEdge(71).second);
 
-    ASSERT_EQ(2, mesh->m_edges[70].first);
-    ASSERT_EQ(32, mesh->m_edges[70].second);
+    ASSERT_EQ(2, mesh->GetEdge(70).first);
+    ASSERT_EQ(32, mesh->GetEdge(70).second);
 
-    ASSERT_EQ(2, mesh->m_edges[69].first);
-    ASSERT_EQ(31, mesh->m_edges[69].second);
+    ASSERT_EQ(2, mesh->GetEdge(69).first);
+    ASSERT_EQ(31, mesh->GetEdge(69).second);
 
-    ASSERT_EQ(1, mesh->m_edges[68].first);
-    ASSERT_EQ(31, mesh->m_edges[68].second);
+    ASSERT_EQ(1, mesh->GetEdge(68).first);
+    ASSERT_EQ(31, mesh->GetEdge(68).second);
 
     // total number of edges
     ASSERT_EQ(84, mesh->GetNumEdges());
@@ -155,68 +155,68 @@ TEST(MeshRefinement, RefinementOnAFourByFourMeshWithSamplesShouldRefine)
     ASSERT_EQ(31, mesh->GetNumNodes());
 
     // Assert edges
-    ASSERT_EQ(0, mesh->m_edges[0].first);
-    ASSERT_EQ(26, mesh->m_edges[0].second);
+    ASSERT_EQ(0, mesh->GetEdge(0).first);
+    ASSERT_EQ(26, mesh->GetEdge(0).second);
 
-    ASSERT_EQ(1, mesh->m_edges[1].first);
-    ASSERT_EQ(17, mesh->m_edges[1].second);
+    ASSERT_EQ(1, mesh->GetEdge(1).first);
+    ASSERT_EQ(17, mesh->GetEdge(1).second);
 
-    ASSERT_EQ(2, mesh->m_edges[2].first);
-    ASSERT_EQ(6, mesh->m_edges[2].second);
+    ASSERT_EQ(2, mesh->GetEdge(2).first);
+    ASSERT_EQ(6, mesh->GetEdge(2).second);
 
-    ASSERT_EQ(3, mesh->m_edges[3].first);
-    ASSERT_EQ(7, mesh->m_edges[3].second);
+    ASSERT_EQ(3, mesh->GetEdge(3).first);
+    ASSERT_EQ(7, mesh->GetEdge(3).second);
 
-    ASSERT_EQ(4, mesh->m_edges[4].first);
-    ASSERT_EQ(8, mesh->m_edges[4].second);
+    ASSERT_EQ(4, mesh->GetEdge(4).first);
+    ASSERT_EQ(8, mesh->GetEdge(4).second);
 
-    ASSERT_EQ(5, mesh->m_edges[5].first);
-    ASSERT_EQ(9, mesh->m_edges[5].second);
+    ASSERT_EQ(5, mesh->GetEdge(5).first);
+    ASSERT_EQ(9, mesh->GetEdge(5).second);
 
-    ASSERT_EQ(6, mesh->m_edges[6].first);
-    ASSERT_EQ(10, mesh->m_edges[6].second);
+    ASSERT_EQ(6, mesh->GetEdge(6).first);
+    ASSERT_EQ(10, mesh->GetEdge(6).second);
 
-    ASSERT_EQ(7, mesh->m_edges[7].first);
-    ASSERT_EQ(11, mesh->m_edges[7].second);
+    ASSERT_EQ(7, mesh->GetEdge(7).first);
+    ASSERT_EQ(11, mesh->GetEdge(7).second);
 
-    ASSERT_EQ(8, mesh->m_edges[8].first);
-    ASSERT_EQ(12, mesh->m_edges[8].second);
+    ASSERT_EQ(8, mesh->GetEdge(8).first);
+    ASSERT_EQ(12, mesh->GetEdge(8).second);
 
-    ASSERT_EQ(9, mesh->m_edges[9].first);
-    ASSERT_EQ(13, mesh->m_edges[9].second);
+    ASSERT_EQ(9, mesh->GetEdge(9).first);
+    ASSERT_EQ(13, mesh->GetEdge(9).second);
 
-    ASSERT_EQ(10, mesh->m_edges[10].first);
-    ASSERT_EQ(14, mesh->m_edges[10].second);
+    ASSERT_EQ(10, mesh->GetEdge(10).first);
+    ASSERT_EQ(14, mesh->GetEdge(10).second);
 
-    ASSERT_EQ(11, mesh->m_edges[11].first);
-    ASSERT_EQ(15, mesh->m_edges[11].second);
+    ASSERT_EQ(11, mesh->GetEdge(11).first);
+    ASSERT_EQ(15, mesh->GetEdge(11).second);
 
-    ASSERT_EQ(1, mesh->m_edges[12].first);
-    ASSERT_EQ(18, mesh->m_edges[12].second);
+    ASSERT_EQ(1, mesh->GetEdge(12).first);
+    ASSERT_EQ(18, mesh->GetEdge(12).second);
 
-    ASSERT_EQ(2, mesh->m_edges[13].first);
-    ASSERT_EQ(1, mesh->m_edges[13].second);
+    ASSERT_EQ(2, mesh->GetEdge(13).first);
+    ASSERT_EQ(1, mesh->GetEdge(13).second);
 
-    ASSERT_EQ(3, mesh->m_edges[14].first);
-    ASSERT_EQ(2, mesh->m_edges[14].second);
+    ASSERT_EQ(3, mesh->GetEdge(14).first);
+    ASSERT_EQ(2, mesh->GetEdge(14).second);
 
-    ASSERT_EQ(5, mesh->m_edges[15].first);
-    ASSERT_EQ(19, mesh->m_edges[15].second);
+    ASSERT_EQ(5, mesh->GetEdge(15).first);
+    ASSERT_EQ(19, mesh->GetEdge(15).second);
 
-    ASSERT_EQ(6, mesh->m_edges[16].first);
-    ASSERT_EQ(5, mesh->m_edges[16].second);
+    ASSERT_EQ(6, mesh->GetEdge(16).first);
+    ASSERT_EQ(5, mesh->GetEdge(16).second);
 
-    ASSERT_EQ(7, mesh->m_edges[17].first);
-    ASSERT_EQ(6, mesh->m_edges[17].second);
+    ASSERT_EQ(7, mesh->GetEdge(17).first);
+    ASSERT_EQ(6, mesh->GetEdge(17).second);
 
-    ASSERT_EQ(9, mesh->m_edges[18].first);
-    ASSERT_EQ(8, mesh->m_edges[18].second);
+    ASSERT_EQ(9, mesh->GetEdge(18).first);
+    ASSERT_EQ(8, mesh->GetEdge(18).second);
 
-    ASSERT_EQ(10, mesh->m_edges[19].first);
-    ASSERT_EQ(9, mesh->m_edges[19].second);
+    ASSERT_EQ(10, mesh->GetEdge(19).first);
+    ASSERT_EQ(9, mesh->GetEdge(19).second);
 
-    ASSERT_EQ(11, mesh->m_edges[20].first);
-    ASSERT_EQ(10, mesh->m_edges[20].second);
+    ASSERT_EQ(11, mesh->GetEdge(20).first);
+    ASSERT_EQ(10, mesh->GetEdge(20).second);
 }
 
 TEST(MeshRefinement, MeshRefinementRefinementLevels_SmallTriangualMeshTwoSamples_ShouldRefinemesh)
@@ -255,17 +255,17 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_SmallTriangualMeshTwoSamples
     meshRefinement.Compute();
 
     // edges connecting hanging nodes
-    ASSERT_EQ(10, mesh->m_edges[32].first);
-    ASSERT_EQ(2, mesh->m_edges[32].second);
+    ASSERT_EQ(10, mesh->GetEdge(32).first);
+    ASSERT_EQ(2, mesh->GetEdge(32).second);
 
-    ASSERT_EQ(14, mesh->m_edges[33].first);
-    ASSERT_EQ(4, mesh->m_edges[33].second);
+    ASSERT_EQ(14, mesh->GetEdge(33).first);
+    ASSERT_EQ(4, mesh->GetEdge(33).second);
 
-    ASSERT_EQ(13, mesh->m_edges[34].first);
-    ASSERT_EQ(5, mesh->m_edges[34].second);
+    ASSERT_EQ(13, mesh->GetEdge(34).first);
+    ASSERT_EQ(5, mesh->GetEdge(34).second);
 
-    ASSERT_EQ(11, mesh->m_edges[31].first);
-    ASSERT_EQ(1, mesh->m_edges[31].second);
+    ASSERT_EQ(11, mesh->GetEdge(31).first);
+    ASSERT_EQ(1, mesh->GetEdge(31).second);
 
     // total number of edges
     ASSERT_EQ(35, mesh->GetNumEdges());
@@ -300,26 +300,26 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
     ASSERT_EQ(33, mesh->GetNumEdges());
 
     // assert on newly generated edges
-    ASSERT_EQ(10, mesh->m_edges[20].first);
-    ASSERT_EQ(11, mesh->m_edges[20].second);
+    ASSERT_EQ(10, mesh->GetEdge(20).first);
+    ASSERT_EQ(11, mesh->GetEdge(20).second);
 
-    ASSERT_EQ(11, mesh->m_edges[21].first);
-    ASSERT_EQ(12, mesh->m_edges[21].second);
+    ASSERT_EQ(11, mesh->GetEdge(21).first);
+    ASSERT_EQ(12, mesh->GetEdge(21).second);
 
-    ASSERT_EQ(12, mesh->m_edges[22].first);
-    ASSERT_EQ(10, mesh->m_edges[22].second);
+    ASSERT_EQ(12, mesh->GetEdge(22).first);
+    ASSERT_EQ(10, mesh->GetEdge(22).second);
 
-    ASSERT_EQ(14, mesh->m_edges[23].first);
-    ASSERT_EQ(13, mesh->m_edges[23].second);
+    ASSERT_EQ(14, mesh->GetEdge(23).first);
+    ASSERT_EQ(13, mesh->GetEdge(23).second);
 
-    ASSERT_EQ(13, mesh->m_edges[24].first);
-    ASSERT_EQ(11, mesh->m_edges[24].second);
+    ASSERT_EQ(13, mesh->GetEdge(24).first);
+    ASSERT_EQ(11, mesh->GetEdge(24).second);
 
-    ASSERT_EQ(11, mesh->m_edges[25].first);
-    ASSERT_EQ(14, mesh->m_edges[25].second);
+    ASSERT_EQ(11, mesh->GetEdge(25).first);
+    ASSERT_EQ(14, mesh->GetEdge(25).second);
 
-    ASSERT_EQ(10, mesh->m_edges[26].first);
-    ASSERT_EQ(4, mesh->m_edges[26].second);
+    ASSERT_EQ(10, mesh->GetEdge(26).first);
+    ASSERT_EQ(4, mesh->GetEdge(26).second);
 }
 
 TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerFace)
@@ -384,38 +384,38 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerFace)
     ASSERT_EQ(84, mesh->GetNumEdges());
 
     // assert on newly generated edges
-    ASSERT_EQ(26, mesh->m_edges[70].first);
-    ASSERT_EQ(14, mesh->m_edges[70].second);
+    ASSERT_EQ(26, mesh->GetEdge(70).first);
+    ASSERT_EQ(14, mesh->GetEdge(70).second);
 
-    ASSERT_EQ(27, mesh->m_edges[71].first);
-    ASSERT_EQ(15, mesh->m_edges[71].second);
+    ASSERT_EQ(27, mesh->GetEdge(71).first);
+    ASSERT_EQ(15, mesh->GetEdge(71).second);
 
-    ASSERT_EQ(28, mesh->m_edges[72].first);
-    ASSERT_EQ(0, mesh->m_edges[72].second);
+    ASSERT_EQ(28, mesh->GetEdge(72).first);
+    ASSERT_EQ(0, mesh->GetEdge(72).second);
 
-    ASSERT_EQ(29, mesh->m_edges[73].first);
-    ASSERT_EQ(1, mesh->m_edges[73].second);
+    ASSERT_EQ(29, mesh->GetEdge(73).first);
+    ASSERT_EQ(1, mesh->GetEdge(73).second);
 
-    ASSERT_EQ(30, mesh->m_edges[74].first);
-    ASSERT_EQ(2, mesh->m_edges[74].second);
+    ASSERT_EQ(30, mesh->GetEdge(74).first);
+    ASSERT_EQ(2, mesh->GetEdge(74).second);
 
-    ASSERT_EQ(31, mesh->m_edges[75].first);
-    ASSERT_EQ(4, mesh->m_edges[75].second);
+    ASSERT_EQ(31, mesh->GetEdge(75).first);
+    ASSERT_EQ(4, mesh->GetEdge(75).second);
 
-    ASSERT_EQ(32, mesh->m_edges[76].first);
-    ASSERT_EQ(5, mesh->m_edges[76].second);
+    ASSERT_EQ(32, mesh->GetEdge(76).first);
+    ASSERT_EQ(5, mesh->GetEdge(76).second);
 
-    ASSERT_EQ(33, mesh->m_edges[77].first);
-    ASSERT_EQ(6, mesh->m_edges[77].second);
+    ASSERT_EQ(33, mesh->GetEdge(77).first);
+    ASSERT_EQ(6, mesh->GetEdge(77).second);
 
-    ASSERT_EQ(34, mesh->m_edges[78].first);
-    ASSERT_EQ(8, mesh->m_edges[78].second);
+    ASSERT_EQ(34, mesh->GetEdge(78).first);
+    ASSERT_EQ(8, mesh->GetEdge(78).second);
 
-    ASSERT_EQ(35, mesh->m_edges[79].first);
-    ASSERT_EQ(9, mesh->m_edges[79].second);
+    ASSERT_EQ(35, mesh->GetEdge(79).first);
+    ASSERT_EQ(9, mesh->GetEdge(79).second);
 
-    ASSERT_EQ(36, mesh->m_edges[80].first);
-    ASSERT_EQ(10, mesh->m_edges[80].second);
+    ASSERT_EQ(36, mesh->GetEdge(80).first);
+    ASSERT_EQ(10, mesh->GetEdge(80).second);
 }
 
 TEST(MeshRefinement, WindowOfRefinementFile)
@@ -455,35 +455,35 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     ASSERT_EQ(461, mesh->GetNumNodes());
     ASSERT_EQ(918, mesh->GetNumEdges());
 
-    ASSERT_EQ(233, mesh->m_edges[906].first);
-    ASSERT_EQ(206, mesh->m_edges[906].second);
+    ASSERT_EQ(233, mesh->GetEdge(906).first);
+    ASSERT_EQ(206, mesh->GetEdge(906).second);
 
-    ASSERT_EQ(206, mesh->m_edges[907].first);
-    ASSERT_EQ(70, mesh->m_edges[907].second);
+    ASSERT_EQ(206, mesh->GetEdge(907).first);
+    ASSERT_EQ(70, mesh->GetEdge(907).second);
 
-    ASSERT_EQ(70, mesh->m_edges[908].first);
-    ASSERT_EQ(233, mesh->m_edges[908].second);
+    ASSERT_EQ(70, mesh->GetEdge(908).first);
+    ASSERT_EQ(233, mesh->GetEdge(908).second);
 
-    ASSERT_EQ(179, mesh->m_edges[909].first);
-    ASSERT_EQ(235, mesh->m_edges[909].second);
+    ASSERT_EQ(179, mesh->GetEdge(909).first);
+    ASSERT_EQ(235, mesh->GetEdge(909).second);
 
-    ASSERT_EQ(235, mesh->m_edges[910].first);
-    ASSERT_EQ(62, mesh->m_edges[910].second);
+    ASSERT_EQ(235, mesh->GetEdge(910).first);
+    ASSERT_EQ(62, mesh->GetEdge(910).second);
 
-    ASSERT_EQ(62, mesh->m_edges[911].first);
-    ASSERT_EQ(179, mesh->m_edges[911].second);
+    ASSERT_EQ(62, mesh->GetEdge(911).first);
+    ASSERT_EQ(179, mesh->GetEdge(911).second);
 
-    ASSERT_EQ(249, mesh->m_edges[912].first);
-    ASSERT_EQ(320, mesh->m_edges[912].second);
+    ASSERT_EQ(249, mesh->GetEdge(912).first);
+    ASSERT_EQ(320, mesh->GetEdge(912).second);
 
-    ASSERT_EQ(320, mesh->m_edges[913].first);
-    ASSERT_EQ(84, mesh->m_edges[913].second);
+    ASSERT_EQ(320, mesh->GetEdge(913).first);
+    ASSERT_EQ(84, mesh->GetEdge(913).second);
 
-    ASSERT_EQ(84, mesh->m_edges[914].first);
-    ASSERT_EQ(249, mesh->m_edges[914].second);
+    ASSERT_EQ(84, mesh->GetEdge(914).first);
+    ASSERT_EQ(249, mesh->GetEdge(914).second);
 
-    ASSERT_EQ(327, mesh->m_edges[915].first);
-    ASSERT_EQ(326, mesh->m_edges[915].second);
+    ASSERT_EQ(327, mesh->GetEdge(915).first);
+    ASSERT_EQ(326, mesh->GetEdge(915).second);
 }
 
 TEST(MeshRefinement, MeshRefinementRefinementLevels_OnWindowOfRefinementFile_ShouldRefinemesh)
@@ -523,38 +523,38 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_OnWindowOfRefinementFile_Sho
     ASSERT_EQ(413, mesh->GetNumNodes());
     ASSERT_EQ(839, mesh->GetNumEdges());
 
-    ASSERT_EQ(0, mesh->m_edges[0].first);
-    ASSERT_EQ(129, mesh->m_edges[0].second);
+    ASSERT_EQ(0, mesh->GetEdge(0).first);
+    ASSERT_EQ(129, mesh->GetEdge(0).second);
 
-    ASSERT_EQ(1, mesh->m_edges[1].first);
-    ASSERT_EQ(130, mesh->m_edges[1].second);
+    ASSERT_EQ(1, mesh->GetEdge(1).first);
+    ASSERT_EQ(130, mesh->GetEdge(1).second);
 
-    ASSERT_EQ(2, mesh->m_edges[2].first);
-    ASSERT_EQ(131, mesh->m_edges[2].second);
+    ASSERT_EQ(2, mesh->GetEdge(2).first);
+    ASSERT_EQ(131, mesh->GetEdge(2).second);
 
-    ASSERT_EQ(3, mesh->m_edges[3].first);
-    ASSERT_EQ(48, mesh->m_edges[3].second);
+    ASSERT_EQ(3, mesh->GetEdge(3).first);
+    ASSERT_EQ(48, mesh->GetEdge(3).second);
 
-    ASSERT_EQ(4, mesh->m_edges[4].first);
-    ASSERT_EQ(49, mesh->m_edges[4].second);
+    ASSERT_EQ(4, mesh->GetEdge(4).first);
+    ASSERT_EQ(49, mesh->GetEdge(4).second);
 
-    ASSERT_EQ(5, mesh->m_edges[5].first);
-    ASSERT_EQ(132, mesh->m_edges[5].second);
+    ASSERT_EQ(5, mesh->GetEdge(5).first);
+    ASSERT_EQ(132, mesh->GetEdge(5).second);
 
-    ASSERT_EQ(6, mesh->m_edges[6].first);
-    ASSERT_EQ(133, mesh->m_edges[6].second);
+    ASSERT_EQ(6, mesh->GetEdge(6).first);
+    ASSERT_EQ(133, mesh->GetEdge(6).second);
 
-    ASSERT_EQ(7, mesh->m_edges[7].first);
-    ASSERT_EQ(22, mesh->m_edges[7].second);
+    ASSERT_EQ(7, mesh->GetEdge(7).first);
+    ASSERT_EQ(22, mesh->GetEdge(7).second);
 
-    ASSERT_EQ(8, mesh->m_edges[8].first);
-    ASSERT_EQ(23, mesh->m_edges[8].second);
+    ASSERT_EQ(8, mesh->GetEdge(8).first);
+    ASSERT_EQ(23, mesh->GetEdge(8).second);
 
-    ASSERT_EQ(9, mesh->m_edges[9].first);
-    ASSERT_EQ(134, mesh->m_edges[9].second);
+    ASSERT_EQ(9, mesh->GetEdge(9).first);
+    ASSERT_EQ(134, mesh->GetEdge(9).second);
 
-    ASSERT_EQ(10, mesh->m_edges[10].first);
-    ASSERT_EQ(135, mesh->m_edges[10].second);
+    ASSERT_EQ(10, mesh->GetEdge(10).first);
+    ASSERT_EQ(135, mesh->GetEdge(10).second);
 }
 
 TEST(MeshRefinement, RefineBasedOnPolygon)
@@ -584,32 +584,32 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
     ASSERT_EQ(30, mesh->GetNumNodes());
     ASSERT_EQ(52, mesh->GetNumEdges());
 
-    ASSERT_EQ(25, mesh->m_edges[40].first);
-    ASSERT_EQ(29, mesh->m_edges[40].second);
+    ASSERT_EQ(25, mesh->GetEdge(40).first);
+    ASSERT_EQ(29, mesh->GetEdge(40).second);
 
-    ASSERT_EQ(28, mesh->m_edges[41].first);
-    ASSERT_EQ(29, mesh->m_edges[41].second);
+    ASSERT_EQ(28, mesh->GetEdge(41).first);
+    ASSERT_EQ(29, mesh->GetEdge(41).second);
 
-    ASSERT_EQ(26, mesh->m_edges[42].first);
-    ASSERT_EQ(29, mesh->m_edges[42].second);
+    ASSERT_EQ(26, mesh->GetEdge(42).first);
+    ASSERT_EQ(29, mesh->GetEdge(42).second);
 
-    ASSERT_EQ(27, mesh->m_edges[43].first);
-    ASSERT_EQ(29, mesh->m_edges[43].second);
+    ASSERT_EQ(27, mesh->GetEdge(43).first);
+    ASSERT_EQ(29, mesh->GetEdge(43).second);
 
-    ASSERT_EQ(25, mesh->m_edges[44].first);
-    ASSERT_EQ(20, mesh->m_edges[44].second);
+    ASSERT_EQ(25, mesh->GetEdge(44).first);
+    ASSERT_EQ(20, mesh->GetEdge(44).second);
 
-    ASSERT_EQ(26, mesh->m_edges[45].first);
-    ASSERT_EQ(21, mesh->m_edges[45].second);
+    ASSERT_EQ(26, mesh->GetEdge(45).first);
+    ASSERT_EQ(21, mesh->GetEdge(45).second);
 
-    ASSERT_EQ(27, mesh->m_edges[46].first);
-    ASSERT_EQ(15, mesh->m_edges[46].second);
+    ASSERT_EQ(27, mesh->GetEdge(46).first);
+    ASSERT_EQ(15, mesh->GetEdge(46).second);
 
-    ASSERT_EQ(28, mesh->m_edges[47].first);
-    ASSERT_EQ(20, mesh->m_edges[47].second);
+    ASSERT_EQ(28, mesh->GetEdge(47).first);
+    ASSERT_EQ(20, mesh->GetEdge(47).second);
 
-    ASSERT_EQ(10, mesh->m_edges[48].first);
-    ASSERT_EQ(27, mesh->m_edges[48].second);
+    ASSERT_EQ(10, mesh->GetEdge(48).first);
+    ASSERT_EQ(27, mesh->GetEdge(48).second);
 }
 
 TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
@@ -683,29 +683,29 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     ASSERT_EQ(32, mesh->GetNumNodes());
 
     // sides of the refined part
-    ASSERT_EQ(5, mesh->m_edges[5].first);
-    ASSERT_EQ(16, mesh->m_edges[5].second);
+    ASSERT_EQ(5, mesh->GetEdge(5).first);
+    ASSERT_EQ(16, mesh->GetEdge(5).second);
 
-    ASSERT_EQ(16, mesh->m_edges[40].first);
-    ASSERT_EQ(9, mesh->m_edges[40].second);
+    ASSERT_EQ(16, mesh->GetEdge(40).first);
+    ASSERT_EQ(9, mesh->GetEdge(40).second);
 
-    ASSERT_EQ(9, mesh->m_edges[9].first);
-    ASSERT_EQ(19, mesh->m_edges[9].second);
+    ASSERT_EQ(9, mesh->GetEdge(9).first);
+    ASSERT_EQ(19, mesh->GetEdge(9).second);
 
-    ASSERT_EQ(19, mesh->m_edges[43].first);
-    ASSERT_EQ(13, mesh->m_edges[43].second);
+    ASSERT_EQ(19, mesh->GetEdge(43).first);
+    ASSERT_EQ(13, mesh->GetEdge(43).second);
 
-    ASSERT_EQ(6, mesh->m_edges[16].first);
-    ASSERT_EQ(22, mesh->m_edges[16].second);
+    ASSERT_EQ(6, mesh->GetEdge(16).first);
+    ASSERT_EQ(22, mesh->GetEdge(16).second);
 
-    ASSERT_EQ(22, mesh->m_edges[46].first);
-    ASSERT_EQ(5, mesh->m_edges[46].second);
+    ASSERT_EQ(22, mesh->GetEdge(46).first);
+    ASSERT_EQ(5, mesh->GetEdge(46).second);
 
-    ASSERT_EQ(7, mesh->m_edges[17].first);
-    ASSERT_EQ(23, mesh->m_edges[17].second);
+    ASSERT_EQ(7, mesh->GetEdge(17).first);
+    ASSERT_EQ(23, mesh->GetEdge(17).second);
 
-    ASSERT_EQ(23, mesh->m_edges[47].first);
-    ASSERT_EQ(6, mesh->m_edges[47].second);
+    ASSERT_EQ(23, mesh->GetEdge(47).first);
+    ASSERT_EQ(6, mesh->GetEdge(47).second);
 }
 
 TEST(MeshRefinement, RefinementFileBasedOnLevels_OnSphericalMesh_ShouldRefine)
@@ -731,17 +731,17 @@ TEST(MeshRefinement, RefinementFileBasedOnLevels_OnSphericalMesh_ShouldRefine)
     ASSERT_EQ(121, mesh->GetNumNodes());
 
     constexpr double tolerance = 1e-6;
-    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[0].x, tolerance);
-    ASSERT_NEAR(41.103300000000004, mesh->m_nodes[6].x, tolerance);
-    ASSERT_NEAR(41.106600000000000, mesh->m_nodes[12].x, tolerance);
-    ASSERT_NEAR(41.109900000000003, mesh->m_nodes[18].x, tolerance);
-    ASSERT_NEAR(41.113199999999999, mesh->m_nodes[24].x, tolerance);
+    ASSERT_NEAR(41.100000000000001, mesh->Node(0).x, tolerance);
+    ASSERT_NEAR(41.103300000000004, mesh->Node(6).x, tolerance);
+    ASSERT_NEAR(41.106600000000000, mesh->Node(12).x, tolerance);
+    ASSERT_NEAR(41.109900000000003, mesh->Node(18).x, tolerance);
+    ASSERT_NEAR(41.113199999999999, mesh->Node(24).x, tolerance);
 
-    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[0].y, tolerance);
-    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[6].y, tolerance);
-    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[12].y, tolerance);
-    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[18].y, tolerance);
-    ASSERT_NEAR(41.100000000000001, mesh->m_nodes[24].y, tolerance);
+    ASSERT_NEAR(41.100000000000001, mesh->Node(0).y, tolerance);
+    ASSERT_NEAR(41.100000000000001, mesh->Node(6).y, tolerance);
+    ASSERT_NEAR(41.100000000000001, mesh->Node(12).y, tolerance);
+    ASSERT_NEAR(41.100000000000001, mesh->Node(18).y, tolerance);
+    ASSERT_NEAR(41.100000000000001, mesh->Node(24).y, tolerance);
 }
 
 TEST(MeshRefinement, RefineCurvilinearGrid)
@@ -985,7 +985,7 @@ TEST(MeshRefinement, CasulliRefinement)
     constexpr double tolerance = 1.0e-12;
 
     auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 3, 3);
-    Mesh2D mesh(curviMesh->m_edges, curviMesh->m_nodes, Projection::cartesian);
+    Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
 
     // Expected values were obtained from a mesh refined using the Casulli refinement algorithm
     std::vector<meshkernel::Point> expectedPoints{{0, 0},
@@ -1037,20 +1037,23 @@ TEST(MeshRefinement, CasulliRefinement)
 
     meshRefinement.Compute(mesh);
 
-    ASSERT_EQ(expectedPoints.size(), mesh.m_nodes.size());
+    std::vector<meshkernel::UInt> validNodeMap(mesh.GetValidNodeMapping());
+    std::vector<meshkernel::UInt> validEdgeMap(mesh.GetValidEdgeMapping());
+
+    ASSERT_EQ(expectedPoints.size(), mesh.GetNumValidNodes());
 
     for (size_t i = 0; i < expectedPoints.size(); ++i)
     {
-        EXPECT_NEAR(expectedPoints[i].x, mesh.m_nodes[i].x, tolerance);
-        EXPECT_NEAR(expectedPoints[i].y, mesh.m_nodes[i].y, tolerance);
+        EXPECT_NEAR(expectedPoints[i].x, mesh.Node(validNodeMap[i]).x, tolerance);
+        EXPECT_NEAR(expectedPoints[i].y, mesh.Node(validNodeMap[i]).y, tolerance);
     }
 
-    ASSERT_EQ(expectedEdgesStart.size(), mesh.m_edges.size());
+    ASSERT_EQ(expectedEdgesStart.size(), mesh.GetNumValidEdges());
 
-    for (size_t i = 0; i < mesh.m_edges.size(); ++i)
+    for (size_t i = 0; i < expectedEdgesStart.size(); ++i)
     {
-        EXPECT_EQ(expectedEdgesStart[i], mesh.m_edges[i].first);
-        EXPECT_EQ(expectedEdgesEnd[i], mesh.m_edges[i].second);
+        EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).first, validNodeMap[expectedEdgesStart[i]]);
+        EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).second, validNodeMap[expectedEdgesEnd[i]]);
     }
 }
 
@@ -1093,7 +1096,7 @@ TEST(MeshRefinement, CasulliPatchRefinement)
     const size_t ExpectedNumberOfEdges = 360;
 
     auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 20.0, 20.0, 11, 11);
-    Mesh2D mesh(curviMesh->m_edges, curviMesh->m_nodes, Projection::cartesian);
+    Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
 
     std::vector<Point> patch{{45.0, 45.0},
                              {155.0, 45.0},
@@ -1121,18 +1124,23 @@ TEST(MeshRefinement, CasulliPatchRefinement)
 
     loadCasulliRefinedMeshData(expectedPoints, expectedEdgeStart, expectedEdgeEnd);
 
-    ASSERT_EQ(ExpectedNumberOfPoints, mesh.m_nodes.size());
-    ASSERT_EQ(ExpectedNumberOfEdges, mesh.m_edges.size());
+    std::vector<meshkernel::UInt> validNodeMap(mesh.GetValidNodeMapping());
+    std::vector<meshkernel::UInt> validEdgeMap(mesh.GetValidEdgeMapping());
 
-    for (size_t i = 0; i < ExpectedNumberOfPoints; ++i)
+    ASSERT_EQ(ExpectedNumberOfPoints, mesh.GetNumValidNodes());
+    ASSERT_EQ(ExpectedNumberOfEdges, mesh.GetNumValidEdges());
+
+    for (size_t i = 0; i < expectedPoints.size(); ++i)
     {
-        EXPECT_NEAR(expectedPoints[i].x, mesh.m_nodes[i].x, tolerance);
-        EXPECT_NEAR(expectedPoints[i].y, mesh.m_nodes[i].y, tolerance);
+        // Map the index i from the nodes array containing only valid points to an array with that may contain in-valid points
+        EXPECT_NEAR(expectedPoints[i].x, mesh.Node(validNodeMap[i]).x, tolerance);
+        EXPECT_NEAR(expectedPoints[i].y, mesh.Node(validNodeMap[i]).y, tolerance);
     }
 
-    for (size_t i = 0; i < ExpectedNumberOfEdges; ++i)
+    for (size_t i = 0; i < expectedEdgeStart.size(); ++i)
     {
-        EXPECT_EQ(expectedEdgeStart[i], mesh.m_edges[i].first);
-        EXPECT_EQ(expectedEdgeEnd[i], mesh.m_edges[i].second);
+        // Map the index i from the edges array containing only valid edges to an array with that may contain in-valid edges
+        EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).first, validNodeMap[expectedEdgeStart[i]]);
+        EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).second, validNodeMap[expectedEdgeEnd[i]]);
     }
 }

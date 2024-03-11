@@ -33,9 +33,9 @@ UInt Mesh2DGenerateGlobal::NodeIndexFromPosition(const Mesh& mesh, const Point& 
 {
     constexpr double tolerance = 1.0e-6;
 
-    for (auto i = static_cast<int>(mesh.m_nodes.size() - 1); i >= 0; --i)
+    for (auto i = static_cast<int>(mesh.GetNumNodes() - 1); i >= 0; --i)
     {
-        if (IsEqual(x, mesh.m_nodes[i], tolerance))
+        if (IsEqual(x, mesh.Node(i), tolerance))
         {
             return static_cast<UInt>(i);
         }
@@ -182,19 +182,28 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
     constexpr double tolerance = 1.0e-6;
     for (UInt e = 0; e < mesh2d->GetNumEdges(); e++)
     {
-        const auto& [firstNode, secondNode] = mesh2d->m_edges[e];
+        const auto& [firstNode, secondNode] = mesh2d->GetEdge(e);
+
+        if (firstNode == constants::missing::uintValue || secondNode == constants::missing::uintValue)
+        {
+            continue;
+        }
+
         const auto numEdgesFirstNode = mesh2d->m_nodesNumEdges[firstNode];
         const auto numEdgesSecondNode = mesh2d->m_nodesNumEdges[secondNode];
         if ((numEdgesFirstNode == constants::geometric::numNodesInPentagon ||
              numEdgesFirstNode == constants::geometric::numNodesInhaxagon) &&
             (numEdgesSecondNode == constants::geometric::numNodesInPentagon ||
              numEdgesSecondNode == constants::geometric::numNodesInhaxagon) &&
-            IsEqual(mesh2d->m_nodes[firstNode].y, mesh2d->m_nodes[secondNode].y, tolerance))
+            IsEqual(mesh2d->Node(firstNode).y, mesh2d->Node(secondNode).y, tolerance))
         {
             mesh2d->DeleteEdge(e);
         }
     }
 
+    // A newly created grid should have no invalid nodes nor edges.
+    // Delete any invalid node and edges that have been generated during calculation of the grid.
+    mesh2d->DeleteInvalidNodesAndEdges();
     mesh2d->AdministrateNodesEdges();
 
     return mesh2d;

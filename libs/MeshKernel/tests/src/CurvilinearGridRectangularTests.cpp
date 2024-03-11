@@ -97,26 +97,26 @@ TEST(CurvilinearGridUniform, MakeCurvilinearInEmptyPolygonSpherical)
     ASSERT_EQ(8, mesh.GetNumNodes());
 
     // x coordinate
-    ASSERT_EQ(0.0, mesh.m_nodes[0].x);
-    ASSERT_EQ(blockSizeX, mesh.m_nodes[1].x);
-    ASSERT_EQ(blockSizeX * 2, mesh.m_nodes[2].x);
-    ASSERT_EQ(blockSizeX * 3, mesh.m_nodes[3].x);
+    ASSERT_EQ(0.0, mesh.Node(0).x);
+    ASSERT_EQ(blockSizeX, mesh.Node(1).x);
+    ASSERT_EQ(blockSizeX * 2, mesh.Node(2).x);
+    ASSERT_EQ(blockSizeX * 3, mesh.Node(3).x);
 
-    ASSERT_EQ(0.0, mesh.m_nodes[4].x);
-    ASSERT_EQ(blockSizeX, mesh.m_nodes[5].x);
-    ASSERT_EQ(blockSizeX * 2, mesh.m_nodes[6].x);
-    ASSERT_EQ(blockSizeX * 3, mesh.m_nodes[7].x);
+    ASSERT_EQ(0.0, mesh.Node(4).x);
+    ASSERT_EQ(blockSizeX, mesh.Node(5).x);
+    ASSERT_EQ(blockSizeX * 2, mesh.Node(6).x);
+    ASSERT_EQ(blockSizeX * 3, mesh.Node(7).x);
 
     // y coordinate
-    ASSERT_EQ(89.0, mesh.m_nodes[0].y);
-    ASSERT_EQ(89.0, mesh.m_nodes[1].y);
-    ASSERT_EQ(89.0, mesh.m_nodes[2].y);
-    ASSERT_EQ(89.0, mesh.m_nodes[3].y);
+    ASSERT_EQ(89.0, mesh.Node(0).y);
+    ASSERT_EQ(89.0, mesh.Node(1).y);
+    ASSERT_EQ(89.0, mesh.Node(2).y);
+    ASSERT_EQ(89.0, mesh.Node(3).y);
 
-    ASSERT_EQ(90.0, mesh.m_nodes[4].y);
-    ASSERT_EQ(90.0, mesh.m_nodes[5].y);
-    ASSERT_EQ(90.0, mesh.m_nodes[6].y);
-    ASSERT_EQ(90.0, mesh.m_nodes[7].y);
+    ASSERT_EQ(90.0, mesh.Node(4).y);
+    ASSERT_EQ(90.0, mesh.Node(5).y);
+    ASSERT_EQ(90.0, mesh.Node(6).y);
+    ASSERT_EQ(90.0, mesh.Node(7).y);
 }
 
 TEST(CurvilinearGridUniformCurvilinearGridUniform, InsertFace_OnBottomLeft_ShouldInsertFace)
