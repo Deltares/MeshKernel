@@ -124,8 +124,6 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGrid_S
     // Assert
     constexpr double tolerance = 1e-6;
 
-    const auto val = curvilinearGrid->GetNode(1, 0).x;
-
     ASSERT_NEAR(79983.796374595549, curvilinearGrid->GetNode(0, 0).x, tolerance);
     ASSERT_NEAR(80067.930920933941, curvilinearGrid->GetNode(0, 1).x, tolerance);
     ASSERT_NEAR(80150.164245250286, curvilinearGrid->GetNode(0, 2).x, tolerance);
