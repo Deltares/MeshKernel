@@ -1256,7 +1256,7 @@ void Mesh::Commit(const ResetNodeAction& undoAction)
     m_edgesRTreeRequiresUpdate = true;
 }
 
-void Mesh::Commit(ResetEdgeAction& undoAction)
+void Mesh::Commit(const ResetEdgeAction& undoAction)
 {
     m_edges[undoAction.EdgeId()] = undoAction.UpdatedEdge();
     m_edgesRTreeRequiresUpdate = true;
@@ -1307,7 +1307,7 @@ void Mesh::Restore(const ResetNodeAction& undoAction)
     m_edgesRTreeRequiresUpdate = true;
 }
 
-void Mesh::Restore(ResetEdgeAction& undoAction)
+void Mesh::Restore(const ResetEdgeAction& undoAction)
 {
     m_edges[undoAction.EdgeId()] = undoAction.InitialEdge();
     m_edgesRTreeRequiresUpdate = true;

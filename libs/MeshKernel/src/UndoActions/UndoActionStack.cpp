@@ -34,7 +34,7 @@ bool meshkernel::UndoActionStack::Undo()
 {
     bool didUndo = false;
 
-    if (m_committed.size() > 0)
+    if (!m_committed.empty())
     {
         // Perform undo operation
         m_committed.back()->Restore();
@@ -51,7 +51,7 @@ bool meshkernel::UndoActionStack::Commit()
 {
     bool didCommit = false;
 
-    if (m_restored.size() > 0)
+    if (!m_restored.empty())
     {
         // Perform commit (redo) operation
         m_restored.back()->Commit();

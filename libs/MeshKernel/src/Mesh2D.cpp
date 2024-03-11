@@ -1812,9 +1812,8 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces(const Polygons& 
 std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteHangingEdges()
 {
     std::unique_ptr<meshkernel::CompoundUndoAction> deleteAction = CompoundUndoAction::Create();
-    const auto hangingEdges = GetHangingEdges();
 
-    for (const auto& hangingEdge : hangingEdges)
+    for (const auto& hangingEdge : GetHangingEdges())
     {
         deleteAction->Add(DeleteEdge(hangingEdge));
     }

@@ -399,7 +399,7 @@ namespace meshkernel
         void Commit(const AddEdgeAction& undoAction);
 
         /// @brief Apply the reset edge action
-        void Commit(ResetEdgeAction& undoAction);
+        void Commit(const ResetEdgeAction& undoAction);
 
         /// @brief Apply the delete node action
         void Commit(const DeleteNodeAction& undoAction);
@@ -431,7 +431,7 @@ namespace meshkernel
         /// @brief Undo the reset edge action
         ///
         /// Restore mesh to state before edge was reset
-        void Restore(ResetEdgeAction& undoAction);
+        void Restore(const ResetEdgeAction& undoAction);
 
         /// @brief Undo the delete node action
         ///
