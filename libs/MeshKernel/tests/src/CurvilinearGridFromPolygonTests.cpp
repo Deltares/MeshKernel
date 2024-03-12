@@ -2,7 +2,6 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
-#include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Polygon.hpp>
 #include <MeshKernel/Polygons.hpp>
 
@@ -95,7 +94,6 @@ TEST(CurvilinearGridFromPolygon, ComputeGridTriangle)
                                                        {593.416260, 266.561584},
                                                        {558.643005, 324.653687},
                                                        {526.733398, 377.836578},
-                                                       {444.095703, 436.746857},
                                                        {444.504791, 437.155945}};
 
     meshkernel::Polygon polygon(polygonPoints, meshkernel::Projection::cartesian);
@@ -108,26 +106,18 @@ TEST(CurvilinearGridFromPolygon, ComputeGridTriangle)
     constexpr double tolerance = 1e-6;
 
     ASSERT_NEAR(444.50479100000001, curvilinearGrid->GetNode(0, 0).x, tolerance);
-    ASSERT_NEAR(444.09570300000001, curvilinearGrid->GetNode(0, 1).x, tolerance);
-    ASSERT_NEAR(526.73339799999997, curvilinearGrid->GetNode(0, 2).x, tolerance);
-    ASSERT_NEAR(558.64300500000002, curvilinearGrid->GetNode(0, 3).x, tolerance);
-    ASSERT_NEAR(593.41625999999997, curvilinearGrid->GetNode(0, 4).x, tolerance);
+    ASSERT_NEAR(558.64300500000002, curvilinearGrid->GetNode(0, 1).x, tolerance);
+    ASSERT_NEAR(593.41625999999997, curvilinearGrid->GetNode(0, 2).x, tolerance);
 
     ASSERT_NEAR(437.15594499999997, curvilinearGrid->GetNode(0, 0).y, tolerance);
-    ASSERT_NEAR(436.74685699999998, curvilinearGrid->GetNode(0, 1).y, tolerance);
-    ASSERT_NEAR(377.83657799999997, curvilinearGrid->GetNode(0, 2).y, tolerance);
-    ASSERT_NEAR(324.65368699999999, curvilinearGrid->GetNode(0, 3).y, tolerance);
-    ASSERT_NEAR(266.56158399999998, curvilinearGrid->GetNode(0, 4).y, tolerance);
+    ASSERT_NEAR(324.65368699999999, curvilinearGrid->GetNode(0, 1).y, tolerance);
+    ASSERT_NEAR(266.56158399999998, curvilinearGrid->GetNode(0, 2).y, tolerance);
 
     ASSERT_NEAR(427.73178100000001, curvilinearGrid->GetNode(1, 0).x, tolerance);
-    ASSERT_NEAR(455.85723540740742, curvilinearGrid->GetNode(1, 1).x, tolerance);
-    ASSERT_NEAR(483.98268981481488, curvilinearGrid->GetNode(1, 2).x, tolerance);
-    ASSERT_NEAR(506.38081040740741, curvilinearGrid->GetNode(1, 3).x, tolerance);
-    ASSERT_NEAR(528.77893099999994, curvilinearGrid->GetNode(1, 4).x, tolerance);
+    ASSERT_NEAR(473.00523900000007, curvilinearGrid->GetNode(1, 1).x, tolerance);
+    ASSERT_NEAR(528.77893099999994, curvilinearGrid->GetNode(1, 2).x, tolerance);
 
     ASSERT_NEAR(382.74575800000002, curvilinearGrid->GetNode(1, 0).y, tolerance);
-    ASSERT_NEAR(362.14685592592593, curvilinearGrid->GetNode(1, 1).y, tolerance);
-    ASSERT_NEAR(341.54795385185184, curvilinearGrid->GetNode(1, 2).y, tolerance);
-    ASSERT_NEAR(302.41837092592596, curvilinearGrid->GetNode(1, 3).y, tolerance);
-    ASSERT_NEAR(263.28878800000001, curvilinearGrid->GetNode(1, 4).y, tolerance);
+    ASSERT_NEAR(322.06271366666670, curvilinearGrid->GetNode(1, 1).y, tolerance);
+    ASSERT_NEAR(263.28878800000001, curvilinearGrid->GetNode(1, 2).y, tolerance);
 }

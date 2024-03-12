@@ -8,14 +8,14 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnLeftBoundary_ShouldCorrectlySumC
 {
     // Set-up
     const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 2.0, 3, 2);
-    EXPECT_EQ(3, curvilinearGrid->NumM());
     EXPECT_EQ(2, curvilinearGrid->NumN());
+    EXPECT_EQ(3, curvilinearGrid->NumM());
 
     constexpr double f = 1.2;
     meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, f);
     curvilinearLineMirror.SetLine({0, 0}, {0, 2});
 
-    const auto p0 = curvilinearGrid->GetNode(0, 1);
+    const auto p0 = curvilinearGrid->GetNode(1, 0);
     const auto p1 = curvilinearGrid->GetNode(1, 1);
 
     // Execute
@@ -27,7 +27,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnLeftBoundary_ShouldCorrectlySumC
     // Asserts
     constexpr double tolerance = 1e-6;
     const auto p_expected = (1 + f) * p0 + (-f) * p1;
-    const auto p_actual = curvilinearGrid->GetNode(0, 1);
+    const auto p_actual = curvilinearGrid->GetNode(1, 0);
     ASSERT_TRUE(meshkernel::IsEqual(p_expected, p_actual, tolerance));
 }
 
@@ -42,7 +42,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldCorrectlySum
     meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, f);
     curvilinearLineMirror.SetLine({2, 0}, {2, 2});
 
-    const auto p0 = curvilinearGrid->GetNode(2, 1);
+    const auto p0 = curvilinearGrid->GetNode(1, 2);
     const auto p1 = curvilinearGrid->GetNode(1, 1);
 
     // Execute
@@ -54,7 +54,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldCorrectlySum
     // Asserts
     constexpr double tolerance = 1e-6;
     const auto p_expected = (1 + f) * p0 + (-f) * p1;
-    const auto p_actual = curvilinearGrid->GetNode(3, 1);
+    const auto p_actual = curvilinearGrid->GetNode(1, 3);
     ASSERT_TRUE(meshkernel::IsEqual(p_expected, p_actual, tolerance));
 }
 
@@ -96,7 +96,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnUpperBoundary_ShouldAddFacesOnUp
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
-    ASSERT_EQ(9, curvilinearGrid->NumN());
+    ASSERT_EQ(9, curvilinearGrid->NumM());
     meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, 1.2);
     curvilinearLineMirror.SetLine({80960.2, 366520.7}, {80609.8, 367406.0});
 
@@ -104,10 +104,10 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnUpperBoundary_ShouldAddFacesOnUp
     curvilinearLineMirror.Compute();
 
     // Asserts
-    ASSERT_EQ(10, curvilinearGrid->NumN());
+    ASSERT_EQ(10, curvilinearGrid->NumM());
 
     constexpr double tolerance = 1e-6;
-    const auto last = (meshkernel::UInt)curvilinearGrid->NumN() - 1;
+    const auto last = (meshkernel::UInt)curvilinearGrid->NumM() - 1;
     ASSERT_NEAR(80703.065731618568, curvilinearGrid->GetNode(0, last).x, tolerance);
     ASSERT_NEAR(80878.447265919545, curvilinearGrid->GetNode(1, last).x, tolerance);
     ASSERT_NEAR(81010.674000571220, curvilinearGrid->GetNode(2, last).x, tolerance);
@@ -158,7 +158,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldAddFacesOnRi
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
-    ASSERT_EQ(5, curvilinearGrid->NumM());
+    ASSERT_EQ(5, curvilinearGrid->NumN());
     meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, 1.2);
     curvilinearLineMirror.SetLine({80155.8, 366529.5}, {80960.2, 366520.72});
 
@@ -166,7 +166,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldAddFacesOnRi
     curvilinearLineMirror.Compute();
 
     // Asserts
-    ASSERT_EQ(6, curvilinearGrid->NumM());
+    ASSERT_EQ(6, curvilinearGrid->NumN());
 
     constexpr double tolerance = 1e-6;
     const std::vector<meshkernel::Point> expected{
@@ -179,7 +179,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldAddFacesOnRi
         {80733.43286732884, 366326.7255580065},
         {80846.495013789012, 366309.39825786441},
         {80959.52970866223, 366287.90794878011}};
-    const auto last = curvilinearGrid->NumM() - 1;
+    const auto last = curvilinearGrid->NumN() - 1;
     for (int i = 0; i < 9; ++i)
     {
         EXPECT_TRUE(meshkernel::IsEqual(expected[i], curvilinearGrid->GetNode(last, i), tolerance));

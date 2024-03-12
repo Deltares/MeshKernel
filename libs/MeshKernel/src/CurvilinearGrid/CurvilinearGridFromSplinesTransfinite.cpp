@@ -57,9 +57,9 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute(
     }
 
     CharacteriseSplines();
-
-    const auto numMPoints = m_numM + 1;
     const auto numNPoints = m_numN + 1;
+    const auto numMPoints = m_numM + 1;
+
     const auto maxNumPoints = std::max(numMPoints, numNPoints);
     std::vector<double> distances;
     std::vector<double> adimensionalDistances;
@@ -67,10 +67,10 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute(
     std::vector<Point> points;
 
     // For each side of the plane reserve a vector
-    std::vector<Point> sideOne;
-    std::vector<Point> sideTwo;
-    std::vector<Point> sideThree;
-    std::vector<Point> sideFour;
+    std::vector<Point> bottomSide;
+    std::vector<Point> upperSide;
+    std::vector<Point> leftSide;
+    std::vector<Point> rightSide;
 
     // allocate local vectors
     distances.reserve(maxNumPoints);
@@ -78,16 +78,16 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute(
     points.reserve(maxNumPoints);
     intersectionDistances.resize(numSplines);
 
-    sideOne.reserve(maxNumPoints);
-    sideTwo.reserve(maxNumPoints);
-    sideThree.reserve(maxNumPoints);
-    sideFour.reserve(maxNumPoints);
+    bottomSide.reserve(maxNumPoints);
+    upperSide.reserve(maxNumPoints);
+    leftSide.reserve(maxNumPoints);
+    rightSide.reserve(maxNumPoints);
 
     // Allocate the curvilinear grid. We can have multiple divisions along N and M.
     const auto TotalMColumns = (m_numNSplines - 1) * m_numM;
     const auto TotalNRows = (m_numMSplines - 1) * m_numN;
 
-    lin_alg::Matrix<Point> gridNodes(TotalMColumns + 1, TotalNRows + 1);
+    lin_alg::Matrix<Point> gridNodes(TotalNRows + 1, TotalMColumns + 1);
 
     UInt numMSplines = 0;
     UInt numNSplines = 0;
@@ -121,7 +121,7 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute(
             position = (m_splineGroupIndexAndFromToIntersections[splineIndex][0] - 1) * m_numN;
             from = (m_splineGroupIndexAndFromToIntersections[splineIndex][1] - 1) * m_numM;
             to = (m_splineGroupIndexAndFromToIntersections[splineIndex][2] - 1) * m_numM + 1;
-            numNSplines = std::max(numNSplines, m_splineGroupIndexAndFromToIntersections[splineIndex][0]);
+            numMSplines = std::max(numMSplines, m_splineGroupIndexAndFromToIntersections[splineIndex][0]);
         }
         else
         {
@@ -130,7 +130,7 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute(
             position = (m_splineGroupIndexAndFromToIntersections[splineIndex][0] - 1) * m_numM;
             from = (m_splineGroupIndexAndFromToIntersections[splineIndex][1] - 1) * m_numN;
             to = (m_splineGroupIndexAndFromToIntersections[splineIndex][2] - 1) * m_numN + 1;
-            numMSplines = std::max(numMSplines, m_splineGroupIndexAndFromToIntersections[splineIndex][0]);
+            numNSplines = std::max(numNSplines, m_splineGroupIndexAndFromToIntersections[splineIndex][0]);
         }
 
         distances.resize(numPoints);
@@ -154,80 +154,83 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute(
         {
             if (splineIndex < m_numMSplines)
             {
-                gridNodes(i, position) = points[index];
+                gridNodes(position, i) = points[index];
             }
             else
             {
-                gridNodes(position, i) = points[index];
+                gridNodes(i, position) = points[index];
             }
             index++;
         }
     }
 
-    sideOne.resize(numNPoints);
-    sideTwo.resize(numNPoints);
-    sideThree.resize(numMPoints);
-    sideFour.resize(numMPoints);
-    for (UInt i = 0; i < numMSplines - 1; i++)
+    bottomSide.resize(numMPoints);
+    upperSide.resize(numMPoints);
+    leftSide.resize(numNPoints);
+    rightSide.resize(numNPoints);
+    for (UInt i = 0; i < numNSplines - 1; i++)
     {
-        for (UInt j = 0; j < numNSplines - 1; j++)
+        for (UInt j = 0; j < numMSplines - 1; j++)
         {
             // Fill each block of the interpolation plane
-            for (UInt k = 0; k < numMPoints; k++)
+            for (UInt k = 0; k < numNPoints; k++)
             {
-                for (UInt l = 0; l < numNPoints; l++)
+                for (UInt l = 0; l < numMPoints; l++)
                 {
-                    const auto m = i * m_numM + k;
-                    const auto n = j * m_numN + l;
+                    const auto m = i * m_numM + l;
+                    const auto n = j * m_numN + k;
+                    const auto val = gridNodes(n, m);
 
                     // We are at the boundary
-                    if (!gridNodes(m, n).IsValid())
+                    if (!val.IsValid())
                     {
                         continue;
                     }
 
+                    // k : numNPoints
                     if (k == 0)
                     {
-                        sideOne[l] = gridNodes(m, n);
+                        bottomSide[l] = val;
                     }
-                    if (k == m_numM)
+                    if (k == m_numN)
                     {
-                        sideTwo[l] = gridNodes(m, n);
+                        upperSide[l] = val;
                     }
                     if (l == 0)
                     {
-                        sideThree[k] = gridNodes(m, n);
+                        leftSide[k] = val;
                     }
-                    if (l == m_numN)
+                    if (l == m_numM)
                     {
-                        sideFour[k] = gridNodes(m, n);
+                        rightSide[k] = val;
                     }
                 }
             }
 
             // call transfinite interpolation
-            const auto interpolationResult = DiscretizeTransfinite(sideOne,
-                                                                   sideTwo,
-                                                                   sideThree,
-                                                                   sideFour,
-                                                                   m_splines->m_projection,
-                                                                   m_numM,
-                                                                   m_numN);
+            auto interpolationResult = DiscretizeTransfinite(bottomSide,
+                                                             upperSide,
+                                                             leftSide,
+                                                             rightSide,
+                                                             m_splines->m_projection,
+                                                             m_numM,
+                                                             m_numN);
 
             // assign the points
-            for (UInt k = 0; k < numMPoints; k++)
+            for (UInt k = 0; k < interpolationResult.rows(); k++)
             {
-                for (UInt l = 0; l < numNPoints; l++)
+                for (UInt l = 0; l < interpolationResult.cols(); l++)
                 {
-                    const auto m = i * m_numM + k;
-                    const auto n = j * m_numN + l;
+                    const auto n = j * m_numN + k;
+                    const auto m = i * m_numM + l;
 
-                    if (gridNodes(m, n).IsValid())
+                    if (gridNodes(n, m).IsValid())
                     {
                         continue;
                     }
+                    const auto val = interpolationResult(k, l);
 
-                    gridNodes(m, n) = interpolationResult(k, l);
+                    gridNodes(n, m) = val;
                 }
             }
         }

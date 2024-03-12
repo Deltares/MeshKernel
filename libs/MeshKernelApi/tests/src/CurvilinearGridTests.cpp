@@ -31,8 +31,8 @@ TEST(CurvilinearGrid, MakeRectangular_OnSphericalCoordinates_ShouldMakeCurviline
     errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGridResults);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    ASSERT_EQ(12, curvilinearGridResults.num_m);
-    ASSERT_EQ(9, curvilinearGridResults.num_n);
+    ASSERT_EQ(9, curvilinearGridResults.num_m);
+    ASSERT_EQ(12, curvilinearGridResults.num_n);
 }
 
 TEST(CurvilinearGrid, MakeRectangular_OnSphericalCoordinatesWithpolygon_ShouldMakeCurvilinearGrid)
@@ -76,8 +76,8 @@ TEST(CurvilinearGrid, MakeRectangular_OnSphericalCoordinatesWithpolygon_ShouldMa
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(125, curvilinearGridResults.num_m);
-    ASSERT_EQ(61, curvilinearGridResults.num_n);
+    ASSERT_EQ(61, curvilinearGridResults.num_m);
+    ASSERT_EQ(125, curvilinearGridResults.num_n);
 }
 
 TEST_F(CartesianApiTestFixture, CurvilinearComputeTransfiniteFromPolygon_ShouldComputeAValidCurvilinearGrid)
@@ -160,8 +160,8 @@ TEST_F(CartesianApiTestFixture, MakeCurvilinearGridThroughApi)
 
     // Assert
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(3, curvilinearGrid.num_m);
-    ASSERT_EQ(4, curvilinearGrid.num_n);
+    ASSERT_EQ(4, curvilinearGrid.num_m);
+    ASSERT_EQ(3, curvilinearGrid.num_n);
 
     // Allocate memory and get data
     std::vector<double> node_x(curvilinearGrid.num_m * curvilinearGrid.num_n);
@@ -302,8 +302,8 @@ TEST_F(CartesianApiTestFixture, GenerateOrthogonalCurvilinearGridThroughApi)
 
     // Assert
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(3, curvilinearGrid.num_m);
-    ASSERT_EQ(7, curvilinearGrid.num_n);
+    ASSERT_EQ(3, curvilinearGrid.num_n);
+    ASSERT_EQ(7, curvilinearGrid.num_m);
 }
 
 TEST_F(CartesianApiTestFixture, RefineCompute_OnCurvilinearGrid_ShouldRefine)
@@ -320,8 +320,8 @@ TEST_F(CartesianApiTestFixture, RefineCompute_OnCurvilinearGrid_ShouldRefine)
     errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    ASSERT_EQ(4, curvilinearGrid.num_m);
-    ASSERT_EQ(13, curvilinearGrid.num_n);
+    ASSERT_EQ(13, curvilinearGrid.num_m);
+    ASSERT_EQ(4, curvilinearGrid.num_n);
 }
 
 TEST_F(CartesianApiTestFixture, DerefineCompute_OnCurvilinearGrid_ShouldDeRefine)
@@ -339,8 +339,8 @@ TEST_F(CartesianApiTestFixture, DerefineCompute_OnCurvilinearGrid_ShouldDeRefine
     errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    ASSERT_EQ(5, curvilinearGrid.num_m);
-    ASSERT_EQ(4, curvilinearGrid.num_n);
+    ASSERT_EQ(4, curvilinearGrid.num_m);
+    ASSERT_EQ(5, curvilinearGrid.num_n);
 }
 
 TEST_F(CartesianApiTestFixture, Orthogonalize_CurvilinearGrid_ShouldOrthogonalize)
@@ -732,8 +732,8 @@ TEST(CurvilinearGrid, MakeRectangularOnDefinedExtension_OnSphericalCoordinates_S
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(6, curvilinearGridResults.num_m);
-    ASSERT_EQ(11, curvilinearGridResults.num_n);
+    ASSERT_EQ(11, curvilinearGridResults.num_m);
+    ASSERT_EQ(6, curvilinearGridResults.num_n);
 }
 
 TEST_F(CartesianApiTestFixture, CurvilinearDeleteExterior_OnCurvilinearGrid_ShouldDeleteExterior)
@@ -819,9 +819,9 @@ TEST(CurvilinearGrid, MakeRectangular_ComputeSmoothnessTest)
     errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGridResults);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    std::vector<double> smoothness(curvilinearGridResults.num_m * curvilinearGridResults.num_n);
-    std::vector<double> expectedX{-999.0, -999.0, -999.0, -999.0, -999.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -999.0, -999.0, -999.0, -999.0, -999.0};
-    std::vector<double> expectedY{-999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0};
+    std::vector<double> smoothness(curvilinearGridResults.num_n * curvilinearGridResults.num_m);
+    std::vector<double> expectedX{-999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0, -999.0, 1.0, 1.0, 1.0, -999.0};
+    std::vector<double> expectedY{-999.0, -999.0, -999.0, -999.0, -999.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -999.0, -999.0, -999.0, -999.0, -999.0};
 
     // Test x direction
     errorCode = meshkernelapi::mkernel_curvilinear_compute_smoothness(meshKernelId, 0, smoothness.data());
@@ -867,21 +867,22 @@ TEST(CurvilinearGrid, MakeRectangular_ComputeCurvatureTest)
     errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGridResults);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    std::vector<double> curvature(curvilinearGridResults.num_m * curvilinearGridResults.num_n);
-    std::vector<double> expectedX{-999.0, -999.0, -999.0, -999.0, -999.0,
+    std::vector<double> curvature(curvilinearGridResults.num_n * curvilinearGridResults.num_m);
+
+    std::vector<double> expectedX{-999.0, 0.001000001000001, 0.001000001000001, 0.001000001000001, -999.0,
+                                  -999.0, 0.001000001000001, 0.001000001000001, 0.001000001000001, -999.0,
+                                  -999.0, 0.001000001000001, 0.001000001000001, 0.001000001000001, -999.0,
+                                  -999.0, 0.001000001000001, 0.001000001000001, 0.001000001000001, -999.0,
+                                  -999.0, 0.001000001000001, 0.001000001000001, 0.001000001000001, -999.0,
+                                  -999.0, 0.001000001000001, 0.001000001000001, 0.001000001000001, -999.0};
+
+    std::vector<double> expectedY{-999.0, -999.0, -999.0, -999.0, -999.0,
                                   0.001000001000001, 0.001000001000001, 0.001000001000001, 0.001000001000001,
                                   0.001000001000001, 0.001000001000001, 0.001000001000001, 0.001000001000001,
                                   0.001000001000001, 0.001000001000001, 0.001000001000001, 0.001000001000001,
                                   0.001000001000001, 0.001000001000001, 0.001000001000001, 0.001000001000001,
                                   0.001000001000001, 0.001000001000001, 0.001000001000001, 0.001000001000001,
                                   -999.0, -999.0, -999.0, -999.0, -999.0};
-
-    std::vector<double> expectedY{-999.0, 0.001000001000001, 0.001000001000001, 0.001000001000001, -999.0,
-                                  -999.0, 0.001000001000001, 0.001000001000001, 0.001000001000001, -999.0,
-                                  -999.0, 0.001000001000001, 0.001000001000001, 0.001000001000001, -999.0,
-                                  -999.0, 0.001000001000001, 0.001000001000001, 0.001000001000001, -999.0,
-                                  -999.0, 0.001000001000001, 0.001000001000001, 0.001000001000001, -999.0,
-                                  -999.0, 0.001000001000001, 0.001000001000001, 0.001000001000001, -999.0};
 
     // Test x direction
     errorCode = meshkernelapi::mkernel_curvilinear_compute_curvature(meshKernelId, 0, curvature.data());

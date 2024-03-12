@@ -45,14 +45,14 @@ namespace curvature
     {
         double y = originY;
 
-        lin_alg::Matrix<meshkernel::Point> points(nx, ny);
+        lin_alg::Matrix<meshkernel::Point> points(ny, nx);
 
-        for (size_t m = 0; m < ny; ++m)
+        for (size_t n = 0; n < ny; ++n)
         {
             double x = originX;
             double deltaXValue = deltaX;
 
-            for (size_t n = 0; n < nx; ++n)
+            for (size_t m = 0; m < nx; ++m)
             {
                 points(n, m) = meshkernel::Point(x, y);
                 x += deltaXValue;
@@ -70,15 +70,15 @@ namespace curvature
         double thetaDelta = std::numbers::pi_v<double> / static_cast<double>(nx);
         double theta = 0.0;
 
-        lin_alg::Matrix<meshkernel::Point> points(nx, ny);
+        lin_alg::Matrix<meshkernel::Point> points(ny, nx);
 
-        for (size_t m = 0; m < ny; ++m)
+        for (size_t n = 0; n < ny; ++n)
         {
             double x = originX;
             double yCurve = 0.0;
             theta = 0.0;
 
-            for (size_t n = 0; n < nx; ++n)
+            for (size_t m = 0; m < nx; ++m)
             {
                 points(n, m) = meshkernel::Point(x, y + yCurve);
                 x += deltaX;
@@ -99,13 +99,13 @@ namespace curvature
         double thetaDelta = 2.0 * std::numbers::pi_v<double> / static_cast<double>(ny);
         double xCurve = 0.0;
 
-        lin_alg::Matrix<meshkernel::Point> points(nx, ny);
+        lin_alg::Matrix<meshkernel::Point> points(ny, nx);
 
-        for (size_t m = 0; m < ny; ++m)
+        for (size_t n = 0; n < ny; ++n)
         {
             double x = originX;
 
-            for (size_t n = 0; n < nx; ++n)
+            for (size_t m = 0; m < nx; ++m)
             {
                 points(n, m) = meshkernel::Point(x + xCurve, y);
                 x += deltaX;
@@ -127,15 +127,15 @@ namespace curvature
         double yThetaDelta = 2.0 * std::numbers::pi_v<double> / static_cast<double>(nx);
         double xCurve = 0.0;
 
-        lin_alg::Matrix<meshkernel::Point> points(nx, ny);
+        lin_alg::Matrix<meshkernel::Point> points(ny, nx);
 
-        for (size_t m = 0; m < ny; ++m)
+        for (size_t n = 0; n < ny; ++n)
         {
             double x = originX;
             double yTheta = 0.0;
             double yCurve = 0.0;
 
-            for (size_t n = 0; n < nx; ++n)
+            for (size_t m = 0; m < nx; ++m)
             {
                 points(n, m) = meshkernel::Point(x + xCurve, y + yCurve);
                 x += deltaX;
@@ -172,35 +172,34 @@ TEST(CurvilinearGridCurvature, Compute_CurvatureOfRegularGrid_ShouldComputeCurva
 
     mk::CurvilinearGridCurvature::Compute(*grid, mk::CurvilinearDirection::M, curvature);
 
-    ASSERT_EQ(nx, curvature.rows());
-    ASSERT_EQ(ny, curvature.cols());
+    ASSERT_EQ(ny, curvature.rows());
+    ASSERT_EQ(nx, curvature.cols());
 
     constexpr double tolerance = 1.0e-12;
     // This is the value for a mesh with no curvature
     constexpr double expectedCurvature = 1.0e3 / 999999.0;
-
-    for (long int i = 0; i < curvature.rows(); ++i)
-    {
-        double expectedCurvatureValue = (i == 0 || i == curvature.rows() - 1 ? mk::constants::missing::doubleValue : expectedCurvature);
-
-        for (long int j = 0; j < curvature.cols(); ++j)
-        {
-            EXPECT_NEAR(expectedCurvatureValue, curvature(i, j), tolerance);
-        }
-    }
-
-    // Next test curvature in n-direction
-
-    mk::CurvilinearGridCurvature::Compute(*grid, mk::CurvilinearDirection::N, curvature);
-
-    ASSERT_EQ(nx, curvature.rows());
-    ASSERT_EQ(ny, curvature.cols());
 
     for (long int j = 0; j < curvature.cols(); ++j)
     {
         double expectedCurvatureValue = (j == 0 || j == curvature.cols() - 1 ? mk::constants::missing::doubleValue : expectedCurvature);
 
         for (long int i = 0; i < curvature.rows(); ++i)
+        {
+            EXPECT_NEAR(expectedCurvatureValue, curvature(i, j), tolerance);
+        }
+    }
+
+    // Next test curvature in n-direction
+    mk::CurvilinearGridCurvature::Compute(*grid, mk::CurvilinearDirection::N, curvature);
+
+    ASSERT_EQ(ny, curvature.rows());
+    ASSERT_EQ(nx, curvature.cols());
+
+    for (long int i = 0; i < curvature.rows(); ++i)
+    {
+        double expectedCurvatureValue = (i == 0 || i == curvature.rows() - 1 ? mk::constants::missing::doubleValue : expectedCurvature);
+
+        for (long int j = 0; j < curvature.cols(); ++j)
         {
             EXPECT_NEAR(expectedCurvatureValue, curvature(i, j), tolerance);
         }
@@ -237,18 +236,18 @@ TEST(CurvilinearGridCurvature, Compute_CurvatureOfRegularGrid_ShouldComputeCurva
 
     mk::CurvilinearGridCurvature::Compute(*grid, mk::CurvilinearDirection::M, curvature);
 
-    ASSERT_EQ(nx, curvature.rows());
-    ASSERT_EQ(ny, curvature.cols());
+    ASSERT_EQ(ny, curvature.rows());
+    ASSERT_EQ(nx, curvature.cols());
 
     constexpr double tolerance = 1.0e-11;
     // This is the value for a mesh with no curvature
     constexpr double expectedCurvature = 1.0e3 / 999999.0;
 
-    for (long int i = 0; i < curvature.rows(); ++i)
+    for (long int j = 0; j < curvature.cols(); ++j)
     {
-        double expectedCurvatureValue = (i == 0 || i == curvature.rows() - 1 ? mk::constants::missing::doubleValue : expectedCurvatureX[i]);
+        double expectedCurvatureValue = (j == 0 || j == curvature.cols() - 1 ? mk::constants::missing::doubleValue : expectedCurvatureX[j]);
 
-        for (long int j = 0; j < curvature.cols(); ++j)
+        for (long int i = 0; i < curvature.rows(); ++i)
         {
             EXPECT_NEAR(expectedCurvatureValue, curvature(i, j), tolerance);
         }
@@ -258,14 +257,14 @@ TEST(CurvilinearGridCurvature, Compute_CurvatureOfRegularGrid_ShouldComputeCurva
 
     mk::CurvilinearGridCurvature::Compute(*grid, mk::CurvilinearDirection::N, curvature);
 
-    ASSERT_EQ(nx, curvature.rows());
-    ASSERT_EQ(ny, curvature.cols());
+    ASSERT_EQ(ny, curvature.rows());
+    ASSERT_EQ(nx, curvature.cols());
 
-    for (long int j = 0; j < curvature.cols(); ++j)
+    for (long int i = 0; i < curvature.rows(); ++i)
     {
-        double expectedCurvatureValue = (j == 0 || j == curvature.cols() - 1 ? mk::constants::missing::doubleValue : expectedCurvature);
+        double expectedCurvatureValue = (i == 0 || i == curvature.rows() - 1 ? mk::constants::missing::doubleValue : expectedCurvature);
 
-        for (long int i = 0; i < curvature.rows(); ++i)
+        for (long int j = 0; j < curvature.cols(); ++j)
         {
             EXPECT_NEAR(expectedCurvatureValue, curvature(i, j), tolerance);
         }
@@ -298,19 +297,20 @@ TEST(CurvilinearGridCurvature, Compute_CurvatureOfRegularGrid_ShouldComputeCurva
 
     mk::CurvilinearGridCurvature::Compute(*grid, mk::CurvilinearDirection::M, curvature);
 
-    ASSERT_EQ(nx, curvature.rows());
-    ASSERT_EQ(ny, curvature.cols());
+    ASSERT_EQ(ny, curvature.rows());
+    ASSERT_EQ(nx, curvature.cols());
 
     constexpr double tolerance = 1.0e-11;
     // This is the value for a mesh with no curvature
     constexpr double expectedCurvature = 1.0e3 / 999999.0;
 
-    for (long int i = 0; i < curvature.rows(); ++i)
+    for (long int j = 0; j < curvature.cols(); ++j)
     {
-        double expectedCurvatureValue = (i == 0 || i == curvature.rows() - 1 ? mk::constants::missing::doubleValue : expectedCurvature);
+        double expectedCurvatureValue = (j == 0 || j == curvature.cols() - 1 ? mk::constants::missing::doubleValue : expectedCurvature);
 
-        for (long int j = 0; j < curvature.cols(); ++j)
+        for (long int i = 0; i < curvature.rows(); ++i)
         {
+
             EXPECT_NEAR(expectedCurvatureValue, curvature(i, j), tolerance);
         }
     }
@@ -319,14 +319,13 @@ TEST(CurvilinearGridCurvature, Compute_CurvatureOfRegularGrid_ShouldComputeCurva
 
     mk::CurvilinearGridCurvature::Compute(*grid, mk::CurvilinearDirection::N, curvature);
 
-    ASSERT_EQ(nx, curvature.rows());
-    ASSERT_EQ(ny, curvature.cols());
+    ASSERT_EQ(ny, curvature.rows());
+    ASSERT_EQ(nx, curvature.cols());
 
-    for (long int j = 0; j < curvature.cols(); ++j)
+    for (long int i = 0; i < curvature.rows(); ++i)
     {
-        double expectedCurvatureValue = (j == 0 || j == curvature.cols() - 1 ? mk::constants::missing::doubleValue : expectedCurvatureY[j]);
-
-        for (long int i = 0; i < curvature.rows(); ++i)
+        double expectedCurvatureValue = (i == 0 || i == curvature.rows() - 1 ? mk::constants::missing::doubleValue : expectedCurvatureY[i]);
+        for (long int j = 0; j < curvature.cols(); ++j)
         {
             EXPECT_NEAR(expectedCurvatureValue, curvature(i, j), tolerance);
         }
@@ -400,16 +399,16 @@ TEST(CurvilinearGridCurvature, Compute_CurvatureOfRegularGrid_ShouldComputeCurva
 
     mk::CurvilinearGridCurvature::Compute(*grid, mk::CurvilinearDirection::M, curvature);
 
-    ASSERT_EQ(nx, curvature.rows());
-    ASSERT_EQ(ny, curvature.cols());
+    ASSERT_EQ(ny, curvature.rows());
+    ASSERT_EQ(nx, curvature.cols());
 
     constexpr double tolerance = 1.0e-11;
 
     size_t count = 0;
 
-    for (long int i = 0; i < curvature.rows(); ++i)
+    for (long int j = 0; j < curvature.cols(); ++j)
     {
-        for (long int j = 0; j < curvature.cols(); ++j)
+        for (long int i = 0; i < curvature.rows(); ++i)
         {
             EXPECT_NEAR(expectedCurvatureX[count], curvature(i, j), tolerance);
             ++count;
@@ -420,14 +419,14 @@ TEST(CurvilinearGridCurvature, Compute_CurvatureOfRegularGrid_ShouldComputeCurva
 
     mk::CurvilinearGridCurvature::Compute(*grid, mk::CurvilinearDirection::N, curvature);
 
-    ASSERT_EQ(nx, curvature.rows());
-    ASSERT_EQ(ny, curvature.cols());
+    ASSERT_EQ(ny, curvature.rows());
+    ASSERT_EQ(nx, curvature.cols());
 
     count = 0;
 
-    for (long int j = 0; j < curvature.cols(); ++j)
+    for (long int i = 0; i < curvature.rows(); ++i)
     {
-        for (long int i = 0; i < curvature.rows(); ++i)
+        for (long int j = 0; j < curvature.cols(); ++j)
         {
             EXPECT_NEAR(expectedCurvatureY[count], curvature(i, j), tolerance);
             ++count;

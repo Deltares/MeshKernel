@@ -50,8 +50,8 @@ void CurvilinearGridLineShift::Compute()
 
     /// The first delta
     auto const previousNodeIndex = m_lines[0].m_startNode;
-    auto previousDelta = m_grid.GetNode(previousNodeIndex.m_m, previousNodeIndex.m_n) -
-                         m_originalGrid.GetNode(previousNodeIndex.m_m, previousNodeIndex.m_n);
+    auto previousDelta = m_grid.GetNode(previousNodeIndex.m_n, previousNodeIndex.m_m) -
+                         m_originalGrid.GetNode(previousNodeIndex.m_n, previousNodeIndex.m_m);
 
     const double eps = 1e-5;
     auto previousCoordinate = m_lines[0].m_startCoordinate;
@@ -59,8 +59,8 @@ void CurvilinearGridLineShift::Compute()
     {
         auto const currentNodeIndex = m_lines[0].GetNodeIndexFromCoordinate(i);
 
-        auto const currentDelta = m_grid.GetNode(currentNodeIndex.m_m, currentNodeIndex.m_n) -
-                                  m_originalGrid.GetNode(currentNodeIndex.m_m, currentNodeIndex.m_n);
+        auto const currentDelta = m_grid.GetNode(currentNodeIndex.m_n, currentNodeIndex.m_m) -
+                                  m_originalGrid.GetNode(currentNodeIndex.m_n, currentNodeIndex.m_m);
 
         if (std::abs(currentDelta.x) < eps && std::abs(currentDelta.y) < eps && i != m_lines[0].m_endCoordinate)
         {
@@ -79,8 +79,9 @@ void CurvilinearGridLineShift::Compute()
             auto const secondFactor = 1.0 - firstFactor;
 
             // Now distribute the shifting
-            m_grid.GetNode(nodeIndex.m_m, nodeIndex.m_n) = m_originalGrid.GetNode(nodeIndex.m_m, nodeIndex.m_n) +
-                                                           previousDelta * secondFactor + currentDelta * firstFactor;
+            const auto newPosition = m_originalGrid.GetNode(nodeIndex.m_n, nodeIndex.m_m) +
+                                     previousDelta * secondFactor + currentDelta * firstFactor;
+            m_grid.GetNode(nodeIndex.m_n, nodeIndex.m_m) = newPosition;
             // Field transformation on the influence area
             TransformGrid(nodeIndex);
         }
@@ -91,7 +92,7 @@ void CurvilinearGridLineShift::Compute()
 
 void CurvilinearGridLineShift::TransformGrid(CurvilinearGridNodeIndices const& node)
 {
-    auto delta = m_grid.GetNode(node.m_m, node.m_n) - m_originalGrid.GetNode(node.m_m, node.m_n);
+    auto delta = m_grid.GetNode(node.m_n, node.m_m) - m_originalGrid.GetNode(node.m_n, node.m_m);
     delta = m_originalGrid.TransformDisplacement(delta, node, true);
 
     auto const start = m_lines[0].IsMGridLine() ? m_lowerLeft.m_n : m_lowerLeft.m_m;
@@ -99,10 +100,12 @@ void CurvilinearGridLineShift::TransformGrid(CurvilinearGridNodeIndices const& n
 
     for (auto i = start; i <= end; ++i)
     {
-        CurvilinearGridNodeIndices currentNode{m_lines[0].IsMGridLine() ? node.m_m : i,
-                                               m_lines[0].IsMGridLine() ? i : node.m_n};
+        CurvilinearGridNodeIndices currentNode{
+            m_lines[0].IsMGridLine() ? i : node.m_n,
+            m_lines[0].IsMGridLine() ? node.m_m : i,
+        };
 
-        if (!m_originalGrid.GetNode(currentNode.m_m, currentNode.m_n).IsValid())
+        if (!m_originalGrid.GetNode(currentNode.m_n, currentNode.m_m).IsValid())
         {
             continue;
         }
@@ -119,7 +122,7 @@ void CurvilinearGridLineShift::TransformGrid(CurvilinearGridNodeIndices const& n
         }
 
         currentDelta = m_originalGrid.TransformDisplacement(currentDelta, currentNode, false);
-        m_grid.GetNode(currentNode.m_m, currentNode.m_n) = m_originalGrid.GetNode(currentNode.m_m, currentNode.m_n) + currentDelta;
+        m_grid.GetNode(currentNode.m_n, currentNode.m_m) = m_originalGrid.GetNode(currentNode.m_n, currentNode.m_m) + currentDelta;
     }
 }
 

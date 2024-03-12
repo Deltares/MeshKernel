@@ -183,7 +183,6 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
 
     // Assert
     constexpr double tolerance = 1e-6;
-
     EXPECT_NEAR(79983.796374595549, curvilinearGrid->GetNode(0, 0).x, tolerance);
     EXPECT_NEAR(80069.224277354806, curvilinearGrid->GetNode(0, 1).x, tolerance);
     EXPECT_NEAR(80152.817263131525, curvilinearGrid->GetNode(0, 2).x, tolerance);
