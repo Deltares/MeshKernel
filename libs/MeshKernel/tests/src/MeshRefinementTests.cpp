@@ -25,6 +25,9 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_OnFourByFourWithFourSamples_
 {
     auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, Projection::cartesian);
 
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
     // sample points
     std::vector<Sample> samples{
         {14.7153645, 14.5698833, 1.0},
@@ -55,7 +58,7 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_OnFourByFourWithFourSamples_
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
-    meshRefinement.Compute();
+    auto undoAction = meshRefinement.Compute();
 
     // 3 Validation edges connecting hanging nodes
 
@@ -113,11 +116,47 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_OnFourByFourWithFourSamples_
 
     // total number of edges
     ASSERT_EQ(84, mesh->GetNumEdges());
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(MeshRefinement, RefinementOnAFourByFourMeshWithSamplesShouldRefine)
 {
     auto mesh = MakeRectangularMeshForTesting(4, 4, 500.0, Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     // sample points
     std::vector<Sample> samples{
@@ -148,7 +187,7 @@ TEST(MeshRefinement, RefinementOnAFourByFourMeshWithSamplesShouldRefine)
     MeshRefinement meshRefinement(*mesh,
                                   std::move(interpolator),
                                   meshRefinementParameters);
-    meshRefinement.Compute();
+    auto undoAction = meshRefinement.Compute();
 
     // Assert number of edges and nodes
     ASSERT_EQ(60, mesh->GetNumEdges());
@@ -217,12 +256,48 @@ TEST(MeshRefinement, RefinementOnAFourByFourMeshWithSamplesShouldRefine)
 
     ASSERT_EQ(11, mesh->GetEdge(20).first);
     ASSERT_EQ(10, mesh->GetEdge(20).second);
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(MeshRefinement, MeshRefinementRefinementLevels_SmallTriangualMeshTwoSamples_ShouldRefinemesh)
 {
     // Prepare
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     // sample points
     std::vector<Sample> samples{
@@ -252,7 +327,7 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_SmallTriangualMeshTwoSamples
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
-    meshRefinement.Compute();
+    auto undoAction = meshRefinement.Compute();
 
     // edges connecting hanging nodes
     ASSERT_EQ(10, mesh->GetEdge(32).first);
@@ -269,12 +344,48 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_SmallTriangualMeshTwoSamples
 
     // total number of edges
     ASSERT_EQ(35, mesh->GetNumEdges());
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
 {
     // Prepare
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     // Polygon sample
     std::vector<Point> point{
@@ -293,7 +404,7 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
     meshRefinementParameters.use_mass_center_when_refining = 0;
 
     MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
-    meshRefinement.Compute();
+    auto undoAction = meshRefinement.Compute();
 
     // total number of edges
     ASSERT_EQ(15, mesh->GetNumNodes());
@@ -320,12 +431,48 @@ TEST(MeshRefinement, RefineBasedOnPolygonTriangularMesh)
 
     ASSERT_EQ(10, mesh->GetEdge(26).first);
     ASSERT_EQ(4, mesh->GetEdge(26).second);
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerFace)
 {
     // Prepare
     auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     // sample points
     std::vector<Sample> samples{
@@ -377,7 +524,7 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerFace)
 
     MeshRefinement meshRefinement(*mesh, std::move(interpolator), meshRefinementParameters);
 
-    meshRefinement.Compute();
+    auto undoAction = meshRefinement.Compute();
 
     // assert on number of nodes and edges
     ASSERT_EQ(49, mesh->GetNumNodes());
@@ -416,12 +563,48 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerFace)
 
     ASSERT_EQ(36, mesh->GetEdge(80).first);
     ASSERT_EQ(10, mesh->GetEdge(80).second);
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(MeshRefinement, WindowOfRefinementFile)
 {
     // Prepare
     auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, Projection::cartesian, {197253.0, 442281.0});
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     // Sample points
     std::vector<Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
@@ -449,7 +632,7 @@ TEST(MeshRefinement, WindowOfRefinementFile)
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
-    meshRefinement.Compute();
+    auto undoAction = meshRefinement.Compute();
 
     // total number of edges
     ASSERT_EQ(461, mesh->GetNumNodes());
@@ -484,12 +667,48 @@ TEST(MeshRefinement, WindowOfRefinementFile)
 
     ASSERT_EQ(327, mesh->GetEdge(915).first);
     ASSERT_EQ(326, mesh->GetEdge(915).second);
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(MeshRefinement, MeshRefinementRefinementLevels_OnWindowOfRefinementFile_ShouldRefinemesh)
 {
     // Prepare
     auto mesh = MakeRectangularMeshForTesting(4, 4, 40.0, Projection::cartesian, {197253.0, 442281.0});
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     // Sample points
     std::vector<Sample> samples = ReadSampleFile(TEST_FOLDER + "/data/MeshRefinementTests/WindowOfRefinementFile.xyz");
@@ -517,7 +736,7 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_OnWindowOfRefinementFile_Sho
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
-    meshRefinement.Compute();
+    auto undoAction = meshRefinement.Compute();
 
     // total number of edges
     ASSERT_EQ(413, mesh->GetNumNodes());
@@ -555,12 +774,48 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_OnWindowOfRefinementFile_Sho
 
     ASSERT_EQ(10, mesh->GetEdge(10).first);
     ASSERT_EQ(135, mesh->GetEdge(10).second);
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(MeshRefinement, RefineBasedOnPolygon)
 {
     // Prepare
     auto mesh = MakeRectangularMeshForTesting(5, 5, 10.0, Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     std::vector<Point> point{
         {25.0, -10.0},
@@ -578,7 +833,7 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
 
     MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
 
-    meshRefinement.Compute();
+    auto undoAction = meshRefinement.Compute();
 
     // total number of edges
     ASSERT_EQ(30, mesh->GetNumNodes());
@@ -610,12 +865,48 @@ TEST(MeshRefinement, RefineBasedOnPolygon)
 
     ASSERT_EQ(10, mesh->GetEdge(48).first);
     ASSERT_EQ(27, mesh->GetEdge(48).second);
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
 {
     // Prepare
     auto mesh = MakeRectangularMeshForTesting(4, 4, 10.0, Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     std::vector<Point> point{
         {9.09836065573771, 34.016393442623},
@@ -635,18 +926,54 @@ TEST(MeshRefinement, RefineBasedOnPolygonThreeByThree)
     meshRefinementParameters.use_mass_center_when_refining = 0;
 
     MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
-    meshRefinement.Compute();
+    auto undoAction = meshRefinement.Compute();
 
     // assert on number of nodes and edges
     ASSERT_EQ(48, mesh->GetNumNodes());
     ASSERT_EQ(96, mesh->GetNumEdges());
     ASSERT_EQ(49, mesh->GetNumFaces());
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
 {
 
     auto mesh = MakeRectangularMeshForTesting(4, 4, 0.0033, Projection::spherical, {41.1, 41.1});
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     // sample points
     std::vector<Sample> samples{
@@ -677,7 +1004,7 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     MeshRefinement meshRefinement(*mesh,
                                   std::move(interpolator),
                                   meshRefinementParameters);
-    meshRefinement.Compute();
+    auto undoAction = meshRefinement.Compute();
 
     ASSERT_EQ(60, mesh->GetNumEdges());
     ASSERT_EQ(32, mesh->GetNumNodes());
@@ -706,12 +1033,48 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
 
     ASSERT_EQ(23, mesh->GetEdge(47).first);
     ASSERT_EQ(6, mesh->GetEdge(47).second);
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(MeshRefinement, RefinementFileBasedOnLevels_OnSphericalMesh_ShouldRefine)
 {
     // Prepare
     auto mesh = MakeRectangularMeshForTesting(6, 6, 0.0033, Projection::spherical, {41.1, 41.1});
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -725,7 +1088,7 @@ TEST(MeshRefinement, RefinementFileBasedOnLevels_OnSphericalMesh_ShouldRefine)
     // Execute
     const auto polygon = Polygons();
     MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
-    meshRefinement.Compute();
+    auto undoAction = meshRefinement.Compute();
 
     // Assert, we passed from 36 to 49 nodes
     ASSERT_EQ(121, mesh->GetNumNodes());
@@ -742,11 +1105,47 @@ TEST(MeshRefinement, RefinementFileBasedOnLevels_OnSphericalMesh_ShouldRefine)
     ASSERT_NEAR(41.100000000000001, mesh->Node(12).y, tolerance);
     ASSERT_NEAR(41.100000000000001, mesh->Node(18).y, tolerance);
     ASSERT_NEAR(41.100000000000001, mesh->Node(24).y, tolerance);
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(MeshRefinement, RefineCurvilinearGrid)
 {
     auto mesh = MakeCurvilinearGridForTesting();
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 1;
@@ -755,14 +1154,47 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
 
     const auto polygon = Polygons();
     MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
-    meshRefinement.Compute();
+    auto undoAction = meshRefinement.Compute();
 
     mesh->ComputeEdgesLengths();
 
     // if the circumcenters are wrongly computed, some edges will be smaller than half cell size
-    for (size_t i = 0; i < mesh->GetNumEdges(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->GetNumEdges(); ++i)
     {
         ASSERT_GT(mesh->m_edgeLengths[i], 0.4);
+    }
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
     }
 }
 
@@ -770,6 +1202,9 @@ TEST(MeshRefinement, RefineElongatedFaces)
 {
     // Prepare
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/MeshRefinementTests/CurvilinearEnlonged.nc");
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     std::vector<Point> point{
         {2018.73356016594, 1165.26385465465},
@@ -791,7 +1226,7 @@ TEST(MeshRefinement, RefineElongatedFaces)
     MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
 
     // Execute
-    meshRefinement.Compute();
+    auto undoAction = meshRefinement.Compute();
 
     // Assert circumcenters are correctly computed
     constexpr double tolerance = 1e-6;
@@ -820,12 +1255,48 @@ TEST(MeshRefinement, RefineElongatedFaces)
     ASSERT_NEAR(690.31918193748425, mesh->m_facesCircumcenters[8].y, tolerance);
     ASSERT_NEAR(698.66471917887850, mesh->m_facesCircumcenters[9].y, tolerance);
     ASSERT_NEAR(700.06356972686194, mesh->m_facesCircumcenters[10].y, tolerance);
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefine)
 {
     // Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     std::vector<float> values{1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0};
     Point origin{-5.0, -5.0};
@@ -843,16 +1314,52 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefin
     MeshRefinement meshRefinement(*mesh, std::move(interpolator), meshRefinementParameters, true);
 
     // Execute
-    meshRefinement.Compute();
+    auto undoAction = meshRefinement.Compute();
 
     // Assert: all bathy values are positive and we are in land, so nothing gets refined
     ASSERT_EQ(4, mesh->GetNumEdges());
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRefine)
 {
     // Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     std::vector<float> values{-1.0, -2.0, 3.0, -4.0, -5.0, 6.0, 7.0, 8.0, 9.0};
     Point origin{-5.0, -5.0};
@@ -870,16 +1377,52 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRe
     MeshRefinement meshRefinement(*mesh, std::move(interpolator), meshRefinementParameters, true);
 
     // Execute
-    meshRefinement.Compute();
+    auto undoAction = meshRefinement.Compute();
 
     // Assert: all depth values are positive and we are in land, so nothing gets refined
     ASSERT_EQ(12, mesh->GetNumEdges());
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine)
 {
     // Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 10.0, Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     std::vector<float> values{-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0, -9.0};
     Point origin{-5.0, -5.0};
@@ -899,10 +1442,43 @@ TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine
                                   meshRefinementParameters, true);
 
     // Execute
-    meshRefinement.Compute();
+    auto undoAction = meshRefinement.Compute();
 
     // Assert: nothing gets refined
     ASSERT_EQ(4, mesh->GetNumEdges());
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 class RidgeRefinementTestCases : public testing::TestWithParam<std::tuple<FunctionTestCase, UInt, UInt>>
@@ -933,6 +1509,9 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
     double dimY = (ny - 1) * deltaY;
 
     auto mesh = MakeRectangularMeshForTesting(nx, ny, dimX, dimY, Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     UInt superSample = 2;
     UInt sampleNx = (nx - 1) * superSample + 1;
@@ -969,11 +1548,44 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
                                   meshRefinementParameters, false);
 
     // Execute
-    meshRefinement.Compute();
+    auto undoAction = meshRefinement.Compute();
 
     // Assert
     ASSERT_EQ(numNodes, mesh->GetNumNodes());
     ASSERT_EQ(numEdges, mesh->GetNumEdges());
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
+    }
 }
 
 INSTANTIATE_TEST_SUITE_P(RidgeRefinementTestCases,
@@ -986,6 +1598,9 @@ TEST(MeshRefinement, CasulliRefinement)
 
     auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 3, 3);
     Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh.Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh.Edges());
 
     // Expected values were obtained from a mesh refined using the Casulli refinement algorithm
     std::vector<meshkernel::Point> expectedPoints{{0, 0},
@@ -1033,16 +1648,14 @@ TEST(MeshRefinement, CasulliRefinement)
                                          18, 27, 26, 27, 7, 29, 28, 29, 11, 6, 5, 6, 31, 10, 9, 10, 15, 33, 32, 33,
                                          19, 14, 13, 14, 35, 18, 17, 18, 20, 28, 22, 23, 30, 29, 34, 24, 33, 26, 27, 35};
 
-    CasulliRefinement meshRefinement;
-
-    meshRefinement.Compute(mesh);
+    auto undoAction = CasulliRefinement::Compute(mesh);
 
     std::vector<meshkernel::UInt> validNodeMap(mesh.GetValidNodeMapping());
     std::vector<meshkernel::UInt> validEdgeMap(mesh.GetValidEdgeMapping());
 
     ASSERT_EQ(expectedPoints.size(), mesh.GetNumValidNodes());
 
-    for (size_t i = 0; i < expectedPoints.size(); ++i)
+    for (meshkernel::UInt i = 0; i < expectedPoints.size(); ++i)
     {
         EXPECT_NEAR(expectedPoints[i].x, mesh.Node(validNodeMap[i]).x, tolerance);
         EXPECT_NEAR(expectedPoints[i].y, mesh.Node(validNodeMap[i]).y, tolerance);
@@ -1050,10 +1663,43 @@ TEST(MeshRefinement, CasulliRefinement)
 
     ASSERT_EQ(expectedEdgesStart.size(), mesh.GetNumValidEdges());
 
-    for (size_t i = 0; i < expectedEdgesStart.size(); ++i)
+    for (meshkernel::UInt i = 0; i < expectedEdgesStart.size(); ++i)
     {
         EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).first, validNodeMap[expectedEdgesStart[i]]);
         EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).second, validNodeMap[expectedEdgesEnd[i]]);
+    }
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh.Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh.GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh.GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh.Nodes().size(); ++i)
+    {
+        if (mesh.Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh.Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh.Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh.Edges().size(); ++i)
+    {
+        if (mesh.IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh.GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh.GetEdge(i).second);
+            ++count;
+        }
     }
 }
 
@@ -1098,6 +1744,9 @@ TEST(MeshRefinement, CasulliPatchRefinement)
     auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 20.0, 20.0, 11, 11);
     Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
 
+    const std::vector<meshkernel::Point> originalNodes(mesh.Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh.Edges());
+
     std::vector<Point> patch{{45.0, 45.0},
                              {155.0, 45.0},
                              {155.0, 155.0},
@@ -1116,9 +1765,7 @@ TEST(MeshRefinement, CasulliPatchRefinement)
 
     Polygons polygon(patch, Projection::cartesian);
 
-    CasulliRefinement meshRefinement;
-
-    meshRefinement.Compute(mesh, polygon);
+    auto undoAction = CasulliRefinement::Compute(mesh, polygon);
 
     constexpr double tolerance = 1.0e-12;
 
@@ -1142,5 +1789,38 @@ TEST(MeshRefinement, CasulliPatchRefinement)
         // Map the index i from the edges array containing only valid edges to an array with that may contain in-valid edges
         EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).first, validNodeMap[expectedEdgeStart[i]]);
         EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).second, validNodeMap[expectedEdgeEnd[i]]);
+    }
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh.Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh.GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh.GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh.Nodes().size(); ++i)
+    {
+        if (mesh.Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh.Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh.Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh.Edges().size(); ++i)
+    {
+        if (mesh.IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh.GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh.GetEdge(i).second);
+            ++count;
+        }
     }
 }

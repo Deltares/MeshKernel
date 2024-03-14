@@ -7,12 +7,18 @@ add_executable(${TARGET_NAME})
 # source directory
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+set (
+  HEADER_LIST
+  ${SRC_DIR}/MockUndoAction.hpp
+)
+
 # list of target sources
 set(
   SRC_LIST
   ${SRC_DIR}/AveragingStrategyTests.cpp
   ${SRC_DIR}/AveragingTests.cpp
   ${SRC_DIR}/BoundingBoxTests.cpp
+  ${SRC_DIR}/CompoundUndoTests.cpp
   ${SRC_DIR}/ContactsTests.cpp
   ${SRC_DIR}/CurvilinearGridBasicTests.cpp
   ${SRC_DIR}/CurvilinearGridCurvatureTests.cpp
@@ -54,10 +60,13 @@ set(
   ${SRC_DIR}/SplineAlgorithmTests.cpp
   ${SRC_DIR}/SplineTests.cpp
   ${SRC_DIR}/TriangleInterpolationTests.cpp
+  ${SRC_DIR}/UndoActionConstructionTests.cpp
+  ${SRC_DIR}/UndoStackTests.cpp
+  ${SRC_DIR}/UndoTests.cpp
 )
 
  # add sources to target
-target_sources(${TARGET_NAME} PRIVATE ${SRC_LIST})
+target_sources(${TARGET_NAME} PRIVATE ${SRC_LIST} ${HEADER_LIST})
 
 # Should be linked to the main library, as well as the google test library
 target_link_libraries(

@@ -41,3 +41,6 @@ add_subdirectory(extern)
 
 # Libraries
 add_subdirectory(libs)
+
+# Add poc (proof of concept)
+add_subdirectory(poc)

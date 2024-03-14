@@ -34,6 +34,7 @@
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Smoother.hpp>
+#include <MeshKernel/UndoActions/NodeTranslationAction.hpp>
 
 using meshkernel::Mesh2D;
 using meshkernel::OrthogonalizationAndSmoothing;
@@ -56,11 +57,14 @@ OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(Mesh2D& mesh,
     m_orthogonalizationParameters = orthogonalizationParameters;
 }
 
-void OrthogonalizationAndSmoothing::Initialize()
+std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initialize()
 {
     // Sets the node mask
     m_mesh.Administrate();
     const auto nodeMask = m_mesh.NodeMaskFromPolygon(*m_polygons, true);
+
+    std::vector<UInt> nodeIndices(m_mesh.GetNumNodes(), constants::missing::uintValue);
+    UInt nodesMovedCount = 0;
 
     // Flag nodes outside the polygon as corner points
     for (UInt n = 0; n < nodeMask.size(); n++)
@@ -69,7 +73,15 @@ void OrthogonalizationAndSmoothing::Initialize()
         {
             m_mesh.m_nodesTypes[n] = 3;
         }
+        else
+        {
+            nodeIndices[nodesMovedCount] = n;
+            ++nodesMovedCount;
+        }
     }
+
+    nodeIndices.resize(nodesMovedCount);
+    std::unique_ptr<NodeTranslationAction> undoAction = NodeTranslationAction::Create(m_mesh, nodeIndices);
 
     // TODO: calculate volume weights for areal smoother
     m_mumax = (1.0 - m_orthogonalizationParameters.areal_to_angle_smoothing_factor) * 0.5;
@@ -99,6 +111,8 @@ void OrthogonalizationAndSmoothing::Initialize()
 
         m_localCoordinates.resize(m_localCoordinatesIndices.back() - 1, {constants::missing::doubleValue, constants::missing::doubleValue});
     }
+
+    return undoAction;
 }
 
 void OrthogonalizationAndSmoothing::Compute()
@@ -111,9 +125,9 @@ void OrthogonalizationAndSmoothing::Compute()
             for (auto innerIter = 0; innerIter < m_orthogonalizationParameters.inner_iterations; innerIter++)
             {
                 Solve();
-
             } // inner iteration
-        }     // boundary iter
+
+        } // boundary iter
 
         // update mu
         FinalizeOuterIteration();
@@ -170,7 +184,8 @@ void OrthogonalizationAndSmoothing::FinalizeOuterIteration()
 
 void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 {
-    const double max_aptf = std::max(m_orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary, m_orthogonalizationParameters.orthogonalization_to_smoothing_factor);
+    const double max_aptf = std::max(m_orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary,
+                                     m_orthogonalizationParameters.orthogonalization_to_smoothing_factor);
 #pragma omp parallel for
     for (int n = 0; n < static_cast<int>(m_mesh.GetNumNodes()); n++)
     {
@@ -219,6 +234,7 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 
 void OrthogonalizationAndSmoothing::Solve()
 {
+
 #pragma omp parallel for
     for (int n = 0; n < static_cast<int>(m_mesh.GetNumNodes()); n++)
     {
@@ -235,7 +251,7 @@ void OrthogonalizationAndSmoothing::Solve()
     // TODO: Not implemented yet ComputeCoordinates();
 
     // project on land boundary
-    m_landBoundaries->SnapMeshToLandBoundaries();
+    [[maybe_unused]] auto action = m_landBoundaries->SnapMeshToLandBoundaries();
 }
 
 void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
@@ -303,7 +319,9 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 
             if (distanceSecondPoint < distanceThirdPoint)
             {
-                m_mesh.SetNode(n, normalSecondPoint);
+                // TODO may need to refactor this (undo action allocation), if performance becomes a problem
+                // Copy nodes at start, then set all nodes at once (SetNodes, this has no associated action yet).
+                [[maybe_unused]] auto action = m_mesh.ResetNode(n, normalSecondPoint);
 
                 if (ratioSecondPoint > 0.5 && m_mesh.m_nodesTypes[n] != 3)
                 {
@@ -312,7 +330,9 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
             }
             else
             {
-                m_mesh.SetNode(n, normalThirdPoint);
+                // TODO may need to refactor this (undo action allocation), if performance becomes a problem
+                [[maybe_unused]] auto action = m_mesh.ResetNode(n, normalThirdPoint);
+
                 if (ratioThirdPoint > 0.5 && m_mesh.m_nodesTypes[n] != 3)
                 {
                     nearestPoints[n] = rightNode;

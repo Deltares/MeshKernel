@@ -30,12 +30,12 @@
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
-
 #include "MeshKernel/Mesh2DIntersections.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygon.hpp"
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/TriangulationWrapper.hpp"
+#include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
 #include "MeshKernel/Utilities/RTree.hpp"
 
 using meshkernel::Mesh2D;
@@ -150,9 +150,9 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
     DoAdministration();
 }
 
-void Mesh2D::DoAdministration()
+void Mesh2D::DoAdministration(CompoundUndoAction* undoAction)
 {
-    AdministrateNodesEdges();
+    AdministrateNodesEdges(undoAction);
 
     // face administration
     ResizeAndInitializeFaceVectors();
@@ -185,9 +185,9 @@ void Mesh2D::DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector
     ClassifyNodes();
 }
 
-void Mesh2D::Administrate()
+void Mesh2D::Administrate(CompoundUndoAction* undoAction)
 {
-    DoAdministration();
+    DoAdministration(undoAction);
 }
 
 bool Mesh2D::HasTriangleNoAcuteAngles(const std::vector<UInt>& faceNodes, const std::vector<Point>& nodes) const
@@ -219,9 +219,11 @@ bool Mesh2D::HasTriangleNoAcuteAngles(const std::vector<UInt>& faceNodes, const 
     return true;
 }
 
-void Mesh2D::DeleteDegeneratedTriangles()
+std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteDegeneratedTriangles()
 {
-    Administrate();
+    std::unique_ptr<CompoundUndoAction> undoAction = CompoundUndoAction::Create();
+
+    Administrate(undoAction.get());
 
     // assume the max amount of degenerated triangles is 10% of the actual faces
     std::vector<UInt> degeneratedTriangles;
@@ -260,7 +262,7 @@ void Mesh2D::DeleteDegeneratedTriangles()
             for (UInt e = 0; e < constants::geometric::numNodesInTriangle; ++e)
             {
                 const auto edge = m_facesEdges[f][e];
-                m_edges[edge] = {constants::missing::uintValue, constants::missing::uintValue};
+                undoAction->Add(ResetEdge(edge, {constants::missing::uintValue, constants::missing::uintValue}));
             }
             // save degenerated face index
             degeneratedTriangles.emplace_back(f);
@@ -274,12 +276,13 @@ void Mesh2D::DeleteDegeneratedTriangles()
         const auto secondNode = m_facesNodes[face][1];
         const auto thirdNode = m_facesNodes[face][2];
 
-        m_nodes[thirdNode] = m_facesMassCenters[face];
-        MergeTwoNodes(secondNode, firstNode);
-        MergeTwoNodes(thirdNode, firstNode);
+        undoAction->Add(ResetNode(thirdNode, m_facesMassCenters[face]));
+        undoAction->Add(MergeTwoNodes(secondNode, firstNode));
+        undoAction->Add(MergeTwoNodes(thirdNode, firstNode));
     }
 
-    Administrate();
+    Administrate(undoAction.get());
+    return undoAction;
 }
 
 bool Mesh2D::HasDuplicateNodes(const UInt numClosingEdges, const std::vector<UInt>& nodes, std::vector<UInt>& sortedNodes) const
@@ -787,23 +790,41 @@ void Mesh2D::ComputeFaceClosedPolygon(UInt faceIndex, std::vector<Point>& polygo
     polygonNodesCache.push_back(polygonNodesCache.front());
 }
 
-void Mesh2D::OffsetSphericalCoordinates(double minx, double maxx)
+std::unique_ptr<meshkernel::SphericalCoordinatesOffsetAction> Mesh2D::OffsetSphericalCoordinates(double minx, double maxx)
 {
+    std::unique_ptr<SphericalCoordinatesOffsetAction> undoAction;
+
     if (m_projection == Projection::spherical && maxx - minx > 180.0)
     {
+        undoAction = SphericalCoordinatesOffsetAction::Create(*this, minx, maxx);
+
         for (UInt n = 0; n < GetNumNodes(); ++n)
         {
             if (m_nodes[n].x - 360.0 >= minx)
             {
-                m_nodes[n].x -= 360.0;
+                undoAction->AddDecrease(n);
             }
 
             if (m_nodes[n].x < minx)
             {
-                m_nodes[n].x += 360.0;
+                undoAction->AddIncrease(n);
             }
         }
+
+        Commit(*undoAction);
     }
+
+    return undoAction;
+}
+
+void Mesh2D::Commit(const SphericalCoordinatesOffsetAction& undoAction)
+{
+    undoAction.ApplyOffset(m_nodes);
+}
+
+void Mesh2D::Restore(const SphericalCoordinatesOffsetAction& undoAction)
+{
+    undoAction.UndoOffset(m_nodes);
 }
 
 meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
@@ -981,24 +1002,30 @@ std::vector<meshkernel::Point> Mesh2D::GetFlowEdgesCenters(const std::vector<UIn
     return result;
 }
 
-void Mesh2D::DeleteSmallFlowEdges(double smallFlowEdgesThreshold)
+std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteSmallFlowEdges(double smallFlowEdgesThreshold)
 {
-    DeleteDegeneratedTriangles();
+    std::unique_ptr<CompoundUndoAction> undoAction = CompoundUndoAction::Create();
 
-    auto edges = GetEdgesCrossingSmallFlowEdges(smallFlowEdgesThreshold);
-    if (!edges.empty())
+    undoAction->Add(DeleteDegeneratedTriangles());
+
+    if (auto edges = GetEdgesCrossingSmallFlowEdges(smallFlowEdgesThreshold); !edges.empty())
     {
         // invalidate the edges
         for (const auto& e : edges)
         {
-            m_edges[e] = {constants::missing::uintValue, constants::missing::uintValue};
+            undoAction->Add(DeleteEdge(e));
         }
-        Administrate();
+
+        Administrate(undoAction.get());
     }
+
+    return undoAction;
 }
 
-void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
+std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
 {
+    std::unique_ptr<CompoundUndoAction> undoAction = CompoundUndoAction::Create();
+
     // On the second part, the small triangles at the boundaries are checked
     std::vector<std::vector<UInt>> smallTrianglesNodes;
     for (UInt face = 0; face < GetNumFaces(); ++face)
@@ -1085,7 +1112,7 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
 
         if (numInternalEdges == 1)
         {
-            MergeTwoNodes(firstNodeToMerge, nodeToPreserve);
+            undoAction->Add(MergeTwoNodes(firstNodeToMerge, nodeToPreserve));
             nodesMerged = true;
         }
 
@@ -1101,15 +1128,17 @@ void Mesh2D::DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles)
 
         if (numInternalEdges == 1)
         {
-            MergeTwoNodes(secondNodeToMerge, nodeToPreserve);
+            undoAction->Add(MergeTwoNodes(secondNodeToMerge, nodeToPreserve));
             nodesMerged = true;
         }
     }
 
     if (nodesMerged)
     {
-        Administrate();
+        Administrate(undoAction.get());
     }
+
+    return undoAction;
 }
 
 void Mesh2D::ComputeNodeNeighbours()
@@ -1331,8 +1360,10 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
     }
 }
 
-void Mesh2D::TriangulateFaces()
+std::unique_ptr<meshkernel::UndoAction> Mesh2D::TriangulateFaces()
 {
+    std::unique_ptr<meshkernel::CompoundUndoAction> triangulationAction = CompoundUndoAction::Create();
+
     for (UInt i = 0; i < GetNumFaces(); ++i)
     {
         const auto NumEdges = GetNumFaceEdges(i);
@@ -1346,11 +1377,14 @@ void Mesh2D::TriangulateFaces()
         for (UInt j = 2; j < NumEdges - 1; j++)
         {
             const auto nodeIndex = m_facesNodes[i][j];
-            ConnectNodes(indexFirstNode, nodeIndex);
+
+            auto [edgeId, edgeConnectionAction] = ConnectNodes(indexFirstNode, nodeIndex);
+            triangulationAction->Add(std::move(edgeConnectionAction));
         }
     }
 
     m_edgesRTreeRequiresUpdate = true;
+    return triangulationAction;
 }
 
 void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point>& dualFace)
@@ -1599,13 +1633,15 @@ std::vector<meshkernel::UInt> Mesh2D::GetHangingEdges() const
     return result;
 }
 
-void Mesh2D::DeleteMesh(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion)
+std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMesh(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion)
 {
     if (deletionOption == FacesWithIncludedCircumcenters)
     {
-        DeleteMeshFaces(polygon, invertDeletion);
-        return;
+        return DeleteMeshFaces(polygon, invertDeletion);
     }
+
+    std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
+
     // Find crossed faces
     Mesh2DIntersections mesh2DIntersections(*this);
     mesh2DIntersections.Compute(polygon);
@@ -1691,27 +1727,29 @@ void Mesh2D::DeleteMesh(const Polygons& polygon, DeleteMeshOptions deletionOptio
             --nodeEdgeCount[m_edges[e].second];
         }
 
-        DeleteEdge(e);
+        deleteMeshAction->Add(DeleteEdge(e));
     }
 
     for (UInt i = 0; i < m_nodes.size(); ++i)
     {
         if ((deleteNode[i] || nodeEdgeCount[i] == 0) && m_nodes[i].IsValid())
         {
-            DeleteNode(i);
+            deleteMeshAction->Add(DeleteNode(i));
         }
     }
 
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
 
-    Administrate();
+    Administrate(deleteMeshAction.get());
+    return deleteMeshAction;
 }
 
-void Mesh2D::DeleteMeshFaces(const Polygons& polygon, bool invertDeletion)
+std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces(const Polygons& polygon, bool invertDeletion)
 {
+    std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
 
-    Administrate();
+    Administrate(deleteMeshAction.get());
 
     for (UInt e = 0u; e < GetNumEdges(); ++e)
     {
@@ -1726,6 +1764,7 @@ void Mesh2D::DeleteMeshFaces(const Polygons& polygon, bool invertDeletion)
             }
 
             auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(m_facesCircumcenters[faceIndex]);
+
             if (invertDeletion)
             {
                 isInPolygon = !isInPolygon;
@@ -1752,6 +1791,7 @@ void Mesh2D::DeleteMeshFaces(const Polygons& polygon, bool invertDeletion)
 
             auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(edgeCenter);
             allFaceCircumcentersInPolygon = isInPolygon;
+
             if (invertDeletion)
             {
                 allFaceCircumcentersInPolygon = !allFaceCircumcentersInPolygon;
@@ -1760,20 +1800,25 @@ void Mesh2D::DeleteMeshFaces(const Polygons& polygon, bool invertDeletion)
 
         if (allFaceCircumcentersInPolygon)
         {
-            m_edges[e].first = constants::missing::uintValue;
-            m_edges[e].second = constants::missing::uintValue;
+            deleteMeshAction->Add(DeleteEdge(e));
         }
     }
-    Administrate();
+
+    Administrate(deleteMeshAction.get());
+
+    return deleteMeshAction;
 }
 
-void Mesh2D::DeleteHangingEdges()
+std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteHangingEdges()
 {
-    const auto hangingEdges = GetHangingEdges();
-    for (const auto& hangingEdge : hangingEdges)
+    std::unique_ptr<meshkernel::CompoundUndoAction> deleteAction = CompoundUndoAction::Create();
+
+    for (const auto& hangingEdge : GetHangingEdges())
     {
-        DeleteEdge(hangingEdge);
+        deleteAction->Add(DeleteEdge(hangingEdge));
     }
+
+    return deleteAction;
 }
 
 std::vector<meshkernel::UInt> Mesh2D::PointFaceIndices(const std::vector<Point>& points)

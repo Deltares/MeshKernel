@@ -17,6 +17,7 @@ set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 set(AVERAGING_STRATEGIES_SRC_DIR ${SRC_DIR}/AveragingStrategies)
 set(CURVILINEAR_GRID_SRC_DIR ${SRC_DIR}/CurvilinearGrid)
 set(UTILITIES_SRC_DIR ${SRC_DIR}/Utilities)
+set(UNDO_SRC_DIR ${PROJECT_SOURCE_DIR}/src/UndoActions)
 
 # include directories
 set(INC_DIR ${PROJECT_SOURCE_DIR}/include)
@@ -24,6 +25,7 @@ set(DOMAIN_INC_DIR ${INC_DIR}/MeshKernel)
 set(AVERAGING_STRATEGIES_INC_DIR ${DOMAIN_INC_DIR}/AveragingStrategies)
 set(CURVILINEAR_GRID_INC_DIR ${DOMAIN_INC_DIR}/CurvilinearGrid)
 set(UTILITIES_INC_DIR ${DOMAIN_INC_DIR}/Utilities)
+set(UNDO_INC_DIR ${DOMAIN_INC_DIR}/UndoActions)
 
 # list of target sources
 set(
@@ -58,6 +60,22 @@ set(
   ${SRC_DIR}/Splines.cpp
   ${SRC_DIR}/TriangulationInterpolation.cpp
   ${SRC_DIR}/TriangulationWrapper.cpp
+)
+
+set(
+  UNDO_SRC_LIST
+  ${UNDO_SRC_DIR}/AddEdgeAction.cpp
+  ${UNDO_SRC_DIR}/AddNodeAction.cpp
+  ${UNDO_SRC_DIR}/CompoundUndoAction.cpp
+  ${UNDO_SRC_DIR}/DeleteEdgeAction.cpp
+  ${UNDO_SRC_DIR}/DeleteNodeAction.cpp
+  ${UNDO_SRC_DIR}/MeshConversionAction.cpp
+  ${UNDO_SRC_DIR}/NodeTranslationAction.cpp
+  ${UNDO_SRC_DIR}/ResetEdgeAction.cpp
+  ${UNDO_SRC_DIR}/ResetNodeAction.cpp
+  ${UNDO_SRC_DIR}/SphericalCoordinatesOffsetAction.cpp
+  ${UNDO_SRC_DIR}/UndoAction.cpp
+  ${UNDO_SRC_DIR}/UndoActionStack.cpp
 )
 
 set(
@@ -143,6 +161,24 @@ set(
 )
 
 set(
+  UNDO_INC_LIST
+  ${UNDO_INC_DIR}/AddEdgeAction.hpp
+  ${UNDO_INC_DIR}/AddNodeAction.hpp
+  ${UNDO_INC_DIR}/BaseMeshUndoAction.hpp
+  ${UNDO_INC_DIR}/DeleteEdgeAction.hpp
+  ${UNDO_INC_DIR}/DeleteNodeAction.hpp
+  ${UNDO_INC_DIR}/MeshConversionAction.hpp
+  ${UNDO_INC_DIR}/NodeTranslationAction.hpp
+  ${UNDO_INC_DIR}/ResetEdgeAction.hpp
+  ${UNDO_INC_DIR}/ResetNodeAction.hpp
+  ${UNDO_INC_DIR}/SphericalCoordinatesOffsetAction.hpp
+  ${UNDO_INC_DIR}/UndoActionStack.hpp
+  ${UNDO_INC_DIR}/CompoundUndoAction.hpp
+  ${UNDO_INC_DIR}/UndoAction.hpp
+)
+
+
+set(
   AVERAGING_STRATEGIES_INC_LIST
   ${AVERAGING_STRATEGIES_INC_DIR}/AveragingStrategy.hpp
   ${AVERAGING_STRATEGIES_INC_DIR}/AveragingStrategyFactory.hpp
@@ -192,6 +228,7 @@ target_sources(
   ${TARGET_NAME}
   PRIVATE
     ${SRC_LIST}
+    ${UNDO_SRC_LIST}
     ${AVERAGING_STRATEGIES_SRC_LIST}
     ${CURVILINEAR_GRID_SRC_LIST}
   PUBLIC
@@ -200,6 +237,7 @@ target_sources(
         ${INC_DIR}
       FILES
         ${INC_LIST}
+        ${UNDO_INC_LIST}
         ${AVERAGING_STRATEGIES_INC_LIST}
         ${CURVILINEAR_GRID_INC_LIST}
         ${UTILITIES_INC_LIST}
@@ -272,11 +310,13 @@ install(TARGETS ${TARGET_NAME} FILE_SET HEADERS DESTINATION "include")
 
 # group the sources in IDE tree
 source_group("Source Files" FILES ${SRC_LIST})
+source_group("Source Files/UndoActions" FILES ${UNDO_SRC_LIST})
 source_group("Source Files/AveragingStrategies" FILES ${AVERAGING_STRATEGIES_SRC_LIST})
 source_group("Source Files/CurvilinearGrid" FILES ${CURVILINEAR_GRID_SRC_LIST})
 
 # group the headers in IDE tree
 source_group("Header Files" FILES ${INC_LIST})
+source_group("Header Files/UndoActions" FILES ${UNDO_INC_LIST})
 source_group("Header Files/AveragingStrategies" FILES ${AVERAGING_STRATEGIES_INC_LIST})
 source_group("Header Files/CurvilinearGrid" FILES ${CURVILINEAR_GRID_INC_LIST})
 source_group("Header Files/Utilities" FILES ${UTILITIES_INC_LIST})

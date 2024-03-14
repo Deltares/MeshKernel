@@ -32,6 +32,7 @@
 
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 namespace meshkernel
 {
@@ -42,13 +43,13 @@ namespace meshkernel
         /// @brief Compute the Casulli refinement for the entire mesh.
         ///
         /// @param [in, out] mesh Mesh to be refined
-        static void Compute(Mesh2D& mesh);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh);
 
         /// @brief Compute the Casulli refinement for the part of the mesh inside the polygon
         ///
         /// @param [in, out] mesh Mesh to be refined
         /// @param [in] polygon Area within which the mesh will be refined
-        static void Compute(Mesh2D& mesh, const Polygons& polygon);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh, const Polygons& polygon);
 
     private:
         ///@brief Indicates status of a node.
@@ -103,14 +104,14 @@ namespace meshkernel
         /// @param [in, out] mesh The Mesh
         /// @param [in, out] newNodes List of new nodes and connectivity
         /// @param [in, out] nodeMask Node mask information
-        static void ComputeNewNodes(Mesh2D& mesh, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> ComputeNewNodes(Mesh2D& mesh, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask);
 
         /// @brief Connect newly generated nodes
         ///
         /// @param [in, out] mesh The mesh being refined
         /// @param [in] newNodes List of new nodes and connectivity
         /// @param [in] numEdges Number of edges in original mesh, before refinement.
-        static void ConnectNodes(Mesh2D& mesh, const std::vector<EdgeNodes>& newNodes, const UInt numEdges);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> ConnectNodes(Mesh2D& mesh, const std::vector<EdgeNodes>& newNodes, const UInt numEdges);
 
         /// @brief Compute new edges required for refinement
         ///
@@ -118,14 +119,14 @@ namespace meshkernel
         /// @param [in] numNodes Number of nodes in original mesh, before refinement.
         /// @param [in] newNodes List of new nodes and connectivity
         /// @param [in, out] nodeMask Node mask information
-        static void CreateMissingBoundaryEdges(Mesh2D& mesh, const UInt numNodes, const std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> CreateMissingBoundaryEdges(Mesh2D& mesh, const UInt numNodes, const std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask);
 
         /// @brief Compute new nodes on faces
         ///
         /// @param [in, out] mesh The mesh being refined
         /// @param [in, out] newNodes List of new nodes and connectivity
         /// @param [in, out] nodeMask Node mask information
-        static void ComputeNewFaceNodes(Mesh2D& mesh, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> ComputeNewFaceNodes(Mesh2D& mesh, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask);
 
         /// @brief Compute new nodes on edges
         ///
@@ -133,7 +134,7 @@ namespace meshkernel
         /// @param [in] numEdges Number of edges in original mesh, before refinement.
         /// @param [in, out] newNodes List of new nodes and connectivity
         /// @param [in, out] nodeMask Node mask information
-        static void ComputeNewEdgeNodes(Mesh2D& mesh, const UInt numEdges, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> ComputeNewEdgeNodes(Mesh2D& mesh, const UInt numEdges, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask);
 
         /// @brief Connect edges
         ///
@@ -142,11 +143,11 @@ namespace meshkernel
         /// @param [in] newNodes List of new nodes and connectivity
         /// @param [out] edgeCount Number of edges created
         /// @param [in, out] newEdges Identifiers of edges created
-        static void ConnectEdges(Mesh2D& mesh,
-                                 const UInt currentNode,
-                                 const std::vector<EdgeNodes>& newNodes,
-                                 UInt& edgeCount,
-                                 std::vector<UInt>& newEdges);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> ConnectEdges(Mesh2D& mesh,
+                                                                                  const UInt currentNode,
+                                                                                  const std::vector<EdgeNodes>& newNodes,
+                                                                                  UInt& edgeCount,
+                                                                                  std::vector<UInt>& newEdges);
 
         /// @brief Connect face node
         ///
@@ -154,10 +155,10 @@ namespace meshkernel
         /// @param [in] currentFace The face being connected
         /// @param [in, out] newNodes List of new nodes and connectivity
         /// @param [in, out] nodeMask Node mask information
-        static void ConnectFaceNodes(Mesh2D& mesh,
-                                     const UInt currentFace,
-                                     const std::vector<EdgeNodes>& newNodes,
-                                     std::vector<NodeMask>& nodeMask);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> ConnectFaceNodes(Mesh2D& mesh,
+                                                                                      const UInt currentFace,
+                                                                                      const std::vector<EdgeNodes>& newNodes,
+                                                                                      std::vector<NodeMask>& nodeMask);
 
         /// @brief Connect newly generated nodes
         ///
@@ -167,7 +168,7 @@ namespace meshkernel
         /// @param [in] numEdges Number of edges in original mesh, before refinement.
         /// @param [in] numFaces Number of faces in original mesh, before refinement.
         /// @param [in, out] nodeMask Node mask information
-        static void ConnectNewNodes(Mesh2D& mesh, const std::vector<EdgeNodes>& newNodes, const UInt numNodes, const UInt numEdges, const UInt numFaces, std::vector<NodeMask>& nodeMask);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> ConnectNewNodes(Mesh2D& mesh, const std::vector<EdgeNodes>& newNodes, const UInt numNodes, const UInt numEdges, const UInt numFaces, std::vector<NodeMask>& nodeMask);
 
         /// @brief Add newly generated nodes to the newNodes list.
         ///
@@ -197,7 +198,7 @@ namespace meshkernel
         /// @param [in, out] mesh The mesh
         /// @param [in] numNodes The original number of nodes in the mesh
         /// @param [in] nodeMask Node mask information
-        static void Administrate(Mesh2D& mesh, const UInt numNodes, const std::vector<NodeMask>& nodeMask);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Administrate(Mesh2D& mesh, const UInt numNodes, const std::vector<NodeMask>& nodeMask);
     };
 
 } // namespace meshkernel
