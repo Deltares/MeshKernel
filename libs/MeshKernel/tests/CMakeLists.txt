@@ -14,6 +14,7 @@ set(
   ${SRC_DIR}/AveragingTests.cpp
   ${SRC_DIR}/BoundingBoxTests.cpp
   ${SRC_DIR}/ContactsTests.cpp
+  ${SRC_DIR}/CurvilinearGridBasicTests.cpp
   ${SRC_DIR}/CurvilinearGridCurvatureTests.cpp
   ${SRC_DIR}/CurvilinearGridDeRefinementTests.cpp
   ${SRC_DIR}/CurvilinearGridFromPolygonTests.cpp

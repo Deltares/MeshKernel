@@ -119,12 +119,12 @@ namespace meshkernel
         /// @brief Gets a reference to the grid node at the (m,n) location
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
-        [[nodiscard]] meshkernel::Point& GetNode(const UInt n, const UInt m) { return m_gridNodes(n, m); }
+        [[nodiscard]] meshkernel::Point& GetNode(const UInt n, const UInt m) { return m_gridNodes(n + m_startOffset.m_n, m + m_startOffset.m_m); }
 
         /// @brief Gets a constant reference to the grid node at the (m,n) location
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
-        [[nodiscard]] meshkernel::Point const& GetNode(const UInt n, const UInt m) const { return m_gridNodes(n, m); }
+        [[nodiscard]] meshkernel::Point const& GetNode(const UInt n, const UInt m) const { return m_gridNodes(n + m_startOffset.m_n, m + m_startOffset.m_m); }
 
         /// @brief Gets a reference to the grid node at the location specified by the index.
         /// @note Exception will be raised for a non-valid index
@@ -135,7 +135,8 @@ namespace meshkernel
             {
                 throw ConstraintError("Invalid node index");
             }
-            return m_gridNodes(index.m_n, index.m_m);
+            return GetNode(index.m_n, index.m_m);
+            // return m_gridNodes(index.m_n, index.m_m);
         }
 
         /// @brief Get a constant reference to the grid node at the location specified by the index.
@@ -147,7 +148,8 @@ namespace meshkernel
             {
                 throw ConstraintError("Invalid node index");
             }
-            return m_gridNodes(index.m_n, index.m_m);
+            return GetNode(index.m_n, index.m_m);
+            // return m_gridNodes(index.m_n, index.m_m);
         }
 
         /// @brief From a point gets the node indices of the closest edges
@@ -162,7 +164,9 @@ namespace meshkernel
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
         /// @return the node type
-        NodeType GetNodeType(UInt n, UInt m) const { return m_gridNodesTypes(n, m); }
+        NodeType GetNodeType(UInt n, UInt m) const { return m_gridNodesTypes(n + m_startOffset.m_n, m + m_startOffset.m_m); }
+
+        NodeType& GetNodeType(UInt n, UInt m) { return m_gridNodesTypes(n + m_startOffset.m_n, m + m_startOffset.m_m); }
 
         /// @brief Determines if all nodes of a face are valid.
         /// A face is valid if all its nodes are valid.
@@ -175,7 +179,9 @@ namespace meshkernel
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
         /// @return the face mask value (true/false)
-        [[nodiscard]] bool IsFaceMaskValid(UInt n, UInt m) const { return m_gridFacesMask(n, m); }
+        [[nodiscard]] bool IsFaceMaskValid(UInt n, UInt m) const { return m_gridFacesMask(n + m_startOffset.m_n, m + m_startOffset.m_m); }
+
+        bool& IsFaceMaskValid(UInt n, UInt m) { return m_gridFacesMask(n + m_startOffset.m_n, m + m_startOffset.m_m); }
 
         /// @brief Inserts a new face. The new face will be inserted on top of the closest edge.
         /// @param[in] point  The point used for finding the closest edge.
@@ -224,6 +230,8 @@ namespace meshkernel
         /// @return If a new grid line has been allocated
         bool AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
 
+        void DeleteGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
+
         /// @brief Get the boundary grid line type: left, right, bottom or up
         /// @param[in] firstNode The first node of the grid line
         /// @param[in] secondNode The second node of the grid line
@@ -244,11 +252,11 @@ namespace meshkernel
 
         /// @brief The number of nodes M in the m dimension
         /// @return A number >= 2 for a valid curvilinear grid
-        UInt NumM() const { return static_cast<UInt>(m_gridNodes.cols()); }
+        UInt NumM() const { return static_cast<UInt>(m_gridNodes.cols()) - m_startOffset.m_m - m_endOffset.m_m; }
 
         /// @brief The number of nodes N in the n dimension
         /// @return A number >= 2 for a valid curvilinear grid
-        UInt NumN() const { return static_cast<UInt>(m_gridNodes.rows()); }
+        UInt NumN() const { return static_cast<UInt>(m_gridNodes.rows()) - m_startOffset.m_n - m_endOffset.m_n; }
 
         /// @brief Is the node matrix empty
         /// @return true iff the node matrix is empty
@@ -257,17 +265,31 @@ namespace meshkernel
         /// @brief Get a copy of the nodes matrix
         /// @note:the m dimension is the first (or row) index, the n dimension is the second (or column) index
         /// @return a copy of the matrix
+        // TODO need to retuen a slice of the matrix m_gridNodes (m_startOffset.m_m .. m_endOffset.m_m, m_startOffset.m_n .. m_endOffset.m_n)
         lin_alg::Matrix<Point> GetNodes() const { return m_gridNodes; }
 
         /// @brief Get the array of nodes at an m-dimension index
         /// @param [in] m the m-dimension index
         /// @return a vector of N nodes
-        std::vector<Point> GetNodeVectorAtM(UInt m) const { return lin_alg::MatrixRowToSTLVector(m_gridNodes, m); }
+        // TODO Need to include the column offset too, m_startOffset.m_n
+        std::vector<Point> GetNodeVectorAtM(UInt m) const { return lin_alg::MatrixRowToSTLVector(m_gridNodes, m + m_startOffset.m_m); }
 
         /// @brief Get the array of nodes at an n-dimension index
         /// @param [in] n the n-dimension index
         /// @return a vector of M nodes
-        std::vector<Point> GetNodeVectorAtN(UInt n) const { return lin_alg::MatrixColToSTLVector(m_gridNodes, n); }
+        // TODO Need to include the column offset too, m_startOffset.m_m
+        std::vector<Point> GetNodeVectorAtN(UInt n) const { return lin_alg::MatrixColToSTLVector(m_gridNodes, n + m_startOffset.m_n); }
+
+        /// @brief The number of nodes M in the m dimension
+        /// @return A number >= 2 for a valid curvilinear grid
+        UInt FullNumM() const { return static_cast<UInt>(m_gridNodes.cols()); }
+
+        /// @brief The number of nodes N in the n dimension
+        /// @return A number >= 2 for a valid curvilinear grid
+        UInt FullNumN() const { return static_cast<UInt>(m_gridNodes.rows()); }
+
+        CurvilinearGridNodeIndices m_startOffset{0, 0};
+        CurvilinearGridNodeIndices m_endOffset{0, 0};
 
     private:
         /// @brief Remove invalid nodes.
