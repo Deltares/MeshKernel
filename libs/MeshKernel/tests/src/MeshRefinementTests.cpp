@@ -1082,8 +1082,6 @@ TEST(MeshRefinement, CasulliRefinement)
         EXPECT_EQ(expectedEdgesStart[i], mesh.GetEdge(validEdgeMap[i]).first);
         EXPECT_EQ(expectedEdgesEnd[i], mesh.GetEdge(validEdgeMap[i]).second);
     }
-
-    int dum = 0;
 }
 
 void loadCasulliRefinedMeshData(std::vector<Point>& expectedPoints,
