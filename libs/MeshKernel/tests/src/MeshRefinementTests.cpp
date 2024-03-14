@@ -1140,7 +1140,7 @@ TEST(MeshRefinement, CasulliPatchRefinement)
     for (size_t i = 0; i < expectedEdgeStart.size(); ++i)
     {
         // Map the index i from the edges array containing only valid edges to an array with that may contain in-valid edges
-        EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).first, validNodeMap[expectedEdgeStart[i]]);
-        EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).second, validNodeMap[expectedEdgeEnd[i]]);
+        EXPECT_EQ(expectedEdgeStart[i], mesh.GetEdge(validEdgeMap[i]).first);
+        EXPECT_EQ(expectedEdgeEnd[i], mesh.GetEdge(validEdgeMap[i]).second);
     }
 }

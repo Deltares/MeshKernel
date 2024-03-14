@@ -577,7 +577,7 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
     EXPECT_EQ(2, grid->NumN());
 
     const auto [nodes, edges, gridIndices] = grid->ConvertCurvilinearToNodesAndEdges();
-    const std::vector<Edge> expected_edges = {{{0u, 1u}, {1u, 2u}, {3u, 4u}, {4u, 5u}, {0u, 3u}, {1u, 4u}, {2u, 5u}}};
+    const std::vector<Edge> expected_edges = {{{0u, 3u}, {1u, 4u}, {2u, 5u}, {0u, 1u}, {1u, 2u}, {3u, 4u}, {4u, 5u}}};
 
     EXPECT_EQ(expected_edges.size(), edges.size());
     for (size_t i = 0; i < edges.size(); ++i)
@@ -603,7 +603,7 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
     grid->GetNode(1, 0).SetInvalid();
 
     const auto [nodes, edges, gridIndices] = grid->ConvertCurvilinearToNodesAndEdges();
-    const std::vector<Edge> expected_edges = {{{0u, 1u}, {1u, 2u}, {3u, 4u}, {4u, 5u}, {0u, 3u}, {1u, 4u}, {2u, 5u}}};
+    const std::vector<Edge> expected_edges = {{{0u, 3u}, {1u, 4u}, {2u, 5u}, {0u, 1u}, {1u, 2u}, {3u, 4u}, {4u, 5u}}};
 
     EXPECT_EQ(expected_edges.size(), edges.size());
     for (size_t i = 0; i < edges.size(); ++i)

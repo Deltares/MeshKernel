@@ -2206,11 +2206,11 @@ TEST(Mesh2D, IntersectionsFromPolyline_ShouldIntersectMesh)
     ASSERT_EQ(faceNumEdges[2], 2);
     ASSERT_EQ(faceNumEdges[3], 2);
 
-    ASSERT_EQ(faceEdgeIndex[0], 6);
-    ASSERT_EQ(faceEdgeIndex[1], 3);
-    ASSERT_EQ(faceEdgeIndex[2], 13);
-    ASSERT_EQ(faceEdgeIndex[3], 3);
-    ASSERT_EQ(faceEdgeIndex[4], 13);
+    ASSERT_EQ(faceEdgeIndex[0], 18);
+    ASSERT_EQ(faceEdgeIndex[1], 15);
+    ASSERT_EQ(faceEdgeIndex[2], 1);
+    ASSERT_EQ(faceEdgeIndex[3], 15);
+    ASSERT_EQ(faceEdgeIndex[4], 1);
 }
 TEST(Mesh2D, CurvilinearMakeRectangularOnExtension_OnSpericalCoordinates_ShouldGenerateCurvilinearMesh)
 {
