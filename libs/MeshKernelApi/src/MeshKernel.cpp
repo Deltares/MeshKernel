@@ -4013,4 +4013,18 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_get_interpolation_type_double(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::InterpolationValues::doubleType);
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_interpolation_type_int(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::InterpolationValues::intType);
+        return lastExitCode;
+    }
+
 } // namespace meshkernelapi

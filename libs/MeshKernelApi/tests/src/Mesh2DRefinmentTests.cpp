@@ -566,7 +566,9 @@ public:
     [[nodiscard]] static std::vector<meshkernel::InterpolationValues> GetData()
     {
         return {meshkernel::InterpolationValues::shortType,
-                meshkernel::InterpolationValues::floatType};
+                meshkernel::InterpolationValues::floatType,
+                meshkernel::InterpolationValues::doubleType,
+                meshkernel::InterpolationValues::intType};
     }
 };
 
@@ -589,13 +591,16 @@ TEST_P(MeshRefinementSampleValueTypes, parameters)
 
     std::vector<short> valuesShort;
     std::vector<float> valuesFloat;
+    std::vector<double> valuesDouble;
+    std::vector<int> valuesInt;
+    const std::string filePath = TEST_FOLDER + "/data/MeshRefinementTests/gebcoIntegers.asc";
 
     int interpolationType;
     if (interpolationValueType == meshkernel::InterpolationValues::shortType)
     {
         errorCode = meshkernelapi::mkernel_get_interpolation_type_short(interpolationType);
         ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-        auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<short>(TEST_FOLDER + "/data/MeshRefinementTests/gebcoIntegers.asc");
+        auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<short>(filePath);
         valuesShort = values;
         griddedSamples.num_x = ncols;
         griddedSamples.num_y = nrows;
@@ -611,7 +616,7 @@ TEST_P(MeshRefinementSampleValueTypes, parameters)
     {
         errorCode = meshkernelapi::mkernel_get_interpolation_type_float(interpolationType);
         ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-        auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<float>(TEST_FOLDER + "/data/MeshRefinementTests/gebcoIntegers.asc");
+        auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<float>(filePath);
         valuesFloat = values;
         griddedSamples.num_x = ncols;
         griddedSamples.num_y = nrows;
@@ -620,6 +625,38 @@ TEST_P(MeshRefinementSampleValueTypes, parameters)
         griddedSamples.cell_size = cellsize;
         griddedSamples.value_type = interpolationType;
         griddedSamples.values = valuesFloat.data();
+        griddedSamples.x_coordinates = nullptr;
+        griddedSamples.y_coordinates = nullptr;
+    }
+    else if (interpolationValueType == meshkernel::InterpolationValues::doubleType)
+    {
+        errorCode = meshkernelapi::mkernel_get_interpolation_type_double(interpolationType);
+        ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+        auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<double>(filePath);
+        valuesDouble = values;
+        griddedSamples.num_x = ncols;
+        griddedSamples.num_y = nrows;
+        griddedSamples.x_origin = xllcenter;
+        griddedSamples.y_origin = yllcenter;
+        griddedSamples.cell_size = cellsize;
+        griddedSamples.value_type = interpolationType;
+        griddedSamples.values = valuesDouble.data();
+        griddedSamples.x_coordinates = nullptr;
+        griddedSamples.y_coordinates = nullptr;
+    }
+    else if (interpolationValueType == meshkernel::InterpolationValues::intType)
+    {
+        errorCode = meshkernelapi::mkernel_get_interpolation_type_int(interpolationType);
+        ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+        auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<int>(filePath);
+        valuesInt = values;
+        griddedSamples.num_x = ncols;
+        griddedSamples.num_y = nrows;
+        griddedSamples.x_origin = xllcenter;
+        griddedSamples.y_origin = yllcenter;
+        griddedSamples.cell_size = cellsize;
+        griddedSamples.value_type = interpolationType;
+        griddedSamples.values = valuesInt.data();
         griddedSamples.x_coordinates = nullptr;
         griddedSamples.y_coordinates = nullptr;
     }

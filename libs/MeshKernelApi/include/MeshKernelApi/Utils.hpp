@@ -281,6 +281,14 @@ namespace meshkernelapi
         {
             return ComputeGriddedDataSamples<float>(griddedSamples);
         }
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::doubleType))
+        {
+            return ComputeGriddedDataSamples<double>(griddedSamples);
+        }
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::intType))
+        {
+            return ComputeGriddedDataSamples<int>(griddedSamples);
+        }
         throw meshkernel::MeshKernelError("The value type for the gridded data samples is invalid.");
     }
 
