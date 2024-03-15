@@ -503,6 +503,14 @@ namespace meshkernelapi
         {
             return CreateBilinearInterpolator<float>(mesh2d, griddedSamples);
         }
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::doubleType))
+        {
+            return CreateBilinearInterpolator<double>(mesh2d, griddedSamples);
+        }
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::intType))
+        {
+            return CreateBilinearInterpolator<int>(mesh2d, griddedSamples);
+        }
         throw meshkernel::MeshKernelError("Invalid value_type for GriddedSamples");
     }
 
