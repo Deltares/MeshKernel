@@ -59,7 +59,7 @@ void meshkernel::DeleteNodeAction::DoRestore()
 
 std::uint64_t meshkernel::DeleteNodeAction::MemorySize() const
 {
-    std::uint64_t size = sizeof(*this) + m_deletedEdges.size() * sizeof(std::unique_ptr<DeleteEdgeAction>);
+    std::uint64_t size = sizeof(*this) + m_deletedEdges.capacity() * sizeof(std::unique_ptr<DeleteEdgeAction>);
 
     for (const std::unique_ptr<DeleteEdgeAction>& action : m_deletedEdges)
     {

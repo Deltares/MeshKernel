@@ -107,8 +107,3 @@ namespace meshkernel
     using UndoActionPtr = std::unique_ptr<UndoAction>;
 
 } // namespace meshkernel
-
-inline meshkernel::UndoAction::ActionState meshkernel::UndoAction::State() const
-{
-    return m_state;
-}

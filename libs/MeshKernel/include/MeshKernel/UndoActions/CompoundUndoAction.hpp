@@ -74,13 +74,3 @@ namespace meshkernel
     };
 
 } // namespace meshkernel
-
-inline meshkernel::CompoundUndoAction::const_iterator meshkernel::CompoundUndoAction::begin() const
-{
-    return m_undoActions.begin();
-}
-
-inline meshkernel::CompoundUndoAction::const_iterator meshkernel::CompoundUndoAction::end() const
-{
-    return m_undoActions.end();
-}

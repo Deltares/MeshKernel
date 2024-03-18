@@ -87,13 +87,3 @@ namespace meshkernel
     };
 
 } // namespace meshkernel
-
-inline double meshkernel::SphericalCoordinatesOffsetAction::MinX() const
-{
-    return m_xMin;
-}
-
-inline double meshkernel::SphericalCoordinatesOffsetAction::MaxX() const
-{
-    return m_xMax;
-}

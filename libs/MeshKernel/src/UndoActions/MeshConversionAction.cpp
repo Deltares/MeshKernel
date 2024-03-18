@@ -26,7 +26,7 @@ void meshkernel::MeshConversionAction::Swap(std::vector<Point>& nodes, Projectio
 
 std::uint64_t meshkernel::MeshConversionAction::MemorySize() const
 {
-    return sizeof(*this) + m_nodes.size() * sizeof(Point);
+    return sizeof(*this) + m_nodes.capacity() * sizeof(Point);
 }
 
 void meshkernel::MeshConversionAction::Print(std::ostream& out) const

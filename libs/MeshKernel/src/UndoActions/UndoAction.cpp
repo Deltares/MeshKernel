@@ -17,6 +17,11 @@ std::string meshkernel::UndoAction::to_string(const ActionState state)
     }
 }
 
+meshkernel::UndoAction::ActionState meshkernel::UndoAction::State() const
+{
+    return m_state;
+}
+
 void meshkernel::UndoAction::Commit()
 {
     if (m_state == Restored)

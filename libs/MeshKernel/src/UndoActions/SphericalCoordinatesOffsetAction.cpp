@@ -10,6 +10,16 @@ meshkernel::SphericalCoordinatesOffsetAction::Create(Mesh2D& mesh, const double 
 meshkernel::SphericalCoordinatesOffsetAction::SphericalCoordinatesOffsetAction(Mesh2D& mesh, const double minx, const double maxx)
     : BaseMeshUndoAction<SphericalCoordinatesOffsetAction, Mesh2D>(mesh), m_xMin(minx), m_xMax(maxx) {}
 
+double meshkernel::SphericalCoordinatesOffsetAction::MinX() const
+{
+    return m_xMin;
+}
+
+double meshkernel::SphericalCoordinatesOffsetAction::MaxX() const
+{
+    return m_xMax;
+}
+
 void meshkernel::SphericalCoordinatesOffsetAction::AddDecrease(const UInt nodeId)
 {
     m_offsetNodesDecrease.push_back(nodeId);
@@ -49,7 +59,7 @@ void meshkernel::SphericalCoordinatesOffsetAction::UndoOffset(std::vector<Point>
 /// \brief Compute the approximate amount of memory being used, in bytes.
 std::uint64_t meshkernel::SphericalCoordinatesOffsetAction::MemorySize() const
 {
-    std::uint64_t size = sizeof(*this) + static_cast<std::uint64_t>(m_offsetNodesDecrease.size() + m_offsetNodesIncrease.size()) * sizeof(UInt);
+    std::uint64_t size = sizeof(*this) + static_cast<std::uint64_t>(m_offsetNodesDecrease.capacity() + m_offsetNodesIncrease.capacity()) * sizeof(UInt);
     return size;
 }
 

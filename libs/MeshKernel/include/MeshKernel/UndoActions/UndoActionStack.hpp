@@ -93,8 +93,3 @@ namespace meshkernel
     };
 
 } // namespace meshkernel
-
-inline meshkernel::UInt meshkernel::UndoActionStack::Size() const
-{
-    return static_cast<UInt>(m_committed.size() + m_restored.size());
-}

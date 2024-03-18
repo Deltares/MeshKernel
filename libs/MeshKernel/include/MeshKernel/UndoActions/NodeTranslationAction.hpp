@@ -89,8 +89,3 @@ namespace meshkernel
     };
 
 } // namespace meshkernel
-
-inline meshkernel::UInt meshkernel::NodeTranslationAction::NumberOfNodes() const
-{
-    return static_cast<UInt>(m_nodes.size());
-}

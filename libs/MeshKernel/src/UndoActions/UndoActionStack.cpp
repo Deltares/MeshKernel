@@ -30,6 +30,11 @@ void meshkernel::UndoActionStack::Add(UndoActionPtr&& action)
     }
 }
 
+meshkernel::UInt meshkernel::UndoActionStack::Size() const
+{
+    return static_cast<UInt>(m_committed.size() + m_restored.size());
+}
+
 bool meshkernel::UndoActionStack::Undo()
 {
     bool didUndo = false;

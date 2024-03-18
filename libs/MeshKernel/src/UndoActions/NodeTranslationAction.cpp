@@ -47,6 +47,11 @@ meshkernel::NodeTranslationAction::NodeTranslationAction(Mesh& mesh, const std::
     }
 }
 
+meshkernel::UInt meshkernel::NodeTranslationAction::NumberOfNodes() const
+{
+    return static_cast<UInt>(m_nodes.size());
+}
+
 void meshkernel::NodeTranslationAction::Swap(std::vector<Point>& nodes)
 {
     if (nodes.size() < m_nodes.size())
@@ -70,7 +75,7 @@ void meshkernel::NodeTranslationAction::Swap(std::vector<Point>& nodes)
 
 std::uint64_t meshkernel::NodeTranslationAction::MemorySize() const
 {
-    return sizeof(*this) + m_nodes.size() * sizeof(Point) + m_nodeIndices.size() * sizeof(UInt);
+    return sizeof(*this) + m_nodes.capacity() * sizeof(Point) + m_nodeIndices.capacity() * sizeof(UInt);
 }
 
 void meshkernel::NodeTranslationAction::Print(std::ostream& out) const
