@@ -66,7 +66,7 @@ std::uint64_t meshkernel::SphericalCoordinatesOffsetAction::MemorySize() const
 /// @brief Print the add node action to the stream
 void meshkernel::SphericalCoordinatesOffsetAction::Print(std::ostream& out) const
 {
-    out << "SphericalCoordinatesOffsetAction: state " << to_string(State())
+    out << "SphericalCoordinatesOffsetAction: state " << to_string(GetState())
         << ", x-minimum = " << m_xMin
         << ", x-maximum = " << m_xMax
         << std::endl;

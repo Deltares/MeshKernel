@@ -2,6 +2,7 @@
 #include "MeshKernel/Exceptions.hpp"
 
 #include <algorithm>
+#include <utility>
 
 const meshkernel::UInt meshkernel::UndoActionStack::MaxUndoSize = 10;
 
@@ -9,9 +10,9 @@ void meshkernel::UndoActionStack::Add(UndoActionPtr&& action)
 {
     if (action != nullptr)
     {
-        if (action->State() != UndoAction::Committed)
+        if (action->GetState() != UndoAction::State::Committed)
         {
-            throw ConstraintError("Cannot add an action in the {} state.", UndoAction::to_string(action->State()));
+            throw ConstraintError("Cannot add an action in the {} state.", UndoAction::to_string(action->GetState()));
         }
 
         m_committed.emplace_back(std::move(action));

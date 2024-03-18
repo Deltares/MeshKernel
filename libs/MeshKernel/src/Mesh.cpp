@@ -1238,7 +1238,6 @@ bool Mesh::IsValidEdge(const UInt edgeId) const
 void Mesh::CommitAction(const AddNodeAction& undoAction)
 {
     m_nodes[undoAction.NodeId()] = undoAction.Node();
-    // TODO is this necessary, will it be set in Administrate?
     m_nodesNumEdges[undoAction.NodeId()] = 0;
     m_nodesRTreeRequiresUpdate = true;
 }
@@ -1288,8 +1287,6 @@ void Mesh::CommitAction(MeshConversionAction& undoAction)
 void Mesh::RestoreAction(const AddNodeAction& undoAction)
 {
     m_nodes[undoAction.NodeId()] = Point(constants::missing::doubleValue, constants::missing::doubleValue);
-    // TODO is this necessary, will it be set in Administrate?
-    // Need to collect the correct value here for this.
     m_nodesNumEdges[undoAction.NodeId()] = 0;
     m_nodesRTreeRequiresUpdate = true;
 }
@@ -1322,8 +1319,6 @@ void Mesh::RestoreAction(const DeleteEdgeAction& undoAction)
 void Mesh::RestoreAction(const DeleteNodeAction& undoAction)
 {
     m_nodes[undoAction.NodeId()] = undoAction.Node();
-    // TODO DO we need to assign the m_nodesNumEdges the length of the deleted edges array?
-    // undoAction.RestoreEdges();
     m_nodesRTreeRequiresUpdate = true;
 }
 

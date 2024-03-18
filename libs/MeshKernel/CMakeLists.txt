@@ -310,15 +310,15 @@ install(TARGETS ${TARGET_NAME} FILE_SET HEADERS DESTINATION "include")
 
 # group the sources in IDE tree
 source_group("Source Files" FILES ${SRC_LIST})
-source_group("Source Files/UndoActions" FILES ${UNDO_SRC_LIST})
 source_group("Source Files/AveragingStrategies" FILES ${AVERAGING_STRATEGIES_SRC_LIST})
 source_group("Source Files/CurvilinearGrid" FILES ${CURVILINEAR_GRID_SRC_LIST})
+source_group("Source Files/UndoActions" FILES ${UNDO_SRC_LIST})
 
 # group the headers in IDE tree
 source_group("Header Files" FILES ${INC_LIST})
-source_group("Header Files/UndoActions" FILES ${UNDO_INC_LIST})
 source_group("Header Files/AveragingStrategies" FILES ${AVERAGING_STRATEGIES_INC_LIST})
 source_group("Header Files/CurvilinearGrid" FILES ${CURVILINEAR_GRID_INC_LIST})
+source_group("Header Files/UndoActions" FILES ${UNDO_INC_LIST})
 source_group("Header Files/Utilities" FILES ${UTILITIES_INC_LIST})
 
 # Add unit tests

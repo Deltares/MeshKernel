@@ -31,7 +31,7 @@ std::uint64_t meshkernel::MeshConversionAction::MemorySize() const
 
 void meshkernel::MeshConversionAction::Print(std::ostream& out) const
 {
-    out << "MeshConversionAction: state " << to_string(State())
+    out << "MeshConversionAction: state " << to_string(GetState())
         << ", projection: " << ProjectionToString(m_projection)
         << ", number of nodes: " << m_nodes.size()
         << std::endl;

@@ -40,8 +40,8 @@ TEST(UndoStackTests, CheckSimpleUndo)
     EXPECT_EQ(undoActionStack.Size(), 2);
 
     // Check state is correct
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Committed);
 
     EXPECT_CALL(*rawUndoAction1, DoRestore()).Times(0);
     EXPECT_CALL(*rawUndoAction2, DoRestore()).Times(1);
@@ -52,8 +52,8 @@ TEST(UndoStackTests, CheckSimpleUndo)
     // Should call the DoRestore for the last action added to the stack, which is undoAction2
     undoActionStack.Undo();
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Restored);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Restored);
 
     // Still 2 items
     EXPECT_EQ(undoActionStack.Size(), 2);
@@ -75,8 +75,8 @@ TEST(UndoStackTests, CheckSimpleUndoWithRedo)
     undoActionStack.Add(std::move(undoAction2));
     EXPECT_EQ(undoActionStack.Size(), 2);
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Committed);
 
     EXPECT_CALL(*rawUndoAction1, DoRestore()).Times(0);
     EXPECT_CALL(*rawUndoAction2, DoRestore()).Times(1);
@@ -85,8 +85,8 @@ TEST(UndoStackTests, CheckSimpleUndoWithRedo)
     undoActionStack.Undo();
     EXPECT_EQ(undoActionStack.Size(), 2);
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Restored);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Restored);
 
     EXPECT_CALL(*rawUndoAction1, DoCommit()).Times(0);
     EXPECT_CALL(*rawUndoAction2, DoCommit()).Times(1);
@@ -95,8 +95,8 @@ TEST(UndoStackTests, CheckSimpleUndoWithRedo)
     undoActionStack.Commit();
     EXPECT_EQ(undoActionStack.Size(), 2);
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Committed);
 }
 
 TEST(UndoStackTests, CheckMultipleUndo)
@@ -118,9 +118,9 @@ TEST(UndoStackTests, CheckMultipleUndo)
     undoActionStack.Add(std::move(undoAction3));
     EXPECT_EQ(undoActionStack.Size(), 3);
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Committed);
 
     EXPECT_CALL(*rawUndoAction1, DoRestore()).Times(0);
     EXPECT_CALL(*rawUndoAction2, DoRestore()).Times(1);
@@ -130,9 +130,9 @@ TEST(UndoStackTests, CheckMultipleUndo)
     EXPECT_TRUE(undoActionStack.Undo());
     EXPECT_TRUE(undoActionStack.Undo());
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Restored);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Restored);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Restored);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Restored);
     EXPECT_EQ(undoActionStack.Size(), 3);
 }
 
@@ -155,9 +155,9 @@ TEST(UndoStackTests, CheckMultipleAllUndo)
     undoActionStack.Add(std::move(undoAction2));
     undoActionStack.Add(std::move(undoAction3));
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Committed);
 
     EXPECT_CALL(*rawUndoAction1, DoRestore()).Times(1);
     EXPECT_CALL(*rawUndoAction2, DoRestore()).Times(1);
@@ -173,9 +173,9 @@ TEST(UndoStackTests, CheckMultipleAllUndo)
     // Should not perform any undo action
     EXPECT_FALSE(undoActionStack.Undo());
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Restored);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Restored);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Restored);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Restored);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Restored);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Restored);
 }
 
 TEST(UndoStackTests, CheckMultipleUndoWithSingleRedo)
@@ -196,9 +196,9 @@ TEST(UndoStackTests, CheckMultipleUndoWithSingleRedo)
     undoActionStack.Add(std::move(undoAction2));
     undoActionStack.Add(std::move(undoAction3));
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Committed);
 
     EXPECT_CALL(*rawUndoAction1, DoRestore()).Times(0);
     EXPECT_CALL(*rawUndoAction2, DoRestore()).Times(1);
@@ -208,9 +208,9 @@ TEST(UndoStackTests, CheckMultipleUndoWithSingleRedo)
     undoActionStack.Undo();
     undoActionStack.Undo();
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Restored);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Restored);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Restored);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Restored);
 
     EXPECT_CALL(*rawUndoAction1, DoCommit()).Times(0);
     EXPECT_CALL(*rawUndoAction2, DoCommit()).Times(1);
@@ -219,9 +219,9 @@ TEST(UndoStackTests, CheckMultipleUndoWithSingleRedo)
     // Should call the DoCommit for the last action that was undone
     undoActionStack.Commit();
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Restored);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Restored);
 }
 
 TEST(UndoStackTests, CheckMultipleUndoWithSingleRedoIntermediateAdd)
@@ -245,9 +245,9 @@ TEST(UndoStackTests, CheckMultipleUndoWithSingleRedoIntermediateAdd)
     undoActionStack.Add(std::move(undoAction3));
     EXPECT_EQ(undoActionStack.Size(), 3);
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Committed);
 
     EXPECT_CALL(*rawUndoAction1, DoRestore()).Times(1);
     EXPECT_CALL(*rawUndoAction2, DoRestore()).Times(1);
@@ -266,22 +266,22 @@ TEST(UndoStackTests, CheckMultipleUndoWithSingleRedoIntermediateAdd)
     // The two undo actions that have been restored should have been removed
     EXPECT_EQ(undoActionStack.Size(), 2);
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
 
     EXPECT_CALL(*rawUndoAction1, DoCommit()).Times(0);
 
     // There should be no actions in the restored state.
     EXPECT_FALSE(undoActionStack.Commit());
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction4->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction4->GetState(), mk::UndoAction::State::Committed);
 
     EXPECT_TRUE(undoActionStack.Undo());
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction4->State(), mk::UndoAction::Restored);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction4->GetState(), mk::UndoAction::State::Restored);
 
     EXPECT_TRUE(undoActionStack.Undo());
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Restored);
-    EXPECT_EQ(rawUndoAction4->State(), mk::UndoAction::Restored);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Restored);
+    EXPECT_EQ(rawUndoAction4->GetState(), mk::UndoAction::State::Restored);
 
     // Attempt to undo.
     // There should be no other actions to undo.
@@ -309,9 +309,9 @@ TEST(UndoStackTests, CheckMultipleUndoWithMultipleRedo)
     undoActionStack.Add(std::move(undoAction3));
     EXPECT_EQ(undoActionStack.Size(), 3);
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Committed);
 
     EXPECT_CALL(*rawUndoAction1, DoRestore()).Times(0);
     EXPECT_CALL(*rawUndoAction2, DoRestore()).Times(1);
@@ -322,9 +322,9 @@ TEST(UndoStackTests, CheckMultipleUndoWithMultipleRedo)
     undoActionStack.Undo();
     EXPECT_EQ(undoActionStack.Size(), 3);
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Restored);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Restored);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Restored);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Restored);
 
     EXPECT_CALL(*rawUndoAction1, DoCommit()).Times(0);
     EXPECT_CALL(*rawUndoAction2, DoCommit()).Times(1);
@@ -339,9 +339,9 @@ TEST(UndoStackTests, CheckMultipleUndoWithMultipleRedo)
     EXPECT_FALSE(undoActionStack.Commit());
     EXPECT_EQ(undoActionStack.Size(), 3);
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Committed);
 }
 
 TEST(UndoStackTests, CheckMultipleUndoCycles)
@@ -364,9 +364,9 @@ TEST(UndoStackTests, CheckMultipleUndoCycles)
     undoActionStack.Add(std::move(undoAction3));
     EXPECT_EQ(undoActionStack.Size(), 3);
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Committed);
 
     EXPECT_CALL(*rawUndoAction1, DoRestore()).Times(1);
     EXPECT_CALL(*rawUndoAction2, DoRestore()).Times(3);
@@ -381,43 +381,43 @@ TEST(UndoStackTests, CheckMultipleUndoCycles)
     EXPECT_TRUE(undoActionStack.Undo()); // action2.Undo
     EXPECT_EQ(undoActionStack.Size(), 3);
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Restored);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Restored);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Restored);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Restored);
 
     EXPECT_TRUE(undoActionStack.Commit()); // action2.Restore
     EXPECT_EQ(undoActionStack.Size(), 3);
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Restored);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Restored);
 
     EXPECT_TRUE(undoActionStack.Undo());  // action2.Undo
     EXPECT_TRUE(undoActionStack.Undo());  // action1.Undo
     EXPECT_FALSE(undoActionStack.Undo()); // no action undone
     EXPECT_EQ(undoActionStack.Size(), 3);
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Restored);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Restored);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Restored);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Restored);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Restored);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Restored);
 
     EXPECT_TRUE(undoActionStack.Commit()); // action1.Restore
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Restored);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Restored);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Restored);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Restored);
 
     EXPECT_TRUE(undoActionStack.Commit()); // action2.Restore
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Restored);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Restored);
 
     EXPECT_TRUE(undoActionStack.Commit()); // action3.Restore
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Committed);
 
     EXPECT_TRUE(undoActionStack.Undo());    // action3.Undo
     EXPECT_TRUE(undoActionStack.Undo());    // action2.Undo
@@ -425,9 +425,9 @@ TEST(UndoStackTests, CheckMultipleUndoCycles)
     EXPECT_TRUE(undoActionStack.Commit());  // action3.Restore
     EXPECT_FALSE(undoActionStack.Commit()); // no action restored
 
-    EXPECT_EQ(rawUndoAction1->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction2->State(), mk::UndoAction::Committed);
-    EXPECT_EQ(rawUndoAction3->State(), mk::UndoAction::Committed);
+    EXPECT_EQ(rawUndoAction1->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction2->GetState(), mk::UndoAction::State::Committed);
+    EXPECT_EQ(rawUndoAction3->GetState(), mk::UndoAction::State::Committed);
     EXPECT_EQ(undoActionStack.Size(), 3);
 }
 

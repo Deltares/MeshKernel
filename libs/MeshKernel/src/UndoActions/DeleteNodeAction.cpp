@@ -1,5 +1,6 @@
 #include "MeshKernel/UndoActions/DeleteNodeAction.hpp"
 #include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/Formatting.hpp"
 #include "MeshKernel/Mesh.hpp"
 
 #include <ranges>
@@ -16,9 +17,9 @@ void meshkernel::DeleteNodeAction::Add(std::unique_ptr<DeleteEdgeAction>&& actio
 {
     if (action != nullptr)
     {
-        if (action->State() == UndoAction::Restored)
+        if (action->GetState() == UndoAction::State::Restored)
         {
-            throw ConstraintError("Cannot add an action in the {} state.", UndoAction::to_string(action->State()));
+            throw ConstraintError("Cannot add an action in the {} state.", UndoAction::to_string(action->GetState()));
         }
 
         m_deletedEdges.emplace_back(std::move(action));
@@ -71,7 +72,8 @@ std::uint64_t meshkernel::DeleteNodeAction::MemorySize() const
 
 void meshkernel::DeleteNodeAction::Print(std::ostream& out) const
 {
-    out << "DeleteNodeAction: state " << to_string(State()) << ", nodeId = " << m_nodeId << " node = {" << m_node.x << ", " << m_node.y << "}" << std::endl;
+    out << fmt_ns::vformat("DeleteNodeAction: state {}, nodeId {}, node {{{}, {}}}",
+                           fmt_ns::make_format_args(to_string(GetState()), m_nodeId, m_node.x, m_node.y));
 
     for (const std::unique_ptr<DeleteEdgeAction>& action : m_deletedEdges)
     {

@@ -25,7 +25,7 @@ const meshkernel::Edge& meshkernel::ResetEdgeAction::UpdatedEdge() const
 
 void meshkernel::ResetEdgeAction::Print(std::ostream& out) const
 {
-    out << "ResetEdgeAction: state " << to_string(State()) << ", edgeId = " << m_edgeId
+    out << "ResetEdgeAction: state " << to_string(GetState()) << ", edgeId = " << m_edgeId
         << " initial = {" << m_initialEdge.first << ", " << m_initialEdge.second << "}, "
         << " updated = {" << m_updatedEdge.first << ", " << m_updatedEdge.second << "}"
         << std::endl;

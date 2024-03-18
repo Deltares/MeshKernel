@@ -25,7 +25,7 @@ const meshkernel::Point& meshkernel::ResetNodeAction::UpdatedNode() const
 
 void meshkernel::ResetNodeAction::Print(std::ostream& out) const
 {
-    out << "ResetNodeAction: state " << to_string(State()) << ", nodeId = " << m_nodeId
+    out << "ResetNodeAction: state " << to_string(GetState()) << ", nodeId = " << m_nodeId
         << " initial = {" << m_initialNode.x << ", " << m_initialNode.y << "}, "
         << " updated = {" << m_updatedNode.x << ", " << m_updatedNode.y << "}"
         << std::endl;

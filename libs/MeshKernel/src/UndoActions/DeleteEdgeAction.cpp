@@ -1,4 +1,5 @@
 #include "MeshKernel/UndoActions/DeleteEdgeAction.hpp"
+#include "MeshKernel/Formatting.hpp"
 #include "MeshKernel/Mesh.hpp"
 
 std::unique_ptr<meshkernel::DeleteEdgeAction> meshkernel::DeleteEdgeAction::Create(Mesh& mesh, const UInt id, const UInt start, const UInt end)
@@ -20,5 +21,7 @@ const meshkernel::Edge& meshkernel::DeleteEdgeAction::GetEdge() const
 
 void meshkernel::DeleteEdgeAction::Print(std::ostream& out) const
 {
-    out << "DeleteEdgeAction: state " << to_string(State()) << ", edgeId = " << m_edgeId << " edge = {" << m_edge.first << ", " << m_edge.second << "}" << std::endl;
+    out << fmt_ns::vformat("DeleteEdgeAction: state {}, edgeId {}, edge {{{}, {}}}",
+                           fmt_ns::make_format_args(to_string(GetState()), m_edgeId, m_edge.first, m_edge.second));
+    out << std::endl;
 }

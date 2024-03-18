@@ -44,14 +44,14 @@ namespace meshkernel
     {
     public:
         /// @brief The current state of an UndoAction
-        enum ActionState
+        enum State
         {
             Committed, ///< The action has been applied.
             Restored   ///< The action has been undone, the state immediately before the action occurred has been restored.
         };
 
-        /// @brief Return the string representation of the ActionState enum value
-        static std::string to_string(const ActionState state);
+        /// @brief Return the string representation of the State enum value
+        static std::string to_string(const State state);
 
         /// @brief Default constructor
         UndoAction() = default;
@@ -59,29 +59,20 @@ namespace meshkernel
         /// @brief Delete the copy constructor
         UndoAction(const UndoAction& copy) = delete;
 
-        /// @brief Delete the move constructor
-        UndoAction(UndoAction&& copy) = delete;
-
         /// @brief Destructor
         virtual ~UndoAction() = default;
 
         /// @brief Delete the copy assignment operator
         UndoAction& operator=(const UndoAction& copy) = delete;
 
-        /// @brief Delete the move assignment operator
-        UndoAction& operator=(UndoAction&& copy) = delete;
-
-        // TODO are the names commit and restore ok?
-        // e.g. rollforward, rollback
-
-        /// @brief Apply the changes and change the state to ActionState::Committed.
+        /// @brief Apply the changes and change the state to State::Committed.
         void Commit();
 
-        /// @brief Undo the changes and change the state to ActionState::Restored.
+        /// @brief Undo the changes and change the state to State::Restored.
         void Restore();
 
         /// @brief Get the current state of the undo action.
-        ActionState State() const;
+        State GetState() const;
 
         /// \brief Compute the approximate amount of memory being used, in bytes.
         virtual std::uint64_t MemorySize() const;
@@ -100,7 +91,7 @@ namespace meshkernel
         virtual void DoRestore() = 0;
 
         /// @brief The current state of the action, all actions are constructed having already been applied
-        ActionState m_state = Committed;
+        State m_state = Committed;
     };
 
     /// @brief Typedef of the pointer to an UndoAction.

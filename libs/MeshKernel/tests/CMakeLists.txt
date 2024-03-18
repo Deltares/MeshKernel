@@ -7,11 +7,6 @@ add_executable(${TARGET_NAME})
 # source directory
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-set (
-  HEADER_LIST
-  ${SRC_DIR}/MockUndoAction.hpp
-)
-
 # list of target sources
 set(
   SRC_LIST
@@ -65,7 +60,7 @@ set(
 )
 
  # add sources to target
-target_sources(${TARGET_NAME} PRIVATE ${SRC_LIST} ${HEADER_LIST})
+target_sources(${TARGET_NAME} PRIVATE ${SRC_LIST})
 
 # Should be linked to the main library, as well as the google test library
 target_link_libraries(

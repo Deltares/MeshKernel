@@ -29,8 +29,6 @@
 
 #include <cstdint>
 #include <list>
-#include <utility>
-#include <vector>
 
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/UndoActions/UndoAction.hpp"
