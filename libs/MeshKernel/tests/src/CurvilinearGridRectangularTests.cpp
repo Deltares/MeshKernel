@@ -262,8 +262,8 @@ void TestDeleteInteriorNodes(meshkernel::CurvilinearGrid& curvilinearGrid,
     meshkernel::UInt expectedInvalidated = (upperLimitI - lowerLimitI + 1) * (upperLimitJ - lowerLimitJ + 1);
     const auto initialSize = static_cast<UInt>(CurvilinearGridCountValidNodes(curvilinearGrid));
     CurvilinearGridDeleteInterior curvilinearGridDeleteInterior(curvilinearGrid);
-    curvilinearGridDeleteInterior.m_lowerLeft = {lowerLimitJ - 1, lowerLimitI - 1};
-    curvilinearGridDeleteInterior.m_upperRight = {upperLimitJ + 1, upperLimitI + 1};
+    curvilinearGridDeleteInterior.m_lowerLeft = {lowerLimitI - 1, lowerLimitJ - 1};
+    curvilinearGridDeleteInterior.m_upperRight = {upperLimitI + 1, upperLimitJ + 1};
 
     // Delete the nodes interior to a block
     curvilinearGridDeleteInterior.Compute();
@@ -331,11 +331,11 @@ TEST(CurvilinearGridUniform, DeleteInteriorNodesMixedTest)
     meshkernel::UInt ny = 100;
 
     auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteInteriorNodes(*curvilinearGrid, {5, 1}, {1, 6});
+    TestDeleteInteriorNodes(*curvilinearGrid, {1, 5}, {6, 1});
 
     // Reset grid
     curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteInteriorNodes(*curvilinearGrid, {1, 6}, {5, 2});
+    TestDeleteInteriorNodes(*curvilinearGrid, {6, 1}, {2, 5});
 }
 
 TEST(CurvilinearGridUniform, DeleteInteriorNodesFailureTest)
@@ -380,8 +380,8 @@ void TestDeleteExteriorNodes(meshkernel::CurvilinearGrid& curvilinearGrid,
     meshkernel::UInt expectedValid = (upperLimitI - lowerLimitI + 1) * (upperLimitJ - lowerLimitJ + 1);
 
     CurvilinearGridDeleteExterior curvilinearGridDeleteExterior(curvilinearGrid);
-    curvilinearGridDeleteExterior.m_lowerLeft = {lowerLimitJ, lowerLimitI};
-    curvilinearGridDeleteExterior.m_upperRight = {upperLimitJ, upperLimitI};
+    curvilinearGridDeleteExterior.m_lowerLeft = {lowerLimitI, lowerLimitJ};
+    curvilinearGridDeleteExterior.m_upperRight = {upperLimitI, upperLimitJ};
 
     // Delete the nodes outside of a block
     curvilinearGridDeleteExterior.Compute();
@@ -418,11 +418,11 @@ TEST(CurvilinearGridUniform, DeleteExteriorNodesTest)
 
     // Reset the mesh
     curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteExteriorNodes(*curvilinearGrid, {2, 1}, {5, 4});
+    TestDeleteExteriorNodes(*curvilinearGrid, {1, 2}, {4, 5});
 
     // Reset the mesh
     curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteExteriorNodes(*curvilinearGrid, {4, 3}, {7, 8});
+    TestDeleteExteriorNodes(*curvilinearGrid, {3, 4}, {8, 7});
 }
 
 TEST(CurvilinearGridUniform, DeleteExteriorNodesReverseTest)
@@ -434,11 +434,11 @@ TEST(CurvilinearGridUniform, DeleteExteriorNodesReverseTest)
 
     // Prepare
     auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteExteriorNodes(*curvilinearGrid, {5, 6}, {1, 2});
+    TestDeleteExteriorNodes(*curvilinearGrid, {6, 5}, {2, 1});
 
     // Reset the mesh
     curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteExteriorNodes(*curvilinearGrid, {5, 6}, {0, 4});
+    TestDeleteExteriorNodes(*curvilinearGrid, {6, 5}, {4, 0});
 }
 
 TEST(CurvilinearGridUniform, DeleteExteriorNodesMixedTest)
@@ -449,11 +449,11 @@ TEST(CurvilinearGridUniform, DeleteExteriorNodesMixedTest)
     meshkernel::UInt ny = 100;
 
     auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteExteriorNodes(*curvilinearGrid, {5, 1}, {1, 6});
+    TestDeleteExteriorNodes(*curvilinearGrid, {1, 5}, {6, 1});
 
     // Reset grid
     curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, nx, ny);
-    TestDeleteExteriorNodes(*curvilinearGrid, {1, 6}, {5, 2});
+    TestDeleteExteriorNodes(*curvilinearGrid, {6, 1}, {2, 5});
 }
 
 TEST(CurvilinearGridUniform, DeleteExteriorNodesFailureTest)
@@ -499,20 +499,20 @@ TEST(CurvilinearGridUniform, GetNodes_ReturnsCopyOfNodeMatrix)
     const int numN = 5;
     const auto subject = MakeCurvilinearGrid(0., 0., 1., 1., numM, numN);
     const auto nodes = subject->GetNodes();
-    EXPECT_EQ(numM, nodes.rows());
-    EXPECT_EQ(numN, nodes.cols());
+    EXPECT_EQ(numN, nodes.rows());
+    EXPECT_EQ(numM, nodes.cols());
 }
 
 TEST(CurvilinearGridUniform, GetRowVector_ReturnsVectorOfLengthNumM)
 {
     const auto subject = MakeCurvilinearGrid(0., 0., 1., 1., 2, 3);
-    EXPECT_EQ(subject->NumM(), subject->GetNodeVectorAtN(1).size());
+    EXPECT_EQ(subject->NumN(), subject->GetNodeVectorAtN(1).size());
 }
 
 TEST(CurvilinearGridUniform, GetColumnVector_ReturnsVectorOfLengthNumN)
 {
     const auto subject = MakeCurvilinearGrid(0., 0., 1., 1., 2, 3);
-    EXPECT_EQ(subject->NumN(), subject->GetNodeVectorAtM(1).size());
+    EXPECT_EQ(subject->NumN(), subject->GetNodeVectorAtN(1).size());
 }
 
 TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerializedNodes)
@@ -520,14 +520,14 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
     // note: this is a characterization test to document the current behavior of MakeCurvilinearGrid,
     // the constructor of CurvilinearGrid taking a matrix of points, and
     // CurvilinearGrid::ConvertCurvilinearToNodesAndEdges
-    // A grid of nx=3 and ny=2 returns node coordinates with 3 y-coordinates and 2 x-coordinates!!!
+    // A grid of nx=3 and ny=2 returns node coordinates with 3 x-coordinates and 2 y-coordinates!!!
     const auto grid = MakeCurvilinearGrid(2.0, 1.0, 2.0, 1.0, 3, 2);
 
     EXPECT_EQ(3, grid->NumM());
     EXPECT_EQ(2, grid->NumN());
 
     const auto [nodes, edges, gridIndices] = grid->ConvertCurvilinearToNodesAndEdges();
-    const std::vector<Point> expected_nodes = {{2., 1.}, {2., 2.}, {4., 1.}, {4., 2.}, {6., 1.}, {6., 2.}};
+    const std::vector<Point> expected_nodes = {{2., 1.}, {4., 1.}, {6., 1.}, {2., 2.}, {4., 2.}, {6., 2.}};
 
     EXPECT_EQ(expected_nodes.size(), nodes.size());
     for (size_t i = 0; i < nodes.size(); ++i)
@@ -550,10 +550,10 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
     EXPECT_EQ(3, grid->NumM());
     EXPECT_EQ(2, grid->NumN());
 
-    grid->GetNode(2, 1).SetInvalid();
+    grid->GetNode(1, 2).SetInvalid();
 
     const auto [nodes, edges, gridIndices] = grid->ConvertCurvilinearToNodesAndEdges();
-    const std::vector<Point> expected_nodes = {{2., 1.}, {2., 2.}, {4., 1.}, {4., 2.}, {6., 1.}, {-999., -999.}};
+    const std::vector<Point> expected_nodes = {{2., 1.}, {4., 1.}, {6., 1.}, {2., 2.}, {4., 2.}, {-999., -999.}};
 
     EXPECT_EQ(expected_nodes.size(), nodes.size());
     for (size_t i = 0; i < nodes.size(); ++i)
@@ -570,14 +570,14 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
     // note: this is a characterization test to document the current behavior of MakeCurvilinearGrid,
     // the constructor of CurvilinearGrid taking a matrix of points, and
     // CurvilinearGrid::ConvertCurvilinearToNodesAndEdges
-    // A grid of nx=3 and ny=2 returns node coordinates with 3 y-coordinates and 2 x-coordinates!!!
+    // A grid of nx=3 and ny=2 returns node coordinates with 3 x-coordinates and 2 y-coordinates
     const auto grid = MakeCurvilinearGrid(2.0, 1.0, 2.0, 1.0, 3, 2);
 
     EXPECT_EQ(3, grid->NumM());
     EXPECT_EQ(2, grid->NumN());
 
     const auto [nodes, edges, gridIndices] = grid->ConvertCurvilinearToNodesAndEdges();
-    const std::vector<Edge> expected_edges = {{{0u, 2u}, {1u, 3u}, {2u, 4u}, {3u, 5u}, {0u, 1u}, {2u, 3u}, {4u, 5u}}};
+    const std::vector<Edge> expected_edges = {{{0u, 3u}, {1u, 4u}, {2u, 5u}, {0u, 1u}, {1u, 2u}, {3u, 4u}, {4u, 5u}}};
 
     EXPECT_EQ(expected_edges.size(), edges.size());
     for (size_t i = 0; i < edges.size(); ++i)
@@ -594,16 +594,16 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
     // note: this is a characterization test to document the current behavior of MakeCurvilinearGrid,
     // the constructor of CurvilinearGrid taking a matrix of points, and
     // CurvilinearGrid::ConvertCurvilinearToNodesAndEdges
-    // A grid of nx=3 and ny=2 returns node coordinates with 3 y-coordinates and 2 x-coordinates!!!
+    // A grid of nx=3 and ny=2 returns node coordinates with 3 x-coordinates and 2 y-coordinates
     const auto grid = MakeCurvilinearGrid(2.0, 1.0, 2.0, 1.0, 3, 2);
 
     EXPECT_EQ(3, grid->NumM());
     EXPECT_EQ(2, grid->NumN());
 
-    grid->GetNode(0, 1).SetInvalid();
+    grid->GetNode(1, 0).SetInvalid();
 
     const auto [nodes, edges, gridIndices] = grid->ConvertCurvilinearToNodesAndEdges();
-    const std::vector<Edge> expected_edges = {{{0u, 2u}, {1u, 3u}, {2u, 4u}, {3u, 5u}, {0u, 1u}, {2u, 3u}, {4u, 5u}}};
+    const std::vector<Edge> expected_edges = {{{0u, 3u}, {1u, 4u}, {2u, 5u}, {0u, 1u}, {1u, 2u}, {3u, 4u}, {4u, 5u}}};
 
     EXPECT_EQ(expected_edges.size(), edges.size());
     for (size_t i = 0; i < edges.size(); ++i)

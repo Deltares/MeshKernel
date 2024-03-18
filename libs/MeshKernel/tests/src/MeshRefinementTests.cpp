@@ -1603,54 +1603,68 @@ TEST(MeshRefinement, CasulliRefinement)
     const std::vector<meshkernel::Edge> originalEdges(mesh.Edges());
 
     // Expected values were obtained from a mesh refined using the Casulli refinement algorithm
-    std::vector<meshkernel::Point> expectedPoints{{0.0, 0.0},
-                                                  {0.0, 20.0},
-                                                  {20.0, 0.0},
-                                                  {20.0, 20.0},
+    std::vector<meshkernel::Point> expectedPoints{{0, 0},
+                                                  {20, 0},
+                                                  {0, 20},
+                                                  {20, 20},
                                                   {2.5, 2.5},
                                                   {7.5, 2.5},
                                                   {7.5, 7.5},
                                                   {2.5, 7.5},
-                                                  {2.5, 12.5},
-                                                  {7.5, 12.5},
-                                                  {7.5, 17.5},
-                                                  {2.5, 17.5},
                                                   {12.5, 2.5},
                                                   {17.5, 2.5},
                                                   {17.5, 7.5},
                                                   {12.5, 7.5},
+                                                  {2.5, 12.5},
+                                                  {7.5, 12.5},
+                                                  {7.5, 17.5},
+                                                  {2.5, 17.5},
                                                   {12.5, 12.5},
                                                   {17.5, 12.5},
                                                   {17.5, 17.5},
                                                   {12.5, 17.5},
-                                                  {2.5, 0.0},
-                                                  {7.5, 0.0},
-                                                  {2.5, 20.0},
-                                                  {7.5, 20.0},
-                                                  {12.5, 0.0},
-                                                  {17.5, 0.0},
-                                                  {12.5, 20.0},
-                                                  {17.5, 20.0},
-                                                  {0.0, 2.5},
-                                                  {0.0, 7.5},
-                                                  {0.0, 12.5},
-                                                  {0.0, 17.5},
-                                                  {20.0, 2.5},
-                                                  {20.0, 7.5},
-                                                  {20.0, 12.5},
-                                                  {20.0, 17.5}};
-    std::vector<meshkernel::UInt> expectedEdgesStart{20, 4, 20, 21, 7, 8, 7, 6, 11, 22,
-                                                     11, 10, 24, 12, 24, 25, 15, 16, 15, 14,
-                                                     19, 26, 19, 18, 4, 28, 4, 7, 8, 30,
-                                                     8, 11, 12, 5, 12, 15, 16, 9, 16, 19,
-                                                     32, 13, 32, 33, 34, 17, 34, 35, 0, 0,
-                                                     30, 1, 1, 21, 23, 2, 2, 33, 3, 3};
-    std::vector<meshkernel::UInt> expectedEdgesEnd{21, 5, 4, 5, 6, 9, 8, 9, 10, 23,
-                                                   22, 23, 25, 13, 12, 13, 14, 17, 16, 17,
-                                                   18, 27, 26, 27, 7, 29, 28, 29, 11, 31,
-                                                   30, 31, 15, 6, 5, 6, 19, 10, 9, 10,
-                                                   33, 14, 13, 14, 35, 18, 17, 18, 20, 28,
-                                                   29, 22, 31, 24, 26, 25, 32, 34, 27, 35};
+                                                  {0, 2.5},
+                                                  {0, 7.5},
+                                                  {20, 2.5},
+                                                  {20, 7.5},
+                                                  {0, 12.5},
+                                                  {0, 17.5},
+                                                  {20, 12.5},
+                                                  {20, 17.5},
+                                                  {2.5, 0},
+                                                  {7.5, 0},
+                                                  {12.5, 0},
+                                                  {17.5, 0},
+                                                  {2.5, 20},
+                                                  {7.5, 20},
+                                                  {12.5, 20},
+                                                  {17.5, 20}};
+
+    std::vector<int> expectedEdgesStart = {9, 25, 9, 12, 13,
+                                           10, 13, 16, 27, 14,
+                                           27, 28, 17, 29, 17,
+                                           20, 21, 18, 21, 24,
+                                           31, 22, 31, 32, 33,
+                                           9, 33, 34, 35, 13,
+                                           35, 36, 12, 17, 12,
+                                           11, 16, 21, 16, 15,
+                                           20, 37, 20, 19, 24,
+                                           39, 24, 23, 0, 0,
+                                           34, 2, 2, 26, 28,
+                                           6, 6, 39, 8, 8};
+
+    std::vector<int> expectedEdgesEnd = {12, 26, 25, 26, 16,
+                                         11, 10, 11, 28, 15,
+                                         14, 15, 20, 30, 29,
+                                         30, 24, 19, 18, 19,
+                                         32, 23, 22, 23, 34,
+                                         10, 9, 10, 36, 14,
+                                         13, 14, 11, 18, 17,
+                                         18, 15, 22, 21, 22,
+                                         19, 38, 37, 38, 23,
+                                         40, 39, 40, 25, 33,
+                                         35, 27, 36, 29, 31,
+                                         30, 37, 38, 32, 40};
 
     auto undoAction = CasulliRefinement::Compute(mesh);
 
@@ -1669,8 +1683,8 @@ TEST(MeshRefinement, CasulliRefinement)
 
     for (meshkernel::UInt i = 0; i < expectedEdgesStart.size(); ++i)
     {
-        EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).first, validNodeMap[expectedEdgesStart[i]]);
-        EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).second, validNodeMap[expectedEdgesEnd[i]]);
+        EXPECT_EQ(expectedEdgesStart[i], mesh.GetEdge(validEdgeMap[i]).first);
+        EXPECT_EQ(expectedEdgesEnd[i], mesh.GetEdge(validEdgeMap[i]).second);
     }
 
     // Test the undo action has been computed correctly
@@ -1791,8 +1805,8 @@ TEST(MeshRefinement, CasulliPatchRefinement)
     for (size_t i = 0; i < expectedEdgeStart.size(); ++i)
     {
         // Map the index i from the edges array containing only valid edges to an array with that may contain in-valid edges
-        EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).first, validNodeMap[expectedEdgeStart[i]]);
-        EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).second, validNodeMap[expectedEdgeEnd[i]]);
+        EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).first, expectedEdgeStart[i]);
+        EXPECT_EQ(mesh.GetEdge(validEdgeMap[i]).second, expectedEdgeEnd[i]);
     }
 
     // Test the undo action has been computed correctly

@@ -24,11 +24,11 @@ size_t CurvilinearGridCountValidNodes(meshkernel::CurvilinearGrid const& curvili
 {
     size_t validNodes = 0;
     size_t index = 0;
-    for (meshkernel::UInt m = 0; m < curvilinearGrid.NumM(); ++m)
+    for (meshkernel::UInt n = 0; n < curvilinearGrid.NumN(); ++n)
     {
-        for (meshkernel::UInt n = 0; n < curvilinearGrid.NumN(); ++n)
+        for (meshkernel::UInt m = 0; m < curvilinearGrid.NumM(); ++m)
         {
-            if (curvilinearGrid.GetNode(m, n).IsValid())
+            if (curvilinearGrid.GetNode(n, m).IsValid())
             {
                 validNodes++;
             }
@@ -42,6 +42,7 @@ std::unique_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGrid()
 {
     using namespace meshkernel;
     lin_alg::Matrix<Point> grid(5, 9);
+
     grid << //
         Point{7.998379637459554942E+04, 3.669368953805413912E+05},
         Point{8.006531634932766610E+04, 3.669913884352280875E+05},
@@ -158,13 +159,13 @@ std::unique_ptr<meshkernel::CurvilinearGrid> MakeCurvilinearGrid(double originX,
 {
     double y = originY;
 
-    lin_alg::Matrix<meshkernel::Point> points(nx, ny);
+    lin_alg::Matrix<meshkernel::Point> points(ny, nx);
 
-    for (size_t m = 0; m < ny; ++m)
+    for (size_t n = 0; n < ny; ++n)
     {
         double x = originX;
 
-        for (size_t n = 0; n < nx; ++n)
+        for (size_t m = 0; m < nx; ++m)
         {
             points(n, m) = meshkernel::Point(x, y);
             x += deltaX;
