@@ -26,8 +26,9 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
-#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
+#include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridBlockUndo.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp"
 
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridLine;
@@ -53,4 +54,25 @@ void meshkernel::CurvilinearGridDeleteInterior::Compute()
             m_grid.GetNode(n, m).SetInvalid();
         }
     }
+}
+
+meshkernel::UndoActionPtr meshkernel::CurvilinearGridDeleteInterior::Compute2()
+{
+    const UInt lowerLimitI = m_lowerLeft.m_n;
+    const UInt upperLimitI = m_upperRight.m_n;
+
+    const UInt lowerLimitJ = m_lowerLeft.m_m;
+    const UInt upperLimitJ = m_upperRight.m_m;
+
+    std::unique_ptr<CurvilinearGridBlockUndo> undoAction = CurvilinearGridBlockUndo::Create(m_grid, m_lowerLeft, m_upperRight);
+
+    for (UInt n = lowerLimitI + 1; n < upperLimitI; ++n)
+    {
+        for (UInt m = lowerLimitJ + 1; m < upperLimitJ; ++m)
+        {
+            m_grid.GetNode(n, m).SetInvalid();
+        }
+    }
+
+    return undoAction;
 }

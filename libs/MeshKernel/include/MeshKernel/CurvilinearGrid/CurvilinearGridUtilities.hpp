@@ -27,18 +27,20 @@
 
 #pragma once
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-
-#include "MeshKernel/UndoActions/UndoAction.hpp"
-
-/// @brief Mock class for UndoAction's
-class MockUndoAction : public meshkernel::UndoAction
+namespace meshkernel
 {
-public:
-    /// @brief Mock the DoCommit function
-    MOCK_METHOD(void, DoCommit, (), (override));
-
-    /// @brief Mock the DoRestore function
-    MOCK_METHOD(void, DoRestore, (), (override));
-};
+    /// @brief An enum for curvilinear node types
+    enum class NodeType
+    {
+        BottomLeft,    //(11)
+        UpperLeft,     //(14)
+        BottomRight,   //(12)
+        UpperRight,    //(13)
+        Left,          //(4)
+        Right,         //(2)
+        Bottom,        //(1)
+        Up,            //(3)
+        InternalValid, //(10)
+        Invalid        //(0)
+    };
+} // namespace meshkernel

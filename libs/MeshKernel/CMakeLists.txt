@@ -91,8 +91,11 @@ set(
 
 set(
   CURVILINEAR_GRID_SRC_LIST
+  ${CURVILINEAR_GRID_SRC_DIR}/AddGridLineUndoAction.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGrid.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridAlgorithm.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridBlock.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridBlockUndo.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridCurvature.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridDeRefinement.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridDeleteExterior.cpp
@@ -192,8 +195,11 @@ set(
 
 set(
   CURVILINEAR_GRID_INC_LIST
+  ${CURVILINEAR_GRID_INC_DIR}/AddGridLineUndoAction.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGrid.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridAlgorithm.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridBlock.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridBlockUndo.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridCurvature.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridDeRefinement.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridDeleteExterior.hpp

@@ -33,6 +33,7 @@
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridCurvature.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Operations.hpp"
+#include "MeshKernel/UndoActions/UndoActionStack.hpp"
 #include "MeshKernel/Utilities/LinearAlgebra.hpp"
 #include "TestUtils/MakeCurvilinearGrids.hpp"
 
@@ -230,6 +231,113 @@ TEST(CurvilinearBasicTests, AddGridLineAtBoundary)
               << grid->GetNode(1, 0).x << ", " << grid->GetNode(1, 0).y << "  -- "
               << std::endl;
     std::cout << " size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
+              << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
+              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
+              << std::endl;
+}
+
+TEST(CurvilinearBasicTests, AddGridLineAtBoundaryUndo)
+{
+    constexpr double originX = 1.0;
+    constexpr double originY = 1.0;
+
+    constexpr double deltaX = 1.0;
+    constexpr double deltaY = 1.0;
+
+    constexpr size_t nx = 8;
+    constexpr size_t ny = 8;
+
+    // constexpr size_t nx = 27;
+    // constexpr size_t ny = 13;
+
+    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    bool addedLine = false;
+    mk::UndoActionStack undoActions;
+
+    grid->print();
+
+    std::cout << " size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
+              << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
+              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
+              << std::endl;
+
+    // auto [addedAnotherLine, undoAction] = grid->AddGridLineAtBoundary({0, 7}, {1, 7}); ///< UP but on right
+    auto [addedAnotherLine, undoAction] = grid->AddGridLineAtBoundary({7, 0}, {7, 1}); ///< Right but on up
+    // auto [addedAnotherLine, undoAction] = grid->AddGridLineAtBoundary({0, 0}, {0, 1}); ///< Left but on bottom
+    // auto [addedAnotherLine, undoAction] = grid->AddGridLineAtBoundary({0, 0}, {1, 0}); < Bottom but on left
+
+    grid->SetFlatCopies();
+    undoAction->Print();
+    undoActions.Add(std::move(undoAction));
+
+    // // up but right
+    // for (mk::UInt i = 0; i < grid->NumN(); ++i)
+    // {
+    //     grid->GetNode(i, 8).x = grid->GetNode(i, 7).x + deltaX;
+    //     grid->GetNode(i, 8).y = grid->GetNode(i, 7).y;
+    // }
+
+    // right but up
+    for (mk::UInt i = 0; i < grid->NumM(); ++i)
+    {
+        grid->GetNode(ny, i).x = grid->GetNode(ny - 1, i).x;
+        grid->GetNode(ny, i).y = grid->GetNode(ny - 1, i).y + deltaY;
+    }
+
+    // // For left but bottom
+    // for (mk::UInt i = 0; i < grid->NumM(); ++i)
+    // {
+    //     grid->GetNode(0, i).x = grid->GetNode(1, i).x;
+    //     grid->GetNode(0, i).y = grid->GetNode(1, i).y - deltaY;
+    // }
+
+    // // For bottom but left
+    // for (mk::UInt i = 0; i < grid->NumN(); ++i)
+    // {
+    //     grid->GetNode(i, 0).x = grid->GetNode(i, 1).x - deltaX;
+    //     grid->GetNode(i, 0).y = grid->GetNode(i, 1).y;
+    // }
+
+    grid->print();
+
+    undoActions.Undo();
+
+    grid->print();
+    std::cout << "undoAction->Restore size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
+              << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
+              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
+              << std::endl;
+
+    undoActions.Commit();
+    std::cout << "undoAction->Commit   size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
+              << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
+              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
+              << std::endl;
+
+    auto [addedAnotherLine2, undoAction2] = grid->AddGridLineAtBoundary({0, 0}, {0, 1});
+
+    // For left but bottom
+    for (mk::UInt i = 0; i < grid->NumM(); ++i)
+    {
+        grid->GetNode(0, i).x = grid->GetNode(1, i).x;
+        grid->GetNode(0, i).y = grid->GetNode(1, i).y - deltaY;
+    }
+
+    grid->SetFlatCopies();
+
+    grid->print();
+
+    undoAction2->Print();
+    undoActions.Add(std::move(undoAction2));
+
+    undoActions.Undo();
+    std::cout << "undoAction2->Restore size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
+              << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
+              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
+              << std::endl;
+
+    undoActions.Commit();
+    std::cout << "undoAction->Restore  size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
               << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
               << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
               << std::endl;

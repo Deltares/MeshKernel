@@ -638,8 +638,6 @@ void CurvilinearGrid::DeleteGridLineAtBoundary(CurvilinearGridNodeIndices const&
     // Allocation depends on directions
     auto const gridLineType = GetBoundaryGridLineType(firstNode, secondNode);
 
-    std::cout << "CurvilinearGrid::DeleteGridLineAtBoundary: " << std::boolalpha << areNodesValid << "  " << std::endl;
-
     if (areNodesValid)
     {
         if (gridLineType == BoundaryGridLineType::Left)
@@ -676,8 +674,30 @@ void CurvilinearGrid::DeleteGridLineAtBoundary(CurvilinearGridNodeIndices const&
     }
 }
 
-bool CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode,
-                                            CurvilinearGridNodeIndices const& secondNode)
+void CurvilinearGrid::Restore(AddGridLineUndoAction& undoAction)
+{
+    m_startOffset += undoAction.StartOffset();
+    m_endOffset += undoAction.EndOffset();
+}
+
+void CurvilinearGrid::Commit(AddGridLineUndoAction& undoAction)
+{
+    m_startOffset -= undoAction.StartOffset();
+    m_endOffset -= undoAction.EndOffset();
+}
+
+void CurvilinearGrid::Restore(CurvilinearGridBlockUndo& undoAction)
+{
+    undoAction.Swap(*this);
+}
+
+void CurvilinearGrid::Commit(CurvilinearGridBlockUndo& undoAction)
+{
+    undoAction.Swap(*this);
+}
+
+std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode,
+                                                                                   CurvilinearGridNodeIndices const& secondNode)
 {
 
     if (!firstNode.IsValid() || !secondNode.IsValid())
@@ -685,14 +705,14 @@ bool CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& fi
         throw ConstraintError("Invalid indices");
     }
 
-    if (IsInRange(firstNode.m_m, 0u, NumM()) && IsInRange(firstNode.m_n, 0u, NumN()))
+    if (!IsInRange(firstNode.m_m, 0u, NumM()) || !IsInRange(firstNode.m_n, 0u, NumN()))
     {
-        throw ConstraintError("First index {{{}, {}}} not in mesh limits {{{}, {}}}", firstNode.m_m, firstNode.m_n, NumM(), NumN());
+        throw ConstraintError("First index {{{}, {}}} not in mesh limits {{{}, {}}},  {{{}, {}}}", firstNode.m_n, firstNode.m_m, NumN(), NumM(), m_gridNodes.rows(), m_gridNodes.cols());
     }
 
-    if (IsInRange(secondNode.m_m, 0u, NumM()) && IsInRange(secondNode.m_n, 0u, NumN()))
+    if (!IsInRange(secondNode.m_m, 0u, NumM()) || !IsInRange(secondNode.m_n, 0u, NumN()))
     {
-        throw ConstraintError("Second index {{{}, {}}} not in mesh limits {{{}, {}}}", secondNode.m_m, secondNode.m_n, NumM(), NumN());
+        throw ConstraintError("Second index {{{}, {}}} not in mesh limits {{{}, {}}}", secondNode.m_n, secondNode.m_m, NumN(), NumM());
     }
 
     // If both nodes are invalid, we can substitute the invalid values. New allocation is not needed.
@@ -703,8 +723,11 @@ bool CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& fi
     bool gridSizeChanged = false;
     auto const gridLineType = GetBoundaryGridLineType(firstNode, secondNode);
 
+    UndoActionPtr undoAction;
+
     if (areNodesValid)
     {
+
         if (gridLineType == BoundaryGridLineType::Left)
         {
             // n-direction
@@ -717,6 +740,7 @@ bool CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& fi
                 m_startOffset.m_n -= 1;
             }
 
+            undoAction = AddGridLineUndoAction::Create(*this, {1, 0}, {0, 0});
             gridSizeChanged = true;
         }
 
@@ -732,6 +756,7 @@ bool CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& fi
                 m_endOffset.m_n -= 1;
             }
 
+            undoAction = AddGridLineUndoAction::Create(*this, {0, 0}, {1, 0});
             gridSizeChanged = true;
         }
 
@@ -747,6 +772,7 @@ bool CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& fi
                 m_endOffset.m_m -= 1;
             }
 
+            undoAction = AddGridLineUndoAction::Create(*this, {0, 0}, {0, 1});
             gridSizeChanged = true;
         }
 
@@ -762,11 +788,12 @@ bool CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& fi
                 m_startOffset.m_m -= 1;
             }
 
+            undoAction = AddGridLineUndoAction::Create(*this, {0, 1}, {0, 0});
             gridSizeChanged = true;
         }
     }
 
-    return gridSizeChanged;
+    return {gridSizeChanged, std::move(undoAction)};
 }
 
 CurvilinearGrid::BoundaryGridLineType CurvilinearGrid::GetBoundaryGridLineType(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode) const
@@ -818,7 +845,9 @@ void CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices const& firstNode, Curvi
     {
         auto const firstNewNodeCoordinates = GetNode(firstNode.m_n, firstNode.m_m) * 2.0 - GetNode(firstNode.m_n + 1, firstNode.m_m);
         auto const secondNewNodeCoordinates = GetNode(secondNode.m_n, secondNode.m_m) * 2.0 - GetNode(secondNode.m_n + 1, secondNode.m_m);
-        auto const isGridLineAdded = AddGridLineAtBoundary(firstNode, secondNode);
+        auto [isGridLineAdded, undoAction] = AddGridLineAtBoundary(firstNode, secondNode);
+        // auto const isGridLineAdded = AddGridLineAtBoundary(firstNode, secondNode);
+
         if (isGridLineAdded)
         {
             GetNode(0, firstNode.m_m) = firstNewNodeCoordinates;
@@ -834,7 +863,7 @@ void CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices const& firstNode, Curvi
     {
         auto const firstNewNodeCoordinates = GetNode(firstNode.m_n, firstNode.m_m) * 2.0 - GetNode(firstNode.m_n - 1, firstNode.m_m);
         auto const secondNewNodeCoordinates = GetNode(secondNode.m_n, secondNode.m_m) * 2.0 - GetNode(secondNode.m_n - 1, secondNode.m_m);
-        AddGridLineAtBoundary(firstNode, secondNode);
+        [[maybe_unused]] auto [isGridLineAdded, undoAction] = AddGridLineAtBoundary(firstNode, secondNode);
         GetNode(firstNode.m_n + 1, firstNode.m_m) = firstNewNodeCoordinates;
         GetNode(secondNode.m_n + 1, secondNode.m_m) = secondNewNodeCoordinates;
 
@@ -844,7 +873,7 @@ void CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices const& firstNode, Curvi
     {
         auto const firstNewNodeCoordinates = GetNode(firstNode.m_n, firstNode.m_m) * 2.0 - GetNode(firstNode.m_n, firstNode.m_m + 1);
         auto const secondNewNodeCoordinates = GetNode(secondNode.m_n, secondNode.m_m) * 2.0 - GetNode(secondNode.m_n, secondNode.m_m + 1);
-        auto const isGridLineAdded = AddGridLineAtBoundary(firstNode, secondNode);
+        auto [isGridLineAdded, undoAction] = AddGridLineAtBoundary(firstNode, secondNode);
         if (isGridLineAdded)
         {
             // Assign the new coordinates
@@ -861,7 +890,7 @@ void CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices const& firstNode, Curvi
     {
         auto const firstNewNodeCoordinates = GetNode(firstNode.m_n, firstNode.m_m) * 2.0 - GetNode(firstNode.m_n, firstNode.m_m - 1);
         auto const secondNewNodeCoordinates = GetNode(secondNode.m_n, secondNode.m_m) * 2.0 - GetNode(secondNode.m_n, secondNode.m_m - 1);
-        AddGridLineAtBoundary(firstNode, secondNode);
+        [[maybe_unused]] auto [isGridLineAdded, undoAction] = AddGridLineAtBoundary(firstNode, secondNode);
         GetNode(firstNode.m_n, firstNode.m_m + 1) = firstNewNodeCoordinates;
         GetNode(secondNode.m_n, secondNode.m_m + 1) = secondNewNodeCoordinates;
     }
@@ -1050,4 +1079,23 @@ meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
     }
 
     return BoundingBox(lowerLeft, upperRight);
+}
+
+void CurvilinearGrid::print(std::ostream& out)
+{
+    out << std::endl;
+    out << "grid dim: " << NumN() << " x " << NumM() << std::endl;
+
+    for (int row = NumN() - 1; row >= 0; --row)
+    {
+        for (UInt col = 0; col < NumM(); ++col)
+        {
+            const Point p = GetNode(static_cast<UInt>(row), col);
+            out << "{" << p.x << ", " << p.y << "}  ";
+        }
+
+        out << std::endl;
+    }
+
+    out << std::endl;
 }

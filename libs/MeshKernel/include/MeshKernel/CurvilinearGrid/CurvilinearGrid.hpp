@@ -30,11 +30,15 @@
 #include <vector>
 
 #include <MeshKernel/BoundingBox.hpp>
+#include <MeshKernel/CurvilinearGrid/AddGridLineUndoAction.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridBlockUndo.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridUtilities.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/UndoActions/UndoAction.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
 namespace meshkernel
@@ -44,28 +48,28 @@ namespace meshkernel
     {
 
     public:
-        /// @brief An enum for curvilinear node types
-        enum class NodeType
-        {
-            BottomLeft,    //(11)
-            UpperLeft,     //(14)
-            BottomRight,   //(12)
-            UpperRight,    //(13)
-            Left,          //(4)
-            Right,         //(2)
-            Bottom,        //(1)
-            Up,            //(3)
-            InternalValid, //(10)
-            Invalid        //(0)
-        };
+        // /// @brief An enum for curvilinear node types
+        // enum class NodeType
+        // {
+        //     BottomLeft,    //(11)
+        //     UpperLeft,     //(14)
+        //     BottomRight,   //(12)
+        //     UpperRight,    //(13)
+        //     Left,          //(4)
+        //     Right,         //(2)
+        //     Bottom,        //(1)
+        //     Up,            //(3)
+        //     InternalValid, //(10)
+        //     Invalid        //(0)
+        // };
 
         /// @brief An enum for boundary grid line types
         enum class BoundaryGridLineType
         {
-            Left,
-            Right,
-            Bottom,
-            Up
+            Left,   ///< Bottom of domain
+            Right,  ///<
+            Bottom, ///<
+            Up      ///< Right side of domain
         };
 
         /// @brief Default destructor
@@ -228,7 +232,15 @@ namespace meshkernel
         /// @param firstNode The first node of the boundary grid line.
         /// @param secondNode The second node of the boundary grid line.
         /// @return If a new grid line has been allocated
-        bool AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
+        std::tuple<bool, UndoActionPtr> AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
+
+        void Restore(AddGridLineUndoAction& undoAction);
+
+        void Commit(AddGridLineUndoAction& undoAction);
+
+        void Restore(CurvilinearGridBlockUndo& undoAction);
+
+        void Commit(CurvilinearGridBlockUndo& undoAction);
 
         void DeleteGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
 
@@ -290,6 +302,8 @@ namespace meshkernel
 
         CurvilinearGridNodeIndices m_startOffset{0, 0};
         CurvilinearGridNodeIndices m_endOffset{0, 0};
+
+        void print(std::ostream& out = std::cout);
 
     private:
         /// @brief Remove invalid nodes.

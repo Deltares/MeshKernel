@@ -27,7 +27,8 @@
 
 #pragma once
 
-#include "CurvilinearGridAlgorithm.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 namespace meshkernel
 {
@@ -43,5 +44,9 @@ namespace meshkernel
         /// @brief Set all the nodes interior to the block to be invalid.
         /// @note If any index is the null value or is out of range a ConstraintError will be thrown
         void Compute() override;
+
+        /// @brief Set all the nodes interior to the block to be invalid.
+        /// @note If any index is the null value or is out of range a ConstraintError will be thrown
+        UndoActionPtr Compute2();
     };
 } // namespace meshkernel
