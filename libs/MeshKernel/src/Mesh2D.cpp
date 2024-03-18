@@ -55,6 +55,7 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                Projection projection)
     : Mesh(edges, nodes, projection)
 {
+    DeleteInvalidNodesAndEdges();
     DoAdministration();
 }
 
@@ -65,6 +66,7 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                Projection projection)
     : Mesh(edges, nodes, projection)
 {
+    DeleteInvalidNodesAndEdges();
     DoAdministrationGivenFaceNodesMapping(faceNodes, numFaceNodes);
 }
 
@@ -148,6 +150,65 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
 
     DeleteInvalidNodesAndEdges();
     DoAdministration();
+}
+
+void Mesh2D::DeleteInvalidNodesAndEdges()
+{
+
+    // Mask nodes connected to valid edges
+    std::vector<bool> connectedNodes(m_nodes.size(), false);
+    UInt numInvalidEdges = 0;
+    // Count all invalid nodes (note: there might be nodes that are not connected to an edge)
+    UInt numInvalidNodes = 0;
+
+    FindConnectedNodes(connectedNodes, numInvalidEdges);
+    InvalidateUnConnectedNodes(connectedNodes, numInvalidNodes);
+
+    // If nothing to invalidate return
+    if (numInvalidEdges == 0 && numInvalidNodes == 0)
+    {
+        return;
+    }
+
+    // Flag invalid nodes
+    std::vector<UInt> validNodesIndices(m_nodes.size());
+    std::ranges::fill(validNodesIndices, constants::missing::uintValue);
+    UInt validIndex = 0;
+    for (UInt n = 0; n < m_nodes.size(); ++n)
+    {
+        if (m_nodes[n].IsValid())
+        {
+            validNodesIndices[n] = validIndex;
+            validIndex++;
+        }
+    }
+
+    // Flag invalid edges
+    for (auto& [firstNode, secondNode] : m_edges)
+    {
+        if (firstNode != constants::missing::uintValue &&
+            secondNode != constants::missing::uintValue &&
+            validNodesIndices[firstNode] != constants::missing::uintValue &&
+            validNodesIndices[secondNode] != constants::missing::uintValue)
+        {
+            firstNode = validNodesIndices[firstNode];
+            secondNode = validNodesIndices[secondNode];
+            continue;
+        }
+
+        firstNode = constants::missing::uintValue;
+        secondNode = constants::missing::uintValue;
+    }
+
+    // Remove invalid nodes, without reducing capacity
+    const auto endNodeVector = std::remove_if(m_nodes.begin(), m_nodes.end(), [](const Point& n)
+                                              { return !n.IsValid(); });
+    m_nodes.erase(endNodeVector, m_nodes.end());
+
+    // Remove invalid edges, without reducing capacity
+    const auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e)
+                                              { return e.first == constants::missing::uintValue || e.second == constants::missing::uintValue; });
+    m_edges.erase(endEdgeVector, m_edges.end());
 }
 
 void Mesh2D::DoAdministration()

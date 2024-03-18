@@ -106,6 +106,9 @@ namespace meshkernel
         /// @param[in] projection The projection to use
         Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
 
+        /// @brief Removes all invalid nodes and edges
+        void DeleteInvalidNodesAndEdges();
+
         /// @brief Perform complete administration
         void Administrate() override;
 

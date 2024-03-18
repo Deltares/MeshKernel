@@ -293,9 +293,6 @@ namespace meshkernel
         /// @return An estimated indicator for a quadrilateral dominated mesh.
         bool NodeAdministration();
 
-        /// @brief Removes all invalid nodes and edges
-        void DeleteInvalidNodesAndEdges();
-
         /// @brief Perform complete administration
         virtual void Administrate();
 
@@ -425,12 +422,6 @@ namespace meshkernel
         std::vector<Point> m_nodes; ///< The mesh nodes (xk, yk)
         std::vector<Edge> m_edges;  ///< The edges, defined as first and second node(kn)
 
-    private:
-        static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate
-
-        /// @brief Set nodes and edges that are not connected to be invalid.
-        void SetUnconnectedNodesAndEdgesToInvalid();
-
         /// @brief Find all nodes that are connected to an edge.
         ///
         /// Also count the number of edges that have either invalid index values or
@@ -441,6 +432,12 @@ namespace meshkernel
         /// @brief Invalidate any not connected to any edge.
         void InvalidateUnConnectedNodes(const std::vector<bool>& connectedNodes,
                                         UInt& numInvalidNodes);
+
+    private:
+        static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate
+
+        /// @brief Set nodes and edges that are not connected to be invalid.
+        void SetUnconnectedNodesAndEdgesToInvalid();
     };
 } // namespace meshkernel
 
