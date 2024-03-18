@@ -811,18 +811,18 @@ std::unique_ptr<meshkernel::SphericalCoordinatesOffsetAction> Mesh2D::OffsetSphe
             }
         }
 
-        Commit(*undoAction);
+        CommitAction(*undoAction);
     }
 
     return undoAction;
 }
 
-void Mesh2D::Commit(const SphericalCoordinatesOffsetAction& undoAction)
+void Mesh2D::CommitAction(const SphericalCoordinatesOffsetAction& undoAction)
 {
     undoAction.ApplyOffset(m_nodes);
 }
 
-void Mesh2D::Restore(const SphericalCoordinatesOffsetAction& undoAction)
+void Mesh2D::RestoreAction(const SphericalCoordinatesOffsetAction& undoAction)
 {
     undoAction.UndoOffset(m_nodes);
 }

@@ -60,13 +60,13 @@ namespace meshkernel
 template <typename DerivedUndoAction, class Mesh>
 void meshkernel::BaseMeshUndoAction<DerivedUndoAction, Mesh>::DoCommit()
 {
-    mesh_.Commit(*static_cast<DerivedUndoAction*>(this));
+    mesh_.CommitAction(*static_cast<DerivedUndoAction*>(this));
 }
 
 template <typename DerivedUndoAction, class Mesh>
 void meshkernel::BaseMeshUndoAction<DerivedUndoAction, Mesh>::DoRestore()
 {
-    mesh_.Restore(*static_cast<DerivedUndoAction*>(this));
+    mesh_.RestoreAction(*static_cast<DerivedUndoAction*>(this));
 }
 
 template <typename DerivedUndoAction, class Mesh>

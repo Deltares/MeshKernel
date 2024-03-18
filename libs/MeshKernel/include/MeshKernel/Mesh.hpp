@@ -390,68 +390,68 @@ namespace meshkernel
         bool IsValidEdge(const UInt edgeId) const;
 
         /// @brief Apply the reset node action
-        void Commit(const ResetNodeAction& undoAction);
+        void CommitAction(const ResetNodeAction& undoAction);
 
         /// @brief Apply the add node action
-        void Commit(const AddNodeAction& undoAction);
+        void CommitAction(const AddNodeAction& undoAction);
 
         /// @brief Apply the add edge action
-        void Commit(const AddEdgeAction& undoAction);
+        void CommitAction(const AddEdgeAction& undoAction);
 
         /// @brief Apply the reset edge action
-        void Commit(const ResetEdgeAction& undoAction);
+        void CommitAction(const ResetEdgeAction& undoAction);
 
         /// @brief Apply the delete node action
-        void Commit(const DeleteNodeAction& undoAction);
+        void CommitAction(const DeleteNodeAction& undoAction);
 
         /// @brief Apply the node translation action
-        void Commit(NodeTranslationAction& undoAction);
+        void CommitAction(NodeTranslationAction& undoAction);
 
         /// @brief Apply the node translation action
-        void Commit(MeshConversionAction& undoAction);
+        void CommitAction(MeshConversionAction& undoAction);
 
         /// @brief Apply the delete edge action
-        void Commit(const DeleteEdgeAction& undoAction);
+        void CommitAction(const DeleteEdgeAction& undoAction);
 
         /// @brief Undo the reset node action
         ///
         /// Restore mesh to state before node was reset
-        void Restore(const ResetNodeAction& undoAction);
+        void RestoreAction(const ResetNodeAction& undoAction);
 
         /// @brief Undo the add node action
         ///
         /// Restore mesh to state before node was added
-        void Restore(const AddNodeAction& undoAction);
+        void RestoreAction(const AddNodeAction& undoAction);
 
         /// @brief Undo the add edge action
         ///
         /// Restore mesh to state before edge was added
-        void Restore(const AddEdgeAction& undoAction);
+        void RestoreAction(const AddEdgeAction& undoAction);
 
         /// @brief Undo the reset edge action
         ///
         /// Restore mesh to state before edge was reset
-        void Restore(const ResetEdgeAction& undoAction);
+        void RestoreAction(const ResetEdgeAction& undoAction);
 
         /// @brief Undo the delete node action
         ///
         /// Restore mesh to state before node was deleted
-        void Restore(const DeleteNodeAction& undoAction);
+        void RestoreAction(const DeleteNodeAction& undoAction);
 
         /// @brief Undo the node translation action
         ///
         /// Restore mesh to state before node was translated
-        void Restore(NodeTranslationAction& undoAction);
+        void RestoreAction(NodeTranslationAction& undoAction);
 
         /// @brief Undo the node translation action
         ///
         /// Restore mesh to state before node was translated
-        void Restore(MeshConversionAction& undoAction);
+        void RestoreAction(MeshConversionAction& undoAction);
 
         /// @brief Undo the delete edge action
         ///
         /// Restore mesh to state before edge was deleted
-        void Restore(const DeleteEdgeAction& undoAction);
+        void RestoreAction(const DeleteEdgeAction& undoAction);
 
         // nodes
         std::vector<std::vector<UInt>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)

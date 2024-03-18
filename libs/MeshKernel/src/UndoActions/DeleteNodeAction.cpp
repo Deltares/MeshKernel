@@ -44,12 +44,12 @@ void meshkernel::DeleteNodeAction::DoCommit()
         action->Commit();
     }
 
-    m_mesh.Commit(*this);
+    m_mesh.CommitAction(*this);
 }
 
 void meshkernel::DeleteNodeAction::DoRestore()
 {
-    m_mesh.Restore(*this);
+    m_mesh.RestoreAction(*this);
 
     for (const std::unique_ptr<DeleteEdgeAction>& action : m_deletedEdges | std::views::reverse)
     {
