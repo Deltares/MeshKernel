@@ -935,10 +935,10 @@ TEST_P(IsPointInPolygonsTests, parameters)
     auto const& [point, expectedResult] = GetParam();
 
     std::vector<meshkernel::Point> nodes;
-    nodes.push_back({0.0, 0.0});
-    nodes.push_back({-1.0, -1.0});
-    nodes.push_back({0.0, -0.5});
-    nodes.push_back({0.0, 0.0});
+    nodes.emplace_back(0.0, 0.0);
+    nodes.emplace_back(-1.0, -1.0);
+    nodes.emplace_back(0.0, -0.5);
+    nodes.emplace_back(0.0, 0.0);
 
     meshkernel::Polygons polygon(nodes, meshkernel::Projection::cartesian);
 
