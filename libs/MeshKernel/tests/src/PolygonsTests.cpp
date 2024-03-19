@@ -916,3 +916,34 @@ TEST(Polygons, SnapMultiPolygonPartToSingleLandBoundary)
             << " Expected y-coordinate: " << expectedSnappedPointsSecond[i].y << ", actual: " << secondPolygon.Node(i).y << ", tolerance: " << tolerance;
     }
 }
+
+class IsPointInPolygonsTests : public ::testing::TestWithParam<std::tuple<meshkernel::Point, bool>>
+{
+public:
+    [[nodiscard]] static std::vector<std::tuple<meshkernel::Point, bool>> GetData()
+    {
+        return {std::make_tuple<meshkernel::Point, bool>(meshkernel::Point{-2.0, -2.0}, false),
+                std::make_tuple<meshkernel::Point, bool>(meshkernel::Point{-1.0, -1.0}, true),
+                std::make_tuple<meshkernel::Point, bool>(meshkernel::Point{0.0, -0.75}, false),
+                std::make_tuple<meshkernel::Point, bool>(meshkernel::Point{0.0, -0.25}, true)};
+    }
+};
+
+TEST_P(IsPointInPolygonsTests, parameters)
+{
+    // Get the test parameters
+    auto const& [point, expectedResult] = GetParam();
+
+    std::vector<meshkernel::Point> nodes;
+    nodes.push_back({0.0, 0.0});
+    nodes.push_back({-1.0, -1.0});
+    nodes.push_back({0.0, -0.5});
+    nodes.push_back({0.0, 0.0});
+
+    meshkernel::Polygons polygon(nodes, meshkernel::Projection::cartesian);
+
+    const auto [result, index] = polygon.IsPointInPolygons(point);
+
+    ASSERT_EQ(result, expectedResult);
+}
+INSTANTIATE_TEST_SUITE_P(IsPointInPolygonsParametrizedTests, IsPointInPolygonsTests, ::testing::ValuesIn(IsPointInPolygonsTests::GetData()));
