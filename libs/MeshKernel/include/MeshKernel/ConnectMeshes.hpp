@@ -59,7 +59,7 @@ namespace meshkernel
         /// @param [in] separationFraction The fraction of the shortest edge to use when determining neighbour edge closeness
         /// @note separationFraction should be in the interval (0, max], where max = DefaultMaximumSeparationFraction,
         /// If the value is outside of this range then a RangeError will be thrown.
-        static void Compute(Mesh2D& mesh, const double separationFraction = DefaultMaximumSeparationFraction);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh, const double separationFraction = DefaultMaximumSeparationFraction);
 
     private:
         /// @brief The maximum number of hanging nodes along a single element edge
@@ -143,7 +143,7 @@ namespace meshkernel
         /// @param [in,out] mesh The mesh
         /// @param [in] nodesToMerge List of nodes to be merged
         /// @param [in,out] mergeIndicator Indicates if node needs to be merged.
-        static void MergeNodes(Mesh2D& mesh, const std::vector<NodesToMerge>& nodesToMerge, std::vector<MergeIndicator>& mergeIndicator);
+        static std::unique_ptr<meshkernel::UndoAction> MergeNodes(Mesh2D& mesh, const std::vector<NodesToMerge>& nodesToMerge, std::vector<MergeIndicator>& mergeIndicator);
 
         /// @brief Free one hanging node along an irregular edge.
         ///
@@ -151,10 +151,10 @@ namespace meshkernel
         /// @brief [in] hangingNodes List of hanging nodes for edge
         /// @brief [in] startNode End point of regular edge, to which the hanging node will be connected
         /// @brief [in] endNode Other end point of regular edge, to which the hanging node will be connected
-        static void FreeOneHangingNode(Mesh2D& mesh,
-                                       const BoundedIntegerArray& hangingNodes,
-                                       const UInt startNode,
-                                       const UInt endNode);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> FreeOneHangingNode(Mesh2D& mesh,
+                                                                                        const BoundedIntegerArray& hangingNodes,
+                                                                                        const UInt startNode,
+                                                                                        const UInt endNode);
 
         /// @brief Free two hanging nodes along an irregular edge.
         ///
@@ -164,12 +164,12 @@ namespace meshkernel
         /// @brief [in] hangingNodes List of hanging nodes for edge
         /// @brief [in] startNode End point of regular edge, to which the hanging nodes will be connected
         /// @brief [in] endNode Other end point of regular edge, to which the hanging nodes will be connected
-        static void FreeTwoHangingNodes(Mesh2D& mesh,
-                                        const UInt faceId,
-                                        const UInt edgeId,
-                                        const BoundedIntegerArray& hangingNodes,
-                                        const UInt startNode,
-                                        const UInt endNode);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> FreeTwoHangingNodes(Mesh2D& mesh,
+                                                                                         const UInt faceId,
+                                                                                         const UInt edgeId,
+                                                                                         const BoundedIntegerArray& hangingNodes,
+                                                                                         const UInt startNode,
+                                                                                         const UInt endNode);
 
         /// @brief Free three hanging nodes along an irregular edge.
         ///
@@ -179,12 +179,12 @@ namespace meshkernel
         /// @brief [in] hangingNodes List of hanging nodes for edge
         /// @brief [in] startNode End point of regular edge, to which the hanging nodes will be connected
         /// @brief [in] endNode Other end point of regular edge, to which the hanging nodes will be connected
-        static void FreeThreeHangingNodes(Mesh2D& mesh,
-                                          const UInt faceId,
-                                          const UInt edgeId,
-                                          const BoundedIntegerArray& hangingNodes,
-                                          const UInt startNode,
-                                          const UInt endNode);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> FreeThreeHangingNodes(Mesh2D& mesh,
+                                                                                           const UInt faceId,
+                                                                                           const UInt edgeId,
+                                                                                           const BoundedIntegerArray& hangingNodes,
+                                                                                           const UInt startNode,
+                                                                                           const UInt endNode);
 
         /// @brief Free four hanging nodes along an irregular edge.
         ///
@@ -194,12 +194,12 @@ namespace meshkernel
         /// @brief [in] hangingNodes List of hanging nodes for edge
         /// @brief [in] startNode End point of regular edge, to which the hanging nodes will be connected
         /// @brief [in] endNode Other end point of regular edge, to which the hanging nodes will be connected
-        static void FreeFourHangingNodes(Mesh2D& mesh,
-                                         const UInt faceId,
-                                         const UInt edgeId,
-                                         const BoundedIntegerArray& hangingNodes,
-                                         const UInt startNode,
-                                         const UInt endNode);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> FreeFourHangingNodes(Mesh2D& mesh,
+                                                                                          const UInt faceId,
+                                                                                          const UInt edgeId,
+                                                                                          const BoundedIntegerArray& hangingNodes,
+                                                                                          const UInt startNode,
+                                                                                          const UInt endNode);
 
         /// @brief Free any hanging nodes along an irregular edge.
         ///
@@ -210,13 +210,13 @@ namespace meshkernel
         /// @brief [in] boundaryEdge The irregular edge
         /// @brief [in] boundaryNode End point of erregular edge, required to order the hanging nodes
         /// @brief [in] edgeId Edge along opposite side of irregular edge, required to get next adjacent element
-        static void FreeHangingNodes(Mesh2D& mesh,
-                                     const UInt numberOfHangingNodes,
-                                     const std::vector<UInt>& hangingNodesOnEdge,
-                                     const UInt faceId,
-                                     const Edge& boundaryEdge,
-                                     const Point& boundaryNode,
-                                     const UInt edgeId);
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> FreeHangingNodes(Mesh2D& mesh,
+                                                                                      const UInt numberOfHangingNodes,
+                                                                                      const std::vector<UInt>& hangingNodesOnEdge,
+                                                                                      const UInt faceId,
+                                                                                      const Edge& boundaryEdge,
+                                                                                      const Point& boundaryNode,
+                                                                                      const UInt edgeId);
 
         /// @brief Find and retain any hanging node id's
         ///

@@ -27,7 +27,10 @@
 
 #pragma once
 
+#include <memory>
+
 #include "MeshKernel/Constants.hpp"
+#include <MeshKernel/UndoActions/UndoAction.hpp>
 
 namespace meshkernel
 {
@@ -55,7 +58,7 @@ namespace meshkernel
                   bool projectToLandBoundary);
 
         /// @brief Flip the edges
-        void Compute() const;
+        [[nodiscard]] std::unique_ptr<UndoAction> Compute() const;
 
     private:
         /// @brief Computes the change in topology functional and gets the nodes involved (comp_ntopo)
