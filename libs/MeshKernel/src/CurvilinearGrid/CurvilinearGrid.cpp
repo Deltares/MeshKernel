@@ -295,8 +295,8 @@ std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGr
     }
 
     const auto nodeIndex = m_mesh->GetLocationsIndices(0, Location::Edges);
-    auto const firstNode = m_mesh->m_edges[nodeIndex].first;
-    auto const secondNode = m_mesh->m_edges[nodeIndex].second;
+    auto const firstNode = m_mesh->GetEdge(nodeIndex).first;
+    auto const secondNode = m_mesh->GetEdge(nodeIndex).second;
 
     return {GetNodeIndices(firstNode), GetNodeIndices(secondNode)};
 }

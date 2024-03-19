@@ -114,7 +114,7 @@ namespace meshkernel
         std::vector<Point> GetNodeVector() const
         {
             BuildMesh();
-            return m_mesh->m_nodes;
+            return m_mesh->Nodes();
         }
 
         /// @brief get a serialized representation of the edges of the curvilinear grid.
@@ -122,7 +122,7 @@ namespace meshkernel
         std::vector<Edge> GetEdgeVector() const
         {
             BuildMesh();
-            return m_mesh->m_edges;
+            return m_mesh->Edges();
         }
 
         /// @brief Get the m and n indices of the node closest to the point
@@ -133,7 +133,11 @@ namespace meshkernel
         /// @note a side effect is that the Mesh representation is cleared.
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
-        [[nodiscard]] meshkernel::Point& GetNode(const UInt n, const UInt m) { return m_gridNodes(m, n); }
+        [[nodiscard]] meshkernel::Point& GetNode(const UInt n, const UInt m)
+        {
+            ClearMesh();
+            return m_gridNodes(n, m);
+        }
 
         /// @brief Gets a constant reference to the grid node at the (m,n) location
         /// @param[in] n The n-dimension index
