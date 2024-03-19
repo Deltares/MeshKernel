@@ -146,7 +146,7 @@ $(function() {
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;                       <span class="keyword">const</span> <a class="code" href="classmeshkernel_1_1_polygons.html">Polygons</a>&amp; polygon,</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;                       <span class="keyword">const</span> <a class="code" href="structmeshkernel_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a>&amp; meshRefinementParameters);</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160; </div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classmeshkernel_1_1_mesh_refinement.html#a3a40b0e1f0feb0b6c052ebfa740009be">Compute</a>();</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;        [[nodiscard]] std::unique_ptr&lt;UndoAction&gt; <a class="code" href="classmeshkernel_1_1_mesh_refinement.html#acb74e797b1aa436791569a00dbed1e78">Compute</a>();</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160; </div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;        <span class="keywordtype">void</span> FindBrotherEdges();</div>
@@ -181,57 +181,59 @@ $(function() {
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160; </div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;        <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> CountEdgesToRefine(<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> face) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160; </div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;        [[nodiscard]] <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> DeleteIsolatedHangingnodes();</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160; </div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;        <span class="keywordtype">void</span> ConnectHangingNodes();</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160; </div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;        <span class="keywordtype">void</span> SmoothRefinementMasks();</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160; </div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;        <span class="keywordtype">void</span> ComputeIfFaceShouldBeSplit();</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160; </div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;        <span class="keywordtype">void</span> RefineFacesBySplittingEdges();</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160; </div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        <span class="keywordtype">bool</span> IsEdgeToBeRefinedBasedFaceLocationTypeAndCourantCriteria(<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> edge, FaceLocation faceLocationType) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160; </div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;        <span class="keywordtype">bool</span> IsRefineNeededBasedOnCourantCriteria(<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> edge, <span class="keywordtype">double</span> depthValues) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160; </div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;        <span class="keywordtype">void</span> ComputeFaceLocationTypes();</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160; </div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;        <span class="keywordtype">void</span> ComputeEdgeBelowMinSizeAfterRefinement();</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160; </div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;        std::unique_ptr&lt;RTreeBase&gt; m_samplesRTree; </div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="preprocessor">#if 0</span></div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;        [[nodiscard]] <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> DeleteIsolatedHangingnodes();</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160; </div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        std::unique_ptr&lt;meshkernel::UndoAction&gt; ConnectHangingNodes();</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160; </div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;        <span class="keywordtype">void</span> SmoothRefinementMasks();</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160; </div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;        <span class="keywordtype">void</span> ComputeIfFaceShouldBeSplit();</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160; </div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;        std::unique_ptr&lt;meshkernel::UndoAction&gt; RefineFacesBySplittingEdges();</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160; </div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;        <span class="keywordtype">bool</span> IsEdgeToBeRefinedBasedFaceLocationTypeAndCourantCriteria(<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> edge, FaceLocation faceLocationType) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160; </div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;        <span class="keywordtype">bool</span> IsRefineNeededBasedOnCourantCriteria(<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> edge, <span class="keywordtype">double</span> depthValues) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160; </div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;        <span class="keywordtype">void</span> ComputeFaceLocationTypes();</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160; </div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;        <span class="keywordtype">void</span> ComputeEdgeBelowMinSizeAfterRefinement();</div>
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160; </div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;        std::vector&lt;int&gt; m_faceMask;                           </div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;        std::vector&lt;int&gt; m_edgeMask;                           </div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        std::vector&lt;bool&gt; m_isEdgeBelowMinSizeAfterRefinement; </div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;        std::vector&lt;int&gt; m_nodeMask;                           </div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;        std::vector&lt;UInt&gt; m_brotherEdges;                      </div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160; </div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;        std::vector&lt;bool&gt; m_isHangingNodeCache;       </div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;        std::vector&lt;bool&gt; m_isHangingEdgeCache;       </div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;        std::vector&lt;Point&gt; m_polygonNodesCache;       </div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;        std::vector&lt;UInt&gt; m_localNodeIndicesCache;    </div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;        std::vector&lt;UInt&gt; m_globalEdgeIndicesCache;   </div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;        std::vector&lt;UInt&gt; m_refineEdgeCache;          </div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;        std::vector&lt;FaceLocation&gt; m_faceLocationType; </div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160; </div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;        <a class="code" href="classmeshkernel_1_1_mesh_refinement.html#a4070f77223ce02f79118a4209dcf3c34">RefinementType</a> m_refinementType = RefinementType::WaveCourant; </div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;        <span class="keywordtype">bool</span> m_directionalRefinement = <span class="keyword">false</span>;                          </div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160; </div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;        <a class="code" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&amp; m_mesh;                                      </div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;        std::unique_ptr&lt;MeshInterpolation&gt; m_interpolant;    </div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;        <a class="code" href="classmeshkernel_1_1_polygons.html">Polygons</a> m_polygons;                                 </div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;        <a class="code" href="structmeshkernel_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a> m_meshRefinementParameters; </div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        <span class="keywordtype">bool</span> m_useNodalRefinement = <span class="keyword">false</span>;                   </div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">double</span> m_mergingDistance = 0.001;              </div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        <span class="keywordtype">bool</span> m_isRefinementBasedOnSamples = <span class="keyword">false</span>;           </div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    };</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;        std::unique_ptr&lt;RTreeBase&gt; m_samplesRTree; </div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160; </div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        std::vector&lt;int&gt; m_faceMask;                           </div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;        std::vector&lt;int&gt; m_edgeMask;                           </div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;        std::vector&lt;bool&gt; m_isEdgeBelowMinSizeAfterRefinement; </div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;        std::vector&lt;int&gt; m_nodeMask;                           </div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;        std::vector&lt;UInt&gt; m_brotherEdges;                      </div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160; </div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;        std::vector&lt;bool&gt; m_isHangingNodeCache;       </div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;        std::vector&lt;bool&gt; m_isHangingEdgeCache;       </div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;        std::vector&lt;Point&gt; m_polygonNodesCache;       </div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;        std::vector&lt;UInt&gt; m_localNodeIndicesCache;    </div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;        std::vector&lt;UInt&gt; m_globalEdgeIndicesCache;   </div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;        std::vector&lt;UInt&gt; m_refineEdgeCache;          </div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;        std::vector&lt;FaceLocation&gt; m_faceLocationType; </div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160; </div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;        <a class="code" href="classmeshkernel_1_1_mesh_refinement.html#a4070f77223ce02f79118a4209dcf3c34">RefinementType</a> m_refinementType = RefinementType::WaveCourant; </div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;        <span class="keywordtype">bool</span> m_directionalRefinement = <span class="keyword">false</span>;                          </div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160; </div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;        <a class="code" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&amp; m_mesh;                                      </div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;        std::unique_ptr&lt;MeshInterpolation&gt; m_interpolant;    </div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        <a class="code" href="classmeshkernel_1_1_polygons.html">Polygons</a> m_polygons;                                 </div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;        <a class="code" href="structmeshkernel_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a> m_meshRefinementParameters; </div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        <span class="keywordtype">bool</span> m_useNodalRefinement = <span class="keyword">false</span>;                   </div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">double</span> m_mergingDistance = 0.001;              </div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        <span class="keywordtype">bool</span> m_isRefinementBasedOnSamples = <span class="keyword">false</span>;           </div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    };</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclassmeshkernel_1_1_mesh_refinement_html"><div class="ttname"><a href="classmeshkernel_1_1_mesh_refinement.html">meshkernel::MeshRefinement</a></div><div class="ttdoc">A class used to refine a Mesh2D instance.</div><div class="ttdef"><b>Definition:</b> MeshRefinement.hpp:74</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_mesh2_d_html"><div class="ttname"><a href="classmeshkernel_1_1_mesh2_d.html">meshkernel::Mesh2D</a></div><div class="ttdoc">A class derived from Mesh, which describes unstructures 2d meshes.</div><div class="ttdef"><b>Definition:</b> Mesh2D.hpp:52</div></div>
-<div class="ttc" id="aclassmeshkernel_1_1_mesh_refinement_html_a3a40b0e1f0feb0b6c052ebfa740009be"><div class="ttname"><a href="classmeshkernel_1_1_mesh_refinement.html#a3a40b0e1f0feb0b6c052ebfa740009be">meshkernel::MeshRefinement::Compute</a></div><div class="ttdeci">void Compute()</div><div class="ttdoc">Compute mesh refinement (refinecellsandfaces2).</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_mesh2_d_html"><div class="ttname"><a href="classmeshkernel_1_1_mesh2_d.html">meshkernel::Mesh2D</a></div><div class="ttdoc">A class derived from Mesh, which describes unstructures 2d meshes.</div><div class="ttdef"><b>Definition:</b> Mesh2D.hpp:55</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_mesh_refinement_html_a4070f77223ce02f79118a4209dcf3c34"><div class="ttname"><a href="classmeshkernel_1_1_mesh_refinement.html#a4070f77223ce02f79118a4209dcf3c34">meshkernel::MeshRefinement::RefinementType</a></div><div class="ttdeci">RefinementType</div><div class="ttdoc">Enumerator describing the different refinement types.</div><div class="ttdef"><b>Definition:</b> MeshRefinement.hpp:86</div></div>
+<div class="ttc" id="aclassmeshkernel_1_1_mesh_refinement_html_acb74e797b1aa436791569a00dbed1e78"><div class="ttname"><a href="classmeshkernel_1_1_mesh_refinement.html#acb74e797b1aa436791569a00dbed1e78">meshkernel::MeshRefinement::Compute</a></div><div class="ttdeci">std::unique_ptr&lt; UndoAction &gt; Compute()</div><div class="ttdoc">Compute mesh refinement (refinecellsandfaces2).</div></div>
 <div class="ttc" id="anamespacemeshkernel_html"><div class="ttname"><a href="namespacemeshkernel.html">meshkernel</a></div><div class="ttdoc">Contains the logic of the C++ static library.</div><div class="ttdef"><b>Definition:</b> AveragingInterpolation.hpp:36</div></div>
 <div class="ttc" id="anamespacemeshkernel_html_a97cee6f31f2b12e413c4b37aceaccf28"><div class="ttname"><a href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">meshkernel::UInt</a></div><div class="ttdeci">std::uint32_t UInt</div><div class="ttdoc">Integer type used when indexing mesh graph entities.</div><div class="ttdef"><b>Definition:</b> Definitions.hpp:38</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_mesh_refinement_html_a58713c5ae981f4e0ed744a8404ef536c"><div class="ttname"><a href="classmeshkernel_1_1_mesh_refinement.html#a58713c5ae981f4e0ed744a8404ef536c">meshkernel::MeshRefinement::MeshRefinement</a></div><div class="ttdeci">MeshRefinement(Mesh2D &amp;mesh, std::unique_ptr&lt; MeshInterpolation &gt; interpolant, const MeshRefinementParameters &amp;meshRefinementParameters)</div><div class="ttdoc">The constructor for refining based on samples.</div></div>

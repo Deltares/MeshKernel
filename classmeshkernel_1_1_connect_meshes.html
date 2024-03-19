@@ -90,9 +90,9 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a499002ea3f0dd5c4a46bc0f199c1b4c8"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_connect_meshes.html#a499002ea3f0dd5c4a46bc0f199c1b4c8">Compute</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const double separationFraction=<a class="el" href="classmeshkernel_1_1_connect_meshes.html#afb1fd3338a7412c67e52e15d8f389441">DefaultMaximumSeparationFraction</a>)</td></tr>
-<tr class="memdesc:a499002ea3f0dd5c4a46bc0f199c1b4c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect grids.  <a href="classmeshkernel_1_1_connect_meshes.html#a499002ea3f0dd5c4a46bc0f199c1b4c8">More...</a><br /></td></tr>
-<tr class="separator:a499002ea3f0dd5c4a46bc0f199c1b4c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa699f978853bc8514373730cc931fb02"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; meshkernel::UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_connect_meshes.html#aa699f978853bc8514373730cc931fb02">Compute</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const double separationFraction=<a class="el" href="classmeshkernel_1_1_connect_meshes.html#afb1fd3338a7412c67e52e15d8f389441">DefaultMaximumSeparationFraction</a>)</td></tr>
+<tr class="memdesc:aa699f978853bc8514373730cc931fb02"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect grids.  <a href="classmeshkernel_1_1_connect_meshes.html#aa699f978853bc8514373730cc931fb02">More...</a><br /></td></tr>
+<tr class="separator:aa699f978853bc8514373730cc931fb02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -108,8 +108,8 @@ static constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a cl
 <div class="textblock"><p>Connects grids across element faces. </p>
 <p>Can be connected with upto 5 elements or 4 hanging nodes along an edge. </p><dl class="section note"><dt>Note</dt><dd>Currently only works for quadrilateral elements. </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a499002ea3f0dd5c4a46bc0f199c1b4c8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a499002ea3f0dd5c4a46bc0f199c1b4c8">&#9670;&nbsp;</a></span>Compute()</h2>
+<a id="aa699f978853bc8514373730cc931fb02"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa699f978853bc8514373730cc931fb02">&#9670;&nbsp;</a></span>Compute()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -118,7 +118,7 @@ static constexpr double&#160;</td><td class="memItemRight" valign="bottom"><a cl
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void meshkernel::ConnectMeshes::Compute </td>
+          <td class="memname">static std::unique_ptr&lt;meshkernel::UndoAction&gt; meshkernel::ConnectMeshes::Compute </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
           <td class="paramname"><em>mesh</em>, </td>

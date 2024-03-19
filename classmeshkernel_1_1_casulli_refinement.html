@@ -88,18 +88,18 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aa9221839b48082c013e716cdb130e372"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_casulli_refinement.html#aa9221839b48082c013e716cdb130e372">Compute</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh)</td></tr>
-<tr class="memdesc:aa9221839b48082c013e716cdb130e372"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the Casulli refinement for the entire mesh.  <a href="classmeshkernel_1_1_casulli_refinement.html#aa9221839b48082c013e716cdb130e372">More...</a><br /></td></tr>
-<tr class="separator:aa9221839b48082c013e716cdb130e372"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac2c6cb72d37a7e61cf36474ae678f354"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_casulli_refinement.html#ac2c6cb72d37a7e61cf36474ae678f354">Compute</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon)</td></tr>
-<tr class="memdesc:ac2c6cb72d37a7e61cf36474ae678f354"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the Casulli refinement for the part of the mesh inside the polygon.  <a href="classmeshkernel_1_1_casulli_refinement.html#ac2c6cb72d37a7e61cf36474ae678f354">More...</a><br /></td></tr>
-<tr class="separator:ac2c6cb72d37a7e61cf36474ae678f354"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e653502d54646ac7994a89448e5bff9"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; meshkernel::UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_casulli_refinement.html#a2e653502d54646ac7994a89448e5bff9">Compute</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh)</td></tr>
+<tr class="memdesc:a2e653502d54646ac7994a89448e5bff9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the Casulli refinement for the entire mesh.  <a href="classmeshkernel_1_1_casulli_refinement.html#a2e653502d54646ac7994a89448e5bff9">More...</a><br /></td></tr>
+<tr class="separator:a2e653502d54646ac7994a89448e5bff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4cc5d5cec43c98cbe26348795af170c"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; meshkernel::UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_casulli_refinement.html#aa4cc5d5cec43c98cbe26348795af170c">Compute</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon)</td></tr>
+<tr class="memdesc:aa4cc5d5cec43c98cbe26348795af170c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the Casulli refinement for the part of the mesh inside the polygon.  <a href="classmeshkernel_1_1_casulli_refinement.html#aa4cc5d5cec43c98cbe26348795af170c">More...</a><br /></td></tr>
+<tr class="separator:aa4cc5d5cec43c98cbe26348795af170c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Compute the Casulli refinement for a mesh. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="aa9221839b48082c013e716cdb130e372"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa9221839b48082c013e716cdb130e372">&#9670;&nbsp;</a></span>Compute() <span class="overload">[1/2]</span></h2>
+<a id="a2e653502d54646ac7994a89448e5bff9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e653502d54646ac7994a89448e5bff9">&#9670;&nbsp;</a></span>Compute() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -108,7 +108,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void meshkernel::CasulliRefinement::Compute </td>
+          <td class="memname">static std::unique_ptr&lt;meshkernel::UndoAction&gt; meshkernel::CasulliRefinement::Compute </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
           <td class="paramname"><em>mesh</em></td><td>)</td>
@@ -132,8 +132,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ac2c6cb72d37a7e61cf36474ae678f354"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac2c6cb72d37a7e61cf36474ae678f354">&#9670;&nbsp;</a></span>Compute() <span class="overload">[2/2]</span></h2>
+<a id="aa4cc5d5cec43c98cbe26348795af170c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4cc5d5cec43c98cbe26348795af170c">&#9670;&nbsp;</a></span>Compute() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -142,7 +142,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void meshkernel::CasulliRefinement::Compute </td>
+          <td class="memname">static std::unique_ptr&lt;meshkernel::UndoAction&gt; meshkernel::CasulliRefinement::Compute </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
           <td class="paramname"><em>mesh</em>, </td>
