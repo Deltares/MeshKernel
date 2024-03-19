@@ -13,6 +13,7 @@ set(
   ${SRC_DIR}/AveragingStrategyTests.cpp
   ${SRC_DIR}/AveragingTests.cpp
   ${SRC_DIR}/BoundingBoxTests.cpp
+  ${SRC_DIR}/CompoundUndoTests.cpp
   ${SRC_DIR}/ContactsTests.cpp
   ${SRC_DIR}/CurvilinearGridCurvatureTests.cpp
   ${SRC_DIR}/CurvilinearGridDeRefinementTests.cpp
@@ -53,6 +54,9 @@ set(
   ${SRC_DIR}/SplineAlgorithmTests.cpp
   ${SRC_DIR}/SplineTests.cpp
   ${SRC_DIR}/TriangleInterpolationTests.cpp
+  ${SRC_DIR}/UndoActionConstructionTests.cpp
+  ${SRC_DIR}/UndoStackTests.cpp
+  ${SRC_DIR}/UndoTests.cpp
 )
 
  # add sources to target

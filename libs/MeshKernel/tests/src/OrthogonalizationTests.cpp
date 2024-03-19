@@ -8,6 +8,7 @@
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Smoother.hpp>
+#include <MeshKernel/UndoActions/UndoAction.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
@@ -55,8 +56,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
                                                     projectToLandBoundaryOption,
                                                     orthogonalizationParameters);
 
-    orthogonalization.Initialize();
-
+    [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
     orthogonalization.Compute();
 
     // Assert
@@ -103,8 +103,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
                                                     projectToLandBoundaryOption,
                                                     orthogonalizationParameters);
 
-    orthogonalization.Initialize();
-
+    [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
     orthogonalization.Compute();
 
     constexpr double tolerance = 0.8e-2;
@@ -162,7 +161,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile
                                                     projectToLandBoundaryOption,
                                                     orthogonalizationParameters);
 
-    orthogonalization.Initialize();
+    [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
     orthogonalization.Compute();
 
     constexpr double tolerance = 1e-2;
@@ -194,6 +193,9 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
 {
     // now build node-edge mapping
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
+
+    // The original mesh nodes
+    const std::vector<meshkernel::Point> meshNodes(mesh->Nodes());
 
     const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
     OrthogonalizationParameters orthogonalizationParameters;
@@ -229,8 +231,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
                                                     projectToLandBoundaryOption,
                                                     orthogonalizationParameters);
 
-    orthogonalization.Initialize();
-
+    auto undoAction = orthogonalization.Initialize();
     orthogonalization.Compute();
 
     constexpr double tolerance = 1.8;
@@ -257,9 +258,19 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     ASSERT_NEAR(405.390188082498, mesh->Node(7).y, tolerance);
     ASSERT_NEAR(319.410057398020, mesh->Node(8).y, tolerance);
     ASSERT_NEAR(327.001109057344, mesh->Node(9).y, tolerance);
+
+    undoAction->Restore();
+
+    constexpr double nodeTolerance = 1.0e-10;
+
+    for (meshkernel::UInt i = 0; i < meshNodes.size(); ++i)
+    {
+        EXPECT_NEAR(meshNodes[i].x, mesh->Node(i).x, nodeTolerance);
+        EXPECT_NEAR(meshNodes[i].y, mesh->Node(i).y, nodeTolerance);
+    }
 }
 
-TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
+TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithUndo)
 {
     // now build node-edge mapping
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
@@ -279,6 +290,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
     std::vector<Point> landBoundary;
     auto landBoundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
+    const std::vector<meshkernel::Point> meshNodes = mesh->Nodes();
+
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
                                                     std::move(smoother),
                                                     std::move(orthogonalizer),
@@ -287,7 +300,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
                                                     projectToLandBoundaryOption,
                                                     orthogonalizationParameters);
 
-    orthogonalization.Initialize();
+    std::unique_ptr<meshkernel::UndoAction> undoAction = orthogonalization.Initialize();
     orthogonalization.Compute();
 
     constexpr double tolerance = 1.2;
@@ -314,6 +327,16 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGrid)
     ASSERT_NEAR(1580.5855923464549, mesh->Node(7).y, tolerance);
     ASSERT_NEAR(1608.7015489976982, mesh->Node(8).y, tolerance);
     ASSERT_NEAR(1631.412199601948, mesh->Node(9).y, tolerance);
+
+    undoAction->Restore();
+
+    EXPECT_EQ(meshNodes.size(), mesh->GetNumNodes());
+
+    for (meshkernel::UInt i = 0; i < meshNodes.size(); ++i)
+    {
+        EXPECT_EQ(meshNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(meshNodes[i].y, mesh->Node(i).y);
+    }
 }
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
@@ -343,8 +366,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
                                                     projectToLandBoundaryOption,
                                                     orthogonalizationParameters);
 
-    orthogonalization.Initialize();
-
+    [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
     orthogonalization.Compute();
 }
 
@@ -391,8 +413,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
                                                     projectToLandBoundaryOption,
                                                     orthogonalizationParameters);
 
-    orthogonalization.Initialize();
-
+    [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
     orthogonalization.Compute();
 
     // check the values
@@ -449,7 +470,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
                                                     projectToLandBoundaryOption,
                                                     orthogonalizationParameters);
 
-    orthogonalization.Initialize();
+    [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
     orthogonalization.Compute();
 
     // check the values
@@ -538,7 +559,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
                                                     projectToLandBoundaryOption,
                                                     orthogonalizationParameters);
 
-    orthogonalization.Initialize();
+    [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
     orthogonalization.Compute();
 
     constexpr double tolerance = 1e-3;
@@ -554,4 +575,77 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
     ASSERT_NEAR(41.1073150612170, mesh->Node(2).y, tolerance);
     ASSERT_NEAR(41.1046638488770, mesh->Node(3).y, tolerance);
     ASSERT_NEAR(41.1039962768555, mesh->Node(4).y, tolerance);
+}
+
+TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSphericalWithUndo)
+{
+    std::vector<Point> nodes{{41.1019592, 41.1072273},
+                             {41.1044655, 41.1043587},
+                             {41.1051979, 41.1073151},
+                             {41.1080132, 41.1046638},
+                             {41.1014137, 41.1039963}};
+
+    std::vector<Edge> edges{{4, 0},
+                            {4, 1},
+                            {1, 0},
+                            {1, 3},
+                            {3, 2},
+                            {2, 1},
+                            {0, 2}};
+
+    auto mesh = std::make_shared<Mesh2D>(edges, nodes, Projection::spherical);
+
+    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    OrthogonalizationParameters orthogonalizationParameters;
+    orthogonalizationParameters.outer_iterations = 2;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 1.0;
+    orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
+
+    // no enclosing polygon
+    auto polygon = std::make_unique<Polygons>();
+    std::vector<Point> landBoundary{};
+    auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
+
+    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
+    auto smoother = std::make_unique<Smoother>(*mesh);
+
+    const std::vector<meshkernel::Point> meshNodes = mesh->Nodes();
+
+    OrthogonalizationAndSmoothing orthogonalization(*mesh,
+                                                    std::move(smoother),
+                                                    std::move(orthogonalizer),
+                                                    std::move(polygon),
+                                                    std::move(landboundaries),
+                                                    projectToLandBoundaryOption,
+                                                    orthogonalizationParameters);
+
+    std::unique_ptr<meshkernel::UndoAction> undoAction = orthogonalization.Initialize();
+    orthogonalization.Compute();
+
+    constexpr double tolerance = 1e-3;
+
+    ASSERT_NEAR(41.1019592285156, mesh->Node(0).x, tolerance);
+    ASSERT_NEAR(41.1044654597059, mesh->Node(1).x, tolerance);
+    ASSERT_NEAR(41.1051978230878, mesh->Node(2).x, tolerance);
+    ASSERT_NEAR(41.1080131530762, mesh->Node(3).x, tolerance);
+    ASSERT_NEAR(41.1014137268066, mesh->Node(4).x, tolerance);
+
+    ASSERT_NEAR(41.1072273254395, mesh->Node(0).y, tolerance);
+    ASSERT_NEAR(41.1043586701373, mesh->Node(1).y, tolerance);
+    ASSERT_NEAR(41.1073150612170, mesh->Node(2).y, tolerance);
+    ASSERT_NEAR(41.1046638488770, mesh->Node(3).y, tolerance);
+    ASSERT_NEAR(41.1039962768555, mesh->Node(4).y, tolerance);
+
+    undoAction->Restore();
+
+    EXPECT_EQ(meshNodes.size(), mesh->GetNumNodes());
+
+    for (meshkernel::UInt i = 0; i < meshNodes.size(); ++i)
+    {
+        EXPECT_EQ(meshNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(meshNodes[i].y, mesh->Node(i).y);
+    }
 }
