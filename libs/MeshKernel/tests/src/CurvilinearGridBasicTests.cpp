@@ -31,6 +31,7 @@
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridCurvature.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/UndoActions/UndoActionStack.hpp"
@@ -341,4 +342,196 @@ TEST(CurvilinearBasicTests, AddGridLineAtBoundaryUndo)
               << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
               << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
               << std::endl;
+}
+
+
+TEST(CurvilinearBasicTests, AnotherTest)
+{
+    constexpr double originX = 0.0;
+    constexpr double originY = 0.0;
+
+    constexpr double deltaX = 1.0;
+    constexpr double deltaY = 1.0;
+
+    constexpr size_t nx = 10;
+    constexpr size_t ny = 10;
+
+    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+
+    mk::CurvilinearGridDeleteInterior deleteInterior(*grid);
+    deleteInterior.m_lowerLeft = {3,2};
+    deleteInterior.m_upperRight = {6,7};
+    auto deleteAction = deleteInterior.Compute2 ();
+    // undoAction->Restore ();
+
+    auto addGridLineAction = grid->AddGridLineAtBoundary({0, 0}, {0, 1});
+
+    for (mk::UInt i = 0; i < grid->NumM(); ++i)
+    {
+        grid->GetNode(0, i).x = grid->GetNode(1, i).x;
+        grid->GetNode(0, i).y = grid->GetNode(1, i).y - deltaY;
+        std::cout << " add point: "<< grid->GetNode(0, i).x << ", " << grid->GetNode(0, i).y << std::endl;
+    }
+
+    // undoAction->Commit ();
+
+    grid->SetFlatCopies ();
+    grid->DeleteInvalidNodesAndEdges ();
+
+    grid->printGraph ();
+
+
+
+}
+
+TEST(CurvilinearBasicTests, AnotherTest2)
+{
+    constexpr double originX = 0.0;
+    constexpr double originY = 0.0;
+
+    constexpr double deltaX = 1.0;
+    constexpr double deltaY = 1.0;
+
+    constexpr size_t nx = 10;
+    constexpr size_t ny = 10;
+
+    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+
+    auto addGridLineAction = grid->AddGridLineAtBoundary({0, 0}, {0, 1});
+
+    for (mk::UInt i = 0; i < grid->NumM(); ++i)
+    {
+        grid->GetNode(0, i).x = grid->GetNode(1, i).x;
+        grid->GetNode(0, i).y = grid->GetNode(1, i).y - deltaY;
+        std::cout << " add point: "<< grid->GetNode(0, i).x << ", " << grid->GetNode(0, i).y << std::endl;
+    }
+
+    mk::CurvilinearGridDeleteInterior deleteInterior(*grid);
+    deleteInterior.m_lowerLeft = {3,2};
+    deleteInterior.m_upperRight = {6,7};
+    auto deleteAction = deleteInterior.Compute2 ();
+    // undoAction->Restore ();
+
+
+    // undoAction->Commit ();
+
+    grid->SetFlatCopies ();
+    grid->DeleteInvalidNodesAndEdges ();
+
+    grid->printGraph ();
+
+
+
+}
+
+TEST(CurvilinearBasicTests, AnotherTest3)
+{
+    constexpr double originX = 0.0;
+    constexpr double originY = 0.0;
+
+    constexpr double deltaX = 1.0;
+    constexpr double deltaY = 1.0;
+
+    constexpr size_t nx = 10;
+    constexpr size_t ny = 10;
+
+    mk::UndoActionStack undoActions;
+
+    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+
+    //--------------------------------
+
+    auto [lineAdded1, addGridLineAction1] = grid->AddGridLineAtBoundary({0, 0}, {0, 1});
+    grid->ComputeGridNodeTypes ();
+    undoActions.Add (std::move (addGridLineAction1));
+
+    for (mk::UInt i = 0; i < grid->NumM(); ++i)
+    {
+        grid->GetNode(0, i).x = grid->GetNode(1, i).x;
+        grid->GetNode(0, i).y = grid->GetNode(1, i).y - deltaY;
+        std::cout << " add point: "<< grid->GetNode(0, i).x << ", " << grid->GetNode(0, i).y << std::endl;
+    }
+
+    grid->ComputeGridNodeTypes ();
+
+    //--------------------------------
+
+    mk::CurvilinearGridDeleteInterior deleteInterior(*grid);
+    deleteInterior.m_lowerLeft = {3,2};
+    deleteInterior.m_upperRight = {6,7};
+    auto deleteAction1 = deleteInterior.Compute2 ();
+    undoActions.Add (std::move (deleteAction1));
+
+    //--------------------------------
+
+    auto [lineAdded2, addGridLineAction2] = grid->AddGridLineAtBoundary({0, 0}, {0, 1});
+    undoActions.Add (std::move (addGridLineAction2));
+
+    for (mk::UInt i = 0; i < grid->NumM(); ++i)
+    {
+        grid->GetNode(0, i).x = grid->GetNode(1, i).x;
+        grid->GetNode(0, i).y = grid->GetNode(1, i).y - deltaY;
+        std::cout << " add point: "<< grid->GetNode(0, i).x << ", " << grid->GetNode(0, i).y << std::endl;
+    }
+
+    grid->ComputeGridNodeTypes ();
+
+    //--------------------------------
+
+    auto [lineAdded3, addGridLineAction3] = grid->AddGridLineAtBoundary({0, 0}, {1, 0});
+    undoActions.Add (std::move (addGridLineAction3));
+
+    for (mk::UInt i = 0; i < grid->NumN(); ++i)
+    {
+        grid->GetNode(i, 0).x = grid->GetNode(i, 1).x - deltaX;
+        grid->GetNode(i, 0).y = grid->GetNode(i, 1).y;
+        std::cout << " add point: "<< grid->GetNode(i, 0).x << ", " << grid->GetNode(i, 0).y << std::endl;
+    }
+
+    grid->ComputeGridNodeTypes ();
+
+    //--------------------------------
+
+    // auto [lineAdded4, addGridLineAction4] = grid->AddGridLineAtBoundary({0, 9}, {1, 9});
+    auto [lineAdded4, addGridLineAction4] = grid->AddGridLineAtBoundary({0, 10}, {1, 10});
+    undoActions.Add (std::move (addGridLineAction4));
+
+    for (mk::UInt i = 0; i < grid->NumN(); ++i)
+    {
+        grid->GetNode(i, 11).x = grid->GetNode(i, 10).x - deltaX;
+        grid->GetNode(i, 11).y = grid->GetNode(i, 10).y;
+        std::cout << " add point: "<< grid->GetNode(i, 11).x << ", " << grid->GetNode(i, 11).y << std::endl;
+    }
+
+    grid->ComputeGridNodeTypes ();
+
+    //--------------------------------
+
+    deleteInterior.m_lowerLeft = {2,3};
+    deleteInterior.m_upperRight = {9,6};
+    auto deleteAction2 = deleteInterior.Compute2 ();
+    grid->ComputeGridNodeTypes ();
+    undoActions.Add (std::move (deleteAction2));
+
+    //--------------------------------
+
+    undoActions.Undo (); // Undo last delete interior action
+    undoActions.Undo (); // Undo second add grid line
+    undoActions.Undo (); // Undo last add grid line
+    undoActions.Undo (); // Undo first delete interior
+    undoActions.Undo (); // Undo first add grid line
+
+    undoActions.Commit (); // Redo first add grid line
+    undoActions.Commit (); // Redo first delete interior
+    undoActions.Commit (); //
+    undoActions.Commit (); //
+
+
+    grid->SetFlatCopies ();
+    grid->DeleteInvalidNodesAndEdges ();
+
+    grid->printGraph ();
+
+
+
 }

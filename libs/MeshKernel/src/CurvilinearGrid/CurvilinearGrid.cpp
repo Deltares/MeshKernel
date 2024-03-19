@@ -674,24 +674,24 @@ void CurvilinearGrid::DeleteGridLineAtBoundary(CurvilinearGridNodeIndices const&
     }
 }
 
-void CurvilinearGrid::Restore(AddGridLineUndoAction& undoAction)
+void CurvilinearGrid::RestoreAction(AddGridLineUndoAction& undoAction)
 {
     m_startOffset += undoAction.StartOffset();
     m_endOffset += undoAction.EndOffset();
 }
 
-void CurvilinearGrid::Commit(AddGridLineUndoAction& undoAction)
+void CurvilinearGrid::CommitAction(AddGridLineUndoAction& undoAction)
 {
     m_startOffset -= undoAction.StartOffset();
     m_endOffset -= undoAction.EndOffset();
 }
 
-void CurvilinearGrid::Restore(CurvilinearGridBlockUndo& undoAction)
+void CurvilinearGrid::RestoreAction(CurvilinearGridBlockUndo& undoAction)
 {
     undoAction.Swap(*this);
 }
 
-void CurvilinearGrid::Commit(CurvilinearGridBlockUndo& undoAction)
+void CurvilinearGrid::CommitAction(CurvilinearGridBlockUndo& undoAction)
 {
     undoAction.Swap(*this);
 }
@@ -734,6 +734,7 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
             if (m_startOffset.m_n == 0)
             {
                 lin_alg::InsertRow(m_gridNodes, lin_alg::RowVector<Point>(FullNumM()), 0);
+                std::cout << " adding grid line LEFT " << m_gridNodes.rows () << "  "  << m_gridNodes.cols () << std::endl;
             }
             else
             {
@@ -750,6 +751,7 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
             if (m_endOffset.m_n == 0)
             {
                 lin_alg::InsertRow(m_gridNodes, lin_alg::RowVector<Point>(FullNumM()), FullNumN());
+                std::cout << " adding grid line RIGHT " << m_gridNodes.rows () << "  "  << m_gridNodes.cols () << std::endl;
             }
             else
             {
@@ -766,6 +768,7 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
             if (m_endOffset.m_m == 0)
             {
                 lin_alg::InsertCol(m_gridNodes, lin_alg::ColVector<Point>(FullNumN()), FullNumM());
+                std::cout << " adding grid line TOP " << m_gridNodes.rows () << "  "  << m_gridNodes.cols () << std::endl;
             }
             else
             {
@@ -782,6 +785,7 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
             if (m_startOffset.m_m == 0)
             {
                 lin_alg::InsertCol(m_gridNodes, lin_alg::ColVector<Point>(FullNumN()), 0);
+                std::cout << " adding grid line BOTTOM " << m_gridNodes.rows () << "  "  << m_gridNodes.cols () << std::endl;
             }
             else
             {
@@ -1098,4 +1102,9 @@ void CurvilinearGrid::print(std::ostream& out)
     }
 
     out << std::endl;
+}
+
+void CurvilinearGrid::printGraph(std::ostream& out)
+{
+    Print (m_nodes, m_edges, out);
 }

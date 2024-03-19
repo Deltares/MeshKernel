@@ -51,6 +51,7 @@ void meshkernel::CurvilinearGridDeleteInterior::Compute()
     {
         for (UInt m = lowerLimitJ + 1; m < upperLimitJ; ++m)
         {
+            std::cout << "setting point invalid: " << n << "  " << m << std::endl;
             m_grid.GetNode(n, m).SetInvalid();
         }
     }

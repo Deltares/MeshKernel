@@ -234,13 +234,13 @@ namespace meshkernel
         /// @return If a new grid line has been allocated
         std::tuple<bool, UndoActionPtr> AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
 
-        void Restore(AddGridLineUndoAction& undoAction);
+        void RestoreAction(AddGridLineUndoAction& undoAction);
 
-        void Commit(AddGridLineUndoAction& undoAction);
+        void CommitAction(AddGridLineUndoAction& undoAction);
 
-        void Restore(CurvilinearGridBlockUndo& undoAction);
+        void RestoreAction(CurvilinearGridBlockUndo& undoAction);
 
-        void Commit(CurvilinearGridBlockUndo& undoAction);
+        void CommitAction(CurvilinearGridBlockUndo& undoAction);
 
         void DeleteGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
 
@@ -304,6 +304,8 @@ namespace meshkernel
         CurvilinearGridNodeIndices m_endOffset{0, 0};
 
         void print(std::ostream& out = std::cout);
+
+        void printGraph(std::ostream& out = std::cout);
 
     private:
         /// @brief Remove invalid nodes.
