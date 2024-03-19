@@ -85,7 +85,22 @@ bool meshkernel::Polygon::ContainsCartesian(const Point& point) const
 
         if (IsEqual(crossProductValue, 0.0))
         {
-            // point on the line
+            // check the point is actually on the segment, not only on the semiline
+            const auto minx = std::min(m_nodes[n].x, m_nodes[n + 1].x);
+            const auto maxx = std::max(m_nodes[n].x, m_nodes[n + 1].x);
+
+            if (minx != maxx && minx <= point.x && point.x <= maxx)
+            {
+                return true;
+            }
+
+            const auto miny = std::min(m_nodes[n].y, m_nodes[n + 1].y);
+            const auto maxy = std::max(m_nodes[n].y, m_nodes[n + 1].y);
+            if (miny != maxy && miny <= point.y && point.y <= maxy)
+            {
+                return true;
+            }
+
             return true;
         }
 
