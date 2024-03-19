@@ -85,23 +85,17 @@ bool meshkernel::Polygon::ContainsCartesian(const Point& point) const
 
         if (IsEqual(crossProductValue, 0.0))
         {
-            // check the point is actually on the segment, not only on the semiline
-            const auto minx = std::min(m_nodes[n].x, m_nodes[n + 1].x);
-            const auto maxx = std::max(m_nodes[n].x, m_nodes[n + 1].x);
+            // check if is on the line or outside
+            const double deltaXSegment = GetDeltaXCartesian(m_nodes[n], m_nodes[n + 1]);
+            const double lambdaX = std::abs(deltaXSegment) > 0.0 ? GetDeltaXCartesian(m_nodes[n], point) / deltaXSegment : 0.0;
 
-            if (minx != maxx && minx <= point.x && point.x <= maxx)
+            const double deltaYSegment = GetDeltaYCartesian(m_nodes[n], m_nodes[n + 1]);
+            const double lambdaY = std::abs(deltaYSegment) > 0.0 ? GetDeltaYCartesian(m_nodes[n], point) / deltaYSegment : 0.0;
+
+            if (lambdaX >= 0.0 && lambdaX <= 1.0 && lambdaY >= 0.0 && lambdaY <= 1.0)
             {
                 return true;
             }
-
-            const auto miny = std::min(m_nodes[n].y, m_nodes[n + 1].y);
-            const auto maxy = std::max(m_nodes[n].y, m_nodes[n + 1].y);
-            if (miny != maxy && miny <= point.y && point.y <= maxy)
-            {
-                return true;
-            }
-
-            return true;
         }
 
         if (m_nodes[n].y <= point.y) // an upward crossing
