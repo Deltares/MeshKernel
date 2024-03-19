@@ -14,9 +14,9 @@ void meshkernel::CompoundUndoAction::Add(UndoActionPtr&& action)
 {
     if (action != nullptr)
     {
-        if (action->State() == UndoAction::Restored)
+        if (action->GetState() == UndoAction::State::Restored)
         {
-            throw ConstraintError("Cannot add an action in the {} state.", UndoAction::to_string(action->State()));
+            throw ConstraintError("Cannot add an action in the {} state.", UndoAction::to_string(action->GetState()));
         }
 
         m_undoActions.emplace_back(std::move(action));
@@ -39,9 +39,19 @@ void meshkernel::CompoundUndoAction::DoRestore()
     }
 }
 
+meshkernel::CompoundUndoAction::const_iterator meshkernel::CompoundUndoAction::begin() const
+{
+    return m_undoActions.begin();
+}
+
+meshkernel::CompoundUndoAction::const_iterator meshkernel::CompoundUndoAction::end() const
+{
+    return m_undoActions.end();
+}
+
 std::uint64_t meshkernel::CompoundUndoAction::MemorySize() const
 {
-    std::uint64_t size = sizeof(*this) + m_undoActions.size() * sizeof(UndoActionPtr);
+    std::uint64_t size = sizeof(*this) + m_undoActions.capacity() * sizeof(UndoActionPtr);
 
     for (const UndoActionPtr& action : m_undoActions)
     {

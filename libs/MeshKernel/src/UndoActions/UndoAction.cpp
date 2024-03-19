@@ -1,6 +1,6 @@
 #include "MeshKernel/UndoActions/UndoAction.hpp"
 
-std::string meshkernel::UndoAction::to_string(const ActionState state)
+std::string meshkernel::UndoAction::to_string(const State state)
 {
     static std::string committedStr = "Committed";
     static std::string restoredStr = "Restored";
@@ -8,30 +8,35 @@ std::string meshkernel::UndoAction::to_string(const ActionState state)
 
     switch (state)
     {
-    case Committed:
+    case State::Committed:
         return committedStr;
-    case Restored:
+    case State::Restored:
         return restoredStr;
     default:
         return unknownStr;
     }
 }
 
+meshkernel::UndoAction::State meshkernel::UndoAction::GetState() const
+{
+    return m_state;
+}
+
 void meshkernel::UndoAction::Commit()
 {
-    if (m_state == Restored)
+    if (m_state == State::Restored)
     {
         DoCommit();
-        m_state = Committed;
+        m_state = State::Committed;
     }
 }
 
 void meshkernel::UndoAction::Restore()
 {
-    if (m_state == Committed)
+    if (m_state == State::Committed)
     {
         DoRestore();
-        m_state = Restored;
+        m_state = State::Restored;
     }
 }
 

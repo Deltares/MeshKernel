@@ -2,6 +2,7 @@
 #include "MeshKernel/Exceptions.hpp"
 
 #include <algorithm>
+#include <utility>
 
 const meshkernel::UInt meshkernel::UndoActionStack::MaxUndoSize = 10;
 
@@ -9,9 +10,9 @@ void meshkernel::UndoActionStack::Add(UndoActionPtr&& action)
 {
     if (action != nullptr)
     {
-        if (action->State() != UndoAction::Committed)
+        if (action->GetState() != UndoAction::State::Committed)
         {
-            throw ConstraintError("Cannot add an action in the {} state.", UndoAction::to_string(action->State()));
+            throw ConstraintError("Cannot add an action in the {} state.", UndoAction::to_string(action->GetState()));
         }
 
         m_committed.emplace_back(std::move(action));
@@ -28,6 +29,11 @@ void meshkernel::UndoActionStack::Add(UndoActionPtr&& action)
     {
         // Logging message
     }
+}
+
+meshkernel::UInt meshkernel::UndoActionStack::Size() const
+{
+    return static_cast<UInt>(m_committed.size() + m_restored.size());
 }
 
 bool meshkernel::UndoActionStack::Undo()
@@ -72,12 +78,12 @@ void meshkernel::UndoActionStack::Clear()
 
 std::uint64_t meshkernel::UndoActionStack::MemorySize() const
 {
-    std::uint64_t committedSize = std::accumulate(m_committed.begin(), m_committed.end(), static_cast<std::uint64_t>(0u),
-                                                  [](const std::uint64_t partialSum, const std::unique_ptr<UndoAction>& action)
-                                                  { return partialSum + action->MemorySize(); });
-    std::uint64_t restoredSize = std::accumulate(m_restored.begin(), m_restored.end(), static_cast<std::uint64_t>(0u),
-                                                 [](const std::uint64_t partialSum, const std::unique_ptr<UndoAction>& action)
-                                                 { return partialSum + action->MemorySize(); });
+    const std::uint64_t committedSize = std::accumulate(m_committed.begin(), m_committed.end(), static_cast<std::uint64_t>(0u),
+                                                        [](const std::uint64_t partialSum, const std::unique_ptr<UndoAction>& action)
+                                                        { return partialSum + action->MemorySize(); });
+    const std::uint64_t restoredSize = std::accumulate(m_restored.begin(), m_restored.end(), static_cast<std::uint64_t>(0u),
+                                                       [](const std::uint64_t partialSum, const std::unique_ptr<UndoAction>& action)
+                                                       { return partialSum + action->MemorySize(); });
 
     return sizeof(*this) + committedSize + restoredSize;
 }

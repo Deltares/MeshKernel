@@ -29,8 +29,6 @@
 
 #include <cstdint>
 #include <list>
-#include <utility>
-#include <vector>
 
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/UndoActions/UndoAction.hpp"
@@ -93,8 +91,3 @@ namespace meshkernel
     };
 
 } // namespace meshkernel
-
-inline meshkernel::UInt meshkernel::UndoActionStack::Size() const
-{
-    return static_cast<UInt>(m_committed.size() + m_restored.size());
-}

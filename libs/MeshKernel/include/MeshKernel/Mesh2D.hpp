@@ -55,8 +55,8 @@ namespace meshkernel
     class Mesh2D final : public Mesh
     {
     public:
-        using Mesh::Commit;
-        using Mesh::Restore;
+        using Mesh::CommitAction;
+        using Mesh::RestoreAction;
 
         /// Enumerator describing the different options to delete a mesh
         enum DeleteMeshOptions
@@ -133,12 +133,12 @@ namespace meshkernel
         [[nodiscard]] std::unique_ptr<SphericalCoordinatesOffsetAction> OffsetSphericalCoordinates(double minx, double maxx);
 
         /// @brief Apply the coordinate offset action
-        void Commit(const SphericalCoordinatesOffsetAction& undoAction);
+        void CommitAction(const SphericalCoordinatesOffsetAction& undoAction);
 
         /// @brief Undo the coordinate offset action
         ///
         /// Restore mesh to state before coordinate offset action was applied
-        void Restore(const SphericalCoordinatesOffsetAction& undoAction);
+        void RestoreAction(const SphericalCoordinatesOffsetAction& undoAction);
 
         /// @brief For a face create a closed polygon and fill local mapping caches (get_cellpolygon)
         /// @param[in]  faceIndex              The face index

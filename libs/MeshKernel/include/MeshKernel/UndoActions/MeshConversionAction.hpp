@@ -64,15 +64,15 @@ namespace meshkernel
         /// @brief Set of nodes moved during the conversion procedure.
         ///
         /// Value of the node depends on the state of the action:
-        /// 1. When ActionState::Committed: m_nodes contain mesh node state before conversion
-        /// 2. When ActionState::Restored:  m_nodes contain mesh node state after conversion
+        /// 1. When State::Committed: m_nodes contain mesh node state before conversion
+        /// 2. When State::Restored:  m_nodes contain mesh node state after conversion
         std::vector<Point> m_nodes;
 
         /// @brief The projection
         ///
         /// Value of the projection depends on the state of the action:
-        /// 1. When ActionState::Committed: m_projection contain mesh projection state before conversion
-        /// 2. When ActionState::Restored:  m_projection contain mesh projection state after conversion
+        /// 1. When State::Committed: m_projection contain mesh projection state before conversion
+        /// 2. When State::Restored:  m_projection contain mesh projection state after conversion
         Projection m_projection;
     };
 

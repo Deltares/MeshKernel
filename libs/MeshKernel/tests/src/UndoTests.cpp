@@ -26,7 +26,7 @@ TEST(UndoTests, AddNodeToMesh)
     mk::Point node(0.5, 0.5);
 
     auto [nodeId, action] = mesh->InsertNode(node);
-    EXPECT_EQ(mk::UndoAction::Committed, action->State());
+    EXPECT_EQ(mk::UndoAction::State::Committed, action->GetState());
     EXPECT_EQ(4, action->NodeId());
     EXPECT_EQ(node.x, action->Node().x);
     EXPECT_EQ(node.y, action->Node().y);
@@ -47,7 +47,7 @@ TEST(UndoTests, ResetNodeInMesh)
     mk::Point updatedNode(1.5, 1.5);
 
     std::unique_ptr<mk::ResetNodeAction> action = mesh->ResetNode(nodeId, updatedNode);
-    EXPECT_EQ(mk::UndoAction::Committed, action->State());
+    EXPECT_EQ(mk::UndoAction::State::Committed, action->GetState());
     EXPECT_EQ(nodeId, action->NodeId());
     EXPECT_EQ(updatedNode.x, action->UpdatedNode().x);
     EXPECT_EQ(updatedNode.y, action->UpdatedNode().y);
@@ -59,7 +59,7 @@ TEST(UndoTests, ResetNodeInMesh)
     EXPECT_EQ(9, mesh->GetNumValidNodes());
 
     action->Restore();
-    EXPECT_EQ(mk::UndoAction::Restored, action->State());
+    EXPECT_EQ(mk::UndoAction::State::Restored, action->GetState());
 
     for (mk::UInt i = 0; i < originalNodes.size(); ++i)
     {
@@ -81,7 +81,7 @@ TEST(UndoTests, AddNodeThenUndoInMesh)
 
     auto [nodeId, action] = mesh->InsertNode(node);
 
-    EXPECT_EQ(mk::UndoAction::Committed, action->State());
+    EXPECT_EQ(mk::UndoAction::State::Committed, action->GetState());
     EXPECT_EQ(4, action->NodeId());
     EXPECT_EQ(node.x, action->Node().x);
     EXPECT_EQ(node.y, action->Node().y);
@@ -91,7 +91,7 @@ TEST(UndoTests, AddNodeThenUndoInMesh)
     EXPECT_EQ(node.y, mesh->Node(action->NodeId()).y);
 
     action->Restore();
-    EXPECT_EQ(mk::UndoAction::Restored, action->State());
+    EXPECT_EQ(mk::UndoAction::State::Restored, action->GetState());
     EXPECT_EQ(5, mesh->GetNumNodes());
     EXPECT_EQ(4, mesh->GetNumValidNodes());
     EXPECT_EQ(mk::constants::missing::doubleValue, mesh->Node(action->NodeId()).x);
@@ -107,8 +107,8 @@ TEST(UndoTests, ConnectAddedNodeInMesh)
     auto [nodeId, addNodeAction] = mesh->InsertNode(node);
     auto [edgeId, addEdgeAction] = mesh->ConnectNodes(0, nodeId);
 
-    EXPECT_EQ(mk::UndoAction::Committed, addNodeAction->State());
-    EXPECT_EQ(mk::UndoAction::Committed, addEdgeAction->State());
+    EXPECT_EQ(mk::UndoAction::State::Committed, addNodeAction->GetState());
+    EXPECT_EQ(mk::UndoAction::State::Committed, addEdgeAction->GetState());
 
     EXPECT_EQ(4, addNodeAction->NodeId());
     EXPECT_EQ(node.x, addNodeAction->Node().x);
@@ -134,8 +134,8 @@ TEST(UndoTests, ConnectAddedNodeThenUndoInMesh)
     auto [nodeId, addNodeAction] = mesh->InsertNode(node);
     auto [edgeId, addEdgeAction] = mesh->ConnectNodes(0, nodeId);
 
-    EXPECT_EQ(mk::UndoAction::Committed, addNodeAction->State());
-    EXPECT_EQ(mk::UndoAction::Committed, addEdgeAction->State());
+    EXPECT_EQ(mk::UndoAction::State::Committed, addNodeAction->GetState());
+    EXPECT_EQ(mk::UndoAction::State::Committed, addEdgeAction->GetState());
 
     EXPECT_EQ(4, addNodeAction->NodeId());
     EXPECT_EQ(node.x, addNodeAction->Node().x);
@@ -152,7 +152,7 @@ TEST(UndoTests, ConnectAddedNodeThenUndoInMesh)
     EXPECT_EQ(addEdgeAction->GetEdge().second, mesh->GetEdge(edgeId).second);
 
     addEdgeAction->Restore();
-    EXPECT_EQ(mk::UndoAction::Restored, addEdgeAction->State());
+    EXPECT_EQ(mk::UndoAction::State::Restored, addEdgeAction->GetState());
     EXPECT_EQ(nodeId, addEdgeAction->GetEdge().second);
     EXPECT_EQ(mk::constants::missing::uintValue, mesh->GetEdge(edgeId).first);
     EXPECT_EQ(mk::constants::missing::uintValue, mesh->GetEdge(edgeId).second);
@@ -169,7 +169,7 @@ TEST(UndoTests, DeleteAddedNodeToMesh)
     ////////////////////////////////
 
     auto [nodeId, action] = mesh->InsertNode(node);
-    EXPECT_EQ(mk::UndoAction::Committed, action->State());
+    EXPECT_EQ(mk::UndoAction::State::Committed, action->GetState());
     EXPECT_EQ(4, action->NodeId());
     EXPECT_EQ(node.x, action->Node().x);
     EXPECT_EQ(node.y, action->Node().y);
@@ -183,7 +183,7 @@ TEST(UndoTests, DeleteAddedNodeToMesh)
     ////////////////////////////////
 
     std::unique_ptr<mk::DeleteNodeAction> deleteAction = mesh->DeleteNode(nodeId);
-    EXPECT_EQ(mk::UndoAction::Committed, deleteAction->State());
+    EXPECT_EQ(mk::UndoAction::State::Committed, deleteAction->GetState());
 
     EXPECT_EQ(nodeId, deleteAction->NodeId());
     EXPECT_EQ(node.x, deleteAction->Node().x);
@@ -198,7 +198,7 @@ TEST(UndoTests, DeleteAddedNodeToMesh)
     ////////////////////////////////
 
     deleteAction->Restore();
-    EXPECT_EQ(mk::UndoAction::Restored, deleteAction->State());
+    EXPECT_EQ(mk::UndoAction::State::Restored, deleteAction->GetState());
 
     EXPECT_EQ(5, mesh->GetNumNodes());
     EXPECT_EQ(5, mesh->GetNumValidNodes());
@@ -210,7 +210,7 @@ TEST(UndoTests, DeleteAddedNodeToMesh)
     ////////////////////////////////
 
     deleteAction->Commit();
-    EXPECT_EQ(mk::UndoAction::Committed, deleteAction->State());
+    EXPECT_EQ(mk::UndoAction::State::Committed, deleteAction->GetState());
 
     EXPECT_EQ(5, mesh->GetNumNodes());
     EXPECT_EQ(4, mesh->GetNumValidNodes());
