@@ -551,10 +551,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            mesh1d.num_nodes = static_cast<int>(meshKernelState[meshKernelId].m_mesh1d->GetNumNodes());
-            mesh1d.num_valid_nodes = static_cast<int>(meshKernelState[meshKernelId].m_mesh1d->GetNumValidNodes());
-            mesh1d.num_edges = static_cast<int>(meshKernelState[meshKernelId].m_mesh1d->GetNumEdges());
-            mesh1d.num_valid_edges = static_cast<int>(meshKernelState[meshKernelId].m_mesh1d->GetNumValidEdges());
+            SetMesh1dApiDimension(*meshKernelState[meshKernelId].m_mesh1d, mesh1d);
         }
         catch (...)
         {
