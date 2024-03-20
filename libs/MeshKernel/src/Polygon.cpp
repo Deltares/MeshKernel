@@ -85,8 +85,17 @@ bool meshkernel::Polygon::ContainsCartesian(const Point& point) const
 
         if (IsEqual(crossProductValue, 0.0))
         {
-            // point on the line
-            return true;
+            // check if is on the line or outside
+            const double deltaXSegment = GetDeltaXCartesian(m_nodes[n], m_nodes[n + 1]);
+            const double lambdaX = std::abs(deltaXSegment) > 0.0 ? GetDeltaXCartesian(m_nodes[n], point) / deltaXSegment : 0.0;
+
+            const double deltaYSegment = GetDeltaYCartesian(m_nodes[n], m_nodes[n + 1]);
+            const double lambdaY = std::abs(deltaYSegment) > 0.0 ? GetDeltaYCartesian(m_nodes[n], point) / deltaYSegment : 0.0;
+
+            if (lambdaX >= 0.0 && lambdaX <= 1.0 && lambdaY >= 0.0 && lambdaY <= 1.0)
+            {
+                return true;
+            }
         }
 
         if (m_nodes[n].y <= point.y) // an upward crossing
