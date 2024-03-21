@@ -27,6 +27,7 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinementUndoAction.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Operations.hpp>
 
@@ -41,7 +42,7 @@ CurvilinearGridRefinement::CurvilinearGridRefinement(CurvilinearGrid& grid, UInt
     m_splines = Splines(m_grid);
 }
 
-void CurvilinearGridRefinement::Compute()
+meshkernel::UndoActionPtr CurvilinearGridRefinement::Compute()
 {
 
     if (!m_lowerLeft.IsValid() || !m_upperRight.IsValid())
@@ -54,6 +55,8 @@ void CurvilinearGridRefinement::Compute()
     {
         throw std::invalid_argument("CurvilinearGridRefinement::Compute: The selected curvilinear grid nodes are not on the same grid-line");
     }
+
+    std::unique_ptr<CurvilinearGridRefinementUndoAction> undoAction = CurvilinearGridRefinementUndoAction::Create(m_grid);
 
     // Estimate the dimension of the refined grid
     const auto numMToRefine = m_upperRight.m_m - m_lowerLeft.m_m;
@@ -141,4 +144,6 @@ void CurvilinearGridRefinement::Compute()
 
     // Substitute original grid with the refined one
     m_grid.SetGridNodes(refinedGrid);
+
+    return undoAction;
 }

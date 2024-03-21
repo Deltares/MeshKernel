@@ -29,10 +29,11 @@
 
 #include <memory>
 
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
-#include <MeshKernel/Parameters.hpp>
-#include <MeshKernel/Splines.hpp>
-#include <MeshKernel/Utilities/LinearAlgebra.hpp>
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp"
+#include "MeshKernel/Parameters.hpp"
+#include "MeshKernel/Splines.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
+#include "MeshKernel/Utilities/LinearAlgebra.hpp"
 
 namespace meshkernel
 {
@@ -49,7 +50,7 @@ namespace meshkernel
                                          const OrthogonalizationParameters& orthogonalizationParameters);
 
         /// @brief Orthogonalize the curvilinear grid (modifies the grid point by m_grid)
-        void Compute() override;
+        UndoActionPtr Compute() override;
 
     private:
         /// @brief Solve one orthogonalization iteration, using the method of successive over-relaxation SOR (ORTSOR)

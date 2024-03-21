@@ -1,27 +1,6 @@
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridBlockUndo.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
 
-// class CurvilinearGridBlockUndo : public BaseMeshUndoAction<CurvilinearGridBlockUndo, CurvilinearGrid>
-// {
-// public:
-
-//     // Not all is needed
-//     // which direction, which side and the offset of 1 is implied
-//     CurvilinearGridBlockUndo(CurvilinearGrid& grid,
-//                              const CurvilinearGridNodeIndices& startOffset,
-//                              const CurvilinearGridNodeIndices& endOffset);
-
-//     void Swap(CurvilinearGrid& grid);
-
-//     /// @brief Print the add grid line action to the stream
-//     void Print(std::ostream& out = std::cout) const override;
-
-// private:
-//     CurvilinearGridBlock m_block;
-//     CurvilinearGridNodeIndices m_startOffset;
-//     CurvilinearGridNodeIndices m_endOffset;
-// };
-
 std::unique_ptr<meshkernel::CurvilinearGridBlockUndo> meshkernel::CurvilinearGridBlockUndo::Create(CurvilinearGrid& grid,
                                                                                                    const CurvilinearGridNodeIndices& startOffset,
                                                                                                    const CurvilinearGridNodeIndices& endOffset)

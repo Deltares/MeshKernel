@@ -29,8 +29,9 @@
 
 #include <memory>
 
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
-#include <MeshKernel/Splines.hpp>
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp"
+#include "MeshKernel/Splines.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 namespace meshkernel
 {
@@ -48,7 +49,7 @@ namespace meshkernel
         CurvilinearGridRefinement(CurvilinearGrid& grid, UInt refinement);
 
         /// @brief Refine the curvilinear grid
-        void Compute() override;
+        UndoActionPtr Compute() override;
 
     private:
         UInt m_refinement; ///< The selected number of refinement lines

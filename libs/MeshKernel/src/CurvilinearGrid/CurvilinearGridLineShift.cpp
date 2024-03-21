@@ -41,7 +41,7 @@ CurvilinearGridLineShift::CurvilinearGridLineShift(CurvilinearGrid& grid) : Curv
 {
 }
 
-void CurvilinearGridLineShift::Compute()
+meshkernel::UndoActionPtr CurvilinearGridLineShift::Compute()
 {
     if (m_lines.empty())
     {
@@ -88,6 +88,8 @@ void CurvilinearGridLineShift::Compute()
         previousCoordinate = i;
         previousDelta = currentDelta;
     }
+
+    return nullptr;
 }
 
 void CurvilinearGridLineShift::TransformGrid(CurvilinearGridNodeIndices const& node)

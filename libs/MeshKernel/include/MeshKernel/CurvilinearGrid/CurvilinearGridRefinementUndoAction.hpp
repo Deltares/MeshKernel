@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2024.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,22 +27,29 @@
 
 #pragma once
 
-#include "CurvilinearGridAlgorithm.hpp"
-#include "MeshKernel/UndoActions/UndoAction.hpp"
+#include <memory>
+#include <vector>
+
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp"
+#include "MeshKernel/Point.hpp"
+#include "MeshKernel/UndoActions/BaseMeshUndoAction.hpp"
+#include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
 namespace meshkernel
 {
+    class CurvilinearGrid;
 
-    /// @brief A class implementing the curvilinear grid delete exterior algorithm.
-    class CurvilinearGridDeleteExterior : public CurvilinearGridAlgorithm
+    class CurvilinearGridRefinementUndoAction : public BaseMeshUndoAction<CurvilinearGridRefinementUndoAction, CurvilinearGrid>
     {
     public:
-        /// @brief Class constructor
-        /// @param[in] grid The input curvilinear grid
-        explicit CurvilinearGridDeleteExterior(CurvilinearGrid& grid);
+        static std::unique_ptr<CurvilinearGridRefinementUndoAction> Create(CurvilinearGrid& grid);
 
-        /// @brief Set all the nodes outside of the block to be invalid.
-        /// @note If any index is the null value or is out of range a ConstraintError will be thrown
-        UndoActionPtr Compute() override;
+        CurvilinearGridRefinementUndoAction(CurvilinearGrid& grid);
+
+        void Swap(lin_alg::Matrix<Point>& nodes);
+
+    private:
+        lin_alg::Matrix<Point> m_nodes; ///< Grid nodes
     };
+
 } // namespace meshkernel

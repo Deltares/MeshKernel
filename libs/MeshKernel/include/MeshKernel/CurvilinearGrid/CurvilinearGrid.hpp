@@ -34,6 +34,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridBlockUndo.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinementUndoAction.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridUtilities.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
@@ -241,6 +242,10 @@ namespace meshkernel
         void RestoreAction(CurvilinearGridBlockUndo& undoAction);
 
         void CommitAction(CurvilinearGridBlockUndo& undoAction);
+
+        void RestoreAction(CurvilinearGridRefinementUndoAction& undoAction);
+
+        void CommitAction(CurvilinearGridRefinementUndoAction& undoAction);
 
         void DeleteGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
 

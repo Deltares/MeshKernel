@@ -29,8 +29,9 @@
 
 #include <memory>
 
-#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
+#include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 namespace meshkernel
 {
@@ -45,7 +46,7 @@ namespace meshkernel
         CurvilinearGridSmoothing(CurvilinearGrid& grid, UInt smoothingIterations);
 
         /// @brief Compute curvilinear grid block smoothing (modifies the m_grid nodal values)
-        void Compute() override;
+        UndoActionPtr Compute() override;
 
         /// @brief Compute curvilinear grid line smoothing. The algorithm smooths the grid along the direction specified by the line.
         /// The line must be an m or n grid line of the curvilinear grid.

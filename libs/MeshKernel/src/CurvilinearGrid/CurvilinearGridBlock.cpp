@@ -12,37 +12,6 @@ meshkernel::CurvilinearGridBlock::CurvilinearGridBlock(const CurvilinearGridNode
     lin_alg::ResizeAndFillMatrix(m_gridNodesTypes, rows, cols, false, NodeType::Invalid);
 }
 
-// void meshkernel::CurvilinearGridBlock::Extract(const lin_alg::Matrix<Point>& nodes,
-//                                                const lin_alg::Matrix<NodeType>& nodeTypes,
-//                                                const CurvilinearGridNodeIndices& start)
-// {
-
-//     const UInt rows = m_topRight.m_n - m_bottomLeft.m_n;
-//     const UInt cols = m_topRight.m_m - m_bottomLeft.m_m;
-
-//     for (UInt r = 0; r < rows; ++r)
-//     {
-//         UInt rowStart = r + start.m_n;
-
-//         for (UInt c = 0; c < cols; ++c)
-//         {
-//             UInt colStart = c + start.m_m;
-//             m_gridNodes(r, c) = grid.GetNode(rowStart, colStart);
-//             m_gridNodesTypes(r, c) = grid.GetNodeType(rowStart, colStart);
-//             // m_gridNodes(r, c) = grid.GetNode(r + m_bottomLeft.m_n, c + m_bottomLeft.m_m);
-//             // m_gridNodesTypes(r, c) = grid.GetNodeType(r + m_bottomLeft.m_n, c + m_bottomLeft.m_m);
-//             ++colStart;
-//         }
-//     }
-
-// }
-
-// void meshkernel::CurvilinearGridBlock::Swap(lin_alg::Matrix<Point>& nodes,
-//                                             lin_alg::Matrix<NodeType>& nodeTypes,
-//                                             const CurvilinearGridNodeIndices& start)
-// {
-// }
-
 void meshkernel::CurvilinearGridBlock::Extract(const CurvilinearGrid& grid)
 {
     const UInt rows = m_topRight.m_n - m_bottomLeft.m_n;

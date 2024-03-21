@@ -27,6 +27,7 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridDeRefinement.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinementUndoAction.hpp>
 #include <MeshKernel/Entities.hpp>
 
 using meshkernel::CurvilinearGrid;
@@ -36,7 +37,7 @@ CurvilinearGridDeRefinement::CurvilinearGridDeRefinement(CurvilinearGrid& grid) 
 {
 }
 
-void CurvilinearGridDeRefinement::Compute()
+meshkernel::UndoActionPtr CurvilinearGridDeRefinement::Compute()
 {
     if (!m_lowerLeft.IsValid() || !m_upperRight.IsValid())
     {
@@ -46,6 +47,8 @@ void CurvilinearGridDeRefinement::Compute()
     /// estimate the dimension of the refined grid
     const auto numMToDeRefine = m_upperRight.m_m > m_lowerLeft.m_m ? m_upperRight.m_m - m_lowerLeft.m_m : 1;
     const auto numNToDeRefine = m_upperRight.m_n > m_lowerLeft.m_n ? m_upperRight.m_n - m_lowerLeft.m_n : 1;
+
+    std::unique_ptr<CurvilinearGridRefinementUndoAction> undoAction = CurvilinearGridRefinementUndoAction::Create(m_grid);
 
     // the de-refined grid
     std::vector<std::vector<Point>> deRefinedGrid;
@@ -78,4 +81,6 @@ void CurvilinearGridDeRefinement::Compute()
 
     // substitute original grid with the derefined one
     m_grid.SetGridNodes(lin_alg::STLVectorOfVectorsToMatrix(deRefinedGrid));
+
+    return undoAction;
 }

@@ -29,8 +29,9 @@
 
 #include <memory>
 
-#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
+#include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 namespace meshkernel
 {
@@ -46,7 +47,7 @@ namespace meshkernel
         CurvilinearGridLineMirror(CurvilinearGrid& grid, double mirroringFactor);
 
         /// @brief Computes a new curvilinear grid with the line shift
-        void Compute() override;
+        UndoActionPtr Compute() override;
 
     private:
         CurvilinearGrid m_originalGrid; ///< The new grid, storing the new positions

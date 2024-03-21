@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridBlockUndo.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridUtilities.hpp>
@@ -36,7 +37,6 @@ using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridSmoothing;
 
 CurvilinearGridSmoothing::CurvilinearGridSmoothing(CurvilinearGrid& grid, UInt smoothingIterations) : CurvilinearGridAlgorithm(grid), m_smoothingIterations(smoothingIterations)
-
 {
     // Allocate cache for storing grid nodes values
     // ResizeAndFill2DVector(m_gridNodesCache, static_cast<UInt>(m_grid.m_gridNodes.size()), static_cast<UInt>(m_grid.m_gridNodes[0].size()));
@@ -46,13 +46,17 @@ CurvilinearGridSmoothing::CurvilinearGridSmoothing(CurvilinearGrid& grid, UInt s
     m_grid.ComputeGridNodeTypes();
 }
 
-void CurvilinearGridSmoothing::Compute()
+meshkernel::UndoActionPtr CurvilinearGridSmoothing::Compute()
 {
+    std::unique_ptr<CurvilinearGridBlockUndo> undoAction = CurvilinearGridBlockUndo::Create(m_grid, m_lowerLeft, m_upperRight);
+
     // Perform smoothing iterations
     for (UInt smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
     {
         Solve();
     }
+
+    return undoAction;
 }
 
 std::unique_ptr<CurvilinearGrid> CurvilinearGridSmoothing::ComputeDirectional()

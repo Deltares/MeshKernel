@@ -39,25 +39,7 @@ meshkernel::CurvilinearGridDeleteInterior::CurvilinearGridDeleteInterior(Curvili
 {
 }
 
-void meshkernel::CurvilinearGridDeleteInterior::Compute()
-{
-    const UInt lowerLimitI = m_lowerLeft.m_n;
-    const UInt upperLimitI = m_upperRight.m_n;
-
-    const UInt lowerLimitJ = m_lowerLeft.m_m;
-    const UInt upperLimitJ = m_upperRight.m_m;
-
-    for (UInt n = lowerLimitI + 1; n < upperLimitI; ++n)
-    {
-        for (UInt m = lowerLimitJ + 1; m < upperLimitJ; ++m)
-        {
-            std::cout << "setting point invalid: " << n << "  " << m << std::endl;
-            m_grid.GetNode(n, m).SetInvalid();
-        }
-    }
-}
-
-meshkernel::UndoActionPtr meshkernel::CurvilinearGridDeleteInterior::Compute2()
+meshkernel::UndoActionPtr meshkernel::CurvilinearGridDeleteInterior::Compute()
 {
     const UInt lowerLimitI = m_lowerLeft.m_n;
     const UInt upperLimitI = m_upperRight.m_n;

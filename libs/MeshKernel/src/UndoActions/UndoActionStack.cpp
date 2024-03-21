@@ -36,6 +36,16 @@ meshkernel::UInt meshkernel::UndoActionStack::Size() const
     return static_cast<UInt>(m_committed.size() + m_restored.size());
 }
 
+meshkernel::UInt meshkernel::UndoActionStack::CommittedSize() const
+{
+    return static_cast<UInt>(m_committed.size());
+}
+
+meshkernel::UInt meshkernel::UndoActionStack::RestoredSize() const
+{
+    return static_cast<UInt>(m_restored.size());
+}
+
 bool meshkernel::UndoActionStack::Undo()
 {
     bool didUndo = false;

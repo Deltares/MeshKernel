@@ -696,6 +696,18 @@ void CurvilinearGrid::CommitAction(CurvilinearGridBlockUndo& undoAction)
     undoAction.Swap(*this);
 }
 
+void CurvilinearGrid::RestoreAction(CurvilinearGridRefinementUndoAction& undoAction)
+{
+    undoAction.Swap(m_gridNodes);
+    ComputeGridNodeTypes();
+}
+
+void CurvilinearGrid::CommitAction(CurvilinearGridRefinementUndoAction& undoAction)
+{
+    undoAction.Swap(m_gridNodes);
+    ComputeGridNodeTypes();
+}
+
 std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode,
                                                                                    CurvilinearGridNodeIndices const& secondNode)
 {
@@ -707,7 +719,8 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
 
     if (!IsInRange(firstNode.m_m, 0u, NumM()) || !IsInRange(firstNode.m_n, 0u, NumN()))
     {
-        throw ConstraintError("First index {{{}, {}}} not in mesh limits {{{}, {}}},  {{{}, {}}}", firstNode.m_n, firstNode.m_m, NumN(), NumM(), m_gridNodes.rows(), m_gridNodes.cols());
+        throw ConstraintError("First index {{{}, {}}} not in mesh limits {{{}, {}}},  {{{}, {}}}",
+                              firstNode.m_n, firstNode.m_m, NumN(), NumM(), m_gridNodes.rows(), m_gridNodes.cols());
     }
 
     if (!IsInRange(secondNode.m_m, 0u, NumM()) || !IsInRange(secondNode.m_n, 0u, NumN()))
@@ -725,6 +738,9 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
 
     UndoActionPtr undoAction;
 
+    UInt rowsBefore = m_gridNodes.rows();
+    UInt colsBefore = m_gridNodes.cols();
+
     if (areNodesValid)
     {
 
@@ -734,12 +750,13 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
             if (m_startOffset.m_n == 0)
             {
                 lin_alg::InsertRow(m_gridNodes, lin_alg::RowVector<Point>(FullNumM()), 0);
-                std::cout << " adding grid line LEFT " << m_gridNodes.rows () << "  "  << m_gridNodes.cols () << std::endl;
             }
             else
             {
                 m_startOffset.m_n -= 1;
             }
+
+            std::cout << " adding grid line LEFT(Bottom) " << rowsBefore << "  " << colsBefore << "  " << m_gridNodes.rows() << "  " << m_gridNodes.cols() << std::endl;
 
             undoAction = AddGridLineUndoAction::Create(*this, {1, 0}, {0, 0});
             gridSizeChanged = true;
@@ -751,13 +768,13 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
             if (m_endOffset.m_n == 0)
             {
                 lin_alg::InsertRow(m_gridNodes, lin_alg::RowVector<Point>(FullNumM()), FullNumN());
-                std::cout << " adding grid line RIGHT " << m_gridNodes.rows () << "  "  << m_gridNodes.cols () << std::endl;
             }
             else
             {
                 m_endOffset.m_n -= 1;
             }
 
+            std::cout << " adding grid line RIGHT(Top) " << rowsBefore << "  " << colsBefore << "  " << m_gridNodes.rows() << "  " << m_gridNodes.cols() << std::endl;
             undoAction = AddGridLineUndoAction::Create(*this, {0, 0}, {1, 0});
             gridSizeChanged = true;
         }
@@ -768,13 +785,13 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
             if (m_endOffset.m_m == 0)
             {
                 lin_alg::InsertCol(m_gridNodes, lin_alg::ColVector<Point>(FullNumN()), FullNumM());
-                std::cout << " adding grid line TOP " << m_gridNodes.rows () << "  "  << m_gridNodes.cols () << std::endl;
             }
             else
             {
                 m_endOffset.m_m -= 1;
             }
 
+            std::cout << " adding grid line UP(Right) " << rowsBefore << "  " << colsBefore << "  " << m_gridNodes.rows() << "  " << m_gridNodes.cols() << std::endl;
             undoAction = AddGridLineUndoAction::Create(*this, {0, 0}, {0, 1});
             gridSizeChanged = true;
         }
@@ -785,13 +802,13 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
             if (m_startOffset.m_m == 0)
             {
                 lin_alg::InsertCol(m_gridNodes, lin_alg::ColVector<Point>(FullNumN()), 0);
-                std::cout << " adding grid line BOTTOM " << m_gridNodes.rows () << "  "  << m_gridNodes.cols () << std::endl;
             }
             else
             {
                 m_startOffset.m_m -= 1;
             }
 
+            std::cout << " adding grid line BOTTOM(Left) " << rowsBefore << "  " << colsBefore << "  " << m_gridNodes.rows() << "  " << m_gridNodes.cols() << std::endl;
             undoAction = AddGridLineUndoAction::Create(*this, {0, 1}, {0, 0});
             gridSizeChanged = true;
         }
@@ -1106,5 +1123,5 @@ void CurvilinearGrid::print(std::ostream& out)
 
 void CurvilinearGrid::printGraph(std::ostream& out)
 {
-    Print (m_nodes, m_edges, out);
+    Print(m_nodes, m_edges, out);
 }

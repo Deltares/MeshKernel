@@ -29,9 +29,10 @@
 
 #include <memory>
 
-#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
-#include <MeshKernel/Entities.hpp>
+#include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 namespace meshkernel
 {
@@ -48,7 +49,7 @@ namespace meshkernel
         CurvilinearGridLineShift(CurvilinearGrid& grid);
 
         /// @brief Computes a new curvilinear grid with the line shift
-        void Compute() override;
+        UndoActionPtr Compute() override;
 
         /// @brief Moves a node from one position to another
         /// @param[in] fromPoint The input position, the closest node on the \ref m_grid grid will be used

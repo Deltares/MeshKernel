@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include <utility>
+
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineMirror.hpp>
@@ -43,7 +45,7 @@ CurvilinearGridLineMirror::CurvilinearGridLineMirror(CurvilinearGrid& grid, doub
     }
 }
 
-void CurvilinearGridLineMirror::Compute()
+meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
 {
     if (m_lines.empty())
     {
@@ -54,15 +56,47 @@ void CurvilinearGridLineMirror::Compute()
         throw std::invalid_argument("CurvilinearGridLineMirror:: Invalid curvilinear grid");
     }
 
+    std::unique_ptr<CompoundUndoAction> undoAction = CompoundUndoAction::Create();
+
     const auto startNode = m_lines[0].m_startNode;
     const auto endNode = m_lines[0].m_endNode;
 
     m_grid.ComputeGridNodeTypes();
     auto const gridLineType = m_grid.GetBoundaryGridLineType(startNode, endNode);
-    m_grid.AddGridLineAtBoundary(startNode, endNode);
+
+    auto [addedLine, addGridLineAction] = m_grid.AddGridLineAtBoundary(startNode, endNode);
+    m_grid.ComputeGridNodeTypes();
+    undoAction->Add(std::move(addGridLineAction));
 
     double const a = 1.0 + m_mirroringFactor;
     double const b = -m_mirroringFactor;
+
+    CurvilinearGridNodeIndices lowerLeft;
+    CurvilinearGridNodeIndices upperRight;
+
+    switch (gridLineType)
+    {
+    case CurvilinearGrid::BoundaryGridLineType::Left: // Bottom
+        lowerLeft = {0, m_lines[0].m_startCoordinate};
+        upperRight = {1, m_lines[0].m_endCoordinate + 1};
+        break;
+    case CurvilinearGrid::BoundaryGridLineType::Right: // Top
+        lowerLeft = {m_grid.NumN() - 1, m_lines[0].m_startCoordinate};
+        upperRight = {m_grid.NumN() - 0, m_lines[0].m_endCoordinate + 1};
+        break;
+    case CurvilinearGrid::BoundaryGridLineType::Up: // Right
+        lowerLeft = {m_lines[0].m_startCoordinate, m_grid.NumM() - 1};
+        upperRight = {m_lines[0].m_endCoordinate + 1, m_grid.NumM() - 0};
+        break;
+    case CurvilinearGrid::BoundaryGridLineType::Bottom: // Left
+        lowerLeft = {0, m_lines[0].m_startCoordinate};
+        upperRight = {m_lines[0].m_endCoordinate + 1, m_lines[0].m_startCoordinate + 1};
+        break;
+    default:
+        throw std::invalid_argument("CurvilinearGridLineMirror:: Invalid grid line type");
+    }
+
+    undoAction->Add(CurvilinearGridBlockUndo::Create(m_grid, lowerLeft, upperRight));
 
     for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
     {
@@ -91,4 +125,6 @@ void CurvilinearGridLineMirror::Compute()
     }
 
     m_grid.SetFlatCopies();
+
+    return undoAction;
 }

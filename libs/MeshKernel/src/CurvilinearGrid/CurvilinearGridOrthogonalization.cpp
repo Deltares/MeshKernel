@@ -63,12 +63,14 @@ void CurvilinearGridOrthogonalization::ComputeFrozenGridPoints()
     }
 }
 
-void CurvilinearGridOrthogonalization::Compute()
+meshkernel::UndoActionPtr CurvilinearGridOrthogonalization::Compute()
 {
     if (!m_lowerLeft.IsValid() || !m_upperRight.IsValid())
     {
         throw std::invalid_argument("CurvilinearGridOrthogonalization::Compute: lower left and upper right corners defining the curvilinear grid block are not set");
     }
+
+    std::unique_ptr<CurvilinearGridBlockUndo> undoAction = CurvilinearGridBlockUndo::Create(m_grid, m_lowerLeft, m_upperRight);
 
     // Compute the grid node types
     m_grid.ComputeGridNodeTypes();
@@ -87,6 +89,8 @@ void CurvilinearGridOrthogonalization::Compute()
             ProjectVerticalBoundariesGridNodes();
         }
     }
+
+    return undoAction;
 }
 
 void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
@@ -289,7 +293,21 @@ void CurvilinearGridOrthogonalization::Solve()
                     m_grid.GetNode(n, m - 1) * m_orthoEqTerms.d(n, m) +
                     m_grid.GetNode(n, m) * m_orthoEqTerms.e(n, m);
 
+                if (!std::isfinite(residual.x) or (n == 7 and m == 7))
+                {
+                    [[maybe_unused]] int dummy;
+                    dummy = 1;
+                }
+
+                std::cout << " node " << n << "  " << m << "  " << m_grid.GetNode(n, m).x << ", " << m_grid.GetNode(n, m).y << "  ";
                 m_grid.GetNode(n, m) = m_grid.GetNode(n, m) - residual / m_orthoEqTerms.e(n, m) * omega;
+                std::cout << residual.x << "  " << residual.y << "  "
+                          << m_orthoEqTerms.a(n, m) << "  "
+                          << m_orthoEqTerms.b(n, m) << "  "
+                          << m_orthoEqTerms.c(n, m) << "  "
+                          << m_orthoEqTerms.d(n, m) << "  "
+                          << m_orthoEqTerms.e(n, m) << "  "
+                          << omega << std::endl;
             }
         }
 
@@ -392,12 +410,16 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
             {
                 continue;
             }
+
+            std::cout << "NodeType::InternalValid" << std::endl;
+
             m_orthoEqTerms.a(n, m) = m_orthoEqTerms.atp(n, m - 1) + m_orthoEqTerms.atp(n, m);
             m_orthoEqTerms.b(n, m) = m_orthoEqTerms.atp(n - 1, m - 1) + m_orthoEqTerms.atp(n - 1, m);
             m_orthoEqTerms.c(n, m) = 1.0 / m_orthoEqTerms.atp(n - 1, m) + 1.0 / m_orthoEqTerms.atp(n, m);
             m_orthoEqTerms.d(n, m) = 1.0 / m_orthoEqTerms.atp(n - 1, m - 1) + 1.0 / m_orthoEqTerms.atp(n, m - 1);
 
             m_orthoEqTerms.e(n, m) = -m_orthoEqTerms.a(n, m) - m_orthoEqTerms.b(n, m) - m_orthoEqTerms.c(n, m) - m_orthoEqTerms.d(n, m);
+            std::cout << " m_orthoEqTerms " << n << "  " << m << "  " << m_orthoEqTerms.e(n, m) << std::endl;
         }
     }
 }

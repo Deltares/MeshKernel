@@ -28,7 +28,8 @@
 #pragma once
 #include <memory>
 
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 namespace meshkernel
 {
@@ -45,6 +46,6 @@ namespace meshkernel
         CurvilinearGridDeRefinement(CurvilinearGrid& grid);
 
         /// @brief Refine the curvilinear grid
-        void Compute() override;
+        UndoActionPtr Compute() override;
     };
 } // namespace meshkernel

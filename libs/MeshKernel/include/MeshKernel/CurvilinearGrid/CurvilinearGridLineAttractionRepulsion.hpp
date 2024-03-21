@@ -48,7 +48,7 @@ namespace meshkernel
         CurvilinearGridLineAttractionRepulsion(CurvilinearGrid& grid, double attractionFactor);
 
         /// @brief Computes a new curvilinear grid with line attracted towards \ref m_lines[0]
-        void Compute() override;
+        UndoActionPtr Compute() override;
 
     private:
         CurvilinearGrid m_originalGrid; ///< A pointer to the original grid, used for computation of quantities
