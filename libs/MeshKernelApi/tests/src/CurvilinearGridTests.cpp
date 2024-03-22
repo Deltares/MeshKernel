@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 
 #include <MeshKernel/Parameters.hpp>
+#include <MeshKernelApi/Mesh2D.hpp>
 #include <MeshKernelApi/MeshKernel.hpp>
 
 #include "CartesianApiTestFixture.hpp"
@@ -903,4 +904,41 @@ TEST(CurvilinearGrid, MakeRectangular_ComputeCurvatureTest)
     {
         EXPECT_NEAR(expectedY[i], curvature[i], tolerance);
     }
+}
+
+TEST(CurvilinearGrid, MakeRectangular_ConvertToMesh2D)
+{
+    // Prepare
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = 10.0;
+    makeGridParameters.block_size_y = 10.0;
+    makeGridParameters.num_columns = 5;
+    makeGridParameters.num_rows = 5;
+
+    int meshKernelId = 0;
+    const int projectionType = 0;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGridResults;
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGridResults);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = meshkernelapi::mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    
+    // assert
+    ASSERT_EQ(mesh2d.num_nodes, 36);
+    ASSERT_EQ(mesh2d.num_edges, 60);
 }
