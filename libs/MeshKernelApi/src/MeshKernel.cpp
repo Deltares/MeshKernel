@@ -3473,11 +3473,11 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
-            lin_alg::Matrix<meshkernel::Point> curviGridPoints(grid.num_m, grid.num_n);
+            lin_alg::Matrix<meshkernel::Point> curviGridPoints(grid.num_n, grid.num_m);
             int nodeIndex = 0;
-            for (int i = 0; i < grid.num_m; ++i)
+            for (int i = 0; i < grid.num_n; ++i)
             {
-                for (int j = 0; j < grid.num_n; ++j)
+                for (int j = 0; j < grid.num_m; ++j)
                 {
 
                     curviGridPoints(i, j) = meshkernel::Point(grid.node_x[nodeIndex], grid.node_y[nodeIndex]);
