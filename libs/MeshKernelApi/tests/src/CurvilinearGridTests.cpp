@@ -937,7 +937,7 @@ TEST(CurvilinearGrid, MakeRectangular_ConvertToMesh2D)
     meshkernelapi::Mesh2D mesh2d{};
     errorCode = meshkernelapi::mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    
+
     // assert
     ASSERT_EQ(mesh2d.num_nodes, 36);
     ASSERT_EQ(mesh2d.num_edges, 60);
