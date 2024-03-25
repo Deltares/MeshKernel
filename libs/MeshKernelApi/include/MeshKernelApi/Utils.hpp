@@ -377,6 +377,8 @@ namespace meshkernelapi
                 faceIndex++;
             }
         }
+
+        SetMesh2dApiDimensions(mesh2d, mesh2dApi);
     }
 
     /// @brief Sets the meshkernelapi::CurvilinearGrid data
@@ -390,6 +392,18 @@ namespace meshkernelapi
             curvilinearGridApi.node_x[n] = curvilinearGrid.Node(n).x;
             curvilinearGridApi.node_y[n] = curvilinearGrid.Node(n).y;
         }
+    }
+
+    /// @brief Sets dimensions members of meshkernelapi::Mesh1D instance
+    /// @param[in]  mesh1d    The meshkernel::Mesh1D instance
+    /// @param[out] mesh1dApi The output meshkernelapi::Mesh1D instance
+    static void SetMesh1dApiDimension(const meshkernel::Mesh1D& mesh1d,
+                                      Mesh1D& mesh1dApi)
+    {
+        mesh1dApi.num_nodes = static_cast<int>(mesh1d.GetNumNodes());
+        mesh1dApi.num_valid_nodes = static_cast<int>(mesh1d.GetNumValidNodes());
+        mesh1dApi.num_edges = static_cast<int>(mesh1d.GetNumEdges());
+        mesh1dApi.num_valid_edges = static_cast<int>(mesh1d.GetNumValidEdges());
     }
 
     /// @brief Sets a meshkernelapi::Mesh1D data
@@ -412,6 +426,7 @@ namespace meshkernelapi
             mesh1dApi.edge_nodes[edgeIndex] = static_cast<int>(mesh1d.GetEdge(e).second);
             edgeIndex++;
         }
+        SetMesh1dApiDimension(mesh1d, mesh1dApi);
     }
 
     /// @brief Generate a rectangular curvilinear grid

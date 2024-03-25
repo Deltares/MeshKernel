@@ -29,6 +29,7 @@
 
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Parameters.hpp>
+#include <MeshKernel/UndoActions/UndoAction.hpp>
 
 namespace meshkernel
 {
@@ -98,7 +99,7 @@ namespace meshkernel
                                       const OrthogonalizationParameters& orthogonalizationParameters);
 
         /// @brief Initializes the object
-        void Initialize();
+        [[nodiscard]] std::unique_ptr<UndoAction> Initialize();
 
         /// @brief Executes the entire algorithm
         void Compute();

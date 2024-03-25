@@ -181,8 +181,8 @@ TEST_F(CartesianApiTestFixture, RefineAGridBasedOnPolygonThroughApi)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(279, mesh2d.num_nodes);
-    ASSERT_EQ(595, mesh2d.num_edges);
+    ASSERT_EQ(264, mesh2d.num_nodes);
+    ASSERT_EQ(563, mesh2d.num_edges);
 }
 
 TEST(MeshRefinement, Mesh2DRefineBasedOnGriddedSamplesWaveCourant_WithGriddedSamples_ShouldRefineMesh)

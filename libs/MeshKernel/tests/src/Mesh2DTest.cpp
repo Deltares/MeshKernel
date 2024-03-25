@@ -16,6 +16,8 @@
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
+#include <MeshKernel/Operations.hpp>
+
 TEST(Mesh2D, OneQuadTestConstructor)
 {
     // 1 Setup
@@ -309,7 +311,7 @@ TEST(Mesh2D, NodeMerging)
 
     // 2. Act
     meshkernel::Polygons polygon;
-    mesh->MergeNodesInPolygon(polygon, 0.001);
+    [[maybe_unused]] auto action = mesh->MergeNodesInPolygon(polygon, 0.001);
 
     // 3. Assert
     ASSERT_EQ(mesh->GetNumValidNodes(), n * m);
@@ -426,12 +428,21 @@ TEST(Mesh2D, DeleteSmallFlowEdge)
     // Setup a mesh with eight triangles
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/RemoveSmallFlowEdgesTests/remove_small_flow_edges_net.nc");
 
+    std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
     ASSERT_EQ(8, mesh->GetNumFaces());
 
     // After merging the number of faces is reduced
-    mesh->DeleteSmallFlowEdges(1.0);
+    auto undoAction = mesh->DeleteSmallFlowEdges(1.0);
 
     ASSERT_EQ(3, mesh->GetNumFaces());
+
+    // Restore original mesh
+    undoAction->Restore();
+    mesh->Administrate();
+
+    ASSERT_EQ(8, mesh->GetNumFaces());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumEdges());
 }
 
 TEST(Mesh2D, DeleteSmallTrianglesAtBoundaries)
@@ -442,7 +453,7 @@ TEST(Mesh2D, DeleteSmallTrianglesAtBoundaries)
     ASSERT_EQ(2, mesh->GetNumFaces());
 
     // After merging
-    mesh->DeleteSmallTrianglesAtBoundaries(0.6);
+    auto undoAction = mesh->DeleteSmallTrianglesAtBoundaries(0.6);
 
     ASSERT_EQ(1, mesh->GetNumFaces());
 
@@ -458,6 +469,11 @@ TEST(Mesh2D, DeleteSmallTrianglesAtBoundaries)
     ASSERT_NEAR(300.48181152343750, mesh->Node(2).y, tolerance);
     ASSERT_NEAR(295.33038330078125, mesh->Node(3).y, tolerance);
     ASSERT_NEAR(398.59295654296875, mesh->Node(4).y, tolerance);
+
+    // Restore original mesh
+    undoAction->Restore();
+    mesh->Administrate();
+    ASSERT_EQ(2, mesh->GetNumFaces());
 }
 
 TEST(Mesh2D, DeleteHangingEdge)
@@ -489,11 +505,31 @@ TEST(Mesh2D, DeleteHangingEdge)
     ASSERT_EQ(1, hangingEdges.size());
 
     // Execute
-    mesh->DeleteHangingEdges();
+    auto undoAction = mesh->DeleteHangingEdges();
     hangingEdges = mesh->GetHangingEdges();
 
     // Assert
     ASSERT_EQ(0, hangingEdges.size());
+
+    // Restore original mesh
+    undoAction->Restore();
+    // Called to reconstruct the faces
+    mesh->Administrate();
+
+    ASSERT_EQ(1, mesh->GetNumFaces());
+    ASSERT_EQ(4, mesh->GetNumValidEdges());
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(nodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(nodes[i].y, mesh->Node(i).y);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(edges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(edges[i].second, mesh->GetEdge(i).second);
+    }
 }
 
 TEST(Mesh2D, GetPolylineIntersectionsFromSimplePolylineShouldReturnCorrectIntersections)
@@ -940,9 +976,32 @@ TEST(Mesh2D, RemoveSingleIsland)
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/RemoveDomainIslands/single_disconnected_region.nc");
     meshkernel::RemoveDisconnectedRegions removeDisconnectedRegions;
 
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
     // Remove all smaller disconnected "island" regions.
-    removeDisconnectedRegions.Compute(*mesh);
+    auto undoAction = removeDisconnectedRegions.Compute(*mesh);
     EXPECT_EQ(mesh->GetNumFaces(), 100);
+
+    // Restore original mesh
+    undoAction->Restore();
+    mesh->Administrate();
+
+    EXPECT_EQ(mesh->GetNumFaces(), 104);
+    ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+    }
 }
 
 TEST(Mesh2D, RemoveMultipleIslands)
@@ -950,11 +1009,35 @@ TEST(Mesh2D, RemoveMultipleIslands)
     // Load mesh with 4 disconnected regions, the main domain is a 10x10, there are 3 other much small island regions,
     // each with a different shape and number of elements.
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/RemoveDomainIslands/multiple_disconnected_regions.nc");
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
     meshkernel::RemoveDisconnectedRegions removeDisconnectedRegions;
 
     // Remove all smaller disconnected "island" regions.
-    removeDisconnectedRegions.Compute(*mesh);
+    auto undoAction = removeDisconnectedRegions.Compute(*mesh);
     EXPECT_EQ(mesh->GetNumFaces(), 100);
+
+    // Restore original mesh
+    undoAction->Restore();
+    mesh->Administrate();
+
+    EXPECT_EQ(mesh->GetNumFaces(), 113);
+    ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+    }
 }
 
 TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersected_ShouldNotDeleteFaces)
@@ -974,20 +1057,44 @@ TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersected_ShouldNotDeleteFaces)
         {3.55081967213115, -0.358196721311476},
         {1.87622950819672, -0.299180327868853}};
 
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
     auto polygon = meshkernel::Polygons(polygonNodes, meshkernel::Projection::cartesian);
     const auto deletion_option = meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected;
 
     // Execute
-    mesh->DeleteMesh(polygon, deletion_option, false);
+    auto undoAction = mesh->DeleteMesh(polygon, deletion_option, false);
 
     // Assert
     EXPECT_EQ(mesh->GetNumFaces(), 9);
+
+    // Restore original mesh
+    undoAction->Restore();
+
+    ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+    }
 }
 
 TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersectedSpherical_ShouldNotDeleteFaces)
 {
     // Prepare
     const auto mesh = MakeRectangularMeshForTesting(4, 4, 3, 3, meshkernel::Projection::spherical, meshkernel::Point{0, 0});
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     // a polygon including all nodes of a face, but also intersecting one
     std::vector<meshkernel::Point> polygonNodes{
@@ -1005,10 +1112,28 @@ TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersectedSpherical_ShouldNotDeleteFaces)
     const auto deletion_option = meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected;
 
     // Execute
-    mesh->DeleteMesh(polygon, deletion_option, false);
+    auto undoAction = mesh->DeleteMesh(polygon, deletion_option, false);
 
     // Assert
     EXPECT_EQ(mesh->GetNumFaces(), 9);
+
+    // Restore original mesh
+    undoAction->Restore();
+
+    ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+    }
 }
 
 TEST(Mesh2D, DeleteMesh_WithLargeSphericalPolygon_ShouldDeleteInnerMeshFaces)
@@ -1020,6 +1145,9 @@ TEST(Mesh2D, DeleteMesh_WithLargeSphericalPolygon_ShouldDeleteInnerMeshFaces)
                                                     2.0,
                                                     meshkernel::Projection::spherical,
                                                     meshkernel::Point{-3.0, 48.5});
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     // a large polygon
     std::vector<meshkernel::Point> polygonNodes{
@@ -1033,10 +1161,28 @@ TEST(Mesh2D, DeleteMesh_WithLargeSphericalPolygon_ShouldDeleteInnerMeshFaces)
     const auto deletion_option = meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected;
 
     // Execute
-    mesh->DeleteMesh(polygon, deletion_option, false);
+    auto undoAction = mesh->DeleteMesh(polygon, deletion_option, false);
 
     // Assert
     EXPECT_EQ(mesh->GetNumFaces(), 7);
+
+    // Restore original mesh
+    undoAction->Restore();
+
+    ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+    }
 }
 
 TEST(Mesh2D, DeleteMesh_WithPolygonAndIncludedCircumcenters_ShouldDeleteInnerFaces)
@@ -1047,6 +1193,9 @@ TEST(Mesh2D, DeleteMesh_WithPolygonAndIncludedCircumcenters_ShouldDeleteInnerFac
                                                     8.0,
                                                     8.0,
                                                     meshkernel::Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     // a large polygon
     std::vector<meshkernel::Point> polygonNodes{
@@ -1060,8 +1209,26 @@ TEST(Mesh2D, DeleteMesh_WithPolygonAndIncludedCircumcenters_ShouldDeleteInnerFac
     const auto deletion_option = meshkernel::Mesh2D::DeleteMeshOptions::FacesWithIncludedCircumcenters;
 
     // Execute
-    mesh->DeleteMesh(polygon, deletion_option, false);
+    auto undoAction = mesh->DeleteMesh(polygon, deletion_option, false);
 
     // Assert
     EXPECT_EQ(mesh->GetNumFaces(), 12);
+
+    // Restore original mesh
+    undoAction->Restore();
+
+    ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+    }
 }

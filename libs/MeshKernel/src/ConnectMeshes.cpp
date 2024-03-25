@@ -1,7 +1,35 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2024.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #include "MeshKernel/ConnectMeshes.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/RangeCheck.hpp"
+#include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
 
 #include <ranges>
 
@@ -181,7 +209,7 @@ void meshkernel::ConnectMeshes::GatherHangingNodes(const UInt primaryStartNode,
     }
 }
 
-void meshkernel::ConnectMeshes::Compute(Mesh2D& mesh, const double separationFraction)
+std::unique_ptr<meshkernel::UndoAction> meshkernel::ConnectMeshes::Compute(Mesh2D& mesh, const double separationFraction)
 {
     // Check that the separationFraction is in correct range (0.0, max]
     range_check::CheckInLeftHalfOpenInterval(separationFraction, 0.0, DefaultMaximumSeparationFraction, "Separation Fraction");
@@ -212,6 +240,8 @@ void meshkernel::ConnectMeshes::Compute(Mesh2D& mesh, const double separationFra
 
     std::vector<UInt> hangingNodesOnEdge(numberOfEdges);
     std::vector<MergeIndicator> mergeIndicator(numberOfEdges, MergeIndicator::Initial);
+
+    std::unique_ptr<meshkernel::CompoundUndoAction> conectMeshesAction = CompoundUndoAction::Create();
 
     // Free hanging nodes along edges.
     for (UInt i = 0; i < edgesOnDomainBoundary.size(); ++i)
@@ -252,22 +282,24 @@ void meshkernel::ConnectMeshes::Compute(Mesh2D& mesh, const double separationFra
                 if (adjacentEdgeIndicator[boundaryEdgeId] && adjacentEdgeIndicator[irregularEdgeId])
                 {
                     adjacentEdgeIndicator[boundaryEdgeId] = false;
-                    mesh.SetEdge(boundaryEdgeId, {missingValue, missingValue});
+                    conectMeshesAction->Add(mesh.ResetEdge(boundaryEdgeId, {missingValue, missingValue}));
                 }
             }
         }
 
         const UInt boundaryFaceId = elementsOnDomainBoundary[i];
         const Point boundaryNode = mesh.Node(boundaryEdge.first);
-        FreeHangingNodes(mesh, numberOfHangingNodes, hangingNodesOnEdge, boundaryFaceId, boundaryEdge, boundaryNode, boundaryEdgeId);
+        conectMeshesAction->Add(FreeHangingNodes(mesh, numberOfHangingNodes, hangingNodesOnEdge, boundaryFaceId, boundaryEdge, boundaryNode, boundaryEdgeId));
     }
 
-    MergeNodes(mesh, nodesToMerge, mergeIndicator);
-    mesh.Administrate();
+    conectMeshesAction->Add(MergeNodes(mesh, nodesToMerge, mergeIndicator));
+    mesh.Administrate(conectMeshesAction.get());
+    return conectMeshesAction;
 }
 
-void meshkernel::ConnectMeshes::MergeNodes(Mesh2D& mesh, const std::vector<NodesToMerge>& nodesToMerge, std::vector<MergeIndicator>& mergeIndicator)
+std::unique_ptr<meshkernel::UndoAction> meshkernel::ConnectMeshes::MergeNodes(Mesh2D& mesh, const std::vector<NodesToMerge>& nodesToMerge, std::vector<MergeIndicator>& mergeIndicator)
 {
+    std::unique_ptr<meshkernel::CompoundUndoAction> mergeAction = CompoundUndoAction::Create();
 
     for (const auto& [coincidingNodeFirst, coincidingNodeSecond] : nodesToMerge)
     {
@@ -275,12 +307,14 @@ void meshkernel::ConnectMeshes::MergeNodes(Mesh2D& mesh, const std::vector<Nodes
 
         if (mergeIndicator[coincidingNodeSecond] != DoNotMerge)
         {
-            mesh.MergeTwoNodes(coincidingNodeFirst, coincidingNodeSecond);
+            mergeAction->Add(mesh.MergeTwoNodes(coincidingNodeFirst, coincidingNodeSecond));
             // Set to MergeIndicator::DoNotMerge so it will not be processed again.
             mergeIndicator[coincidingNodeFirst] = DoNotMerge;
             mergeIndicator[coincidingNodeSecond] = DoNotMerge;
         }
     }
+
+    return mergeAction;
 }
 
 void meshkernel::ConnectMeshes::GetOrderedDistanceFromPoint(const Mesh2D& mesh,
@@ -312,7 +346,7 @@ void meshkernel::ConnectMeshes::GetOrderedDistanceFromPoint(const Mesh2D& mesh,
     }
 }
 
-void meshkernel::ConnectMeshes::FreeOneHangingNode(Mesh2D& mesh, const BoundedIntegerArray& hangingNodes, const UInt startNode, const UInt endNode)
+std::unique_ptr<meshkernel::UndoAction> meshkernel::ConnectMeshes::FreeOneHangingNode(Mesh2D& mesh, const BoundedIntegerArray& hangingNodes, const UInt startNode, const UInt endNode)
 {
     //
     // 2------+------+
@@ -322,17 +356,26 @@ void meshkernel::ConnectMeshes::FreeOneHangingNode(Mesh2D& mesh, const BoundedIn
     // 1------+------+
     //
 
+    std::unique_ptr<CompoundUndoAction> freeHangingNodesAction = CompoundUndoAction::Create();
+    UInt edgeId;
+    std::unique_ptr<AddEdgeAction> addEdgeAction;
+
     // Connect node marked with 'x' to nodes labeled 1 and 2
-    mesh.ConnectNodes(hangingNodes[0], startNode);
-    mesh.ConnectNodes(hangingNodes[0], endNode);
+    std::tie(edgeId, addEdgeAction) = mesh.ConnectNodes(hangingNodes[0], startNode);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+
+    std::tie(edgeId, addEdgeAction) = mesh.ConnectNodes(hangingNodes[0], endNode);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+
+    return freeHangingNodesAction;
 }
 
-void meshkernel::ConnectMeshes::FreeTwoHangingNodes(Mesh2D& mesh,
-                                                    const UInt faceId,
-                                                    const UInt edgeId,
-                                                    const BoundedIntegerArray& hangingNodes,
-                                                    const UInt startNode,
-                                                    const UInt endNode)
+std::unique_ptr<meshkernel::UndoAction> meshkernel::ConnectMeshes::FreeTwoHangingNodes(Mesh2D& mesh,
+                                                                                       const UInt faceId,
+                                                                                       const UInt edgeId,
+                                                                                       const BoundedIntegerArray& hangingNodes,
+                                                                                       const UInt startNode,
+                                                                                       const UInt endNode)
 {
     //
     // 2------4------+------+
@@ -344,41 +387,60 @@ void meshkernel::ConnectMeshes::FreeTwoHangingNodes(Mesh2D& mesh,
     // 1------3------+------+
     //
 
+    std::unique_ptr<CompoundUndoAction> freeHangingNodesAction = CompoundUndoAction::Create();
+    UInt newEdgeId;
+    std::unique_ptr<AddEdgeAction> addEdgeAction;
+
     // Compute point labeled with 'o' in ASCII diagram above
     const Point midPoint = PointAlongLine(mesh.Node(startNode), mesh.Node(endNode), 0.5);
-    const UInt newNodeIndex = mesh.InsertNode(midPoint);
+    auto [newNodeIndex, addNodeAction] = mesh.InsertNode(midPoint);
+    freeHangingNodesAction->Add(std::move(addNodeAction));
 
     // Connect node marked with 'x' to nodes labeled 3 and 'o'
-    mesh.ConnectNodes(hangingNodes[0], newNodeIndex);
-    mesh.ConnectNodes(hangingNodes[0], startNode);
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(hangingNodes[0], newNodeIndex);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(hangingNodes[0], startNode);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
 
     // Connect node marked with 'x' to nodes labeled 'o' and 4
-    mesh.ConnectNodes(hangingNodes[1], newNodeIndex);
-    mesh.ConnectNodes(hangingNodes[1], endNode);
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(hangingNodes[1], newNodeIndex);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(hangingNodes[1], endNode);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
 
     // Connect node marked with 'o' to nodes labeled 3 and 4
-    mesh.ConnectNodes(newNodeIndex, startNode);
-    mesh.ConnectNodes(newNodeIndex, endNode);
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(newNodeIndex, startNode);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(newNodeIndex, endNode);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
 
     const UInt adjacentFaceId = mesh.NextFace(faceId, edgeId);
 
-    mesh.DeleteEdge(edgeId);
+    freeHangingNodesAction->Add(mesh.DeleteEdge(edgeId));
 
     if (adjacentFaceId != constants::missing::uintValue)
     {
         const UInt nextOppositeEdge = mesh.FindOppositeEdge(adjacentFaceId, edgeId);
         // Connect node marked with 'o' to nodes labeled 1 and 2
-        mesh.ConnectNodes(newNodeIndex, mesh.GetEdge(nextOppositeEdge).first);
-        mesh.ConnectNodes(newNodeIndex, mesh.GetEdge(nextOppositeEdge).second);
+        std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(newNodeIndex, mesh.GetEdge(nextOppositeEdge).first);
+        freeHangingNodesAction->Add(std::move(addEdgeAction));
+
+        std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(newNodeIndex, mesh.GetEdge(nextOppositeEdge).second);
+        freeHangingNodesAction->Add(std::move(addEdgeAction));
     }
+
+    return freeHangingNodesAction;
 }
 
-void meshkernel::ConnectMeshes::FreeThreeHangingNodes(Mesh2D& mesh,
-                                                      const UInt faceId,
-                                                      const UInt edgeId,
-                                                      const BoundedIntegerArray& hangingNodes,
-                                                      const UInt startNode,
-                                                      const UInt endNode)
+std::unique_ptr<meshkernel::UndoAction> meshkernel::ConnectMeshes::FreeThreeHangingNodes(Mesh2D& mesh,
+                                                                                         const UInt faceId,
+                                                                                         const UInt edgeId,
+                                                                                         const BoundedIntegerArray& hangingNodes,
+                                                                                         const UInt startNode,
+                                                                                         const UInt endNode)
 {
     //
     // 2------4------+------+
@@ -392,38 +454,59 @@ void meshkernel::ConnectMeshes::FreeThreeHangingNodes(Mesh2D& mesh,
     // 1------3------+------+
     //
 
+    std::unique_ptr<CompoundUndoAction> freeHangingNodesAction = CompoundUndoAction::Create();
+    UInt newEdgeId;
+    std::unique_ptr<AddEdgeAction> addEdgeAction;
+
     // Compute point labeled with 'o' in ASCII diagram above
     const Point midPoint = PointAlongLine(mesh.Node(startNode), mesh.Node(endNode), 0.5);
-    const UInt newNodeIndex = mesh.InsertNode(midPoint);
+    auto [newNodeIndex, addNodeAction] = mesh.InsertNode(midPoint);
+    freeHangingNodesAction->Add(std::move(addNodeAction));
 
-    mesh.ConnectNodes(hangingNodes[1], newNodeIndex);
-    mesh.ConnectNodes(newNodeIndex, endNode);
-    mesh.ConnectNodes(newNodeIndex, startNode);
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(hangingNodes[1], newNodeIndex);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
 
-    mesh.ConnectNodes(hangingNodes[0], newNodeIndex);
-    mesh.ConnectNodes(hangingNodes[0], startNode);
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(newNodeIndex, endNode);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
 
-    mesh.ConnectNodes(hangingNodes[2], newNodeIndex);
-    mesh.ConnectNodes(hangingNodes[2], endNode);
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(newNodeIndex, startNode);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(hangingNodes[0], newNodeIndex);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(hangingNodes[0], startNode);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(hangingNodes[2], newNodeIndex);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(hangingNodes[2], endNode);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
 
     const UInt adjacentFaceId = mesh.NextFace(faceId, edgeId);
 
-    mesh.DeleteEdge(edgeId);
+    freeHangingNodesAction->Add(mesh.DeleteEdge(edgeId));
 
     if (adjacentFaceId != constants::missing::uintValue)
     {
         const UInt nextOppositeEdge = mesh.FindOppositeEdge(adjacentFaceId, edgeId);
-        mesh.ConnectNodes(newNodeIndex, mesh.GetEdge(nextOppositeEdge).first);
-        mesh.ConnectNodes(newNodeIndex, mesh.GetEdge(nextOppositeEdge).second);
+        std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(newNodeIndex, mesh.GetEdge(nextOppositeEdge).first);
+        freeHangingNodesAction->Add(std::move(addEdgeAction));
+
+        std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(newNodeIndex, mesh.GetEdge(nextOppositeEdge).second);
+        freeHangingNodesAction->Add(std::move(addEdgeAction));
     }
+
+    return freeHangingNodesAction;
 }
 
-void meshkernel::ConnectMeshes::FreeFourHangingNodes(Mesh2D& mesh,
-                                                     const UInt faceId,
-                                                     const UInt edgeId,
-                                                     const BoundedIntegerArray& hangingNodes,
-                                                     const UInt startNode,
-                                                     const UInt endNode)
+std::unique_ptr<meshkernel::UndoAction> meshkernel::ConnectMeshes::FreeFourHangingNodes(Mesh2D& mesh,
+                                                                                        const UInt faceId,
+                                                                                        const UInt edgeId,
+                                                                                        const BoundedIntegerArray& hangingNodes,
+                                                                                        const UInt startNode,
+                                                                                        const UInt endNode)
 {
     //
     //  +------+------+------+------+
@@ -446,36 +529,53 @@ void meshkernel::ConnectMeshes::FreeFourHangingNodes(Mesh2D& mesh,
     // Create 3 new nodes (labelled 1, 2 and 3 in ASCII diagram)
     // Connect newly created nodes to hanging nodes
 
+    std::unique_ptr<CompoundUndoAction> freeHangingNodesAction = CompoundUndoAction::Create();
+    UInt newEdgeId;
+    std::unique_ptr<AddEdgeAction> addEdgeAction;
+
     UInt firstNextFace = mesh.NextFace(faceId, edgeId);
 
     // Compute points labeled 1, 2 or 3 in ASCII diagram above
-    const UInt node1 = mesh.InsertNode(PointAlongLine(mesh.Node(startNode), mesh.Node(endNode), 0.25));
-    const UInt node2 = mesh.InsertNode(PointAlongLine(mesh.Node(startNode), mesh.Node(endNode), 0.5));
-    const UInt node3 = mesh.InsertNode(PointAlongLine(mesh.Node(startNode), mesh.Node(endNode), 0.75));
+    auto [node1, node1Insertion] = mesh.InsertNode(PointAlongLine(mesh.Node(startNode), mesh.Node(endNode), 0.25));
+    freeHangingNodesAction->Add(std::move(node1Insertion));
+    auto [node2, node2Insertion] = mesh.InsertNode(PointAlongLine(mesh.Node(startNode), mesh.Node(endNode), 0.5));
+    freeHangingNodesAction->Add(std::move(node2Insertion));
+    auto [node3, node3Insertion] = mesh.InsertNode(PointAlongLine(mesh.Node(startNode), mesh.Node(endNode), 0.75));
+    freeHangingNodesAction->Add(std::move(node3Insertion));
 
     // Connect nodes across the face
-    mesh.ConnectNodes(hangingNodes[1], node2);
-    mesh.ConnectNodes(hangingNodes[2], node2);
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(hangingNodes[1], node2);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(hangingNodes[2], node2);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
 
-    mesh.ConnectNodes(hangingNodes[1], node1);
-    mesh.ConnectNodes(hangingNodes[2], node3);
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(hangingNodes[1], node1);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(hangingNodes[2], node3);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
 
-    mesh.ConnectNodes(hangingNodes[0], node1);
-    mesh.ConnectNodes(hangingNodes[3], node3);
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(hangingNodes[0], node1);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(hangingNodes[3], node3);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
 
     // Connect newly created node along the edge
-    mesh.ConnectNodes(startNode, node1);
-    mesh.ConnectNodes(node1, node2);
-    mesh.ConnectNodes(node2, node3);
-    mesh.ConnectNodes(node3, endNode);
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(startNode, node1);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(node1, node2);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(node2, node3);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(node3, endNode);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
 
     // The original edge can now be deleted.
-    mesh.DeleteEdge(edgeId);
+    freeHangingNodesAction->Add(mesh.DeleteEdge(edgeId));
 
     // Reached the end of the mesh
     if (firstNextFace == constants::missing::uintValue)
     {
-        return;
+        return freeHangingNodesAction;
     }
 
     const UInt firstNextOppositeEdge = mesh.FindOppositeEdge(firstNextFace, edgeId);
@@ -487,29 +587,38 @@ void meshkernel::ConnectMeshes::FreeFourHangingNodes(Mesh2D& mesh,
     // Connect newly created nodes to (newly created) hanging nodes (1, 2 and 3)
 
     // Compute points labeled with 4 or 5 in ASCII diagram above
-    UInt node4 = mesh.InsertNode(PointAlongLine(mesh.Node(firstNextOppositeStartNode), mesh.Node(firstNextOppositeEndNode), 0.34));
-    UInt node5 = mesh.InsertNode(PointAlongLine(mesh.Node(firstNextOppositeStartNode), mesh.Node(firstNextOppositeEndNode), 0.66));
+    auto [node4, node4Insertion] = mesh.InsertNode(PointAlongLine(mesh.Node(firstNextOppositeStartNode), mesh.Node(firstNextOppositeEndNode), 0.34));
+    freeHangingNodesAction->Add(std::move(node4Insertion));
+    auto [node5, node5Insertion] = mesh.InsertNode(PointAlongLine(mesh.Node(firstNextOppositeStartNode), mesh.Node(firstNextOppositeEndNode), 0.66));
+    freeHangingNodesAction->Add(std::move(node5Insertion));
 
     // Connect nodes across the face
-    mesh.ConnectNodes(node1, node4);
-    mesh.ConnectNodes(node4, node2);
-    mesh.ConnectNodes(node2, node5);
-    mesh.ConnectNodes(node5, node3);
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(node1, node4);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(node4, node2);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(node2, node5);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(node5, node3);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
 
     // Connect newly created node along the edge
-    mesh.ConnectNodes(firstNextOppositeStartNode, node4);
-    mesh.ConnectNodes(node4, node5);
-    mesh.ConnectNodes(node5, firstNextOppositeEndNode);
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(firstNextOppositeStartNode, node4);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(node4, node5);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(node5, firstNextOppositeEndNode);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
 
     // The original edge can now be deleted.
-    mesh.DeleteEdge(firstNextOppositeEdge);
+    freeHangingNodesAction->Add(mesh.DeleteEdge(firstNextOppositeEdge));
 
     const UInt secondNextFaceId = mesh.NextFace(firstNextFace, firstNextOppositeEdge);
 
     // Reached the end of the mesh
     if (secondNextFaceId == constants::missing::uintValue)
     {
-        return;
+        return freeHangingNodesAction;
     }
 
     const UInt secondNextOppositeEdge = mesh.FindOppositeEdge(secondNextFaceId, firstNextOppositeEdge);
@@ -517,18 +626,23 @@ void meshkernel::ConnectMeshes::FreeFourHangingNodes(Mesh2D& mesh,
     const UInt secondNextOppositeEndNode = mesh.GetEdge(secondNextOppositeEdge).second;
 
     // Compute point labeled with 6 in ASCII diagram above
-    const UInt node6 = mesh.InsertNode(PointAlongLine(mesh.Node(secondNextOppositeStartNode), mesh.Node(secondNextOppositeEndNode), 0.5));
+    auto [node6, node6Insertion] = mesh.InsertNode(PointAlongLine(mesh.Node(secondNextOppositeStartNode), mesh.Node(secondNextOppositeEndNode), 0.5));
+    freeHangingNodesAction->Add(std::move(node6Insertion));
 
     // Connect nodes across the face1
-    mesh.ConnectNodes(node4, node6);
-    mesh.ConnectNodes(node5, node6);
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(node4, node6);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(node5, node6);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
 
     // Connect newly created node along the edge
-    mesh.ConnectNodes(secondNextOppositeStartNode, node6);
-    mesh.ConnectNodes(secondNextOppositeEndNode, node6);
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(secondNextOppositeStartNode, node6);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(secondNextOppositeEndNode, node6);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
 
     // The original edge can now be deleted.
-    mesh.DeleteEdge(secondNextOppositeEdge);
+    freeHangingNodesAction->Add(mesh.DeleteEdge(secondNextOppositeEdge));
 
     //--------------------------------
     // Create 1 new node (labelled 6 in ASCII diagram)
@@ -539,26 +653,32 @@ void meshkernel::ConnectMeshes::FreeFourHangingNodes(Mesh2D& mesh,
     // Reached the end of the mesh
     if (thirdNextFaceId == constants::missing::uintValue)
     {
-        return;
+        return freeHangingNodesAction;
     }
 
     const UInt thirdNextOppositeEdge = mesh.FindOppositeEdge(thirdNextFaceId, secondNextOppositeEdge);
-    mesh.ConnectNodes(node6, mesh.GetEdge(thirdNextOppositeEdge).second);
-    mesh.ConnectNodes(node6, mesh.GetEdge(thirdNextOppositeEdge).first);
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(node6, mesh.GetEdge(thirdNextOppositeEdge).second);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+    std::tie(newEdgeId, addEdgeAction) = mesh.ConnectNodes(node6, mesh.GetEdge(thirdNextOppositeEdge).first);
+    freeHangingNodesAction->Add(std::move(addEdgeAction));
+
+    return freeHangingNodesAction;
 }
 
-void meshkernel::ConnectMeshes::FreeHangingNodes(Mesh2D& mesh,
-                                                 const UInt numberOfHangingNodes,
-                                                 const std::vector<UInt>& hangingNodesOnEdge,
-                                                 const UInt faceId,
-                                                 const Edge& boundaryEdge,
-                                                 const Point& boundaryNode,
-                                                 const UInt edgeId)
+std::unique_ptr<meshkernel::UndoAction> meshkernel::ConnectMeshes::FreeHangingNodes(Mesh2D& mesh,
+                                                                                    const UInt numberOfHangingNodes,
+                                                                                    const std::vector<UInt>& hangingNodesOnEdge,
+                                                                                    const UInt faceId,
+                                                                                    const Edge& boundaryEdge,
+                                                                                    const Point& boundaryNode,
+                                                                                    const UInt edgeId)
 {
     if (numberOfHangingNodes == 0)
     {
-        return;
+        return nullptr;
     }
+
+    std::unique_ptr<CompoundUndoAction> freeHangingNodesAction = CompoundUndoAction::Create();
 
     BoundedIntegerArray hangingNodes;
     GetOrderedDistanceFromPoint(mesh, hangingNodesOnEdge, numberOfHangingNodes, boundaryNode, hangingNodes);
@@ -591,20 +711,22 @@ void meshkernel::ConnectMeshes::FreeHangingNodes(Mesh2D& mesh,
     switch (numberOfHangingNodes)
     {
     case 1:
-        FreeOneHangingNode(mesh, hangingNodes, startNode, endNode);
+        freeHangingNodesAction->Add(FreeOneHangingNode(mesh, hangingNodes, startNode, endNode));
         break;
     case 2:
-        FreeTwoHangingNodes(mesh, faceId, oppositeEdgeId, hangingNodes, startNode, endNode);
+        freeHangingNodesAction->Add(FreeTwoHangingNodes(mesh, faceId, oppositeEdgeId, hangingNodes, startNode, endNode));
         break;
     case 3:
-        FreeThreeHangingNodes(mesh, faceId, oppositeEdgeId, hangingNodes, startNode, endNode);
+        freeHangingNodesAction->Add(FreeThreeHangingNodes(mesh, faceId, oppositeEdgeId, hangingNodes, startNode, endNode));
         break;
     case 4:
-        FreeFourHangingNodes(mesh, faceId, oppositeEdgeId, hangingNodes, startNode, endNode);
+        freeHangingNodesAction->Add(FreeFourHangingNodes(mesh, faceId, oppositeEdgeId, hangingNodes, startNode, endNode));
         break;
     default:
         // 0 hanging nodes is handled at the top of this function, so to be here can only be: numberOfHangingNodes > 4
         throw NotImplementedError("Cannot handle more than 4 hanging nodes along irregular edge, number is: {}",
                                   numberOfHangingNodes);
     }
+
+    return freeHangingNodesAction;
 }
