@@ -27,6 +27,7 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
+#include <MeshKernel/CurvilinearGrid/ResetCurvilinearNodeAction.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
@@ -674,40 +675,6 @@ void CurvilinearGrid::DeleteGridLineAtBoundary(CurvilinearGridNodeIndices const&
     }
 }
 
-void CurvilinearGrid::RestoreAction(AddGridLineUndoAction& undoAction)
-{
-    m_startOffset += undoAction.StartOffset();
-    m_endOffset += undoAction.EndOffset();
-}
-
-void CurvilinearGrid::CommitAction(AddGridLineUndoAction& undoAction)
-{
-    m_startOffset -= undoAction.StartOffset();
-    m_endOffset -= undoAction.EndOffset();
-}
-
-void CurvilinearGrid::RestoreAction(CurvilinearGridBlockUndo& undoAction)
-{
-    undoAction.Swap(*this);
-}
-
-void CurvilinearGrid::CommitAction(CurvilinearGridBlockUndo& undoAction)
-{
-    undoAction.Swap(*this);
-}
-
-void CurvilinearGrid::RestoreAction(CurvilinearGridRefinementUndoAction& undoAction)
-{
-    undoAction.Swap(m_gridNodes);
-    ComputeGridNodeTypes();
-}
-
-void CurvilinearGrid::CommitAction(CurvilinearGridRefinementUndoAction& undoAction)
-{
-    undoAction.Swap(m_gridNodes);
-    ComputeGridNodeTypes();
-}
-
 std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode,
                                                                                    CurvilinearGridNodeIndices const& secondNode)
 {
@@ -1021,22 +988,30 @@ meshkernel::Point CurvilinearGrid::TransformDisplacement(Point const& displaceme
     return {0.0, 0.0};
 }
 
-void CurvilinearGrid::DeleteNode(Point const& point)
+meshkernel::UndoActionPtr CurvilinearGrid::DeleteNode(Point const& point)
 {
     // Get the m and n indices from the point coordinates
     auto const nodeToDelete = GetNodeIndices(point);
 
+    std::unique_ptr<ResetCurvilinearNodeAction> undoAction;
+
     if (nodeToDelete.IsValid())
     {
+        undoAction = ResetCurvilinearNodeAction::Create(*this, nodeToDelete, GetNode(nodeToDelete),
+                                                        {constants::missing::doubleValue, constants::missing::doubleValue},
+                                                        true /* recomputeNodeTypes */);
+
         // Invalidate gridnodes
         GetNode(nodeToDelete.m_n, nodeToDelete.m_m) = {constants::missing::doubleValue, constants::missing::doubleValue};
         // Re-compute quantities
         ComputeGridNodeTypes();
         SetFlatCopies();
     }
+
+    return undoAction;
 }
 
-void CurvilinearGrid::MoveNode(Point const& fromPoint, Point const& toPoint)
+meshkernel::UndoActionPtr CurvilinearGrid::MoveNode(Point const& fromPoint, Point const& toPoint)
 {
     // Get the node indices of fromPoint
     auto const nodeIndex = GetNodeIndices(fromPoint);
@@ -1047,8 +1022,12 @@ void CurvilinearGrid::MoveNode(Point const& fromPoint, Point const& toPoint)
         throw std::invalid_argument("CurvilinearGrid::MoveNode node indices not found");
     }
 
+    std::unique_ptr<ResetCurvilinearNodeAction> undoAction = ResetCurvilinearNodeAction::Create(*this, nodeIndex, GetNode(nodeIndex), toPoint,
+                                                                                                false /* recomputeNodeTypes */);
+
     // move fromPoint to toPoint
     GetNode(nodeIndex.m_n, nodeIndex.m_m) = toPoint;
+    return undoAction;
 }
 
 meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
@@ -1124,4 +1103,60 @@ void CurvilinearGrid::print(std::ostream& out)
 void CurvilinearGrid::printGraph(std::ostream& out)
 {
     Print(m_nodes, m_edges, out);
+}
+
+void CurvilinearGrid::RestoreAction(AddGridLineUndoAction& undoAction)
+{
+    m_startOffset += undoAction.StartOffset();
+    m_endOffset += undoAction.EndOffset();
+}
+
+void CurvilinearGrid::CommitAction(AddGridLineUndoAction& undoAction)
+{
+    m_startOffset -= undoAction.StartOffset();
+    m_endOffset -= undoAction.EndOffset();
+}
+
+void CurvilinearGrid::RestoreAction(CurvilinearGridBlockUndo& undoAction)
+{
+    undoAction.Swap(*this);
+}
+
+void CurvilinearGrid::CommitAction(CurvilinearGridBlockUndo& undoAction)
+{
+    undoAction.Swap(*this);
+}
+
+void CurvilinearGrid::RestoreAction(CurvilinearGridRefinementUndoAction& undoAction)
+{
+    undoAction.Swap(m_gridNodes, m_startOffset, m_endOffset);
+    ComputeGridNodeTypes();
+}
+
+void CurvilinearGrid::CommitAction(CurvilinearGridRefinementUndoAction& undoAction)
+{
+    undoAction.Swap(m_gridNodes, m_startOffset, m_endOffset);
+    ComputeGridNodeTypes();
+}
+
+void CurvilinearGrid::RestoreAction(const ResetCurvilinearNodeAction& undoAction)
+{
+    GetNode(undoAction.NodeId()) = undoAction.InitialNode();
+
+    if (undoAction.RecalculateNodeTypes())
+    {
+        ComputeGridNodeTypes();
+        SetFlatCopies();
+    }
+}
+
+void CurvilinearGrid::CommitAction(const ResetCurvilinearNodeAction& undoAction)
+{
+    GetNode(undoAction.NodeId()) = undoAction.UpdatedNode();
+
+    if (undoAction.RecalculateNodeTypes())
+    {
+        ComputeGridNodeTypes();
+        SetFlatCopies();
+    }
 }

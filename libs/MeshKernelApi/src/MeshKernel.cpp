@@ -3539,7 +3539,7 @@ namespace meshkernelapi
             }
             meshkernel::Point const fromPoint{xFromCoordinate, yFromCoordinate};
             meshkernel::Point const toPoint{xToCoordinate, yToCoordinate};
-            meshKernelState[meshKernelId].m_curvilinearGridLineShift->MoveNode(fromPoint, toPoint);
+            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGridLineShift->MoveNode(fromPoint, toPoint));
         }
         catch (...)
         {
@@ -3829,7 +3829,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
             }
 
-            meshKernelState[meshKernelId].m_curvilinearGrid->DeleteNode({xPointCoordinate, yPointCoordinate});
+            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGrid->DeleteNode({xPointCoordinate, yPointCoordinate}));
         }
         catch (...)
         {
@@ -3860,7 +3860,7 @@ namespace meshkernelapi
             meshkernel::Point const fromPoint{xFromPoint, yFromPoint};
             meshkernel::Point const toPoint{xToPoint, yToPoint};
 
-            meshKernelState[meshKernelId].m_curvilinearGrid->MoveNode(fromPoint, toPoint);
+            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGrid->MoveNode(fromPoint, toPoint));
         }
         catch (...)
         {

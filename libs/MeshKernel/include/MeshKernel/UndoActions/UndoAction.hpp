@@ -51,7 +51,7 @@ namespace meshkernel
         };
 
         /// @brief Return the string representation of the State enum value
-        static std::string to_string(const State state);
+        static const std::string& to_string(const State state);
 
         /// @brief Default constructor
         UndoAction() = default;

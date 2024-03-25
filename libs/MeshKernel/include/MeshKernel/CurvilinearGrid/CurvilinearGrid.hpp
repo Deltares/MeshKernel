@@ -36,6 +36,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinementUndoAction.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridUtilities.hpp>
+#include <MeshKernel/CurvilinearGrid/ResetCurvilinearNodeAction.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh.hpp>
@@ -235,18 +236,6 @@ namespace meshkernel
         /// @return If a new grid line has been allocated
         std::tuple<bool, UndoActionPtr> AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
 
-        void RestoreAction(AddGridLineUndoAction& undoAction);
-
-        void CommitAction(AddGridLineUndoAction& undoAction);
-
-        void RestoreAction(CurvilinearGridBlockUndo& undoAction);
-
-        void CommitAction(CurvilinearGridBlockUndo& undoAction);
-
-        void RestoreAction(CurvilinearGridRefinementUndoAction& undoAction);
-
-        void CommitAction(CurvilinearGridRefinementUndoAction& undoAction);
-
         void DeleteGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
 
         /// @brief Get the boundary grid line type: left, right, bottom or up
@@ -257,12 +246,12 @@ namespace meshkernel
 
         /// @brief Delete a node at a specific location by setting it to an invalid point.
         /// @param[in] point The input point coordinate. The closest grid node will be deleted.
-        void DeleteNode(Point const& point);
+        [[nodiscard]] UndoActionPtr DeleteNode(Point const& point);
 
         /// @brief Moves a node from one position to another
         /// @param[in] fromPoint The input position, the closest node will be used
         /// @param[in] toPoint The coordinates of the new position
-        void MoveNode(Point const& fromPoint, Point const& toPoint);
+        [[nodiscard]] UndoActionPtr MoveNode(Point const& fromPoint, Point const& toPoint);
 
         /// @brief Get the mesh bounding box.
         BoundingBox GetBoundingBox() const;
@@ -305,6 +294,23 @@ namespace meshkernel
         /// @return A number >= 2 for a valid curvilinear grid
         UInt FullNumN() const { return static_cast<UInt>(m_gridNodes.rows()); }
 
+        void RestoreAction(AddGridLineUndoAction& undoAction);
+
+        void CommitAction(AddGridLineUndoAction& undoAction);
+
+        void RestoreAction(CurvilinearGridBlockUndo& undoAction);
+
+        void CommitAction(CurvilinearGridBlockUndo& undoAction);
+
+        void RestoreAction(CurvilinearGridRefinementUndoAction& undoAction);
+
+        void CommitAction(CurvilinearGridRefinementUndoAction& undoAction);
+
+        void RestoreAction(const ResetCurvilinearNodeAction& undoAction);
+
+        void CommitAction(const ResetCurvilinearNodeAction& undoAction);
+
+        // TODO make private;
         CurvilinearGridNodeIndices m_startOffset{0, 0};
         CurvilinearGridNodeIndices m_endOffset{0, 0};
 

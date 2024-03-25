@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <utility>
 
-const meshkernel::UInt meshkernel::UndoActionStack::MaxUndoSize = 10;
+const meshkernel::UInt meshkernel::UndoActionStack::MaxUndoSize = 50;
 
 void meshkernel::UndoActionStack::Add(UndoActionPtr&& action)
 {

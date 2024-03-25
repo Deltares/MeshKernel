@@ -13,6 +13,7 @@
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/Operations.hpp" // can delete after test
 
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
@@ -483,4 +484,54 @@ TEST(UndoTests, AddAndResetEdgeInMeshTestUsingStack)
     ////////////////////////////////
     // Nothing else to undo
     EXPECT_FALSE(undoActionStack.Undo());
+}
+
+TEST(UndoTests, ConnectNodeThenDeleteEdge)
+{
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 1.0, meshkernel::Projection::cartesian);
+    mk::UndoActionStack undoActionStack;
+
+    mk::Point node1(0.5, -1.0);
+    mk::Point node2(1.5, -1.0);
+
+    auto [nodeId1, addNodeAction1] = mesh->InsertNode(node1);
+    undoActionStack.Add(std::move(addNodeAction1));
+
+    auto [edgeId1, addEdgeAction1] = mesh->ConnectNodes(0, nodeId1);
+    undoActionStack.Add(std::move(addEdgeAction1));
+
+    auto [edgeId2, addEdgeAction2] = mesh->ConnectNodes(4, nodeId1);
+    undoActionStack.Add(std::move(addEdgeAction2));
+
+    auto [nodeId2, addNodeAction2] = mesh->InsertNode(node2);
+    undoActionStack.Add(std::move(addNodeAction2));
+
+    auto [edgeId3, addEdgeAction3] = mesh->ConnectNodes(4, nodeId2);
+    undoActionStack.Add(std::move(addEdgeAction3));
+
+    auto [edgeId4, addEdgeAction4] = mesh->ConnectNodes(8, nodeId2);
+    undoActionStack.Add(std::move(addEdgeAction4));
+
+    undoActionStack.Add(mesh->DeleteEdge(edgeId4));
+
+    undoActionStack.Undo(); // Undo delete-edge
+    undoActionStack.Undo(); // undo connect-nodes 8 and 2
+    undoActionStack.Undo(); // undo connect-nodes 4 and 2
+    undoActionStack.Undo(); // undo insert node 2
+
+    undoActionStack.Undo(); // undo connect-nodes 0 and 1
+    undoActionStack.Undo(); // undo connect-nodes 4 and 1
+    undoActionStack.Undo(); // undo insert node 1
+
+    undoActionStack.Commit();
+    undoActionStack.Commit();
+    undoActionStack.Commit();
+    undoActionStack.Commit();
+    undoActionStack.Commit();
+    undoActionStack.Commit();
+    // undoActionStack.Commit(); // delete-edge
+
+    mk::Print(mesh->Nodes(), mesh->Edges());
+
+    // undoActionStack.
 }

@@ -54,7 +54,7 @@ namespace meshkernel
         /// @brief Moves a node from one position to another
         /// @param[in] fromPoint The input position, the closest node on the \ref m_grid grid will be used
         /// @param[in] toPoint The coordinates of the new position
-        void MoveNode(Point const& fromPoint, Point const& toPoint);
+        UndoActionPtr MoveNode(Point const& fromPoint, Point const& toPoint);
 
     private:
         /// @brief Distribute the displacement around the node on the influence zone.

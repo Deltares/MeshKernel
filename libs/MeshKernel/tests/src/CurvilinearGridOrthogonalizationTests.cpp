@@ -21,7 +21,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnStronglyNonOrthogonalCurvilinea
     CurvilinearGrid curvilinearGrid(grid, meshkernel::Projection::cartesian);
 
     // Move a node, to make the grid strongly non orthogonal
-    curvilinearGrid.MoveNode({10.0, 20.0}, {18.0, 12.0});
+    [[maybe_unused]] auto dummyUnusedAction = curvilinearGrid.MoveNode({10.0, 20.0}, {18.0, 12.0});
 
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 1;

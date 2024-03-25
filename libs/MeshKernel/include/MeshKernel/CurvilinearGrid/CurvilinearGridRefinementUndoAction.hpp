@@ -46,10 +46,12 @@ namespace meshkernel
 
         CurvilinearGridRefinementUndoAction(CurvilinearGrid& grid);
 
-        void Swap(lin_alg::Matrix<Point>& nodes);
+        void Swap(lin_alg::Matrix<Point>& nodes, CurvilinearGridNodeIndices& lower, CurvilinearGridNodeIndices& upper);
 
     private:
         lin_alg::Matrix<Point> m_nodes; ///< Grid nodes
+        CurvilinearGridNodeIndices m_lower;
+        CurvilinearGridNodeIndices m_upper;
     };
 
 } // namespace meshkernel

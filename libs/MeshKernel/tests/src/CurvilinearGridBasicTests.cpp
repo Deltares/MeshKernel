@@ -37,6 +37,7 @@
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridLineAttractionRepulsion.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridLineMirror.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridLineShift.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp"
@@ -1067,4 +1068,295 @@ TEST(CurvilinearBasicTests, AnotherTest9)
     //               << points[i].y << " ++ " << grid->Node(i).y << " == " << points[i].y - grid->Node(i).y
     //               << std::endl;
     // }
+}
+
+TEST(CurvilinearBasicTests, AnotherTest10)
+{
+    std::cout.precision(18);
+    // Set-up
+    const auto grid = MakeSmallCurvilinearGrid();
+    meshkernel::CurvilinearGridLineShift curvilinearLineShift(*grid);
+
+    // grid->printGraph();
+
+    curvilinearLineShift.SetLine({79982.0, 366934.0}, {80155.0, 366530.0});
+    curvilinearLineShift.SetBlock({80108.0, 366707.0}, {80291.0, 366792.0});
+    curvilinearLineShift.MoveNode({79982.0, 366934.0}, {79872.0, 366876.0});
+
+    // curvilinearLineShift.SetLine({79982.0, 366934.0}, {80155.0, 366530.0});
+    // curvilinearLineShift.SetBlock({80108.0, 366707.0}, {80291.0, 366792.0});
+
+    // // Move two nodes
+    // curvilinearLineShift.MoveNode({79982.0, 366934.0}, {79872.0, 366876.0});
+    // curvilinearLineShift.MoveNode({80053.0, 366823.0}, {79932.0, 366773.0});
+
+    // Execute
+    curvilinearLineShift.Compute();
+    grid->ComputeGridNodeTypes();
+    grid->SetFlatCopies();
+
+    // Asserts
+    // const double tolerance = 1e-6;
+
+    // ASSERT_NEAR(79872.000000000000, grid->GetNode(0, 0).x, tolerance);
+    // ASSERT_NEAR(80010.039799507853, grid->GetNode(0, 1).x, tolerance);
+    // ASSERT_NEAR(80145.970831448722, grid->GetNode(0, 2).x, tolerance);
+    // ASSERT_NEAR(80225.900042018140, grid->GetNode(0, 3).x, tolerance);
+    // ASSERT_NEAR(80305.243756829266, grid->GetNode(0, 4).x, tolerance);
+    // ASSERT_NEAR(80381.747982750283, grid->GetNode(0, 5).x, tolerance);
+    // ASSERT_NEAR(80458.252208671300, grid->GetNode(0, 6).x, tolerance);
+    // ASSERT_NEAR(80534.756434592317, grid->GetNode(0, 7).x, tolerance);
+    // ASSERT_NEAR(80611.260660513333, grid->GetNode(0, 8).x, tolerance);
+
+    // ASSERT_NEAR(79970.149644452977, grid->GetNode(1, 0).x, tolerance);
+    // ASSERT_NEAR(80103.062377666603, grid->GetNode(1, 1).x, tolerance);
+    // ASSERT_NEAR(80234.924195000407, grid->GetNode(1, 2).x, tolerance);
+    // ASSERT_NEAR(80324.671765221428, grid->GetNode(1, 3).x, tolerance);
+    // ASSERT_NEAR(80414.057391982613, grid->GetNode(1, 4).x, tolerance);
+    // ASSERT_NEAR(80505.096476712482, grid->GetNode(1, 5).x, tolerance);
+    // ASSERT_NEAR(80595.183339827883, grid->GetNode(1, 6).x, tolerance);
+    // ASSERT_NEAR(80684.333994102650, grid->GetNode(1, 7).x, tolerance);
+    // ASSERT_NEAR(80772.567299473958, grid->GetNode(1, 8).x, tolerance);
+
+    // ASSERT_NEAR(366876.00000000000, grid->GetNode(0, 0).y, tolerance);
+    // ASSERT_NEAR(366959.82623907487, grid->GetNode(0, 1).y, tolerance);
+    // ASSERT_NEAR(367047.36276461056, grid->GetNode(0, 2).y, tolerance);
+    // ASSERT_NEAR(367104.62934968271, grid->GetNode(0, 3).y, tolerance);
+    // ASSERT_NEAR(367163.01691965276, grid->GetNode(0, 4).y, tolerance);
+    // ASSERT_NEAR(367224.10904462705, grid->GetNode(0, 5).y, tolerance);
+    // ASSERT_NEAR(367285.20116960135, grid->GetNode(0, 6).y, tolerance);
+    // ASSERT_NEAR(367346.29329457565, grid->GetNode(0, 7).y, tolerance);
+    // ASSERT_NEAR(367407.38541954994, grid->GetNode(0, 8).y, tolerance);
+
+    // ASSERT_NEAR(366781.50715811126, grid->GetNode(1, 0).y, tolerance);
+    // ASSERT_NEAR(366849.28921837400, grid->GetNode(1, 1).y, tolerance);
+    // ASSERT_NEAR(366919.18816119258, grid->GetNode(1, 2).y, tolerance);
+    // ASSERT_NEAR(366966.76979594346, grid->GetNode(1, 3).y, tolerance);
+    // ASSERT_NEAR(367015.14849423966, grid->GetNode(1, 4).y, tolerance);
+    // ASSERT_NEAR(367056.48898898275, grid->GetNode(1, 5).y, tolerance);
+    // ASSERT_NEAR(367099.12347147451, grid->GetNode(1, 6).y, tolerance);
+    // ASSERT_NEAR(367143.03018172452, grid->GetNode(1, 7).y, tolerance);
+    // ASSERT_NEAR(367188.18349069095, grid->GetNode(1, 8).y, tolerance);
+
+    grid->printGraph();
+}
+
+TEST(CurvilinearBasicTests, AnotherTest11)
+{
+    constexpr double originX = 0.0;
+    constexpr double originY = 0.0;
+
+    constexpr double deltaX = 1.0;
+    constexpr double deltaY = 1.0;
+
+    constexpr size_t nx = 30;
+    constexpr size_t ny = 30;
+
+    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+
+    meshkernel::CurvilinearGridLineShift lineShift(*grid);
+
+    // grid->printGraph();
+
+    lineShift.SetLine({5.0, 3.0}, {5.0, 15.0});
+    lineShift.SetBlock({2.0, 3.0}, {10.0, 10.0});
+    std::unique_ptr<mk::UndoAction> undoMoveNode = lineShift.MoveNode({5.0, 5.0}, {6.5, 6.0});
+
+    // lineShift.SetLine({79982.0, 366934.0}, {80155.0, 366530.0});
+    // lineShift.SetBlock({80108.0, 366707.0}, {80291.0, 366792.0});
+
+    // // Move two nodes
+    // lineShift.MoveNode({79982.0, 366934.0}, {79872.0, 366876.0});
+    // lineShift.MoveNode({80053.0, 366823.0}, {79932.0, 366773.0});
+
+    // Execute
+    std::unique_ptr<mk::UndoAction> undoAction = lineShift.Compute();
+
+    undoAction->Restore();
+    undoMoveNode->Restore();
+
+    grid->ComputeGridNodeTypes();
+    grid->SetFlatCopies();
+    grid->printGraph();
+}
+
+TEST(CurvilinearBasicTests, CompoundTest1)
+{
+    constexpr double originX = 0.0;
+    constexpr double originY = 0.0;
+
+    constexpr double deltaX = 1.0;
+    constexpr double deltaY = 1.0;
+
+    constexpr size_t nx = 30;
+    constexpr size_t ny = 30;
+
+    mk::UndoActionStack undoActions;
+    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+
+    meshkernel::CurvilinearGridLineShift lineShift(*grid);
+
+    // grid->printGraph();
+
+    lineShift.SetLine({5.0, 3.0}, {5.0, 15.0});
+    lineShift.SetBlock({2.0, 3.0}, {10.0, 10.0});
+
+    undoActions.Add(lineShift.MoveNode({5.0, 5.0}, {6.5, 6.0}));
+    undoActions.Add(lineShift.Compute());
+
+    mk::CurvilinearGridRefinement refinement(*grid, 2);
+    refinement.SetBlock({10.0, 20.0}, {20.0, 20.0});
+
+    undoActions.Add(refinement.Compute());
+
+    //--------------------------------
+
+    mk::CurvilinearGridLineMirror lineMirror(*grid, deltaX);
+
+    // Bottom
+    lineMirror.m_lines.push_back(mk::CurvilinearGridLine({0, 0}, {0, nx - 1 + 10}));
+    undoActions.Add(lineMirror.Compute());
+    grid->ComputeGridNodeTypes();
+
+#if 1
+
+    //--------------------------------
+
+    // Bottom
+    lineMirror.m_lines[0] = mk::CurvilinearGridLine({0, 0}, {0, nx - 1 + 10});
+    undoActions.Add(lineMirror.Compute());
+    grid->ComputeGridNodeTypes();
+
+    //--------------------------------
+
+    mk::CurvilinearGridDeleteInterior deleteInterior(*grid);
+    deleteInterior.m_lowerLeft = {7, 4};
+    deleteInterior.m_upperRight = {16, 20};
+    auto deleteAction2 = deleteInterior.Compute();
+    grid->ComputeGridNodeTypes();
+    undoActions.Add(std::move(deleteAction2));
+
+    //--------------------------------
+
+    // Left
+    lineMirror.m_lines[0] = mk::CurvilinearGridLine({0, 0}, {ny + 1, 0});
+    undoActions.Add(lineMirror.Compute());
+    grid->ComputeGridNodeTypes();
+
+    //--------------------------------
+
+    // Top
+    lineMirror.m_lines[0] = mk::CurvilinearGridLine({ny + 1, 5}, {ny + 1, nx + 7});
+    undoActions.Add(lineMirror.Compute());
+    grid->ComputeGridNodeTypes();
+
+    //--------------------------------
+
+    // Right
+    lineMirror.m_lines[0] = mk::CurvilinearGridLine({3, nx + 10}, {ny - 4, nx + 10});
+    undoActions.Add(lineMirror.Compute());
+    grid->ComputeGridNodeTypes();
+
+    //--------------------------------
+
+    // Right
+    lineMirror.m_lines[0] = mk::CurvilinearGridLine({3, nx + 11}, {ny - 4, nx + 11});
+    undoActions.Add(lineMirror.Compute());
+    grid->ComputeGridNodeTypes();
+
+    //--------------------------------
+
+    // Right
+    lineMirror.m_lines[0] = mk::CurvilinearGridLine({3, nx + 12}, {ny - 4, nx + 12});
+    undoActions.Add(lineMirror.Compute());
+    grid->ComputeGridNodeTypes();
+
+    //--------------------------------
+
+    mk::CurvilinearGridRefinement refinement2(*grid, 2);
+    refinement2.SetBlock({0.0, 10.0}, {0.0, 20.0});
+
+    undoActions.Add(refinement2.Compute());
+
+    //--------------------------------
+
+    // Right
+    lineMirror.m_lines[0] = mk::CurvilinearGridLine({3, nx + 13}, {ny - 4, nx + 13});
+    undoActions.Add(lineMirror.Compute());
+    grid->ComputeGridNodeTypes();
+
+    //--------------------------------
+
+    // Right
+    lineMirror.m_lines[0] = mk::CurvilinearGridLine({3, nx + 14}, {ny - 4, nx + 14});
+    undoActions.Add(lineMirror.Compute());
+    grid->ComputeGridNodeTypes();
+
+    //--------------------------------
+
+    // Right
+    lineMirror.m_lines[0] = mk::CurvilinearGridLine({3, nx + 15}, {ny - 4, nx + 15});
+    undoActions.Add(lineMirror.Compute());
+    grid->ComputeGridNodeTypes();
+
+    //--------------------------------
+
+    // Right
+    lineMirror.m_lines[0] = mk::CurvilinearGridLine({3, nx + 16}, {ny - 4, nx + 16});
+    undoActions.Add(lineMirror.Compute());
+    grid->ComputeGridNodeTypes();
+
+    //--------------------------------
+
+    // Right
+    lineMirror.m_lines[0] = mk::CurvilinearGridLine({3, nx + 17}, {ny - 4, nx + 17});
+    undoActions.Add(lineMirror.Compute());
+    grid->ComputeGridNodeTypes();
+
+    //--------------------------------
+
+    mk::CurvilinearGridDeleteInterior deleteInterior2(*grid);
+    deleteInterior2.m_lowerLeft = {9, 25};
+    deleteInterior2.m_upperRight = {23, 42};
+    auto deleteAction3 = deleteInterior2.Compute();
+    grid->ComputeGridNodeTypes();
+    undoActions.Add(std::move(deleteAction3));
+
+    //--------------------------------
+
+    // for (int i = 1; i <= 17; ++i)
+    // {
+    //     undoActions.Undo();
+    // }
+
+    // for (int i = 1; i <= 17; ++i)
+    // {
+    //     undoActions.Commit();
+    // }
+
+#endif
+
+    while (undoActions.Undo())
+    {
+        // Nothing else to do
+    }
+
+    while (undoActions.Commit())
+    {
+        // Nothing else to do
+    }
+
+    // undoActions.Undo();
+    // undoActions.Undo();
+    // undoActions.Undo();
+    // undoActions.Undo();
+    // undoActions.Undo();
+    // undoActions.Undo();
+    // undoActions.Undo();
+    // undoActions.Undo();
+    // undoActions.Undo();
+
+    grid->ComputeGridNodeTypes();
+    grid->SetFlatCopies();
+    grid->printGraph();
 }
