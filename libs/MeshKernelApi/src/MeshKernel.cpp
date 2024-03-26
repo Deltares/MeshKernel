@@ -73,6 +73,7 @@
 #include <MeshKernel/SplineAlgorithms.hpp>
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
+#include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
 #include <MeshKernelApi/MeshKernel.hpp>
@@ -1588,7 +1589,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            auto [edgeId, action] = meshKernelState[meshKernelId].m_mesh2d->ConnectNodes(startNode, endNode);
+            auto [edgeId, undoAction] = meshKernelState[meshKernelId].m_mesh2d->ConnectNodes(startNode, endNode);
+            meshKernelState[meshKernelId].m_undoStack.Add(std::move(undoAction));
 
             new_edge_index = static_cast<int>(edgeId);
         }
@@ -1611,7 +1613,8 @@ namespace meshkernelapi
 
             meshkernel::Point const nodeCoordinateVector{xCoordinate, yCoordinate};
 
-            auto [nodeId, action] = meshKernelState[meshKernelId].m_mesh2d->InsertNode(nodeCoordinateVector);
+            auto [nodeId, undoAction] = meshKernelState[meshKernelId].m_mesh2d->InsertNode(nodeCoordinateVector);
+            meshKernelState[meshKernelId].m_undoStack.Add(std::move(undoAction));
 
             nodeIndex = static_cast<int>(nodeId);
         }
@@ -2544,8 +2547,10 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            [[maybe_unused]] auto undoAction1 = meshKernelState[meshKernelId].m_mesh2d->DeleteSmallFlowEdges(smallFlowEdgesThreshold);
-            [[maybe_unused]] auto undoAction2 = meshKernelState[meshKernelId].m_mesh2d->DeleteSmallTrianglesAtBoundaries(minFractionalAreaTriangles);
+            std::unique_ptr<meshkernel::CompoundUndoAction> undoSmallFlowEdges = meshkernel::CompoundUndoAction::Create();
+            undoSmallFlowEdges->Add(meshKernelState[meshKernelId].m_mesh2d->DeleteSmallFlowEdges(smallFlowEdgesThreshold));
+            undoSmallFlowEdges->Add(meshKernelState[meshKernelId].m_mesh2d->DeleteSmallTrianglesAtBoundaries(minFractionalAreaTriangles));
+            meshKernelState[meshKernelId].m_undoStack.Add(std::move(undoSmallFlowEdges));
         }
         catch (...)
         {
