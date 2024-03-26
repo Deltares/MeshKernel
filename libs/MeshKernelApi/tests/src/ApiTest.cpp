@@ -3031,3 +3031,94 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
     errorCode = mkernel_deallocate_state(mk_id);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
+
+TEST(Mesh2D, Mesh2DAddEdge)
+{
+    using namespace meshkernelapi;
+
+    meshkernel::UInt const num_nodes_x = 4;
+    meshkernel::UInt const num_nodes_y = 4;
+    double const delta = 1.0;
+
+    // create first mesh
+    auto [num_nodes, num_edges, node_x, node_y, edge_nodes] =
+        MakeRectangularMeshForApiTesting(num_nodes_x,
+                                         num_nodes_y,
+                                         delta,
+                                         meshkernel::Point(0.0, 0.0));
+    Mesh2D mesh2d{};
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+     // allocate state
+    int mk_id = 0;
+    int errorCode = mkernel_allocate_state(0, mk_id);
+
+    // first initialise using the first mesh, mesh2d
+    errorCode = mkernel_mesh2d_set(mk_id, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    int newEdgeId = -1;
+    errorCode = mkernel_mesh2d_insert_edge (mk_id, 0, 4, newEdgeId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_TRUE(newEdgeId > 0);
+
+    bool undoInsertEdge = false;
+    errorCode = mkernel_undo_state (mk_id, undoInsertEdge);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_TRUE(undoInsertEdge);
+
+    undoInsertEdge = false;
+    errorCode = mkernel_undo_state (mk_id, undoInsertEdge);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_FALSE(undoInsertEdge);
+}
+
+TEST(Mesh2D, Mesh2DInsertNode)
+{
+    using namespace meshkernelapi;
+
+    meshkernel::UInt const num_nodes_x = 4;
+    meshkernel::UInt const num_nodes_y = 4;
+    double const delta = 1.0;
+
+    // create first mesh
+    auto [num_nodes, num_edges, node_x, node_y, edge_nodes] =
+        MakeRectangularMeshForApiTesting(num_nodes_x,
+                                         num_nodes_y,
+                                         delta,
+                                         meshkernel::Point(0.0, 0.0));
+    Mesh2D mesh2d{};
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+     // allocate state
+    int mk_id = 0;
+    int errorCode = mkernel_allocate_state(0, mk_id);
+
+    // first initialise using the first mesh, mesh2d
+    errorCode = mkernel_mesh2d_set(mk_id, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    //--------------------------------
+
+    int newNodeId = -1;
+    errorCode = mkernel_mesh2d_insert_node (mk_id, 0.5, -1.0, newNodeId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    bool undoInsertNode = false;
+    errorCode = mkernel_undo_state (mk_id, undoInsertNode);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_TRUE(undoInsertNode);
+
+    undoInsertNode = false;
+    errorCode = mkernel_undo_state (mk_id, undoInsertNode);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_FALSE(undoInsertNode);
+}
