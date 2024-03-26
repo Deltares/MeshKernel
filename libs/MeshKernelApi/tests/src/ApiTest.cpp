@@ -3053,7 +3053,7 @@ TEST(Mesh2D, Mesh2DAddEdge)
     mesh2d.node_y = node_y.data();
     mesh2d.edge_nodes = edge_nodes.data();
 
-     // allocate state
+    // allocate state
     int mk_id = 0;
     int errorCode = mkernel_allocate_state(0, mk_id);
 
@@ -3062,17 +3062,17 @@ TEST(Mesh2D, Mesh2DAddEdge)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     int newEdgeId = -1;
-    errorCode = mkernel_mesh2d_insert_edge (mk_id, 0, 4, newEdgeId);
+    errorCode = mkernel_mesh2d_insert_edge(mk_id, 0, 4, newEdgeId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_TRUE(newEdgeId > 0);
 
     bool undoInsertEdge = false;
-    errorCode = mkernel_undo_state (mk_id, undoInsertEdge);
+    errorCode = mkernel_undo_state(mk_id, undoInsertEdge);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_TRUE(undoInsertEdge);
 
     undoInsertEdge = false;
-    errorCode = mkernel_undo_state (mk_id, undoInsertEdge);
+    errorCode = mkernel_undo_state(mk_id, undoInsertEdge);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_FALSE(undoInsertEdge);
 }
@@ -3098,7 +3098,7 @@ TEST(Mesh2D, Mesh2DInsertNode)
     mesh2d.node_y = node_y.data();
     mesh2d.edge_nodes = edge_nodes.data();
 
-     // allocate state
+    // allocate state
     int mk_id = 0;
     int errorCode = mkernel_allocate_state(0, mk_id);
 
@@ -3109,16 +3109,16 @@ TEST(Mesh2D, Mesh2DInsertNode)
     //--------------------------------
 
     int newNodeId = -1;
-    errorCode = mkernel_mesh2d_insert_node (mk_id, 0.5, -1.0, newNodeId);
+    errorCode = mkernel_mesh2d_insert_node(mk_id, 0.5, -1.0, newNodeId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     bool undoInsertNode = false;
-    errorCode = mkernel_undo_state (mk_id, undoInsertNode);
+    errorCode = mkernel_undo_state(mk_id, undoInsertNode);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_TRUE(undoInsertNode);
 
     undoInsertNode = false;
-    errorCode = mkernel_undo_state (mk_id, undoInsertNode);
+    errorCode = mkernel_undo_state(mk_id, undoInsertNode);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_FALSE(undoInsertNode);
 }
