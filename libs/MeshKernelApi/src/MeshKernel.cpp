@@ -1622,11 +1622,16 @@ namespace meshkernelapi
             meshkernel::Point const firstNodeCoordinates{firstNodeX, firstNodeY};
             meshkernel::Point const secondNodeCoordinates{secondNodeX, secondNodeY};
 
-            const auto searchRadius = ComputeDistance(firstNodeCoordinates, secondNodeCoordinates, meshKernelState[meshKernelId].m_projection) * 0.1;
+            const auto newEdgeLength = ComputeDistance(firstNodeCoordinates, secondNodeCoordinates, meshKernelState[meshKernelId].m_projection);
+            const auto edgeLengths = meshKernelState[meshKernelId].m_mesh2d->m_edgeLengths;
+            const auto lengthFraction = 0.01;
+
+            const auto minEdgeLength = edgeLengths.empty() ? newEdgeLength : *std::ranges::min_element(edgeLengths);
+            const auto searchRadius = std::min(newEdgeLength * lengthFraction, minEdgeLength * lengthFraction);
 
             if (searchRadius <= 0.0)
             {
-                throw meshkernel::MeshKernelError("The nodes are coinciding.");
+                throw meshkernel::MeshKernelError("The first and the second node are coinciding.");
             }
 
             meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Nodes);
