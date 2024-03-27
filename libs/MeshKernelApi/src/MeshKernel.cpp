@@ -1624,10 +1624,10 @@ namespace meshkernelapi
 
             const auto newEdgeLength = ComputeDistance(firstNodeCoordinates, secondNodeCoordinates, meshKernelState[meshKernelId].m_projection);
             const auto& edgeLengths = meshKernelState[meshKernelId].m_mesh2d->m_edgeLengths;
-            const auto lengthFraction = 0.01;
+            constexpr auto lengthFraction = 0.01;
 
-            const auto minEdgeLength = edgeLengths.empty() ? newEdgeLength : *std::ranges::min_element(edgeLengths);
-            const auto searchRadius = std::min(newEdgeLength * lengthFraction, minEdgeLength * lengthFraction);
+            const auto minMeshEdgeLength = edgeLengths.empty() ? newEdgeLength : *std::ranges::min_element(edgeLengths);
+            const auto searchRadius = std::min(newEdgeLength * lengthFraction, minMeshEdgeLength * lengthFraction);
 
             if (searchRadius <= 0.0)
             {
@@ -1639,7 +1639,7 @@ namespace meshkernelapi
             if (firstNodeId == meshkernel::constants::missing::uintValue)
             {
                 auto result = meshKernelState[meshKernelId].m_mesh2d->InsertNode(firstNodeCoordinates);
-                firstNodeId = std::get<0>(result);
+                std::tie(firstNodeId, std::ignore) = result;
                 compoundUndoAction->Add(std::move(std::get<1>(result)));
             }
             firstNodeIndex = static_cast<int>(firstNodeId);
@@ -1649,7 +1649,7 @@ namespace meshkernelapi
             if (secondNodeId == meshkernel::constants::missing::uintValue)
             {
                 auto result = meshKernelState[meshKernelId].m_mesh2d->InsertNode(secondNodeCoordinates);
-                secondNodeId = std::get<0>(result);
+                std::tie(firstNodeId, std::ignore) = result;
                 compoundUndoAction->Add(std::move(std::get<1>(result)));
             }
             secondNodeIndex = static_cast<int>(secondNodeId);
