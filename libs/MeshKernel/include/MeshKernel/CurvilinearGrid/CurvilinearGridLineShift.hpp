@@ -49,12 +49,12 @@ namespace meshkernel
         CurvilinearGridLineShift(CurvilinearGrid& grid);
 
         /// @brief Computes a new curvilinear grid with the line shift
-        UndoActionPtr Compute() override;
+        [[nodiscard]] UndoActionPtr Compute() override;
 
         /// @brief Moves a node from one position to another
         /// @param[in] fromPoint The input position, the closest node on the \ref m_grid grid will be used
         /// @param[in] toPoint The coordinates of the new position
-        UndoActionPtr MoveNode(Point const& fromPoint, Point const& toPoint);
+        [[nodiscard]] UndoActionPtr MoveNode(Point const& fromPoint, Point const& toPoint);
 
     private:
         /// @brief Distribute the displacement around the node on the influence zone.

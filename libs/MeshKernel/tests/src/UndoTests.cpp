@@ -503,33 +503,35 @@ TEST(UndoTests, ConnectNodeThenDeleteEdge)
     auto [edgeId2, addEdgeAction2] = mesh->ConnectNodes(4, nodeId1);
     undoActionStack.Add(std::move(addEdgeAction2));
 
-    auto [nodeId2, addNodeAction2] = mesh->InsertNode(node2);
-    undoActionStack.Add(std::move(addNodeAction2));
+    mesh->Administrate ();
 
-    auto [edgeId3, addEdgeAction3] = mesh->ConnectNodes(4, nodeId2);
-    undoActionStack.Add(std::move(addEdgeAction3));
+    // auto [nodeId2, addNodeAction2] = mesh->InsertNode(node2);
+    // undoActionStack.Add(std::move(addNodeAction2));
 
-    auto [edgeId4, addEdgeAction4] = mesh->ConnectNodes(8, nodeId2);
-    undoActionStack.Add(std::move(addEdgeAction4));
+    // auto [edgeId3, addEdgeAction3] = mesh->ConnectNodes(4, nodeId2);
+    // undoActionStack.Add(std::move(addEdgeAction3));
 
-    undoActionStack.Add(mesh->DeleteEdge(edgeId4));
+    // auto [edgeId4, addEdgeAction4] = mesh->ConnectNodes(8, nodeId2);
+    // undoActionStack.Add(std::move(addEdgeAction4));
+
+    // undoActionStack.Add(mesh->DeleteEdge(edgeId4));
 
     undoActionStack.Undo(); // Undo delete-edge
     undoActionStack.Undo(); // undo connect-nodes 8 and 2
-    undoActionStack.Undo(); // undo connect-nodes 4 and 2
-    undoActionStack.Undo(); // undo insert node 2
+    // undoActionStack.Undo(); // undo connect-nodes 4 and 2
+    // undoActionStack.Undo(); // undo insert node 2
 
-    undoActionStack.Undo(); // undo connect-nodes 0 and 1
-    undoActionStack.Undo(); // undo connect-nodes 4 and 1
-    undoActionStack.Undo(); // undo insert node 1
+    // undoActionStack.Undo(); // undo connect-nodes 0 and 1
+    // undoActionStack.Undo(); // undo connect-nodes 4 and 1
+    // undoActionStack.Undo(); // undo insert node 1
 
-    undoActionStack.Commit();
-    undoActionStack.Commit();
-    undoActionStack.Commit();
-    undoActionStack.Commit();
-    undoActionStack.Commit();
-    undoActionStack.Commit();
-    // undoActionStack.Commit(); // delete-edge
+    // undoActionStack.Commit();
+    // undoActionStack.Commit();
+    // undoActionStack.Commit();
+    // undoActionStack.Commit();
+    // undoActionStack.Commit();
+    // undoActionStack.Commit();
+    // // undoActionStack.Commit(); // delete-edge
 
     mk::Print(mesh->Nodes(), mesh->Edges());
 

@@ -140,7 +140,7 @@ namespace meshkernel
                                 const std::vector<Point>& points);
 
         /// @brief Executes the snapping and smoothing algorithm
-        UndoActionPtr Compute() override;
+        [[nodiscard]] UndoActionPtr Compute() override;
 
     private:
         /// @brief Tolerance to determine if point is on (close to) boundary

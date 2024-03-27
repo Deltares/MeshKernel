@@ -64,7 +64,9 @@ namespace meshkernel
 
     private:
         lin_alg::Matrix<Point> m_gridNodes;         ///< Member variable storing the grid
+#ifdef NODE_TYPES_NEEDED
         lin_alg::Matrix<NodeType> m_gridNodesTypes; ///< The grid node types
+#endif
 
         CurvilinearGridNodeIndices m_bottomLeft;
         CurvilinearGridNodeIndices m_topRight;

@@ -46,7 +46,7 @@ namespace meshkernel
         CurvilinearGridSmoothing(CurvilinearGrid& grid, UInt smoothingIterations);
 
         /// @brief Compute curvilinear grid block smoothing (modifies the m_grid nodal values)
-        UndoActionPtr Compute() override;
+        [[nodiscard]] UndoActionPtr Compute() override;
 
         /// @brief Compute curvilinear grid line smoothing. The algorithm smooths the grid along the direction specified by the line.
         /// The line must be an m or n grid line of the curvilinear grid.

@@ -46,6 +46,6 @@ namespace meshkernel
         CurvilinearGridDeRefinement(CurvilinearGrid& grid);
 
         /// @brief Refine the curvilinear grid
-        UndoActionPtr Compute() override;
+        [[nodiscard]] UndoActionPtr Compute() override;
     };
 } // namespace meshkernel

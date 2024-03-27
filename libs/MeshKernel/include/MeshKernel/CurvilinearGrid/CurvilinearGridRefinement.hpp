@@ -49,7 +49,7 @@ namespace meshkernel
         CurvilinearGridRefinement(CurvilinearGrid& grid, UInt refinement);
 
         /// @brief Refine the curvilinear grid
-        UndoActionPtr Compute() override;
+        [[nodiscard]] UndoActionPtr Compute() override;
 
     private:
         UInt m_refinement; ///< The selected number of refinement lines

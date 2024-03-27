@@ -299,15 +299,7 @@ void CurvilinearGridOrthogonalization::Solve()
                     dummy = 1;
                 }
 
-                std::cout << " node " << n << "  " << m << "  " << m_grid.GetNode(n, m).x << ", " << m_grid.GetNode(n, m).y << "  ";
                 m_grid.GetNode(n, m) = m_grid.GetNode(n, m) - residual / m_orthoEqTerms.e(n, m) * omega;
-                std::cout << residual.x << "  " << residual.y << "  "
-                          << m_orthoEqTerms.a(n, m) << "  "
-                          << m_orthoEqTerms.b(n, m) << "  "
-                          << m_orthoEqTerms.c(n, m) << "  "
-                          << m_orthoEqTerms.d(n, m) << "  "
-                          << m_orthoEqTerms.e(n, m) << "  "
-                          << omega << std::endl;
             }
         }
 
@@ -411,15 +403,12 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
                 continue;
             }
 
-            std::cout << "NodeType::InternalValid" << std::endl;
-
             m_orthoEqTerms.a(n, m) = m_orthoEqTerms.atp(n, m - 1) + m_orthoEqTerms.atp(n, m);
             m_orthoEqTerms.b(n, m) = m_orthoEqTerms.atp(n - 1, m - 1) + m_orthoEqTerms.atp(n - 1, m);
             m_orthoEqTerms.c(n, m) = 1.0 / m_orthoEqTerms.atp(n - 1, m) + 1.0 / m_orthoEqTerms.atp(n, m);
             m_orthoEqTerms.d(n, m) = 1.0 / m_orthoEqTerms.atp(n - 1, m - 1) + 1.0 / m_orthoEqTerms.atp(n, m - 1);
 
             m_orthoEqTerms.e(n, m) = -m_orthoEqTerms.a(n, m) - m_orthoEqTerms.b(n, m) - m_orthoEqTerms.c(n, m) - m_orthoEqTerms.d(n, m);
-            std::cout << " m_orthoEqTerms " << n << "  " << m << "  " << m_orthoEqTerms.e(n, m) << std::endl;
         }
     }
 }

@@ -336,6 +336,8 @@ namespace meshkernelapi
     /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
     static void SetMesh2dApiData(meshkernel::Mesh2D& mesh2d, Mesh2D& mesh2dApi)
     {
+        std::vector<meshkernel::UInt> edgeIndexMapping (mesh2d.GetNumEdges(), meshkernel::constants::missing::uintValue);
+
         mesh2d.ComputeEdgesCenters();
         for (meshkernel::UInt n = 0; n < mesh2d.GetNumNodes(); n++)
         {
@@ -343,17 +345,36 @@ namespace meshkernelapi
             mesh2dApi.node_y[n] = mesh2d.Node(n).y;
         }
 
+        meshkernel::UInt edgeCount = 0;
+
         for (meshkernel::UInt edgeIndex = 0; edgeIndex < mesh2d.GetNumEdges(); edgeIndex++)
         {
-            mesh2dApi.edge_x[edgeIndex] = mesh2d.m_edgesCenters[edgeIndex].x;
-            mesh2dApi.edge_y[edgeIndex] = mesh2d.m_edgesCenters[edgeIndex].y;
-            mesh2dApi.edge_nodes[edgeIndex * 2] = static_cast<int>(mesh2d.GetEdge(edgeIndex).first);
-            mesh2dApi.edge_nodes[edgeIndex * 2 + 1] = static_cast<int>(mesh2d.GetEdge(edgeIndex).second);
 
-            const auto& firstEdgeFace = mesh2d.m_edgesFaces[edgeIndex][0];
-            mesh2dApi.edge_faces[edgeIndex * 2] = firstEdgeFace == meshkernel::constants::missing::uintValue ? -1 : static_cast<int>(firstEdgeFace);
-            const auto& secondEdgeFace = mesh2d.m_edgesFaces[edgeIndex][1];
-            mesh2dApi.edge_faces[edgeIndex * 2 + 1] = secondEdgeFace == meshkernel::constants::missing::uintValue ? -1 : static_cast<int>(secondEdgeFace);
+            if (mesh2d.m_edgesFaces[edgeIndex][0] != meshkernel::constants::missing::uintValue && mesh2d.m_edgesFaces[edgeIndex][1] != meshkernel::constants::missing::uintValue)
+            {
+                mesh2dApi.edge_x[edgeIndex] = mesh2d.m_edgesCenters[edgeCount].x;
+                mesh2dApi.edge_y[edgeIndex] = mesh2d.m_edgesCenters[edgeCount].y;
+                mesh2dApi.edge_nodes[edgeCount * 2] = static_cast<int>(mesh2d.GetEdge(edgeIndex).first);
+                mesh2dApi.edge_nodes[edgeCount * 2 + 1] = static_cast<int>(mesh2d.GetEdge(edgeIndex).second);
+
+                const auto firstEdgeFace = mesh2d.m_edgesFaces[edgeIndex][0];
+                const auto secondEdgeFace = mesh2d.m_edgesFaces[edgeIndex][1];
+
+                mesh2dApi.edge_faces[edgeCount * 2] = static_cast<int>(firstEdgeFace);
+                mesh2dApi.edge_faces[edgeCount * 2 + 1] = static_cast<int>(secondEdgeFace);
+                edgeIndexMapping[edgeIndex] = edgeCount;
+                ++edgeCount;
+            }
+
+            // mesh2dApi.edge_x[edgeIndex] = mesh2d.m_edgesCenters[edgeIndex].x;
+            // mesh2dApi.edge_y[edgeIndex] = mesh2d.m_edgesCenters[edgeIndex].y;
+            // mesh2dApi.edge_nodes[edgeIndex * 2] = static_cast<int>(mesh2d.GetEdge(edgeIndex).first);
+            // mesh2dApi.edge_nodes[edgeIndex * 2 + 1] = static_cast<int>(mesh2d.GetEdge(edgeIndex).second);
+
+            // const auto& firstEdgeFace = mesh2d.m_edgesFaces[edgeIndex][0];
+            // mesh2dApi.edge_faces[edgeIndex * 2] = firstEdgeFace == meshkernel::constants::missing::uintValue ? -1 : static_cast<int>(firstEdgeFace);
+            // const auto& secondEdgeFace = mesh2d.m_edgesFaces[edgeIndex][1];
+            // mesh2dApi.edge_faces[edgeIndex * 2 + 1] = secondEdgeFace == meshkernel::constants::missing::uintValue ? -1 : static_cast<int>(secondEdgeFace);
         }
 
         int faceIndex = 0;
@@ -362,12 +383,22 @@ namespace meshkernelapi
             mesh2dApi.face_x[f] = mesh2d.m_facesMassCenters[f].x;
             mesh2dApi.face_y[f] = mesh2d.m_facesMassCenters[f].y;
             mesh2dApi.nodes_per_face[f] = static_cast<int>(mesh2d.m_facesNodes[f].size());
+
             for (size_t n = 0; n < mesh2d.m_facesNodes[f].size(); ++n)
             {
                 mesh2dApi.face_nodes[faceIndex] = static_cast<int>(mesh2d.m_facesNodes[f][n]);
-                mesh2dApi.face_edges[faceIndex] = static_cast<int>(mesh2d.m_facesEdges[f][n]);
+                mesh2dApi.face_edges[faceIndex] = static_cast<int>(edgeIndexMapping[mesh2d.m_facesEdges[f][n]]);
                 faceIndex++;
             }
+
+
+            // for (size_t n = 0; n < mesh2d.m_facesNodes[f].size(); ++n)
+            // {
+            //     mesh2dApi.face_nodes[faceIndex] = static_cast<int>(mesh2d.m_facesNodes[f][n]);
+            //     mesh2dApi.face_edges[faceIndex] = static_cast<int>(mesh2d.m_facesEdges[f][n]);
+            //     faceIndex++;
+            // }
+
         }
     }
 

@@ -47,7 +47,7 @@ namespace meshkernel
         CurvilinearGridLineMirror(CurvilinearGrid& grid, double mirroringFactor);
 
         /// @brief Computes a new curvilinear grid with the line shift
-        UndoActionPtr Compute() override;
+        [[nodiscard]] UndoActionPtr Compute() override;
 
     private:
         CurvilinearGrid m_originalGrid; ///< The new grid, storing the new positions

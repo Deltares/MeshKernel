@@ -21,7 +21,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnStronglyNonOrthogonalCurvilinea
     CurvilinearGrid curvilinearGrid(grid, meshkernel::Projection::cartesian);
 
     // Move a node, to make the grid strongly non orthogonal
-    [[maybe_unused]] auto dummyUnusedAction = curvilinearGrid.MoveNode({10.0, 20.0}, {18.0, 12.0});
+    [[maybe_unused]] auto dummyUnusedAction = curvilinearGrid.MoveNode(meshkernel::Point(10.0, 20.0), meshkernel::Point(18.0, 12.0));
 
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 1;
@@ -32,7 +32,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnStronglyNonOrthogonalCurvilinea
     curvilinearGridOrthogonalization.SetBlock({0, 0}, {30, 30});
 
     // Execute
-    curvilinearGridOrthogonalization.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridOrthogonalization.Compute();
 
     // Assert the moved nodes has moved towards its original location, making the grid more orthogonal
     constexpr double tolerance = 1e-6;
@@ -60,7 +60,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnOrthogonalCurvilinearGrid_Shoul
     curvilinearGridOrthogonalization.SetBlock({0, 0}, {30, 30});
 
     // Execute
-    curvilinearGridOrthogonalization.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridOrthogonalization.Compute();
 
     // Assert nodes are on the same location because the grid is already orthogonal
     constexpr double tolerance = 1e-6;
@@ -119,7 +119,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGrid_S
     meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(*curvilinearGrid, orthogonalizationParameters);
     curvilinearGridOrthogonalization.SetBlock({80154, 366530}, {80610, 367407});
     // Execute
-    curvilinearGridOrthogonalization.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridOrthogonalization.Compute();
 
     // Assert
     constexpr double tolerance = 1e-6;
@@ -179,7 +179,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
     curvilinearGridOrthogonalization.SetBlock({80154, 366530}, {80610, 367407});
 
     // Execute
-    curvilinearGridOrthogonalization.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridOrthogonalization.Compute();
 
     // Assert
     constexpr double tolerance = 1e-6;
@@ -277,7 +277,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
     curvilinearGridOrthogonalization.SetLine({80144, 367046}, {80329, 366550});
 
     // Execute
-    curvilinearGridOrthogonalization.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridOrthogonalization.Compute();
 
     // Assert
     constexpr double tolerance = 1e-6;

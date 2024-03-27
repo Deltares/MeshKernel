@@ -191,7 +191,7 @@ namespace meshkernel
 
         /// @brief Inserts a new face. The new face will be inserted on top of the closest edge.
         /// @param[in] point  The point used for finding the closest edge.
-        void InsertFace(Point const& point);
+        [[nodiscard]] UndoActionPtr InsertFace(Point const& point);
 
         /// @brief From two points expressed as CurvilinearGridNodeIndices, gets the two corner points defining a block in m and n coordinates
         /// @param[in] firstNode The node indices of the first node
@@ -247,6 +247,11 @@ namespace meshkernel
         /// @brief Delete a node at a specific location by setting it to an invalid point.
         /// @param[in] point The input point coordinate. The closest grid node will be deleted.
         [[nodiscard]] UndoActionPtr DeleteNode(Point const& point);
+
+        /// @brief Moves a node from one position to another
+        /// @param[in] nodeIndex The input index
+        /// @param[in] toPoint The coordinates of the new position
+        [[nodiscard]] UndoActionPtr MoveNode(const CurvilinearGridNodeIndices& nodeIndex, Point const& toPoint);
 
         /// @brief Moves a node from one position to another
         /// @param[in] fromPoint The input position, the closest node will be used
@@ -333,8 +338,8 @@ namespace meshkernel
         /// The new node will be calculated by a first order approximation: x2 = x1 + (x1 - x0) = 2*x1 - x0
         /// @param[in] firstNode The indices of the first new node in the modified grid.
         /// @param[in] secondNode The indices of the second new node in the modified grid.
-        void AddEdge(CurvilinearGridNodeIndices const& firstNode,
-                     CurvilinearGridNodeIndices const& secondNode);
+        [[nodiscard]] UndoActionPtr AddEdge(CurvilinearGridNodeIndices const& firstNode,
+                                            CurvilinearGridNodeIndices const& secondNode);
 
         lin_alg::Matrix<Point> m_gridNodes;                    ///< Member variable storing the grid
         lin_alg::Matrix<bool> m_gridFacesMask;                 ///< The mask of the grid faces (true/false)

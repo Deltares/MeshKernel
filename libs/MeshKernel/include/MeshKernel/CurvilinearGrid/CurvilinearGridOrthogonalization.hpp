@@ -50,7 +50,7 @@ namespace meshkernel
                                          const OrthogonalizationParameters& orthogonalizationParameters);
 
         /// @brief Orthogonalize the curvilinear grid (modifies the grid point by m_grid)
-        UndoActionPtr Compute() override;
+        [[nodiscard]] UndoActionPtr Compute() override;
 
     private:
         /// @brief Solve one orthogonalization iteration, using the method of successive over-relaxation SOR (ORTSOR)

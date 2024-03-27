@@ -43,6 +43,6 @@ namespace meshkernel
 
         /// @brief Set all the nodes interior to the block to be invalid.
         /// @note If any index is the null value or is out of range a ConstraintError will be thrown
-        UndoActionPtr Compute() override;
+        [[nodiscard]] UndoActionPtr Compute() override;
     };
 } // namespace meshkernel

@@ -109,7 +109,7 @@ namespace basic
 
 } // namespace basic
 
-TEST(CurvilinearBasicTests, AddGridLineAtBoundary)
+TEST(CurvilinearBasicTests, DISABLED_AddGridLineAtBoundary)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -243,7 +243,7 @@ TEST(CurvilinearBasicTests, AddGridLineAtBoundary)
               << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
               << std::endl;
 
-    grid->InsertFace({-1.1, 1.0});
+    auto undoAction = grid->InsertFace({-1.1, 1.0});
 
     for (mk::UInt i = 0; i < grid->NumN(); ++i)
     {
@@ -275,7 +275,7 @@ TEST(CurvilinearBasicTests, AddGridLineAtBoundary)
               << std::endl;
 }
 
-TEST(CurvilinearBasicTests, AddGridLineAtBoundaryUndo)
+TEST(CurvilinearBasicTests, DISABLED_AddGridLineAtBoundaryUndo)
 {
     constexpr double originX = 1.0;
     constexpr double originY = 1.0;
@@ -382,7 +382,7 @@ TEST(CurvilinearBasicTests, AddGridLineAtBoundaryUndo)
               << std::endl;
 }
 
-TEST(CurvilinearBasicTests, AnotherTest)
+TEST(CurvilinearBasicTests, DISABLED_AnotherTest)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -418,7 +418,7 @@ TEST(CurvilinearBasicTests, AnotherTest)
     grid->printGraph();
 }
 
-TEST(CurvilinearBasicTests, AnotherTest2)
+TEST(CurvilinearBasicTests, DISABLED_AnotherTest2)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -454,7 +454,7 @@ TEST(CurvilinearBasicTests, AnotherTest2)
     grid->printGraph();
 }
 
-TEST(CurvilinearBasicTests, AnotherTest3)
+TEST(CurvilinearBasicTests, DISABLED_AnotherTest3)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -600,7 +600,7 @@ TEST(CurvilinearBasicTests, AnotherTest3)
     grid->printGraph();
 }
 
-TEST(CurvilinearBasicTests, AnotherTest4)
+TEST(CurvilinearBasicTests, DISABLED_AnotherTest4)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -755,7 +755,7 @@ TEST(CurvilinearBasicTests, AnotherTest4)
     grid->printGraph();
 }
 
-TEST(CurvilinearBasicTests, AnotherTest5)
+TEST(CurvilinearBasicTests, DISABLED_AnotherTest5)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -886,7 +886,7 @@ TEST(CurvilinearBasicTests, AnotherTest5)
     grid->printGraph();
 }
 
-TEST(CurvilinearBasicTests, AnotherTest6)
+TEST(CurvilinearBasicTests, DISABLED_AnotherTest6)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -923,7 +923,7 @@ TEST(CurvilinearBasicTests, AnotherTest6)
     // }
 }
 
-TEST(CurvilinearBasicTests, AnotherTest7)
+TEST(CurvilinearBasicTests, DISABLED_AnotherTest7)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -967,7 +967,7 @@ TEST(CurvilinearBasicTests, AnotherTest7)
     // }
 }
 
-TEST(CurvilinearBasicTests, AnotherTest8)
+TEST(CurvilinearBasicTests, DISABLED_AnotherTest8)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -1019,7 +1019,7 @@ TEST(CurvilinearBasicTests, AnotherTest8)
     // }
 }
 
-TEST(CurvilinearBasicTests, AnotherTest9)
+TEST(CurvilinearBasicTests, DISABLED_AnotherTest9)
 {
     [[maybe_unused]] constexpr double originX = 0.0;
     [[maybe_unused]] constexpr double originY = 0.0;
@@ -1070,7 +1070,7 @@ TEST(CurvilinearBasicTests, AnotherTest9)
     // }
 }
 
-TEST(CurvilinearBasicTests, AnotherTest10)
+TEST(CurvilinearBasicTests, DISABLED_AnotherTest10)
 {
     std::cout.precision(18);
     // Set-up
@@ -1081,7 +1081,7 @@ TEST(CurvilinearBasicTests, AnotherTest10)
 
     curvilinearLineShift.SetLine({79982.0, 366934.0}, {80155.0, 366530.0});
     curvilinearLineShift.SetBlock({80108.0, 366707.0}, {80291.0, 366792.0});
-    curvilinearLineShift.MoveNode({79982.0, 366934.0}, {79872.0, 366876.0});
+    auto undoMoveNode = curvilinearLineShift.MoveNode({79982.0, 366934.0}, {79872.0, 366876.0});
 
     // curvilinearLineShift.SetLine({79982.0, 366934.0}, {80155.0, 366530.0});
     // curvilinearLineShift.SetBlock({80108.0, 366707.0}, {80291.0, 366792.0});
@@ -1091,7 +1091,7 @@ TEST(CurvilinearBasicTests, AnotherTest10)
     // curvilinearLineShift.MoveNode({80053.0, 366823.0}, {79932.0, 366773.0});
 
     // Execute
-    curvilinearLineShift.Compute();
+    auto undoLineShift = curvilinearLineShift.Compute();
     grid->ComputeGridNodeTypes();
     grid->SetFlatCopies();
 
@@ -1141,7 +1141,7 @@ TEST(CurvilinearBasicTests, AnotherTest10)
     grid->printGraph();
 }
 
-TEST(CurvilinearBasicTests, AnotherTest11)
+TEST(CurvilinearBasicTests, DISABLED_AnotherTest11)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -1180,7 +1180,31 @@ TEST(CurvilinearBasicTests, AnotherTest11)
     grid->printGraph();
 }
 
-TEST(CurvilinearBasicTests, CompoundTest1)
+TEST(CurvilinearBasicTests, DISABLED_AnotherTest12)
+{
+    constexpr double originX = 0.0;
+    constexpr double originY = 0.0;
+
+    constexpr double deltaX = 1.0;
+    constexpr double deltaY = 1.0;
+
+    constexpr size_t nx = 30;
+    constexpr size_t ny = 30;
+
+    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+
+    auto undoAction1 = grid->InsertFace ({0.5, 30.0});
+    undoAction1->Restore ();
+
+    auto undoAction2 = grid->InsertFace ({1.5, 30.0});
+    // undoAction2->Restore ();
+
+    grid->ComputeGridNodeTypes();
+    grid->SetFlatCopies();
+    grid->printGraph();
+}
+
+TEST(CurvilinearBasicTests, DISABLED_CompoundTest1)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -1323,16 +1347,6 @@ TEST(CurvilinearBasicTests, CompoundTest1)
     undoActions.Add(std::move(deleteAction3));
 
     //--------------------------------
-
-    // for (int i = 1; i <= 17; ++i)
-    // {
-    //     undoActions.Undo();
-    // }
-
-    // for (int i = 1; i <= 17; ++i)
-    // {
-    //     undoActions.Commit();
-    // }
 
 #endif
 

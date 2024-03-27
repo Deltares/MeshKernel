@@ -605,7 +605,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
     }
 }
 
-void CurvilinearGrid::InsertFace(Point const& point)
+meshkernel::UndoActionPtr CurvilinearGrid::InsertFace(Point const& point)
 {
     if (!point.IsValid())
     {
@@ -624,11 +624,13 @@ void CurvilinearGrid::InsertFace(Point const& point)
     ComputeGridNodeTypes();
 
     // Add a new edge
-    AddEdge(firstNode, secondNode);
+    UndoActionPtr undoAction = AddEdge(firstNode, secondNode);
 
     // Re-compute quantities
     ComputeGridNodeTypes();
     SetFlatCopies();
+
+    return undoAction;
 }
 
 void CurvilinearGrid::DeleteGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode)
@@ -705,9 +707,6 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
 
     UndoActionPtr undoAction;
 
-    UInt rowsBefore = m_gridNodes.rows();
-    UInt colsBefore = m_gridNodes.cols();
-
     if (areNodesValid)
     {
 
@@ -722,8 +721,6 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
             {
                 m_startOffset.m_n -= 1;
             }
-
-            std::cout << " adding grid line LEFT(Bottom) " << rowsBefore << "  " << colsBefore << "  " << m_gridNodes.rows() << "  " << m_gridNodes.cols() << std::endl;
 
             undoAction = AddGridLineUndoAction::Create(*this, {1, 0}, {0, 0});
             gridSizeChanged = true;
@@ -741,7 +738,6 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
                 m_endOffset.m_n -= 1;
             }
 
-            std::cout << " adding grid line RIGHT(Top) " << rowsBefore << "  " << colsBefore << "  " << m_gridNodes.rows() << "  " << m_gridNodes.cols() << std::endl;
             undoAction = AddGridLineUndoAction::Create(*this, {0, 0}, {1, 0});
             gridSizeChanged = true;
         }
@@ -758,7 +754,6 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
                 m_endOffset.m_m -= 1;
             }
 
-            std::cout << " adding grid line UP(Right) " << rowsBefore << "  " << colsBefore << "  " << m_gridNodes.rows() << "  " << m_gridNodes.cols() << std::endl;
             undoAction = AddGridLineUndoAction::Create(*this, {0, 0}, {0, 1});
             gridSizeChanged = true;
         }
@@ -775,7 +770,6 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
                 m_startOffset.m_m -= 1;
             }
 
-            std::cout << " adding grid line BOTTOM(Left) " << rowsBefore << "  " << colsBefore << "  " << m_gridNodes.rows() << "  " << m_gridNodes.cols() << std::endl;
             undoAction = AddGridLineUndoAction::Create(*this, {0, 1}, {0, 0});
             gridSizeChanged = true;
         }
@@ -823,65 +817,81 @@ CurvilinearGrid::BoundaryGridLineType CurvilinearGrid::GetBoundaryGridLineType(C
     throw std::invalid_argument("CurvilinearGrid::GetBoundaryGridLineType: Invalid node types");
 }
 
-void CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode)
+meshkernel::UndoActionPtr CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode)
 {
 
     // Allocate new grid line if needed
     auto const gridLineType = GetBoundaryGridLineType(firstNode, secondNode);
     // Allocation depends on directions
+
+    std::unique_ptr<CompoundUndoAction> undoAddEdge = CompoundUndoAction::Create ();
+
     if (gridLineType == BoundaryGridLineType::Left)
     {
         auto const firstNewNodeCoordinates = GetNode(firstNode.m_n, firstNode.m_m) * 2.0 - GetNode(firstNode.m_n + 1, firstNode.m_m);
         auto const secondNewNodeCoordinates = GetNode(secondNode.m_n, secondNode.m_m) * 2.0 - GetNode(secondNode.m_n + 1, secondNode.m_m);
-        auto [isGridLineAdded, undoAction] = AddGridLineAtBoundary(firstNode, secondNode);
-        // auto const isGridLineAdded = AddGridLineAtBoundary(firstNode, secondNode);
+        auto [isGridLineAdded, addGridLineUndo] = AddGridLineAtBoundary(firstNode, secondNode);
 
         if (isGridLineAdded)
         {
-            GetNode(0, firstNode.m_m) = firstNewNodeCoordinates;
-            GetNode(0, secondNode.m_m) = secondNewNodeCoordinates;
-            return;
+            undoAddEdge->Add (std::move(addGridLineUndo));
+            undoAddEdge->Add (MoveNode (CurvilinearGridNodeIndices(0, firstNode.m_m), firstNewNodeCoordinates));
+            undoAddEdge->Add (MoveNode (CurvilinearGridNodeIndices(0, secondNode.m_m), secondNewNodeCoordinates));
+        }
+        else
+        {
+            undoAddEdge->Add (MoveNode (CurvilinearGridNodeIndices(firstNode.m_n - 1, firstNode.m_m), firstNewNodeCoordinates));
+            undoAddEdge->Add (MoveNode (CurvilinearGridNodeIndices(secondNode.m_n - 1, secondNode.m_m), secondNewNodeCoordinates));
         }
 
-        GetNode(firstNode.m_n - 1, firstNode.m_m) = firstNewNodeCoordinates;
-        GetNode(secondNode.m_n - 1, secondNode.m_m) = secondNewNodeCoordinates;
-        return;
+        return undoAddEdge;
     }
+
     if (gridLineType == BoundaryGridLineType::Right)
     {
         auto const firstNewNodeCoordinates = GetNode(firstNode.m_n, firstNode.m_m) * 2.0 - GetNode(firstNode.m_n - 1, firstNode.m_m);
         auto const secondNewNodeCoordinates = GetNode(secondNode.m_n, secondNode.m_m) * 2.0 - GetNode(secondNode.m_n - 1, secondNode.m_m);
-        [[maybe_unused]] auto [isGridLineAdded, undoAction] = AddGridLineAtBoundary(firstNode, secondNode);
-        GetNode(firstNode.m_n + 1, firstNode.m_m) = firstNewNodeCoordinates;
-        GetNode(secondNode.m_n + 1, secondNode.m_m) = secondNewNodeCoordinates;
+        auto [isGridLineAdded, addGridLineUndo] = AddGridLineAtBoundary(firstNode, secondNode);
+        undoAddEdge->Add (std::move(addGridLineUndo));
+        undoAddEdge->Add (MoveNode (CurvilinearGridNodeIndices(firstNode.m_n + 1, firstNode.m_m), firstNewNodeCoordinates));
+        undoAddEdge->Add (MoveNode (CurvilinearGridNodeIndices(secondNode.m_n + 1, secondNode.m_m), secondNewNodeCoordinates));
 
-        return;
+        return undoAddEdge;
     }
+
     if (gridLineType == BoundaryGridLineType::Bottom)
     {
         auto const firstNewNodeCoordinates = GetNode(firstNode.m_n, firstNode.m_m) * 2.0 - GetNode(firstNode.m_n, firstNode.m_m + 1);
         auto const secondNewNodeCoordinates = GetNode(secondNode.m_n, secondNode.m_m) * 2.0 - GetNode(secondNode.m_n, secondNode.m_m + 1);
-        auto [isGridLineAdded, undoAction] = AddGridLineAtBoundary(firstNode, secondNode);
+        auto [isGridLineAdded, addGridLineUndo] = AddGridLineAtBoundary(firstNode, secondNode);
+
         if (isGridLineAdded)
         {
+            undoAddEdge->Add (std::move(addGridLineUndo));
             // Assign the new coordinates
-            GetNode(firstNode.m_n, 0) = firstNewNodeCoordinates;
-            GetNode(secondNode.m_n, 0) = secondNewNodeCoordinates;
-            return;
+            undoAddEdge->Add (MoveNode (CurvilinearGridNodeIndices(firstNode.m_n, 0), firstNewNodeCoordinates));
+            undoAddEdge->Add (MoveNode (CurvilinearGridNodeIndices(secondNode.m_n, 0), secondNewNodeCoordinates));
+        }
+        else
+        {
+            GetNode(firstNode.m_n, firstNode.m_m - 1) = firstNewNodeCoordinates;
+            GetNode(secondNode.m_n, secondNode.m_m - 1) = secondNewNodeCoordinates;
         }
 
-        GetNode(firstNode.m_n, firstNode.m_m - 1) = firstNewNodeCoordinates;
-        GetNode(secondNode.m_n, secondNode.m_m - 1) = secondNewNodeCoordinates;
+        return undoAddEdge;
     }
 
     if (gridLineType == BoundaryGridLineType::Up)
     {
         auto const firstNewNodeCoordinates = GetNode(firstNode.m_n, firstNode.m_m) * 2.0 - GetNode(firstNode.m_n, firstNode.m_m - 1);
         auto const secondNewNodeCoordinates = GetNode(secondNode.m_n, secondNode.m_m) * 2.0 - GetNode(secondNode.m_n, secondNode.m_m - 1);
-        [[maybe_unused]] auto [isGridLineAdded, undoAction] = AddGridLineAtBoundary(firstNode, secondNode);
-        GetNode(firstNode.m_n, firstNode.m_m + 1) = firstNewNodeCoordinates;
-        GetNode(secondNode.m_n, secondNode.m_m + 1) = secondNewNodeCoordinates;
+        [[maybe_unused]] auto [isGridLineAdded, addGridLineUndo] = AddGridLineAtBoundary(firstNode, secondNode);
+        undoAddEdge->Add (std::move(addGridLineUndo));
+        undoAddEdge->Add (MoveNode (CurvilinearGridNodeIndices(firstNode.m_n, firstNode.m_m + 1), firstNewNodeCoordinates));
+        undoAddEdge->Add (MoveNode (CurvilinearGridNodeIndices(secondNode.m_n, secondNode.m_m + 1), secondNewNodeCoordinates));
     }
+
+    return  undoAddEdge;
 }
 
 std::tuple<double, double, double>
@@ -1011,11 +1021,8 @@ meshkernel::UndoActionPtr CurvilinearGrid::DeleteNode(Point const& point)
     return undoAction;
 }
 
-meshkernel::UndoActionPtr CurvilinearGrid::MoveNode(Point const& fromPoint, Point const& toPoint)
+meshkernel::UndoActionPtr CurvilinearGrid::MoveNode(const CurvilinearGridNodeIndices& nodeIndex, Point const& toPoint)
 {
-    // Get the node indices of fromPoint
-    auto const nodeIndex = GetNodeIndices(fromPoint);
-
     // Check the node indices are valid
     if (!nodeIndex.IsValid())
     {
@@ -1028,6 +1035,26 @@ meshkernel::UndoActionPtr CurvilinearGrid::MoveNode(Point const& fromPoint, Poin
     // move fromPoint to toPoint
     GetNode(nodeIndex.m_n, nodeIndex.m_m) = toPoint;
     return undoAction;
+}
+
+meshkernel::UndoActionPtr CurvilinearGrid::MoveNode(Point const& fromPoint, Point const& toPoint)
+{
+    // Get the node indices of fromPoint
+    auto const nodeIndex = GetNodeIndices(fromPoint);
+    return MoveNode (nodeIndex, toPoint);
+
+    // // Check the node indices are valid
+    // if (!nodeIndex.IsValid())
+    // {
+    //     throw std::invalid_argument("CurvilinearGrid::MoveNode node indices not found");
+    // }
+
+    // std::unique_ptr<ResetCurvilinearNodeAction> undoAction = ResetCurvilinearNodeAction::Create(*this, nodeIndex, GetNode(nodeIndex), toPoint,
+    //                                                                                             false /* recomputeNodeTypes */);
+
+    // // move fromPoint to toPoint
+    // GetNode(nodeIndex.m_n, nodeIndex.m_m) = toPoint;
+    // return undoAction;
 }
 
 meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
