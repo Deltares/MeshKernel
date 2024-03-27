@@ -1102,6 +1102,25 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_insert_edge(int meshKernelId, int startNode, int endNode, int& newEdgeIndex);
 
+        /// @brief Insert a new mesh2d edge from 2 coordinates
+        /// @param[in]  meshKernelId The id of the mesh state
+        /// @param[in]  firstNodeX    The index of the first node to connect
+        /// @param[in]  firstNodeY      The index of the second node to connect
+        /// @param[in]  secondNodeX    The index of the first node to connect
+        /// @param[in]  secondNodeY      The index of the second node to connect
+        /// @param[in]  firstNodeIndex      The index of the first node
+        /// @param[in]  secondNodeIndex      The index of the second node
+        /// @param[in]  edgeIndex      The index of the new generated edge
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_insert_edge_from_coordinates(int meshKernelId,
+                                                                    double firstNodeX,
+                                                                    double firstNodeY,
+                                                                    double secondNodeX,
+                                                                    double secondNodeY,
+                                                                    int& firstNodeIndex,
+                                                                    int& secondNodeIndex,
+                                                                    int& edgeIndex);
+
         /// @brief Insert a new mesh2d node at a specific coordinate.
         /// @param[in]  meshKernelId The id of the mesh state
         /// @param[in]  xCoordinate  The x coordinate of the node to insert

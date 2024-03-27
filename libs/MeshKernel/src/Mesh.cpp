@@ -643,7 +643,7 @@ meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point const& point, double searchRa
 {
     if (GetNumNodes() <= 0)
     {
-        throw std::invalid_argument("Mesh::FindNodeCloseToAPoint: There are no valid nodes.");
+        return constants::missing::uintValue;
     }
 
     SearchNearestLocation(point, searchRadius * searchRadius, Location::Nodes);
@@ -660,7 +660,7 @@ meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point point, const std::vector<bool
 {
     if (GetNumNodes() <= 0)
     {
-        throw std::invalid_argument("Mesh::FindNodeCloseToAPoint: There are no valid nodes.");
+        return constants::missing::uintValue;
     }
 
     SearchNearestLocation(point, Location::Nodes);

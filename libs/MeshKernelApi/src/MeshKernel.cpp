@@ -1601,6 +1601,75 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_mesh2d_insert_edge_from_coordinates(int meshKernelId,
+                                                                double firstNodeX,
+                                                                double firstNodeY,
+                                                                double secondNodeX,
+                                                                double secondNodeY,
+                                                                int& firstNodeIndex,
+                                                                int& secondNodeIndex,
+                                                                int& edgeIndex)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            std::unique_ptr<meshkernel::CompoundUndoAction> compoundUndoAction = meshkernel::CompoundUndoAction::Create();
+            meshkernel::Point const firstNodeCoordinates{firstNodeX, firstNodeY};
+            meshkernel::Point const secondNodeCoordinates{secondNodeX, secondNodeY};
+
+            const auto newEdgeLength = ComputeDistance(firstNodeCoordinates, secondNodeCoordinates, meshKernelState[meshKernelId].m_projection);
+            const auto& edgeLengths = meshKernelState[meshKernelId].m_mesh2d->m_edgeLengths;
+            constexpr auto lengthFraction = 0.01;
+
+            const auto minMeshEdgeLength = edgeLengths.empty() ? newEdgeLength : *std::ranges::min_element(edgeLengths);
+            const auto searchRadius = std::min(newEdgeLength * lengthFraction, minMeshEdgeLength * lengthFraction);
+
+            if (searchRadius <= 0.0)
+            {
+                throw meshkernel::MeshKernelError("The first and the second node are coinciding.");
+            }
+
+            meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Nodes);
+            auto firstNodeId = meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(firstNodeCoordinates, searchRadius);
+            if (firstNodeId == meshkernel::constants::missing::uintValue)
+            {
+                auto result = meshKernelState[meshKernelId].m_mesh2d->InsertNode(firstNodeCoordinates);
+                std::tie(firstNodeId, std::ignore) = result;
+                compoundUndoAction->Add(std::move(std::get<1>(result)));
+                meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Nodes);
+            }
+            firstNodeIndex = static_cast<int>(firstNodeId);
+
+            auto secondNodeId = meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(secondNodeCoordinates, searchRadius);
+            if (secondNodeId == meshkernel::constants::missing::uintValue)
+            {
+                auto result = meshKernelState[meshKernelId].m_mesh2d->InsertNode(secondNodeCoordinates);
+                std::tie(secondNodeId, std::ignore) = result;
+                compoundUndoAction->Add(std::move(std::get<1>(result)));
+            }
+            secondNodeIndex = static_cast<int>(secondNodeId);
+
+            meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Edges);
+            auto [edgeId, action] = meshKernelState[meshKernelId].m_mesh2d->ConnectNodes(firstNodeId, secondNodeId);
+            if (edgeId != meshkernel::constants::missing::uintValue)
+            {
+                compoundUndoAction->Add(std::move(action));
+                meshKernelState[meshKernelId].m_undoStack.Add(std::move(compoundUndoAction));
+            }
+            edgeIndex = static_cast<int>(edgeId);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_mesh2d_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, int& nodeIndex)
     {
         lastExitCode = meshkernel::ExitCode::Success;
