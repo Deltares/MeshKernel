@@ -1623,7 +1623,7 @@ namespace meshkernelapi
             meshkernel::Point const secondNodeCoordinates{secondNodeX, secondNodeY};
 
             const auto newEdgeLength = ComputeDistance(firstNodeCoordinates, secondNodeCoordinates, meshKernelState[meshKernelId].m_projection);
-            const auto edgeLengths = meshKernelState[meshKernelId].m_mesh2d->m_edgeLengths;
+            const auto& edgeLengths = meshKernelState[meshKernelId].m_mesh2d->m_edgeLengths;
             const auto lengthFraction = 0.01;
 
             const auto minEdgeLength = edgeLengths.empty() ? newEdgeLength : *std::ranges::min_element(edgeLengths);
