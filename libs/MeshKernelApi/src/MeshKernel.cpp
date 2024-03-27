@@ -1618,15 +1618,13 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Nodes);
-
             std::unique_ptr<meshkernel::CompoundUndoAction> compoundUndoAction = meshkernel::CompoundUndoAction::Create();
             meshkernel::Point const firstNodeCoordinates{firstNodeX, firstNodeY};
             meshkernel::Point const secondNodeCoordinates{secondNodeX, secondNodeY};
 
             const auto searchRadius = ComputeDistance(firstNodeCoordinates, secondNodeCoordinates, meshKernelState[meshKernelId].m_projection) * 0.1;
 
-            if (searchRadius <= 0)
+            if (searchRadius <= 0.0)
             {
                 throw meshkernel::MeshKernelError("The nodes are coinciding.");
             }
