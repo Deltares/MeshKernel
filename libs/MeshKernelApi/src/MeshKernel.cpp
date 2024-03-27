@@ -1641,15 +1641,15 @@ namespace meshkernelapi
                 auto result = meshKernelState[meshKernelId].m_mesh2d->InsertNode(firstNodeCoordinates);
                 std::tie(firstNodeId, std::ignore) = result;
                 compoundUndoAction->Add(std::move(std::get<1>(result)));
+                meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Nodes);
             }
             firstNodeIndex = static_cast<int>(firstNodeId);
 
-            meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Nodes);
             auto secondNodeId = meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(secondNodeCoordinates, searchRadius);
             if (secondNodeId == meshkernel::constants::missing::uintValue)
             {
                 auto result = meshKernelState[meshKernelId].m_mesh2d->InsertNode(secondNodeCoordinates);
-                std::tie(firstNodeId, std::ignore) = result;
+                std::tie(secondNodeId, std::ignore) = result;
                 compoundUndoAction->Add(std::move(std::get<1>(result)));
             }
             secondNodeIndex = static_cast<int>(secondNodeId);

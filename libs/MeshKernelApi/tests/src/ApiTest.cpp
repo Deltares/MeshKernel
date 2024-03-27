@@ -3162,41 +3162,7 @@ TEST(Mesh2D, InsertEdgeFromCoordinates_OnEmptyMesh_ShouldInsertNewEdge)
     ASSERT_EQ(1, mesh2d.num_edges);
 }
 
-TEST(Mesh2D, InsertEdgeFromCoordinates_OnEmMesh_ShouldInsertNewEdge)
-{
-    // Prepare
-    int meshKernelId = 0;
-    int errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Execute
-    int firstNodeIndex;
-    int secondNodeIndex;
-    int edgeIndex;
-    errorCode = meshkernelapi::mkernel_mesh2d_insert_edge_from_coordinates(meshKernelId,
-                                                                           0,
-                                                                           0,
-                                                                           1,
-                                                                           0,
-                                                                           firstNodeIndex,
-                                                                           secondNodeIndex,
-                                                                           edgeIndex);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    meshkernelapi::Mesh2D mesh2d{};
-    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Assert
-    ASSERT_EQ(0, edgeIndex);
-    ASSERT_EQ(0, firstNodeIndex);
-    ASSERT_EQ(1, secondNodeIndex);
-
-    ASSERT_EQ(2, mesh2d.num_nodes);
-    ASSERT_EQ(1, mesh2d.num_edges);
-}
-
-TEST_F(CartesianApiTestFixture, InsertEdgeFromCoordinates_OnEmMesh_ShouldInsertNewEdge)
+TEST_F(CartesianApiTestFixture, InsertEdgeFromCoordinates_OnNonEmptyMesh_ShouldInsertNewEdge)
 {
     // Prepare
     MakeMesh(4, 4, 2);
