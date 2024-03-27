@@ -273,13 +273,21 @@ namespace meshkernelapi
             return result;
         }
 
-        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::shortType))
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationDataTypes::Short))
         {
             return ComputeGriddedDataSamples<short>(griddedSamples);
         }
-        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::floatType))
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationDataTypes::Float))
         {
             return ComputeGriddedDataSamples<float>(griddedSamples);
+        }
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationDataTypes::Double))
+        {
+            return ComputeGriddedDataSamples<double>(griddedSamples);
+        }
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationDataTypes::Int))
+        {
+            return ComputeGriddedDataSamples<int>(griddedSamples);
         }
         throw meshkernel::MeshKernelError("The value type for the gridded data samples is invalid.");
     }
@@ -510,15 +518,20 @@ namespace meshkernelapi
     static std::unique_ptr<meshkernel::MeshInterpolation> CreateBilinearInterpolatorBasedOnType(const GriddedSamples& griddedSamples,
                                                                                                 const meshkernel::Mesh2D& mesh2d)
     {
-        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::shortType))
+
+        switch (static_cast<meshkernel::InterpolationDataTypes>(griddedSamples.value_type))
         {
+        case meshkernel::InterpolationDataTypes::Short:
             return CreateBilinearInterpolator<short>(mesh2d, griddedSamples);
-        }
-        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::floatType))
-        {
+        case meshkernel::InterpolationDataTypes::Float:
             return CreateBilinearInterpolator<float>(mesh2d, griddedSamples);
+        case meshkernel::InterpolationDataTypes::Int:
+            return CreateBilinearInterpolator<int>(mesh2d, griddedSamples);
+        case meshkernel::InterpolationDataTypes::Double:
+            return CreateBilinearInterpolator<double>(mesh2d, griddedSamples);
+        default:
+            throw meshkernel::MeshKernelError("Invalid value_type for GriddedSamples");
         }
-        throw meshkernel::MeshKernelError("Invalid value_type for GriddedSamples");
     }
 
 } // namespace meshkernelapi
