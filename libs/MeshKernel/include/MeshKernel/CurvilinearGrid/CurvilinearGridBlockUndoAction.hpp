@@ -41,18 +41,18 @@ namespace meshkernel
     class CurvilinearGrid;
 
     /// @brief Undo action for blocks of nodes in a curvilinear mesh.
-    class CurvilinearGridBlockUndo : public BaseMeshUndoAction<CurvilinearGridBlockUndo, CurvilinearGrid>
+    class CurvilinearGridBlockUndoAction : public BaseMeshUndoAction<CurvilinearGridBlockUndoAction, CurvilinearGrid>
     {
     public:
-        /// @brief Return unique pointer to newly created CurvilinearGridBlockUndo object
-        static std::unique_ptr<CurvilinearGridBlockUndo> Create(CurvilinearGrid& grid,
-                                                                const CurvilinearGridNodeIndices& startOffset,
-                                                                const CurvilinearGridNodeIndices& endOffset);
+        /// @brief Return unique pointer to newly created CurvilinearGridBlockUndoAction object
+        static std::unique_ptr<CurvilinearGridBlockUndoAction> Create(CurvilinearGrid& grid,
+                                                                      const CurvilinearGridNodeIndices& startOffset,
+                                                                      const CurvilinearGridNodeIndices& endOffset);
 
         /// @brief Constructor, node values are copied from the grid for the block specified
-        CurvilinearGridBlockUndo(CurvilinearGrid& grid,
-                                 const CurvilinearGridNodeIndices& startOffset,
-                                 const CurvilinearGridNodeIndices& endOffset);
+        CurvilinearGridBlockUndoAction(CurvilinearGrid& grid,
+                                       const CurvilinearGridNodeIndices& startOffset,
+                                       const CurvilinearGridNodeIndices& endOffset);
 
         /// @brief Swap the saved grid nodes with those from the mesh.
         void Swap(CurvilinearGrid& grid);

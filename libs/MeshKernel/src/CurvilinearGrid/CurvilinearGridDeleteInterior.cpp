@@ -27,7 +27,7 @@
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
-#include "MeshKernel/CurvilinearGrid/CurvilinearGridBlockUndo.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridBlockUndoAction.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp"
 
 using meshkernel::CurvilinearGrid;
@@ -47,7 +47,7 @@ meshkernel::UndoActionPtr meshkernel::CurvilinearGridDeleteInterior::Compute()
     const UInt lowerLimitJ = m_lowerLeft.m_m;
     const UInt upperLimitJ = m_upperRight.m_m;
 
-    std::unique_ptr<CurvilinearGridBlockUndo> undoAction = CurvilinearGridBlockUndo::Create(m_grid, m_lowerLeft, m_upperRight);
+    std::unique_ptr<CurvilinearGridBlockUndoAction> undoAction = CurvilinearGridBlockUndoAction::Create(m_grid, m_lowerLeft, m_upperRight);
 
     for (UInt n = lowerLimitI + 1; n < upperLimitI; ++n)
     {

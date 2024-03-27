@@ -1144,13 +1144,13 @@ void CurvilinearGrid::CommitAction(AddGridLineUndoAction& undoAction)
     m_endOffset -= undoAction.EndOffset();
 }
 
-void CurvilinearGrid::RestoreAction(CurvilinearGridBlockUndo& undoAction)
+void CurvilinearGrid::RestoreAction(CurvilinearGridBlockUndoAction& undoAction)
 {
     undoAction.Swap(*this);
     ComputeGridNodeTypes();
 }
 
-void CurvilinearGrid::CommitAction(CurvilinearGridBlockUndo& undoAction)
+void CurvilinearGrid::CommitAction(CurvilinearGridBlockUndoAction& undoAction)
 {
     undoAction.Swap(*this);
     ComputeGridNodeTypes();

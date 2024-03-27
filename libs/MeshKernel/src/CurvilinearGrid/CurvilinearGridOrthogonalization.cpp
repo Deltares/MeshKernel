@@ -70,7 +70,7 @@ meshkernel::UndoActionPtr CurvilinearGridOrthogonalization::Compute()
         throw std::invalid_argument("CurvilinearGridOrthogonalization::Compute: lower left and upper right corners defining the curvilinear grid block are not set");
     }
 
-    std::unique_ptr<CurvilinearGridBlockUndo> undoAction = CurvilinearGridBlockUndo::Create(m_grid, m_lowerLeft, m_upperRight);
+    std::unique_ptr<CurvilinearGridBlockUndoAction> undoAction = CurvilinearGridBlockUndoAction::Create(m_grid, m_lowerLeft, m_upperRight);
 
     // Compute the grid node types
     m_grid.ComputeGridNodeTypes();

@@ -26,7 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridBlockUndo.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridBlockUndoAction.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineAttractionRepulsion.hpp>
 #include <MeshKernel/Entities.hpp>
@@ -67,7 +67,7 @@ meshkernel::UndoActionPtr CurvilinearGridLineAttractionRepulsion::Compute()
     auto const startM = m_lines[0].IsMGridLine() ? m_lines[0].m_startCoordinate : m_lowerLeft.m_m;
     auto const endM = m_lines[0].IsMGridLine() ? m_lines[0].m_endCoordinate : m_upperRight.m_m;
 
-    std::unique_ptr<CurvilinearGridBlockUndo> undoAction = CurvilinearGridBlockUndo::Create(m_grid, {startN, startM}, {endN + 1, endM + 1});
+    std::unique_ptr<CurvilinearGridBlockUndoAction> undoAction = CurvilinearGridBlockUndoAction::Create(m_grid, {startN, startM}, {endN + 1, endM + 1});
 
     for (auto n = startN; n <= endN; ++n)
     {

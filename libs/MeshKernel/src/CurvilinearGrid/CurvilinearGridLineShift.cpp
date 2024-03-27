@@ -60,7 +60,7 @@ meshkernel::UndoActionPtr CurvilinearGridLineShift::Compute()
     auto const startM = m_lines[0].IsMGridLine() ? m_lines[0].m_startCoordinate : m_lowerLeft.m_m;
     auto const endM = m_lines[0].IsMGridLine() ? m_lines[0].m_endCoordinate : m_upperRight.m_m;
 
-    std::unique_ptr<CurvilinearGridBlockUndo> undoAction = CurvilinearGridBlockUndo::Create(m_grid, {startN, startM}, {endN + 1, endM + 1});
+    std::unique_ptr<CurvilinearGridBlockUndoAction> undoAction = CurvilinearGridBlockUndoAction::Create(m_grid, {startN, startM}, {endN + 1, endM + 1});
 
     /// The first delta
     auto const previousNodeIndex = m_lines[0].m_startNode;

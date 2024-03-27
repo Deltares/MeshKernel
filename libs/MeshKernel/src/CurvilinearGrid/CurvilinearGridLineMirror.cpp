@@ -96,7 +96,7 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
         throw std::invalid_argument("CurvilinearGridLineMirror:: Invalid grid line type");
     }
 
-    undoAction->Add(CurvilinearGridBlockUndo::Create(m_grid, lowerLeft, upperRight));
+    undoAction->Add(CurvilinearGridBlockUndoAction::Create(m_grid, lowerLeft, upperRight));
 
     for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
     {

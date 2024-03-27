@@ -50,10 +50,10 @@ meshkernel::UndoActionPtr meshkernel::CurvilinearGridDeleteExterior::Compute()
     std::unique_ptr<CompoundUndoAction> undoAction = CompoundUndoAction::Create();
 
     // TODO check if block is empty
-    undoAction->Add(CurvilinearGridBlockUndo::Create(m_grid, {0, 0}, {m_grid.NumN(), lowerLimitJ}));
-    undoAction->Add(CurvilinearGridBlockUndo::Create(m_grid, {0, lowerLimitJ}, {lowerLimitI, upperLimitJ + 1}));
-    undoAction->Add(CurvilinearGridBlockUndo::Create(m_grid, {upperLimitI, lowerLimitJ}, {m_grid.NumN(), upperLimitJ + 1}));
-    undoAction->Add(CurvilinearGridBlockUndo::Create(m_grid, {0, upperLimitJ + 1}, {m_grid.NumN(), m_grid.NumM()}));
+    undoAction->Add(CurvilinearGridBlockUndoAction::Create(m_grid, {0, 0}, {m_grid.NumN(), lowerLimitJ}));
+    undoAction->Add(CurvilinearGridBlockUndoAction::Create(m_grid, {0, lowerLimitJ}, {lowerLimitI, upperLimitJ + 1}));
+    undoAction->Add(CurvilinearGridBlockUndoAction::Create(m_grid, {upperLimitI, lowerLimitJ}, {m_grid.NumN(), upperLimitJ + 1}));
+    undoAction->Add(CurvilinearGridBlockUndoAction::Create(m_grid, {0, upperLimitJ + 1}, {m_grid.NumN(), m_grid.NumM()}));
 
     // Split into 4 regions, setting the nodes in each region to invalid
     //

@@ -26,7 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridBlockUndo.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridBlockUndoAction.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridUtilities.hpp>
@@ -48,7 +48,7 @@ CurvilinearGridSmoothing::CurvilinearGridSmoothing(CurvilinearGrid& grid, UInt s
 
 meshkernel::UndoActionPtr CurvilinearGridSmoothing::Compute()
 {
-    std::unique_ptr<CurvilinearGridBlockUndo> undoAction = CurvilinearGridBlockUndo::Create(m_grid, m_lowerLeft, m_upperRight);
+    std::unique_ptr<CurvilinearGridBlockUndoAction> undoAction = CurvilinearGridBlockUndoAction::Create(m_grid, m_lowerLeft, m_upperRight);
 
     // Perform smoothing iterations
     for (UInt smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)

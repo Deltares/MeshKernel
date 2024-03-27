@@ -31,7 +31,7 @@
 
 #include <MeshKernel/BoundingBox.hpp>
 #include <MeshKernel/CurvilinearGrid/AddGridLineUndoAction.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridBlockUndo.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridBlockUndoAction.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinementUndoAction.hpp>
@@ -308,10 +308,10 @@ namespace meshkernel
         /// @brief Restore grid to state before grid block was modified
         ///
         /// The modification could be from e.g. orthogonalisation, delete interior, ...
-        void RestoreAction(CurvilinearGridBlockUndo& undoAction);
+        void RestoreAction(CurvilinearGridBlockUndoAction& undoAction);
 
         /// @brief Restore grid to state after grid block was modified
-        void CommitAction(CurvilinearGridBlockUndo& undoAction);
+        void CommitAction(CurvilinearGridBlockUndoAction& undoAction);
 
         /// @brief Restore grid to state before refinement operation
         void RestoreAction(CurvilinearGridRefinementUndoAction& undoAction);
