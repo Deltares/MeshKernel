@@ -1639,6 +1639,7 @@ namespace meshkernelapi
             }
             firstNodeIndex = static_cast<int>(firstNodeId);
 
+            meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Nodes);
             auto secondNodeId = meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(secondNodeCoordinates, searchRadius);
             if (secondNodeId == meshkernel::constants::missing::uintValue)
             {
