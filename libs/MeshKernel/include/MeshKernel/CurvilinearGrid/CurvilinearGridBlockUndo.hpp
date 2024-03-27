@@ -37,28 +37,34 @@
 
 namespace meshkernel
 {
-    // Forward declaration of the curvilinear mesh
+    /// @brief Forward declaration of the curvilinear mesh
     class CurvilinearGrid;
 
+    /// @brief Undo action for blocks of nodes in a curvilinear mesh.
     class CurvilinearGridBlockUndo : public BaseMeshUndoAction<CurvilinearGridBlockUndo, CurvilinearGrid>
     {
     public:
+        /// @brief Return unique pointer to newly created CurvilinearGridBlockUndo object
         static std::unique_ptr<CurvilinearGridBlockUndo> Create(CurvilinearGrid& grid,
                                                                 const CurvilinearGridNodeIndices& startOffset,
                                                                 const CurvilinearGridNodeIndices& endOffset);
 
-        // Not all is needed
-        // which direction, which side and the offset of 1 is implied
+        /// @brief Constructor, node values are copied from the grid for the block specified
         CurvilinearGridBlockUndo(CurvilinearGrid& grid,
                                  const CurvilinearGridNodeIndices& startOffset,
                                  const CurvilinearGridNodeIndices& endOffset);
 
+        /// @brief Swap the saved grid nodes with those from the mesh.
         void Swap(CurvilinearGrid& grid);
+
+        /// \brief Compute the approximate amount of memory being used, in bytes.
+        std::uint64_t MemorySize() const override;
 
         /// @brief Print the add grid line action to the stream
         void Print(std::ostream& out = std::cout) const override;
 
     private:
+        /// @brief The saved block of grid nodes.
         CurvilinearGridBlock m_block;
     };
 

@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -39,36 +40,41 @@
 namespace meshkernel
 {
 
+    /// @brief Forward declaration of the curvilinear mesh
     class CurvilinearGrid;
 
+    /// @brief Block of grid node with start and end offsets.
     class CurvilinearGridBlock
     {
     public:
+        /// @brief Constructor
         CurvilinearGridBlock(const CurvilinearGridNodeIndices& bottomLeft, const CurvilinearGridNodeIndices& topRight);
 
-        // void Extract(const lin_alg::Matrix<Point>& nodes,
-        //              const lin_alg::Matrix<NodeType>& nodeTypes,
-        //              const CurvilinearGridNodeIndices& start);
+        /// @brief Copy block of nodes from the curvilinear grid.
+        void CopyFrom(const CurvilinearGrid& grid);
 
-        // void Swap(lin_alg::Matrix<Point>& nodes,
-        //           lin_alg::Matrix<NodeType>& nodeTypes,
-        //           const CurvilinearGridNodeIndices& start);
-
-        void Extract(const CurvilinearGrid& grid);
-
+        /// @brief Swap the saved grid nodes with those from the mesh.
         void Swap(CurvilinearGrid& grid);
 
+        /// @brief Get the start offset indices
         const CurvilinearGridNodeIndices& StartOffset() const;
 
+        /// @brief Get the end offset indices
         const CurvilinearGridNodeIndices& EndOffset() const;
 
+        /// @brief Get the approximate number of bytes used.
+        std::uint64_t MemorySize() const;
+
     private:
-        lin_alg::Matrix<Point> m_gridNodes;         ///< Member variable storing the grid
+        lin_alg::Matrix<Point> m_gridNodes; ///< Member variable storing the grid
 #ifdef NODE_TYPES_NEEDED
         lin_alg::Matrix<NodeType> m_gridNodesTypes; ///< The grid node types
 #endif
 
+        /// @brief Bottom left indices of the block
         CurvilinearGridNodeIndices m_bottomLeft;
+
+        /// @brief Top right indices of the block (1 past end)
         CurvilinearGridNodeIndices m_topRight;
     };
 

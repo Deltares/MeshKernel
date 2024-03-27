@@ -37,20 +37,33 @@
 
 namespace meshkernel
 {
+    /// @brief Forward declaration of the curvilinear mesh
     class CurvilinearGrid;
 
+    /// @brief Undo action for curvilinear grid refinement operations
     class CurvilinearGridRefinementUndoAction : public BaseMeshUndoAction<CurvilinearGridRefinementUndoAction, CurvilinearGrid>
     {
     public:
+        /// @brief Return unique pointer to newly created CurvilinearGridRefinementUndoAction object
         static std::unique_ptr<CurvilinearGridRefinementUndoAction> Create(CurvilinearGrid& grid);
 
+        /// @brief Constructor
         CurvilinearGridRefinementUndoAction(CurvilinearGrid& grid);
 
+        /// @brief Swap the grid nodes, and the grid extents.
         void Swap(lin_alg::Matrix<Point>& nodes, CurvilinearGridNodeIndices& lower, CurvilinearGridNodeIndices& upper);
 
+        /// \brief Compute the approximate amount of memory being used, in bytes.
+        std::uint64_t MemorySize() const override;
+
     private:
-        lin_alg::Matrix<Point> m_nodes; ///< Grid nodes
+        /// @brief Grid nodes
+        lin_alg::Matrix<Point> m_nodes;
+
+        /// @brief Start offset.
         CurvilinearGridNodeIndices m_lower;
+
+        /// @brief End offset.
         CurvilinearGridNodeIndices m_upper;
     };
 

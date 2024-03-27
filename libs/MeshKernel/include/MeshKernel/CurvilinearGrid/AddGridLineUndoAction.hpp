@@ -36,31 +36,37 @@
 
 namespace meshkernel
 {
-    // Forward declaration of the curvilinear mesh
+    /// @brief Forward declaration of the curvilinear mesh
     class CurvilinearGrid;
 
+    /// @brief Undo action for adding grid line to boundary of curvilinear mesh
     class AddGridLineUndoAction : public BaseMeshUndoAction<AddGridLineUndoAction, CurvilinearGrid>
     {
     public:
+        /// @brief Return unique pointer to newly created AddGridLineUndoAction object
         static std::unique_ptr<AddGridLineUndoAction> Create(CurvilinearGrid& grid,
                                                              const CurvilinearGridNodeIndices& startOffset,
                                                              const CurvilinearGridNodeIndices& endOffset);
 
-        // Not all is needed
-        // which direction, which side and the offset of 1 is implied
+        /// @brief Constructor
         AddGridLineUndoAction(CurvilinearGrid& grid,
                               const CurvilinearGridNodeIndices& startOffset,
                               const CurvilinearGridNodeIndices& endOffset);
 
+        /// @brief Get the start offset
         const CurvilinearGridNodeIndices& StartOffset() const;
 
+        /// @brief Get the end offset
         const CurvilinearGridNodeIndices& EndOffset() const;
 
         /// @brief Print the add grid line action to the stream
         void Print(std::ostream& out = std::cout) const override;
 
     private:
+        /// @brief Start offset, to be added when restoring action and subtracted when undoing action.
         CurvilinearGridNodeIndices m_startOffset;
+
+        /// @brief End offset, to be added when restoring action and subtracted when undoing action.
         CurvilinearGridNodeIndices m_endOffset;
     };
 

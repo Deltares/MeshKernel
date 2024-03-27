@@ -299,20 +299,30 @@ namespace meshkernel
         /// @return A number >= 2 for a valid curvilinear grid
         UInt FullNumN() const { return static_cast<UInt>(m_gridNodes.rows()); }
 
+        /// @brief Restore grid to state before grid line was added
         void RestoreAction(AddGridLineUndoAction& undoAction);
 
+        /// @brief Restore grid to state after grid line was added
         void CommitAction(AddGridLineUndoAction& undoAction);
 
+        /// @brief Restore grid to state before grid block was modified
+        ///
+        /// The modification could be from e.g. orthogonalisation, delete interior, ...
         void RestoreAction(CurvilinearGridBlockUndo& undoAction);
 
+        /// @brief Restore grid to state after grid block was modified
         void CommitAction(CurvilinearGridBlockUndo& undoAction);
 
+        /// @brief Restore grid to state before refinement operation
         void RestoreAction(CurvilinearGridRefinementUndoAction& undoAction);
 
+        /// @brief Restore grid to state after refinement operation
         void CommitAction(CurvilinearGridRefinementUndoAction& undoAction);
 
+        /// @brief Restore grid to state before node was modified
         void RestoreAction(const ResetCurvilinearNodeAction& undoAction);
 
+        /// @brief Restore grid to state after node was modified
         void CommitAction(const ResetCurvilinearNodeAction& undoAction);
 
         // TODO make private;

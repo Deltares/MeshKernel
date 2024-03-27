@@ -18,3 +18,11 @@ void meshkernel::CurvilinearGridRefinementUndoAction::Swap(lin_alg::Matrix<Point
     std::swap(m_upper, upper);
     // m_nodes.swap(nodes);
 }
+
+std::uint64_t meshkernel::CurvilinearGridRefinementUndoAction::MemorySize() const
+{
+    std::uint64_t result = 0;
+    result += sizeof(*this);
+    result += static_cast<std::uint64_t>(m_nodes.rows() * m_nodes.cols() * sizeof(Point));
+    return result;
+}

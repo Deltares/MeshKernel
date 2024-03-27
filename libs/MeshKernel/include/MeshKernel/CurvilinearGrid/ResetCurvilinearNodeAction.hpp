@@ -42,7 +42,7 @@ namespace meshkernel
     class ResetCurvilinearNodeAction : public BaseMeshUndoAction<ResetCurvilinearNodeAction, CurvilinearGrid>
     {
     public:
-        /// @brief Allocate a ResetCurvilinearNodeAction and return a unique_ptr to the newly create object.
+        /// @brief Return unique pointer to newly created ResetCurvilinearNodeAction object
         static std::unique_ptr<ResetCurvilinearNodeAction> Create(CurvilinearGrid& grid,
                                                                   const CurvilinearGridNodeIndices nodeId,
                                                                   const Point& initial,

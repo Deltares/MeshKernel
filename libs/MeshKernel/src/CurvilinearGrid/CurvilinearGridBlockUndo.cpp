@@ -13,12 +13,17 @@ meshkernel::CurvilinearGridBlockUndo::CurvilinearGridBlockUndo(CurvilinearGrid& 
                                                                const CurvilinearGridNodeIndices& endOffset)
     : BaseMeshUndoAction<CurvilinearGridBlockUndo, CurvilinearGrid>(grid), m_block(startOffset, endOffset)
 {
-    m_block.Extract(grid);
+    m_block.CopyFrom(grid);
 }
 
 void meshkernel::CurvilinearGridBlockUndo::Swap(CurvilinearGrid& grid)
 {
     m_block.Swap(grid);
+}
+
+std::uint64_t meshkernel::CurvilinearGridBlockUndo::MemorySize() const
+{
+    return static_cast<std::uint64_t>(sizeof(*this)) + m_block.MemorySize();
 }
 
 void meshkernel::CurvilinearGridBlockUndo::Print(std::ostream& out) const

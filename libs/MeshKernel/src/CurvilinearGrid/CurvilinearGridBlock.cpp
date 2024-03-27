@@ -15,7 +15,7 @@ meshkernel::CurvilinearGridBlock::CurvilinearGridBlock(const CurvilinearGridNode
 #endif
 }
 
-void meshkernel::CurvilinearGridBlock::Extract(const CurvilinearGrid& grid)
+void meshkernel::CurvilinearGridBlock::CopyFrom(const CurvilinearGrid& grid)
 {
     const UInt rows = m_topRight.m_n - m_bottomLeft.m_n;
     const UInt cols = m_topRight.m_m - m_bottomLeft.m_m;
@@ -49,4 +49,17 @@ void meshkernel::CurvilinearGridBlock::Swap(CurvilinearGrid& grid)
 #endif
         }
     }
+}
+
+std::uint64_t meshkernel::CurvilinearGridBlock::MemorySize() const
+{
+    std::uint64_t result = 0;
+
+    result += sizeof(*this);
+    result += static_cast<std::uint64_t>(m_gridNodes.rows() * m_gridNodes.cols() * sizeof(Point));
+
+#ifdef NODE_TYPES_NEEDED
+    result += static_cast<std::uint64_t>(m_gridNodesTypes.rows() * m_gridNodesTypes.cols() * sizeof(NodeType));
+#endif
+    return result;
 }
