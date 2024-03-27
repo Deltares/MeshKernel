@@ -1601,6 +1601,62 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_mesh2d_insert_edge_from_coordinates(int meshKernelId,
+                                                                double firstNodeX,
+                                                                double firstNodeY,
+                                                                double secondNodeX,
+                                                                double secondNodeY,
+                                                                int& firstNodeIndex,
+                                                                int& secondNodeIndex,
+                                                                int& edgeIndex)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            std::unique_ptr<meshkernel::CompoundUndoAction> compoundUndoAction = meshkernel::CompoundUndoAction::Create();
+            meshkernel::Point const firstNodeCoordinates{firstNodeX, firstNodeY};
+
+            const std::vector<bool> nodeMask;
+
+            auto firstNodeId = meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(firstNodeCoordinates, nodeMask);
+            if (firstNodeId == meshkernel::constants::missing::uintValue)
+            {
+                auto result = meshKernelState[meshKernelId].m_mesh2d->InsertNode(firstNodeCoordinates);
+                firstNodeId = std::get<0>(result);
+                compoundUndoAction->Add(std::move(std::get<1>(result)));
+            }
+            firstNodeIndex = static_cast<int>(firstNodeId);
+
+            meshkernel::Point const secondNodeCoordinates{secondNodeX, secondNodeY};
+            auto secondNodeId = meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(secondNodeCoordinates, nodeMask);
+
+            if (secondNodeId == meshkernel::constants::missing::uintValue)
+            {
+                auto result = meshKernelState[meshKernelId].m_mesh2d->InsertNode(secondNodeCoordinates);
+                secondNodeId = std::get<0>(result);
+                compoundUndoAction->Add(std::move(std::get<1>(result)));
+            }
+            secondNodeIndex = static_cast<int>(secondNodeId);
+
+            auto [edgeId, action] = meshKernelState[meshKernelId].m_mesh2d->ConnectNodes(firstNodeId, secondNodeId);
+
+            edgeIndex = static_cast<int>(edgeId);
+            compoundUndoAction->Add(std::move(action));
+
+            meshKernelState[meshKernelId].m_undoStack.Add(std::move(compoundUndoAction));
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_mesh2d_insert_node(int meshKernelId, double xCoordinate, double yCoordinate, int& nodeIndex)
     {
         lastExitCode = meshkernel::ExitCode::Success;
