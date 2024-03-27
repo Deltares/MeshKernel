@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['faces_1510',['Faces',['../namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9a4f93ea0836ba76b6f9b81e3eee53a3af',1,'meshkernel']]],
-  ['floattype_1511',['floatType',['../namespacemeshkernel.html#a5749e013c134a21c9b09b2568609c03ea385df7a5627deeb169279603063aee04',1,'meshkernel']]]
+  ['edges_1515',['Edges',['../namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9a484afb8d54ec549700b1fe96417519a9',1,'meshkernel']]],
+  ['exterior_1516',['Exterior',['../classmeshkernel_1_1_polygonal_enclosure.html#a5294cab21134ae4359209f24398fdbe3ad9b3dceaf520ba1fa45c371c498c6baf',1,'meshkernel::PolygonalEnclosure']]]
 ];

@@ -319,11 +319,13 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:ada45df7d9a6b761430af4dbf350f67cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Direction to use in curvilinear grid algorithms.  <a href="namespacemeshkernel.html#ada45df7d9a6b761430af4dbf350f67cc">More...</a><br /></td></tr>
 <tr class="separator:ada45df7d9a6b761430af4dbf350f67cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5749e013c134a21c9b09b2568609c03e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a5749e013c134a21c9b09b2568609c03e">InterpolationValues</a> { <a class="el" href="namespacemeshkernel.html#a5749e013c134a21c9b09b2568609c03ea6234b319941cf42381af648f012536df">InterpolationValues::shortType</a> = 0, 
-<a class="el" href="namespacemeshkernel.html#a5749e013c134a21c9b09b2568609c03ea385df7a5627deeb169279603063aee04">InterpolationValues::floatType</a> = 1
+<tr class="memitem:abc88bd08e00d68260b39fb1e5f8b52a7"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#abc88bd08e00d68260b39fb1e5f8b52a7">InterpolationDataTypes</a> { <a class="el" href="namespacemeshkernel.html#abc88bd08e00d68260b39fb1e5f8b52a7a30bb747c98bccdd11b3f89e644c4d0ad">InterpolationDataTypes::Short</a> = 0, 
+<a class="el" href="namespacemeshkernel.html#abc88bd08e00d68260b39fb1e5f8b52a7a22ae0e2b89e5e3d477f988cc36d3272b">InterpolationDataTypes::Float</a> = 1, 
+<a class="el" href="namespacemeshkernel.html#abc88bd08e00d68260b39fb1e5f8b52a7a1686a6c336b71b36d77354cea19a8b52">InterpolationDataTypes::Int</a> = 2, 
+<a class="el" href="namespacemeshkernel.html#abc88bd08e00d68260b39fb1e5f8b52a7ad909d38d705ce75386dd86e611a82f5b">InterpolationDataTypes::Double</a> = 3
  }</td></tr>
-<tr class="memdesc:a5749e013c134a21c9b09b2568609c03e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The possible types of the values to be interpolated in the gridded sample.  <a href="namespacemeshkernel.html#a5749e013c134a21c9b09b2568609c03e">More...</a><br /></td></tr>
-<tr class="separator:a5749e013c134a21c9b09b2568609c03e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memdesc:abc88bd08e00d68260b39fb1e5f8b52a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">The possible types of the values to be interpolated in the gridded sample.  <a href="namespacemeshkernel.html#abc88bd08e00d68260b39fb1e5f8b52a7">More...</a><br /></td></tr>
+<tr class="separator:abc88bd08e00d68260b39fb1e5f8b52a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25feb926a55573977c6c4f410ece8fbb"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbb">ExitCode</a> { <br />
 &#160;&#160;<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba20e2d57f016460094a776b30d46bd2f5">Success</a> = 0, 
 <a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbae0d91fdaea35979fbd714182d61ff8c1">MeshKernelErrorCode</a> = 1, 
@@ -680,10 +682,9 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="na
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
-<tr class="memitem:a3194577122b88038daf159e0b96c9bfb"><td class="memTemplParams" colspan="2"><a id="a3194577122b88038daf159e0b96c9bfb"></a>
-template&lt;typename T &gt; </td></tr>
-<tr class="memitem:a3194577122b88038daf159e0b96c9bfb"><td class="memTemplItemLeft" align="right" valign="top">concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a3194577122b88038daf159e0b96c9bfb">InterpolatableType</a> = std::same_as&lt;T, short&gt; || std::same_as&lt;T, float&gt;</td></tr>
-<tr class="memdesc:a3194577122b88038daf159e0b96c9bfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the iterpolatable data types. <br /></td></tr>
+<tr class="memitem:a3194577122b88038daf159e0b96c9bfb"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a3194577122b88038daf159e0b96c9bfb"><td class="memTemplItemLeft" align="right" valign="top">concept&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a3194577122b88038daf159e0b96c9bfb">InterpolatableType</a></td></tr>
+<tr class="memdesc:a3194577122b88038daf159e0b96c9bfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the iterpolatable data types.  <a href="namespacemeshkernel.html#a3194577122b88038daf159e0b96c9bfb">More...</a><br /></td></tr>
 <tr class="separator:a3194577122b88038daf159e0b96c9bfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ad8c7b77cd35cbe911710b6c4d3571e"><td class="memTemplParams" colspan="2"><a id="a7ad8c7b77cd35cbe911710b6c4d3571e"></a>
 template&lt;typename Operation &gt; </td></tr>
@@ -786,8 +787,8 @@ template&lt;typename Function &gt; </td></tr>
 
 </div>
 </div>
-<a id="a5749e013c134a21c9b09b2568609c03e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5749e013c134a21c9b09b2568609c03e">&#9670;&nbsp;</a></span>InterpolationValues</h2>
+<a id="abc88bd08e00d68260b39fb1e5f8b52a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc88bd08e00d68260b39fb1e5f8b52a7">&#9670;&nbsp;</a></span>InterpolationDataTypes</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -796,7 +797,7 @@ template&lt;typename Function &gt; </td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="namespacemeshkernel.html#a5749e013c134a21c9b09b2568609c03e">meshkernel::InterpolationValues</a></td>
+          <td class="memname">enum <a class="el" href="namespacemeshkernel.html#abc88bd08e00d68260b39fb1e5f8b52a7">meshkernel::InterpolationDataTypes</a></td>
         </tr>
       </table>
   </td>
@@ -808,9 +809,13 @@ template&lt;typename Function &gt; </td></tr>
 
 <p>The possible types of the values to be interpolated in the gridded sample. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a5749e013c134a21c9b09b2568609c03ea6234b319941cf42381af648f012536df"></a>shortType&#160;</td><td class="fielddoc"><p>short type </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="abc88bd08e00d68260b39fb1e5f8b52a7a30bb747c98bccdd11b3f89e644c4d0ad"></a>Short&#160;</td><td class="fielddoc"><p>short type </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a5749e013c134a21c9b09b2568609c03ea385df7a5627deeb169279603063aee04"></a>floatType&#160;</td><td class="fielddoc"><p>float type </p>
+<tr><td class="fieldname"><a id="abc88bd08e00d68260b39fb1e5f8b52a7a22ae0e2b89e5e3d477f988cc36d3272b"></a>Float&#160;</td><td class="fielddoc"><p>float type </p>
+</td></tr>
+<tr><td class="fieldname"><a id="abc88bd08e00d68260b39fb1e5f8b52a7a1686a6c336b71b36d77354cea19a8b52"></a>Int&#160;</td><td class="fielddoc"><p>int type </p>
+</td></tr>
+<tr><td class="fieldname"><a id="abc88bd08e00d68260b39fb1e5f8b52a7ad909d38d705ce75386dd86e611a82f5b"></a>Double&#160;</td><td class="fielddoc"><p>double type </p>
 </td></tr>
 </table>
 
@@ -4304,6 +4309,28 @@ template&lt;typename Operation &gt; </div>
 <div class="line">                                                              { op.TargetProjection()} -&gt; std::same_as&lt;Projection&gt;; }</div>
 </div><!-- fragment -->
 <p>Ensure any instantiation of the <a class="el" href="classmeshkernel_1_1_mesh_conversion.html" title="Apply a conversion to nodes of a mesh.">MeshConversion</a> Compute function is able to determine source and target projection types. </p>
+
+</div>
+</div>
+<a id="a3194577122b88038daf159e0b96c9bfb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3194577122b88038daf159e0b96c9bfb">&#9670;&nbsp;</a></span>InterpolatableType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">concept meshkernel::InterpolatableType</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">= std::same_as&lt;T, short&gt; ||</div>
+<div class="line">                                 std::same_as&lt;T, float&gt; ||</div>
+<div class="line">                                 std::same_as&lt;T, double&gt; ||</div>
+<div class="line">                                 std::same_as&lt;T, int&gt;</div>
+</div><!-- fragment -->
+<p>Defines the iterpolatable data types. </p>
 
 </div>
 </div>

@@ -16,5 +16,6 @@ var searchData=
   ['discretizetransfinite_126',['DiscretizeTransfinite',['../namespacemeshkernel.html#ae6ef3a4e3b6172de6a99d2c1c9e14ff1',1,'meshkernel']]],
   ['distancefromline_127',['DistanceFromLine',['../namespacemeshkernel.html#ac61995134187918aff44b4bf298700d8',1,'meshkernel']]],
   ['dot_128',['dot',['../namespacemeshkernel.html#a46c4949453f4ccd0a0665a22b5eefe1e',1,'meshkernel::dot(const Point &amp;p, const Vector &amp;v)'],['../namespacemeshkernel.html#acf5ffaf3fedceee72e69d15769156f62',1,'meshkernel::dot(const Vector &amp;v, const Point &amp;p)'],['../namespacemeshkernel.html#aec0e604161b010fc791f1c101e15e929',1,'meshkernel::dot(const Vector &amp;v1, const Vector &amp;v2)']]],
-  ['dotproduct_129',['DotProduct',['../namespacemeshkernel.html#ab7eba48571f6e2e6ec9857d9499d235d',1,'meshkernel::DotProduct(const T &amp;dx1, const T &amp;dx2)'],['../namespacemeshkernel.html#ac36c4ebc5ddac1360895f5af36574640',1,'meshkernel::DotProduct(const T &amp;dx1, const T &amp;dx2, Args &amp;... args)']]]
+  ['dotproduct_129',['DotProduct',['../namespacemeshkernel.html#ab7eba48571f6e2e6ec9857d9499d235d',1,'meshkernel::DotProduct(const T &amp;dx1, const T &amp;dx2)'],['../namespacemeshkernel.html#ac36c4ebc5ddac1360895f5af36574640',1,'meshkernel::DotProduct(const T &amp;dx1, const T &amp;dx2, Args &amp;... args)']]],
+  ['double_130',['Double',['../namespacemeshkernel.html#abc88bd08e00d68260b39fb1e5f8b52a7ad909d38d705ce75386dd86e611a82f5b',1,'meshkernel']]]
 ];
