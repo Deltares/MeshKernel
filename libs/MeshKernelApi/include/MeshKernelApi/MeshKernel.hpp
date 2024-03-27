@@ -666,6 +666,16 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_get_interpolation_type_float(int& type);
 
+        /// @brief Get the integer indicating the interpolation type int
+        /// @param[out] type The integer indicating the interpolation type int
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_interpolation_type_int(int& type);
+
+        /// @brief Get the integer indicating the interpolation type double
+        /// @param[out] type The integer indicating the interpolation type double
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_interpolation_type_double(int& type);
+
         /// @brief Gets an int indicating the node location type
         /// @param[out] type The int indicating the node location type
         /// @returns Error code
@@ -1432,6 +1442,18 @@ namespace meshkernelapi
                                                              GeometryList& polygon,
                                                              int startIndex,
                                                              int endIndex);
+
+        /// @brief Attempt to redo by one undo-action.
+        /// @param[in] meshKernelId The id of the mesh state.
+        /// @param[out] redone Indicates if the redo action was actually redone
+        /// @returns Error code
+        MKERNEL_API int mkernel_redo_state(int meshKernelId, bool& redone);
+
+        /// @brief Attempt to undo by one undo-action.
+        /// @param[in] meshKernelId The id of the mesh state.
+        /// @param[out] undone Indicates if the undo action was actually undone
+        /// @returns Error code
+        MKERNEL_API int mkernel_undo_state(int meshKernelId, bool& undone);
 
 #ifdef __cplusplus
     }

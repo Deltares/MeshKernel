@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 
 #include <MeshKernel/Parameters.hpp>
+#include <MeshKernelApi/Mesh2D.hpp>
 #include <MeshKernelApi/MeshKernel.hpp>
 
 #include "CartesianApiTestFixture.hpp"
@@ -903,4 +904,83 @@ TEST(CurvilinearGrid, MakeRectangular_ComputeCurvatureTest)
     {
         EXPECT_NEAR(expectedY[i], curvature[i], tolerance);
     }
+}
+
+TEST(CurvilinearGrid, MakeRectangular_ConvertToMesh2D)
+{
+    // Prepare
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = 10.0;
+    makeGridParameters.block_size_y = 10.0;
+    makeGridParameters.num_columns = 5;
+    makeGridParameters.num_rows = 5;
+
+    int meshKernelId = 0;
+    const int projectionType = 0;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGridResults;
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGridResults);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = meshkernelapi::mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Data for translated mesh
+    std::vector<int> edge_faces(mesh2d.num_edges * 2);
+    std::vector<int> edge_nodes(mesh2d.num_edges * 2);
+    std::vector<int> face_nodes(mesh2d.num_face_nodes);
+    std::vector<int> face_edges(mesh2d.num_face_nodes);
+    std::vector<int> nodes_per_face(mesh2d.num_faces);
+    std::vector<double> node_x(mesh2d.num_nodes);
+    std::vector<double> node_y(mesh2d.num_nodes);
+    std::vector<double> edge_x(mesh2d.num_edges);
+    std::vector<double> edge_y(mesh2d.num_edges);
+    std::vector<double> face_x(mesh2d.num_faces);
+    std::vector<double> face_y(mesh2d.num_faces);
+
+    mesh2d.edge_faces = edge_faces.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+    mesh2d.face_nodes = face_nodes.data();
+    mesh2d.face_edges = face_edges.data();
+    mesh2d.nodes_per_face = nodes_per_face.data();
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_x = edge_x.data();
+    mesh2d.edge_y = edge_y.data();
+    mesh2d.face_x = face_x.data();
+    mesh2d.face_y = face_y.data();
+
+    errorCode = meshkernelapi::mkernel_mesh2d_get_data(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // assert
+    const double tolerance = 1e-8;
+    ASSERT_NEAR(0.0, node_x[0], tolerance);
+    ASSERT_NEAR(10.0, node_x[1], tolerance);
+    ASSERT_NEAR(20.0, node_x[2], tolerance);
+    ASSERT_NEAR(30.0, node_x[3], tolerance);
+    ASSERT_NEAR(40.0, node_x[4], tolerance);
+
+    ASSERT_NEAR(0.0, node_y[0], tolerance);
+    ASSERT_NEAR(0.0, node_y[1], tolerance);
+    ASSERT_NEAR(10.0, node_y[6], tolerance);
+    ASSERT_NEAR(10.0, node_y[7], tolerance);
+    ASSERT_NEAR(20.0, node_y[12], tolerance);
+    ASSERT_NEAR(20.0, node_y[13], tolerance);
+
+    ASSERT_EQ(mesh2d.num_nodes, 36);
+    ASSERT_EQ(mesh2d.num_edges, 60);
 }

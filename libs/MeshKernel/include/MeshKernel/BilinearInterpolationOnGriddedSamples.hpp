@@ -38,7 +38,10 @@ namespace meshkernel
 
     /// @brief Defines the iterpolatable data types.
     template <typename T>
-    concept InterpolatableType = std::same_as<T, short> || std::same_as<T, float>;
+    concept InterpolatableType = std::same_as<T, short> ||
+                                 std::same_as<T, float> ||
+                                 std::same_as<T, double> ||
+                                 std::same_as<T, int>;
 
     /// @brief A class for performing bilinear interpolation on gridded samples
     template <InterpolatableType T>

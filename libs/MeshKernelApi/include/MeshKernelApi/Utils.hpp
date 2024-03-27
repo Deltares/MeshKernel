@@ -273,13 +273,21 @@ namespace meshkernelapi
             return result;
         }
 
-        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::shortType))
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationDataTypes::Short))
         {
             return ComputeGriddedDataSamples<short>(griddedSamples);
         }
-        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::floatType))
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationDataTypes::Float))
         {
             return ComputeGriddedDataSamples<float>(griddedSamples);
+        }
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationDataTypes::Double))
+        {
+            return ComputeGriddedDataSamples<double>(griddedSamples);
+        }
+        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationDataTypes::Int))
+        {
+            return ComputeGriddedDataSamples<int>(griddedSamples);
         }
         throw meshkernel::MeshKernelError("The value type for the gridded data samples is invalid.");
     }
@@ -400,6 +408,8 @@ namespace meshkernelapi
             // }
 
         }
+
+        SetMesh2dApiDimensions(mesh2d, mesh2dApi);
     }
 
     /// @brief Sets the meshkernelapi::CurvilinearGrid data
@@ -413,6 +423,18 @@ namespace meshkernelapi
             curvilinearGridApi.node_x[n] = curvilinearGrid.Node(n).x;
             curvilinearGridApi.node_y[n] = curvilinearGrid.Node(n).y;
         }
+    }
+
+    /// @brief Sets dimensions members of meshkernelapi::Mesh1D instance
+    /// @param[in]  mesh1d    The meshkernel::Mesh1D instance
+    /// @param[out] mesh1dApi The output meshkernelapi::Mesh1D instance
+    static void SetMesh1dApiDimension(const meshkernel::Mesh1D& mesh1d,
+                                      Mesh1D& mesh1dApi)
+    {
+        mesh1dApi.num_nodes = static_cast<int>(mesh1d.GetNumNodes());
+        mesh1dApi.num_valid_nodes = static_cast<int>(mesh1d.GetNumValidNodes());
+        mesh1dApi.num_edges = static_cast<int>(mesh1d.GetNumEdges());
+        mesh1dApi.num_valid_edges = static_cast<int>(mesh1d.GetNumValidEdges());
     }
 
     /// @brief Sets a meshkernelapi::Mesh1D data
@@ -435,6 +457,7 @@ namespace meshkernelapi
             mesh1dApi.edge_nodes[edgeIndex] = static_cast<int>(mesh1d.GetEdge(e).second);
             edgeIndex++;
         }
+        SetMesh1dApiDimension(mesh1d, mesh1dApi);
     }
 
     /// @brief Generate a rectangular curvilinear grid
@@ -526,15 +549,20 @@ namespace meshkernelapi
     static std::unique_ptr<meshkernel::MeshInterpolation> CreateBilinearInterpolatorBasedOnType(const GriddedSamples& griddedSamples,
                                                                                                 const meshkernel::Mesh2D& mesh2d)
     {
-        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::shortType))
+
+        switch (static_cast<meshkernel::InterpolationDataTypes>(griddedSamples.value_type))
         {
+        case meshkernel::InterpolationDataTypes::Short:
             return CreateBilinearInterpolator<short>(mesh2d, griddedSamples);
-        }
-        if (griddedSamples.value_type == static_cast<int>(meshkernel::InterpolationValues::floatType))
-        {
+        case meshkernel::InterpolationDataTypes::Float:
             return CreateBilinearInterpolator<float>(mesh2d, griddedSamples);
+        case meshkernel::InterpolationDataTypes::Int:
+            return CreateBilinearInterpolator<int>(mesh2d, griddedSamples);
+        case meshkernel::InterpolationDataTypes::Double:
+            return CreateBilinearInterpolator<double>(mesh2d, griddedSamples);
+        default:
+            throw meshkernel::MeshKernelError("Invalid value_type for GriddedSamples");
         }
-        throw meshkernel::MeshKernelError("Invalid value_type for GriddedSamples");
     }
 
 } // namespace meshkernelapi

@@ -29,6 +29,7 @@
 
 #include "MeshKernel/Entities.hpp"
 
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -38,7 +39,7 @@
 std::vector<meshkernel::Sample> ReadSampleFile(std::string const& filePath);
 
 template <typename values_type>
-std::tuple<int, int, double, double, double, double, std::vector<values_type>> ReadAscFile(const std::string& filePath)
+std::tuple<int, int, double, double, double, double, std::vector<values_type>> ReadAscFile(const std::filesystem::path& filePath)
 {
     // read sample file
     std::string line;

@@ -44,7 +44,7 @@ namespace meshkernel
     {
     public:
         /// @brief The current state of an UndoAction
-        enum State
+        enum class State
         {
             Committed, ///< The action has been applied.
             Restored   ///< The action has been undone, the state immediately before the action occurred has been restored.
@@ -91,7 +91,7 @@ namespace meshkernel
         virtual void DoRestore() = 0;
 
         /// @brief The current state of the action, all actions are constructed having already been applied
-        State m_state = Committed;
+        State m_state = State::Committed;
     };
 
     /// @brief Typedef of the pointer to an UndoAction.

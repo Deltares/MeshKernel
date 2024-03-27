@@ -1269,7 +1269,6 @@ void Mesh::CommitAction(const DeleteEdgeAction& undoAction)
 
 void Mesh::CommitAction(const DeleteNodeAction& undoAction)
 {
-    // undoAction.CommitEdges();
     m_nodes[undoAction.NodeId()] = {constants::missing::doubleValue, constants::missing::doubleValue};
     m_nodesRTreeRequiresUpdate = true;
 }

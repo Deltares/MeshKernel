@@ -73,6 +73,7 @@
 #include <MeshKernel/SplineAlgorithms.hpp>
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
+#include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
 #include <MeshKernelApi/MeshKernel.hpp>
@@ -551,10 +552,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            mesh1d.num_nodes = static_cast<int>(meshKernelState[meshKernelId].m_mesh1d->GetNumNodes());
-            mesh1d.num_valid_nodes = static_cast<int>(meshKernelState[meshKernelId].m_mesh1d->GetNumValidNodes());
-            mesh1d.num_edges = static_cast<int>(meshKernelState[meshKernelId].m_mesh1d->GetNumEdges());
-            mesh1d.num_valid_edges = static_cast<int>(meshKernelState[meshKernelId].m_mesh1d->GetNumValidEdges());
+            SetMesh1dApiDimension(*meshKernelState[meshKernelId].m_mesh1d, mesh1d);
         }
         catch (...)
         {
@@ -1591,7 +1589,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            auto [edgeId, action] = meshKernelState[meshKernelId].m_mesh2d->ConnectNodes(startNode, endNode);
+            auto [edgeId, undoAction] = meshKernelState[meshKernelId].m_mesh2d->ConnectNodes(startNode, endNode);
+            meshKernelState[meshKernelId].m_undoStack.Add(std::move(undoAction));
 
             new_edge_index = static_cast<int>(edgeId);
         }
@@ -1614,7 +1613,8 @@ namespace meshkernelapi
 
             meshkernel::Point const nodeCoordinateVector{xCoordinate, yCoordinate};
 
-            auto [nodeId, action] = meshKernelState[meshKernelId].m_mesh2d->InsertNode(nodeCoordinateVector);
+            auto [nodeId, undoAction] = meshKernelState[meshKernelId].m_mesh2d->InsertNode(nodeCoordinateVector);
+            meshKernelState[meshKernelId].m_undoStack.Add(std::move(undoAction));
 
             nodeIndex = static_cast<int>(nodeId);
         }
@@ -2547,8 +2547,10 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            [[maybe_unused]] auto undoAction1 = meshKernelState[meshKernelId].m_mesh2d->DeleteSmallFlowEdges(smallFlowEdgesThreshold);
-            [[maybe_unused]] auto undoAction2 = meshKernelState[meshKernelId].m_mesh2d->DeleteSmallTrianglesAtBoundaries(minFractionalAreaTriangles);
+            std::unique_ptr<meshkernel::CompoundUndoAction> undoSmallFlowEdges = meshkernel::CompoundUndoAction::Create();
+            undoSmallFlowEdges->Add(meshKernelState[meshKernelId].m_mesh2d->DeleteSmallFlowEdges(smallFlowEdgesThreshold));
+            undoSmallFlowEdges->Add(meshKernelState[meshKernelId].m_mesh2d->DeleteSmallTrianglesAtBoundaries(minFractionalAreaTriangles));
+            meshKernelState[meshKernelId].m_undoStack.Add(std::move(undoSmallFlowEdges));
         }
         catch (...)
         {
@@ -3476,11 +3478,11 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
-            lin_alg::Matrix<meshkernel::Point> curviGridPoints(grid.num_m, grid.num_n);
+            lin_alg::Matrix<meshkernel::Point> curviGridPoints(grid.num_n, grid.num_m);
             int nodeIndex = 0;
-            for (int i = 0; i < grid.num_m; ++i)
+            for (int i = 0; i < grid.num_n; ++i)
             {
-                for (int j = 0; j < grid.num_n; ++j)
+                for (int j = 0; j < grid.num_m; ++j)
                 {
 
                     curviGridPoints(i, j) = meshkernel::Point(grid.node_x[nodeIndex], grid.node_y[nodeIndex]);
@@ -4070,14 +4072,28 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_get_interpolation_type_short(int& type)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        type = static_cast<int>(meshkernel::InterpolationValues::shortType);
+        type = static_cast<int>(meshkernel::InterpolationDataTypes::Short);
         return lastExitCode;
     }
 
     MKERNEL_API int mkernel_get_interpolation_type_float(int& type)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        type = static_cast<int>(meshkernel::InterpolationValues::floatType);
+        type = static_cast<int>(meshkernel::InterpolationDataTypes::Float);
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_interpolation_type_int(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::InterpolationDataTypes::Int);
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_interpolation_type_double(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::InterpolationDataTypes::Double);
         return lastExitCode;
     }
 

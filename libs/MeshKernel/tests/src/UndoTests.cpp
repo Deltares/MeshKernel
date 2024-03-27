@@ -503,7 +503,7 @@ TEST(UndoTests, ConnectNodeThenDeleteEdge)
     auto [edgeId2, addEdgeAction2] = mesh->ConnectNodes(4, nodeId1);
     undoActionStack.Add(std::move(addEdgeAction2));
 
-    mesh->Administrate ();
+    mesh->Administrate();
 
     // auto [nodeId2, addNodeAction2] = mesh->InsertNode(node2);
     // undoActionStack.Add(std::move(addNodeAction2));

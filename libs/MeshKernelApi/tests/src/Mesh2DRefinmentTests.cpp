@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -18,6 +19,8 @@
 #include "MeshKernel/SamplesHessianCalculator.hpp"
 #include "SampleFileWriter.hpp"
 #include "SampleGenerator.hpp"
+
+namespace fs = std::filesystem;
 
 TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApi)
 {
@@ -181,8 +184,8 @@ TEST_F(CartesianApiTestFixture, RefineAGridBasedOnPolygonThroughApi)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(279, mesh2d.num_nodes);
-    ASSERT_EQ(595, mesh2d.num_edges);
+    ASSERT_EQ(264, mesh2d.num_nodes);
+    ASSERT_EQ(563, mesh2d.num_edges);
 }
 
 TEST(MeshRefinement, Mesh2DRefineBasedOnGriddedSamplesWaveCourant_WithGriddedSamples_ShouldRefineMesh)
@@ -192,8 +195,8 @@ TEST(MeshRefinement, Mesh2DRefineBasedOnGriddedSamplesWaveCourant_WithGriddedSam
     constexpr int isGeographic = 0;
     meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
 
-    auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] =
-        ReadLegacyMeshFile(TEST_FOLDER + "/data/MeshRefinementTests/gebco.nc");
+    const fs::path meshFilePath = fs::path(TEST_FOLDER) / "data" / "MeshRefinementTests" / "gebco.nc";
+    auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] = ReadLegacyMeshFile(meshFilePath);
     meshkernelapi::Mesh2D mesh2d;
     mesh2d.num_edges = static_cast<int>(num_edges);
     mesh2d.num_nodes = static_cast<int>(num_nodes);
@@ -204,7 +207,8 @@ TEST(MeshRefinement, Mesh2DRefineBasedOnGriddedSamplesWaveCourant_WithGriddedSam
     auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    auto [numX, numY, xllCenter, yllCenter, cellSize, nodatavalue, values] = ReadAscFile<float>(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
+    const fs::path ascFilePath = fs::path(TEST_FOLDER) / "data" / "MeshRefinementTests" / "gebco.asc";
+    auto [numX, numY, xllCenter, yllCenter, cellSize, nodatavalue, values] = ReadAscFile<float>(ascFilePath);
     int interpolationType;
     errorCode = meshkernelapi::mkernel_get_interpolation_type_float(interpolationType);
     meshkernelapi::GriddedSamples griddedSamples;
@@ -322,7 +326,8 @@ TEST(MeshRefinement, RefineBasedOnGriddedSamplesWaveCourant_WithUniformSamplesAn
     errorCode = meshkernelapi::mkernel_get_interpolation_type_float(interpolationType);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<float>(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
+    const fs::path ascFilePath = fs::path(TEST_FOLDER) / "data" / "MeshRefinementTests" / "gebco.asc";
+    auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<float>(ascFilePath);
     meshkernelapi::GriddedSamples griddedSamples;
     griddedSamples.num_x = ncols;
     griddedSamples.num_y = nrows;
@@ -375,7 +380,8 @@ TEST(MeshRefinement, RefineBasedOnGriddedSamplesWaveCourant_WithUniformSamplesAn
     errorCode = meshkernelapi::mkernel_get_interpolation_type_float(interpolationType);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<double>(TEST_FOLDER + "/data/MeshRefinementTests/gebco.asc");
+    const fs::path ascFilePath = fs::path(TEST_FOLDER) / "data" / "MeshRefinementTests" / "gebco.asc";
+    auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<double>(ascFilePath);
     meshkernelapi::GriddedSamples griddedSamples;
     griddedSamples.num_x = ncols;
     griddedSamples.num_y = nrows;
@@ -560,13 +566,15 @@ TEST(MeshRefinement, RefineGridUsingApi_CasulliRefinement_ShouldRefine)
     EXPECT_EQ(1104, mesh2d.num_valid_edges);
 }
 
-class MeshRefinementSampleValueTypes : public ::testing::TestWithParam<meshkernel::InterpolationValues>
+class MeshRefinementSampleValueTypes : public ::testing::TestWithParam<meshkernel::InterpolationDataTypes>
 {
 public:
-    [[nodiscard]] static std::vector<meshkernel::InterpolationValues> GetData()
+    [[nodiscard]] static std::vector<meshkernel::InterpolationDataTypes> GetDataTypes()
     {
-        return {meshkernel::InterpolationValues::shortType,
-                meshkernel::InterpolationValues::floatType};
+        return {meshkernel::InterpolationDataTypes::Short,
+                meshkernel::InterpolationDataTypes::Float,
+                meshkernel::InterpolationDataTypes::Int,
+                meshkernel::InterpolationDataTypes::Double};
     }
 };
 
@@ -589,13 +597,16 @@ TEST_P(MeshRefinementSampleValueTypes, parameters)
 
     std::vector<short> valuesShort;
     std::vector<float> valuesFloat;
+    std::vector<double> valuesDouble;
+    std::vector<int> valuesInt;
+    const fs::path filePath = fs::path(TEST_FOLDER) / "data" / "MeshRefinementTests" / "gebcoIntegers.asc";
 
     int interpolationType;
-    if (interpolationValueType == meshkernel::InterpolationValues::shortType)
+    if (interpolationValueType == meshkernel::InterpolationDataTypes::Short)
     {
         errorCode = meshkernelapi::mkernel_get_interpolation_type_short(interpolationType);
         ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-        auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<short>(TEST_FOLDER + "/data/MeshRefinementTests/gebcoIntegers.asc");
+        auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<short>(filePath);
         valuesShort = values;
         griddedSamples.num_x = ncols;
         griddedSamples.num_y = nrows;
@@ -607,11 +618,11 @@ TEST_P(MeshRefinementSampleValueTypes, parameters)
         griddedSamples.x_coordinates = nullptr;
         griddedSamples.y_coordinates = nullptr;
     }
-    else if (interpolationValueType == meshkernel::InterpolationValues::floatType)
+    else if (interpolationValueType == meshkernel::InterpolationDataTypes::Float)
     {
         errorCode = meshkernelapi::mkernel_get_interpolation_type_float(interpolationType);
         ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-        auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<float>(TEST_FOLDER + "/data/MeshRefinementTests/gebcoIntegers.asc");
+        auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<float>(filePath);
         valuesFloat = values;
         griddedSamples.num_x = ncols;
         griddedSamples.num_y = nrows;
@@ -620,6 +631,38 @@ TEST_P(MeshRefinementSampleValueTypes, parameters)
         griddedSamples.cell_size = cellsize;
         griddedSamples.value_type = interpolationType;
         griddedSamples.values = valuesFloat.data();
+        griddedSamples.x_coordinates = nullptr;
+        griddedSamples.y_coordinates = nullptr;
+    }
+    else if (interpolationValueType == meshkernel::InterpolationDataTypes::Double)
+    {
+        errorCode = meshkernelapi::mkernel_get_interpolation_type_double(interpolationType);
+        ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+        auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<double>(filePath);
+        valuesDouble = values;
+        griddedSamples.num_x = ncols;
+        griddedSamples.num_y = nrows;
+        griddedSamples.x_origin = xllcenter;
+        griddedSamples.y_origin = yllcenter;
+        griddedSamples.cell_size = cellsize;
+        griddedSamples.value_type = interpolationType;
+        griddedSamples.values = valuesDouble.data();
+        griddedSamples.x_coordinates = nullptr;
+        griddedSamples.y_coordinates = nullptr;
+    }
+    else if (interpolationValueType == meshkernel::InterpolationDataTypes::Int)
+    {
+        errorCode = meshkernelapi::mkernel_get_interpolation_type_int(interpolationType);
+        ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+        auto [ncols, nrows, xllcenter, yllcenter, cellsize, nodata_value, values] = ReadAscFile<int>(filePath);
+        valuesInt = values;
+        griddedSamples.num_x = ncols;
+        griddedSamples.num_y = nrows;
+        griddedSamples.x_origin = xllcenter;
+        griddedSamples.y_origin = yllcenter;
+        griddedSamples.cell_size = cellsize;
+        griddedSamples.value_type = interpolationType;
+        griddedSamples.values = valuesInt.data();
         griddedSamples.x_coordinates = nullptr;
         griddedSamples.y_coordinates = nullptr;
     }
@@ -651,7 +694,7 @@ TEST_P(MeshRefinementSampleValueTypes, parameters)
     ASSERT_EQ(21212, mesh2dResults.num_face_nodes);
 }
 
-INSTANTIATE_TEST_SUITE_P(MeshRefinement, MeshRefinementSampleValueTypes, ::testing::ValuesIn(MeshRefinementSampleValueTypes::GetData()));
+INSTANTIATE_TEST_SUITE_P(MeshRefinement, MeshRefinementSampleValueTypes, ::testing::ValuesIn(MeshRefinementSampleValueTypes::GetDataTypes()));
 
 TEST_F(CartesianApiTestFixture, RefineAMeshBasedOnRidgeRefinement_OnAUniformMesh_shouldRefineMesh)
 {
