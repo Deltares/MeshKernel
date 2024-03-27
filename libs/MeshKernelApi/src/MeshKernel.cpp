@@ -1629,6 +1629,10 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The nodes are coinciding.");
             }
 
+            firstNodeIndex = meshkernel::constants::missing::uintValue;
+            secondNodeIndex = meshkernel::constants::missing::uintValue;
+            edgeIndex = meshkernel::constants::missing::uintValue;
+
             meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Nodes);
             auto firstNodeId = meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(firstNodeCoordinates, searchRadius);
             if (firstNodeId == meshkernel::constants::missing::uintValue)
