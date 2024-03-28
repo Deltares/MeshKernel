@@ -79,6 +79,16 @@ namespace meshkernel
         /// The total includes both the number of committed and restored actions.
         UInt Size() const;
 
+        /// @brief Get the number of undo action items
+        ///
+        /// The number of committed actions.
+        UInt CommittedSize() const;
+
+        /// @brief Get the number of undo action items
+        ///
+        /// The number of restored actions.
+        UInt RestoredSize() const;
+
         /// \brief Compute the approximate amount of memory being used, in bytes, for all undo actions.
         std::uint64_t MemorySize() const;
 

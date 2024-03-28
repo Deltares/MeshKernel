@@ -91,8 +91,11 @@ set(
 
 set(
   CURVILINEAR_GRID_SRC_LIST
+  ${CURVILINEAR_GRID_SRC_DIR}/AddGridLineUndoAction.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGrid.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridAlgorithm.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridBlock.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridBlockUndoAction.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridCurvature.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridDeRefinement.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridDeleteExterior.cpp
@@ -107,9 +110,11 @@ set(
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridOrthogonalization.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridRectangular.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridRefinement.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridRefinementUndoAction.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothing.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothness.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapping.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/ResetCurvilinearNodeAction.cpp
 )
 
 # list of target headers
@@ -192,8 +197,11 @@ set(
 
 set(
   CURVILINEAR_GRID_INC_LIST
+  ${CURVILINEAR_GRID_INC_DIR}/AddGridLineUndoAction.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGrid.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridAlgorithm.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridBlock.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridBlockUndoAction.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridCurvature.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridDeRefinement.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridDeleteExterior.hpp
@@ -209,9 +217,11 @@ set(
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridOrthogonalization.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridRectangular.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridRefinement.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridRefinementUndoAction.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothing.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothness.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapping.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/ResetCurvilinearNodeAction.hpp
 )
 
 set(

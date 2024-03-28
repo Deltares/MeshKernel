@@ -53,6 +53,20 @@ namespace meshkernel
         /// @brief Overloads equality with another CurvilinearGridNodeIndices
         bool operator==(const CurvilinearGridNodeIndices& rhs) const = default;
 
+        CurvilinearGridNodeIndices& operator+=(const CurvilinearGridNodeIndices& val)
+        {
+            m_n += val.m_n;
+            m_m += val.m_m;
+            return *this;
+        }
+
+        CurvilinearGridNodeIndices& operator-=(const CurvilinearGridNodeIndices& val)
+        {
+            m_n -= val.m_n;
+            m_m -= val.m_m;
+            return *this;
+        }
+
         /// @brief Inquires if another node is on the same grid line of the current node
         /// @param[in] rhs The node to inquire
         /// @return True if on the same grid line, false otherwise

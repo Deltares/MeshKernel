@@ -30,11 +30,17 @@
 #include <vector>
 
 #include <MeshKernel/BoundingBox.hpp>
+#include <MeshKernel/CurvilinearGrid/AddGridLineUndoAction.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridBlockUndoAction.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinementUndoAction.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridUtilities.hpp>
+#include <MeshKernel/CurvilinearGrid/ResetCurvilinearNodeAction.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh.hpp>
+#include <MeshKernel/UndoActions/UndoAction.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
 namespace meshkernel
@@ -44,28 +50,28 @@ namespace meshkernel
     {
 
     public:
-        /// @brief An enum for curvilinear node types
-        enum class NodeType
-        {
-            BottomLeft,    //(11)
-            UpperLeft,     //(14)
-            BottomRight,   //(12)
-            UpperRight,    //(13)
-            Left,          //(4)
-            Right,         //(2)
-            Bottom,        //(1)
-            Up,            //(3)
-            InternalValid, //(10)
-            Invalid        //(0)
-        };
+        // /// @brief An enum for curvilinear node types
+        // enum class NodeType
+        // {
+        //     BottomLeft,    //(11)
+        //     UpperLeft,     //(14)
+        //     BottomRight,   //(12)
+        //     UpperRight,    //(13)
+        //     Left,          //(4)
+        //     Right,         //(2)
+        //     Bottom,        //(1)
+        //     Up,            //(3)
+        //     InternalValid, //(10)
+        //     Invalid        //(0)
+        // };
 
         /// @brief An enum for boundary grid line types
         enum class BoundaryGridLineType
         {
-            Left,
-            Right,
-            Bottom,
-            Up
+            Left,   ///< Bottom of domain
+            Right,  ///<
+            Bottom, ///<
+            Up      ///< Right side of domain
         };
 
         /// @brief Default destructor
@@ -119,12 +125,12 @@ namespace meshkernel
         /// @brief Gets a reference to the grid node at the (m,n) location
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
-        [[nodiscard]] meshkernel::Point& GetNode(const UInt n, const UInt m) { return m_gridNodes(n, m); }
+        [[nodiscard]] meshkernel::Point& GetNode(const UInt n, const UInt m) { return m_gridNodes(n + m_startOffset.m_n, m + m_startOffset.m_m); }
 
         /// @brief Gets a constant reference to the grid node at the (m,n) location
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
-        [[nodiscard]] meshkernel::Point const& GetNode(const UInt n, const UInt m) const { return m_gridNodes(n, m); }
+        [[nodiscard]] meshkernel::Point const& GetNode(const UInt n, const UInt m) const { return m_gridNodes(n + m_startOffset.m_n, m + m_startOffset.m_m); }
 
         /// @brief Gets a reference to the grid node at the location specified by the index.
         /// @note Exception will be raised for a non-valid index
@@ -135,7 +141,8 @@ namespace meshkernel
             {
                 throw ConstraintError("Invalid node index");
             }
-            return m_gridNodes(index.m_n, index.m_m);
+            return GetNode(index.m_n, index.m_m);
+            // return m_gridNodes(index.m_n, index.m_m);
         }
 
         /// @brief Get a constant reference to the grid node at the location specified by the index.
@@ -147,7 +154,8 @@ namespace meshkernel
             {
                 throw ConstraintError("Invalid node index");
             }
-            return m_gridNodes(index.m_n, index.m_m);
+            return GetNode(index.m_n, index.m_m);
+            // return m_gridNodes(index.m_n, index.m_m);
         }
 
         /// @brief From a point gets the node indices of the closest edges
@@ -162,7 +170,9 @@ namespace meshkernel
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
         /// @return the node type
-        NodeType GetNodeType(UInt n, UInt m) const { return m_gridNodesTypes(n, m); }
+        NodeType GetNodeType(UInt n, UInt m) const { return m_gridNodesTypes(n + m_startOffset.m_n, m + m_startOffset.m_m); }
+
+        NodeType& GetNodeType(UInt n, UInt m) { return m_gridNodesTypes(n + m_startOffset.m_n, m + m_startOffset.m_m); }
 
         /// @brief Determines if all nodes of a face are valid.
         /// A face is valid if all its nodes are valid.
@@ -175,11 +185,13 @@ namespace meshkernel
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
         /// @return the face mask value (true/false)
-        [[nodiscard]] bool IsFaceMaskValid(UInt n, UInt m) const { return m_gridFacesMask(n, m); }
+        [[nodiscard]] bool IsFaceMaskValid(UInt n, UInt m) const { return m_gridFacesMask(n + m_startOffset.m_n, m + m_startOffset.m_m); }
+
+        bool& IsFaceMaskValid(UInt n, UInt m) { return m_gridFacesMask(n + m_startOffset.m_n, m + m_startOffset.m_m); }
 
         /// @brief Inserts a new face. The new face will be inserted on top of the closest edge.
         /// @param[in] point  The point used for finding the closest edge.
-        void InsertFace(Point const& point);
+        [[nodiscard]] UndoActionPtr InsertFace(Point const& point);
 
         /// @brief From two points expressed as CurvilinearGridNodeIndices, gets the two corner points defining a block in m and n coordinates
         /// @param[in] firstNode The node indices of the first node
@@ -222,7 +234,9 @@ namespace meshkernel
         /// @param firstNode The first node of the boundary grid line.
         /// @param secondNode The second node of the boundary grid line.
         /// @return If a new grid line has been allocated
-        bool AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
+        std::tuple<bool, UndoActionPtr> AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
+
+        void DeleteGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
 
         /// @brief Get the boundary grid line type: left, right, bottom or up
         /// @param[in] firstNode The first node of the grid line
@@ -232,23 +246,28 @@ namespace meshkernel
 
         /// @brief Delete a node at a specific location by setting it to an invalid point.
         /// @param[in] point The input point coordinate. The closest grid node will be deleted.
-        void DeleteNode(Point const& point);
+        [[nodiscard]] UndoActionPtr DeleteNode(Point const& point);
+
+        /// @brief Moves a node from one position to another
+        /// @param[in] nodeIndex The input index
+        /// @param[in] toPoint The coordinates of the new position
+        [[nodiscard]] UndoActionPtr MoveNode(const CurvilinearGridNodeIndices& nodeIndex, Point const& toPoint);
 
         /// @brief Moves a node from one position to another
         /// @param[in] fromPoint The input position, the closest node will be used
         /// @param[in] toPoint The coordinates of the new position
-        void MoveNode(Point const& fromPoint, Point const& toPoint);
+        [[nodiscard]] UndoActionPtr MoveNode(Point const& fromPoint, Point const& toPoint);
 
         /// @brief Get the mesh bounding box.
         BoundingBox GetBoundingBox() const;
 
         /// @brief The number of nodes M in the m dimension
         /// @return A number >= 2 for a valid curvilinear grid
-        UInt NumM() const { return static_cast<UInt>(m_gridNodes.cols()); }
+        UInt NumM() const { return static_cast<UInt>(m_gridNodes.cols()) - m_startOffset.m_m - m_endOffset.m_m; }
 
         /// @brief The number of nodes N in the n dimension
         /// @return A number >= 2 for a valid curvilinear grid
-        UInt NumN() const { return static_cast<UInt>(m_gridNodes.rows()); }
+        UInt NumN() const { return static_cast<UInt>(m_gridNodes.rows()) - m_startOffset.m_n - m_endOffset.m_n; }
 
         /// @brief Is the node matrix empty
         /// @return true iff the node matrix is empty
@@ -257,17 +276,62 @@ namespace meshkernel
         /// @brief Get a copy of the nodes matrix
         /// @note:the m dimension is the first (or row) index, the n dimension is the second (or column) index
         /// @return a copy of the matrix
+        // TODO need to retuen a slice of the matrix m_gridNodes (m_startOffset.m_m .. m_endOffset.m_m, m_startOffset.m_n .. m_endOffset.m_n)
         lin_alg::Matrix<Point> GetNodes() const { return m_gridNodes; }
 
         /// @brief Get the array of nodes at an m-dimension index
         /// @param [in] m the m-dimension index
         /// @return a vector of N nodes
-        std::vector<Point> GetNodeVectorAtM(UInt m) const { return lin_alg::MatrixRowToSTLVector(m_gridNodes, m); }
+        // TODO Need to include the column offset too, m_startOffset.m_n
+        std::vector<Point> GetNodeVectorAtM(UInt m) const { return lin_alg::MatrixRowToSTLVector(m_gridNodes, m + m_startOffset.m_m); }
 
         /// @brief Get the array of nodes at an n-dimension index
         /// @param [in] n the n-dimension index
         /// @return a vector of M nodes
-        std::vector<Point> GetNodeVectorAtN(UInt n) const { return lin_alg::MatrixColToSTLVector(m_gridNodes, n); }
+        // TODO Need to include the column offset too, m_startOffset.m_m
+        std::vector<Point> GetNodeVectorAtN(UInt n) const { return lin_alg::MatrixColToSTLVector(m_gridNodes, n + m_startOffset.m_n); }
+
+        /// @brief The number of nodes M in the m dimension
+        /// @return A number >= 2 for a valid curvilinear grid
+        UInt FullNumM() const { return static_cast<UInt>(m_gridNodes.cols()); }
+
+        /// @brief The number of nodes N in the n dimension
+        /// @return A number >= 2 for a valid curvilinear grid
+        UInt FullNumN() const { return static_cast<UInt>(m_gridNodes.rows()); }
+
+        /// @brief Restore grid to state before grid line was added
+        void RestoreAction(AddGridLineUndoAction& undoAction);
+
+        /// @brief Restore grid to state after grid line was added
+        void CommitAction(AddGridLineUndoAction& undoAction);
+
+        /// @brief Restore grid to state before grid block was modified
+        ///
+        /// The modification could be from e.g. orthogonalisation, delete interior, ...
+        void RestoreAction(CurvilinearGridBlockUndoAction& undoAction);
+
+        /// @brief Restore grid to state after grid block was modified
+        void CommitAction(CurvilinearGridBlockUndoAction& undoAction);
+
+        /// @brief Restore grid to state before refinement operation
+        void RestoreAction(CurvilinearGridRefinementUndoAction& undoAction);
+
+        /// @brief Restore grid to state after refinement operation
+        void CommitAction(CurvilinearGridRefinementUndoAction& undoAction);
+
+        /// @brief Restore grid to state before node was modified
+        void RestoreAction(const ResetCurvilinearNodeAction& undoAction);
+
+        /// @brief Restore grid to state after node was modified
+        void CommitAction(const ResetCurvilinearNodeAction& undoAction);
+
+        // TODO make private;
+        CurvilinearGridNodeIndices m_startOffset{0, 0};
+        CurvilinearGridNodeIndices m_endOffset{0, 0};
+
+        void print(std::ostream& out = std::cout);
+
+        void printGraph(std::ostream& out = std::cout);
 
     private:
         /// @brief Remove invalid nodes.
@@ -284,8 +348,8 @@ namespace meshkernel
         /// The new node will be calculated by a first order approximation: x2 = x1 + (x1 - x0) = 2*x1 - x0
         /// @param[in] firstNode The indices of the first new node in the modified grid.
         /// @param[in] secondNode The indices of the second new node in the modified grid.
-        void AddEdge(CurvilinearGridNodeIndices const& firstNode,
-                     CurvilinearGridNodeIndices const& secondNode);
+        [[nodiscard]] UndoActionPtr AddEdge(CurvilinearGridNodeIndices const& firstNode,
+                                            CurvilinearGridNodeIndices const& secondNode);
 
         lin_alg::Matrix<Point> m_gridNodes;                    ///< Member variable storing the grid
         lin_alg::Matrix<bool> m_gridFacesMask;                 ///< The mask of the grid faces (true/false)

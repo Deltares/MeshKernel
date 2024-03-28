@@ -224,6 +224,44 @@ namespace lin_alg
         matrix.block(row + 1, 0, rows_to_move_down, cols) = block_to_move_down;
     }
 
+    template <typename T, int storage>
+    inline static bool FillRow(Matrix<T, storage>& matrix,
+                               Eigen::Index row,
+                               T const& fillValue = {})
+    {
+        if (row < 0)
+        {
+            throw meshkernel::LinearAlgebraError("Invalid dimensions: rows = {}. Dimensions must be strictly positive.",
+                                                 row);
+        }
+
+        Eigen::Index const cols = matrix.cols();
+
+        for (Eigen::Index i = 0; i < cols; ++i)
+        {
+            matrix(row, i) = fillValue;
+        }
+    }
+
+    template <typename T, int storage>
+    inline static bool FillCol(Matrix<T, storage>& matrix,
+                               Eigen::Index col,
+                               T const& fillValue = {})
+    {
+        if (col < 0)
+        {
+            throw meshkernel::LinearAlgebraError("Invalid dimensions: col = {}. Dimensions must be strictly positive.",
+                                                 col);
+        }
+
+        Eigen::Index const rows = matrix.rows();
+
+        for (Eigen::Index i = 0; i < rows; ++i)
+        {
+            matrix(i, col) = fillValue;
+        }
+    }
+
     /// @brief     Transforms a STL vector to an Eigen row-major vector
     /// @tparam    T       Matrix data type
     /// @tparam    storage Matrix storage option

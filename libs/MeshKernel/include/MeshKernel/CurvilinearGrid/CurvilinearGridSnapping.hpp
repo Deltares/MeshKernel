@@ -33,6 +33,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/LandBoundary.hpp>
 #include <MeshKernel/Splines.hpp>
+#include <MeshKernel/UndoActions/UndoAction.hpp>
 
 namespace meshkernel
 {
@@ -139,7 +140,7 @@ namespace meshkernel
                                 const std::vector<Point>& points);
 
         /// @brief Executes the snapping and smoothing algorithm
-        void Compute() override;
+        [[nodiscard]] UndoActionPtr Compute() override;
 
     private:
         /// @brief Tolerance to determine if point is on (close to) boundary

@@ -13,7 +13,7 @@ TEST(CurvilinearLineAttraction, Compute_OnMLine_ShouldAttractMLines)
     curvilinearLineAttractionRepulsion.SetBlock({80198.2, 366750.6}, {80583.1, 366889.8});
 
     // Execute
-    curvilinearLineAttractionRepulsion.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearLineAttractionRepulsion.Compute();
 
     // Asserts
     constexpr double tolerance = 1e-6;
@@ -40,7 +40,7 @@ TEST(CurvilinearLineAttraction, Compute_OnNLine_ShouldAttractNLines)
     curvilinearLineAttractionRepulsion.SetBlock({80266.8, 367104.0}, {80419.3, 366566.2});
 
     // Execute
-    curvilinearLineAttractionRepulsion.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearLineAttractionRepulsion.Compute();
 
     // Asserts
     constexpr double tolerance = 1e-6;
@@ -67,7 +67,7 @@ TEST(CurvilinearLineRepulsion, Compute_OnMLine_ShouldRepulseMLines)
     curvilinearLineAttractionRepulsion.SetBlock({80198.2, 366750.6}, {80583.1, 366889.8});
 
     // Execute
-    curvilinearLineAttractionRepulsion.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearLineAttractionRepulsion.Compute();
 
     // Asserts
     const double tolerance = 1e-6;
@@ -94,7 +94,7 @@ TEST(CurvilinearLineRepulsion, Compute_OnNLine_ShouldRepulseNLines)
     curvilinearLineAttractionRepulsion.SetBlock({80266.8, 367104.0}, {80419.3, 366566.2});
 
     // Execute
-    curvilinearLineAttractionRepulsion.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearLineAttractionRepulsion.Compute();
 
     // Asserts
     const double tolerance = 1e-6;

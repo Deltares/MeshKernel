@@ -22,7 +22,7 @@ TEST(CurvilinearGridSmoothing, Compute_OnSmoothCurvilinearGrid_ShouldNotSmoothGr
 
     // Execute
     curvilinearGridSmoothing.SetBlock({0, 0}, {30, 30});
-    curvilinearGridSmoothing.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.Compute();
 
     // Assert nodes are on the same location because the grid is already smooth
     constexpr double tolerance = 1e-6;
@@ -76,7 +76,7 @@ TEST(CurvilinearGridSmoothing, Compute_OnONonSmoothCurvilinearGrid_ShouldSmoothG
 
     // Execute
     curvilinearGridSmoothing.SetBlock({80154, 366530}, {80610, 367407});
-    curvilinearGridSmoothing.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.Compute();
 
     // Assert
     constexpr double tolerance = 1e-6;
@@ -131,7 +131,7 @@ TEST(CurvilinearGridSmoothing, Compute_OnONonSmoothCurvilinearGridWithMissingEle
 
     // Execute
     curvilinearGridSmoothing.SetBlock({80154, 366530}, {80610, 367407});
-    curvilinearGridSmoothing.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.Compute();
 
     // Assert
     constexpr double tolerance = 1e-6;
@@ -207,7 +207,7 @@ TEST(CurvilinearGridSmoothing, ComputedDirectionalSmooth_OnMDrirection_ShouldSmo
     curvilinearGridSmoothing.SetBlock({80199, 366749}, {80480, 366869});
 
     // Execute
-    curvilinearGridSmoothing.ComputeDirectional();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.ComputeDirectional();
 
     // Assert
     constexpr double tolerance = 1e-6;
@@ -243,7 +243,7 @@ TEST(CurvilinearGridSmoothing, ComputedDirectionalSmooth_OnNDrirection_ShouldSmo
     curvilinearGridSmoothing.SetBlock({80143, 367041}, {80333, 366553});
 
     // Execute
-    curvilinearGridSmoothing.ComputeDirectional();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.ComputeDirectional();
 
     // Assert
     constexpr double tolerance = 1e-6;

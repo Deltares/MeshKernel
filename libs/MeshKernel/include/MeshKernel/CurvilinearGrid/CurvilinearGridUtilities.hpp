@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2024.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,26 +26,21 @@
 //------------------------------------------------------------------------------
 
 #pragma once
-#include <memory>
-
-#include "MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp"
-#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 namespace meshkernel
 {
-    class CurvilinearGrid;
-
-    /// @brief A class implementing the curvilinear grid de-refinement algorithm.
-    /// A segment is defined by the first and second point.
-    /// The grid lines crossed by the segment are eliminated from the curvilinear grid.
-    class CurvilinearGridDeRefinement : public CurvilinearGridAlgorithm
+    /// @brief An enum for curvilinear node types
+    enum class NodeType
     {
-    public:
-        /// @brief Class constructor
-        /// @param[in] grid The input curvilinear grid
-        CurvilinearGridDeRefinement(CurvilinearGrid& grid);
-
-        /// @brief Refine the curvilinear grid
-        [[nodiscard]] UndoActionPtr Compute() override;
+        BottomLeft,    //(11)
+        UpperLeft,     //(14)
+        BottomRight,   //(12)
+        UpperRight,    //(13)
+        Left,          //(4)
+        Right,         //(2)
+        Bottom,        //(1)
+        Up,            //(3)
+        InternalValid, //(10)
+        Invalid        //(0)
     };
 } // namespace meshkernel
