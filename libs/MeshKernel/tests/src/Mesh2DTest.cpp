@@ -1232,3 +1232,59 @@ TEST(Mesh2D, DeleteMesh_WithPolygonAndIncludedCircumcenters_ShouldDeleteInnerFac
         EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
     }
 }
+
+TEST(Mesh2D, GetBoundingBox_WithANonEmptyMesh_ShouldGetAValidBoundingBox)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(10,
+                                                    10,
+                                                    10.0,
+                                                    10.0,
+                                                    meshkernel::Projection::cartesian);
+    // Execute
+    const auto boundingBox = mesh->GetBoundingBox();
+
+    // Assert
+    ASSERT_EQ(boundingBox.IsEmpty(), false);
+    ASSERT_EQ(boundingBox.lowerLeft().x, 0.0);
+    ASSERT_EQ(boundingBox.lowerLeft().y, 0.0);
+    ASSERT_EQ(boundingBox.upperRight().x, 10.0);
+    ASSERT_EQ(boundingBox.upperRight().y, 10.0);
+}
+
+TEST(Mesh2D, GetBoundingBox_WithAnEmptyMesh_ShouldGetAnEmptyBoundingBox)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(10,
+                                                    10,
+                                                    10.0,
+                                                    10.0,
+                                                    meshkernel::Projection::cartesian);
+
+    const auto polygon = meshkernel::Polygons({}, meshkernel::Projection::cartesian);
+    const auto deletionOption = meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected;
+
+    // Execute
+    auto undoAction = mesh->DeleteMesh(polygon, deletionOption, false);
+    auto boundingBox = mesh->GetBoundingBox();
+
+    // Assert
+    ASSERT_EQ(boundingBox.IsEmpty(), true);
+}
+
+TEST(Mesh2D, GetEdgesBoundingBox_WithAnInvalidEdge_ShouldGetOneInvalidEdgeBoundingBox)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(10,
+                                                    10,
+                                                    10.0,
+                                                    10.0,
+                                                    meshkernel::Projection::cartesian);
+    // Execute
+    const auto undoAction = mesh->DeleteEdge(0);
+    const auto edgesBoundingBoxes = mesh->GetEdgesBoundingBoxes();
+
+    // Assert
+    ASSERT_EQ(edgesBoundingBoxes[0].IsEmpty(), true);
+    ASSERT_EQ(edgesBoundingBoxes[1].IsEmpty(), false);
+}

@@ -39,6 +39,7 @@ namespace meshkernel
     class BoundingBox
     {
     public:
+        /// @brief Default constructor
         BoundingBox() = default;
 
         /// @brief Constructor taking the corner points of the bounding box
@@ -90,7 +91,7 @@ namespace meshkernel
         /// @return True if the other bounding box is not equal
         bool operator!=(const BoundingBox& other) const
         {
-            return other.m_lowerLeft != m_lowerLeft || other.m_upperRight != m_upperRight;
+            return other.IsEmpty() != IsEmpty() || other.m_lowerLeft != m_lowerLeft || other.m_upperRight != m_upperRight;
         }
 
         /// @brief Checks if a point is inside a bounding box
@@ -161,9 +162,9 @@ namespace meshkernel
         bool IsEmpty() const { return m_isEmpty; }
 
     private:
-        Point m_lowerLeft;  ///< The lower left corner of the bounding box
-        Point m_upperRight; ///< The upper right corner of the bounding box
-        bool m_isEmpty = true;
+        Point m_lowerLeft;     ///< The lower left corner of the bounding box
+        Point m_upperRight;    ///< The upper right corner of the bounding box
+        bool m_isEmpty = true; ///< If the bounding box is empty (no entity bounded)
     };
 
     /// @brief Merge two bounding boxes into a single bounding box that will contain both of the original.

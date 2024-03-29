@@ -2258,7 +2258,7 @@ meshkernel::BoundingBox Mesh2D::GetBoundingBox() const
 
     if (validNodeFound)
     {
-        return BoundingBox(lowerLeft, upperRight);
+        return {lowerLeft, upperRight};
     }
     return {};
 }
