@@ -1245,7 +1245,6 @@ TEST(Mesh2D, GetBoundingBox_WithANonEmptyMesh_ShouldGetAValidBoundingBox)
     const auto boundingBox = mesh->GetBoundingBox();
 
     // Assert
-    ASSERT_EQ(boundingBox.IsEmpty(), false);
     ASSERT_EQ(boundingBox.lowerLeft().x, 0.0);
     ASSERT_EQ(boundingBox.lowerLeft().y, 0.0);
     ASSERT_EQ(boundingBox.upperRight().x, 10.0);
@@ -1264,12 +1263,18 @@ TEST(Mesh2D, GetBoundingBox_WithAnEmptyMesh_ShouldGetAnEmptyBoundingBox)
     const auto polygon = meshkernel::Polygons({}, meshkernel::Projection::cartesian);
     const auto deletionOption = meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected;
 
+    meshkernel::Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    meshkernel::Point upperRight(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
+
     // Execute
     auto undoAction = mesh->DeleteMesh(polygon, deletionOption, false);
     auto boundingBox = mesh->GetBoundingBox();
 
     // Assert
-    ASSERT_EQ(boundingBox.IsEmpty(), true);
+    ASSERT_EQ(boundingBox.lowerLeft().x, lowerLeft.x);
+    ASSERT_EQ(boundingBox.lowerLeft().y, lowerLeft.y);
+    ASSERT_EQ(boundingBox.upperRight().x, upperRight.x);
+    ASSERT_EQ(boundingBox.upperRight().y, upperRight.y);
 }
 
 TEST(Mesh2D, GetEdgesBoundingBox_WithAnInvalidEdge_ShouldGetOneInvalidEdgeBoundingBox)
@@ -1285,6 +1290,17 @@ TEST(Mesh2D, GetEdgesBoundingBox_WithAnInvalidEdge_ShouldGetOneInvalidEdgeBoundi
     const auto edgesBoundingBoxes = mesh->GetEdgesBoundingBoxes();
 
     // Assert
-    ASSERT_EQ(edgesBoundingBoxes[0].IsEmpty(), true);
-    ASSERT_EQ(edgesBoundingBoxes[1].IsEmpty(), false);
+    meshkernel::Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    meshkernel::Point upperRight(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
+
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(edgesBoundingBoxes[0].lowerLeft().x, lowerLeft.x, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[0].lowerLeft().y, lowerLeft.y, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[0].upperRight().x, upperRight.x, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[0].upperRight().y, upperRight.y, tolerance);
+
+    ASSERT_NEAR(edgesBoundingBoxes[1].lowerLeft().x, 0.0, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[1].lowerLeft().y, 1.1111111111111112, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[1].upperRight().x, 1.1111111111111112, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[1].upperRight().y, 1.1111111111111112, tolerance);
 }

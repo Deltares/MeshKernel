@@ -40,15 +40,15 @@ namespace meshkernel
     {
     public:
         /// @brief Default constructor
-        BoundingBox() = default;
+        BoundingBox() : m_lowerLeft(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest()),
+                        m_upperRight(std::numeric_limits<double>::max(), std::numeric_limits<double>::max()) {}
 
         /// @brief Constructor taking the corner points of the bounding box
         /// @param[in] lowerLeft The lower left corner of the bounding box
         /// @param[in] upperRight The upper right corner of the bounding box
         BoundingBox(const Point& lowerLeft, const Point& upperRight)
             : m_lowerLeft(lowerLeft),
-              m_upperRight(upperRight),
-              m_isEmpty(false)
+              m_upperRight(upperRight)
         {
         }
 
@@ -91,7 +91,7 @@ namespace meshkernel
         /// @return True if the other bounding box is not equal
         bool operator!=(const BoundingBox& other) const
         {
-            return other.IsEmpty() != IsEmpty() || other.m_lowerLeft != m_lowerLeft || other.m_upperRight != m_upperRight;
+            return other.m_lowerLeft != m_lowerLeft || other.m_upperRight != m_upperRight;
         }
 
         /// @brief Checks if a point is inside a bounding box
@@ -158,17 +158,16 @@ namespace meshkernel
             return BoundingBox({lowerLeftX, lowerLeftY}, {upperRightX, upperRightY});
         }
 
-        /// @brief If the bounding box is empty
-        bool IsEmpty() const { return m_isEmpty; }
-
     private:
-        Point m_lowerLeft;     ///< The lower left corner of the bounding box
-        Point m_upperRight;    ///< The upper right corner of the bounding box
-        bool m_isEmpty = true; ///< If the bounding box is empty (no entity bounded)
+        Point m_lowerLeft;  ///< The lower left corner of the bounding box
+        Point m_upperRight; ///< The upper right corner of the bounding box
     };
 
     /// @brief Merge two bounding boxes into a single bounding box that will contain both of the original.
     BoundingBox Merge(const BoundingBox& b1, const BoundingBox& b2);
+
+    /// @brief Create a non overlapping bounding box
+    BoundingBox CreateEmptyBoundingBox();
 
 } // namespace meshkernel
 
@@ -220,6 +219,13 @@ inline meshkernel::BoundingBox meshkernel::Merge(const BoundingBox& b1, const Bo
     return BoundingBox(lowerLeft, upperRight);
 }
 
+inline meshkernel::BoundingBox meshkernel::CreateEmptyBoundingBox()
+{
+    Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    Point upperRight(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
+    return BoundingBox(lowerLeft, upperRight);
+}
+
 inline meshkernel::Vector meshkernel::BoundingBox::Delta() const
 {
     return Vector(m_upperRight.x - m_lowerLeft.x, m_upperRight.y - m_lowerLeft.y);
@@ -227,11 +233,6 @@ inline meshkernel::Vector meshkernel::BoundingBox::Delta() const
 
 inline bool meshkernel::BoundingBox::Overlaps(const BoundingBox& other) const
 {
-    if (IsEmpty() || other.IsEmpty())
-    {
-        return false;
-    }
-
     const auto& otherLowerleft = other.lowerLeft();
     const auto& otherUpperRight = other.upperRight();
     if (m_upperRight.x < otherLowerleft.x ||
