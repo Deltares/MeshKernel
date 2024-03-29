@@ -39,16 +39,15 @@ namespace meshkernel
     class BoundingBox
     {
     public:
-        /// @brief Default constructor
-        BoundingBox() : m_lowerLeft(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest()),
-                        m_upperRight(std::numeric_limits<double>::max(), std::numeric_limits<double>::max()) {}
+        BoundingBox() = default;
 
         /// @brief Constructor taking the corner points of the bounding box
         /// @param[in] lowerLeft The lower left corner of the bounding box
         /// @param[in] upperRight The upper right corner of the bounding box
         BoundingBox(const Point& lowerLeft, const Point& upperRight)
             : m_lowerLeft(lowerLeft),
-              m_upperRight(upperRight)
+              m_upperRight(upperRight),
+              m_isEmpty(false)
         {
         }
 
@@ -158,9 +157,13 @@ namespace meshkernel
             return BoundingBox({lowerLeftX, lowerLeftY}, {upperRightX, upperRightY});
         }
 
+        /// @brief If the bounding box is empty
+        bool IsEmpty() const { return m_isEmpty; }
+
     private:
         Point m_lowerLeft;  ///< The lower left corner of the bounding box
         Point m_upperRight; ///< The upper right corner of the bounding box
+        bool m_isEmpty = true;
     };
 
     /// @brief Merge two bounding boxes into a single bounding box that will contain both of the original.
@@ -223,6 +226,10 @@ inline meshkernel::Vector meshkernel::BoundingBox::Delta() const
 
 inline bool meshkernel::BoundingBox::Overlaps(const BoundingBox& other) const
 {
+    if (IsEmpty() || other.IsEmpty())
+    {
+        return false;
+    }
 
     const auto& otherLowerleft = other.lowerLeft();
     const auto& otherUpperRight = other.upperRight();
