@@ -2272,6 +2272,7 @@ std::vector<meshkernel::BoundingBox> Mesh2D::GetEdgesBoundingBoxes() const
         if (e.first == constants::missing::uintValue || e.second == constants::missing::uintValue)
         {
             result.emplace_back(BoundingBox());
+            continue;
         }
 
         result.emplace_back(BoundingBox::CreateBoundingBox(m_nodes[e.first], m_nodes[e.second]));
