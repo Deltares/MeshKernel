@@ -1180,7 +1180,7 @@ TEST(CurvilinearBasicTests, DISABLED_AnotherTest11)
     grid->printGraph();
 }
 
-TEST(CurvilinearBasicTests, DISABLED_AnotherTest12)
+TEST(CurvilinearBasicTests, AnotherTest12)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -1192,19 +1192,27 @@ TEST(CurvilinearBasicTests, DISABLED_AnotherTest12)
     constexpr size_t ny = 30;
 
     std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    grid->ComputeGridNodeTypes();
+    grid->SetFlatCopies();
+    std::cout << "sizes: " << grid->NumN() << "  " << grid->NumM() << "  " << grid->GetNumNodes() << "  " << grid->GetNumEdges() << std::endl;
 
-    auto undoAction1 = grid->InsertFace ({0.5, 30.0});
-    undoAction1->Restore ();
+    auto undoAction1 = grid->InsertFace({0.5, 30.0});
+    // undoAction1->Restore();
 
-    auto undoAction2 = grid->InsertFace ({1.5, 30.0});
+    grid->ComputeGridNodeTypes();
+    grid->SetFlatCopies();
+    std::cout << "sizes: " << grid->NumN() << "  " << grid->NumM() << "  " << grid->GetNumNodes() << "  " << grid->GetNumEdges() << std::endl;
+
+    auto undoAction2 = grid->InsertFace({1.51, 30.0});
     // undoAction2->Restore ();
 
     grid->ComputeGridNodeTypes();
     grid->SetFlatCopies();
-    grid->printGraph();
+
+    std::cout << "sizes: " << grid->NumN() << "  " << grid->NumM() << "  " << grid->GetNumNodes() << "  " << grid->GetNumEdges() << std::endl;
 }
 
-TEST(CurvilinearBasicTests, DISABLED_CompoundTest1)
+TEST(CurvilinearBasicTests, CompoundTest)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -1217,10 +1225,12 @@ TEST(CurvilinearBasicTests, DISABLED_CompoundTest1)
 
     mk::UndoActionStack undoActions;
     std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    grid->SetFlatCopies();
+
+    // Nodes in the original mesh
+    const std::vector<mk::Point> originalPoints = grid->Nodes();
 
     meshkernel::CurvilinearGridLineShift lineShift(*grid);
-
-    // grid->printGraph();
 
     lineShift.SetLine({5.0, 3.0}, {5.0, 15.0});
     lineShift.SetBlock({2.0, 3.0}, {10.0, 10.0});
@@ -1241,8 +1251,6 @@ TEST(CurvilinearBasicTests, DISABLED_CompoundTest1)
     lineMirror.m_lines.push_back(mk::CurvilinearGridLine({0, 0}, {0, nx - 1 + 10}));
     undoActions.Add(lineMirror.Compute());
     grid->ComputeGridNodeTypes();
-
-#if 1
 
     //--------------------------------
 
@@ -1348,11 +1356,31 @@ TEST(CurvilinearBasicTests, DISABLED_CompoundTest1)
 
     //--------------------------------
 
-#endif
+    grid->SetFlatCopies();
+
+    // Nodes in the grid after all actions
+    const std::vector<mk::Point> refinedPoints = grid->Nodes();
 
     while (undoActions.Undo())
     {
         // Nothing else to do
+    }
+
+    grid->SetFlatCopies();
+
+    constexpr double tolerance = 1.0e-12;
+
+    // Points should be same as inthe original mesh after all actions have bene undone
+    mk::UInt index = 0;
+
+    for (mk::UInt i = 0; i < grid->GetNumNodes(); ++i)
+    {
+        if (grid->Node(i).IsValid())
+        {
+            EXPECT_NEAR(originalPoints[index].x, grid->Node(i).x, tolerance);
+            EXPECT_NEAR(originalPoints[index].y, grid->Node(i).y, tolerance);
+            ++index;
+        }
     }
 
     while (undoActions.Commit())
@@ -1360,17 +1388,12 @@ TEST(CurvilinearBasicTests, DISABLED_CompoundTest1)
         // Nothing else to do
     }
 
-    // undoActions.Undo();
-    // undoActions.Undo();
-    // undoActions.Undo();
-    // undoActions.Undo();
-    // undoActions.Undo();
-    // undoActions.Undo();
-    // undoActions.Undo();
-    // undoActions.Undo();
-    // undoActions.Undo();
-
-    grid->ComputeGridNodeTypes();
     grid->SetFlatCopies();
-    grid->printGraph();
+
+    // Points should be same as in the refined mesh after all actions have bene redone
+    for (mk::UInt i = 0; i < grid->GetNumNodes(); ++i)
+    {
+        EXPECT_NEAR(refinedPoints[index].x, grid->Node(i).x, tolerance);
+        EXPECT_NEAR(refinedPoints[index].y, grid->Node(i).y, tolerance);
+    }
 }

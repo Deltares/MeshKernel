@@ -623,6 +623,8 @@ meshkernel::UndoActionPtr CurvilinearGrid::InsertFace(Point const& point)
     // Compute the grid node types
     ComputeGridNodeTypes();
 
+    std::cout << "edge nodes: " << point.x << ", " << point.y << "   " << GetNode(firstNode).x << ", " << GetNode(firstNode).y << " -- " << GetNode(secondNode).x << ", " << GetNode(secondNode).y << std::endl;
+
     // Add a new edge
     UndoActionPtr undoAction = AddEdge(firstNode, secondNode);
 
