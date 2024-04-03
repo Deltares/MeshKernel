@@ -615,18 +615,6 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
     }
 }
 
-TEST(CurvilinearGridUniform, DeleteTopLeftNode_OnUniformGrid_ShouldDeleteNode)
-{
-    // Prepare
-    const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 4, 4);
-
-    // Execute
-    curvilinearGrid->DeleteNode({10.0, 30.0});
-
-    auto const numValidNodes = CurvilinearGridCountValidNodes(*curvilinearGrid);
-    ASSERT_EQ(numValidNodes, 14);
-}
-
 class CurvilinearGridUniformTests : public ::testing::TestWithParam<std::tuple<meshkernel::Point, int>>
 {
 public:
