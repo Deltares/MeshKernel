@@ -51,6 +51,11 @@ namespace meshkernel
         /// @brief Computes a new curvilinear grid with the line shift
         [[nodiscard]] UndoActionPtr Compute() override;
 
+        /// @brief Moves node and computes a new curvilinear grid with the line shift
+        /// @param[in] fromPoint The input position, the closest node on the \ref m_grid grid will be used
+        /// @param[in] toPoint The coordinates of the new position
+        [[nodiscard]] UndoActionPtr Compute(const Point& fromPoint, const Point& toPoint);
+
         /// @brief Moves a node from one position to another
         /// @param[in] fromPoint The input position, the closest node on the \ref m_grid grid will be used
         /// @param[in] toPoint The coordinates of the new position

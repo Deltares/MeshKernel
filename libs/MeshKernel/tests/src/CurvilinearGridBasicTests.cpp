@@ -27,6 +27,7 @@
 
 #include <numbers>
 #include <random>
+#include <utility>
 
 #include <gtest/gtest.h>
 
@@ -49,67 +50,8 @@
 
 namespace mk = meshkernel;
 
-namespace basic
-{
 
-    std::unique_ptr<meshkernel::CurvilinearGrid> MakeCurvilinearGrid(double originX, double originY, double deltaX, double deltaY, size_t nx, size_t ny)
-    {
-        double y = originY;
-
-        lin_alg::Matrix<meshkernel::Point> points(ny, nx);
-
-        for (size_t n = 0; n < ny; ++n)
-        {
-            double x = originX;
-            double deltaXValue = deltaX;
-
-            for (size_t m = 0; m < nx; ++m)
-            {
-                points(n, m) = meshkernel::Point(x, y);
-                x += deltaXValue;
-            }
-
-            y += deltaY;
-        }
-
-        auto grid = std::make_unique<meshkernel::CurvilinearGrid>(points, meshkernel::Projection::cartesian);
-        grid->SetFlatCopies();
-        grid->ComputeGridNodeTypes();
-        return grid;
-    }
-
-    std::unique_ptr<meshkernel::CurvilinearGrid> MakeCurvilinearGridRand(double originX, double originY, double deltaX, double deltaY, size_t nx, size_t ny)
-    {
-        double y = originY;
-
-        std::uniform_real_distribution<double> dist(0.0, 1.0);
-        std::default_random_engine re;
-
-        lin_alg::Matrix<meshkernel::Point> points(ny, nx);
-
-        for (size_t n = 0; n < ny; ++n)
-        {
-            double x = originX;
-            double deltaXValue = deltaX;
-
-            for (size_t m = 0; m < nx; ++m)
-            {
-                points(n, m) = meshkernel::Point(x, y) + mk::Vector(dist(re) * 0.4 * deltaX, dist(re) * 0.4 * deltaY);
-                x += deltaXValue;
-            }
-
-            y += deltaY;
-        }
-
-        auto grid = std::make_unique<meshkernel::CurvilinearGrid>(points, meshkernel::Projection::cartesian);
-        grid->SetFlatCopies();
-        grid->ComputeGridNodeTypes();
-        return grid;
-    }
-
-} // namespace basic
-
-TEST(CurvilinearBasicTests, DISABLED_AddGridLineAtBoundary)
+TEST(CurvilinearBasicTests, SimpleAddGridLineAtBoundary)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -120,159 +62,39 @@ TEST(CurvilinearBasicTests, DISABLED_AddGridLineAtBoundary)
     constexpr size_t nx = 27;
     constexpr size_t ny = 13;
 
-    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    grid->SetFlatCopies();
+    grid->ComputeGridNodeTypes();
+
+    // Nodes in the original mesh
+    const std::vector<mk::Point> originalPoints = grid->Nodes();
     bool addedLine = false;
+    std::unique_ptr<mk::UndoAction> undoAction;
 
-    std::cout << "pnts: " << grid->GetNode(0, 0).x << ", " << grid->GetNode(0, 0).y
-              << "  -- " << grid->GetNode(1, 0).x << ", " << grid->GetNode(1, 0).y
-              << std::endl;
+    EXPECT_EQ (grid->NumN (), ny);
+    EXPECT_EQ (grid->NumM (), nx);
 
-    std::cout << " size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
-              << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
-              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
-              << std::endl;
+    // Add grid line to bottom of domain
+    std::tie (addedLine, undoAction) = grid->AddGridLineAtBoundary({0, 0}, {0, 1});
+    EXPECT_EQ (grid->NumN (), ny + 1);
+    EXPECT_EQ (grid->NumM (), nx);
 
-    grid->AddGridLineAtBoundary({0, 0}, {0, 1});
-    grid->SetFlatCopies();
+    // There should be no start/end offset changes
+    EXPECT_EQ (grid->StartOffset ().m_n, 0);
+    EXPECT_EQ (grid->StartOffset ().m_m, 0);
+    EXPECT_EQ (grid->EndOffset ().m_n, 0);
+    EXPECT_EQ (grid->EndOffset ().m_m, 0);
 
-    for (mk::UInt i = 0; i < grid->NumN(); ++i)
-    {
-        grid->GetNode(0, i).x = grid->GetNode(1, i).x - deltaX;
-        grid->GetNode(0, i).y = grid->GetNode(1, i).y;
-        std::cout << " pnt: " << grid->GetNode(0, i).x << "  " << grid->GetNode(0, i).y << " -- " << grid->GetNode(1, i).x << "  " << grid->GetNode(1, i).y << std::endl;
-    }
+    undoAction->Restore ();
 
-    grid->ComputeGridNodeTypes();
+    EXPECT_EQ (grid->NumN (), ny);
+    EXPECT_EQ (grid->NumM (), nx);
 
-    std::cout << "pnts: " << grid->GetNode(0, 0).x << ", " << grid->GetNode(0, 0).y
-              << "  -- " << grid->GetNode(1, 0).x << ", " << grid->GetNode(1, 0).y
-              << std::endl;
-
-    std::cout << " size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
-              << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
-              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
-              << std::endl;
-
-    // grid->AddGridLineAtBoundary({0, 26}, {1, 26});
-    // grid->ComputeGridNodeTypes();
-    // std::cout << " size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << std::endl;
-    // addedLine = grid->AddGridLineAtBoundary({0, 0}, {0, 1});
-    // grid->ComputeGridNodeTypes();
-    // std::cout << " size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << std::endl;
-
-    grid->DeleteGridLineAtBoundary({0, 0}, {1, 0});
-    grid->SetFlatCopies();
-    std::cout << "pnts: " << grid->GetNode(0, 0).x << ", " << grid->GetNode(0, 0).y << "  -- "
-              << grid->GetNode(1, 0).x << ", " << grid->GetNode(1, 0).y << "  -- "
-              << std::endl;
-    std::cout << " size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
-              << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
-              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
-              << std::endl;
-
-    grid->DeleteGridLineAtBoundary({0, 0}, {0, 1});
-    grid->SetFlatCopies();
-    grid->ComputeGridNodeTypes();
-    std::cout << "pnts: " << grid->GetNode(0, 0).x << ", " << grid->GetNode(0, 0).y << "  -- "
-              << grid->GetNode(1, 0).x << ", " << grid->GetNode(1, 0).y << "  -- "
-              << std::endl;
-    std::cout << " size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
-              << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
-              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
-              << std::endl;
-
-    grid->DeleteGridLineAtBoundary({0, 0}, {0, 1});
-    grid->SetFlatCopies();
-    grid->ComputeGridNodeTypes();
-    std::cout << "pnts: " << grid->GetNode(0, 0).x << ", " << grid->GetNode(0, 0).y << "  -- "
-              << grid->GetNode(1, 0).x << ", " << grid->GetNode(1, 0).y << "  -- "
-              << std::endl;
-    std::cout << " size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
-              << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
-              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
-              << std::endl;
-
-    grid->AddGridLineAtBoundary({0, 0}, {1, 0});
-    grid->SetFlatCopies();
-    // grid->AddGridLineAtBoundary({0, 0}, {0, 1});
-    grid->ComputeGridNodeTypes();
-    std::cout << " size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
-              << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
-              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
-              << std::endl;
-
-    grid->AddGridLineAtBoundary({0, 0}, {0, 1});
-    grid->SetFlatCopies();
-    grid->ComputeGridNodeTypes();
-    std::cout << " size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
-              << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
-              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
-              << std::endl;
-
-    grid->AddGridLineAtBoundary({0, 0}, {0, 1});
-    grid->SetFlatCopies();
-    grid->ComputeGridNodeTypes();
-    std::cout << " size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
-              << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
-              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
-              << std::endl;
-
-    grid->AddGridLineAtBoundary({0, 0}, {0, 1});
-
-    for (mk::UInt i = 0; i < grid->NumN(); ++i)
-    {
-        grid->GetNode(0, i).x = grid->GetNode(1, i).x - deltaX;
-        grid->GetNode(0, i).y = grid->GetNode(1, i).y;
-    }
-
-    grid->SetFlatCopies();
-    grid->ComputeGridNodeTypes();
-    std::cout << " size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
-              << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
-              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
-              << std::endl;
-
-    grid->DeleteGridLineAtBoundary({0, 0}, {0, 1});
-    grid->SetFlatCopies();
-    grid->ComputeGridNodeTypes();
-    std::cout << "pnts: " << grid->GetNode(0, 0).x << ", " << grid->GetNode(0, 0).y << "  -- "
-              << grid->GetNode(1, 0).x << ", " << grid->GetNode(1, 0).y << "  -- "
-              << std::endl;
-    std::cout << " size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
-              << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
-              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
-              << std::endl;
-
-    auto undoAction = grid->InsertFace({-1.1, 1.0});
-
-    for (mk::UInt i = 0; i < grid->NumN(); ++i)
-    {
-        grid->GetNode(0, i).x = grid->GetNode(1, i).x - deltaX;
-        grid->GetNode(0, i).y = grid->GetNode(1, i).y;
-        std::cout << " pnt: " << grid->GetNode(0, i).x << "  " << grid->GetNode(0, i).y << " -- " << grid->GetNode(1, i).x << "  " << grid->GetNode(1, i).y << std::endl;
-    }
-
-    grid->SetFlatCopies();
-    grid->ComputeGridNodeTypes();
-    std::cout << "pnts: " << grid->GetNode(0, 0).x << ", " << grid->GetNode(0, 0).y << "  -- "
-              << grid->GetNode(1, 0).x << ", " << grid->GetNode(1, 0).y << "  -- "
-              << std::endl;
-    std::cout << " size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
-              << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
-              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
-              << std::endl;
-
-    grid->DeleteGridLineAtBoundary({0, 0}, {0, 1});
-
-    grid->SetFlatCopies();
-    grid->ComputeGridNodeTypes();
-    std::cout << "pnts: " << grid->GetNode(0, 0).x << ", " << grid->GetNode(0, 0).y << "  -- "
-              << grid->GetNode(1, 0).x << ", " << grid->GetNode(1, 0).y << "  -- "
-              << std::endl;
-    std::cout << " size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
-              << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
-              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
-              << std::endl;
+    // There should be no start/end offset changes
+    EXPECT_EQ (grid->StartOffset ().m_n, 1);
+    EXPECT_EQ (grid->StartOffset ().m_m, 0);
+    EXPECT_EQ (grid->EndOffset ().m_n, 0);
+    EXPECT_EQ (grid->EndOffset ().m_m, 0);
 }
 
 TEST(CurvilinearBasicTests, DISABLED_AddGridLineAtBoundaryUndo)
@@ -289,7 +111,9 @@ TEST(CurvilinearBasicTests, DISABLED_AddGridLineAtBoundaryUndo)
     // constexpr size_t nx = 27;
     // constexpr size_t ny = 13;
 
-    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    grid->SetFlatCopies();
+    grid->ComputeGridNodeTypes();
     bool addedLine = false;
     mk::UndoActionStack undoActions;
 
@@ -297,7 +121,7 @@ TEST(CurvilinearBasicTests, DISABLED_AddGridLineAtBoundaryUndo)
 
     std::cout << " size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
               << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
-              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
+              << grid->StartOffset().m_m << ", " << grid->StartOffset().m_n << "  -- "
               << std::endl;
 
     // auto [addedAnotherLine, undoAction] = grid->AddGridLineAtBoundary({0, 7}, {1, 7}); ///< UP but on right
@@ -344,13 +168,13 @@ TEST(CurvilinearBasicTests, DISABLED_AddGridLineAtBoundaryUndo)
     grid->print();
     std::cout << "undoAction->Restore size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
               << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
-              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
+              << grid->StartOffset().m_m << ", " << grid->StartOffset().m_n << "  -- "
               << std::endl;
 
     undoActions.Commit();
     std::cout << "undoAction->Commit   size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
               << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
-              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
+              << grid->StartOffset().m_m << ", " << grid->StartOffset().m_n << "  -- "
               << std::endl;
 
     auto [addedAnotherLine2, undoAction2] = grid->AddGridLineAtBoundary({0, 0}, {0, 1});
@@ -372,13 +196,13 @@ TEST(CurvilinearBasicTests, DISABLED_AddGridLineAtBoundaryUndo)
     undoActions.Undo();
     std::cout << "undoAction2->Restore size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
               << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
-              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
+              << grid->StartOffset().m_m << ", " << grid->StartOffset().m_n << "  -- "
               << std::endl;
 
     undoActions.Commit();
     std::cout << "undoAction->Restore  size of grid: " << grid->NumM() << "  " << grid->NumN() << "  " << std::boolalpha << addedLine
               << "  --- " << grid->FullNumM() << "  " << grid->FullNumN() << "  -- "
-              << grid->m_startOffset.m_m << ", " << grid->m_startOffset.m_n << "  -- "
+              << grid->StartOffset().m_m << ", " << grid->StartOffset().m_n << "  -- "
               << std::endl;
 }
 
@@ -393,7 +217,9 @@ TEST(CurvilinearBasicTests, DISABLED_AnotherTest)
     constexpr size_t nx = 10;
     constexpr size_t ny = 10;
 
-    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    grid->SetFlatCopies();
+    grid->ComputeGridNodeTypes();
 
     mk::CurvilinearGridDeleteInterior deleteInterior(*grid);
     deleteInterior.m_lowerLeft = {3, 2};
@@ -418,7 +244,7 @@ TEST(CurvilinearBasicTests, DISABLED_AnotherTest)
     grid->printGraph();
 }
 
-TEST(CurvilinearBasicTests, DISABLED_AnotherTest2)
+TEST(CurvilinearBasicTests, SimpleDeleteInterior)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -429,29 +255,51 @@ TEST(CurvilinearBasicTests, DISABLED_AnotherTest2)
     constexpr size_t nx = 10;
     constexpr size_t ny = 10;
 
-    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
-
-    auto addGridLineAction = grid->AddGridLineAtBoundary({0, 0}, {0, 1});
-
-    for (mk::UInt i = 0; i < grid->NumM(); ++i)
-    {
-        grid->GetNode(0, i).x = grid->GetNode(1, i).x;
-        grid->GetNode(0, i).y = grid->GetNode(1, i).y - deltaY;
-        std::cout << " add point: " << grid->GetNode(0, i).x << ", " << grid->GetNode(0, i).y << std::endl;
-    }
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    grid->SetFlatCopies();
+    grid->ComputeGridNodeTypes();
 
     mk::CurvilinearGridDeleteInterior deleteInterior(*grid);
     deleteInterior.m_lowerLeft = {3, 2};
     deleteInterior.m_upperRight = {6, 7};
     auto deleteAction = deleteInterior.Compute();
-    // undoAction->Restore ();
 
-    // undoAction->Commit ();
+    auto validityCheck = [](const mk::CurvilinearGrid& grid, const mk::CurvilinearGridDeleteInterior& deleteInterior, const bool checkDeletedRegion)
+    {
+        for (mk::UInt r = 0; r < ny; ++r)
+        {
+            bool invalidRow = checkDeletedRegion && deleteInterior.m_lowerLeft.m_n < r && r < deleteInterior.m_upperRight.m_n;
 
-    grid->SetFlatCopies();
-    grid->DeleteInvalidNodesAndEdges();
+            for (mk::UInt c = 0; c < nx; ++c)
+            {
+                bool invalidCol = checkDeletedRegion && deleteInterior.m_lowerLeft.m_m < c && c < deleteInterior.m_upperRight.m_m;
 
-    grid->printGraph();
+                if (invalidRow && invalidCol)
+                {
+                    EXPECT_FALSE (grid.GetNode (r,c).IsValid ()) << "pos " << r << "  " << c;
+                }
+                else
+                {
+                    EXPECT_TRUE (grid.GetNode (r,c).IsValid ()) << "pos " << r << "  " << c;
+                }
+            }
+        }
+    };
+
+    validityCheck (*grid, deleteInterior, true /* checkDeletedRegion */);
+
+    //--------------------------------
+    // Now undo the deletion of the block
+
+    deleteAction->Restore ();
+    validityCheck (*grid, deleteInterior, false /* checkDeletedRegion */);
+
+    //--------------------------------
+    // Redo the interior bock delete
+
+    deleteAction->Commit ();
+    validityCheck (*grid, deleteInterior, true /* checkDeletedRegion */);
+
 }
 
 TEST(CurvilinearBasicTests, DISABLED_AnotherTest3)
@@ -467,7 +315,9 @@ TEST(CurvilinearBasicTests, DISABLED_AnotherTest3)
 
     mk::UndoActionStack undoActions;
 
-    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    grid->SetFlatCopies();
+    grid->ComputeGridNodeTypes();
 
     //--------------------------------
 
@@ -600,7 +450,7 @@ TEST(CurvilinearBasicTests, DISABLED_AnotherTest3)
     grid->printGraph();
 }
 
-TEST(CurvilinearBasicTests, DISABLED_AnotherTest4)
+TEST(CurvilinearBasicTests, SimpleDeleteExterior)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -613,149 +463,58 @@ TEST(CurvilinearBasicTests, DISABLED_AnotherTest4)
 
     mk::UndoActionStack undoActions;
 
-    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
 
-    //--------------------------------
-
-    auto [lineAdded1, addGridLineAction1] = grid->AddGridLineAtBoundary({0, 0}, {0, 1});
-    grid->ComputeGridNodeTypes();
-    undoActions.Add(std::move(addGridLineAction1));
-
-    for (mk::UInt i = 0; i < grid->NumM(); ++i)
+    auto validityCheck = [](const mk::CurvilinearGrid& grid, const mk::CurvilinearGridDeleteExterior& deleteExterior, const bool checkDeletedRegion)
     {
-        grid->GetNode(0, i).x = grid->GetNode(1, i).x;
-        grid->GetNode(0, i).y = grid->GetNode(1, i).y - deltaY;
-        std::cout << " add point: " << grid->GetNode(0, i).x << ", " << grid->GetNode(0, i).y << std::endl;
-    }
+        for (mk::UInt r = 0; r < ny; ++r)
+        {
+            bool invalidRow = checkDeletedRegion && (r < deleteExterior.m_lowerLeft.m_n || deleteExterior.m_upperRight.m_n < r);
 
-    grid->ComputeGridNodeTypes();
+            for (mk::UInt c = 0; c < nx; ++c)
+            {
+                bool invalidCol = checkDeletedRegion && (c < deleteExterior.m_lowerLeft.m_m || deleteExterior.m_upperRight.m_m < c);
+
+                if (invalidRow || invalidCol)
+                {
+                    EXPECT_FALSE (grid.GetNode (r,c).IsValid ()) << "pos " << r << "  " << c;
+                }
+                else
+                {
+                    EXPECT_TRUE (grid.GetNode (r,c).IsValid ()) << "pos " << r << "  " << c;
+                }
+            }
+        }
+    };
 
     //--------------------------------
 
-    mk::CurvilinearGridDeleteInterior deleteInterior(*grid);
     mk::CurvilinearGridDeleteExterior deleteExterior(*grid);
 
-    deleteInterior.m_lowerLeft = {20, 15};
-    deleteInterior.m_upperRight = {30, 30};
-    auto deleteAction1 = deleteInterior.Compute();
-    undoActions.Add(std::move(deleteAction1));
+    deleteExterior.m_lowerLeft = {20, 15};
+    deleteExterior.m_upperRight = {30, 30};
 
     //--------------------------------
 
-    auto [lineAdded2, addGridLineAction2] = grid->AddGridLineAtBoundary({0, 0}, {0, 1});
-    undoActions.Add(std::move(addGridLineAction2));
+    auto deleteAction = deleteExterior.Compute();
 
-    for (mk::UInt i = 0; i < grid->NumM(); ++i)
-    {
-        grid->GetNode(0, i).x = grid->GetNode(1, i).x;
-        grid->GetNode(0, i).y = grid->GetNode(1, i).y - deltaY;
-        std::cout << " add point: " << grid->GetNode(0, i).x << ", " << grid->GetNode(0, i).y << std::endl;
-    }
-
-    grid->ComputeGridNodeTypes();
+    validityCheck (*grid, deleteExterior, true /* checkDeletedRegion */);
 
     //--------------------------------
+    // undo the deletion of the exterior
 
-    auto [lineAdded3, addGridLineAction3] = grid->AddGridLineAtBoundary({0, 0}, {1, 0});
-    undoActions.Add(std::move(addGridLineAction3));
-
-    for (mk::UInt i = 0; i < grid->NumN(); ++i)
-    {
-        grid->GetNode(i, 0).x = grid->GetNode(i, 1).x - deltaX;
-        grid->GetNode(i, 0).y = grid->GetNode(i, 1).y;
-        std::cout << " add point: " << grid->GetNode(i, 0).x << ", " << grid->GetNode(i, 0).y << std::endl;
-    }
-
-    grid->ComputeGridNodeTypes();
+    deleteAction->Restore ();
+    validityCheck (*grid, deleteExterior, false /* checkDeletedRegion */);
 
     //--------------------------------
+    // Redo the exterior delete
 
-    // auto [lineAdded4, addGridLineAction4] = grid->AddGridLineAtBoundary({0, 9}, {1, 9});
-    auto [lineAdded4, addGridLineAction4] = grid->AddGridLineAtBoundary({0, nx}, {1, nx});
-    undoActions.Add(std::move(addGridLineAction4));
+    deleteAction->Commit ();
+    validityCheck (*grid, deleteExterior, true /* checkDeletedRegion */);
 
-    for (mk::UInt i = 0; i < grid->NumN(); ++i)
-    {
-        grid->GetNode(i, nx + 1).x = grid->GetNode(i, nx).x + deltaX;
-        grid->GetNode(i, nx + 1).y = grid->GetNode(i, nx).y;
-        std::cout << " add point: " << grid->GetNode(i, nx + 1).x << ", " << grid->GetNode(i, nx + 1).y << std::endl;
-    }
-
-    grid->ComputeGridNodeTypes();
-
-    // //--------------------------------
-
-    deleteExterior.m_lowerLeft = {5, 5};
-    deleteExterior.m_upperRight = {43, 45};
-    auto deleteAction3 = deleteExterior.Compute();
-    undoActions.Add(std::move(deleteAction3));
-
-    undoActions.Undo();
-
-    // deleteInterior.m_lowerLeft = {2, 4};
-    // deleteInterior.m_upperRight = {9, 6};
-    // auto deleteAction2 = deleteInterior.Compute();
-    // grid->ComputeGridNodeTypes();
-    // undoActions.Add(std::move(deleteAction2));
-
-    // //--------------------------------
-
-    // undoActions.Undo(); // Undo last delete interior action
-    // undoActions.Undo(); // Undo add grid line (0,10)(1,10)
-    // undoActions.Undo(); // Undo add grid line (0,0)(1,0)
-
-    // std::cout << "undo action stack: " << undoActions.Size() << "  " << undoActions.CommittedSize() << "  " << undoActions.RestoredSize() << std::endl;
-
-    // grid->ComputeGridNodeTypes();
-
-    // //--------------------------------
-
-    // // auto [lineAdded4, addGridLineAction4] = grid->AddGridLineAtBoundary({0, 9}, {1, 9});
-    // auto [lineAdded5, addGridLineAction5] = grid->AddGridLineAtBoundary({0, 9}, {1, 9});
-    // undoActions.Add(std::move(addGridLineAction5));
-    // std::cout << "undo action stack: " << undoActions.Size() << "  " << undoActions.CommittedSize() << "  " << undoActions.RestoredSize() << std::endl;
-
-    // for (mk::UInt i = 0; i < grid->NumN(); ++i)
-    // {
-    //     grid->GetNode(i, 10).x = grid->GetNode(i, 9).x + deltaX;
-    //     grid->GetNode(i, 10).y = grid->GetNode(i, 9).y;
-    //     std::cout << " add point: " << grid->GetNode(i, 10).x << ", " << grid->GetNode(i, 10).y << std::endl;
-    // }
-
-    // grid->ComputeGridNodeTypes();
-
-    // //--------------------------------
-
-    // auto [lineAdded6, addGridLineAction6] = grid->AddGridLineAtBoundary({0, 0}, {1, 0});
-    // undoActions.Add(std::move(addGridLineAction6));
-
-    // for (mk::UInt i = 0; i < grid->NumN(); ++i)
-    // {
-    //     grid->GetNode(i, 0).x = grid->GetNode(i, 1).x - deltaX;
-    //     grid->GetNode(i, 0).y = grid->GetNode(i, 1).y;
-    //     std::cout << " add point: " << grid->GetNode(i, 0).x << ", " << grid->GetNode(i, 0).y << std::endl;
-    // }
-
-    // grid->ComputeGridNodeTypes();
-
-    // // undoActions.Undo(); //
-    // // undoActions.Undo(); //
-    // // undoActions.Undo(); // Undo first add grid line
-
-    // // undoActions.Commit(); // Redo first add grid line
-    // // undoActions.Commit(); // Redo first delete interior
-    // // undoActions.Commit(); //
-    // // undoActions.Commit(); //
-    // // undoActions.Commit(); //
-    // // undoActions.Commit(); //
-
-    grid->SetFlatCopies();
-    grid->DeleteInvalidNodesAndEdges();
-
-    grid->printGraph();
 }
 
-TEST(CurvilinearBasicTests, DISABLED_AnotherTest5)
+TEST(CurvilinearBasicTests, AddGridLinesAllRound)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -768,125 +527,175 @@ TEST(CurvilinearBasicTests, DISABLED_AnotherTest5)
 
     mk::UndoActionStack undoActions;
 
-    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
-
-    mk::CurvilinearGridDeleteInterior deleteInterior(*grid);
-    // mk::CurvilinearGridDeleteExterior deleteExterior(*grid);
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    // Nodes in the original mesh
+    const std::vector<mk::Point> originalPoints = grid->Nodes();
+    grid->SetFlatCopies();
+    grid->ComputeGridNodeTypes();
 
     //--------------------------------
 
     mk::CurvilinearGridLineMirror lineMirror(*grid, deltaX);
 
+    EXPECT_EQ (grid->NumN (), ny);
+    EXPECT_EQ (grid->NumM (), nx);
+
     // Bottom
     lineMirror.m_lines.push_back(mk::CurvilinearGridLine({0, 0}, {0, nx - 1}));
     undoActions.Add(lineMirror.Compute());
-    grid->ComputeGridNodeTypes();
 
-    //--------------------------------
+    EXPECT_EQ (grid->NumN (), ny + 1);
+    EXPECT_EQ (grid->NumM (), nx);
 
-    // Bottom
-    lineMirror.m_lines[0] = mk::CurvilinearGridLine({0, 0}, {0, nx - 1});
-    undoActions.Add(lineMirror.Compute());
-    grid->ComputeGridNodeTypes();
-
-    //--------------------------------
-
-    deleteInterior.m_lowerLeft = {2, 4};
-    deleteInterior.m_upperRight = {9, 6};
-    auto deleteAction2 = deleteInterior.Compute();
-    grid->ComputeGridNodeTypes();
-    undoActions.Add(std::move(deleteAction2));
+    // There should be no start/end offset changes
+    EXPECT_EQ (grid->StartOffset ().m_n, 0);
+    EXPECT_EQ (grid->StartOffset ().m_m, 0);
+    EXPECT_EQ (grid->EndOffset ().m_n, 0);
+    EXPECT_EQ (grid->EndOffset ().m_m, 0);
 
     //--------------------------------
 
     // Left
-    lineMirror.m_lines[0] = mk::CurvilinearGridLine({0, 0}, {ny + 1, 0});
+    lineMirror.m_lines[0] = mk::CurvilinearGridLine({0, 0}, {ny, 0});
     undoActions.Add(lineMirror.Compute());
-    grid->ComputeGridNodeTypes();
+
+    EXPECT_EQ (grid->NumN (), ny + 1);
+    EXPECT_EQ (grid->NumM (), nx + 1);
+
+    // There should be no start/end offset changes
+    EXPECT_EQ (grid->StartOffset ().m_n, 0);
+    EXPECT_EQ (grid->StartOffset ().m_m, 0);
+    EXPECT_EQ (grid->EndOffset ().m_n, 0);
+    EXPECT_EQ (grid->EndOffset ().m_m, 0);
 
     //--------------------------------
 
     // Top
-    lineMirror.m_lines[0] = mk::CurvilinearGridLine({ny + 1, 0}, {ny + 1, nx});
+    lineMirror.m_lines[0] = mk::CurvilinearGridLine({ny, 0}, {ny, nx});
     undoActions.Add(lineMirror.Compute());
-    grid->ComputeGridNodeTypes();
+
+    EXPECT_EQ (grid->NumN (), ny + 2);
+    EXPECT_EQ (grid->NumM (), nx + 1);
+
+    // There should be no start/end offset changes
+    EXPECT_EQ (grid->StartOffset ().m_n, 0);
+    EXPECT_EQ (grid->StartOffset ().m_m, 0);
+    EXPECT_EQ (grid->EndOffset ().m_n, 0);
+    EXPECT_EQ (grid->EndOffset ().m_m, 0);
 
     //--------------------------------
 
     // Right
-    lineMirror.m_lines[0] = mk::CurvilinearGridLine({1, nx}, {ny + 1, nx});
+    lineMirror.m_lines[0] = mk::CurvilinearGridLine({0, nx}, {ny + 1, nx});
     undoActions.Add(lineMirror.Compute());
-    grid->ComputeGridNodeTypes();
+
+    EXPECT_EQ (grid->NumN (), ny + 2);
+    EXPECT_EQ (grid->NumM (), nx + 2);
+
+    // There should be no start/end offset changes
+    EXPECT_EQ (grid->StartOffset ().m_n, 0);
+    EXPECT_EQ (grid->StartOffset ().m_m, 0);
+    EXPECT_EQ (grid->EndOffset ().m_n, 0);
+    EXPECT_EQ (grid->EndOffset ().m_m, 0);
 
     //--------------------------------
 
-    undoActions.Undo();
-    undoActions.Undo();
-    undoActions.Undo();
-    undoActions.Undo();
+    constexpr double tolerance = 1.0e-14;
 
-    undoActions.Commit();
-    undoActions.Commit();
-    undoActions.Commit();
-    undoActions.Commit();
+    for (mk::UInt i = 0; i < grid->NumN(); ++i)
+    {
+        EXPECT_NEAR (grid->GetNode (i, 0).x, -1.0, tolerance);
+        EXPECT_NEAR (grid->GetNode (i, 0).y, originY - deltaY + static_cast<double>(i) * deltaY, tolerance);
+    }
 
-    // undoActions.Undo();
+    for (mk::UInt i = 0; i < grid->NumN(); ++i)
+    {
+        EXPECT_NEAR (grid->GetNode (i, nx + 1).x, -deltaX + static_cast<double>(nx + 1) * deltaX, tolerance);
+        EXPECT_NEAR (grid->GetNode (i, nx + 1).y, originY - deltaY + static_cast<double>(i) * deltaY, tolerance);
+    }
 
-    // undoActions.Undo(); // Undo add grid line (0,10)(1,10)
-    // undoActions.Undo(); // Undo add grid line (0,0)(1,0)
+    for (mk::UInt i = 0; i < grid->NumM(); ++i)
+    {
+        EXPECT_NEAR (grid->GetNode (0, i).x, originX - deltaX + static_cast<double>(i) * deltaX, tolerance);
+        EXPECT_NEAR (grid->GetNode (0, i).y, -deltaY, tolerance);
+    }
 
-    // std::cout << "undo action stack: " << undoActions.Size() << "  " << undoActions.CommittedSize() << "  " << undoActions.RestoredSize() << std::endl;
+    for (mk::UInt i = 0; i < grid->NumM(); ++i)
+    {
+        EXPECT_NEAR (grid->GetNode (ny + 1, i).x, originX - deltaX + static_cast<double>(i) * deltaX, tolerance);
+        EXPECT_NEAR (grid->GetNode (ny + 1, i).y, originY + static_cast<double>(ny) * deltaY, tolerance);
+    }
 
-    // grid->ComputeGridNodeTypes();
+    // Now undo the adding of the bondary grid lines checking that the
+    // size of the mesh and the start/end offsets are correct.
+    //
+    undoActions.Undo ();
 
-    // //--------------------------------
+    EXPECT_EQ (grid->NumN (), ny + 2);
+    EXPECT_EQ (grid->NumM (), nx + 1);
 
-    // // auto [lineAdded4, addGridLineAction4] = grid->AddGridLineAtBoundary({0, 9}, {1, 9});
-    // auto [lineAdded5, addGridLineAction5] = grid->AddGridLineAtBoundary({0, 9}, {1, 9});
-    // undoActions.Add(std::move(addGridLineAction5));
-    // std::cout << "undo action stack: " << undoActions.Size() << "  " << undoActions.CommittedSize() << "  " << undoActions.RestoredSize() << std::endl;
+    // There should be no start/end offset changes
+    EXPECT_EQ (grid->StartOffset ().m_n, 0);
+    EXPECT_EQ (grid->StartOffset ().m_m, 0);
+    EXPECT_EQ (grid->EndOffset ().m_n, 0);
+    EXPECT_EQ (grid->EndOffset ().m_m, 1);
 
-    // for (mk::UInt i = 0; i < grid->NumN(); ++i)
-    // {
-    //     grid->GetNode(i, 10).x = grid->GetNode(i, 9).x + deltaX;
-    //     grid->GetNode(i, 10).y = grid->GetNode(i, 9).y;
-    //     std::cout << " add point: " << grid->GetNode(i, 10).x << ", " << grid->GetNode(i, 10).y << std::endl;
-    // }
+    //--------------------------------
+    undoActions.Undo ();
 
-    // grid->ComputeGridNodeTypes();
+    EXPECT_EQ (grid->NumN (), ny + 1);
+    EXPECT_EQ (grid->NumM (), nx + 1);
 
-    // //--------------------------------
+    // There should be no start/end offset changes
+    EXPECT_EQ (grid->StartOffset ().m_n, 0);
+    EXPECT_EQ (grid->StartOffset ().m_m, 0);
+    EXPECT_EQ (grid->EndOffset ().m_n, 1);
+    EXPECT_EQ (grid->EndOffset ().m_m, 1);
 
-    // auto [lineAdded6, addGridLineAction6] = grid->AddGridLineAtBoundary({0, 0}, {1, 0});
-    // undoActions.Add(std::move(addGridLineAction6));
+    //--------------------------------
+    undoActions.Undo ();
 
-    // for (mk::UInt i = 0; i < grid->NumN(); ++i)
-    // {
-    //     grid->GetNode(i, 0).x = grid->GetNode(i, 1).x - deltaX;
-    //     grid->GetNode(i, 0).y = grid->GetNode(i, 1).y;
-    //     std::cout << " add point: " << grid->GetNode(i, 0).x << ", " << grid->GetNode(i, 0).y << std::endl;
-    // }
+    EXPECT_EQ (grid->NumN (), ny + 1);
+    EXPECT_EQ (grid->NumM (), nx);
 
-    // grid->ComputeGridNodeTypes();
+    // There should be no start/end offset changes
+    EXPECT_EQ (grid->StartOffset ().m_n, 0);
+    EXPECT_EQ (grid->StartOffset ().m_m, 1);
+    EXPECT_EQ (grid->EndOffset ().m_n, 1);
+    EXPECT_EQ (grid->EndOffset ().m_m, 1);
 
-    // // undoActions.Undo(); //
-    // // undoActions.Undo(); //
-    // // undoActions.Undo(); // Undo first add grid line
+    //--------------------------------
+    undoActions.Undo ();
 
-    // // undoActions.Commit(); // Redo first add grid line
-    // // undoActions.Commit(); // Redo first delete interior
-    // // undoActions.Commit(); //
-    // // undoActions.Commit(); //
-    // // undoActions.Commit(); //
-    // // undoActions.Commit(); //
+    EXPECT_EQ (grid->NumN (), ny);
+    EXPECT_EQ (grid->NumM (), nx);
 
-    grid->SetFlatCopies();
-    grid->DeleteInvalidNodesAndEdges();
+    // There should be no start/end offset changes
+    EXPECT_EQ (grid->StartOffset ().m_n, 1);
+    EXPECT_EQ (grid->StartOffset ().m_m, 1);
+    EXPECT_EQ (grid->EndOffset ().m_n, 1);
+    EXPECT_EQ (grid->EndOffset ().m_m, 1);
 
-    grid->printGraph();
+    //--------------------------------
+    // Check that the nodes can be accessed with the correct index.
+    // and not the indices without the offset.
+
+    mk::UInt count = 0;
+
+    ASSERT_EQ (originalPoints.size (), grid->NumN () * grid->NumM ());
+
+    for (mk::UInt r = 0; r < grid->NumN(); ++r)
+    {
+        for (mk::UInt c = 0; c < grid->NumM(); ++c)
+        {
+            EXPECT_EQ (originalPoints [count].x, grid->GetNode (r, c).x);
+            EXPECT_EQ (originalPoints [count].y, grid->GetNode (r, c).y);
+            ++count;
+        }
+    }
 }
 
-TEST(CurvilinearBasicTests, DISABLED_AnotherTest6)
+TEST(CurvilinearBasicTests, GridSmoothing)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -897,11 +706,10 @@ TEST(CurvilinearBasicTests, DISABLED_AnotherTest6)
     constexpr size_t nx = 30;
     constexpr size_t ny = 30;
 
-    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGridRand(originX, originY, deltaX, deltaY, nx, ny);
-
-    grid->ComputeGridNodeTypes();
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGridRand(originX, originY, deltaX, deltaY, nx, ny, 0.4);
     grid->SetFlatCopies();
-    std::vector<mk::Point> points = grid->Nodes();
+
+    const lin_alg::Matrix<mk::Point> originalPoints = grid->GetNodes();
 
     mk::CurvilinearGridSmoothing curvilinearGridSmoothing(*grid, 10);
 
@@ -909,21 +717,25 @@ TEST(CurvilinearBasicTests, DISABLED_AnotherTest6)
 
     std::unique_ptr<mk::UndoAction> undoAction = curvilinearGridSmoothing.Compute();
 
-    // undoAction->Restore();
+    undoAction->Restore();
     grid->SetFlatCopies();
 
-    grid->printGraph();
+    constexpr double tolerance = 1.0e-12;
 
-    // for (mk::UInt i = 0; i < points.size(); ++i)
-    // {
-    //     std::cout << " nodes "
-    //               << points[i].x << " ++ " << grid->Node(i).x << " == " << points[i].x - grid->Node(i).x << " ----- "
-    //               << points[i].y << " ++ " << grid->Node(i).y << " == " << points[i].y - grid->Node(i).y
-    //               << std::endl;
-    // }
+    ASSERT_EQ (originalPoints.rows (), grid->NumN ());
+    ASSERT_EQ (originalPoints.cols (), grid->NumM ());
+
+    for (mk::UInt r = 0; r < grid->NumN(); ++r)
+    {
+        for (mk::UInt c = 0; c < grid->NumM(); ++c)
+        {
+            EXPECT_NEAR (originalPoints(r,c).x, grid->GetNode (r, c).x, tolerance);
+            EXPECT_NEAR (originalPoints(r,c).y, grid->GetNode (r, c).y, tolerance);
+        }
+    }
 }
 
-TEST(CurvilinearBasicTests, DISABLED_AnotherTest7)
+TEST(CurvilinearBasicTests, GridOrthogonalisation)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -934,16 +746,16 @@ TEST(CurvilinearBasicTests, DISABLED_AnotherTest7)
     constexpr size_t nx = 30;
     constexpr size_t ny = 30;
 
-    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGridRand(originX, originY, deltaX, deltaY, nx, ny);
-
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGridRand(originX, originY, deltaX, deltaY, nx, ny, 0.4, false);
     grid->ComputeGridNodeTypes();
     grid->SetFlatCopies();
-    std::vector<mk::Point> points = grid->Nodes();
+
+    const lin_alg::Matrix<mk::Point> originalPoints = grid->GetNodes();
 
     mk::OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 1;
-    orthogonalizationParameters.boundary_iterations = 1;
-    orthogonalizationParameters.inner_iterations = 1;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
 
     meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(*grid, orthogonalizationParameters);
@@ -953,21 +765,25 @@ TEST(CurvilinearBasicTests, DISABLED_AnotherTest7)
 
     std::unique_ptr<mk::UndoAction> undoAction = curvilinearGridOrthogonalization.Compute();
 
-    // undoAction->Restore();
-    grid->SetFlatCopies();
+    undoAction->Restore();
 
-    grid->printGraph();
+    constexpr double tolerance = 1.0e-12;
 
-    // for (mk::UInt i = 0; i < points.size(); ++i)
-    // {
-    //     std::cout << " nodes "
-    //               << points[i].x << " ++ " << grid->Node(i).x << " == " << points[i].x - grid->Node(i).x << " ----- "
-    //               << points[i].y << " ++ " << grid->Node(i).y << " == " << points[i].y - grid->Node(i).y
-    //               << std::endl;
-    // }
+    ASSERT_EQ (originalPoints.rows (), grid->NumN ());
+    ASSERT_EQ (originalPoints.cols (), grid->NumM ());
+
+    for (mk::UInt r = 0; r < grid->NumN(); ++r)
+    {
+        for (mk::UInt c = 0; c < grid->NumM(); ++c)
+        {
+            EXPECT_NEAR (originalPoints(r,c).x, grid->GetNode (r, c).x, tolerance) << "pos " << r << "  " << c;
+            EXPECT_NEAR (originalPoints(r,c).y, grid->GetNode (r, c).y, tolerance) << "pos " << r << "  " << c;
+        }
+    }
+
 }
 
-TEST(CurvilinearBasicTests, DISABLED_AnotherTest8)
+TEST(CurvilinearBasicTests, Derefinement)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -978,170 +794,166 @@ TEST(CurvilinearBasicTests, DISABLED_AnotherTest8)
     constexpr size_t nx = 30;
     constexpr size_t ny = 30;
 
-    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
-
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
     grid->ComputeGridNodeTypes();
     grid->SetFlatCopies();
-    std::vector<mk::Point> points = grid->Nodes();
+
+    const lin_alg::Matrix<mk::Point> originalPoints = grid->GetNodes();
 
     mk::CurvilinearGridDeRefinement deRefinement(*grid);
 
-    // refinement.SetBlock({-10.0, -10.0}, {2.0 * nx * deltaX, 2.0 * nx * deltaX});
-    // refinement.SetBlock({ny * deltaX / 4.0, 3.0 * ny * deltaX / 4.0}, {3.0 * ny * deltaX / 4.0, 3.0 * ny * deltaX / 4.0});
     deRefinement.SetBlock({10.0, 20.0}, {20.0, 20.0});
 
-    std::unique_ptr<mk::UndoAction> undoActionDeRef = deRefinement.Compute();
-    grid->ComputeGridNodeTypes();
-    grid->SetFlatCopies();
+    std::unique_ptr<mk::UndoAction> undoAction = deRefinement.Compute();
 
-    mk::CurvilinearGridRefinement refinement(*grid, 3);
-    refinement.SetBlock({10.0, 20.0}, {20.0, 20.0});
+    // After de-refinement the size of the grid in the y-direction should be the same
+    EXPECT_TRUE (originalPoints.rows () == grid->NumN ());
+    // After de-refinement the size of the grid in the x-direction should be less
+    EXPECT_TRUE (originalPoints.cols () > grid->NumM ());
 
-    std::unique_ptr<mk::UndoAction> undoActionRef = refinement.Compute();
-    grid->ComputeGridNodeTypes();
-    grid->SetFlatCopies();
+    undoAction->Restore ();
 
-    undoActionRef->Restore();
-    undoActionDeRef->Restore();
+    // After undoing the de-refinement the size of the grid in the y-direction should be the same
+    ASSERT_TRUE (originalPoints.rows () == grid->NumN ());
+    // After undoing the de-refinement the size of the grid in the x-direction should be the same
+    ASSERT_TRUE (originalPoints.cols () == grid->NumM ());
 
-    undoActionDeRef->Commit();
-    undoActionRef->Commit();
+    constexpr double tolerance = 1.0e-10;
 
-    grid->SetFlatCopies();
-    grid->printGraph();
-
-    // for (mk::UInt i = 0; i < points.size(); ++i)
-    // {
-    //     std::cout << " nodes "
-    //               << points[i].x << " ++ " << grid->Node(i).x << " == " << points[i].x - grid->Node(i).x << " ----- "
-    //               << points[i].y << " ++ " << grid->Node(i).y << " == " << points[i].y - grid->Node(i).y
-    //               << std::endl;
-    // }
+    for (mk::UInt r = 0; r < grid->NumN(); ++r)
+    {
+        for (mk::UInt c = 0; c < grid->NumM(); ++c)
+        {
+            EXPECT_NEAR (originalPoints(r, c).x, grid->GetNode (r, c).x, tolerance);
+            EXPECT_NEAR (originalPoints(r, c).y, grid->GetNode (r, c).y, tolerance);
+        }
+    }
 }
 
-TEST(CurvilinearBasicTests, DISABLED_AnotherTest9)
+TEST(CurvilinearBasicTests, UndoLineAttractor)
 {
-    [[maybe_unused]] constexpr double originX = 0.0;
-    [[maybe_unused]] constexpr double originY = 0.0;
-
-    [[maybe_unused]] constexpr double deltaX = 1.0;
-    [[maybe_unused]] constexpr double deltaY = 1.0;
-
-    [[maybe_unused]] constexpr size_t nx = 30;
-    [[maybe_unused]] constexpr size_t ny = 30;
-
     auto grid = MakeSmallCurvilinearGrid();
-    // std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
 
     grid->ComputeGridNodeTypes();
     grid->SetFlatCopies();
-    std::vector<mk::Point> points = grid->Nodes();
+    const std::vector<mk::Point> originalPoints = grid->Nodes();
 
     mk::CurvilinearGridLineAttractionRepulsion lineAttractor(*grid, 0.5);
-
-    // mk::CurvilinearGridRefinement refinement(*grid, 3);
-    // refinement.SetBlock({10.0, 20.0}, {20.0, 20.0});
-
-    // std::unique_ptr<mk::UndoAction> undoActionRef = refinement.Compute();
-
-    // 8.022590004201814008E+04, 3.671046293496827129E+05
 
     lineAttractor.SetLine({80266.8, 367104.0}, {80419.3, 366566.2});
     lineAttractor.SetBlock({80198.2, 366750.6}, {80583.1, 366889.8});
 
-    // // lineAttractor.SetBlock({-10.0, -10.0}, {2.0 * nx * deltaX, 2.0 * nx * deltaX});
-    // // lineAttractor.SetBlock({ny * deltaX / 4.0, 3.0 * ny * deltaX / 4.0}, {3.0 * ny * deltaX / 4.0, 3.0 * ny * deltaX / 4.0});
-    // lineAttractor.SetLine({20.0, 10.0}, {10.0, 10.0});
-    // lineAttractor.SetBlock({10.0, 20.0}, {20.0, 20.0});
-
     std::unique_ptr<mk::UndoAction> undoAction = lineAttractor.Compute();
-    undoAction->Restore();
-    grid->ComputeGridNodeTypes();
-    grid->SetFlatCopies();
-
-    grid->printGraph();
-
-    // for (mk::UInt i = 0; i < points.size(); ++i)
-    // {
-    //     std::cout << " nodes "
-    //               << points[i].x << " ++ " << grid->Node(i).x << " == " << points[i].x - grid->Node(i).x << " ----- "
-    //               << points[i].y << " ++ " << grid->Node(i).y << " == " << points[i].y - grid->Node(i).y
-    //               << std::endl;
-    // }
-}
-
-TEST(CurvilinearBasicTests, DISABLED_AnotherTest10)
-{
-    std::cout.precision(18);
-    // Set-up
-    const auto grid = MakeSmallCurvilinearGrid();
-    meshkernel::CurvilinearGridLineShift curvilinearLineShift(*grid);
-
-    // grid->printGraph();
-
-    curvilinearLineShift.SetLine({79982.0, 366934.0}, {80155.0, 366530.0});
-    curvilinearLineShift.SetBlock({80108.0, 366707.0}, {80291.0, 366792.0});
-    auto undoMoveNode = curvilinearLineShift.MoveNode({79982.0, 366934.0}, {79872.0, 366876.0});
-
-    // curvilinearLineShift.SetLine({79982.0, 366934.0}, {80155.0, 366530.0});
-    // curvilinearLineShift.SetBlock({80108.0, 366707.0}, {80291.0, 366792.0});
-
-    // // Move two nodes
-    // curvilinearLineShift.MoveNode({79982.0, 366934.0}, {79872.0, 366876.0});
-    // curvilinearLineShift.MoveNode({80053.0, 366823.0}, {79932.0, 366773.0});
-
-    // Execute
-    auto undoLineShift = curvilinearLineShift.Compute();
     grid->ComputeGridNodeTypes();
     grid->SetFlatCopies();
 
     // Asserts
-    // const double tolerance = 1e-6;
+    constexpr double tolerance = 1e-6;
 
-    // ASSERT_NEAR(79872.000000000000, grid->GetNode(0, 0).x, tolerance);
-    // ASSERT_NEAR(80010.039799507853, grid->GetNode(0, 1).x, tolerance);
-    // ASSERT_NEAR(80145.970831448722, grid->GetNode(0, 2).x, tolerance);
-    // ASSERT_NEAR(80225.900042018140, grid->GetNode(0, 3).x, tolerance);
-    // ASSERT_NEAR(80305.243756829266, grid->GetNode(0, 4).x, tolerance);
-    // ASSERT_NEAR(80381.747982750283, grid->GetNode(0, 5).x, tolerance);
-    // ASSERT_NEAR(80458.252208671300, grid->GetNode(0, 6).x, tolerance);
-    // ASSERT_NEAR(80534.756434592317, grid->GetNode(0, 7).x, tolerance);
-    // ASSERT_NEAR(80611.260660513333, grid->GetNode(0, 8).x, tolerance);
+    ASSERT_NEAR(80178.014482303217, grid->GetNode(0, 2).x, tolerance);
+    ASSERT_NEAR(80266.910680413363, grid->GetNode(1, 2).x, tolerance);
+    ASSERT_NEAR(80322.584162464715, grid->GetNode(2, 2).x, tolerance);
+    ASSERT_NEAR(80350.500795549306, grid->GetNode(3, 2).x, tolerance);
+    ASSERT_NEAR(80362.879671417410, grid->GetNode(4, 2).x, tolerance);
 
-    // ASSERT_NEAR(79970.149644452977, grid->GetNode(1, 0).x, tolerance);
-    // ASSERT_NEAR(80103.062377666603, grid->GetNode(1, 1).x, tolerance);
-    // ASSERT_NEAR(80234.924195000407, grid->GetNode(1, 2).x, tolerance);
-    // ASSERT_NEAR(80324.671765221428, grid->GetNode(1, 3).x, tolerance);
-    // ASSERT_NEAR(80414.057391982613, grid->GetNode(1, 4).x, tolerance);
-    // ASSERT_NEAR(80505.096476712482, grid->GetNode(1, 5).x, tolerance);
-    // ASSERT_NEAR(80595.183339827883, grid->GetNode(1, 6).x, tolerance);
-    // ASSERT_NEAR(80684.333994102650, grid->GetNode(1, 7).x, tolerance);
-    // ASSERT_NEAR(80772.567299473958, grid->GetNode(1, 8).x, tolerance);
+    ASSERT_NEAR(367069.60110549850, grid->GetNode(0, 2).y, tolerance);
+    ASSERT_NEAR(366937.57246542675, grid->GetNode(1, 2).y, tolerance);
+    ASSERT_NEAR(366803.23746104678, grid->GetNode(2, 2).y, tolerance);
+    ASSERT_NEAR(366683.98469820933, grid->GetNode(3, 2).y, tolerance);
+    ASSERT_NEAR(366555.11052078847, grid->GetNode(4, 2).y, tolerance);
 
-    // ASSERT_NEAR(366876.00000000000, grid->GetNode(0, 0).y, tolerance);
-    // ASSERT_NEAR(366959.82623907487, grid->GetNode(0, 1).y, tolerance);
-    // ASSERT_NEAR(367047.36276461056, grid->GetNode(0, 2).y, tolerance);
-    // ASSERT_NEAR(367104.62934968271, grid->GetNode(0, 3).y, tolerance);
-    // ASSERT_NEAR(367163.01691965276, grid->GetNode(0, 4).y, tolerance);
-    // ASSERT_NEAR(367224.10904462705, grid->GetNode(0, 5).y, tolerance);
-    // ASSERT_NEAR(367285.20116960135, grid->GetNode(0, 6).y, tolerance);
-    // ASSERT_NEAR(367346.29329457565, grid->GetNode(0, 7).y, tolerance);
-    // ASSERT_NEAR(367407.38541954994, grid->GetNode(0, 8).y, tolerance);
+    undoAction->Restore();
+    grid->SetFlatCopies();
 
-    // ASSERT_NEAR(366781.50715811126, grid->GetNode(1, 0).y, tolerance);
-    // ASSERT_NEAR(366849.28921837400, grid->GetNode(1, 1).y, tolerance);
-    // ASSERT_NEAR(366919.18816119258, grid->GetNode(1, 2).y, tolerance);
-    // ASSERT_NEAR(366966.76979594346, grid->GetNode(1, 3).y, tolerance);
-    // ASSERT_NEAR(367015.14849423966, grid->GetNode(1, 4).y, tolerance);
-    // ASSERT_NEAR(367056.48898898275, grid->GetNode(1, 5).y, tolerance);
-    // ASSERT_NEAR(367099.12347147451, grid->GetNode(1, 6).y, tolerance);
-    // ASSERT_NEAR(367143.03018172452, grid->GetNode(1, 7).y, tolerance);
-    // ASSERT_NEAR(367188.18349069095, grid->GetNode(1, 8).y, tolerance);
+    ASSERT_EQ (originalPoints.size (), grid->GetNumNodes ());
 
-    grid->printGraph();
+    for (mk::UInt i = 0; i < originalPoints.size (); ++i)
+    {
+        EXPECT_NEAR (originalPoints[i].x, grid->Node (i).x, tolerance);
+        EXPECT_NEAR (originalPoints[i].y, grid->Node (i).y, tolerance);
+    }
+
 }
 
-TEST(CurvilinearBasicTests, DISABLED_AnotherTest11)
+TEST(CurvilinearBasicTests, UndoLineShift)
+{
+    std::cout.precision(18);
+    // Set-up
+    const auto grid = MakeSmallCurvilinearGrid();
+    grid->SetFlatCopies();
+    const std::vector<mk::Point> originalPoints = grid->Nodes();
+
+    meshkernel::CurvilinearGridLineShift curvilinearLineShift(*grid);
+
+    curvilinearLineShift.SetLine({79982.0, 366934.0}, {80155.0, 366530.0});
+    curvilinearLineShift.SetBlock({80108.0, 366707.0}, {80291.0, 366792.0});
+    // The line shift is made by combining two actions
+    // The first is to move the node.
+    auto undoMoveNode = curvilinearLineShift.MoveNode({79982.0, 366934.0}, {79872.0, 366876.0});
+
+    // The second actio is to shift the line
+    auto undoLineShift = curvilinearLineShift.Compute();
+    grid->SetFlatCopies();
+
+    // Asserts
+    const double tolerance = 1e-6;
+
+    ASSERT_NEAR(79872.000000000000, grid->GetNode(0, 0).x, tolerance);
+    ASSERT_NEAR(80010.039799507853, grid->GetNode(0, 1).x, tolerance);
+    ASSERT_NEAR(80145.970831448722, grid->GetNode(0, 2).x, tolerance);
+    ASSERT_NEAR(80225.900042018140, grid->GetNode(0, 3).x, tolerance);
+    ASSERT_NEAR(80305.243756829266, grid->GetNode(0, 4).x, tolerance);
+    ASSERT_NEAR(80381.747982750283, grid->GetNode(0, 5).x, tolerance);
+    ASSERT_NEAR(80458.252208671300, grid->GetNode(0, 6).x, tolerance);
+    ASSERT_NEAR(80534.756434592317, grid->GetNode(0, 7).x, tolerance);
+    ASSERT_NEAR(80611.260660513333, grid->GetNode(0, 8).x, tolerance);
+
+    ASSERT_NEAR(79970.149644452977, grid->GetNode(1, 0).x, tolerance);
+    ASSERT_NEAR(80103.062377666603, grid->GetNode(1, 1).x, tolerance);
+    ASSERT_NEAR(80234.924195000407, grid->GetNode(1, 2).x, tolerance);
+    ASSERT_NEAR(80324.671765221428, grid->GetNode(1, 3).x, tolerance);
+    ASSERT_NEAR(80414.057391982613, grid->GetNode(1, 4).x, tolerance);
+    ASSERT_NEAR(80505.096476712482, grid->GetNode(1, 5).x, tolerance);
+    ASSERT_NEAR(80595.183339827883, grid->GetNode(1, 6).x, tolerance);
+    ASSERT_NEAR(80684.333994102650, grid->GetNode(1, 7).x, tolerance);
+    ASSERT_NEAR(80772.567299473958, grid->GetNode(1, 8).x, tolerance);
+
+    ASSERT_NEAR(366876.00000000000, grid->GetNode(0, 0).y, tolerance);
+    ASSERT_NEAR(366959.82623907487, grid->GetNode(0, 1).y, tolerance);
+    ASSERT_NEAR(367047.36276461056, grid->GetNode(0, 2).y, tolerance);
+    ASSERT_NEAR(367104.62934968271, grid->GetNode(0, 3).y, tolerance);
+    ASSERT_NEAR(367163.01691965276, grid->GetNode(0, 4).y, tolerance);
+    ASSERT_NEAR(367224.10904462705, grid->GetNode(0, 5).y, tolerance);
+    ASSERT_NEAR(367285.20116960135, grid->GetNode(0, 6).y, tolerance);
+    ASSERT_NEAR(367346.29329457565, grid->GetNode(0, 7).y, tolerance);
+    ASSERT_NEAR(367407.38541954994, grid->GetNode(0, 8).y, tolerance);
+
+    ASSERT_NEAR(366781.50715811126, grid->GetNode(1, 0).y, tolerance);
+    ASSERT_NEAR(366849.28921837400, grid->GetNode(1, 1).y, tolerance);
+    ASSERT_NEAR(366919.18816119258, grid->GetNode(1, 2).y, tolerance);
+    ASSERT_NEAR(366966.76979594346, grid->GetNode(1, 3).y, tolerance);
+    ASSERT_NEAR(367015.14849423966, grid->GetNode(1, 4).y, tolerance);
+    ASSERT_NEAR(367056.48898898275, grid->GetNode(1, 5).y, tolerance);
+    ASSERT_NEAR(367099.12347147451, grid->GetNode(1, 6).y, tolerance);
+    ASSERT_NEAR(367143.03018172452, grid->GetNode(1, 7).y, tolerance);
+    ASSERT_NEAR(367188.18349069095, grid->GetNode(1, 8).y, tolerance);
+
+    // Need to undo both actions
+    undoLineShift->Restore ();
+    undoMoveNode->Restore ();
+    grid->SetFlatCopies();
+
+    ASSERT_EQ (originalPoints.size (), grid->GetNumNodes ());
+
+    for (mk::UInt i = 0; i < originalPoints.size (); ++i)
+    {
+        EXPECT_NEAR (originalPoints[i].x, grid->Node (i).x, tolerance);
+        EXPECT_NEAR (originalPoints[i].y, grid->Node (i).y, tolerance);
+    }
+
+}
+
+TEST(CurvilinearBasicTests, AnotherTest11)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
@@ -1152,32 +964,37 @@ TEST(CurvilinearBasicTests, DISABLED_AnotherTest11)
     constexpr size_t nx = 30;
     constexpr size_t ny = 30;
 
-    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    grid->SetFlatCopies();
+    const std::vector<mk::Point> originalPoints = grid->Nodes();
 
     meshkernel::CurvilinearGridLineShift lineShift(*grid);
-
-    // grid->printGraph();
 
     lineShift.SetLine({5.0, 3.0}, {5.0, 15.0});
     lineShift.SetBlock({2.0, 3.0}, {10.0, 10.0});
     std::unique_ptr<mk::UndoAction> undoMoveNode = lineShift.MoveNode({5.0, 5.0}, {6.5, 6.0});
 
-    // lineShift.SetLine({79982.0, 366934.0}, {80155.0, 366530.0});
-    // lineShift.SetBlock({80108.0, 366707.0}, {80291.0, 366792.0});
-
-    // // Move two nodes
-    // lineShift.MoveNode({79982.0, 366934.0}, {79872.0, 366876.0});
-    // lineShift.MoveNode({80053.0, 366823.0}, {79932.0, 366773.0});
-
     // Execute
-    std::unique_ptr<mk::UndoAction> undoAction = lineShift.Compute();
+    std::unique_ptr<mk::UndoAction> undoLineShift = lineShift.Compute();
 
-    undoAction->Restore();
+    //--------------------------------
+    // Now undo the actions
+
+    undoLineShift->Restore();
     undoMoveNode->Restore();
 
-    grid->ComputeGridNodeTypes();
     grid->SetFlatCopies();
-    grid->printGraph();
+
+    ASSERT_EQ (originalPoints.size (), grid->GetNumNodes ());
+
+    const double tolerance = 1e-12;
+
+    for (mk::UInt i = 0; i < originalPoints.size (); ++i)
+    {
+        EXPECT_NEAR (originalPoints[i].x, grid->Node (i).x, tolerance);
+        EXPECT_NEAR (originalPoints[i].y, grid->Node (i).y, tolerance);
+    }
+
 }
 
 TEST(CurvilinearBasicTests, AnotherTest12)
@@ -1191,20 +1008,55 @@ TEST(CurvilinearBasicTests, AnotherTest12)
     constexpr size_t nx = 30;
     constexpr size_t ny = 30;
 
-    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    grid->SetFlatCopies();
+    std::cout << "sizes: " << grid->GetNumNodes () << "  " << grid->GetNumValidNodes () << "  "
+              << grid->GetNumEdges () << "  " << grid->GetNumValidEdges () << "  "
+              << grid->GetNumFaces () << "  "
+              << grid->GetNodes().rows () << "  " << grid->GetNodes().cols () << "  "
+              << std::endl
+              << std::endl;
+
+    auto undoAction1 = grid->InsertFace ({0.5, 29.5});
     grid->ComputeGridNodeTypes();
     grid->SetFlatCopies();
-    std::cout << "sizes: " << grid->NumN() << "  " << grid->NumM() << "  " << grid->GetNumNodes() << "  " << grid->GetNumEdges() << std::endl;
+    std::cout << "sizes: " << grid->GetNumNodes () << "  " << grid->GetNumValidNodes () << "  "
+              << grid->GetNumEdges () << "  " << grid->GetNumValidEdges () << "  "
+              << grid->GetNumFaces () << "  "
+              << grid->GetNodes().rows () << "  " << grid->GetNodes().cols () << "  "
+              << std::endl
+              << std::endl;
+    // undoAction1->Restore ();
 
-    auto undoAction1 = grid->InsertFace({0.5, 30.0});
-    // undoAction1->Restore();
-
+    auto undoAction2 = grid->InsertFace ({3.5, 29.5});
     grid->ComputeGridNodeTypes();
     grid->SetFlatCopies();
-    std::cout << "sizes: " << grid->NumN() << "  " << grid->NumM() << "  " << grid->GetNumNodes() << "  " << grid->GetNumEdges() << std::endl;
-
-    auto undoAction2 = grid->InsertFace({1.51, 30.0});
     // undoAction2->Restore ();
+
+    std::cout << "sizes: " << grid->GetNumNodes () << "  " << grid->GetNumValidNodes () << "  "
+              << grid->GetNumEdges () << "  " << grid->GetNumValidEdges () << "  "
+              << grid->GetNumFaces () << "  "
+              << grid->GetNodes().rows () << "  " << grid->GetNodes().cols () << "  "
+              << std::endl
+              << std::endl;
+
+    auto undoAction3 = grid->InsertFace ({6.5, 29.5});
+    grid->ComputeGridNodeTypes();
+    grid->SetFlatCopies();
+    // undoAction3->Restore ();
+
+
+    std::cout << "sizes: " << grid->GetNumNodes () << "  " << grid->GetNumValidNodes () << "  "
+              << grid->GetNumEdges () << "  " << grid->GetNumValidEdges () << "  "
+              << grid->GetNumFaces () << "  "
+              << grid->GetNodes().rows () << "  " << grid->GetNodes().cols () << "  "
+              << std::endl
+              << std::endl;
+
+    // auto undoAction4 = grid->InsertFace ({6.5, 29.0});
+    // grid->ComputeGridNodeTypes();
+    // grid->SetFlatCopies();
+    // // undoAction4->Restore ();
 
     grid->ComputeGridNodeTypes();
     grid->SetFlatCopies();
@@ -1214,6 +1066,19 @@ TEST(CurvilinearBasicTests, AnotherTest12)
 
 TEST(CurvilinearBasicTests, CompoundTest)
 {
+    // Tests combining a number of actions:
+    //
+    // line shift
+    // mesh refinement (x-direction)
+    // add boundary grid lines
+    // delete interior block
+    // more add boundary grid lines
+    // mesh refinement (y-direction)
+    // more add boundary grid lines
+    // delete another interior block
+    // undo all of the above, the grid nodes should be the same as the original
+    // then redo all actions, the grid nodes should be the same as the nodes were before the undo, but after all the actions were computed.
+
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
 
@@ -1224,8 +1089,9 @@ TEST(CurvilinearBasicTests, CompoundTest)
     constexpr size_t ny = 30;
 
     mk::UndoActionStack undoActions;
-    std::unique_ptr<mk::CurvilinearGrid> grid = basic::MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
     grid->SetFlatCopies();
+    grid->ComputeGridNodeTypes();
 
     // Nodes in the original mesh
     const std::vector<mk::Point> originalPoints = grid->Nodes();
@@ -1235,8 +1101,7 @@ TEST(CurvilinearBasicTests, CompoundTest)
     lineShift.SetLine({5.0, 3.0}, {5.0, 15.0});
     lineShift.SetBlock({2.0, 3.0}, {10.0, 10.0});
 
-    undoActions.Add(lineShift.MoveNode({5.0, 5.0}, {6.5, 6.0}));
-    undoActions.Add(lineShift.Compute());
+    undoActions.Add(lineShift.Compute({5.0, 5.0}, {6.5, 6.0}));
 
     mk::CurvilinearGridRefinement refinement(*grid, 2);
     refinement.SetBlock({10.0, 20.0}, {20.0, 20.0});
@@ -1393,7 +1258,7 @@ TEST(CurvilinearBasicTests, CompoundTest)
     // Points should be same as in the refined mesh after all actions have bene redone
     for (mk::UInt i = 0; i < grid->GetNumNodes(); ++i)
     {
-        EXPECT_NEAR(refinedPoints[index].x, grid->Node(i).x, tolerance);
-        EXPECT_NEAR(refinedPoints[index].y, grid->Node(i).y, tolerance);
+        EXPECT_NEAR(refinedPoints[i].x, grid->Node(i).x, tolerance);
+        EXPECT_NEAR(refinedPoints[i].y, grid->Node(i).y, tolerance);
     }
 }

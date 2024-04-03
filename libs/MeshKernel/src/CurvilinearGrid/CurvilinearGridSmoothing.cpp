@@ -30,6 +30,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridUtilities.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Operations.hpp>
 
@@ -48,7 +49,11 @@ CurvilinearGridSmoothing::CurvilinearGridSmoothing(CurvilinearGrid& grid, UInt s
 
 meshkernel::UndoActionPtr CurvilinearGridSmoothing::Compute()
 {
-    std::unique_ptr<CurvilinearGridBlockUndoAction> undoAction = CurvilinearGridBlockUndoAction::Create(m_grid, m_lowerLeft, m_upperRight);
+    CurvilinearGridNodeIndices upperLimit = m_upperRight;
+    ++upperLimit.m_n;
+    ++upperLimit.m_m;
+
+    std::unique_ptr<CurvilinearGridBlockUndoAction> undoAction = CurvilinearGridBlockUndoAction::Create(m_grid, m_lowerLeft, upperLimit);
 
     // Perform smoothing iterations
     for (UInt smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)

@@ -2,6 +2,8 @@
 #include <MeshKernelApi/CurvilinearGrid.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
+#include <random>
+
 size_t CurvilinearGridCountValidNodes(meshkernelapi::CurvilinearGrid const& curvilinearGrid)
 {
     size_t validNodes = 0;
@@ -168,6 +170,43 @@ std::unique_ptr<meshkernel::CurvilinearGrid> MakeCurvilinearGrid(double originX,
         for (size_t m = 0; m < nx; ++m)
         {
             points(n, m) = meshkernel::Point(x, y);
+            x += deltaX;
+        }
+
+        y += deltaY;
+    }
+
+    return std::make_unique<meshkernel::CurvilinearGrid>(points, meshkernel::Projection::cartesian);
+}
+
+std::unique_ptr<meshkernel::CurvilinearGrid> MakeCurvilinearGridRand(double originX, double originY, double deltaX, double deltaY, size_t nx, size_t ny, double fraction, bool displaceBoundary)
+{
+    double y = originY;
+    // Create a uniform distribution in 0 .. 1.
+    std::uniform_real_distribution<double> distribution(0.0, 1.0);
+    std::default_random_engine engine;
+
+    lin_alg::Matrix<meshkernel::Point> points(ny, nx);
+
+    for (size_t n = 0; n < ny; ++n)
+    {
+        double x = originX;
+        bool onVerticalBoundary = n == 0 || n == ny - 1;
+
+        for (size_t m = 0; m < nx; ++m)
+        {
+            bool onHorizontalBoundary = m == 0 || m == nx - 1;
+
+            meshkernel::Vector displacement (distribution(engine) * fraction * deltaX,
+                                             distribution(engine) * fraction * deltaY);
+            meshkernel::Point meshPoint(x, y);
+
+            if ((displaceBoundary && (onVerticalBoundary || onHorizontalBoundary)) || (!onVerticalBoundary && !onHorizontalBoundary))
+            {
+                meshPoint += displacement;
+            }
+
+            points(n, m) = meshPoint;
             x += deltaX;
         }
 

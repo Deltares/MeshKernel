@@ -48,7 +48,7 @@ namespace meshkernel
         static std::unique_ptr<CurvilinearGridRefinementUndoAction> Create(CurvilinearGrid& grid);
 
         /// @brief Constructor
-        CurvilinearGridRefinementUndoAction(CurvilinearGrid& grid);
+        explicit CurvilinearGridRefinementUndoAction(CurvilinearGrid& grid);
 
         /// @brief Swap the grid nodes, and the grid extents.
         void Swap(lin_alg::Matrix<Point>& nodes, CurvilinearGridNodeIndices& lower, CurvilinearGridNodeIndices& upper);

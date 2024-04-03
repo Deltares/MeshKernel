@@ -7,7 +7,7 @@ std::unique_ptr<meshkernel::CurvilinearGridRefinementUndoAction> meshkernel::Cur
 }
 
 meshkernel::CurvilinearGridRefinementUndoAction::CurvilinearGridRefinementUndoAction(CurvilinearGrid& grid)
-    : BaseMeshUndoAction<CurvilinearGridRefinementUndoAction, CurvilinearGrid>(grid), m_nodes(grid.GetNodes()), m_lower(grid.m_startOffset), m_upper(grid.m_endOffset) {}
+    : BaseMeshUndoAction<CurvilinearGridRefinementUndoAction, CurvilinearGrid>(grid), m_nodes(grid.GetNodes()), m_lower(grid.StartOffset()), m_upper(grid.EndOffset()) {}
 
 void meshkernel::CurvilinearGridRefinementUndoAction::Swap(lin_alg::Matrix<Point>& nodes, CurvilinearGridNodeIndices& lower, CurvilinearGridNodeIndices& upper)
 {

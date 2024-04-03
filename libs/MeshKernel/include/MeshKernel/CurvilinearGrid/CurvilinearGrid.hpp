@@ -236,7 +236,8 @@ namespace meshkernel
         /// @return If a new grid line has been allocated
         std::tuple<bool, UndoActionPtr> AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
 
-        void DeleteGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
+        void DeleteGridLineAtBoundary(const CurvilinearGridNodeIndices& firstNode,
+                                      const CurvilinearGridNodeIndices& secondNode);
 
         /// @brief Get the boundary grid line type: left, right, bottom or up
         /// @param[in] firstNode The first node of the grid line
@@ -269,6 +270,12 @@ namespace meshkernel
         /// @return A number >= 2 for a valid curvilinear grid
         UInt NumN() const { return static_cast<UInt>(m_gridNodes.rows()) - m_startOffset.m_n - m_endOffset.m_n; }
 
+        /// @brief Get the row and column start index offset
+        CurvilinearGridNodeIndices StartOffset () const;
+
+        /// @brief Get the row and column end index offset
+        CurvilinearGridNodeIndices EndOffset () const;
+
         /// @brief Is the node matrix empty
         /// @return true iff the node matrix is empty
         bool IsEmpty() const { return lin_alg::MatrixIsEmpty(m_gridNodes); }
@@ -300,10 +307,10 @@ namespace meshkernel
         UInt FullNumN() const { return static_cast<UInt>(m_gridNodes.rows()); }
 
         /// @brief Restore grid to state before grid line was added
-        void RestoreAction(AddGridLineUndoAction& undoAction);
+        void RestoreAction(const AddGridLineUndoAction& undoAction);
 
         /// @brief Restore grid to state after grid line was added
-        void CommitAction(AddGridLineUndoAction& undoAction);
+        void CommitAction(const AddGridLineUndoAction& undoAction);
 
         /// @brief Restore grid to state before grid block was modified
         ///
@@ -325,13 +332,9 @@ namespace meshkernel
         /// @brief Restore grid to state after node was modified
         void CommitAction(const ResetCurvilinearNodeAction& undoAction);
 
-        // TODO make private;
-        CurvilinearGridNodeIndices m_startOffset{0, 0};
-        CurvilinearGridNodeIndices m_endOffset{0, 0};
+        void print(std::ostream& out = std::cout) const;
 
-        void print(std::ostream& out = std::cout);
-
-        void printGraph(std::ostream& out = std::cout);
+        void printGraph(std::ostream& out = std::cout) const;
 
     private:
         /// @brief Remove invalid nodes.
@@ -355,5 +358,18 @@ namespace meshkernel
         lin_alg::Matrix<bool> m_gridFacesMask;                 ///< The mask of the grid faces (true/false)
         lin_alg::Matrix<NodeType> m_gridNodesTypes;            ///< The grid node types
         std::vector<CurvilinearGridNodeIndices> m_gridIndices; ///< The original mapping of the flatten nodes in the curvilinear grid
+        CurvilinearGridNodeIndices m_startOffset{0, 0};        ///< Row and column start index offset
+        CurvilinearGridNodeIndices m_endOffset{0, 0};          ///< Row and column end index offset
     };
 } // namespace meshkernel
+
+
+inline meshkernel::CurvilinearGridNodeIndices meshkernel::CurvilinearGrid::StartOffset () const
+{
+    return m_startOffset;
+}
+
+inline meshkernel::CurvilinearGridNodeIndices meshkernel::CurvilinearGrid::EndOffset () const
+{
+    return m_endOffset;
+}

@@ -29,6 +29,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineShift.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
 
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridLineShift;
@@ -105,6 +106,17 @@ meshkernel::UndoActionPtr CurvilinearGridLineShift::Compute()
 
     return undoAction;
 }
+
+meshkernel::UndoActionPtr CurvilinearGridLineShift::Compute(const Point& fromPoint, const Point& toPoint)
+{
+    std::unique_ptr<CompoundUndoAction> compoundAction = CompoundUndoAction::Create ();
+
+    compoundAction->Add (MoveNode (fromPoint, toPoint));
+    compoundAction->Add (Compute ());
+
+    return compoundAction;
+}
+
 
 void CurvilinearGridLineShift::TransformGrid(CurvilinearGridNodeIndices const& node)
 {

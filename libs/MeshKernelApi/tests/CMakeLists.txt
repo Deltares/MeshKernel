@@ -11,14 +11,15 @@ set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(INC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # list of target sources
-set(SRC_LIST 
+set(SRC_LIST
     ${SRC_DIR}/ApiTest.cpp
     ${SRC_DIR}/CurvilinearGridTests.cpp
+    ${SRC_DIR}/CurvilinearGridUndoTests.cpp
     ${SRC_DIR}/Mesh2DRefinmentTests.cpp
     ${SRC_DIR}/ErrorHandlingTests.cpp
 )
 
-set(INC_LIST 
+set(INC_LIST
     ${INC_DIR}/CartesianApiTestFixture.hpp
 )
 

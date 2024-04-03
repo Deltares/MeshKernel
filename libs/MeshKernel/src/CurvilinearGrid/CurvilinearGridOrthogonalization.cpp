@@ -29,6 +29,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridDeRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridUtilities.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
@@ -70,7 +71,10 @@ meshkernel::UndoActionPtr CurvilinearGridOrthogonalization::Compute()
         throw std::invalid_argument("CurvilinearGridOrthogonalization::Compute: lower left and upper right corners defining the curvilinear grid block are not set");
     }
 
-    std::unique_ptr<CurvilinearGridBlockUndoAction> undoAction = CurvilinearGridBlockUndoAction::Create(m_grid, m_lowerLeft, m_upperRight);
+    CurvilinearGridNodeIndices upperLimit = m_upperRight;
+    ++upperLimit.m_n;
+    ++upperLimit.m_m;
+    std::unique_ptr<CurvilinearGridBlockUndoAction> undoAction = CurvilinearGridBlockUndoAction::Create(m_grid, m_lowerLeft, upperLimit);
 
     // Compute the grid node types
     m_grid.ComputeGridNodeTypes();
@@ -292,12 +296,6 @@ void CurvilinearGridOrthogonalization::Solve()
                     m_grid.GetNode(n, m + 1) * m_orthoEqTerms.c(n, m) +
                     m_grid.GetNode(n, m - 1) * m_orthoEqTerms.d(n, m) +
                     m_grid.GetNode(n, m) * m_orthoEqTerms.e(n, m);
-
-                if (!std::isfinite(residual.x) or (n == 7 and m == 7))
-                {
-                    [[maybe_unused]] int dummy;
-                    dummy = 1;
-                }
 
                 m_grid.GetNode(n, m) = m_grid.GetNode(n, m) - residual / m_orthoEqTerms.e(n, m) * omega;
             }
