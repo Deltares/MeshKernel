@@ -636,7 +636,8 @@ public:
             std::make_tuple<Point, int>(Point{10.0, 30.0}, 14),
             std::make_tuple<Point, int>(Point{0.0, 30.0}, 15),
             std::make_tuple<Point, int>(Point{30.0, 30.0}, 15),
-            std::make_tuple<Point, int>(Point{10.0, 10.0}, 12)};
+            std::make_tuple<Point, int>(Point{10.0, 10.0}, 12),
+            std::make_tuple<Point, int>(Point{20.0, 10.0}, 12)};
     }
 };
 
