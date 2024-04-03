@@ -242,6 +242,7 @@ CurvilinearGridNodeIndices CurvilinearGrid::GetNodeIndices(Point point)
 {
     BuildTree(Location::Nodes);
     SearchNearestLocation(point, Location::Nodes);
+
     if (GetNumLocations(Location::Nodes) == 0)
     {
         return {constants::missing::uintValue, constants::missing::uintValue};
@@ -388,6 +389,9 @@ void CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
 void CurvilinearGrid::ComputeGridNodeTypes()
 {
     RemoveInvalidNodes(true);
+    std::cout << " m_gridNodesTypes " << m_gridNodesTypes.rows() << "  " << m_gridNodesTypes.cols()
+              << "  " << FullNumN() << "  " << FullNumM()
+              << std::endl;
     lin_alg::ResizeAndFillMatrix(m_gridNodesTypes, FullNumN(), FullNumM(), false, NodeType::Invalid);
 
     // Flag faces based on boundaries
@@ -624,8 +628,8 @@ meshkernel::UndoActionPtr CurvilinearGrid::InsertFace(Point const& point)
     ComputeGridNodeTypes();
 
     std::cout << "insert face: " << point.x << ", " << point.y << "  --  "
-              << GetNode (firstNode).x << ", " << GetNode (firstNode).y << "  --  "
-              << GetNode (secondNode).x << ", " << GetNode (secondNode).y << "  --  "
+              << GetNode(firstNode).x << ", " << GetNode(firstNode).y << "  --  "
+              << GetNode(secondNode).x << ", " << GetNode(secondNode).y << "  --  "
               << std::endl;
 
     // Add a new edge
@@ -662,7 +666,7 @@ void CurvilinearGrid::DeleteGridLineAtBoundary(CurvilinearGridNodeIndices const&
         case BoundaryGridLineType::Bottom:
             m_startOffset.m_m += 1;
             break;
-        default :
+        default:
             // Error
             break;
         }
@@ -688,7 +692,7 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
     {
         throw ConstraintError("Second index {{{}, {}}} not in mesh limits {{{}, {}}}", secondNode.m_n, secondNode.m_m, NumN(), NumM());
     }
-    std::cout << "CurvilinearGrid::AddGridLineAtBoundary " << GetNode(firstNode).x << ", "<< GetNode(firstNode).y << " -- " << GetNode(secondNode).x << ", " << GetNode(secondNode).y << std::endl;
+    std::cout << "CurvilinearGrid::AddGridLineAtBoundary " << GetNode(firstNode).x << ", " << GetNode(firstNode).y << " -- " << GetNode(secondNode).x << ", " << GetNode(secondNode).y << std::endl;
 
     // If both nodes are invalid, we can substitute the invalid values. New allocation is not needed.
     bool const areNodesValid = GetNode(firstNode.m_n, firstNode.m_m).IsValid() &&
@@ -854,7 +858,7 @@ meshkernel::UndoActionPtr CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices co
         // TODO SHould there ie the same kind of: if (isGridLIneAdded) ... here too?
 
         std::cout << "gridLineType == BoundaryGridLineType::Right " << firstNewNodeCoordinates.x << ", " << firstNewNodeCoordinates.y << " -- "
-                  << secondNewNodeCoordinates.x << ", " << secondNewNodeCoordinates.y << " "<< std::boolalpha << isGridLineAdded << std::endl;
+                  << secondNewNodeCoordinates.x << ", " << secondNewNodeCoordinates.y << " " << std::boolalpha << isGridLineAdded << std::endl;
 
         undoAddEdge->Add(std::move(addGridLineUndo));
         undoAddEdge->Add(MoveNode(CurvilinearGridNodeIndices(firstNode.m_n + 1, firstNode.m_m), firstNewNodeCoordinates));
@@ -1046,19 +1050,6 @@ meshkernel::UndoActionPtr CurvilinearGrid::MoveNode(Point const& fromPoint, Poin
     // Get the node indices of fromPoint
     auto const nodeIndex = GetNodeIndices(fromPoint);
     return MoveNode(nodeIndex, toPoint);
-
-    // // Check the node indices are valid
-    // if (!nodeIndex.IsValid())
-    // {
-    //     throw std::invalid_argument("CurvilinearGrid::MoveNode node indices not found");
-    // }
-
-    // std::unique_ptr<ResetCurvilinearNodeAction> undoAction = ResetCurvilinearNodeAction::Create(*this, nodeIndex, GetNode(nodeIndex), toPoint,
-    //                                                                                             false /* recomputeNodeTypes */);
-
-    // // move fromPoint to toPoint
-    // GetNode(nodeIndex.m_n, nodeIndex.m_m) = toPoint;
-    // return undoAction;
 }
 
 meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
@@ -1140,35 +1131,49 @@ void CurvilinearGrid::RestoreAction(const AddGridLineUndoAction& undoAction)
 {
     m_startOffset += undoAction.StartOffset();
     m_endOffset += undoAction.EndOffset();
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
 }
 
 void CurvilinearGrid::CommitAction(const AddGridLineUndoAction& undoAction)
 {
     m_startOffset -= undoAction.StartOffset();
     m_endOffset -= undoAction.EndOffset();
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
 }
 
 void CurvilinearGrid::RestoreAction(CurvilinearGridBlockUndoAction& undoAction)
 {
     undoAction.Swap(*this);
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
     ComputeGridNodeTypes();
 }
 
 void CurvilinearGrid::CommitAction(CurvilinearGridBlockUndoAction& undoAction)
 {
     undoAction.Swap(*this);
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
     ComputeGridNodeTypes();
 }
 
 void CurvilinearGrid::RestoreAction(CurvilinearGridRefinementUndoAction& undoAction)
 {
     undoAction.Swap(m_gridNodes, m_startOffset, m_endOffset);
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+    SetFlatCopies();
     ComputeGridNodeTypes();
 }
 
 void CurvilinearGrid::CommitAction(CurvilinearGridRefinementUndoAction& undoAction)
 {
     undoAction.Swap(m_gridNodes, m_startOffset, m_endOffset);
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+    SetFlatCopies();
     ComputeGridNodeTypes();
 }
 

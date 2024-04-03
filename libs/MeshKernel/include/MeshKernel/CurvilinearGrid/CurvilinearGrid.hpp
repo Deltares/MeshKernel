@@ -170,9 +170,37 @@ namespace meshkernel
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
         /// @return the node type
-        NodeType GetNodeType(UInt n, UInt m) const { return m_gridNodesTypes(n + m_startOffset.m_n, m + m_startOffset.m_m); }
+        NodeType GetNodeType(UInt n, UInt m) const
+        {
 
-        NodeType& GetNodeType(UInt n, UInt m) { return m_gridNodesTypes(n + m_startOffset.m_n, m + m_startOffset.m_m); }
+            if (n >= m_gridNodesTypes.rows())
+            {
+                throw ConstraintError("Invalid row index {} > {}", n, m_gridNodesTypes.rows());
+            }
+
+            if (m >= m_gridNodesTypes.cols())
+            {
+                throw ConstraintError("Invalid colum index {} > {}", m, m_gridNodesTypes.cols());
+            }
+
+            return m_gridNodesTypes(n + m_startOffset.m_n, m + m_startOffset.m_m);
+        }
+
+        NodeType& GetNodeType(UInt n, UInt m)
+        {
+
+            if (n >= m_gridNodesTypes.rows())
+            {
+                throw ConstraintError("Invalid row index {} > {}", n, m_gridNodesTypes.rows());
+            }
+
+            if (m >= m_gridNodesTypes.cols())
+            {
+                throw ConstraintError("Invalid colum index {} > {}", m, m_gridNodesTypes.cols());
+            }
+
+            return m_gridNodesTypes(n + m_startOffset.m_n, m + m_startOffset.m_m);
+        }
 
         /// @brief Determines if all nodes of a face are valid.
         /// A face is valid if all its nodes are valid.
@@ -271,10 +299,10 @@ namespace meshkernel
         UInt NumN() const { return static_cast<UInt>(m_gridNodes.rows()) - m_startOffset.m_n - m_endOffset.m_n; }
 
         /// @brief Get the row and column start index offset
-        CurvilinearGridNodeIndices StartOffset () const;
+        CurvilinearGridNodeIndices StartOffset() const;
 
         /// @brief Get the row and column end index offset
-        CurvilinearGridNodeIndices EndOffset () const;
+        CurvilinearGridNodeIndices EndOffset() const;
 
         /// @brief Is the node matrix empty
         /// @return true iff the node matrix is empty
@@ -363,13 +391,12 @@ namespace meshkernel
     };
 } // namespace meshkernel
 
-
-inline meshkernel::CurvilinearGridNodeIndices meshkernel::CurvilinearGrid::StartOffset () const
+inline meshkernel::CurvilinearGridNodeIndices meshkernel::CurvilinearGrid::StartOffset() const
 {
     return m_startOffset;
 }
 
-inline meshkernel::CurvilinearGridNodeIndices meshkernel::CurvilinearGrid::EndOffset () const
+inline meshkernel::CurvilinearGridNodeIndices meshkernel::CurvilinearGrid::EndOffset() const
 {
     return m_endOffset;
 }
