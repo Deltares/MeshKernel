@@ -2242,7 +2242,7 @@ meshkernel::BoundingBox Mesh2D::GetBoundingBox() const
     const auto numNodes = GetNumNodes();
     for (UInt n = 0; n < numNodes; ++n)
     {
-        if (!m_nodes[n].IsValid())
+        [[unlikely]] if (!m_nodes[n].IsValid())
         {
             continue;
         }
