@@ -49,13 +49,6 @@ meshkernel::UndoActionPtr CurvilinearGridLineShift::Compute()
         throw std::invalid_argument("CurvilinearGridLineShift::Compute No candidate line to shift has been selected");
     }
 
-    std::cout << "limits: {" << m_lowerLeft.m_n << "  " << m_lowerLeft.m_n << "}  {" << m_upperRight.m_n << "  " << m_upperRight.m_m << " } -- "
-              << m_lines[0].m_startCoordinate << "  " << m_lines[0].m_endCoordinate
-              << std::endl;
-
-    // auto const start = m_lines[0].IsMGridLine() ? m_lowerLeft.m_n : m_lowerLeft.m_m;
-    // auto const end = m_lines[0].IsMGridLine() ? m_upperRight.m_n : m_upperRight.m_m;
-
     auto const startN = m_lines[0].IsNGridLine() ? m_lines[0].m_startCoordinate : m_lowerLeft.m_n;
     auto const endN = m_lines[0].IsNGridLine() ? m_lines[0].m_endCoordinate : m_upperRight.m_n;
     auto const startM = m_lines[0].IsMGridLine() ? m_lines[0].m_startCoordinate : m_lowerLeft.m_m;
@@ -109,14 +102,13 @@ meshkernel::UndoActionPtr CurvilinearGridLineShift::Compute()
 
 meshkernel::UndoActionPtr CurvilinearGridLineShift::Compute(const Point& fromPoint, const Point& toPoint)
 {
-    std::unique_ptr<CompoundUndoAction> compoundAction = CompoundUndoAction::Create ();
+    std::unique_ptr<CompoundUndoAction> compoundAction = CompoundUndoAction::Create();
 
-    compoundAction->Add (MoveNode (fromPoint, toPoint));
-    compoundAction->Add (Compute ());
+    compoundAction->Add(MoveNode(fromPoint, toPoint));
+    compoundAction->Add(Compute());
 
     return compoundAction;
 }
-
 
 void CurvilinearGridLineShift::TransformGrid(CurvilinearGridNodeIndices const& node)
 {

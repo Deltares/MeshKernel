@@ -199,8 +199,6 @@ namespace meshkernel
         /// @return the node type
         NodeType GetNodeType(UInt n, UInt m) const
         {
-            return m_gridNodesTypes2.at(n).at(m);
-
             if (n >= m_gridNodesTypes.rows())
             {
                 throw ConstraintError("Invalid row index {} > {}", n, m_gridNodesTypes.rows());
@@ -216,8 +214,6 @@ namespace meshkernel
 
         NodeType& GetNodeType(UInt n, UInt m)
         {
-            return m_gridNodesTypes2.at(n).at(m);
-
             if (n >= m_gridNodesTypes.rows())
             {
                 throw ConstraintError("Invalid row index {} > {}", n, m_gridNodesTypes.rows());
@@ -244,8 +240,6 @@ namespace meshkernel
         /// @return the face mask value (true/false)
         [[nodiscard]] bool IsFaceMaskValid(UInt n, UInt m) const
         {
-            return m_gridFacesMask2.at(n).at(m);
-
             if (n >= m_gridFacesMask.rows())
             {
                 throw ConstraintError("Invalid row index {} > {}", n, m_gridFacesMask.rows());
@@ -259,28 +253,20 @@ namespace meshkernel
             return m_gridFacesMask(n + m_startOffset.m_n, m + m_startOffset.m_m);
         }
 
-        void SetIsFaceMaskValid(UInt n, UInt m, bool value)
+        bool& IsFaceMaskValid(UInt n, UInt m)
         {
-            m_gridFacesMask2.at(n).at(m) = value;
-            // m_gridFacesMask(n + m_startOffset.m_n, m + m_startOffset.m_m) = value;
+            if (n >= m_gridFacesMask.rows())
+            {
+                throw ConstraintError("Invalid row index {} > {}", n, m_gridFacesMask.rows());
+            }
+
+            if (m >= m_gridFacesMask.cols())
+            {
+                throw ConstraintError("Invalid colum index {} > {}", m, m_gridFacesMask.cols());
+            }
+
+            return m_gridFacesMask(n + m_startOffset.m_n, m + m_startOffset.m_m);
         }
-
-        // bool& IsFaceMaskValid(UInt n, UInt m)
-        // {
-        //     return m_gridFacesMask2.at(n).at(m);
-
-        //     if (n >= m_gridFacesMask.rows())
-        //     {
-        //         throw ConstraintError("Invalid row index {} > {}", n, m_gridFacesMask.rows());
-        //     }
-
-        //     if (m >= m_gridFacesMask.cols())
-        //     {
-        //         throw ConstraintError("Invalid colum index {} > {}", m, m_gridFacesMask.cols());
-        //     }
-
-        //     return m_gridFacesMask(n + m_startOffset.m_n, m + m_startOffset.m_m);
-        // }
 
         /// @brief Inserts a new face. The new face will be inserted on top of the closest edge.
         /// @param[in] point  The point used for finding the closest edge.
@@ -447,15 +433,9 @@ namespace meshkernel
         [[nodiscard]] UndoActionPtr AddEdge(CurvilinearGridNodeIndices const& firstNode,
                                             CurvilinearGridNodeIndices const& secondNode);
 
-        lin_alg::Matrix<Point> m_gridNodes; ///< Member variable storing the grid
-        char unusedArray1[2049];
-        lin_alg::Matrix<bool> m_gridFacesMask; ///< The mask of the grid faces (true/false)
-        char unusedArray2[2049];
-        std::vector<std::vector<bool>> m_gridFacesMask2; ///< The mask of the grid faces (true/false)
-        char unusedArray3[2049];
-        lin_alg::Matrix<NodeType> m_gridNodesTypes; ///< The grid node types
-        char unusedArray4[2049];
-        std::vector<std::vector<NodeType>> m_gridNodesTypes2;  ///< The grid node types
+        lin_alg::Matrix<Point> m_gridNodes;                    ///< Member variable storing the grid
+        lin_alg::Matrix<bool> m_gridFacesMask;                 ///< The mask of the grid faces (true/false)
+        lin_alg::Matrix<NodeType> m_gridNodesTypes;            ///< The grid node types
         std::vector<CurvilinearGridNodeIndices> m_gridIndices; ///< The original mapping of the flatten nodes in the curvilinear grid
         CurvilinearGridNodeIndices m_startOffset{0, 0};        ///< Row and column start index offset
         CurvilinearGridNodeIndices m_endOffset{0, 0};          ///< Row and column end index offset

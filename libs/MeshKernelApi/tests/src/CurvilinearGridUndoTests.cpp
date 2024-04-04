@@ -1151,6 +1151,129 @@ TEST(CurvilinearGridUndoTests, OrthogonaliseEntireGrid)
     }
 }
 
+TEST(CurvilinearGridUndoTests, RefineAndOrthogonalise)
+{
+    int meshKernelId;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    constexpr double delta = 1.0;
+
+    makeGridParameters.num_columns = 30;
+    makeGridParameters.num_rows = 30;
+    makeGridParameters.angle = 0.0;
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = delta;
+    makeGridParameters.block_size_y = delta;
+
+    // Create a uniform random distribution in (0.01 .. 0.25) * delta
+    // lower bound non-zero to ensure simple check works
+    std::uniform_real_distribution<double> distribution(0.01 * delta, 0.25 * delta);
+    std::default_random_engine engine;
+
+    // Generate curvilinear grid
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGrid{};
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    std::vector<double> node_x(curvilinearGrid.num_m * curvilinearGrid.num_n);
+    std::vector<double> node_y(curvilinearGrid.num_m * curvilinearGrid.num_n);
+    curvilinearGrid.node_x = node_x.data();
+    curvilinearGrid.node_y = node_y.data();
+    // Get the nodal values
+    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Add some perturbation to the mesh before smoothing.
+    for (int i = 0; i < curvilinearGrid.num_n * curvilinearGrid.num_m; ++i)
+    {
+        curvilinearGrid.node_x[i] += distribution(engine);
+        curvilinearGrid.node_y[i] += distribution(engine);
+    }
+
+    // Make copy of node values.
+    std::vector<double> originalNodeX(node_x);
+    std::vector<double> originalNodeY(node_y);
+
+    // Copy the node values back
+    errorCode = meshkernelapi::mkernel_curvilinear_set(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // End of curvilinear grid initialisation
+    //--------------------------------
+
+    // Refine grid
+    errorCode = meshkernelapi::mkernel_curvilinear_refine(meshKernelId,
+                                                          10.0, 20.0,
+                                                          20.0, 20.0,
+                                                          2 /* refinement */);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    //--------------------------------
+    // Perform orthogonalisation on perturbed and refined grid
+
+    meshkernel::OrthogonalizationParameters orthogonalizationParameters{};
+    orthogonalizationParameters.outer_iterations = 1;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
+
+    // set up orthogonalisation
+    errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_set_block_orthogonalize(meshKernelId, 0.0, 0.0, 30.0, 30.0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // apply orthogonalisation
+    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // finalise orthogonalisation
+    errorCode = meshkernelapi::mkernel_curvilinear_finalize_orthogonalize(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    //--------------------------------
+    // Undo orthogonalisation and refinement
+
+    bool didUndo = false;
+
+    // Undo the orthogonalisation
+    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+
+    didUndo = false;
+
+    // Undo the orthogonalisation
+    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+
+    //--------------------------------
+    // The mesh should now be in the original (perturbed) state
+
+    // Get the current state of the curvilinear grid
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Get the current state of the curvilinear grid
+    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // After undo of smoothing, compare all the nodes to check that they are the same as the original nodes.
+    for (int i = 0; i < curvilinearGrid.num_m * curvilinearGrid.num_n; ++i)
+    {
+        EXPECT_EQ(curvilinearGrid.node_x[i], originalNodeX[i]) << "position: " << i;
+        EXPECT_EQ(curvilinearGrid.node_y[i], originalNodeY[i]) << "position: " << i;
+    }
+}
+
 TEST(CurvilinearGridUndoTests, RefineUndoThenOrthogonalise)
 {
     int meshKernelId;
@@ -1204,32 +1327,32 @@ TEST(CurvilinearGridUndoTests, RefineUndoThenOrthogonalise)
     errorCode = meshkernelapi::mkernel_curvilinear_set(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
+    // End of curvilinear grid initialisation
     //--------------------------------
 
+    // Refine grid
     errorCode = meshkernelapi::mkernel_curvilinear_refine(meshKernelId,
                                                           10.0, 20.0,
                                                           20.0, 20.0,
                                                           2 /* refinement */);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    // bool didUndoOfRefinement = false;
+    //--------------------------------
+    // Undo the refinement
+    bool didUndo = false;
 
-    // errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfRefinement);
-    // ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    // EXPECT_TRUE(didUndoOfRefinement);
-
-    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
+    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
 
     //--------------------------------
+    // Perform orthogonalisation on perturbed grid
 
     meshkernel::OrthogonalizationParameters orthogonalizationParameters{};
     orthogonalizationParameters.outer_iterations = 1;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
-
-    //--------------------------------
 
     // set up orthogonalisation
     errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
@@ -1247,38 +1370,16 @@ TEST(CurvilinearGridUndoTests, RefineUndoThenOrthogonalise)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     //--------------------------------
+    // Undo orthognalisation
 
-    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
+    didUndo = false;
+
+    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
 
-    // Get the current state of the curvilinear grid
-    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // const std::vector<int> cornerNodes{0, 30, 930, 960};
-
-    // // Expect the nodes of the orthogonalised mesh to be different from the original nodes
-    // for (int i = 0; i < curvilinearGrid.num_m * curvilinearGrid.num_n; ++i)
-    // {
-    //     // Corner nodes are not moved
-    //     if (std::ranges::find(cornerNodes, i) == cornerNodes.end())
-    //     {
-    //         EXPECT_NE(curvilinearGrid.node_x[i], originalNodeX[i]) << "position: " << i;
-    //         EXPECT_NE(curvilinearGrid.node_y[i], originalNodeY[i]) << "position: " << i;
-    //     }
-    // }
-
-    bool didUndoOfSmoothing = false;
-
-    // Undo the orthogonalisation
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfSmoothing);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    EXPECT_TRUE(didUndoOfSmoothing);
-
-    // Undo the orthogonalisation
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfSmoothing);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    EXPECT_TRUE(didUndoOfSmoothing);
+    //--------------------------------
+    // The mesh should now be in the original (perturbed) state
 
     // Get the current state of the curvilinear grid
     errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
@@ -1293,5 +1394,279 @@ TEST(CurvilinearGridUndoTests, RefineUndoThenOrthogonalise)
     {
         EXPECT_EQ(curvilinearGrid.node_x[i], originalNodeX[i]) << "position: " << i;
         EXPECT_EQ(curvilinearGrid.node_y[i], originalNodeY[i]) << "position: " << i;
+    }
+}
+
+TEST(CurvilinearGridUndoTests, InsertFaceUndoThenMirrorLine)
+{
+    int meshKernelId;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    constexpr double delta = 1.0;
+
+    makeGridParameters.num_columns = 30;
+    makeGridParameters.num_rows = 30;
+    makeGridParameters.angle = 0.0;
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = delta;
+    makeGridParameters.block_size_y = delta;
+
+    // Create a uniform random distribution in (0.01 .. 0.25) * delta
+    // lower bound non-zero to ensure simple check works
+    std::uniform_real_distribution<double> distribution(0.01 * delta, 0.25 * delta);
+    std::default_random_engine engine;
+
+    // Generate curvilinear grid
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGrid{};
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    std::vector<double> node_x(curvilinearGrid.num_m * curvilinearGrid.num_n);
+    std::vector<double> node_y(curvilinearGrid.num_m * curvilinearGrid.num_n);
+    curvilinearGrid.node_x = node_x.data();
+    curvilinearGrid.node_y = node_y.data();
+    // Get the nodal values
+    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Make copy of node values.
+    std::vector<double> originalNodeX(node_x);
+    std::vector<double> originalNodeY(node_y);
+
+    // End of curvilinear grid initialisation
+    //--------------------------------
+
+    // Insert face
+    errorCode = meshkernelapi::mkernel_curvilinear_insert_face(meshKernelId, 0.5 * delta, 0.0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid updatedGrid{};
+
+    // Get the current state of the curvilinear grid
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, updatedGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // 1 extra row for the inserted face
+    EXPECT_EQ(updatedGrid.num_n, curvilinearGrid.num_n + 1);
+    // Same number of columns
+    EXPECT_EQ(updatedGrid.num_m, curvilinearGrid.num_m);
+
+    // Undo insert face
+    bool didUndo = false;
+
+    // Undo the refinement
+    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+
+    //-------------------------------
+
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, updatedGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Add an extra column on the left of the domain
+    errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId, delta, 0.0, 0.0, 0.0, 30.0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, updatedGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, updatedGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Same number of rows as original mesh
+    EXPECT_EQ(updatedGrid.num_n, curvilinearGrid.num_n);
+    // One extra row than the original mesh
+    EXPECT_EQ(updatedGrid.num_m, curvilinearGrid.num_m + 1);
+
+    // Undo the mirror line
+    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+
+    //--------------------------------
+    // Grid should be in original state
+
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, updatedGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    EXPECT_EQ(updatedGrid.num_n, curvilinearGrid.num_n);
+    EXPECT_EQ(updatedGrid.num_m, curvilinearGrid.num_m);
+
+    // Get the current state of the curvilinear grid
+    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    constexpr double tolerance = 1.0e-10;
+
+    // After undo of smoothing, compare all the nodes to check that they are the same as the original nodes.
+    for (int i = 0; i < curvilinearGrid.num_m * curvilinearGrid.num_n; ++i)
+    {
+        EXPECT_NEAR(curvilinearGrid.node_x[i], originalNodeX[i], tolerance);
+        EXPECT_NEAR(curvilinearGrid.node_y[i], originalNodeY[i], tolerance);
+    }
+}
+
+TEST(CurvilinearGridUndoTests, MultiStepUndoTest)
+{
+    // A multi-step undo test
+    // 1. Refine grid in x-direciton
+    // 2. undo refinement
+    // 3. delete interior block
+    // 4. undo deletion
+    // 5. Refine grid in y-direction
+    // 6. undo refinement
+
+    int meshKernelId;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    constexpr double delta = 1.0;
+
+    makeGridParameters.num_columns = 30;
+    makeGridParameters.num_rows = 30;
+    makeGridParameters.angle = 0.0;
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = delta;
+    makeGridParameters.block_size_y = delta;
+
+    // Create a uniform random distribution in (0.01 .. 0.25) * delta
+    // lower bound non-zero to ensure simple check works
+    std::uniform_real_distribution<double> distribution(0.01 * delta, 0.25 * delta);
+    std::default_random_engine engine;
+
+    // Generate curvilinear grid
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGrid{};
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    std::vector<double> node_x(curvilinearGrid.num_m * curvilinearGrid.num_n);
+    std::vector<double> node_y(curvilinearGrid.num_m * curvilinearGrid.num_n);
+    curvilinearGrid.node_x = node_x.data();
+    curvilinearGrid.node_y = node_y.data();
+    // Get the nodal values
+    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Make copy of node values.
+    std::vector<double> originalNodeX(node_x);
+    std::vector<double> originalNodeY(node_y);
+
+    meshkernelapi::CurvilinearGrid updatedGrid{};
+
+    // End of curvilinear grid initialisation
+
+    //--------------------------------
+    // Refine grid
+    errorCode = meshkernelapi::mkernel_curvilinear_refine(meshKernelId,
+                                                          10.0, 20.0,
+                                                          20.0, 20.0,
+                                                          2 /* refinement */);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, updatedGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    EXPECT_EQ(updatedGrid.num_n, curvilinearGrid.num_n);
+    EXPECT_EQ(updatedGrid.num_m, curvilinearGrid.num_m + 10);
+
+    // Undo the refinement
+    bool didUndo = false;
+
+    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, updatedGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    EXPECT_EQ(updatedGrid.num_n, curvilinearGrid.num_n);
+    EXPECT_EQ(updatedGrid.num_m, curvilinearGrid.num_m);
+
+    //--------------------------------
+    // Delete interior block
+
+    const int lowerBoundIndex = 10;
+    const int upperBoundIndex = 20;
+
+    constexpr double lowerBoundValue = static_cast<double>(lowerBoundIndex);
+    constexpr double upperBoundValue = static_cast<double>(upperBoundIndex);
+
+    // delete interior block
+    errorCode = meshkernelapi::mkernel_curvilinear_delete_interior(meshKernelId,
+                                                                   lowerBoundValue, lowerBoundValue,
+                                                                   upperBoundValue, upperBoundValue);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    didUndo = false;
+    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, updatedGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    EXPECT_EQ(updatedGrid.num_n, curvilinearGrid.num_n);
+    EXPECT_EQ(updatedGrid.num_m, curvilinearGrid.num_m);
+
+    //-------------------------------
+
+    // Refine grid
+    errorCode = meshkernelapi::mkernel_curvilinear_refine(meshKernelId,
+                                                          0.0, 10.0,
+                                                          0.0, 20.0,
+                                                          2 /* refinement */);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, updatedGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    EXPECT_EQ(updatedGrid.num_n, curvilinearGrid.num_n + 10);
+    EXPECT_EQ(updatedGrid.num_m, curvilinearGrid.num_m);
+
+    // Undo the refinement
+    didUndo = false;
+
+    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, updatedGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    EXPECT_EQ(updatedGrid.num_n, curvilinearGrid.num_n);
+    EXPECT_EQ(updatedGrid.num_m, curvilinearGrid.num_m);
+
+    //--------------------------------
+    // Grid should be in original state
+
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, updatedGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    EXPECT_EQ(updatedGrid.num_n, curvilinearGrid.num_n);
+    EXPECT_EQ(updatedGrid.num_m, curvilinearGrid.num_m);
+
+    // Get the current state of the curvilinear grid
+    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    constexpr double tolerance = 1.0e-10;
+
+    // After undo of smoothing, compare all the nodes to check that they are the same as the original nodes.
+    for (int i = 0; i < curvilinearGrid.num_m * curvilinearGrid.num_n; ++i)
+    {
+        EXPECT_NEAR(curvilinearGrid.node_x[i], originalNodeX[i], tolerance);
+        EXPECT_NEAR(curvilinearGrid.node_y[i], originalNodeY[i], tolerance);
     }
 }

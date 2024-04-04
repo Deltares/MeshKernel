@@ -14,11 +14,11 @@ meshkernel::ResetCurvilinearNodeAction::ResetCurvilinearNodeAction(CurvilinearGr
                                                                    const CurvilinearGridNodeIndices nodeId,
                                                                    const Point& initial,
                                                                    const Point& updated,
-                                                                   const bool recalculateNodeTypes) : BaseMeshUndoAction<ResetCurvilinearNodeAction, CurvilinearGrid>(grid), m_nodeId(nodeId), m_initialNode(initial), m_updatedNode(updated), m_recalculateNodeTypes(recalculateNodeTypes)
-{
-
-    std::cout << "ResetCurvilinearNodeAction: " << nodeId.m_n << "  " << nodeId.m_m << " init " << initial.x << ", " << initial.y << " update: " << updated.x << ", " << updated.y << std::endl;
-}
+                                                                   const bool recalculateNodeTypes) : BaseMeshUndoAction<ResetCurvilinearNodeAction, CurvilinearGrid>(grid),
+                                                                                                      m_nodeId(nodeId),
+                                                                                                      m_initialNode(initial),
+                                                                                                      m_updatedNode(updated),
+                                                                                                      m_recalculateNodeTypes(recalculateNodeTypes) {}
 
 meshkernel::CurvilinearGridNodeIndices meshkernel::ResetCurvilinearNodeAction::NodeId() const
 {
