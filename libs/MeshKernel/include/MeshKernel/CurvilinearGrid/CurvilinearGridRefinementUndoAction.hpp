@@ -50,8 +50,8 @@ namespace meshkernel
         /// @brief Constructor
         explicit CurvilinearGridRefinementUndoAction(CurvilinearGrid& grid);
 
-        /// @brief Swap the grid nodes, and the grid extents.
-        void Swap(lin_alg::Matrix<Point>& nodes, CurvilinearGridNodeIndices& lower, CurvilinearGridNodeIndices& upper);
+        /// @brief Swap the grid nodes, and the grid extent offsets.
+        void Swap(lin_alg::Matrix<Point>& nodes, CurvilinearGridNodeIndices& startOffset, CurvilinearGridNodeIndices& endOffset);
 
         /// \brief Compute the approximate amount of memory being used, in bytes.
         std::uint64_t MemorySize() const override;
@@ -61,10 +61,10 @@ namespace meshkernel
         lin_alg::Matrix<Point> m_nodes;
 
         /// @brief Start offset.
-        CurvilinearGridNodeIndices m_lower;
+        CurvilinearGridNodeIndices m_startOffset;
 
         /// @brief End offset.
-        CurvilinearGridNodeIndices m_upper;
+        CurvilinearGridNodeIndices m_endOffset;
     };
 
 } // namespace meshkernel

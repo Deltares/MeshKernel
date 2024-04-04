@@ -59,9 +59,6 @@ namespace meshkernel
         /// @brief Get the end offset
         const CurvilinearGridNodeIndices& EndOffset() const;
 
-        /// @brief Print the add grid line action to the stream
-        void Print(std::ostream& out = std::cout) const override;
-
     private:
         /// @brief Start offset, to be added when restoring action and subtracted when undoing action.
         CurvilinearGridNodeIndices m_startOffset;

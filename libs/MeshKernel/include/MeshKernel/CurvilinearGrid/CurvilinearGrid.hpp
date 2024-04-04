@@ -50,21 +50,6 @@ namespace meshkernel
     {
 
     public:
-        // /// @brief An enum for curvilinear node types
-        // enum class NodeType
-        // {
-        //     BottomLeft,    //(11)
-        //     UpperLeft,     //(14)
-        //     BottomRight,   //(12)
-        //     UpperRight,    //(13)
-        //     Left,          //(4)
-        //     Right,         //(2)
-        //     Bottom,        //(1)
-        //     Up,            //(3)
-        //     InternalValid, //(10)
-        //     Invalid        //(0)
-        // };
-
         /// @brief An enum for boundary grid line types
         enum class BoundaryGridLineType
         {
@@ -212,6 +197,10 @@ namespace meshkernel
             return m_gridNodesTypes(n + m_startOffset.m_n, m + m_startOffset.m_m);
         }
 
+        /// @brief Determines the grid node type
+        /// @param[in] n The n-dimension index
+        /// @param[in] m The m-dimension index
+        /// @return reference to the node type
         NodeType& GetNodeType(UInt n, UInt m)
         {
             if (n >= m_gridNodesTypes.rows())
@@ -253,6 +242,10 @@ namespace meshkernel
             return m_gridFacesMask(n + m_startOffset.m_n, m + m_startOffset.m_m);
         }
 
+        /// @brief Determines if the face mask is true (valid face) or false (invalid face)
+        /// @param[in] n The n-dimension index
+        /// @param[in] m The m-dimension index
+        /// @return reference to the face mask value
         bool& IsFaceMaskValid(UInt n, UInt m)
         {
             if (n >= m_gridFacesMask.rows())
@@ -314,9 +307,6 @@ namespace meshkernel
         /// @param secondNode The second node of the boundary grid line.
         /// @return If a new grid line has been allocated
         std::tuple<bool, UndoActionPtr> AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
-
-        void DeleteGridLineAtBoundary(const CurvilinearGridNodeIndices& firstNode,
-                                      const CurvilinearGridNodeIndices& secondNode);
 
         /// @brief Get the boundary grid line type: left, right, bottom or up
         /// @param[in] firstNode The first node of the grid line
@@ -411,9 +401,8 @@ namespace meshkernel
         /// @brief Restore grid to state after node was modified
         void CommitAction(const ResetCurvilinearNodeAction& undoAction);
 
-        void print(std::ostream& out = std::cout) const;
-
-        void printGraph(std::ostream& out = std::cout) const;
+        /// @brief Prints the node and edge connectivity to the output stream in a form that can be read by Octave/Matlab
+        void printGraph(std::ostream& out = std::cout);
 
     private:
         /// @brief Remove invalid nodes.
@@ -437,8 +426,10 @@ namespace meshkernel
         lin_alg::Matrix<bool> m_gridFacesMask;                 ///< The mask of the grid faces (true/false)
         lin_alg::Matrix<NodeType> m_gridNodesTypes;            ///< The grid node types
         std::vector<CurvilinearGridNodeIndices> m_gridIndices; ///< The original mapping of the flatten nodes in the curvilinear grid
-        CurvilinearGridNodeIndices m_startOffset{0, 0};        ///< Row and column start index offset
-        CurvilinearGridNodeIndices m_endOffset{0, 0};          ///< Row and column end index offset
+
+        /// @brief
+        CurvilinearGridNodeIndices m_startOffset{0, 0}; ///< Row and column start index offset
+        CurvilinearGridNodeIndices m_endOffset{0, 0};   ///< Row and column end index offset
     };
 } // namespace meshkernel
 

@@ -25,11 +25,3 @@ std::uint64_t meshkernel::CurvilinearGridBlockUndoAction::MemorySize() const
 {
     return static_cast<std::uint64_t>(sizeof(*this)) + m_block.MemorySize();
 }
-
-void meshkernel::CurvilinearGridBlockUndoAction::Print(std::ostream& out) const
-{
-    out << "CurvilinearGridBlockUndoAction: state " << to_string(State())
-        << ", startOffset = {" << m_block.StartOffset().m_n << ", " << m_block.StartOffset().m_m << "}, "
-        << "endOffset = {" << m_block.EndOffset().m_n << ", " << m_block.EndOffset().m_m << "}"
-        << std::endl;
-}

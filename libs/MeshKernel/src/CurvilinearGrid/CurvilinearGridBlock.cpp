@@ -9,10 +9,6 @@ meshkernel::CurvilinearGridBlock::CurvilinearGridBlock(const CurvilinearGridNode
     const UInt cols = m_topRight.m_m - m_bottomLeft.m_m;
 
     lin_alg::ResizeAndFillMatrix(m_gridNodes, rows, cols, false, {constants::missing::doubleValue, constants::missing::doubleValue});
-
-#ifdef NODE_TYPES_NEEDED
-    lin_alg::ResizeAndFillMatrix(m_gridNodesTypes, rows, cols, false, NodeType::Invalid);
-#endif
 }
 
 void meshkernel::CurvilinearGridBlock::CopyFrom(const CurvilinearGrid& grid)
@@ -25,10 +21,6 @@ void meshkernel::CurvilinearGridBlock::CopyFrom(const CurvilinearGrid& grid)
         for (UInt c = 0; c < cols; ++c)
         {
             m_gridNodes(r, c) = grid.GetNode(r + m_bottomLeft.m_n, c + m_bottomLeft.m_m);
-
-#ifdef NODE_TYPES_NEEDED
-            m_gridNodesTypes(r, c) = grid.GetNodeType(r + m_bottomLeft.m_n, c + m_bottomLeft.m_m);
-#endif
         }
     }
 }
@@ -43,10 +35,6 @@ void meshkernel::CurvilinearGridBlock::Swap(CurvilinearGrid& grid)
         for (UInt c = 0; c < cols; ++c)
         {
             std::swap(m_gridNodes(r, c), grid.GetNode(r + m_bottomLeft.m_n, c + m_bottomLeft.m_m));
-
-#ifdef NODE_TYPES_NEEDED
-            std::swap(m_gridNodesTypes(r, c), grid.GetNodeType(r + m_bottomLeft.m_n, c + m_bottomLeft.m_m));
-#endif
         }
     }
 }
@@ -58,8 +46,5 @@ std::uint64_t meshkernel::CurvilinearGridBlock::MemorySize() const
     result += sizeof(*this);
     result += static_cast<std::uint64_t>(m_gridNodes.rows() * m_gridNodes.cols() * sizeof(Point));
 
-#ifdef NODE_TYPES_NEEDED
-    result += static_cast<std::uint64_t>(m_gridNodesTypes.rows() * m_gridNodesTypes.cols() * sizeof(NodeType));
-#endif
     return result;
 }

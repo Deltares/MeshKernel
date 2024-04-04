@@ -66,10 +66,8 @@ namespace meshkernel
         std::uint64_t MemorySize() const;
 
     private:
-        lin_alg::Matrix<Point> m_gridNodes; ///< Member variable storing the grid
-#ifdef NODE_TYPES_NEEDED
-        lin_alg::Matrix<NodeType> m_gridNodesTypes; ///< The grid node types
-#endif
+        /// @brief Member variable storing the grid nodes
+        lin_alg::Matrix<Point> m_gridNodes;
 
         /// @brief Bottom left indices of the block
         CurvilinearGridNodeIndices m_bottomLeft;

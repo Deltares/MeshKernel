@@ -68,9 +68,6 @@ namespace meshkernel
         /// @brief Get recalculateNodeTypes indicator
         bool RecalculateNodeTypes() const;
 
-        /// @brief Print the reset node action to the stream
-        void Print(std::ostream& out = std::cout) const override;
-
     private:
         /// @brief The node identifier
         CurvilinearGridNodeIndices m_nodeId;

@@ -39,12 +39,3 @@ bool meshkernel::ResetCurvilinearNodeAction::RecalculateNodeTypes() const
 {
     return m_recalculateNodeTypes;
 }
-
-void meshkernel::ResetCurvilinearNodeAction::Print(std::ostream& out) const
-{
-    out << "ResetCurvilinearNodeAction: state " << to_string(GetState()) << ", nodeId = {" << m_nodeId.m_n << ", " << m_nodeId.m_m << "} "
-        << ", initial = {" << m_initialNode.x << ", " << m_initialNode.y << "} "
-        << ", updated = {" << m_updatedNode.x << ", " << m_updatedNode.y << "}"
-        << ", node-types " << std::boolalpha << m_recalculateNodeTypes
-        << std::endl;
-}

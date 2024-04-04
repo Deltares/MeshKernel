@@ -7,16 +7,13 @@ std::unique_ptr<meshkernel::CurvilinearGridRefinementUndoAction> meshkernel::Cur
 }
 
 meshkernel::CurvilinearGridRefinementUndoAction::CurvilinearGridRefinementUndoAction(CurvilinearGrid& grid)
-    : BaseMeshUndoAction<CurvilinearGridRefinementUndoAction, CurvilinearGrid>(grid), m_nodes(grid.GetNodes()), m_lower(grid.StartOffset()), m_upper(grid.EndOffset()) {}
+    : BaseMeshUndoAction<CurvilinearGridRefinementUndoAction, CurvilinearGrid>(grid), m_nodes(grid.GetNodes()), m_startOffset(grid.StartOffset()), m_endOffset(grid.EndOffset()) {}
 
-void meshkernel::CurvilinearGridRefinementUndoAction::Swap(lin_alg::Matrix<Point>& nodes, CurvilinearGridNodeIndices& lower, CurvilinearGridNodeIndices& upper)
+void meshkernel::CurvilinearGridRefinementUndoAction::Swap(lin_alg::Matrix<Point>& nodes, CurvilinearGridNodeIndices& startOffset, CurvilinearGridNodeIndices& endOffset)
 {
-    lin_alg::Matrix<Point> temp = nodes;
-    nodes = m_nodes;
-    m_nodes = temp;
-    std::swap(m_lower, lower);
-    std::swap(m_upper, upper);
-    // m_nodes.swap(nodes);
+    std::swap(m_startOffset, startOffset);
+    std::swap(m_endOffset, endOffset);
+    m_nodes.swap(nodes);
 }
 
 std::uint64_t meshkernel::CurvilinearGridRefinementUndoAction::MemorySize() const

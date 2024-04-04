@@ -78,11 +78,3 @@ std::uint64_t meshkernel::NodeTranslationAction::MemorySize() const
 {
     return sizeof(*this) + m_nodes.capacity() * sizeof(Point) + m_nodeIndices.capacity() * sizeof(UInt);
 }
-
-void meshkernel::NodeTranslationAction::Print(std::ostream& out) const
-{
-    size_t nodesSize = m_nodes.size();
-    out << fmt_ns::vformat("NodeTranslationAction: state {}, number of nodes {}",
-                           fmt_ns::make_format_args(to_string(GetState()), nodesSize));
-    out << std::endl;
-}

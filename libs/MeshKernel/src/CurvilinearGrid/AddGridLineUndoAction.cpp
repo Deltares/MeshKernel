@@ -14,11 +14,3 @@ meshkernel::AddGridLineUndoAction::AddGridLineUndoAction(CurvilinearGrid& grid,
     : BaseMeshUndoAction<AddGridLineUndoAction, CurvilinearGrid>(grid),
       m_startOffset(startOffset),
       m_endOffset(endOffset) {}
-
-void meshkernel::AddGridLineUndoAction::Print(std::ostream& out) const
-{
-    out << "AddGridLineUndoAction: state " << to_string(State())
-        << ", startOffset = {" << m_startOffset.m_n << ", " << m_startOffset.m_m << "}, "
-        << "endOffset = {" << m_endOffset.m_n << ", " << m_endOffset.m_m << "}"
-        << std::endl;
-}

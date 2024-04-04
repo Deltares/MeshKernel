@@ -77,9 +77,6 @@ namespace meshkernel
         /// \brief Compute the approximate amount of memory being used, in bytes.
         virtual std::uint64_t MemorySize() const;
 
-        /// @brief Print the undo action to the stream
-        virtual void Print(std::ostream& out = std::cout) const;
-
     private:
         /// @brief Operation to apply the changes required by the UndoAction
         virtual void DoCommit() = 0;

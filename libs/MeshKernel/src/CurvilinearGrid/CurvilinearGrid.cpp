@@ -640,37 +640,6 @@ meshkernel::UndoActionPtr CurvilinearGrid::InsertFace(Point const& point)
     return undoAction;
 }
 
-void CurvilinearGrid::DeleteGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode)
-{
-    bool const areNodesValid = GetNode(firstNode.m_n, firstNode.m_m).IsValid() &&
-                               GetNode(secondNode.m_n, secondNode.m_m).IsValid();
-
-    // Allocation depends on directions
-    auto const gridLineType = GetBoundaryGridLineType(firstNode, secondNode);
-
-    if (areNodesValid)
-    {
-        switch (gridLineType)
-        {
-        case BoundaryGridLineType::Left:
-            m_startOffset.m_n += 1;
-            break;
-        case BoundaryGridLineType::Right:
-            m_endOffset.m_n += 1;
-            break;
-        case BoundaryGridLineType::Up:
-            m_endOffset.m_m += 1;
-            break;
-        case BoundaryGridLineType::Bottom:
-            m_startOffset.m_m += 1;
-            break;
-        default:
-            // Error
-            break;
-        }
-    }
-}
-
 std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode,
                                                                                    CurvilinearGridNodeIndices const& secondNode)
 {
@@ -1090,30 +1059,6 @@ meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
     return BoundingBox(lowerLeft, upperRight);
 }
 
-void CurvilinearGrid::print(std::ostream& out) const
-{
-    out << std::endl;
-    out << "grid dim: " << NumN() << " x " << NumM() << std::endl;
-
-    for (int row = NumN() - 1; row >= 0; --row)
-    {
-        for (UInt col = 0; col < NumM(); ++col)
-        {
-            const Point p = GetNode(static_cast<UInt>(row), col);
-            out << "{" << p.x << ", " << p.y << "}  ";
-        }
-
-        out << std::endl;
-    }
-
-    out << std::endl;
-}
-
-void CurvilinearGrid::printGraph(std::ostream& out) const
-{
-    Print(m_nodes, m_edges, out);
-}
-
 void CurvilinearGrid::RestoreAction(const AddGridLineUndoAction& undoAction)
 {
     m_startOffset += undoAction.StartOffset();
@@ -1192,4 +1137,10 @@ void CurvilinearGrid::CommitAction(const ResetCurvilinearNodeAction& undoAction)
         ComputeGridNodeTypes();
         SetFlatCopies();
     }
+}
+
+void CurvilinearGrid::printGraph(std::ostream& out)
+{
+    SetFlatCopies();
+    Print(m_nodes, m_edges, out);
 }
