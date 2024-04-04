@@ -1063,7 +1063,7 @@ meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
 
     Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
     Point upperRight(-std::numeric_limits<double>::max(), -std::numeric_limits<double>::max());
-    size_t last = NumM() - 1;
+    UInt last = static_cast<UInt>(NumM() - 1);
 
     // Only need to loop over boundary nodes
 
