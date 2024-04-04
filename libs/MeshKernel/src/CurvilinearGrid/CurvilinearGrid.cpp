@@ -335,47 +335,32 @@ void CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
     // Compute the face mask
     ComputeGridFacesMask();
 
-    invalidNodesToRemove = false;
-    // Flag nodes not connected to valid faces
-    for (UInt n = 1; n < NumN() - 1; ++n)
+    std::vector validNodeMask(NumN(), std::vector(NumM(), false));
+    for (UInt n = 0; n < NumN() - 1; ++n)
     {
-        for (UInt m = 1; m < NumM() - 1; ++m)
+        for (UInt m = 0; m < NumM() - 1; ++m)
         {
-            if (m_gridNodes(n, m).IsValid() &&
-                !m_gridFacesMask(n, m) &&
-                !m_gridFacesMask(n, m - 1) &&
-                !m_gridFacesMask(n - 1, m - 1) &&
-                !m_gridFacesMask(n - 1, m))
+            if (m_gridFacesMask(n, m))
+            {
+                validNodeMask[n][m] = true;
+                validNodeMask[n][m + 1] = true;
+                validNodeMask[n + 1][m] = true;
+                validNodeMask[n + 1][m + 1] = true;
+            }
+        }
+    }
+
+    invalidNodesToRemove = false;
+    for (UInt n = 0; n < NumN(); ++n)
+    {
+        for (UInt m = 0; m < NumM(); ++m)
+        {
+            if (!validNodeMask[n][m] && m_gridNodes(n, m).IsValid())
             {
                 m_gridNodes(n, m) = {constants::missing::doubleValue, constants::missing::doubleValue};
                 invalidNodesToRemove = true;
             }
         }
-    }
-
-    for (UInt m = 1; m < NumM() - 1; ++m)
-    {
-        if (m_gridNodes(0, m).IsValid() &&
-            !m_gridFacesMask(0, m - 1) &&
-            !m_gridFacesMask(0, m))
-        {
-            m_gridNodes(0, m) = {constants::missing::doubleValue, constants::missing::doubleValue};
-        }
-    }
-
-    for (UInt n = 1; n < NumN() - 1; ++n)
-    {
-        if (m_gridNodes(n, 0).IsValid() &&
-            !m_gridFacesMask(n - 1, 0) &&
-            !m_gridFacesMask(n, 0))
-        {
-            m_gridNodes(n, 0) = {constants::missing::doubleValue, constants::missing::doubleValue};
-        }
-    }
-
-    if (m_gridNodes(0, 0).IsValid() && !m_gridFacesMask(0, 0))
-    {
-        m_gridNodes(0, 0) = {constants::missing::doubleValue, constants::missing::doubleValue};
     }
 
     RemoveInvalidNodes(invalidNodesToRemove);
