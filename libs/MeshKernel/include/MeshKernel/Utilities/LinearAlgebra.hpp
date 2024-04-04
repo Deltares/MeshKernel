@@ -15,6 +15,7 @@
 #endif
 
 #include <algorithm>
+#include <iostream>
 #include <numeric>
 #include <stdexcept>
 #include <vector>
@@ -79,6 +80,8 @@ namespace lin_alg
 
         Eigen::Index const rows_old = matrix.rows();
         Eigen::Index const cols_old = matrix.cols();
+
+        std::cout << "resizing matrix: old size " << rows_old << "  " << cols_old << " new size " << rows << "  " << cols << std::endl;
 
         bool const resize = (rows != rows_old) || (cols != cols_old);
         if (!resize && !preserve)

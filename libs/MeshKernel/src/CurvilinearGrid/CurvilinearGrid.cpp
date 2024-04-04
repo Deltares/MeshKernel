@@ -249,6 +249,12 @@ CurvilinearGridNodeIndices CurvilinearGrid::GetNodeIndices(Point point)
     }
 
     const auto nodeIndex = GetLocationsIndices(0, Location::Nodes);
+
+    if (nodeIndex >= m_gridIndices.size())
+    {
+        throw ConstraintError("Invalid node index {} > {}", nodeIndex, m_gridIndices.size());
+    }
+
     return m_gridIndices[nodeIndex];
 }
 

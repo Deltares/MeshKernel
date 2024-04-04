@@ -125,12 +125,39 @@ namespace meshkernel
         /// @brief Gets a reference to the grid node at the (m,n) location
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
-        [[nodiscard]] meshkernel::Point& GetNode(const UInt n, const UInt m) { return m_gridNodes(n + m_startOffset.m_n, m + m_startOffset.m_m); }
+        [[nodiscard]] meshkernel::Point& GetNode(const UInt n, const UInt m)
+        {
+
+            if (n >= m_gridNodes.rows())
+            {
+                throw ConstraintError("Invalid row index {} > {}", n, m_gridNodes.rows());
+            }
+
+            if (m >= m_gridNodes.cols())
+            {
+                throw ConstraintError("Invalid colum index {} > {}", m, m_gridNodes.cols());
+            }
+
+            return m_gridNodes(n + m_startOffset.m_n, m + m_startOffset.m_m);
+        }
 
         /// @brief Gets a constant reference to the grid node at the (m,n) location
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
-        [[nodiscard]] meshkernel::Point const& GetNode(const UInt n, const UInt m) const { return m_gridNodes(n + m_startOffset.m_n, m + m_startOffset.m_m); }
+        [[nodiscard]] meshkernel::Point const& GetNode(const UInt n, const UInt m) const
+        {
+
+            if (n >= m_gridNodes.rows())
+            {
+                throw ConstraintError("Invalid row index {} > {}", n, m_gridNodes.rows());
+            }
+
+            if (m >= m_gridNodes.cols())
+            {
+                throw ConstraintError("Invalid colum index {} > {}", m, m_gridNodes.cols());
+            }
+            return m_gridNodes(n + m_startOffset.m_n, m + m_startOffset.m_m);
+        }
 
         /// @brief Gets a reference to the grid node at the location specified by the index.
         /// @note Exception will be raised for a non-valid index
@@ -213,9 +240,37 @@ namespace meshkernel
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
         /// @return the face mask value (true/false)
-        [[nodiscard]] bool IsFaceMaskValid(UInt n, UInt m) const { return m_gridFacesMask(n + m_startOffset.m_n, m + m_startOffset.m_m); }
+        [[nodiscard]] bool IsFaceMaskValid(UInt n, UInt m) const
+        {
 
-        bool& IsFaceMaskValid(UInt n, UInt m) { return m_gridFacesMask(n + m_startOffset.m_n, m + m_startOffset.m_m); }
+            if (n >= m_gridFacesMask.rows())
+            {
+                throw ConstraintError("Invalid row index {} > {}", n, m_gridFacesMask.rows());
+            }
+
+            if (m >= m_gridFacesMask.cols())
+            {
+                throw ConstraintError("Invalid colum index {} > {}", m, m_gridFacesMask.cols());
+            }
+
+            return m_gridFacesMask(n + m_startOffset.m_n, m + m_startOffset.m_m);
+        }
+
+        bool& IsFaceMaskValid(UInt n, UInt m)
+        {
+
+            if (n >= m_gridFacesMask.rows())
+            {
+                throw ConstraintError("Invalid row index {} > {}", n, m_gridFacesMask.rows());
+            }
+
+            if (m >= m_gridFacesMask.cols())
+            {
+                throw ConstraintError("Invalid colum index {} > {}", m, m_gridFacesMask.cols());
+            }
+
+            return m_gridFacesMask(n + m_startOffset.m_n, m + m_startOffset.m_m);
+        }
 
         /// @brief Inserts a new face. The new face will be inserted on top of the closest edge.
         /// @param[in] point  The point used for finding the closest edge.
