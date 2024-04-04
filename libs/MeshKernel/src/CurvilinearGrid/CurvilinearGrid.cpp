@@ -177,9 +177,11 @@ CurvilinearGrid::ConvertCurvilinearToNodesAndEdges() const
                             (NumM() - 1) * NumN());
     lin_alg::Matrix<UInt> nodeIndices(NumN(), NumM());
     nodeIndices.setConstant(constants::missing::uintValue);
-    std::vector gridIndices(nodes.size(),
-                            CurvilinearGridNodeIndices{constants::missing::uintValue,
-                                                       constants::missing::uintValue});
+    std::vector<CurvilinearGridNodeIndices> gridIndices(nodes.size());
+    std::ranges::fill(gridIndices, CurvilinearGridNodeIndices(constants::missing::uintValue, constants::missing::uintValue));
+    // std::vector gridIndices(nodes.size(),
+    //                         CurvilinearGridNodeIndices{constants::missing::uintValue,
+    //                                                    constants::missing::uintValue});
 
     UInt ind = 0;
     for (UInt n = 0; n < NumN(); n++)
@@ -321,6 +323,8 @@ void CurvilinearGrid::ComputeGridFacesMask()
 {
     // Flag valid faces
     lin_alg::ResizeAndFillMatrix(m_gridFacesMask, FullNumN() - 1, FullNumM() - 1, false, false);
+    ResizeAndFill2DVector(m_gridFacesMask2, FullNumN() - 1, FullNumM() - 1, false, false);
+
     for (UInt n = 0; n < NumN() - 1; ++n)
     {
         for (UInt m = 0; m < NumM() - 1; ++m)
@@ -330,7 +334,8 @@ void CurvilinearGrid::ComputeGridFacesMask()
             {
                 continue;
             }
-            IsFaceMaskValid(n, m) = true;
+            SetIsFaceMaskValid(n, m, true);
+            // IsFaceMaskValid(n, m) = true;
         }
     }
 }
@@ -399,6 +404,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
               << "  " << FullNumN() << "  " << FullNumM()
               << std::endl;
     lin_alg::ResizeAndFillMatrix(m_gridNodesTypes, FullNumN(), FullNumM(), false, NodeType::Invalid);
+    ResizeAndFill2DVector(m_gridNodesTypes2, FullNumN(), FullNumM(), true, NodeType::Invalid);
 
     // Flag faces based on boundaries
     for (UInt n = 0; n < NumN(); ++n)
