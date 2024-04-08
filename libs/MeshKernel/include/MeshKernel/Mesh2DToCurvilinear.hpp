@@ -32,6 +32,8 @@
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Point.hpp"
 
+using namespace meshkernel::constants;
+
 namespace meshkernel
 {
     /// @brief Construct a curvilinear grid from an unstructured mesh
@@ -63,14 +65,14 @@ namespace meshkernel
             }
 
             const auto frontFace = m_mesh.GetLocationsIndices(0, Location::Faces);
-            if (m_mesh.GetNumFaceEdges(frontFace) != constants::geometric::numNodesInQuadrilateral)
+            if (m_mesh.GetNumFaceEdges(frontFace) != geometric::numNodesInQuadrilateral)
             {
                 return;
             }
 
             // Check the seed point is contained
             std::vector<Point> polygonPoints;
-            for (UInt n = 0; n < constants::geometric::numNodesInQuadrilateral; ++n)
+            for (UInt n = 0; n < geometric::numNodesInQuadrilateral; ++n)
             {
                 const auto node = m_mesh.m_facesNodes[frontFace][n];
                 polygonPoints.emplace_back(m_mesh.Node(node));
@@ -86,8 +88,8 @@ namespace meshkernel
 
             // build local coordinate system
             const auto numNodes = m_mesh.GetNumNodes();
-            m_i = std::vector(numNodes, constants::missing::intValue);
-            m_j = std::vector(numNodes, constants::missing::intValue);
+            m_i = std::vector(numNodes, missing::intValue);
+            m_j = std::vector(numNodes, missing::intValue);
 
             const auto firstEdge = m_mesh.m_facesEdges[frontFace][0];
             const auto secondEdge = m_mesh.m_facesEdges[frontFace][1];
@@ -115,7 +117,6 @@ namespace meshkernel
 
             std::queue<UInt> q;
             q.push(frontFace);
-            visitedFace[frontFace] = true;
 
             while (!q.empty())
             {
@@ -127,7 +128,7 @@ namespace meshkernel
                 }
                 visitedFace[face] = true;
 
-                if (m_mesh.GetNumFaceEdges(face) != constants::geometric::numNodesInQuadrilateral)
+                if (m_mesh.GetNumFaceEdges(face) != geometric::numNodesInQuadrilateral)
                 {
                     continue;
                 }
@@ -147,7 +148,7 @@ namespace meshkernel
                 auto minJ = *std::ranges::min_element(localJ);
 
                 // build a local mapping
-                Eigen::Matrix2i matrix(2, 2);
+                Eigen::Matrix<UInt, 2, 2> matrix;
                 for (UInt i = 0; i < localI.size(); ++i)
                 {
                     if (localI[i] == minI && localJ[i] == minJ)
@@ -168,55 +169,94 @@ namespace meshkernel
                     }
                 }
 
-                for (UInt i = 0; i < numDirections; ++i)
+                for (UInt d = 0; d < numDirections; ++d)
                 {
-                    const auto firstNode = matrix(m_nodeFrom[i][0], m_nodeFrom[i][1]);
-                    const auto secondNode = matrix(m_nodeTo[i][0], m_nodeTo[i][1]);
-
-                    // find the edge index
-                    const auto edgeIndex = m_mesh.FindEdge(firstNode, secondNode);
-                    if (edgeIndex == constants::missing::uintValue)
+                    const auto newFaceIndex = computeNeighbourFace(face, d, matrix, visitedFace);
+                    if (newFaceIndex != missing::uintValue)
                     {
-                        continue;
+                        q.push(newFaceIndex);
                     }
-
-                    // this edge belongs only to the current face
-                    if (m_mesh.m_edgesNumFaces[edgeIndex] < 2)
-                    {
-                        continue;
-                    }
-
-                    const auto otherFace = face == m_mesh.m_edgesFaces[edgeIndex][0] ? m_mesh.m_edgesFaces[edgeIndex][1] : m_mesh.m_edgesFaces[edgeIndex][0];
-
-                    if (m_mesh.GetNumFaceEdges(otherFace) != constants::geometric::numNodesInQuadrilateral)
-                    {
-                        continue;
-                    }
-                    // find the nodes to add
-                    q.push(otherFace);
-
-                    int edgeIndexInOtherFace = 0;
-                    for (UInt e = 0; e < m_mesh.GetNumFaceEdges(otherFace); ++e)
-                    {
-                        if (m_mesh.m_facesEdges[otherFace][e] == edgeIndex)
-                        {
-                            edgeIndexInOtherFace = e;
-                            break;
-                        }
-                    }
-                    int nextEdgeIndexInOtherFace = edgeIndexInOtherFace + 1;
-                    nextEdgeIndexInOtherFace = nextEdgeIndexInOtherFace > 3 ? 0 : nextEdgeIndexInOtherFace;
-
-                    int previousEdgeIndexInOtherFace = edgeIndexInOtherFace - 1;
-                    previousEdgeIndexInOtherFace = previousEdgeIndexInOtherFace < 0 ? 3 : previousEdgeIndexInOtherFace;
-
-                    // if not a quad or already visited exit the loop and set visited to true
-                    // add the points accordingly to the direction
                 }
             }
         }
 
     private:
+        UInt computeNeighbourFace(const UInt face,
+                                  const UInt d,
+                                  const Eigen::Matrix2i& matrix,
+                                  std::vector<bool>& visitedFace)
+        {
+            const auto firstNode = matrix(m_nodeFrom[d][0], m_nodeFrom[d][1]);
+            const auto secondNode = matrix(m_nodeTo[d][0], m_nodeTo[d][1]);
+
+            // find the edge index
+            const auto edgeIndex = m_mesh.FindEdge(firstNode, secondNode);
+            if (edgeIndex == missing::uintValue)
+            {
+                return missing::uintValue;
+            }
+
+            // this edge belongs only to the current face
+            if (m_mesh.m_edgesNumFaces[edgeIndex] < 2)
+            {
+                return missing::uintValue;
+            }
+
+            const auto newFace = face == m_mesh.m_edgesFaces[edgeIndex][0] ? m_mesh.m_edgesFaces[edgeIndex][1] : m_mesh.m_edgesFaces[edgeIndex][0];
+
+            if (visitedFace[newFace])
+            {
+                return missing::uintValue;
+            }
+
+            if (m_mesh.GetNumFaceEdges(newFace) != geometric::numNodesInQuadrilateral)
+            {
+                return missing::uintValue;
+            }
+
+            int edgeIndexInNewFace = 0;
+            for (UInt e = 0; e < m_mesh.GetNumFaceEdges(newFace); ++e)
+            {
+                if (m_mesh.m_facesEdges[newFace][e] == edgeIndex)
+                {
+                    edgeIndexInNewFace = e;
+                    break;
+                }
+            }
+            auto nextEdgeIndexInNewFace = edgeIndexInNewFace + 1;
+            nextEdgeIndexInNewFace = nextEdgeIndexInNewFace > 3 ? 0 : nextEdgeIndexInNewFace;
+            const auto nextEdgeInNewFace = m_mesh.m_facesEdges[newFace][nextEdgeIndexInNewFace];
+            const auto firstCommonNode = m_mesh.FindCommonNode(edgeIndex, nextEdgeInNewFace);
+            const auto i_firstCommonNode = m_i[firstCommonNode] + m_directionsDeltas[d][0];
+            const auto j_firstCommonNode = m_j[firstCommonNode] + m_directionsDeltas[d][1];
+
+            auto previousEdgeIndexInNewFace = edgeIndexInNewFace - 1;
+            previousEdgeIndexInNewFace = previousEdgeIndexInNewFace < 0 ? 3 : previousEdgeIndexInNewFace;
+            const auto previousEdgeInNewFace = m_mesh.m_facesEdges[newFace][previousEdgeIndexInNewFace];
+            const auto secondCommonNode = m_mesh.FindCommonNode(edgeIndex, previousEdgeInNewFace);
+            const auto i_secondCommonNode = m_i[secondCommonNode] + m_directionsDeltas[d][0];
+            const auto j_secondCommonNode = m_j[secondCommonNode] + m_directionsDeltas[d][1];
+
+            const auto invalid = m_i[firstCommonNode] != missing::intValue && m_i[firstCommonNode] != i_firstCommonNode ||
+                                 m_j[firstCommonNode] != missing::intValue && m_j[firstCommonNode] != j_firstCommonNode ||
+                                 m_i[secondCommonNode] != missing::intValue && m_i[secondCommonNode] != i_secondCommonNode ||
+                                 m_j[secondCommonNode] != missing::intValue && m_j[secondCommonNode] != j_secondCommonNode;
+
+            if (!invalid)
+            {
+                m_i[firstCommonNode] = i_firstCommonNode;
+                m_j[firstCommonNode] = j_firstCommonNode;
+                m_i[secondCommonNode] = i_secondCommonNode;
+                m_j[secondCommonNode] = j_secondCommonNode;
+                return newFace;
+            }
+            return missing::uintValue;
+        }
+
+        void ComputeMatrix()
+        {
+        }
+
         Mesh2D& m_mesh; ///< The mesh where the edges should be found
 
         std::vector<int> m_i;
@@ -234,6 +274,11 @@ namespace meshkernel
                                                        {0, 0},
                                                        {1, 0},
                                                        {1, 1}}};
+
+        std::array<std::array<int, 2>, 4> m_directionsDeltas = {{{-1, 0},
+                                                                 {0, -1},
+                                                                 {1, 0},
+                                                                 {0, 1}}};
     };
 
 } // namespace meshkernel
