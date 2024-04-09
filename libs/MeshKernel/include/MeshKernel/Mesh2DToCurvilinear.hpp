@@ -28,9 +28,11 @@
 #pragma once
 #include <queue>
 
+#include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Point.hpp"
+#include "Utilities/LinearAlgebra.hpp"
 
 using namespace meshkernel::constants;
 
@@ -56,34 +58,34 @@ namespace meshkernel
             }
         }
 
-        void Compute(const Point& point)
+        std::unique_ptr<CurvilinearGrid> Compute(const Point& point)
         {
             m_mesh.SearchNearestLocation(point, Location::Faces);
             if (m_mesh.GetNumLocations(Location::Faces) <= 0)
             {
-                return;
+                throw AlgorithmError("No valid face found close to the initial point.");
             }
 
-            const auto frontFace = m_mesh.GetLocationsIndices(0, Location::Faces);
-            if (m_mesh.GetNumFaceEdges(frontFace) != geometric::numNodesInQuadrilateral)
+            const auto initialFace = m_mesh.GetLocationsIndices(0, Location::Faces);
+            if (m_mesh.GetNumFaceEdges(initialFace) != geometric::numNodesInQuadrilateral)
             {
-                return;
+                throw AlgorithmError("The initial face is not a quadrilateral");
             }
 
             // Check the seed point is contained
             std::vector<Point> polygonPoints;
             for (UInt n = 0; n < geometric::numNodesInQuadrilateral; ++n)
             {
-                const auto node = m_mesh.m_facesNodes[frontFace][n];
+                const auto node = m_mesh.m_facesNodes[initialFace][n];
                 polygonPoints.emplace_back(m_mesh.Node(node));
             }
-            const auto node = m_mesh.m_facesNodes[frontFace][0];
+            const auto node = m_mesh.m_facesNodes[initialFace][0];
             polygonPoints.emplace_back(m_mesh.Node(node));
 
             Polygon polygon(polygonPoints, m_mesh.m_projection);
             if (!polygon.Contains(point))
             {
-                return;
+                throw AlgorithmError("The initial face does not contain the starting point");
             }
 
             // build local coordinate system
@@ -91,10 +93,10 @@ namespace meshkernel
             m_i = std::vector(numNodes, missing::intValue);
             m_j = std::vector(numNodes, missing::intValue);
 
-            const auto firstEdge = m_mesh.m_facesEdges[frontFace][0];
-            const auto secondEdge = m_mesh.m_facesEdges[frontFace][1];
-            const auto thirdEdge = m_mesh.m_facesEdges[frontFace][2];
-            const auto fourthEdge = m_mesh.m_facesEdges[frontFace][3];
+            const auto firstEdge = m_mesh.m_facesEdges[initialFace][0];
+            const auto secondEdge = m_mesh.m_facesEdges[initialFace][1];
+            const auto thirdEdge = m_mesh.m_facesEdges[initialFace][2];
+            const auto fourthEdge = m_mesh.m_facesEdges[initialFace][3];
 
             const auto firstNodeIndex = m_mesh.FindCommonNode(firstEdge, secondEdge);
             m_i[firstNodeIndex] = 0;
@@ -116,7 +118,7 @@ namespace meshkernel
             std::vector visitedFace(numFaces, false);
 
             std::queue<UInt> q;
-            q.push(frontFace);
+            q.push(initialFace);
 
             while (!q.empty())
             {
@@ -133,61 +135,70 @@ namespace meshkernel
                     continue;
                 }
 
-                const auto& faceIndices = m_mesh.m_facesNodes[face];
-
-                const auto node0 = faceIndices[0];
-                const auto node1 = faceIndices[1];
-                const auto node2 = faceIndices[2];
-                const auto node3 = faceIndices[3];
-
-                const std::vector localI{m_i[node0], m_i[node1], m_i[node2], m_i[node3]};
-                const std::vector localJ{m_j[node0], m_j[node1], m_j[node2], m_j[node3]};
-                const std::vector localNodes{node0, node1, node2, node3};
-
-                auto minI = *std::ranges::min_element(localI);
-                auto minJ = *std::ranges::min_element(localJ);
-
-                // build a local mapping
-                Eigen::Matrix<UInt, 2, 2> matrix;
-                for (UInt i = 0; i < localI.size(); ++i)
+                const auto localNodeMapping = ComputeLocalNodeMapping(face);
+                for (UInt d = 0; d < m_numDirections; ++d)
                 {
-                    if (localI[i] == minI && localJ[i] == minJ)
-                    {
-                        matrix(0, 0) = localNodes[i];
-                    }
-                    if (localI[i] == minI + 1 && localJ[i] == minJ)
-                    {
-                        matrix(1, 0) = localNodes[i];
-                    }
-                    if (localI[i] == minI && localJ[i] == minJ + 1)
-                    {
-                        matrix(0, 1) = localNodes[i];
-                    }
-                    if (localI[i] == minI + 1 && localJ[i] == minJ + 1)
-                    {
-                        matrix(1, 1) = localNodes[i];
-                    }
-                }
-
-                for (UInt d = 0; d < numDirections; ++d)
-                {
-                    const auto newFaceIndex = computeNeighbourFace(face, d, matrix, visitedFace);
+                    const auto newFaceIndex = ComputeNeighbouringFaces(face, localNodeMapping, d, visitedFace);
                     if (newFaceIndex != missing::uintValue)
                     {
                         q.push(newFaceIndex);
                     }
                 }
             }
+
+            const auto matrix = ComputeMatrix();
+            return std::make_unique<CurvilinearGrid>(matrix, m_mesh.m_projection);
         }
 
     private:
-        UInt computeNeighbourFace(const UInt face,
-                                  const UInt d,
-                                  const Eigen::Matrix2i& matrix,
-                                  std::vector<bool>& visitedFace)
+        Eigen::Matrix<UInt, 2, 2> ComputeLocalNodeMapping(UInt face)
         {
-            const auto firstNode = matrix(m_nodeFrom[d][0], m_nodeFrom[d][1]);
-            const auto secondNode = matrix(m_nodeTo[d][0], m_nodeTo[d][1]);
+            const auto& faceIndices = m_mesh.m_facesNodes[face];
+
+            const auto node0 = faceIndices[0];
+            const auto node1 = faceIndices[1];
+            const auto node2 = faceIndices[2];
+            const auto node3 = faceIndices[3];
+
+            const std::vector localI{m_i[node0], m_i[node1], m_i[node2], m_i[node3]};
+            const std::vector localJ{m_j[node0], m_j[node1], m_j[node2], m_j[node3]};
+            const std::vector localNodes{node0, node1, node2, node3};
+
+            const auto minI = *std::ranges::min_element(localI);
+            const auto minJ = *std::ranges::min_element(localJ);
+
+            // build a local mapping
+            Eigen::Matrix<UInt, 2, 2> matrix;
+            for (UInt i = 0; i < localI.size(); ++i)
+            {
+                if (localI[i] == minI && localJ[i] == minJ)
+                {
+                    matrix(0, 0) = localNodes[i];
+                }
+                if (localI[i] == minI + 1 && localJ[i] == minJ)
+                {
+                    matrix(1, 0) = localNodes[i];
+                }
+                if (localI[i] == minI && localJ[i] == minJ + 1)
+                {
+                    matrix(0, 1) = localNodes[i];
+                }
+                if (localI[i] == minI + 1 && localJ[i] == minJ + 1)
+                {
+                    matrix(1, 1) = localNodes[i];
+                }
+            }
+            return matrix;
+        }
+
+        UInt ComputeNeighbouringFaces(const UInt face,
+                                      const Eigen::Matrix<UInt, 2, 2>& localNodeMapping,
+                                      const UInt d,
+                                      std::vector<bool>& visitedFace)
+        {
+
+            const auto firstNode = localNodeMapping(m_nodeFrom[d][0], m_nodeFrom[d][1]);
+            const auto secondNode = localNodeMapping(m_nodeTo[d][0], m_nodeTo[d][1]);
 
             // find the edge index
             const auto edgeIndex = m_mesh.FindEdge(firstNode, secondNode);
@@ -253,17 +264,63 @@ namespace meshkernel
             return missing::uintValue;
         }
 
-        void ComputeMatrix()
+        lin_alg::Matrix<Point> ComputeMatrix()
         {
+
+            int minI = n_maxNumRowsColumns;
+            int minJ = n_maxNumRowsColumns;
+            const auto numNodes = m_mesh.GetNumNodes();
+            for (UInt n = 0; n < numNodes; ++n)
+            {
+                if (m_i[n] != missing::intValue)
+                {
+                    minI = std::min(minI, m_i[n]);
+                }
+                if (m_j[n] != missing::intValue)
+                {
+                    minJ = std::min(minJ, m_j[n]);
+                }
+            }
+
+            int maxI = -n_maxNumRowsColumns;
+            int maxJ = -n_maxNumRowsColumns;
+            for (UInt n = 0; n < numNodes; ++n)
+            {
+                if (m_i[n] != missing::intValue)
+                {
+                    m_i[n] = m_i[n] + minI;
+                    maxI = std::max(maxI, m_i[n]);
+                }
+                if (m_j[n] != missing::intValue)
+                {
+                    m_j[n] = m_j[n] + minJ;
+                    maxJ = std::max(maxJ, m_j[n]);
+                }
+            }
+
+            lin_alg::Matrix<Point> result(maxI + 1, maxJ + 1);
+            for (UInt n = 0; n < numNodes; ++n)
+            {
+                const auto i = m_i[n];
+                const auto j = m_j[n];
+                if (i != missing::intValue && j != missing::intValue)
+                {
+                    result(i, j) = m_mesh.Node(n);
+                }
+                else
+                {
+                    result(i, j) = Point(missing::doubleValue,
+                                         missing::doubleValue);
+                }
+            }
+            return result;
         }
 
         Mesh2D& m_mesh; ///< The mesh where the edges should be found
 
         std::vector<int> m_i;
         std::vector<int> m_j;
-        int const numDirections = 4;
-        std::array<int, 4> m_dirI{0, 1, 1, 0};
-        std::array<int, 4> m_dirJ{1, 0, 1, 1};
+        UInt const m_numDirections = 4;
 
         std::array<std::array<int, 2>, 4> m_nodeFrom = {{{0, 0},
                                                          {0, 0},
@@ -279,6 +336,8 @@ namespace meshkernel
                                                                  {0, -1},
                                                                  {1, 0},
                                                                  {0, 1}}};
+
+        int n_maxNumRowsColumns = 1000000;
     };
 
 } // namespace meshkernel

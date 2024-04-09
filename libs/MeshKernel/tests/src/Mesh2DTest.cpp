@@ -1,6 +1,7 @@
 #include "MeshKernelApi/Mesh2D.hpp"
 
 #include "MeshKernel/Mesh2DIntersections.hpp"
+#include "MeshKernel/Mesh2DToCurvilinear.hpp"
 
 #include <chrono>
 #include <gmock/gmock-matchers.h>
@@ -1231,4 +1232,32 @@ TEST(Mesh2D, DeleteMesh_WithPolygonAndIncludedCircumcenters_ShouldDeleteInnerFac
         EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
         EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
     }
+}
+
+TEST(Mesh2D, Mesh2DToCurvilinear_WithRectangularMesh_ShouldCreateFullCurvilinearMesh)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(3,
+                                                    3,
+                                                    10.0,
+                                                    10.0,
+                                                    meshkernel::Projection::cartesian);
+
+    // a large polygon
+    meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(*mesh);
+
+    const meshkernel::Point point(5.0, 5.0);
+    mesh2DToCurvilinear.Compute(point);
+
+    //// Execute
+    // auto undoAction = mesh->DeleteMesh(polygon, deletion_option, false);
+
+    //// Assert
+    // EXPECT_EQ(mesh->GetNumFaces(), 12);
+
+    //// Restore original mesh
+    // undoAction->Restore();
+
+    // ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
+    // ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
 }
