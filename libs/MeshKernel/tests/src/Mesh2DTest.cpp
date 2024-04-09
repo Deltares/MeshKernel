@@ -1242,22 +1242,44 @@ TEST(Mesh2D, Mesh2DToCurvilinear_WithRectangularMesh_ShouldCreateFullCurvilinear
                                                     10.0,
                                                     10.0,
                                                     meshkernel::Projection::cartesian);
-
-    // a large polygon
     meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(*mesh);
 
+    // Execute
     const meshkernel::Point point(5.0, 5.0);
-    mesh2DToCurvilinear.Compute(point);
+    const auto curvilinearGrid = mesh2DToCurvilinear.Compute(point);
 
-    //// Execute
-    // auto undoAction = mesh->DeleteMesh(polygon, deletion_option, false);
+    // Assert
+    ASSERT_EQ(3, curvilinearGrid->NumM());
+    ASSERT_EQ(3, curvilinearGrid->NumN());
+    ASSERT_EQ(9, curvilinearGrid->GetNumNodes());
 
-    //// Assert
-    // EXPECT_EQ(mesh->GetNumFaces(), 12);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).y);
 
-    //// Restore original mesh
-    // undoAction->Restore();
+    ASSERT_EQ(5.0, curvilinearGrid->GetNode(0, 1).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 1).y);
 
-    // ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
-    // ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(0, 0).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 0).y);
 }
+/*
+TEST(Mesh2D, Mesh2DToCurvilinear_WithMixedMesh_ShouldCreatePartialCurvilinearMesh)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(3,
+                                                    3,
+                                                    10.0,
+                                                    10.0,
+                                                    meshkernel::Projection::cartesian);
+    meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(*mesh);
+
+    // Execute
+    const meshkernel::Point point(5.0, 5.0);
+    const auto curvilinearGrid = mesh2DToCurvilinear.Compute(point);
+
+    // Assert
+    ASSERT_EQ(3, curvilinearGrid->NumM());
+    ASSERT_EQ(3, curvilinearGrid->NumN());
+    ASSERT_EQ(9, curvilinearGrid->GetNumNodes());
+}
+*/

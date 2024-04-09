@@ -60,6 +60,8 @@ namespace meshkernel
 
         std::unique_ptr<CurvilinearGrid> Compute(const Point& point)
         {
+            m_mesh.Administrate();
+            m_mesh.BuildTree(Location::Faces);
             m_mesh.SearchNearestLocation(point, Location::Faces);
             if (m_mesh.GetNumLocations(Location::Faces) <= 0)
             {
@@ -123,6 +125,7 @@ namespace meshkernel
             while (!q.empty())
             {
                 const auto face = q.front();
+
                 q.pop();
                 if (visitedFace[face])
                 {
@@ -238,27 +241,29 @@ namespace meshkernel
             nextEdgeIndexInNewFace = nextEdgeIndexInNewFace > 3 ? 0 : nextEdgeIndexInNewFace;
             const auto nextEdgeInNewFace = m_mesh.m_facesEdges[newFace][nextEdgeIndexInNewFace];
             const auto firstCommonNode = m_mesh.FindCommonNode(edgeIndex, nextEdgeInNewFace);
-            const auto i_firstCommonNode = m_i[firstCommonNode] + m_directionsDeltas[d][0];
-            const auto j_firstCommonNode = m_j[firstCommonNode] + m_directionsDeltas[d][1];
+            const auto firstOtherNode = OtherNodeOfEdge(m_mesh.GetEdge(nextEdgeInNewFace), firstCommonNode);
+            const auto i_firstOtherNode = m_i[firstCommonNode] + m_directionsDeltas[d][0];
+            const auto j_firstOtherNode = m_j[firstCommonNode] + m_directionsDeltas[d][1];
 
             auto previousEdgeIndexInNewFace = edgeIndexInNewFace - 1;
             previousEdgeIndexInNewFace = previousEdgeIndexInNewFace < 0 ? 3 : previousEdgeIndexInNewFace;
             const auto previousEdgeInNewFace = m_mesh.m_facesEdges[newFace][previousEdgeIndexInNewFace];
             const auto secondCommonNode = m_mesh.FindCommonNode(edgeIndex, previousEdgeInNewFace);
+            const auto secondOtherNode = OtherNodeOfEdge(m_mesh.GetEdge(previousEdgeInNewFace), secondCommonNode);
             const auto i_secondCommonNode = m_i[secondCommonNode] + m_directionsDeltas[d][0];
             const auto j_secondCommonNode = m_j[secondCommonNode] + m_directionsDeltas[d][1];
 
-            const auto invalid = m_i[firstCommonNode] != missing::intValue && m_i[firstCommonNode] != i_firstCommonNode ||
-                                 m_j[firstCommonNode] != missing::intValue && m_j[firstCommonNode] != j_firstCommonNode ||
-                                 m_i[secondCommonNode] != missing::intValue && m_i[secondCommonNode] != i_secondCommonNode ||
-                                 m_j[secondCommonNode] != missing::intValue && m_j[secondCommonNode] != j_secondCommonNode;
+            const auto invalid = m_i[firstOtherNode] != missing::intValue && m_i[firstOtherNode] != i_firstOtherNode ||
+                                 m_j[firstOtherNode] != missing::intValue && m_j[firstOtherNode] != j_firstOtherNode ||
+                                 m_i[secondOtherNode] != missing::intValue && m_i[secondOtherNode] != i_secondCommonNode ||
+                                 m_j[secondOtherNode] != missing::intValue && m_j[secondOtherNode] != j_secondCommonNode;
 
             if (!invalid)
             {
-                m_i[firstCommonNode] = i_firstCommonNode;
-                m_j[firstCommonNode] = j_firstCommonNode;
-                m_i[secondCommonNode] = i_secondCommonNode;
-                m_j[secondCommonNode] = j_secondCommonNode;
+                m_i[firstOtherNode] = i_firstOtherNode;
+                m_j[firstOtherNode] = j_firstOtherNode;
+                m_i[secondOtherNode] = i_secondCommonNode;
+                m_j[secondOtherNode] = j_secondCommonNode;
                 return newFace;
             }
             return missing::uintValue;
@@ -288,12 +293,12 @@ namespace meshkernel
             {
                 if (m_i[n] != missing::intValue)
                 {
-                    m_i[n] = m_i[n] + minI;
+                    m_i[n] = m_i[n] - minI;
                     maxI = std::max(maxI, m_i[n]);
                 }
                 if (m_j[n] != missing::intValue)
                 {
-                    m_j[n] = m_j[n] + minJ;
+                    m_j[n] = m_j[n] - minJ;
                     maxJ = std::max(maxJ, m_j[n]);
                 }
             }
@@ -327,10 +332,10 @@ namespace meshkernel
                                                          {1, 0},
                                                          {1, 1}}};
 
-        std::array<std::array<int, 2>, 4> m_nodeTo = {{{0, 0},
-                                                       {0, 0},
+        std::array<std::array<int, 2>, 4> m_nodeTo = {{{0, 1},
                                                        {1, 0},
-                                                       {1, 1}}};
+                                                       {1, 1},
+                                                       {0, 1}}};
 
         std::array<std::array<int, 2>, 4> m_directionsDeltas = {{{-1, 0},
                                                                  {0, -1},
