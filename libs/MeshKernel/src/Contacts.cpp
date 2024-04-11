@@ -289,7 +289,7 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
         }
         const auto polygonIndex = facePolygonIndex[faceIndex];
         const auto faceMassCenter = m_mesh2d.m_facesMassCenters[faceIndex];
-        const auto close1DNodeIndex = m_mesh1d.FindNodeCloseToAPoint(faceMassCenter, oneDNodeMask);
+        const auto close1DNodeIndex = m_mesh1d.FindIndexCloseToAPoint(faceMassCenter, Location::Nodes, oneDNodeMask);
 
         const auto close1DNode = m_mesh1d.Node(close1DNodeIndex);
         const auto squaredDistance = ComputeSquaredDistance(faceMassCenter, close1DNode, m_mesh2d.m_projection);

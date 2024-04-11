@@ -1831,7 +1831,7 @@ std::vector<meshkernel::UInt> Mesh2D::PointFaceIndices(const std::vector<Point>&
 
     for (UInt i = 0; i < numPoints; ++i)
     {
-        const auto edgeIndex = FindEdgeCloseToAPoint(points[i]);
+        const auto edgeIndex = FindIndexCloseToAPoint(points[i], Location::Edges);
 
         if (edgeIndex == constants::missing::uintValue)
         {

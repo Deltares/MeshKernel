@@ -30,6 +30,8 @@
 #include "MeshKernel/SamplesHessianCalculator.hpp"
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
+#include "MeshKernelApi/BoundingBox.hpp"
+
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/BilinearInterpolationOnGriddedSamples.hpp>
 #include <MeshKernel/CasulliRefinement.hpp>
@@ -592,6 +594,41 @@ namespace meshkernelapi
             }
             curvilinearGrid.num_n = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->NumN());
             curvilinearGrid.num_m = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->NumM());
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_get_location_index(int meshKernelId,
+                                                           double xCoordinate,
+                                                           double yCoordinate,
+                                                           int locationType,
+                                                           const BoundingBox& boundingBox,
+                                                           int& locationIndex)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
+            {
+                throw meshkernel::ConstraintError("The selected mesh has no nodes.");
+            }
+
+            auto const meshLocation = static_cast<meshkernel::Location>(locationType);
+
+            meshkernel::Point const point{xCoordinate, yCoordinate};
+            meshkernel::BoundingBox box{{boundingBox.xLowerLeft, boundingBox.yLowerLef}, {boundingBox.xUpperRight, boundingBox.yUpperRight}};
+            meshKernelState[meshKernelId].m_curvilinearGrid->BuildTree(meshLocation, box);
+
+            locationIndex = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->FindIndexCloseToAPoint(point, meshLocation));
         }
         catch (...)
         {
@@ -1755,7 +1792,7 @@ namespace meshkernelapi
             meshkernel::BoundingBox boundingBox{{xLowerLeftBoundingBox, yLowerLeftBoundingBox}, {xUpperRightBoundingBox, yUpperRightBoundingBox}};
 
             meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Edges, boundingBox);
-            const auto edgeIndex = meshKernelState[meshKernelId].m_mesh2d->FindEdgeCloseToAPoint(point);
+            const auto edgeIndex = meshKernelState[meshKernelId].m_mesh2d->FindIndexCloseToAPoint(point, meshkernel::Location::Edges);
 
             meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteEdge(edgeIndex));
         }
@@ -1789,7 +1826,7 @@ namespace meshkernelapi
 
             meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Edges, boundingBox);
 
-            edgeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindEdgeCloseToAPoint(point));
+            edgeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindIndexCloseToAPoint(point, meshkernel::Location::Edges));
         }
         catch (...)
         {

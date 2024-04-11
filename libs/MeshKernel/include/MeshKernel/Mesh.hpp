@@ -254,22 +254,20 @@ namespace meshkernel
         /// @param[in] nodeindex The index of the node to move
         [[nodiscard]] std::unique_ptr<UndoAction> MoveNode(Point newPoint, UInt nodeindex);
 
-        /// @brief Get the index of a node close to a point
+        /// @brief Get the index of a location (node/edge or face) close to a point
         /// @param[in] point The starting point from where to start the search
-        /// @param[in] nodeMask The mask to apply to mesh nodes, if the mask value is false, the next closest node will be considered
+        /// @param[in] point The location
+        /// @param[in] point The mask to apply to each location
         /// @returns The index of the closest node
-        [[nodiscard]] UInt FindNodeCloseToAPoint(Point point, const std::vector<bool>& nodeMask);
+        [[nodiscard]] UInt FindIndexCloseToAPoint(Point point,
+                                                  Location location,
+                                                  const std::vector<bool>& oneDNodeMask = std::vector<bool>());
 
         /// @brief Get the index of a node close to a point
         /// @param[in] point The starting point from where to start the search
         /// @param[in] searchRadius The search radius
         /// @returns The index of the closest node
         [[nodiscard]] UInt FindNodeCloseToAPoint(Point const& point, double searchRadius);
-
-        /// Finds the closest edge close to a point
-        /// @param[in] point The starting point from where to start the search
-        /// @returns The index of the closest edge
-        [[nodiscard]] UInt FindEdgeCloseToAPoint(Point point);
 
         /// @brief Deletes an edge
         /// @param[in] edge The edge index
