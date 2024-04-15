@@ -291,7 +291,7 @@ namespace meshkernel
         /// @returns The location index
         UInt FindLocationIndex(Point point,
                                Location location,
-                               const std::vector<bool>& locationMask = {});
+                               const std::vector<bool>& locationMask = {}) const;
 
         /// @brief Set the m_nodesRTreeRequiresUpdate flag
         /// @param[in] value The value of the flag

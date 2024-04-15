@@ -222,7 +222,7 @@ void CurvilinearGrid::BuildTree(Location location)
 
 meshkernel::UInt CurvilinearGrid::FindLocationIndex(Point point,
                                                     Location location,
-                                                    const std::vector<bool>& locationMask)
+                                                    const std::vector<bool>& locationMask) const
 {
     if (Location::Nodes == location && GetNumNodes() <= 0)
     {
@@ -237,7 +237,7 @@ meshkernel::UInt CurvilinearGrid::FindLocationIndex(Point point,
         return constants::missing::uintValue;
     }
 
-    auto& rtree = m_RTrees.at(location);
+    const auto& rtree = m_RTrees.at(location);
     rtree->SearchNearestPoint(point);
     const auto numLocations = rtree->GetQueryResultSize();
 
