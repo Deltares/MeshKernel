@@ -97,10 +97,6 @@ namespace meshkernel
         /// @return True if valid, false otherwise
         [[nodiscard]] bool IsValid() const;
 
-        /// @brief Set internal flat copies of nodes and edges, so the pointer to the first entry is communicated with the front-end
-        /// @details The Mesh nodes and edges arrays, and the grid node indices array are populated by the result of ConvertCurvilinearToNodesAndEdges.
-        void SetFlatCopies();
-
         /// @brief Get the m and n indices of the node closest to the point
         /// @param[in] point       The input grid points
         [[nodiscard]] CurvilinearGridNodeIndices GetNodeIndices(Point point);
@@ -291,7 +287,7 @@ namespace meshkernel
         /// @returns The location index
         UInt FindLocationIndex(Point point,
                                Location location,
-                               const std::vector<bool>& locationMask = {}) const;
+                               const std::vector<bool>& locationMask = {});
 
         /// @brief Set the m_nodesRTreeRequiresUpdate flag
         /// @param[in] value The value of the flag

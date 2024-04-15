@@ -74,7 +74,7 @@ void CurvilinearGrid::SetGridNodes(const lin_alg::Matrix<Point>& gridNodes)
     m_edgesRTreeRequiresUpdate = true;
     m_facesRTreeRequiresUpdate = true;
 
-    SetFlatCopies();
+    m_gridIndices = ComputeNodeIndices();
 }
 
 void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, UInt polygonIndex)
@@ -158,15 +158,6 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, UInt polygonInd
     }
 }
 
-void CurvilinearGrid::SetFlatCopies()
-{
-    if (lin_alg::MatrixIsEmpty(m_gridNodes))
-    {
-        return;
-    }
-    m_gridIndices = ComputeNodeIndices();
-}
-
 bool CurvilinearGrid::IsValid() const
 {
     if (m_gridNodes.size() == 0)
@@ -222,22 +213,15 @@ void CurvilinearGrid::BuildTree(Location location)
 
 meshkernel::UInt CurvilinearGrid::FindLocationIndex(Point point,
                                                     Location location,
-                                                    const std::vector<bool>& locationMask) const
+                                                    const std::vector<bool>& locationMask)
 {
-    if (Location::Nodes == location && GetNumNodes() <= 0)
-    {
-        return constants::missing::uintValue;
-    }
-    if (Location::Edges == location && GetNumEdges() <= 0)
-    {
-        return constants::missing::uintValue;
-    }
-    if (Location::Faces == location && GetNumFaces() <= 0)
+    BuildTree(location);
+    const auto& rtree = m_RTrees.at(location);
+    if (rtree->Empty())
     {
         return constants::missing::uintValue;
     }
 
-    const auto& rtree = m_RTrees.at(location);
     rtree->SearchNearestPoint(point);
     const auto numLocations = rtree->GetQueryResultSize();
 
@@ -643,7 +627,7 @@ void CurvilinearGrid::InsertFace(Point const& point)
 
     // Re-compute quantities
     ComputeGridNodeTypes();
-    SetFlatCopies();
+    m_gridIndices = ComputeNodeIndices();
 }
 
 bool CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode,
@@ -906,7 +890,7 @@ void CurvilinearGrid::DeleteNode(Point const& point)
         m_gridNodes(nodeToDelete.m_n, nodeToDelete.m_m) = {constants::missing::doubleValue, constants::missing::doubleValue};
         // Re-compute quantities
         ComputeGridNodeTypes();
-        SetFlatCopies();
+        m_gridIndices = ComputeNodeIndices();
     }
 }
 

@@ -647,7 +647,6 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
-            meshKernelState[meshKernelId].m_curvilinearGrid->SetFlatCopies();
             SetCurvilinearGridApiData(*meshKernelState[meshKernelId].m_curvilinearGrid, curvilinearGrid);
         }
         catch (...)
