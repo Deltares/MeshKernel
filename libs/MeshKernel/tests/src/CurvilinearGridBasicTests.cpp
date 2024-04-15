@@ -116,23 +116,23 @@ TEST(CurvilinearBasicTests, SimpleDeleteInterior)
     deleteInterior.m_upperRight = {6, 7};
     auto deleteAction = deleteInterior.Compute();
 
-    auto validityCheck = [](const mk::CurvilinearGrid& grid, const mk::CurvilinearGridDeleteInterior& deleteInterior, const bool checkDeletedRegion)
+    auto validityCheck = [](const mk::CurvilinearGrid& mesh, const mk::CurvilinearGridDeleteInterior& interior, const bool checkDeletedRegion)
     {
         for (mk::UInt r = 0; r < ny; ++r)
         {
-            bool invalidRow = checkDeletedRegion && deleteInterior.m_lowerLeft.m_n < r && r < deleteInterior.m_upperRight.m_n;
+            bool invalidRow = checkDeletedRegion && interior.m_lowerLeft.m_n < r && r < interior.m_upperRight.m_n;
 
             for (mk::UInt c = 0; c < nx; ++c)
             {
-                bool invalidCol = checkDeletedRegion && deleteInterior.m_lowerLeft.m_m < c && c < deleteInterior.m_upperRight.m_m;
+                bool invalidCol = checkDeletedRegion && interior.m_lowerLeft.m_m < c && c < interior.m_upperRight.m_m;
 
                 if (invalidRow && invalidCol)
                 {
-                    EXPECT_FALSE(grid.GetNode(r, c).IsValid()) << "pos " << r << "  " << c;
+                    EXPECT_FALSE(mesh.GetNode(r, c).IsValid()) << "pos " << r << "  " << c;
                 }
                 else
                 {
-                    EXPECT_TRUE(grid.GetNode(r, c).IsValid()) << "pos " << r << "  " << c;
+                    EXPECT_TRUE(mesh.GetNode(r, c).IsValid()) << "pos " << r << "  " << c;
                 }
             }
         }
@@ -168,23 +168,23 @@ TEST(CurvilinearBasicTests, SimpleDeleteExterior)
 
     std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
 
-    auto validityCheck = [](const mk::CurvilinearGrid& grid, const mk::CurvilinearGridDeleteExterior& deleteExterior, const bool checkDeletedRegion)
+    auto validityCheck = [](const mk::CurvilinearGrid& mesh, const mk::CurvilinearGridDeleteExterior& exterior, const bool checkDeletedRegion)
     {
         for (mk::UInt r = 0; r < ny; ++r)
         {
-            bool invalidRow = checkDeletedRegion && (r < deleteExterior.m_lowerLeft.m_n || deleteExterior.m_upperRight.m_n < r);
+            bool invalidRow = checkDeletedRegion && (r < exterior.m_lowerLeft.m_n || exterior.m_upperRight.m_n < r);
 
             for (mk::UInt c = 0; c < nx; ++c)
             {
-                bool invalidCol = checkDeletedRegion && (c < deleteExterior.m_lowerLeft.m_m || deleteExterior.m_upperRight.m_m < c);
+                bool invalidCol = checkDeletedRegion && (c < exterior.m_lowerLeft.m_m || exterior.m_upperRight.m_m < c);
 
                 if (invalidRow || invalidCol)
                 {
-                    EXPECT_FALSE(grid.GetNode(r, c).IsValid()) << "pos " << r << "  " << c;
+                    EXPECT_FALSE(mesh.GetNode(r, c).IsValid()) << "pos " << r << "  " << c;
                 }
                 else
                 {
-                    EXPECT_TRUE(grid.GetNode(r, c).IsValid()) << "pos " << r << "  " << c;
+                    EXPECT_TRUE(mesh.GetNode(r, c).IsValid()) << "pos " << r << "  " << c;
                 }
             }
         }
@@ -463,7 +463,6 @@ TEST(CurvilinearBasicTests, GridOrthogonalisation)
     meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(*grid, orthogonalizationParameters);
 
     curvilinearGridOrthogonalization.SetBlock({-10.0, -10.0}, {2.0 * nx * deltaX, 2.0 * nx * deltaX});
-    // curvilinearGridOrthogonalization.SetBlock({ny * deltaX / 4.0, ny * deltaX / 4.0}, {3.0 * ny * deltaX / 4.0, 3.0 * ny * deltaX / 4.0});
 
     std::unique_ptr<mk::UndoAction> undoAction = curvilinearGridOrthogonalization.Compute();
 

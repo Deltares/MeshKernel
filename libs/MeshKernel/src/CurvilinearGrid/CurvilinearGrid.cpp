@@ -773,10 +773,7 @@ meshkernel::UndoActionPtr CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices co
 
     std::unique_ptr<CompoundUndoAction> undoAddEdge = CompoundUndoAction::Create();
 
-    // m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
-
-    // TODO perhaps rename the MoveNode function to ResetNode?
 
     if (gridLineType == BoundaryGridLineType::Left)
     {
@@ -802,8 +799,6 @@ meshkernel::UndoActionPtr CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices co
         auto const firstNewNodeCoordinates = GetNode(firstNode.m_n, firstNode.m_m) * 2.0 - GetNode(firstNode.m_n - 1, firstNode.m_m);
         auto const secondNewNodeCoordinates = GetNode(secondNode.m_n, secondNode.m_m) * 2.0 - GetNode(secondNode.m_n - 1, secondNode.m_m);
         auto [isGridLineAdded, addGridLineUndo] = AddGridLineAtBoundary(firstNode, secondNode);
-
-        // TODO SHould there ie the same kind of: if (isGridLIneAdded) ... here too?
 
         undoAddEdge->Add(std::move(addGridLineUndo));
         undoAddEdge->Add(MoveNode(CurvilinearGridNodeIndices(firstNode.m_n + 1, firstNode.m_m), firstNewNodeCoordinates));

@@ -155,7 +155,6 @@ namespace meshkernel
             }
 
             return GetNode(index.m_n, index.m_m);
-            // return m_gridNodes(index.m_n, index.m_m);
         }
 
         /// @brief Get a constant reference to the grid node at the location specified by the index.
@@ -169,7 +168,6 @@ namespace meshkernel
             }
 
             return GetNode(index.m_n, index.m_m);
-            // return m_gridNodes(index.m_n, index.m_m);
         }
 
         /// @brief From a point gets the node indices of the closest edges
@@ -354,19 +352,16 @@ namespace meshkernel
         /// @brief Get a copy of the nodes matrix
         /// @note:the m dimension is the first (or row) index, the n dimension is the second (or column) index
         /// @return a copy of the matrix
-        // TODO need to retuen a slice of the matrix m_gridNodes (m_startOffset.m_m .. m_endOffset.m_m, m_startOffset.m_n .. m_endOffset.m_n)
         lin_alg::Matrix<Point> GetNodes() const { return m_gridNodes; }
 
         /// @brief Get the array of nodes at an m-dimension index
         /// @param [in] m the m-dimension index
         /// @return a vector of N nodes
-        // TODO Need to include the column offset too, m_startOffset.m_n
         std::vector<Point> GetNodeVectorAtM(UInt m) const { return lin_alg::MatrixRowToSTLVector(m_gridNodes, m + m_startOffset.m_m); }
 
         /// @brief Get the array of nodes at an n-dimension index
         /// @param [in] n the n-dimension index
         /// @return a vector of M nodes
-        // TODO Need to include the column offset too, m_startOffset.m_m
         std::vector<Point> GetNodeVectorAtN(UInt n) const { return lin_alg::MatrixColToSTLVector(m_gridNodes, n + m_startOffset.m_n); }
 
         /// @brief The number of nodes M in the m dimension

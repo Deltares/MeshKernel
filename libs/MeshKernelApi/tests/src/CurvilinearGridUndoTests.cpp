@@ -13,6 +13,7 @@ TEST(CurvilinearGridUndoTests, DeleteNode)
     // Prepare
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -90,6 +91,7 @@ TEST(CurvilinearGridUndoTests, MoveNode)
     // Prepare
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -165,6 +167,7 @@ TEST(CurvilinearGridUndoTests, Smoothing)
 {
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -274,6 +277,7 @@ TEST(CurvilinearGridUndoTests, SmoothingDirectional)
     // Prepare
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -353,6 +357,7 @@ TEST(CurvilinearGridUndoTests, DeleteInterior)
 {
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -447,6 +452,7 @@ TEST(CurvilinearGridUndoTests, DeleteExterior)
 {
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -459,11 +465,6 @@ TEST(CurvilinearGridUndoTests, DeleteExterior)
     makeGridParameters.origin_y = 0.0;
     makeGridParameters.block_size_x = delta;
     makeGridParameters.block_size_y = delta;
-
-    // Create a uniform random distribution in (0.01 .. 0.25) * delta
-    // lower bound non-zero to ensure simple check works
-    std::uniform_real_distribution<double> distribution(0.01 * delta, 0.25 * delta);
-    std::default_random_engine engine;
 
     // Generate curvilinear grid
     errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
@@ -550,6 +551,7 @@ TEST(CurvilinearGridUndoTests, Refine)
 {
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -636,6 +638,7 @@ TEST(CurvilinearGridUndoTests, Derefine)
 {
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -721,6 +724,7 @@ TEST(CurvilinearGridUndoTests, InsertFace)
 {
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -805,6 +809,7 @@ TEST(CurvilinearGridUndoTests, LineShift)
     // Prepare
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -897,6 +902,7 @@ TEST(CurvilinearGridUndoTests, LineMirror)
     // Prepare
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -966,6 +972,7 @@ TEST(CurvilinearGridUndoTests, LineAttractionRepulsion)
     // Prepare
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -1038,6 +1045,7 @@ TEST(CurvilinearGridUndoTests, OrthogonaliseEntireGrid)
 {
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -1155,6 +1163,7 @@ TEST(CurvilinearGridUndoTests, RefineAndOrthogonalise)
 {
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -1278,6 +1287,7 @@ TEST(CurvilinearGridUndoTests, RefineUndoThenOrthogonalise)
 {
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -1401,6 +1411,7 @@ TEST(CurvilinearGridUndoTests, InsertFaceUndoThenMirrorLine)
 {
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
@@ -1525,6 +1536,7 @@ TEST(CurvilinearGridUndoTests, MultiStepUndoTest)
 
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::MakeGridParameters makeGridParameters;
 
