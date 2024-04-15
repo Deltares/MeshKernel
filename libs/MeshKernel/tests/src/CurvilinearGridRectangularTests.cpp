@@ -614,3 +614,33 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
             << "[" << edges[i].first << "," << edges[i].second << "]";
     }
 }
+
+class CurvilinearGridUniformTests : public ::testing::TestWithParam<std::tuple<meshkernel::Point, int>>
+{
+public:
+    [[nodiscard]] static std::vector<std::tuple<Point, int>> GetData()
+    {
+        return {
+            std::make_tuple<Point, int>(Point{10.0, 30.0}, 14),
+            std::make_tuple<Point, int>(Point{0.0, 30.0}, 15),
+            std::make_tuple<Point, int>(Point{30.0, 30.0}, 15),
+            std::make_tuple<Point, int>(Point{10.0, 10.0}, 12),
+            std::make_tuple<Point, int>(Point{20.0, 10.0}, 12)};
+    }
+};
+
+TEST_P(CurvilinearGridUniformTests, parameters)
+{
+    // Get the test parameters
+    auto const& [point, expectedNumNodes] = GetParam();
+
+    // Prepare
+    const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 4, 4);
+
+    // Execute
+    curvilinearGrid->DeleteNode(point);
+
+    auto const numValidNodes = CurvilinearGridCountValidNodes(*curvilinearGrid);
+    ASSERT_EQ(numValidNodes, expectedNumNodes);
+}
+INSTANTIATE_TEST_SUITE_P(curvilinearGridDeletionTests, CurvilinearGridUniformTests, ::testing::ValuesIn(CurvilinearGridUniformTests::GetData()));

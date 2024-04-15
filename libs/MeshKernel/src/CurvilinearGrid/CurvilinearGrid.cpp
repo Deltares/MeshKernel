@@ -346,47 +346,32 @@ void CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
     // Compute the face mask
     ComputeGridFacesMask();
 
-    invalidNodesToRemove = false;
-    // Flag nodes not connected to valid faces
-    for (UInt n = 1; n < NumN() - 1; ++n)
+    std::vector validNodeMask(NumN(), std::vector(NumM(), false));
+    for (UInt n = 0; n < NumN() - 1; ++n)
     {
-        for (UInt m = 1; m < NumM() - 1; ++m)
+        for (UInt m = 0; m < NumM() - 1; ++m)
         {
-            if (GetNode(n, m).IsValid() &&
-                !IsFaceMaskValid(n, m) &&
-                !IsFaceMaskValid(n, m - 1) &&
-                !IsFaceMaskValid(n - 1, m - 1) &&
-                !IsFaceMaskValid(n - 1, m))
+            if (m_gridFacesMask(n, m))
+            {
+                validNodeMask[n][m] = true;
+                validNodeMask[n][m + 1] = true;
+                validNodeMask[n + 1][m] = true;
+                validNodeMask[n + 1][m + 1] = true;
+            }
+        }
+    }
+
+    invalidNodesToRemove = false;
+    for (UInt n = 0; n < NumN(); ++n)
+    {
+        for (UInt m = 0; m < NumM(); ++m)
+        {
+            if (!validNodeMask[n][m] && m_gridNodes(n, m).IsValid())
             {
                 GetNode(n, m) = {constants::missing::doubleValue, constants::missing::doubleValue};
                 invalidNodesToRemove = true;
             }
         }
-    }
-
-    for (UInt m = 1; m < NumM() - 1; ++m)
-    {
-        if (GetNode(0, m).IsValid() &&
-            !IsFaceMaskValid(0, m - 1) &&
-            !IsFaceMaskValid(0, m))
-        {
-            GetNode(0, m) = {constants::missing::doubleValue, constants::missing::doubleValue};
-        }
-    }
-
-    for (UInt n = 1; n < NumN() - 1; ++n)
-    {
-        if (GetNode(n, 0).IsValid() &&
-            !IsFaceMaskValid(n - 1, 0) &&
-            !IsFaceMaskValid(n, 0))
-        {
-            GetNode(n, 0) = {constants::missing::doubleValue, constants::missing::doubleValue};
-        }
-    }
-
-    if (GetNode(0, 0).IsValid() && !IsFaceMaskValid(0, 0))
-    {
-        GetNode(0, 0) = {constants::missing::doubleValue, constants::missing::doubleValue};
     }
 
     RemoveInvalidNodes(invalidNodesToRemove);
