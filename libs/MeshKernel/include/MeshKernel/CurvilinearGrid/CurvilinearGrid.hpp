@@ -120,7 +120,7 @@ namespace meshkernel
 
             if (m >= m_gridNodes.cols()) [[unlikely]]
             {
-                throw ConstraintError("Invalid colum index {} > {}", m, m_gridNodes.cols());
+                throw ConstraintError("Invalid column index {} > {}", m, m_gridNodes.cols());
             }
 
             return m_gridNodes(n + m_startOffset.m_n, m + m_startOffset.m_m);
@@ -139,7 +139,7 @@ namespace meshkernel
 
             if (m >= m_gridNodes.cols()) [[unlikely]]
             {
-                throw ConstraintError("Invalid colum index {} > {}", m, m_gridNodes.cols());
+                throw ConstraintError("Invalid column index {} > {}", m, m_gridNodes.cols());
             }
             return m_gridNodes(n + m_startOffset.m_n, m + m_startOffset.m_m);
         }
@@ -193,7 +193,7 @@ namespace meshkernel
 
             if (m >= m_gridNodesTypes.cols()) [[unlikely]]
             {
-                throw ConstraintError("Invalid colum index {} > {}", m, m_gridNodesTypes.cols());
+                throw ConstraintError("Invalid column index {} > {}", m, m_gridNodesTypes.cols());
             }
 
             return m_gridNodesTypes(n + m_startOffset.m_n, m + m_startOffset.m_m);
@@ -212,7 +212,7 @@ namespace meshkernel
 
             if (m >= m_gridNodesTypes.cols()) [[unlikely]]
             {
-                throw ConstraintError("Invalid colum index {} > {}", m, m_gridNodesTypes.cols());
+                throw ConstraintError("Invalid column index {} > {}", m, m_gridNodesTypes.cols());
             }
 
             return m_gridNodesTypes(n + m_startOffset.m_n, m + m_startOffset.m_m);
@@ -238,7 +238,7 @@ namespace meshkernel
 
             if (m >= m_gridFacesMask.cols()) [[unlikely]]
             {
-                throw ConstraintError("Invalid colum index {} > {}", m, m_gridFacesMask.cols());
+                throw ConstraintError("Invalid column index {} > {}", m, m_gridFacesMask.cols());
             }
 
             return m_gridFacesMask(n + m_startOffset.m_n, m + m_startOffset.m_m);
@@ -257,7 +257,7 @@ namespace meshkernel
 
             if (m >= m_gridFacesMask.cols()) [[unlikely]]
             {
-                throw ConstraintError("Invalid colum index {} > {}", m, m_gridFacesMask.cols());
+                throw ConstraintError("Invalid column index {} > {}", m, m_gridFacesMask.cols());
             }
 
             return m_gridFacesMask(n + m_startOffset.m_n, m + m_startOffset.m_m);
