@@ -101,7 +101,7 @@ static void BM_CurvilinearRectangular_add_faces_to_left_boundary(benchmark::Stat
         Point point{-5.0, 5.0};
         for (int i = 0; i < faces_to_add; ++i)
         {
-            curvilinearGrid->InsertFace(point);
+            [[maybe_unused]] auto dummyUndoAction = curvilinearGrid->InsertFace(point);
             point.x -= block_size;
         }
     }
