@@ -473,8 +473,6 @@ TEST(Polygons, RefinePolygonLongerSquare)
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
-    std::cout << std::endl;
-
     // Execute
     const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
 
