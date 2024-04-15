@@ -259,9 +259,9 @@ namespace meshkernel
         /// @param[in] point The location
         /// @param[in] point The mask to apply to each location
         /// @returns The index of the closest node
-        [[nodiscard]] UInt FindIndexCloseToAPoint(Point point,
+        [[nodiscard]] UInt FindLocationIndex(Point point,
                                                   Location location,
-                                                  const std::vector<bool>& oneDNodeMask = std::vector<bool>());
+                                                  const std::vector<bool>& locationMask = std::vector<bool>());
 
         /// @brief Get the index of a node close to a point
         /// @param[in] point The starting point from where to start the search
@@ -425,15 +425,15 @@ namespace meshkernel
 
         /// @brief Set the m_nodesRTreeRequiresUpdate flag
         /// @param[in] value The value of the flag
-        void SetNodesRTreeRequiresUpdate(bool value) { m_nodesRTreeRequiresUpdate = true; }
+        void SetNodesRTreeRequiresUpdate(bool value) { m_nodesRTreeRequiresUpdate = value; }
 
         /// @brief Set the m_edgesRTreeRequiresUpdate flag
         /// @param[in] value The value of the flag
-        void SetEdgesRTreeRequiresUpdate(bool value) { m_edgesRTreeRequiresUpdate = true; }
+        void SetEdgesRTreeRequiresUpdate(bool value) { m_edgesRTreeRequiresUpdate = value; }
 
         /// @brief Set the m_facesRTreeRequiresUpdate flag
         /// @param[in] value The value of the flag
-        void SetFacesRTreeRequiresUpdate(bool value) { m_facesRTreeRequiresUpdate = true; }
+        void SetFacesRTreeRequiresUpdate(bool value) { m_facesRTreeRequiresUpdate = value; }
 
         // nodes
         std::vector<std::vector<UInt>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)

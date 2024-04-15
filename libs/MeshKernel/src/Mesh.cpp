@@ -660,9 +660,9 @@ meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point const& point, double searchRa
     return constants::missing::uintValue;
 }
 
-meshkernel::UInt Mesh::FindIndexCloseToAPoint(Point point,
-                                              Location location,
-                                              const std::vector<bool>& oneDNodeMask)
+meshkernel::UInt Mesh::FindLocationIndex(Point point,
+                                         Location location,
+                                         const std::vector<bool>& locationMask)
 {
     if (Location::Nodes == location && GetNumNodes() <= 0)
     {
@@ -688,7 +688,7 @@ meshkernel::UInt Mesh::FindIndexCloseToAPoint(Point point,
     }
 
     // resultSize > 0, no node mask applied
-    if (oneDNodeMask.empty())
+    if (locationMask.empty())
     {
         return rtree->GetQueryResult(0);
     }
@@ -697,7 +697,7 @@ meshkernel::UInt Mesh::FindIndexCloseToAPoint(Point point,
     for (UInt index = 0; index < numLocations; ++index)
     {
         const auto locationIndex = rtree->GetQueryResult(index);
-        if (oneDNodeMask[locationIndex])
+        if (locationMask[locationIndex])
         {
             return locationIndex;
         }

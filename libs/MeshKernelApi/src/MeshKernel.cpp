@@ -628,7 +628,7 @@ namespace meshkernelapi
             meshkernel::BoundingBox box{{boundingBox.xLowerLeft, boundingBox.yLowerLef}, {boundingBox.xUpperRight, boundingBox.yUpperRight}};
             meshKernelState[meshKernelId].m_curvilinearGrid->BuildTree(meshLocation);
 
-            locationIndex = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->FindIndexCloseToAPoint(point, meshLocation));
+            locationIndex = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->FindLocationIndex(point, meshLocation));
         }
         catch (...)
         {
@@ -1800,7 +1800,7 @@ namespace meshkernelapi
 
             meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Edges);
 
-            const auto edgeIndex = meshKernelState[meshKernelId].m_mesh2d->FindIndexCloseToAPoint(point, meshkernel::Location::Edges);
+            const auto edgeIndex = meshKernelState[meshKernelId].m_mesh2d->FindLocationIndex(point, meshkernel::Location::Edges);
             meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteEdge(edgeIndex));
         }
         catch (...)
@@ -1833,7 +1833,7 @@ namespace meshkernelapi
 
             meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Edges);
 
-            edgeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindIndexCloseToAPoint(point, meshkernel::Location::Edges));
+            edgeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindLocationIndex(point, meshkernel::Location::Edges));
         }
         catch (...)
         {

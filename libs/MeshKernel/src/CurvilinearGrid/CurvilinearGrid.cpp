@@ -185,9 +185,9 @@ bool CurvilinearGrid::IsValid() const
     return true;
 }
 
-void CurvilinearGrid::BuildTree(meshkernel::Location meshLocation)
+void CurvilinearGrid::BuildTree(Location location)
 {
-    switch (meshLocation)
+    switch (location)
     {
     case Location::Faces:
         if (m_facesRTreeRequiresUpdate)
@@ -220,9 +220,9 @@ void CurvilinearGrid::BuildTree(meshkernel::Location meshLocation)
     }
 }
 
-meshkernel::UInt CurvilinearGrid::FindIndexCloseToAPoint(Point point,
-                                                         Location location,
-                                                         const std::vector<bool>& oneDNodeMask)
+meshkernel::UInt CurvilinearGrid::FindLocationIndex(Point point,
+                                                    Location location,
+                                                    const std::vector<bool>& locationMask)
 {
     if (Location::Nodes == location && GetNumNodes() <= 0)
     {
@@ -247,7 +247,7 @@ meshkernel::UInt CurvilinearGrid::FindIndexCloseToAPoint(Point point,
     }
 
     // resultSize > 0, no node mask applied
-    if (oneDNodeMask.empty())
+    if (locationMask.empty())
     {
         return rtree->GetQueryResult(0);
     }
@@ -256,7 +256,7 @@ meshkernel::UInt CurvilinearGrid::FindIndexCloseToAPoint(Point point,
     for (UInt index = 0; index < numLocations; ++index)
     {
         const auto locationIndex = rtree->GetQueryResult(index);
-        if (oneDNodeMask[locationIndex])
+        if (locationMask[locationIndex])
         {
             return locationIndex;
         }
@@ -974,4 +974,141 @@ meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
     }
 
     return BoundingBox(lowerLeft, upperRight);
+}
+
+std::vector<meshkernel::Point> CurvilinearGrid::ComputeNodes() const
+{
+    if (!IsValid())
+    {
+        throw AlgorithmError("Invalid curvilinear grid ");
+    }
+
+    std::vector<Point> result(NumN() * NumM());
+    UInt ind = 0;
+    for (UInt n = 0; n < NumN(); n++)
+    {
+        for (UInt m = 0; m < NumM(); m++)
+        {
+
+            result[ind] = m_gridNodes(n, m);
+            ind++;
+        }
+    }
+    return result;
+}
+
+std::vector<meshkernel::Edge> CurvilinearGrid::ComputeEdges() const
+{
+    if (!IsValid())
+    {
+        throw AlgorithmError("Invalid curvilinear grid ");
+    }
+
+    const auto numM = NumM();
+    const auto numN = NumN();
+
+    std::vector<Edge> result(numM * (numN - 1) +
+                             (numM - 1) * numN);
+
+    UInt ind = 0;
+    for (UInt n = 0; n < numN - 1; n++)
+    {
+        for (UInt m = 0; m < numM; m++)
+        {
+
+            result[ind].first = numM * n + m;
+            result[ind].second = numM * (n + 1) + m;
+            ind++;
+        }
+    }
+    for (UInt n = 0; n < numN; n++)
+    {
+        for (UInt m = 0; m < numM - 1; m++)
+        {
+            result[ind].first = numM * n + m;
+            result[ind].second = numM * n + m + 1;
+            ind++;
+        }
+    }
+
+    return result;
+}
+
+std::vector<meshkernel::Point> CurvilinearGrid::ComputeEdgesCenters() const
+{
+    if (!IsValid())
+    {
+        throw AlgorithmError("Invalid curvilinear grid ");
+    }
+
+    std::vector<Point> edgesCenters(GetNumEdges());
+    UInt index = 0;
+    for (UInt n = 0; n < NumN() - 1; n++)
+    {
+        for (UInt m = 0; m < NumM(); m++)
+        {
+            edgesCenters[index] = (m_gridNodes(n, m) + m_gridNodes(n + 1, m)) * 0.5;
+            index++;
+        }
+    }
+    for (UInt n = 0; n < NumN(); n++)
+    {
+        for (UInt m = 0; m < NumM() - 1; m++)
+        {
+            edgesCenters[index] = (m_gridNodes(n, m) + m_gridNodes(n, m + 1)) * 0.5;
+            index++;
+        }
+    }
+
+    return edgesCenters;
+}
+
+std::vector<CurvilinearGridNodeIndices> CurvilinearGrid::ComputeNodeIndices() const
+{
+    if (!IsValid())
+    {
+        throw AlgorithmError("Invalid curvilinear grid ");
+    }
+
+    std::vector result(NumN() * NumM(),
+                       CurvilinearGridNodeIndices{constants::missing::uintValue,
+                                                  constants::missing::uintValue});
+
+    UInt ind = 0;
+    for (UInt n = 0; n < NumN(); n++)
+    {
+        for (UInt m = 0; m < NumM(); m++)
+        {
+
+            result[ind] = {n, m};
+            ind++;
+        }
+    }
+    return result;
+}
+
+std::vector<meshkernel::Point> CurvilinearGrid::ComputeFaceCenters() const
+{
+    if (!IsValid())
+    {
+        throw AlgorithmError("Invalid curvilinear grid ");
+    }
+
+    std::vector<Point> result((NumM() - 1) * (NumN() - 1));
+
+    UInt index = 0;
+    for (UInt n = 0; n < NumN() - 1; n++)
+    {
+        for (UInt m = 0; m < NumM() - 1; m++)
+        {
+            result[index] = (m_gridNodes(n, m) +
+                             m_gridNodes(n, m + 1) +
+                             m_gridNodes(n + 1, m + 1) +
+                             m_gridNodes(n + 1, m)) *
+                            0.25;
+            index++;
+        }
+    }
+
+    return result;
 }

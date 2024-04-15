@@ -260,124 +260,62 @@ namespace meshkernel
 
         /// @brief Get the projection
         /// @return The curvilinear grid projection
-        const Projection& projection() const { return m_projection; }
-
-        /// @brief Computes the face centers in the correct order
-        void ComputeFaceCircumCenters(){};
+        [[nodiscard]] const Projection& projection() const { return m_projection; }
 
         /// @brief Computes the number of nodes
-        UInt GetNumNodes() const { return NumN() * NumM(); }
+        [[nodiscard]] UInt GetNumNodes() const { return NumN() * NumM(); }
 
         /// @brief Computes the number of edges
-        UInt GetNumEdges() const { return NumM() * (NumN() - 1) +
-                                          (NumM() - 1) * NumN(); }
+        [[nodiscard]] UInt GetNumEdges() const { return NumM() * (NumN() - 1) +
+                                                        (NumM() - 1) * NumN(); }
 
-        /// @brief Computes the number of edges
-        UInt GetNumFaces() const { return (NumN() - 1) * (NumM() - 1); }
+        /// @brief Computes the number of faces
+        [[nodiscard]] UInt GetNumFaces() const { return (NumN() - 1) * (NumM() - 1); }
 
         /// @brief Computes the node from an index
-        const Point& Node(const UInt index) const
+        [[nodiscard]] const Point& Node(const UInt index) const
         {
             const UInt n = static_cast<UInt>(std::floor(index / NumM()));
             const UInt m = index % NumM();
             return m_gridNodes(n, m);
         }
 
-        /// @brief Get the nodes
-        // const auto& Nodes() const
-        //{
-        //     return m_nodes;
-        // }
+        /// @brief Builds the tree for a specific location type
+        /// @param[in] location the location type
+        void BuildTree(Location location);
 
-        /// @brief Get the edges
-        // const auto& Edges() const
-        //{
-        //     return m_edges;
-        // }
-
-        void BuildTree(Location meshLocation);
-
-        UInt FindIndexCloseToAPoint(Point point,
-                                    Location location,
-                                    const std::vector<bool>& oneDNodeMask = {});
+        /// @brief Finds the index of the closest location
+        /// @param[in] point the input point
+        /// @param[in] location the location type
+        /// @param[in] locationMask the location mask
+        /// @returns The location index
+        UInt FindLocationIndex(Point point,
+                               Location location,
+                               const std::vector<bool>& locationMask = {});
 
         /// @brief Set the m_nodesRTreeRequiresUpdate flag
         /// @param[in] value The value of the flag
-        void SetNodesRTreeRequiresUpdate(bool value) { m_nodesRTreeRequiresUpdate = true; }
+        void SetNodesRTreeRequiresUpdate(bool value) { m_nodesRTreeRequiresUpdate = value; }
 
         /// @brief Set the m_edgesRTreeRequiresUpdate flag
         /// @param[in] value The value of the flag
-        void SetEdgesRTreeRequiresUpdate(bool value) { m_edgesRTreeRequiresUpdate = true; }
+        void SetEdgesRTreeRequiresUpdate(bool value) { m_edgesRTreeRequiresUpdate = value; }
 
         /// @brief Set the m_facesRTreeRequiresUpdate flag
         /// @param[in] value The value of the flag
-        void SetFacesRTreeRequiresUpdate(bool value) { m_facesRTreeRequiresUpdate = true; }
+        void SetFacesRTreeRequiresUpdate(bool value) { m_facesRTreeRequiresUpdate = value; }
 
         /// @brief Converting a curvilinear mesh to a set of nodes
         /// @details Nodes and grid indices from the matrix are serialized in row-major order (n runs fastest).
         /// @note Also invalid nodes are serialized to points
         /// @returns The nodes
-        [[nodiscard]] std::vector<Point> ComputeNodes() const
-        {
-            if (!IsValid())
-            {
-                throw AlgorithmError("Invalid curvilinear grid ");
-            }
-
-            std::vector<Point> result(NumN() * NumM());
-            UInt ind = 0;
-            for (UInt n = 0; n < NumN(); n++)
-            {
-                for (UInt m = 0; m < NumM(); m++)
-                {
-
-                    result[ind] = m_gridNodes(n, m);
-                    ind++;
-                }
-            }
-            return result;
-        }
+        [[nodiscard]] std::vector<Point> ComputeNodes() const;
 
         /// @brief Converting a curvilinear mesh to a set of edges
         /// @details Edges are serialized as follows: first all m-oriented edges ((m,n)-(m+1,n)) in row-major order, then all
         /// n-oriented edges ((m,n)-(m,n+1)), in row-major order.
         /// @returns The edges
-        [[nodiscard]] std::vector<Edge> ComputeEdges() const
-        {
-            if (!IsValid())
-            {
-                throw AlgorithmError("Invalid curvilinear grid ");
-            }
-
-            const auto numM = NumM();
-            const auto numN = NumN();
-
-            std::vector<Edge> result(numM * (numN - 1) +
-                                     (numM - 1) * numN);
-
-            UInt ind = 0;
-            for (UInt n = 0; n < numN - 1; n++)
-            {
-                for (UInt m = 0; m < numM; m++)
-                {
-
-                    result[ind].first = numM * n + m;
-                    result[ind].second = numM * (n + 1) + m;
-                    ind++;
-                }
-            }
-            for (UInt n = 0; n < numN; n++)
-            {
-                for (UInt m = 0; m < numM - 1; m++)
-                {
-                    result[ind].first = numM * n + m;
-                    result[ind].second = numM * n + m + 1;
-                    ind++;
-                }
-            }
-
-            return result;
-        }
+        [[nodiscard]] std::vector<Edge> ComputeEdges() const;
 
     private:
         /// @brief Remove invalid nodes.
@@ -398,82 +336,16 @@ namespace meshkernel
                      CurvilinearGridNodeIndices const& secondNode);
 
         /// @brief Computes the edge centers in the correct order
-        std::vector<Point> ComputeEdgesCenters()
-        {
-            if (!IsValid())
-            {
-                throw AlgorithmError("Invalid curvilinear grid ");
-            }
-
-            std::vector<Point> edgesCenters(GetNumEdges());
-            UInt index = 0;
-            for (UInt n = 0; n < NumN() - 1; n++)
-            {
-                for (UInt m = 0; m < NumM(); m++)
-                {
-                    edgesCenters[index] = (m_gridNodes(n, m) + m_gridNodes(n + 1, m)) * 0.5;
-                    index++;
-                }
-            }
-            for (UInt n = 0; n < NumN(); n++)
-            {
-                for (UInt m = 0; m < NumM() - 1; m++)
-                {
-                    edgesCenters[index] = (m_gridNodes(n, m) + m_gridNodes(n, m + 1)) * 0.5;
-                    index++;
-                }
-            }
-
-            return edgesCenters;
-        }
+        /// @returns the edge ceneters
+        [[nodiscard]] std::vector<Point> ComputeEdgesCenters() const;
 
         /// @brief Compute the node indices in row-major order (n runs fastest).
         /// @returns The  mapping (m and n indices for each node)
-        std::vector<CurvilinearGridNodeIndices> ComputeNodeIndices() const
-        {
-            if (!IsValid())
-            {
-                throw AlgorithmError("Invalid curvilinear grid ");
-            }
+        [[nodiscard]] std::vector<CurvilinearGridNodeIndices> ComputeNodeIndices() const;
 
-            std::vector result(NumN() * NumM(),
-                               CurvilinearGridNodeIndices{constants::missing::uintValue,
-                                                          constants::missing::uintValue});
-
-            UInt ind = 0;
-            for (UInt n = 0; n < NumN(); n++)
-            {
-                for (UInt m = 0; m < NumM(); m++)
-                {
-
-                    result[ind] = {n, m};
-                    ind++;
-                }
-            }
-            return result;
-        }
-
-        std::vector<Point> ComputeFaceCenters() const
-        {
-            if (!IsValid())
-            {
-                throw AlgorithmError("Invalid curvilinear grid ");
-            }
-
-            std::vector<Point> result((NumM() - 1) * (NumN() - 1));
-
-            UInt index = 0;
-            for (UInt n = 0; n < NumN() - 1; n++)
-            {
-                for (UInt m = 0; m < NumM() - 1; m++)
-                {
-                    result[index] = (m_gridNodes(n, m) + m_gridNodes(n, m + 1) + m_gridNodes(n + 1, m + 1) + m_gridNodes(n + 1, m)) * 0.25;
-                    index++;
-                }
-            }
-
-            return result;
-        }
+        /// @brief Compute the node indices in row-major order (n runs fastest).
+        /// @returns The  mapping (m and n indices for each node)
+        [[nodiscard]] std::vector<Point> ComputeFaceCenters() const;
 
         Projection m_projection;                               ///< The curvilinear grid projection
         lin_alg::Matrix<Point> m_gridNodes;                    ///< Member variable storing the grid

@@ -548,7 +548,7 @@ TEST(Mesh, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
     const auto& edgesRTree = mesh->GetRTree(meshkernel::Location::Edges);
     const auto& nodesRTree = mesh->GetRTree(meshkernel::Location::Nodes);
 
-    const auto index = mesh->FindIndexCloseToAPoint({1.5, 1.5}, meshkernel::Location::Edges);
+    const auto index = mesh->FindLocationIndex({1.5, 1.5}, meshkernel::Location::Edges);
     ASSERT_EQ(1, index);
 
     // m_nodesRTree is not build when searching for edges
