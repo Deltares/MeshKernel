@@ -261,7 +261,7 @@ namespace meshkernel
         /// @returns The index of the closest node
         [[nodiscard]] UInt FindLocationIndex(Point point,
                                              Location location,
-                                             const std::vector<bool>& locationMask = std::vector<bool>()) const;
+                                             const std::vector<bool>& locationMask = std::vector<bool>());
 
         /// @brief Get the index of a node close to a point
         /// @param[in] point The starting point from where to start the search

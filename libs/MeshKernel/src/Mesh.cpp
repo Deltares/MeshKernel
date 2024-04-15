@@ -662,7 +662,7 @@ meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point const& point, double searchRa
 
 meshkernel::UInt Mesh::FindLocationIndex(Point point,
                                          Location location,
-                                         const std::vector<bool>& locationMask) const
+                                         const std::vector<bool>& locationMask)
 {
     if (Location::Nodes == location && GetNumNodes() <= 0)
     {
