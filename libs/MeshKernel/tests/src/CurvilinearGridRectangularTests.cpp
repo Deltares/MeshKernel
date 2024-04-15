@@ -638,7 +638,7 @@ TEST_P(CurvilinearGridUniformTests, parameters)
     const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 4, 4);
 
     // Execute
-    curvilinearGrid->DeleteNode(point);
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGrid->DeleteNode(point);
 
     auto const numValidNodes = CurvilinearGridCountValidNodes(*curvilinearGrid);
     ASSERT_EQ(numValidNodes, expectedNumNodes);
