@@ -113,12 +113,12 @@ namespace meshkernel
         [[nodiscard]] meshkernel::Point& GetNode(const UInt n, const UInt m)
         {
 
-            if (n >= m_gridNodes.rows())
+            if (n >= m_gridNodes.rows()) [[unlikely]]
             {
                 throw ConstraintError("Invalid row index {} > {}", n, m_gridNodes.rows());
             }
 
-            if (m >= m_gridNodes.cols())
+            if (m >= m_gridNodes.cols()) [[unlikely]]
             {
                 throw ConstraintError("Invalid colum index {} > {}", m, m_gridNodes.cols());
             }
@@ -132,12 +132,12 @@ namespace meshkernel
         [[nodiscard]] meshkernel::Point const& GetNode(const UInt n, const UInt m) const
         {
 
-            if (n >= m_gridNodes.rows())
+            if (n >= m_gridNodes.rows()) [[unlikely]]
             {
                 throw ConstraintError("Invalid row index {} > {}", n, m_gridNodes.rows());
             }
 
-            if (m >= m_gridNodes.cols())
+            if (m >= m_gridNodes.cols()) [[unlikely]]
             {
                 throw ConstraintError("Invalid colum index {} > {}", m, m_gridNodes.cols());
             }
@@ -149,10 +149,11 @@ namespace meshkernel
         /// This is just a helper function, it calls GetNode with (index.m_m, index.m_n)
         [[nodiscard]] meshkernel::Point& GetNode(const CurvilinearGridNodeIndices& index)
         {
-            if (!index.IsValid())
+            if (!index.IsValid()) [[unlikely]]
             {
                 throw ConstraintError("Invalid node index");
             }
+
             return GetNode(index.m_n, index.m_m);
             // return m_gridNodes(index.m_n, index.m_m);
         }
@@ -162,10 +163,11 @@ namespace meshkernel
         /// This is just a helper function, it calls GetNode with (index.m_m, index.m_n)
         [[nodiscard]] meshkernel::Point const& GetNode(const CurvilinearGridNodeIndices& index) const
         {
-            if (!index.IsValid())
+            if (!index.IsValid()) [[unlikely]]
             {
                 throw ConstraintError("Invalid node index");
             }
+
             return GetNode(index.m_n, index.m_m);
             // return m_gridNodes(index.m_n, index.m_m);
         }
@@ -184,12 +186,12 @@ namespace meshkernel
         /// @return the node type
         NodeType GetNodeType(UInt n, UInt m) const
         {
-            if (n >= m_gridNodesTypes.rows())
+            if (n >= m_gridNodesTypes.rows()) [[unlikely]]
             {
                 throw ConstraintError("Invalid row index {} > {}", n, m_gridNodesTypes.rows());
             }
 
-            if (m >= m_gridNodesTypes.cols())
+            if (m >= m_gridNodesTypes.cols()) [[unlikely]]
             {
                 throw ConstraintError("Invalid colum index {} > {}", m, m_gridNodesTypes.cols());
             }
@@ -203,12 +205,12 @@ namespace meshkernel
         /// @return reference to the node type
         NodeType& GetNodeType(UInt n, UInt m)
         {
-            if (n >= m_gridNodesTypes.rows())
+            if (n >= m_gridNodesTypes.rows()) [[unlikely]]
             {
                 throw ConstraintError("Invalid row index {} > {}", n, m_gridNodesTypes.rows());
             }
 
-            if (m >= m_gridNodesTypes.cols())
+            if (m >= m_gridNodesTypes.cols()) [[unlikely]]
             {
                 throw ConstraintError("Invalid colum index {} > {}", m, m_gridNodesTypes.cols());
             }
@@ -229,12 +231,12 @@ namespace meshkernel
         /// @return the face mask value (true/false)
         [[nodiscard]] bool IsFaceMaskValid(UInt n, UInt m) const
         {
-            if (n >= m_gridFacesMask.rows())
+            if (n >= m_gridFacesMask.rows()) [[unlikely]]
             {
                 throw ConstraintError("Invalid row index {} > {}", n, m_gridFacesMask.rows());
             }
 
-            if (m >= m_gridFacesMask.cols())
+            if (m >= m_gridFacesMask.cols()) [[unlikely]]
             {
                 throw ConstraintError("Invalid colum index {} > {}", m, m_gridFacesMask.cols());
             }
@@ -248,12 +250,12 @@ namespace meshkernel
         /// @return reference to the face mask value
         bool& IsFaceMaskValid(UInt n, UInt m)
         {
-            if (n >= m_gridFacesMask.rows())
+            if (n >= m_gridFacesMask.rows()) [[unlikely]]
             {
                 throw ConstraintError("Invalid row index {} > {}", n, m_gridFacesMask.rows());
             }
 
-            if (m >= m_gridFacesMask.cols())
+            if (m >= m_gridFacesMask.cols()) [[unlikely]]
             {
                 throw ConstraintError("Invalid colum index {} > {}", m, m_gridFacesMask.cols());
             }
