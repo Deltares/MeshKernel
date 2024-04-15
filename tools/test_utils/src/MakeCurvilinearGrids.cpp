@@ -197,8 +197,8 @@ std::unique_ptr<meshkernel::CurvilinearGrid> MakeCurvilinearGridRand(double orig
         {
             bool onHorizontalBoundary = m == 0 || m == nx - 1;
 
-            meshkernel::Vector displacement (distribution(engine) * fraction * deltaX,
-                                             distribution(engine) * fraction * deltaY);
+            meshkernel::Vector displacement(distribution(engine) * fraction * deltaX,
+                                            distribution(engine) * fraction * deltaY);
             meshkernel::Point meshPoint(x, y);
 
             if ((displaceBoundary && (onVerticalBoundary || onHorizontalBoundary)) || (!onVerticalBoundary && !onHorizontalBoundary))
