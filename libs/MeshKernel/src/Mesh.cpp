@@ -44,23 +44,24 @@ Mesh::Mesh() : Mesh(Projection::cartesian)
 {
 }
 
-Mesh::Mesh(Projection projection) : m_projection(projection),
-                                    m_nodesRTree(RTreeFactory::Create(m_projection)),
-                                    m_edgesRTree(RTreeFactory::Create(m_projection)),
-                                    m_facesRTree(RTreeFactory::Create(m_projection))
+Mesh::Mesh(Projection projection) : m_projection(projection)
 {
+
+    m_RTrees.emplace(Location::Nodes, RTreeFactory::Create(m_projection));
+    m_RTrees.emplace(Location::Edges, RTreeFactory::Create(m_projection));
+    m_RTrees.emplace(Location::Faces, RTreeFactory::Create(m_projection));
 }
 
 Mesh::Mesh(const std::vector<Edge>& edges,
            const std::vector<Point>& nodes,
            Projection projection) : m_projection(projection),
-                                    m_nodesRTree(RTreeFactory::Create(m_projection)),
-                                    m_edgesRTree(RTreeFactory::Create(m_projection)),
-                                    m_facesRTree(RTreeFactory::Create(m_projection)),
                                     m_nodes(nodes),
                                     m_edges(edges)
 
 {
+    m_RTrees.emplace(Location::Nodes, RTreeFactory::Create(m_projection));
+    m_RTrees.emplace(Location::Edges, RTreeFactory::Create(m_projection));
+    m_RTrees.emplace(Location::Faces, RTreeFactory::Create(m_projection));
     DeleteInvalidNodesAndEdges();
 }
 
@@ -645,20 +646,23 @@ meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point const& point, double searchRa
     {
         return constants::missing::uintValue;
     }
+    BuildTree(Location::Nodes);
 
-    SearchNearestLocation(point, searchRadius * searchRadius, Location::Nodes);
+    auto& rtree = m_RTrees.at(Location::Nodes);
 
-    if (GetNumLocations(Location::Nodes) > 0)
+    rtree->SearchNearestPoint(point, searchRadius * searchRadius);
+
+    if (rtree->GetQueryResultSize() > 0)
     {
-        return GetLocationsIndices(0, Location::Nodes);
+        return rtree->GetQueryResult(0);
     }
 
     return constants::missing::uintValue;
 }
 
-[[nodiscard]] meshkernel::UInt Mesh::FindIndexCloseToAPoint(Point point,
-                                                            Location location,
-                                                            const std::vector<bool>& oneDNodeMask)
+meshkernel::UInt Mesh::FindIndexCloseToAPoint(Point point,
+                                              Location location,
+                                              const std::vector<bool>& oneDNodeMask)
 {
     if (Location::Nodes == location && GetNumNodes() <= 0)
     {
@@ -672,10 +676,13 @@ meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point const& point, double searchRa
     {
         return constants::missing::uintValue;
     }
+    BuildTree(location);
 
-    SearchNearestLocation(point, location);
+    const auto& rtree = m_RTrees.at(location);
+    rtree->SearchNearestPoint(point);
+    const auto numLocations = rtree->GetQueryResultSize();
 
-    if (GetNumLocations(location) <= 0)
+    if (numLocations <= 0)
     {
         throw AlgorithmError("Query result size <= 0.");
     }
@@ -683,13 +690,13 @@ meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point const& point, double searchRa
     // resultSize > 0, no node mask applied
     if (oneDNodeMask.empty())
     {
-        return GetLocationsIndices(0, location);
+        return rtree->GetQueryResult(0);
     }
 
     // resultSize > 0, a mask is applied
-    for (UInt index = 0; index < GetNumLocations(location); ++index)
+    for (UInt index = 0; index < numLocations; ++index)
     {
-        const auto locationIndex = GetLocationsIndices(index, location);
+        const auto locationIndex = rtree->GetQueryResult(index);
         if (oneDNodeMask[locationIndex])
         {
             return locationIndex;
@@ -843,163 +850,6 @@ void Mesh::SortEdgesInCounterClockWiseOrder(UInt startNode, UInt endNode)
         {
             m_nodesEdges[n][edgeIndex] = edgeNodeCopy[indices[edgeIndex]];
         }
-    }
-}
-
-void Mesh::SearchNearestLocation(Point point, Location meshLocation)
-{
-    switch (meshLocation)
-    {
-    case Location::Nodes:
-        m_nodesRTree->SearchNearestPoint(point);
-        break;
-    case Location::Edges:
-        m_edgesRTree->SearchNearestPoint(point);
-        break;
-    case Location::Faces:
-        m_facesRTree->SearchNearestPoint(point);
-        break;
-    case Location::Unknown:
-    default:
-        throw std::runtime_error("Mesh2D::SearchNearestLocation: Mesh location has not been set.");
-    }
-}
-
-void Mesh::SearchNearestLocation(Point point, double squaredRadius, Location meshLocation)
-{
-    switch (meshLocation)
-    {
-    case Location::Faces:
-        m_facesRTree->SearchNearestPoint(point, squaredRadius);
-        break;
-    case Location::Nodes:
-        m_nodesRTree->SearchNearestPoint(point, squaredRadius);
-        break;
-    case Location::Edges:
-        m_edgesRTree->SearchNearestPoint(point, squaredRadius);
-        break;
-    case Location::Unknown:
-    default:
-        throw std::runtime_error("Mesh2D::SearchNearestLocation: Mesh location has not been set.");
-    }
-}
-
-void Mesh::SearchLocations(Point point, double squaredRadius, Location meshLocation)
-{
-    switch (meshLocation)
-    {
-    case Location::Faces:
-        m_facesRTree->SearchPoints(point, squaredRadius);
-        break;
-    case Location::Nodes:
-        m_nodesRTree->SearchPoints(point, squaredRadius);
-        break;
-    case Location::Edges:
-        m_edgesRTree->SearchPoints(point, squaredRadius);
-        break;
-    case Location::Unknown:
-    default:
-        throw std::runtime_error("Mesh2D::SearchLocations: Mesh location has not been set.");
-    }
-}
-
-void Mesh::BuildTree(Location meshLocation)
-{
-    switch (meshLocation)
-    {
-    case Location::Faces:
-        if (m_facesRTreeRequiresUpdate)
-        {
-            m_facesRTree->BuildTree(m_facesCircumcenters);
-            m_facesRTreeRequiresUpdate = false;
-        }
-        break;
-    case Location::Nodes:
-        if (m_nodesRTreeRequiresUpdate)
-        {
-
-            m_nodesRTree->BuildTree(m_nodes);
-            m_nodesRTreeRequiresUpdate = false;
-        }
-        break;
-    case Location::Edges:
-        if (m_edgesRTreeRequiresUpdate)
-        {
-            ComputeEdgesCenters();
-            m_edgesRTree->BuildTree(m_edgesCenters);
-            m_edgesRTreeRequiresUpdate = false;
-        }
-        break;
-    case Location::Unknown:
-    default:
-        throw std::runtime_error("Mesh2D::SearchLocations: Mesh location has not been set.");
-    }
-}
-
-void Mesh::BuildTree(Location meshLocation, const BoundingBox& boundingBox)
-{
-    switch (meshLocation)
-    {
-    case Location::Faces:
-        if (m_facesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
-        {
-            m_facesRTree->BuildTree(m_facesCircumcenters, boundingBox);
-            m_facesRTreeRequiresUpdate = false;
-            m_boundingBoxCache = boundingBox;
-        }
-        break;
-    case Location::Nodes:
-        if (m_nodesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
-        {
-            m_nodesRTree->BuildTree(m_nodes, boundingBox);
-            m_nodesRTreeRequiresUpdate = false;
-            m_boundingBoxCache = boundingBox;
-        }
-        break;
-    case Location::Edges:
-        if (m_edgesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
-        {
-            ComputeEdgesCenters();
-            m_edgesRTree->BuildTree(m_edgesCenters, boundingBox);
-            m_edgesRTreeRequiresUpdate = false;
-            m_boundingBoxCache = boundingBox;
-        }
-        break;
-    case Location::Unknown:
-    default:
-        throw std::runtime_error("Invalid location");
-    }
-}
-
-meshkernel::UInt Mesh::GetNumLocations(Location meshLocation) const
-{
-    switch (meshLocation)
-    {
-    case Location::Faces:
-        return m_facesRTree->GetQueryResultSize();
-    case Location::Nodes:
-        return m_nodesRTree->GetQueryResultSize();
-    case Location::Edges:
-        return m_edgesRTree->GetQueryResultSize();
-    case Location::Unknown:
-    default:
-        return constants::missing::uintValue;
-    }
-}
-
-meshkernel::UInt Mesh::GetLocationsIndices(UInt index, Location meshLocation)
-{
-    switch (meshLocation)
-    {
-    case Location::Faces:
-        return m_facesRTree->GetQueryResult(index);
-    case Location::Nodes:
-        return m_nodesRTree->GetQueryResult(index);
-    case Location::Edges:
-        return m_edgesRTree->GetQueryResult(index);
-    case Location::Unknown:
-    default:
-        return constants::missing::uintValue;
     }
 }
 
@@ -1224,6 +1074,74 @@ bool Mesh::IsValidEdge(const UInt edgeId) const
 
     return m_edges[edgeId].first != constants::missing::uintValue && m_edges[edgeId].second != constants::missing::uintValue &&
            m_nodes[m_edges[edgeId].first].IsValid() && m_nodes[m_edges[edgeId].second].IsValid();
+}
+
+void Mesh::BuildTree(Location location)
+{
+    switch (location)
+    {
+    case Location::Faces:
+        if (m_facesRTreeRequiresUpdate)
+        {
+            m_RTrees.at(Location::Faces)->BuildTree(m_facesCircumcenters);
+            m_facesRTreeRequiresUpdate = false;
+        }
+        break;
+    case Location::Nodes:
+        if (m_nodesRTreeRequiresUpdate)
+        {
+            m_RTrees.at(Location::Nodes)->BuildTree(m_nodes);
+            m_nodesRTreeRequiresUpdate = false;
+        }
+        break;
+    case Location::Edges:
+        if (m_edgesRTreeRequiresUpdate)
+        {
+            ComputeEdgesCenters();
+            m_RTrees.at(Location::Edges)->BuildTree(m_edgesCenters);
+            m_edgesRTreeRequiresUpdate = false;
+        }
+        break;
+    case Location::Unknown:
+    default:
+        throw std::runtime_error("Mesh2D::SearchLocations: Mesh location has not been set.");
+    }
+}
+
+void Mesh::BuildTree(Location meshLocation, const BoundingBox& boundingBox)
+{
+    switch (meshLocation)
+    {
+    case Location::Faces:
+        if (m_facesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
+        {
+            Administrate();
+            m_RTrees.at(Location::Faces)->BuildTree(m_facesCircumcenters, boundingBox);
+            m_facesRTreeRequiresUpdate = false;
+            m_boundingBoxCache = boundingBox;
+        }
+        break;
+    case Location::Nodes:
+        if (m_nodesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
+        {
+            m_RTrees.at(Location::Nodes)->BuildTree(m_nodes, boundingBox);
+            m_nodesRTreeRequiresUpdate = false;
+            m_boundingBoxCache = boundingBox;
+        }
+        break;
+    case Location::Edges:
+        if (m_edgesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
+        {
+            ComputeEdgesCenters();
+            m_RTrees.at(Location::Edges)->BuildTree(m_edgesCenters, boundingBox);
+            m_edgesRTreeRequiresUpdate = false;
+            m_boundingBoxCache = boundingBox;
+        }
+        break;
+    case Location::Unknown:
+    default:
+        throw std::runtime_error("Invalid location");
+    }
 }
 
 //--------------------------------

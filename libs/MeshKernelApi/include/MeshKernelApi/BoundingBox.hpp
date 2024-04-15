@@ -27,21 +27,23 @@
 
 #pragma once
 
+#include <limits>
+
 namespace meshkernelapi
 {
     /// @brief A struct describing a bounding box
     struct BoundingBox
     {
         /// @brief The bounding box lower left x coordinate
-        double xLowerLeft;
+        double xLowerLeft = std::numeric_limits<double>::lowest();
 
         /// @brief The bounding box lower left y coordinate
-        double yLowerLef;
+        double yLowerLef = std::numeric_limits<double>::lowest();
 
         /// @brief The bounding box upper right x coordinate
-        double xUpperRight;
+        double xUpperRight = std::numeric_limits<double>::max();
 
         /// @brief The bounding box upper right y coordinate
-        double yUpperRight;
+        double yUpperRight = std::numeric_limits<double>::max();
     };
 } // namespace meshkernelapi

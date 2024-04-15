@@ -122,7 +122,7 @@ void CurvilinearGridRefinement::Compute()
                                                              rightRefinement,
                                                              bottomRefinement,
                                                              topRefinement,
-                                                             m_grid.m_projection,
+                                                             m_grid.projection(),
                                                              localMRefinement,
                                                              localNRefinement);
                 // Copy the local grid into the refined grid

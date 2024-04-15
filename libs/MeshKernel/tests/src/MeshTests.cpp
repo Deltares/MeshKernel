@@ -367,9 +367,10 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
 
     // builds edges RTree
     mesh->BuildTree(meshkernel::Location::Edges);
+    const auto& rtreeEdges = mesh->GetRTree(meshkernel::Location::Edges);
 
     // even if m_edgesRTreeRequiresUpdate = true, m_edgesRTree is initially empty, so it is assumed that is not needed for searches
-    ASSERT_EQ(5, mesh->m_edgesRTree->Size());
+    ASSERT_EQ(5, rtreeEdges.Size());
 }
 
 TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
@@ -379,6 +380,8 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
 
     meshkernel::Point newPoint{10.0, 10.0};
     mesh->BuildTree(meshkernel::Location::Nodes);
+    auto& rtree = mesh->GetRTree(meshkernel::Location::Nodes);
+
     [[maybe_unused]] auto [nodeId, indertAction] = mesh->InsertNode(newPoint);
 
     // delete nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
@@ -389,10 +392,10 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     mesh->Administrate();
 
     // building a tree based on nodes
-    mesh->BuildTree(meshkernel::Location::Nodes);
+    rtree.BuildTree(mesh->Nodes());
 
     // After deleting a node, the nodes RTree is reduced
-    ASSERT_EQ(3, mesh->m_nodesRTree->Size());
+    ASSERT_EQ(3, rtree.Size());
 }
 
 TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
@@ -412,9 +415,10 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 
     // re-build tree
     mesh->BuildTree(meshkernel::Location::Edges);
+    const auto& rtree = mesh->GetRTree(meshkernel::Location::Edges);
 
     // even if m_nodesRTreeRequiresUpdate = true, m_nodesRTree is initially empty, so it is assumed that is not needed for searches
-    ASSERT_EQ(5, mesh->m_edgesRTree->Size());
+    ASSERT_EQ(5, rtree.Size());
 }
 
 TEST(Mesh, DeleteEdgeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
@@ -422,6 +426,7 @@ TEST(Mesh, DeleteEdgeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     // 1 Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
     mesh->BuildTree(meshkernel::Location::Edges);
+    const auto& rtree = mesh->GetRTree(meshkernel::Location::Edges);
 
     // DeleteEdge modifies the number of edges, m_edgesRTreeRequiresUpdate is set to true
     [[maybe_unused]] auto action = mesh->DeleteEdge(0);
@@ -433,7 +438,7 @@ TEST(Mesh, DeleteEdgeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     mesh->BuildTree(meshkernel::Location::Edges);
 
     // deleting an edge produces an edges rtree of size 3
-    ASSERT_EQ(3, mesh->m_edgesRTree->Size());
+    ASSERT_EQ(3, rtree.Size());
 }
 
 TEST(Mesh, InsertUnconnectedNodeInMeshIsSetToInvalid)
@@ -441,6 +446,7 @@ TEST(Mesh, InsertUnconnectedNodeInMeshIsSetToInvalid)
     // Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
     mesh->BuildTree(meshkernel::Location::Nodes);
+    const auto& rtreesNodes = mesh->GetRTree(meshkernel::Location::Nodes);
 
     // insert nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
     meshkernel::Point newPoint{10.0, 10.0};
@@ -453,13 +459,15 @@ TEST(Mesh, InsertUnconnectedNodeInMeshIsSetToInvalid)
     // building a tree based on nodes
     mesh->BuildTree(meshkernel::Location::Nodes);
 
-    // building a tree based on edges
+    // building the edges rtree
     mesh->BuildTree(meshkernel::Location::Edges);
+    const auto& rtreeEdges = mesh->GetRTree(meshkernel::Location::Edges);
 
+    // building a tree based on edges
     EXPECT_EQ(5, mesh->GetNumNodes());
     EXPECT_EQ(4, mesh->GetNumValidNodes());
-    EXPECT_EQ(4, mesh->m_nodesRTree->Size());
-    EXPECT_EQ(4, mesh->m_edgesRTree->Size());
+    EXPECT_EQ(4, rtreesNodes.Size());
+    EXPECT_EQ(4, rtreeEdges.Size());
     // Administrate should set the unconnected node to be invalid.
     EXPECT_FALSE(mesh->Node(4).IsValid());
 }
@@ -469,6 +477,8 @@ TEST(Mesh, EdgeConnectedToInvalidNodeInMeshIsSetToInvalid)
     // Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
     mesh->BuildTree(meshkernel::Location::Nodes);
+    const auto& nodesRtree = mesh->GetRTree(meshkernel::Location::Nodes);
+    const auto& edgesRtree = mesh->GetRTree(meshkernel::Location::Edges);
 
     meshkernel::Point newPoint{meshkernel::constants::missing::doubleValue,
                                meshkernel::constants::missing::doubleValue};
@@ -493,8 +503,8 @@ TEST(Mesh, EdgeConnectedToInvalidNodeInMeshIsSetToInvalid)
     EXPECT_EQ(5, mesh->GetNumEdges());
     EXPECT_EQ(4, mesh->GetNumValidEdges());
 
-    EXPECT_EQ(4, mesh->m_nodesRTree->Size());
-    EXPECT_EQ(4, mesh->m_edgesRTree->Size());
+    EXPECT_EQ(4, nodesRtree.Size());
+    EXPECT_EQ(4, edgesRtree.Size());
 
     // Administrate should set the unconnected node to be invalid.
     EXPECT_FALSE(mesh->Node(4).IsValid());
@@ -510,18 +520,21 @@ TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     // By default, no nodesRTree is build
-    ASSERT_EQ(0, mesh->m_nodesRTree->Size());
+    const auto& edgesRTree = mesh->GetRTree(meshkernel::Location::Edges);
+    const auto& nodesRTree = mesh->GetRTree(meshkernel::Location::Nodes);
+
+    ASSERT_EQ(0, nodesRTree.Size());
+    ASSERT_EQ(0, edgesRTree.Size());
 
     // FindNodeCloseToAPoint builds m_nodesRTree for searching the nodes
-    mesh->BuildTree(meshkernel::Location::Nodes);
     const auto index = mesh->FindNodeCloseToAPoint({1.5, 1.5}, 10.0);
     ASSERT_EQ(3, index);
 
     // m_nodesRTree is build
-    ASSERT_EQ(4, mesh->m_nodesRTree->Size());
+    ASSERT_EQ(4, nodesRTree.Size());
 
     // m_edgesRTree is not build when searching for nodes
-    ASSERT_EQ(0, mesh->m_edgesRTree->Size());
+    ASSERT_EQ(0, edgesRTree.Size());
 }
 
 TEST(Mesh, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
@@ -530,15 +543,19 @@ TEST(Mesh, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     // FindEdgeCloseToAPoint builds m_edgesRTree for searching the edges
+
     mesh->BuildTree(meshkernel::Location::Edges);
+    const auto& edgesRTree = mesh->GetRTree(meshkernel::Location::Edges);
+    const auto& nodesRTree = mesh->GetRTree(meshkernel::Location::Nodes);
+
     const auto index = mesh->FindIndexCloseToAPoint({1.5, 1.5}, meshkernel::Location::Edges);
     ASSERT_EQ(1, index);
 
     // m_nodesRTree is not build when searching for edges
-    ASSERT_EQ(0, mesh->m_nodesRTree->Size());
+    ASSERT_EQ(0, nodesRTree.Size());
 
     // m_edgesRTree is build
-    ASSERT_EQ(4, mesh->m_edgesRTree->Size());
+    ASSERT_EQ(4, edgesRTree.Size());
 }
 
 TEST(Mesh, GetObtuseTriangles)

@@ -617,7 +617,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
+            if (meshKernelState[meshKernelId].m_curvilinearGrid->GetNumNodes() <= 0)
             {
                 throw meshkernel::ConstraintError("The selected mesh has no nodes.");
             }
@@ -626,7 +626,7 @@ namespace meshkernelapi
 
             meshkernel::Point const point{xCoordinate, yCoordinate};
             meshkernel::BoundingBox box{{boundingBox.xLowerLeft, boundingBox.yLowerLef}, {boundingBox.xUpperRight, boundingBox.yUpperRight}};
-            meshKernelState[meshKernelId].m_curvilinearGrid->BuildTree(meshLocation, box);
+            meshKernelState[meshKernelId].m_curvilinearGrid->BuildTree(meshLocation);
 
             locationIndex = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->FindIndexCloseToAPoint(point, meshLocation));
         }
@@ -1249,7 +1249,8 @@ namespace meshkernelapi
             const auto projection = meshKernelState[meshKernelId].m_projection;
             const auto curvilinearGrid = CreateRectangularCurvilinearGrid(makeGridParameters, projection);
 
-            auto const [nodes, edges, gridIndices] = curvilinearGrid->ConvertCurvilinearToNodesAndEdges();
+            auto const nodes = curvilinearGrid->ComputeNodes();
+            auto const edges = curvilinearGrid->ComputeEdges();
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, projection);
         }
         catch (...)
@@ -1274,7 +1275,9 @@ namespace meshkernelapi
             const auto projection = meshKernelState[meshKernelId].m_projection;
             const auto curvilinearGrid = CreateRectangularCurvilinearGridFromPolygons(makeGridParameters, geometryList, projection);
 
-            auto const [nodes, edges, gridIndices] = curvilinearGrid->ConvertCurvilinearToNodesAndEdges();
+            const auto edges = curvilinearGrid->ComputeEdges();
+            const auto nodes = curvilinearGrid->ComputeNodes();
+
             *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, projection);
         }
         catch (...)
@@ -1298,8 +1301,10 @@ namespace meshkernelapi
             const auto projection = meshKernelState[meshKernelId].m_projection;
             auto const curvilinearGrid = CreateRectangularCurvilinearGridOnExtension(makeGridParameters, projection);
 
-            auto const [nodes, edges, gridIndices] = curvilinearGrid->ConvertCurvilinearToNodesAndEdges();
-            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
+            const auto edges = curvilinearGrid->ComputeEdges();
+            const auto nodes = curvilinearGrid->ComputeNodes();
+
+            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->projection());
         }
         catch (...)
         {
@@ -1672,6 +1677,7 @@ namespace meshkernelapi
             }
 
             meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Nodes);
+
             auto firstNodeId = meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(firstNodeCoordinates, searchRadius);
             if (firstNodeId == meshkernel::constants::missing::uintValue)
             {
@@ -1692,6 +1698,7 @@ namespace meshkernelapi
             secondNodeIndex = static_cast<int>(secondNodeId);
 
             meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Edges);
+
             auto [edgeId, action] = meshKernelState[meshKernelId].m_mesh2d->ConnectNodes(firstNodeId, secondNodeId);
             if (edgeId != meshkernel::constants::missing::uintValue)
             {
@@ -1791,9 +1798,9 @@ namespace meshkernelapi
 
             meshkernel::BoundingBox boundingBox{{xLowerLeftBoundingBox, yLowerLeftBoundingBox}, {xUpperRightBoundingBox, yUpperRightBoundingBox}};
 
-            meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Edges, boundingBox);
-            const auto edgeIndex = meshKernelState[meshKernelId].m_mesh2d->FindIndexCloseToAPoint(point, meshkernel::Location::Edges);
+            meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Edges);
 
+            const auto edgeIndex = meshKernelState[meshKernelId].m_mesh2d->FindIndexCloseToAPoint(point, meshkernel::Location::Edges);
             meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteEdge(edgeIndex));
         }
         catch (...)
@@ -1824,7 +1831,7 @@ namespace meshkernelapi
 
             meshkernel::BoundingBox boundingBox{{xLowerLeftBoundingBox, yLowerLeftBoundingBox}, {xUpperRightBoundingBox, yUpperRightBoundingBox}};
 
-            meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Edges, boundingBox);
+            meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Edges);
 
             edgeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindIndexCloseToAPoint(point, meshkernel::Location::Edges));
         }
@@ -2107,7 +2114,9 @@ namespace meshkernelapi
 
             meshkernel::Point const point{xCoordinate, yCoordinate};
             meshkernel::BoundingBox boundingBox{{xLowerLeftBoundingBox, yLowerLeftBoundingBox}, {xUpperRightBoundingBox, yUpperRightBoundingBox}};
-            meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Nodes, boundingBox);
+
+            meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Nodes);
+
             nodeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindNodeCloseToAPoint(point, searchRadius));
         }
         catch (...)
@@ -3746,14 +3755,15 @@ namespace meshkernelapi
             }
 
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() > 0 &&
-                meshKernelState[meshKernelId].m_curvilinearGrid->m_projection != meshKernelState[meshKernelId].m_mesh2d->m_projection)
+                meshKernelState[meshKernelId].m_curvilinearGrid->projection() != meshKernelState[meshKernelId].m_mesh2d->m_projection)
             {
                 throw meshkernel::MeshKernelError("The existing mesh2d projection is not equal to the curvilinear grid projection");
             }
 
-            const auto [nodes, edges, gridIndices] = meshKernelState[meshKernelId].m_curvilinearGrid->ConvertCurvilinearToNodesAndEdges();
+            const auto edges = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeEdges();
+            const auto nodes = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeNodes();
 
-            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->m_projection);
+            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->projection());
 
             // curvilinear grid must be reset to an empty curvilinear grid
             meshKernelState[meshKernelId].m_curvilinearGrid = std::make_unique<meshkernel::CurvilinearGrid>();

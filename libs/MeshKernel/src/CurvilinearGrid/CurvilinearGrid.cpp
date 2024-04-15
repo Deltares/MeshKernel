@@ -25,27 +25,39 @@
 //
 //------------------------------------------------------------------------------
 
-#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
-#include <MeshKernel/Exceptions.hpp>
-#include <MeshKernel/Operations.hpp>
-#include <MeshKernel/Polygons.hpp>
+#include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp"
+#include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/Operations.hpp"
+#include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/Utilities/RTreeFactory.hpp"
 
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridNodeIndices;
 
-CurvilinearGrid::CurvilinearGrid(const CurvilinearGrid& grid) : Mesh(grid.m_edges, grid.Nodes(), grid.m_projection),
+CurvilinearGrid::CurvilinearGrid(const CurvilinearGrid& grid) : m_projection(Projection::cartesian),
                                                                 m_gridNodes(grid.m_gridNodes),
                                                                 m_gridFacesMask(grid.m_gridFacesMask),
                                                                 m_gridNodesTypes(grid.m_gridNodesTypes),
                                                                 m_gridIndices(grid.m_gridIndices)
 {
+    m_RTrees.emplace(Location::Nodes, RTreeFactory::Create(m_projection));
+    m_RTrees.emplace(Location::Edges, RTreeFactory::Create(m_projection));
+    m_RTrees.emplace(Location::Faces, RTreeFactory::Create(m_projection));
 }
 
-CurvilinearGrid::CurvilinearGrid(Projection projection) : Mesh(projection) {}
-
-CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection projection) : Mesh(projection)
+CurvilinearGrid::CurvilinearGrid(Projection projection) : m_projection(projection)
 {
+    m_RTrees.emplace(Location::Nodes, RTreeFactory::Create(m_projection));
+    m_RTrees.emplace(Location::Edges, RTreeFactory::Create(m_projection));
+    m_RTrees.emplace(Location::Faces, RTreeFactory::Create(m_projection));
+}
+
+CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection projection) : m_projection(projection)
+{
+    m_RTrees.emplace(Location::Nodes, RTreeFactory::Create(m_projection));
+    m_RTrees.emplace(Location::Edges, RTreeFactory::Create(m_projection));
+    m_RTrees.emplace(Location::Faces, RTreeFactory::Create(m_projection));
     SetGridNodes(grid);
 }
 
@@ -152,69 +164,7 @@ void CurvilinearGrid::SetFlatCopies()
     {
         return;
     }
-
-    const auto [nodes, edges, gridIndices] = ConvertCurvilinearToNodesAndEdges();
-    m_nodes = nodes;
-    m_edges = edges;
-    m_gridIndices = gridIndices;
-}
-
-std::tuple<std::vector<meshkernel::Point>,
-           std::vector<meshkernel::Edge>,
-           std::vector<CurvilinearGridNodeIndices>>
-CurvilinearGrid::ConvertCurvilinearToNodesAndEdges() const
-{
-    if (!IsValid())
-    {
-        throw std::invalid_argument("CurvilinearGrid::ConvertCurvilinearToNodesAndEdges: Invalid curvilinear grid ");
-    }
-
-    std::vector<Point> nodes(NumN() * NumM());
-    std::vector<Edge> edges(NumM() * (NumN() - 1) +
-                            (NumM() - 1) * NumN());
-    lin_alg::Matrix<UInt> nodeIndices(NumN(), NumM());
-    nodeIndices.setConstant(constants::missing::uintValue);
-    std::vector gridIndices(nodes.size(),
-                            CurvilinearGridNodeIndices{constants::missing::uintValue,
-                                                       constants::missing::uintValue});
-
-    UInt ind = 0;
-    for (UInt n = 0; n < NumN(); n++)
-    {
-        for (UInt m = 0; m < NumM(); m++)
-        {
-
-            nodes[ind] = m_gridNodes(n, m);
-            nodeIndices(n, m) = ind;
-            gridIndices[ind] = {n, m};
-            ind++;
-        }
-    }
-
-    ind = 0;
-    for (UInt n = 0; n < NumN() - 1; n++)
-    {
-        for (UInt m = 0; m < NumM(); m++)
-        {
-
-            edges[ind].first = nodeIndices(n, m);
-            edges[ind].second = nodeIndices(n + 1, m);
-            ind++;
-        }
-    }
-
-    for (UInt n = 0; n < NumN(); n++)
-    {
-        for (UInt m = 0; m < NumM() - 1; m++)
-        {
-            edges[ind].first = nodeIndices(n, m);
-            edges[ind].second = nodeIndices(n, m + 1);
-            ind++;
-        }
-    }
-    edges.resize(ind);
-
-    return {nodes, edges, gridIndices};
+    m_gridIndices = ComputeNodeIndices();
 }
 
 bool CurvilinearGrid::IsValid() const
@@ -235,29 +185,113 @@ bool CurvilinearGrid::IsValid() const
     return true;
 }
 
+void CurvilinearGrid::BuildTree(meshkernel::Location meshLocation)
+{
+    switch (meshLocation)
+    {
+    case Location::Faces:
+        if (m_facesRTreeRequiresUpdate)
+        {
+            const auto faceCenters = ComputeFaceCenters();
+            m_RTrees.at(Location::Faces)->BuildTree(faceCenters);
+            m_facesRTreeRequiresUpdate = false;
+        }
+        break;
+    case Location::Nodes:
+        if (m_nodesRTreeRequiresUpdate)
+        {
+            const auto nodes = ComputeNodes();
+            m_RTrees.at(Location::Nodes)->BuildTree(nodes);
+            m_nodesRTreeRequiresUpdate = false;
+        }
+        break;
+    case Location::Edges:
+        if (m_edgesRTreeRequiresUpdate)
+        {
+            m_edges = ComputeEdges();
+            const auto edgeCenters = ComputeEdgesCenters();
+            m_RTrees.at(Location::Edges)->BuildTree(edgeCenters);
+            m_edgesRTreeRequiresUpdate = false;
+        }
+        break;
+    case Location::Unknown:
+    default:
+        throw std::runtime_error("Mesh2D::SearchLocations: Mesh location has not been set.");
+    }
+}
+
+meshkernel::UInt CurvilinearGrid::FindIndexCloseToAPoint(Point point,
+                                                         Location location,
+                                                         const std::vector<bool>& oneDNodeMask)
+{
+    if (Location::Nodes == location && GetNumNodes() <= 0)
+    {
+        return constants::missing::uintValue;
+    }
+    if (Location::Edges == location && GetNumEdges() <= 0)
+    {
+        return constants::missing::uintValue;
+    }
+    if (Location::Faces == location && GetNumFaces() <= 0)
+    {
+        return constants::missing::uintValue;
+    }
+
+    auto& rtree = m_RTrees.at(location);
+    rtree->SearchNearestPoint(point);
+    const auto numLocations = rtree->GetQueryResultSize();
+
+    if (numLocations <= 0)
+    {
+        throw AlgorithmError("Query result size <= 0.");
+    }
+
+    // resultSize > 0, no node mask applied
+    if (oneDNodeMask.empty())
+    {
+        return rtree->GetQueryResult(0);
+    }
+
+    // resultSize > 0, a mask is applied
+    for (UInt index = 0; index < numLocations; ++index)
+    {
+        const auto locationIndex = rtree->GetQueryResult(index);
+        if (oneDNodeMask[locationIndex])
+        {
+            return locationIndex;
+        }
+    }
+
+    throw AlgorithmError("Could not find a valid location close to a point.");
+}
+
 CurvilinearGridNodeIndices CurvilinearGrid::GetNodeIndices(Point point)
 {
     BuildTree(Location::Nodes);
-    SearchNearestLocation(point, Location::Nodes);
-    if (GetNumLocations(Location::Nodes) == 0)
+
+    m_RTrees.at(Location::Nodes)->SearchNearestPoint(point);
+
+    if (m_RTrees.at(Location::Nodes)->GetQueryResultSize() == 0)
     {
         return {constants::missing::uintValue, constants::missing::uintValue};
     }
 
-    const auto nodeIndex = GetLocationsIndices(0, Location::Nodes);
+    const auto nodeIndex = m_RTrees.at(Location::Nodes)->GetQueryResult(0);
     return m_gridIndices[nodeIndex];
 }
 
 std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGrid::GetEdgeNodeIndices(Point const& point)
 {
     BuildTree(Location::Edges);
-    SearchNearestLocation(point, Location::Edges);
-    if (GetNumLocations(Location::Edges) == 0)
+
+    m_RTrees.at(Location::Edges)->SearchNearestPoint(point);
+
+    if (m_RTrees.at(Location::Edges)->GetQueryResultSize() == 0)
     {
         return {{}, {}};
     }
 
-    const auto nodeIndex = GetLocationsIndices(0, Location::Edges);
+    const auto nodeIndex = m_RTrees.at(Location::Edges)->GetQueryResult(0);
     auto const firstNode = m_edges[nodeIndex].first;
     auto const secondNode = m_edges[nodeIndex].second;
 

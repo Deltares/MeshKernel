@@ -218,7 +218,7 @@ void meshkernel::CurvilinearGridSnapping::Compute()
                 continue;
             }
 
-            m_grid.GetNode(snappedNodeIndex) = m_landBoundary.FindNearestPoint(currentPoint, m_grid.m_projection);
+            m_grid.GetNode(snappedNodeIndex) = m_landBoundary.FindNearestPoint(currentPoint, m_grid.projection());
 
             // Only shift the line points in the grid line/region if the current grid point differs from the
             // grid point (at the same index) snapped to the boundary.

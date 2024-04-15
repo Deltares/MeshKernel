@@ -164,6 +164,7 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
     // build mesh2d face circumcenters r-tree
     std::vector<bool> isFaceAlreadyConnected(m_mesh2d.GetNumFaces(), false);
     m_mesh2d.BuildTree(Location::Faces);
+    auto& rtree = m_mesh2d.GetRTree(Location::Faces);
 
     // loop over 1d mesh edges
     for (UInt e = 0; e < m_mesh1d.GetNumEdges(); ++e)
@@ -176,13 +177,13 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
         const auto maxEdgeLength = m_mesh1d.ComputeMaxLengthSurroundingEdges(firstNode1dMeshEdge);
 
         // compute the nearest 2d face indices
-        m_mesh2d.SearchLocations(m_mesh1d.Node(firstNode1dMeshEdge), 1.1 * maxEdgeLength * maxEdgeLength, Location::Faces);
+        rtree.SearchPoints(m_mesh1d.Node(firstNode1dMeshEdge), 1.1 * maxEdgeLength * maxEdgeLength);
 
         // for each face determine if it is crossing the current 1d edge
-        const auto numNeighbours = m_mesh2d.GetNumLocations(Location::Faces);
+        const auto numNeighbours = rtree.GetQueryResultSize();
         for (UInt f = 0; f < numNeighbours; ++f)
         {
-            const auto face = m_mesh2d.GetLocationsIndices(f, Location::Faces);
+            const auto face = rtree.GetQueryResult(f);
 
             // the face is already connected to a 1d node, nothing to do
             if (isFaceAlreadyConnected[face])
@@ -331,6 +332,7 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
     Validate();
 
     m_mesh1d.BuildTree(Location::Nodes);
+    auto& rtree = m_mesh1d.GetRTree(Location::Nodes);
 
     // find the face indices containing the 1d points
     const auto pointsFaceIndices = m_mesh2d.PointFaceIndices(points);
@@ -345,16 +347,16 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
         }
 
         // get the closest 1d node
-        m_mesh1d.SearchNearestLocation(points[i], Location::Nodes);
+        rtree.SearchNearestPoint(points[i]);
 
         // if nothing found continue
-        if (m_mesh1d.GetNumLocations(Location::Nodes) == 0)
+        if (rtree.GetQueryResultSize() == 0)
         {
             continue;
         }
 
         // form the 1d-2d contact
-        m_mesh1dIndices.emplace_back(m_mesh1d.GetLocationsIndices(0, Location::Nodes));
+        m_mesh1dIndices.emplace_back(rtree.GetQueryResult(0));
         m_mesh2dIndices.emplace_back(pointsFaceIndices[i]);
     }
 
