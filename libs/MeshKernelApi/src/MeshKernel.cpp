@@ -619,14 +619,13 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_curvilinearGrid->GetNumNodes() <= 0)
             {
-                throw meshkernel::ConstraintError("The selected mesh has no nodes.");
+                throw meshkernel::ConstraintError("The selected curvilinear grid has no nodes.");
             }
 
             auto const meshLocation = static_cast<meshkernel::Location>(locationType);
 
             meshkernel::Point const point{xCoordinate, yCoordinate};
             meshkernel::BoundingBox box{{boundingBox.xLowerLeft, boundingBox.yLowerLef}, {boundingBox.xUpperRight, boundingBox.yUpperRight}};
-            meshKernelState[meshKernelId].m_curvilinearGrid->BuildTree(meshLocation);
 
             locationIndex = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->FindLocationIndex(point, meshLocation));
         }
@@ -966,6 +965,40 @@ namespace meshkernelapi
             }
 
             meshKernelState[meshKernelId].m_meshOrthogonalization->Solve();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_get_location_index(int meshKernelId,
+                                                      double xCoordinate,
+                                                      double yCoordinate,
+                                                      int locationType,
+                                                      const BoundingBox& boundingBox,
+                                                      int& locationIndex)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
+            {
+                throw meshkernel::ConstraintError("The selected mesh grid has no nodes.");
+            }
+
+            auto const meshLocation = static_cast<meshkernel::Location>(locationType);
+
+            meshkernel::Point const point{xCoordinate, yCoordinate};
+            meshkernel::BoundingBox box{{boundingBox.xLowerLeft, boundingBox.yLowerLef}, {boundingBox.xUpperRight, boundingBox.yUpperRight}};
+
+            locationIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindLocationIndex(point, meshLocation));
         }
         catch (...)
         {

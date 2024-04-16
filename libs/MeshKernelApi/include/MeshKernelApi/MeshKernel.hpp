@@ -288,7 +288,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_get_dimensions(int meshKernelId, CurvilinearGrid& curvilinearGrid);
 
-        /// @brief Gets the grid node closet to a specific coordinate.
+        /// @brief Gets the grid location closet to a specific coordinate.
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] xCoordinate The input xCoordinate
         /// @param[in] yCoordinate The input yCoordinate
@@ -776,6 +776,21 @@ namespace meshkernelapi
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_compute_inner_ortogonalization_iteration(int meshKernelId);
+
+        /// @brief Gets the mesh location closet to a specific coordinate.
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] xCoordinate The input xCoordinate
+        /// @param[in] yCoordinate The input yCoordinate
+        /// @param[in] locationType The location type
+        /// @param[in] boundingBox The input bounding box
+        /// @param[out] locationIndex The location index
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_location_index(int meshKernelId,
+                                                          double xCoordinate,
+                                                          double yCoordinate,
+                                                          int locationType,
+                                                          const BoundingBox& boundingBox,
+                                                          int& locationIndex);
 
         /// @brief Rotate a mesh2d about a point.
         ///

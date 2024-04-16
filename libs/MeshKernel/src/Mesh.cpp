@@ -664,21 +664,13 @@ meshkernel::UInt Mesh::FindLocationIndex(Point point,
                                          Location location,
                                          const std::vector<bool>& locationMask)
 {
-    if (Location::Nodes == location && GetNumNodes() <= 0)
-    {
-        return constants::missing::uintValue;
-    }
-    if (Location::Edges == location && GetNumEdges() <= 0)
-    {
-        return constants::missing::uintValue;
-    }
-    if (Location::Faces == location && GetNumFaces() <= 0)
-    {
-        return constants::missing::uintValue;
-    }
     BuildTree(location);
-
     const auto& rtree = m_RTrees.at(location);
+    if (rtree->Empty())
+    {
+        return constants::missing::uintValue;
+    }
+
     rtree->SearchNearestPoint(point);
     const auto numLocations = rtree->GetQueryResultSize();
 
