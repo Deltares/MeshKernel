@@ -104,7 +104,7 @@ meshkernel::PolygonalEnclosure::Region meshkernel::PolygonalEnclosure::ContainsR
 {
     Region region = Region::None;
 
-    if (pnt.IsValid () && m_outer.Contains(pnt))
+    if (pnt.IsValid() && m_outer.Contains(pnt))
     {
         // The point is contained within the perimeter of the enclosure.
         region = Region::Exterior;
