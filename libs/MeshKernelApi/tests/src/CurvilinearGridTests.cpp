@@ -987,7 +987,7 @@ TEST(CurvilinearGrid, MakeRectangular_ConvertToMesh2D)
     ASSERT_EQ(mesh2d.num_edges, 60);
 }
 
-class LocationIndexTests : public ::testing::TestWithParam<std::tuple<meshkernel::Point, meshkernel::Location, int>>
+class CurvilinearLocationIndexTests : public ::testing::TestWithParam<std::tuple<meshkernel::Point, meshkernel::Location, int>>
 {
 public:
     [[nodiscard]] static std::vector<std::tuple<meshkernel::Point, meshkernel::Location, int>> GetData()
@@ -1003,7 +1003,7 @@ public:
     }
 };
 
-TEST_P(LocationIndexTests, GetLocationIndex_OnACurvilinearGrid_ShouldGetTheLocationIndex)
+TEST_P(CurvilinearLocationIndexTests, GetLocationIndex_OnACurvilinearGrid_ShouldGetTheLocationIndex)
 {
     // Prepare
     auto const& [point, location, expectedIndex] = GetParam();
@@ -1036,4 +1036,4 @@ TEST_P(LocationIndexTests, GetLocationIndex_OnACurvilinearGrid_ShouldGetTheLocat
     // Execute
     ASSERT_EQ(locationIndex, expectedIndex);
 }
-INSTANTIATE_TEST_SUITE_P(LocationIndexParametrizedTests, LocationIndexTests, ::testing::ValuesIn(LocationIndexTests::GetData()));
+INSTANTIATE_TEST_SUITE_P(LocationIndexParametrizedTests, CurvilinearLocationIndexTests, ::testing::ValuesIn(CurvilinearLocationIndexTests::GetData()));
