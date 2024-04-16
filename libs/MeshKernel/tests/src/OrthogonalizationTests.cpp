@@ -4,6 +4,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
@@ -648,4 +649,102 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
         EXPECT_EQ(meshNodes[i].x, mesh->Node(i).x);
         EXPECT_EQ(meshNodes[i].y, mesh->Node(i).y);
     }
+}
+
+TEST(OrthogonalizationAndSmoothing, RefineUndoTheOrthogonalise)
+{
+    auto mesh = MakeRectangularMeshForTestingRand(20, 20, 1.0, Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalPoints = mesh->Nodes();
+
+    // sample points
+    std::vector<Sample> samples{
+        {14.7153645, 14.5698833, 1.0},
+        {24.7033062, 14.4729137, 1.0},
+        {15.5396099, 24.2669525, 1.0},
+        {23.8305721, 23.9275551, 1.0}};
+
+    auto interpolator = std::make_unique<AveragingInterpolation>(*mesh,
+                                                                 samples,
+                                                                 AveragingInterpolation::Method::MinAbsValue,
+                                                                 Location::Faces,
+                                                                 1.0,
+                                                                 false,
+                                                                 false,
+                                                                 1);
+
+    MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.min_edge_size = 1.0;
+    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 2;
+    meshRefinementParameters.smoothing_iterations = 0;
+
+    MeshRefinement meshRefinement(*mesh,
+                                  std::move(interpolator),
+                                  meshRefinementParameters);
+
+    auto refinementUndoAction = meshRefinement.Compute();
+    refinementUndoAction->Restore();
+
+    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    OrthogonalizationParameters orthogonalizationParameters;
+    orthogonalizationParameters.inner_iterations = 2;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.outer_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 0.975;
+    orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
+
+    std::vector<meshkernel::Point> polygonNodes{{10.0, 10.0}, {30.0, 10.0}, {30.0, 30.0}, {10.0, 30.0}, {10.0, 10.0}};
+
+    auto polygon = std::make_unique<Polygons>(polygonNodes, Projection::cartesian);
+    auto orthogonalisationPolygon = std::make_unique<Polygons>(polygonNodes, Projection::cartesian);
+    std::vector<Point> landBoundary{};
+    auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
+
+    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
+    auto smoother = std::make_unique<Smoother>(*mesh);
+    OrthogonalizationAndSmoothing orthogonalization(*mesh,
+                                                    std::move(smoother),
+                                                    std::move(orthogonalizer),
+                                                    std::move(orthogonalisationPolygon),
+                                                    std::move(landboundaries),
+                                                    projectToLandBoundaryOption,
+                                                    orthogonalizationParameters);
+
+    [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
+
+    const std::vector<meshkernel::Point>& nodes = mesh->Nodes();
+    const auto& enclosure = polygon->Enclosure(0);
+
+    constexpr double tolerance = 1.0e-12;
+
+    orthogonalization.Compute();
+
+    size_t count = 0;
+    size_t orignialCount = 0;
+
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        if (nodes[i].IsValid())
+        {
+            if (!enclosure.Contains(nodes[i]))
+            {
+                EXPECT_NEAR(originalPoints[count].x, nodes[i].x, tolerance);
+                EXPECT_NEAR(originalPoints[count].y, nodes[i].y, tolerance);
+                ++orignialCount;
+            }
+            ++count;
+        }
+    }
+
+    // There are 400 points in the original mesh
+    EXPECT_EQ(count, 400);
+
+    // Only check the number of points not subject to orthogonalisation
+    EXPECT_EQ(orignialCount, 300);
 }
