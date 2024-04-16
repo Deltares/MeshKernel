@@ -211,11 +211,50 @@ void CurvilinearGrid::BuildTree(Location location)
     }
 }
 
+void CurvilinearGrid::BuildTree(Location meshLocation, const BoundingBox& boundingBox)
+{
+    switch (meshLocation)
+    {
+    case Location::Faces:
+        if (m_facesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
+        {
+            const auto faceCenters = ComputeFaceCenters();
+            m_RTrees.at(Location::Faces)->BuildTree(faceCenters, boundingBox);
+            m_facesRTreeRequiresUpdate = false;
+            m_boundingBoxCache = boundingBox;
+        }
+        break;
+    case Location::Nodes:
+        if (m_nodesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
+        {
+            const auto nodes = ComputeNodes();
+            m_RTrees.at(Location::Nodes)->BuildTree(nodes, boundingBox);
+            m_nodesRTreeRequiresUpdate = false;
+            m_boundingBoxCache = boundingBox;
+        }
+        break;
+    case Location::Edges:
+        if (m_edgesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
+        {
+            m_edges = ComputeEdges();
+            const auto edgeCenters = ComputeEdgesCenters();
+            m_RTrees.at(Location::Edges)->BuildTree(edgeCenters, boundingBox);
+            m_edgesRTreeRequiresUpdate = false;
+            m_boundingBoxCache = boundingBox;
+        }
+        break;
+    case Location::Unknown:
+    default:
+        throw std::runtime_error("Invalid location");
+    }
+}
+
 meshkernel::UInt CurvilinearGrid::FindLocationIndex(Point point,
                                                     Location location,
-                                                    const std::vector<bool>& locationMask)
+                                                    const std::vector<bool>& locationMask,
+                                                    const BoundingBox& boundingBox)
 {
-    BuildTree(location);
+    BuildTree(location, boundingBox);
     const auto& rtree = m_RTrees.at(location);
     if (rtree->Empty())
     {

@@ -280,14 +280,21 @@ namespace meshkernel
         /// @param[in] location the location type
         void BuildTree(Location location);
 
+        /// @brief Build the rtree for the corresponding location, using only the locations inside the bounding box
+        /// @param[in] meshLocation The mesh location for which the RTree is build
+        /// @param[in] boundingBox The bounding box
+        void BuildTree(Location meshLocation, const BoundingBox& boundingBox);
+
         /// @brief Finds the index of the closest location
         /// @param[in] point the input point
         /// @param[in] location the location type
         /// @param[in] locationMask the location mask
+        /// @param[in] boundingBox The bounding box
         /// @returns The location index
         UInt FindLocationIndex(Point point,
                                Location location,
-                               const std::vector<bool>& locationMask = {});
+                               const std::vector<bool>& locationMask = {},
+                               const BoundingBox& boundingBox = {});
 
         /// @brief Set the m_nodesRTreeRequiresUpdate flag
         /// @param[in] value The value of the flag

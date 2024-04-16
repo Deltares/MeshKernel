@@ -256,12 +256,14 @@ namespace meshkernel
 
         /// @brief Get the index of a location (node/edge or face) close to a point
         /// @param[in] point The starting point from where to start the search
-        /// @param[in] point The location
-        /// @param[in] point The mask to apply to each location
+        /// @param[in] location The location
+        /// @param[in] locationMask The mask to apply to each location
+        // /@param[in] boundingBox The bounding box
         /// @returns The index of the closest node
         [[nodiscard]] UInt FindLocationIndex(Point point,
                                              Location location,
-                                             const std::vector<bool>& locationMask = std::vector<bool>());
+                                             const std::vector<bool>& locationMask = {},
+                                             const BoundingBox& boundingBox = {});
 
         /// @brief Get the index of a node close to a point
         /// @param[in] point The starting point from where to start the search

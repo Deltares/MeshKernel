@@ -662,9 +662,10 @@ meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point const& point, double searchRa
 
 meshkernel::UInt Mesh::FindLocationIndex(Point point,
                                          Location location,
-                                         const std::vector<bool>& locationMask)
+                                         const std::vector<bool>& locationMask,
+                                         const BoundingBox& boundingBox)
 {
-    BuildTree(location);
+    BuildTree(location, boundingBox);
     const auto& rtree = m_RTrees.at(location);
     if (rtree->Empty())
     {

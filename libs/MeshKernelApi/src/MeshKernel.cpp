@@ -627,7 +627,7 @@ namespace meshkernelapi
             meshkernel::Point const point{xCoordinate, yCoordinate};
             meshkernel::BoundingBox box{{boundingBox.xLowerLeft, boundingBox.yLowerLef}, {boundingBox.xUpperRight, boundingBox.yUpperRight}};
 
-            locationIndex = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->FindLocationIndex(point, meshLocation));
+            locationIndex = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->FindLocationIndex(point, meshLocation, {}, box));
         }
         catch (...)
         {
@@ -998,7 +998,7 @@ namespace meshkernelapi
             meshkernel::Point const point{xCoordinate, yCoordinate};
             meshkernel::BoundingBox box{{boundingBox.xLowerLeft, boundingBox.yLowerLef}, {boundingBox.xUpperRight, boundingBox.yUpperRight}};
 
-            locationIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindLocationIndex(point, meshLocation));
+            locationIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindLocationIndex(point, meshLocation, {}, box));
         }
         catch (...)
         {
@@ -1830,9 +1830,7 @@ namespace meshkernelapi
 
             meshkernel::BoundingBox boundingBox{{xLowerLeftBoundingBox, yLowerLeftBoundingBox}, {xUpperRightBoundingBox, yUpperRightBoundingBox}};
 
-            meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Edges);
-
-            const auto edgeIndex = meshKernelState[meshKernelId].m_mesh2d->FindLocationIndex(point, meshkernel::Location::Edges);
+            const auto edgeIndex = meshKernelState[meshKernelId].m_mesh2d->FindLocationIndex(point, meshkernel::Location::Edges, {}, boundingBox);
             meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteEdge(edgeIndex));
         }
         catch (...)
@@ -1863,9 +1861,7 @@ namespace meshkernelapi
 
             meshkernel::BoundingBox boundingBox{{xLowerLeftBoundingBox, yLowerLeftBoundingBox}, {xUpperRightBoundingBox, yUpperRightBoundingBox}};
 
-            meshKernelState[meshKernelId].m_mesh2d->BuildTree(meshkernel::Location::Edges);
-
-            edgeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindLocationIndex(point, meshkernel::Location::Edges));
+            edgeIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindLocationIndex(point, meshkernel::Location::Edges, {}, boundingBox));
         }
         catch (...)
         {
