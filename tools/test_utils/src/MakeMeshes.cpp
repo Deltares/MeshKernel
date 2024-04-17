@@ -255,7 +255,7 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTestingRand(
     // Create a uniform distribution in 0 .. 1.
     std::uniform_real_distribution<double> distribution(0.0, 1.0);
     std::default_random_engine engine;
-    const double randomScaling = 0.4;
+    const double randomScaling = 0.25;
 
     {
         meshkernel::UInt index = 0;
