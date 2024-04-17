@@ -1654,11 +1654,20 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMesh(const Polygons& polyg
 
     for (UInt n = 0; n < GetNumNodes(); ++n)
     {
-        auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(m_nodes[n]);
-        if (isInPolygon)
+        if (m_nodes[n].IsValid())
         {
-            isNodeInsidePolygon[n] = true;
-            deleteNode[n] = !invertDeletion;
+            auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(m_nodes[n]);
+
+            if (isInPolygon)
+            {
+                isNodeInsidePolygon[n] = true;
+                deleteNode[n] = !invertDeletion;
+            }
+        }
+        else
+        {
+            isNodeInsidePolygon[n] = false;
+            deleteNode[n] = false;
         }
     }
 
