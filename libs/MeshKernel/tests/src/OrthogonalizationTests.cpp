@@ -734,8 +734,8 @@ TEST(OrthogonalizationAndSmoothing, RefineUndoTheOrthogonalise)
         {
             if (!enclosure.Contains(nodes[i]))
             {
-                EXPECT_NEAR(originalPoints[count].x, nodes[i].x, tolerance);
-                EXPECT_NEAR(originalPoints[count].y, nodes[i].y, tolerance);
+                EXPECT_NEAR(originalPoints[count].x, nodes[i].x, tolerance) << "x-position: " << i << "  " << count << "  " << orignialCount;
+                EXPECT_NEAR(originalPoints[count].y, nodes[i].y, tolerance) << "y-position: " << i << "  " << count << "  " << orignialCount;
                 ++orignialCount;
             }
             ++count;
