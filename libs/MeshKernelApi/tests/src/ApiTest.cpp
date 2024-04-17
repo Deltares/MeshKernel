@@ -4,11 +4,11 @@
 #include "MeshKernel/MeshTransformation.hpp"
 #include "MeshKernel/Parameters.hpp"
 
+#include "MeshKernelApi/BoundingBox.hpp"
 #include "MeshKernelApi/GeometryList.hpp"
 #include "MeshKernelApi/Mesh1D.hpp"
 #include "MeshKernelApi/Mesh2D.hpp"
 #include "MeshKernelApi/MeshKernel.hpp"
-#include "MeshKernelApi/BoundingBox.hpp"
 #include "Version/Version.hpp"
 
 #include "TestUtils/Definitions.hpp"
@@ -3204,7 +3204,7 @@ public:
             std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{-1.0, -1.0}, meshkernel::Location::Nodes, 0),
             std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{18.0, 18.0}, meshkernel::Location::Nodes, 10),
             std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{5.0, -1.0}, meshkernel::Location::Edges, 12),
-            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{11.0, 11.0}, meshkernel::Location::Edges, 5),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{11.0, 13.0}, meshkernel::Location::Edges, 5),
             std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{0.5, 0.5}, meshkernel::Location::Faces, 0),
             std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{18.0, 18.0}, meshkernel::Location::Faces, 4),
             std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{7.0, 14.0}, meshkernel::Location::Faces, 3)};
