@@ -669,7 +669,7 @@ meshkernel::UInt Mesh::FindLocationIndex(Point point,
     const auto& rtree = m_RTrees.at(location);
     if (rtree->Empty())
     {
-        return constants::missing::uintValue;
+        throw AlgorithmError("Empty RTree");
     }
 
     rtree->SearchNearestPoint(point);
