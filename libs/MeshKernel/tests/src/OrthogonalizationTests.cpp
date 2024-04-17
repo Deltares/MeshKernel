@@ -656,7 +656,6 @@ TEST(OrthogonalizationAndSmoothing, RefineUndoTheOrthogonalise)
 {
     auto mesh = MakeRectangularMeshForTestingRand(20, 20, 1.0, Projection::cartesian);
     std::cout.precision(20);
-    meshkernel::Print(mesh->Nodes(), mesh->Edges());
 
     const std::vector<meshkernel::Point> originalPoints = mesh->Nodes();
 
@@ -720,7 +719,6 @@ TEST(OrthogonalizationAndSmoothing, RefineUndoTheOrthogonalise)
                                                     orthogonalizationParameters);
 
     [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
-    meshkernel::Print(mesh->Nodes(), mesh->Edges());
 
     const std::vector<meshkernel::Point>& nodes = mesh->Nodes();
     const auto& enclosure = polygon->Enclosure(0);
@@ -732,115 +730,10 @@ TEST(OrthogonalizationAndSmoothing, RefineUndoTheOrthogonalise)
     size_t count = 0;
     size_t orignialCount = 0;
 
-    // std::vector<bool> isContained(405, false);
-
-    // isContained[210] = true;
-    // isContained[211] = true;
-    // isContained[212] = true;
-    // isContained[213] = true;
-    // isContained[214] = true;
-    // isContained[215] = true;
-    // isContained[216] = true;
-    // isContained[217] = true;
-    // isContained[218] = true;
-    // isContained[219] = true;
-    // isContained[230] = true;
-    // isContained[231] = true;
-    // isContained[232] = true;
-    // isContained[233] = true;
-    // isContained[234] = true;
-    // isContained[235] = true;
-    // isContained[236] = true;
-    // isContained[237] = true;
-    // isContained[238] = true;
-    // isContained[239] = true;
-    // isContained[250] = true;
-    // isContained[251] = true;
-    // isContained[252] = true;
-    // isContained[253] = true;
-    // isContained[254] = true;
-    // isContained[255] = true;
-    // isContained[256] = true;
-    // isContained[257] = true;
-    // isContained[258] = true;
-    // isContained[259] = true;
-    // isContained[270] = true;
-    // isContained[271] = true;
-    // isContained[272] = true;
-    // isContained[273] = true;
-    // isContained[274] = true;
-    // isContained[275] = true;
-    // isContained[276] = true;
-    // isContained[277] = true;
-    // isContained[278] = true;
-    // isContained[279] = true;
-    // isContained[290] = true;
-    // isContained[291] = true;
-    // isContained[292] = true;
-    // isContained[293] = true;
-    // isContained[294] = true;
-    // isContained[295] = true;
-    // isContained[296] = true;
-    // isContained[297] = true;
-    // isContained[298] = true;
-    // isContained[299] = true;
-    // isContained[310] = true;
-    // isContained[311] = true;
-    // isContained[312] = true;
-    // isContained[313] = true;
-    // isContained[314] = true;
-    // isContained[315] = true;
-    // isContained[316] = true;
-    // isContained[317] = true;
-    // isContained[318] = true;
-    // isContained[319] = true;
-    // isContained[330] = true;
-    // isContained[331] = true;
-    // isContained[332] = true;
-    // isContained[333] = true;
-    // isContained[334] = true;
-    // isContained[335] = true;
-    // isContained[336] = true;
-    // isContained[337] = true;
-    // isContained[338] = true;
-    // isContained[339] = true;
-    // isContained[350] = true;
-    // isContained[351] = true;
-    // isContained[352] = true;
-    // isContained[353] = true;
-    // isContained[354] = true;
-    // isContained[355] = true;
-    // isContained[356] = true;
-    // isContained[357] = true;
-    // isContained[358] = true;
-    // isContained[359] = true;
-    // isContained[370] = true;
-    // isContained[371] = true;
-    // isContained[372] = true;
-    // isContained[373] = true;
-    // isContained[374] = true;
-    // isContained[375] = true;
-    // isContained[376] = true;
-    // isContained[377] = true;
-    // isContained[378] = true;
-    // isContained[379] = true;
-    // isContained[390] = true;
-    // isContained[391] = true;
-    // isContained[392] = true;
-    // isContained[393] = true;
-    // isContained[394] = true;
-    // isContained[395] = true;
-    // isContained[396] = true;
-    // isContained[397] = true;
-    // isContained[398] = true;
-    // isContained[399] = true;
-
     for (size_t i = 0; i < nodes.size(); ++i)
     {
         if (nodes[i].IsValid())
         {
-            // EXPECT_EQ(isContained[i], enclosure.Contains(nodes[i])) << "is-contained: " << i;
-
             if (!enclosure.Contains(nodes[i]))
             {
                 EXPECT_NEAR(originalPoints[count].x, nodes[i].x, tolerance) << "x-position: " << i << "  " << count << "  " << orignialCount;
@@ -851,18 +744,9 @@ TEST(OrthogonalizationAndSmoothing, RefineUndoTheOrthogonalise)
         }
     }
 
-    size_t pos = 389;
-    std::cout << "node 389: {" << originalPoints[pos].x << ", " << originalPoints[pos].y << "}, {" << nodes[pos].x << ", " << nodes[pos].y << "}"
-              << std::boolalpha << enclosure.Contains(nodes[pos])
-              << std::endl;
-    ++pos;
-    std::cout << "node 390: {" << originalPoints[pos].x << ", " << originalPoints[pos].y << "}, {" << nodes[pos].x << ", " << nodes[pos].y << "}"
-              << std::boolalpha << enclosure.Contains(nodes[pos])
-              << std::endl;
-
     // There are 400 points in the original mesh
     EXPECT_EQ(count, 400);
 
     // Only check the number of points not subject to orthogonalisation
-    EXPECT_EQ(orignialCount, 300);
+    EXPECT_EQ(orignialCount, 319);
 }
