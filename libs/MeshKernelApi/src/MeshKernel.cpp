@@ -627,7 +627,7 @@ namespace meshkernelapi
             meshkernel::Point const point{xCoordinate, yCoordinate};
             meshkernel::BoundingBox box{{boundingBox.xLowerLeft, boundingBox.yLowerLef}, {boundingBox.xUpperRight, boundingBox.yUpperRight}};
 
-            locationIndex = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->FindLocationIndex(point, meshLocation, {}, box));
+            locationIndex = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->FindLocationIndex(point, meshLocation, box));
         }
         catch (...)
         {

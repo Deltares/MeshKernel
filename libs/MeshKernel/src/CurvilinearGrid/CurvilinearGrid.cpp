@@ -158,24 +158,6 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, UInt polygonInd
     }
 }
 
-bool CurvilinearGrid::IsValid() const
-{
-    if (m_gridNodes.size() == 0)
-    {
-        return false;
-    }
-    if (NumM() < 2)
-    {
-        return false;
-    }
-    if (NumN() < 2)
-    {
-        return false;
-    }
-
-    return true;
-}
-
 void CurvilinearGrid::BuildTree(Location location)
 {
     switch (location)
@@ -251,56 +233,23 @@ void CurvilinearGrid::BuildTree(Location meshLocation, const BoundingBox& boundi
 
 meshkernel::UInt CurvilinearGrid::FindLocationIndex(Point point,
                                                     Location location,
-                                                    const std::vector<bool>& locationMask,
                                                     const BoundingBox& boundingBox)
 {
     BuildTree(location, boundingBox);
     const auto& rtree = m_RTrees.at(location);
     if (rtree->Empty())
     {
-        return constants::missing::uintValue;
+        throw AlgorithmError("Empty RTree");
     }
 
     rtree->SearchNearestPoint(point);
-    const auto numLocations = rtree->GetQueryResultSize();
 
-    if (numLocations <= 0)
+    if (rtree->GetQueryResultSize() <= 0)
     {
         throw AlgorithmError("Query result size <= 0.");
     }
 
-    // resultSize > 0, no node mask applied
-    if (locationMask.empty())
-    {
-        return rtree->GetQueryResult(0);
-    }
-
-    // resultSize > 0, a mask is applied
-    for (UInt index = 0; index < numLocations; ++index)
-    {
-        const auto locationIndex = rtree->GetQueryResult(index);
-        if (locationMask[locationIndex])
-        {
-            return locationIndex;
-        }
-    }
-
-    throw AlgorithmError("Could not find a valid location close to a point.");
-}
-
-CurvilinearGridNodeIndices CurvilinearGrid::GetNodeIndices(Point point)
-{
-    BuildTree(Location::Nodes);
-
-    m_RTrees.at(Location::Nodes)->SearchNearestPoint(point);
-
-    if (m_RTrees.at(Location::Nodes)->GetQueryResultSize() == 0)
-    {
-        return {constants::missing::uintValue, constants::missing::uintValue};
-    }
-
-    const auto nodeIndex = m_RTrees.at(Location::Nodes)->GetQueryResult(0);
-    return m_gridIndices[nodeIndex];
+    return rtree->GetQueryResult(0);
 }
 
 std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGrid::GetEdgeNodeIndices(Point const& point)
@@ -314,9 +263,9 @@ std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGr
         return {{}, {}};
     }
 
-    const auto nodeIndex = m_RTrees.at(Location::Edges)->GetQueryResult(0);
-    auto const firstNode = m_edges[nodeIndex].first;
-    auto const secondNode = m_edges[nodeIndex].second;
+    const auto edgeIndex = m_RTrees.at(Location::Edges)->GetQueryResult(0);
+    auto const firstNode = m_edges[edgeIndex].first;
+    auto const secondNode = m_edges[edgeIndex].second;
 
     return {m_gridIndices[firstNode], m_gridIndices[secondNode]};
 }
@@ -332,11 +281,11 @@ bool CurvilinearGrid::AreFaceNodesValid(UInt n, UInt m) const
 std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGrid::ComputeBlockFromCornerPoints(Point const& firstCornerPoint, Point const& secondCornerPoint)
 {
     // Get the m and n indices from the point coordinates
-    auto const firstNode = GetNodeIndices(firstCornerPoint);
-    auto const secondNode = GetNodeIndices(secondCornerPoint);
+    auto const firstNodeIndex = FindLocationIndex(firstCornerPoint, Location::Nodes);
+    auto const secondNodeIndex = FindLocationIndex(secondCornerPoint, Location::Nodes);
 
     // Compute bounding box as node indices from corner points
-    return ComputeBlockFromCornerPoints(firstNode, secondNode);
+    return ComputeBlockFromCornerPoints(m_gridIndices[firstNodeIndex], m_gridIndices[secondNodeIndex]);
 }
 
 std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices>
@@ -921,7 +870,8 @@ meshkernel::Point CurvilinearGrid::TransformDisplacement(Point const& displaceme
 void CurvilinearGrid::DeleteNode(Point const& point)
 {
     // Get the m and n indices from the point coordinates
-    auto const nodeToDelete = GetNodeIndices(point);
+    auto const nodeToDeleteIndex = FindLocationIndex(point, Location::Nodes);
+    const auto nodeToDelete = m_gridIndices[nodeToDeleteIndex];
 
     if (nodeToDelete.IsValid())
     {
@@ -936,16 +886,17 @@ void CurvilinearGrid::DeleteNode(Point const& point)
 void CurvilinearGrid::MoveNode(Point const& fromPoint, Point const& toPoint)
 {
     // Get the node indices of fromPoint
-    auto const nodeIndex = GetNodeIndices(fromPoint);
+    auto const nodeToMoveIndex = FindLocationIndex(fromPoint, Location::Nodes);
+    const auto nodeToMove = m_gridIndices[nodeToMoveIndex];
 
     // Check the node indices are valid
-    if (!nodeIndex.IsValid())
+    if (!nodeToMove.IsValid())
     {
         throw std::invalid_argument("CurvilinearGrid::MoveNode node indices not found");
     }
 
     // move fromPoint to toPoint
-    m_gridNodes(nodeIndex.m_n, nodeIndex.m_m) = toPoint;
+    m_gridNodes(nodeToMove.m_n, nodeToMove.m_m) = toPoint;
 }
 
 meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
@@ -996,7 +947,7 @@ meshkernel::BoundingBox CurvilinearGrid::GetBoundingBox() const
         upperRight.y = std::max(upperRight.y, m_gridNodes(i, 0).y);
     }
 
-    return BoundingBox(lowerLeft, upperRight);
+    return {lowerLeft, upperRight};
 }
 
 std::vector<meshkernel::Point> CurvilinearGrid::ComputeNodes() const
@@ -1059,40 +1010,24 @@ std::vector<meshkernel::Edge> CurvilinearGrid::ComputeEdges() const
 
 std::vector<meshkernel::Point> CurvilinearGrid::ComputeEdgesCenters() const
 {
-    if (!IsValid())
-    {
-        throw AlgorithmError("Invalid curvilinear grid ");
-    }
-
-    std::vector<Point> edgesCenters(GetNumEdges());
+    std::vector<Point> result(GetNumEdges());
     UInt index = 0;
-    for (UInt n = 0; n < NumN() - 1; n++)
+
+    const auto edgeIndices = ComputeEdgeIndices();
+
+    for (const auto& edgeIndex : edgeIndices)
     {
-        for (UInt m = 0; m < NumM(); m++)
-        {
-            edgesCenters[index] = (m_gridNodes(n, m) + m_gridNodes(n + 1, m)) * 0.5;
-            index++;
-        }
-    }
-    for (UInt n = 0; n < NumN(); n++)
-    {
-        for (UInt m = 0; m < NumM() - 1; m++)
-        {
-            edgesCenters[index] = (m_gridNodes(n, m) + m_gridNodes(n, m + 1)) * 0.5;
-            index++;
-        }
+        const auto first = edgeIndex[0];
+        const auto second = edgeIndex[1];
+        result[index] = (m_gridNodes(first.m_n, first.m_m) + m_gridNodes(second.m_n, second.m_m)) * 0.5;
+        index++;
     }
 
-    return edgesCenters;
+    return result;
 }
 
 std::vector<CurvilinearGridNodeIndices> CurvilinearGrid::ComputeNodeIndices() const
 {
-    if (!IsValid())
-    {
-        throw AlgorithmError("Invalid curvilinear grid ");
-    }
-
     std::vector result(NumN() * NumM(),
                        CurvilinearGridNodeIndices{constants::missing::uintValue,
                                                   constants::missing::uintValue});
@@ -1110,28 +1045,67 @@ std::vector<CurvilinearGridNodeIndices> CurvilinearGrid::ComputeNodeIndices() co
     return result;
 }
 
-std::vector<meshkernel::Point> CurvilinearGrid::ComputeFaceCenters() const
+std::vector<CurvilinearGrid::CurvilinearEdgeNodeIndices> CurvilinearGrid::ComputeEdgeIndices() const
 {
-    if (!IsValid())
-    {
-        throw AlgorithmError("Invalid curvilinear grid ");
-    }
 
-    std::vector<Point> result((NumM() - 1) * (NumN() - 1));
+    std::vector<CurvilinearEdgeNodeIndices> result(GetNumEdges());
+    UInt index = 0;
+    for (UInt n = 0; n < NumN() - 1; n++)
+    {
+        for (UInt m = 0; m < NumM(); m++)
+        {
+            result[index][0] = {n, m};
+            result[index][1] = {n + 1, m};
+            index++;
+        }
+    }
+    for (UInt n = 0; n < NumN(); n++)
+    {
+        for (UInt m = 0; m < NumM() - 1; m++)
+        {
+            result[index][0] = {n, m};
+            result[index][1] = {n, m + 1};
+            index++;
+        }
+    }
+    return result;
+}
+
+std::vector<CurvilinearGrid::CurvilinearFaceNodeIndices> CurvilinearGrid::ComputeFaceIndices() const
+{
+    const auto numFaces = (NumM() - 1) * (NumN() - 1);
+
+    std::vector<CurvilinearFaceNodeIndices> result(numFaces);
 
     UInt index = 0;
     for (UInt n = 0; n < NumN() - 1; n++)
     {
         for (UInt m = 0; m < NumM() - 1; m++)
         {
-            result[index] = (m_gridNodes(n, m) +
-                             m_gridNodes(n, m + 1) +
-                             m_gridNodes(n + 1, m + 1) +
-                             m_gridNodes(n + 1, m)) *
-                            0.25;
+            result[index][0] = {n, m};
+            result[index][1] = {n, m + 1};
+            result[index][2] = {n + 1, m + 1};
+            result[index][3] = {n + 1, m};
             index++;
         }
     }
+    return result;
+}
 
+std::vector<meshkernel::Point> CurvilinearGrid::ComputeFaceCenters() const
+{
+    const auto faceIndices = ComputeFaceIndices();
+
+    std::vector<Point> result(faceIndices.size());
+
+    for (UInt i = 0; i < faceIndices.size(); ++i)
+    {
+        Point massCenter{0.0, 0.0};
+        for (const auto& index : faceIndices[i])
+        {
+            massCenter += m_gridNodes(index.m_n, index.m_m);
+        }
+        result[i] = massCenter * 0.25;
+    }
     return result;
 }

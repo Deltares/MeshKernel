@@ -44,6 +44,12 @@ namespace meshkernel
     {
 
     public:
+        /// @brief Typedef for edge indices
+        using CurvilinearEdgeNodeIndices = std::array<CurvilinearGridNodeIndices, 2>;
+
+        /// @brief Typedef for face indices
+        using CurvilinearFaceNodeIndices = std::array<CurvilinearGridNodeIndices, 4>;
+
         /// @brief An enum for curvilinear node types
         enum class NodeType
         {
@@ -95,26 +101,22 @@ namespace meshkernel
 
         /// @brief Check if current curvilinear grid instance is valid
         /// @return True if valid, false otherwise
-        [[nodiscard]] bool IsValid() const;
-
-        /// @brief Get the m and n indices of the node closest to the point
-        /// @param[in] point       The input grid points
-        [[nodiscard]] CurvilinearGridNodeIndices GetNodeIndices(Point point);
+        [[nodiscard]] inline bool IsValid() const;
 
         /// @brief Gets a reference to the grid node at the (m,n) location
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
-        [[nodiscard]] Point& GetNode(const UInt n, const UInt m) { return m_gridNodes(n, m); }
+        [[nodiscard]] inline Point& GetNode(const UInt n, const UInt m);
 
         /// @brief Gets a constant reference to the grid node at the (m,n) location
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
-        [[nodiscard]] Point const& GetNode(const UInt n, const UInt m) const { return m_gridNodes(n, m); }
+        [[nodiscard]] inline Point const& GetNode(const UInt n, const UInt m) const;
 
         /// @brief Gets a reference to the grid node at the location specified by the index.
         /// @note Exception will be raised for a non-valid index
         /// This is just a helper function, it calls GetNode with (index.m_m, index.m_n)
-        [[nodiscard]] meshkernel::Point& GetNode(const CurvilinearGridNodeIndices& index)
+        [[nodiscard]] Point& GetNode(const CurvilinearGridNodeIndices& index)
         {
             if (!index.IsValid())
             {
@@ -126,7 +128,7 @@ namespace meshkernel
         /// @brief Get a constant reference to the grid node at the location specified by the index.
         /// @note Exception will be raised for a non-valid index
         /// This is just a helper function, it calls GetNode with (index.m_m, index.m_n)
-        [[nodiscard]] meshkernel::Point const& GetNode(const CurvilinearGridNodeIndices& index) const
+        [[nodiscard]] Point const& GetNode(const CurvilinearGridNodeIndices& index) const
         {
             if (!index.IsValid())
             {
@@ -271,42 +273,27 @@ namespace meshkernel
         /// @brief Computes the node from an index
         [[nodiscard]] const Point& Node(const UInt index) const
         {
-            const UInt n = static_cast<UInt>(std::floor(index / NumM()));
-            const UInt m = index % NumM();
-            return m_gridNodes(n, m);
+            const auto nodeIndex = GetNodeIndex(index);
+            return m_gridNodes(nodeIndex.m_n, nodeIndex.m_m);
         }
 
-        /// @brief Builds the tree for a specific location type
-        /// @param[in] location the location type
-        void BuildTree(Location location);
-
-        /// @brief Build the rtree for the corresponding location, using only the locations inside the bounding box
-        /// @param[in] meshLocation The mesh location for which the RTree is build
-        /// @param[in] boundingBox The bounding box
-        void BuildTree(Location meshLocation, const BoundingBox& boundingBox);
+        /// @brief Get the node CurvilinearGridNodeIndices from a position
+        /// @return The CurvilinearGridNodeIndices
+        CurvilinearGridNodeIndices GetNodeIndex(const UInt index) const
+        {
+            const UInt n = index / NumM();
+            const UInt m = index % NumM();
+            return {n, m};
+        }
 
         /// @brief Finds the index of the closest location
         /// @param[in] point the input point
         /// @param[in] location the location type
-        /// @param[in] locationMask the location mask
         /// @param[in] boundingBox The bounding box
         /// @returns The location index
         UInt FindLocationIndex(Point point,
                                Location location,
-                               const std::vector<bool>& locationMask = {},
                                const BoundingBox& boundingBox = {});
-
-        /// @brief Set the m_nodesRTreeRequiresUpdate flag
-        /// @param[in] value The value of the flag
-        void SetNodesRTreeRequiresUpdate(bool value) { m_nodesRTreeRequiresUpdate = value; }
-
-        /// @brief Set the m_edgesRTreeRequiresUpdate flag
-        /// @param[in] value The value of the flag
-        void SetEdgesRTreeRequiresUpdate(bool value) { m_edgesRTreeRequiresUpdate = value; }
-
-        /// @brief Set the m_facesRTreeRequiresUpdate flag
-        /// @param[in] value The value of the flag
-        void SetFacesRTreeRequiresUpdate(bool value) { m_facesRTreeRequiresUpdate = value; }
 
         /// @brief Converting a curvilinear mesh to a set of nodes
         /// @details Nodes and grid indices from the matrix are serialized in row-major order (n runs fastest).
@@ -321,14 +308,6 @@ namespace meshkernel
         [[nodiscard]] std::vector<Edge> ComputeEdges() const;
 
     private:
-        /// @brief Remove invalid nodes.
-        /// This function is recursive
-        /// @param[in] invalidNodesToRemove Whether there are still invalid nodes to remove
-        void RemoveInvalidNodes(bool invalidNodesToRemove);
-
-        /// @brief Computes the valid grid faces
-        void ComputeGridFacesMask();
-
         /// @brief Adds an edge at the boundary forming a new face. Increase the grid if required (MODGR1)
         /// The position of the new edge depends on the type of \p firstNode or \p secondNode.
         /// For example, if one of the node types is 'Left' the new edge will be inserted on the left.
@@ -338,17 +317,54 @@ namespace meshkernel
         void AddEdge(CurvilinearGridNodeIndices const& firstNode,
                      CurvilinearGridNodeIndices const& secondNode);
 
+        /// @brief Builds the tree for a specific location type
+        /// @param[in] location the location type
+        void BuildTree(Location location);
+
+        /// @brief Build the rtree for the corresponding location, using only the locations inside the bounding box
+        /// @param[in] meshLocation The mesh location for which the RTree is build
+        /// @param[in] boundingBox The bounding box
+        void BuildTree(Location meshLocation, const BoundingBox& boundingBox);
+
         /// @brief Computes the edge centers in the correct order
-        /// @returns the edge ceneters
+        /// @returns the edge centers
         [[nodiscard]] std::vector<Point> ComputeEdgesCenters() const;
+
+        /// @brief Compute the node indices in row-major order (n runs fastest).
+        /// @returns The  mapping (m and n indices for each node)
+        [[nodiscard]] std::vector<Point> ComputeFaceCenters() const;
+
+        /// @brief Computes the valid grid faces
+        void ComputeGridFacesMask();
 
         /// @brief Compute the node indices in row-major order (n runs fastest).
         /// @returns The  mapping (m and n indices for each node)
         [[nodiscard]] std::vector<CurvilinearGridNodeIndices> ComputeNodeIndices() const;
 
-        /// @brief Compute the node indices in row-major order (n runs fastest).
-        /// @returns The  mapping (m and n indices for each node)
-        [[nodiscard]] std::vector<Point> ComputeFaceCenters() const;
+        /// @brief Compute the edge indices.
+        /// @returns The  mapping (m and n indices for each node of the edge)
+        [[nodiscard]] std::vector<CurvilinearEdgeNodeIndices> ComputeEdgeIndices() const;
+
+        /// @brief Compute the face indices.
+        /// @returns The  mapping (m and n indices for each node of the face)
+        [[nodiscard]] std::vector<CurvilinearFaceNodeIndices> ComputeFaceIndices() const;
+
+        /// @brief Remove invalid nodes.
+        /// This function is recursive
+        /// @param[in] invalidNodesToRemove Whether there are still invalid nodes to remove
+        void RemoveInvalidNodes(bool invalidNodesToRemove);
+
+        /// @brief Set the m_nodesRTreeRequiresUpdate flag
+        /// @param[in] value The value of the flag
+        void SetNodesRTreeRequiresUpdate(bool value) { m_nodesRTreeRequiresUpdate = value; }
+
+        /// @brief Set the m_edgesRTreeRequiresUpdate flag
+        /// @param[in] value The value of the flag
+        void SetEdgesRTreeRequiresUpdate(bool value) { m_edgesRTreeRequiresUpdate = value; }
+
+        /// @brief Set the m_facesRTreeRequiresUpdate flag
+        /// @param[in] value The value of the flag
+        void SetFacesRTreeRequiresUpdate(bool value) { m_facesRTreeRequiresUpdate = value; }
 
         Projection m_projection;                               ///< The curvilinear grid projection
         lin_alg::Matrix<Point> m_gridNodes;                    ///< Member variable storing the grid
@@ -366,3 +382,22 @@ namespace meshkernel
         std::vector<Edge> m_edges; ///< Member variable storing the edges
     };
 } // namespace meshkernel
+
+meshkernel::Point& meshkernel::CurvilinearGrid::GetNode(const UInt n, const UInt m)
+{
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+    m_facesRTreeRequiresUpdate = true;
+
+    return m_gridNodes(n, m);
+}
+
+meshkernel::Point const& meshkernel::CurvilinearGrid::GetNode(const UInt n, const UInt m) const
+{
+    return m_gridNodes(n, m);
+}
+
+bool meshkernel::CurvilinearGrid::IsValid() const
+{
+    return NumM() > 1 && NumN() > 1;
+}
