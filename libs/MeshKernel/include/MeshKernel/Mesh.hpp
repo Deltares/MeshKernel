@@ -258,7 +258,7 @@ namespace meshkernel
         /// @param[in] point The starting point from where to start the search
         /// @param[in] location The location
         /// @param[in] locationMask The mask to apply to each location
-        // /@param[in] boundingBox The bounding box
+        /// @param[in] boundingBox The bounding box
         /// @returns The index of the closest node
         [[nodiscard]] UInt FindLocationIndex(Point point,
                                              Location location,
