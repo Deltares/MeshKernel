@@ -318,14 +318,11 @@ namespace meshkernel
         /// @return The max edge length
         double ComputeMaxLengthSurroundingEdges(UInt node);
 
-        /// @brief Build the rtree for the corresponding location, using all locations
-        /// @param[in] location The mesh location for which the RTree is build
-        void BuildTree(Location location);
-
         /// @brief Build the rtree for the corresponding location, using only the locations inside the bounding box
-        /// @param[in] meshLocation The mesh location for which the RTree is build
+        /// @param[in] location The mesh location for which the RTree is build
         /// @param[in] boundingBox The bounding box
-        void BuildTree(Location meshLocation, const BoundingBox& boundingBox);
+        void BuildTree(Location location, const BoundingBox& boundingBox = {});
+
         /// @brief Computes a vector with the mesh locations coordinates (nodes, edges or faces coordinates).
         ///
         /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).

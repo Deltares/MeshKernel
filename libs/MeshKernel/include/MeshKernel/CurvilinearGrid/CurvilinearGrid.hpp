@@ -227,7 +227,7 @@ namespace meshkernel
         void MoveNode(Point const& fromPoint, Point const& toPoint);
 
         /// @brief Get the mesh bounding box.
-        BoundingBox GetBoundingBox() const;
+        [[nodiscard]] BoundingBox GetBoundingBox() const;
 
         /// @brief The number of nodes M in the m dimension
         /// @return A number >= 2 for a valid curvilinear grid
@@ -274,13 +274,18 @@ namespace meshkernel
         [[nodiscard]] const Point& Node(const UInt index) const
         {
             const auto nodeIndex = GetNodeIndex(index);
-            return m_gridNodes(nodeIndex.m_n, nodeIndex.m_m);
+            return GetNode(nodeIndex);
         }
 
         /// @brief Get the node CurvilinearGridNodeIndices from a position
         /// @return The CurvilinearGridNodeIndices
         CurvilinearGridNodeIndices GetNodeIndex(const UInt index) const
         {
+            if (index >= NumM() * NumN())
+            {
+                throw AlgorithmError("Invalid index");
+            }
+
             const UInt n = index / NumM();
             const UInt m = index % NumM();
             return {n, m};
@@ -317,14 +322,10 @@ namespace meshkernel
         void AddEdge(CurvilinearGridNodeIndices const& firstNode,
                      CurvilinearGridNodeIndices const& secondNode);
 
-        /// @brief Builds the tree for a specific location type
-        /// @param[in] location the location type
-        void BuildTree(Location location);
-
         /// @brief Build the rtree for the corresponding location, using only the locations inside the bounding box
-        /// @param[in] meshLocation The mesh location for which the RTree is build
+        /// @param[in] location The mesh location for which the RTree is build
         /// @param[in] boundingBox The bounding box
-        void BuildTree(Location meshLocation, const BoundingBox& boundingBox);
+        void BuildTree(Location location, const BoundingBox& boundingBox = {});
 
         /// @brief Computes the edge centers in the correct order
         /// @returns the edge centers
@@ -389,12 +390,12 @@ meshkernel::Point& meshkernel::CurvilinearGrid::GetNode(const UInt n, const UInt
     m_edgesRTreeRequiresUpdate = true;
     m_facesRTreeRequiresUpdate = true;
 
-    return m_gridNodes(n, m);
+    return GetNode({n, m});
 }
 
 meshkernel::Point const& meshkernel::CurvilinearGrid::GetNode(const UInt n, const UInt m) const
 {
-    return m_gridNodes(n, m);
+    return GetNode({n, m});
 }
 
 bool meshkernel::CurvilinearGrid::IsValid() const

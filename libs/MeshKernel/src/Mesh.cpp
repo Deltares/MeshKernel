@@ -648,7 +648,7 @@ meshkernel::UInt Mesh::FindNodeCloseToAPoint(Point const& point, double searchRa
     }
     BuildTree(Location::Nodes);
 
-    auto& rtree = m_RTrees.at(Location::Nodes);
+    const auto& rtree = m_RTrees.at(Location::Nodes);
 
     rtree->SearchNearestPoint(point, searchRadius * searchRadius);
 
@@ -1069,41 +1069,9 @@ bool Mesh::IsValidEdge(const UInt edgeId) const
            m_nodes[m_edges[edgeId].first].IsValid() && m_nodes[m_edges[edgeId].second].IsValid();
 }
 
-void Mesh::BuildTree(Location location)
+void Mesh::BuildTree(Location location, const BoundingBox& boundingBox)
 {
     switch (location)
-    {
-    case Location::Faces:
-        if (m_facesRTreeRequiresUpdate)
-        {
-            m_RTrees.at(Location::Faces)->BuildTree(m_facesCircumcenters);
-            m_facesRTreeRequiresUpdate = false;
-        }
-        break;
-    case Location::Nodes:
-        if (m_nodesRTreeRequiresUpdate)
-        {
-            m_RTrees.at(Location::Nodes)->BuildTree(m_nodes);
-            m_nodesRTreeRequiresUpdate = false;
-        }
-        break;
-    case Location::Edges:
-        if (m_edgesRTreeRequiresUpdate)
-        {
-            ComputeEdgesCenters();
-            m_RTrees.at(Location::Edges)->BuildTree(m_edgesCenters);
-            m_edgesRTreeRequiresUpdate = false;
-        }
-        break;
-    case Location::Unknown:
-    default:
-        throw std::runtime_error("Mesh2D::SearchLocations: Mesh location has not been set.");
-    }
-}
-
-void Mesh::BuildTree(Location meshLocation, const BoundingBox& boundingBox)
-{
-    switch (meshLocation)
     {
     case Location::Faces:
         if (m_facesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)

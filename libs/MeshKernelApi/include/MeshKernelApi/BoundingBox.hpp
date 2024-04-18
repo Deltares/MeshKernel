@@ -38,7 +38,7 @@ namespace meshkernelapi
         double xLowerLeft = std::numeric_limits<double>::lowest();
 
         /// @brief The bounding box lower left y coordinate
-        double yLowerLef = std::numeric_limits<double>::lowest();
+        double yLowerLeft = std::numeric_limits<double>::lowest();
 
         /// @brief The bounding box upper right x coordinate
         double xUpperRight = std::numeric_limits<double>::max();

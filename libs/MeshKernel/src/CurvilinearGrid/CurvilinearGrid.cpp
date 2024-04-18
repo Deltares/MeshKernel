@@ -158,44 +158,9 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, UInt polygonInd
     }
 }
 
-void CurvilinearGrid::BuildTree(Location location)
+void CurvilinearGrid::BuildTree(Location location, const BoundingBox& boundingBox)
 {
     switch (location)
-    {
-    case Location::Faces:
-        if (m_facesRTreeRequiresUpdate)
-        {
-            const auto faceCenters = ComputeFaceCenters();
-            m_RTrees.at(Location::Faces)->BuildTree(faceCenters);
-            m_facesRTreeRequiresUpdate = false;
-        }
-        break;
-    case Location::Nodes:
-        if (m_nodesRTreeRequiresUpdate)
-        {
-            const auto nodes = ComputeNodes();
-            m_RTrees.at(Location::Nodes)->BuildTree(nodes);
-            m_nodesRTreeRequiresUpdate = false;
-        }
-        break;
-    case Location::Edges:
-        if (m_edgesRTreeRequiresUpdate)
-        {
-            m_edges = ComputeEdges();
-            const auto edgeCenters = ComputeEdgesCenters();
-            m_RTrees.at(Location::Edges)->BuildTree(edgeCenters);
-            m_edgesRTreeRequiresUpdate = false;
-        }
-        break;
-    case Location::Unknown:
-    default:
-        throw std::runtime_error("Mesh2D::SearchLocations: Mesh location has not been set.");
-    }
-}
-
-void CurvilinearGrid::BuildTree(Location meshLocation, const BoundingBox& boundingBox)
-{
-    switch (meshLocation)
     {
     case Location::Faces:
         if (m_facesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)

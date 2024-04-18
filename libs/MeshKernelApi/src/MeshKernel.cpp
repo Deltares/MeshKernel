@@ -625,7 +625,7 @@ namespace meshkernelapi
             auto const meshLocation = static_cast<meshkernel::Location>(locationType);
 
             meshkernel::Point const point{xCoordinate, yCoordinate};
-            meshkernel::BoundingBox box{{boundingBox.xLowerLeft, boundingBox.yLowerLef}, {boundingBox.xUpperRight, boundingBox.yUpperRight}};
+            meshkernel::BoundingBox box{{boundingBox.xLowerLeft, boundingBox.yLowerLeft}, {boundingBox.xUpperRight, boundingBox.yUpperRight}};
 
             locationIndex = static_cast<int>(meshKernelState[meshKernelId].m_curvilinearGrid->FindLocationIndex(point, meshLocation, box));
         }
@@ -996,7 +996,7 @@ namespace meshkernelapi
             auto const meshLocation = static_cast<meshkernel::Location>(locationType);
 
             meshkernel::Point const point{xCoordinate, yCoordinate};
-            meshkernel::BoundingBox box{{boundingBox.xLowerLeft, boundingBox.yLowerLef}, {boundingBox.xUpperRight, boundingBox.yUpperRight}};
+            meshkernel::BoundingBox box{{boundingBox.xLowerLeft, boundingBox.yLowerLeft}, {boundingBox.xUpperRight, boundingBox.yUpperRight}};
 
             locationIndex = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->FindLocationIndex(point, meshLocation, {}, box));
         }
