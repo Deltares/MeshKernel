@@ -29,6 +29,7 @@
 #include <stddef.h>
 
 #include <MeshKernel/Constants.hpp>
+#include <MeshKernel/Exceptions.hpp>
 
 namespace meshkernel
 {
@@ -52,6 +53,40 @@ namespace meshkernel
 
         /// @brief Overloads equality with another CurvilinearGridNodeIndices
         bool operator==(const CurvilinearGridNodeIndices& rhs) const = default;
+
+        CurvilinearGridNodeIndices& operator+=(const CurvilinearGridNodeIndices& val)
+        {
+            if (!IsValid())
+            {
+                throw ConstraintError("Invalid node index");
+            }
+
+            if (!val.IsValid())
+            {
+                throw ConstraintError("Invalid node index increment");
+            }
+
+            m_n += val.m_n;
+            m_m += val.m_m;
+            return *this;
+        }
+
+        CurvilinearGridNodeIndices& operator-=(const CurvilinearGridNodeIndices& val)
+        {
+            if (!IsValid())
+            {
+                throw ConstraintError("Invalid node index");
+            }
+
+            if (!val.IsValid())
+            {
+                throw ConstraintError("Invalid node index increment");
+            }
+
+            m_n -= val.m_n;
+            m_m -= val.m_m;
+            return *this;
+        }
 
         /// @brief Inquires if another node is on the same grid line of the current node
         /// @param[in] rhs The node to inquire

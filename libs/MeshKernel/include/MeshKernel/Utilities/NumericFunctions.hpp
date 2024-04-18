@@ -54,4 +54,15 @@ namespace meshkernel
         return abs_diff < relative_tol * std::min(abs_value, abs_ref_value);
     }
 
+    /// @brief Determine is a value is in the closed interval, bounded by lower- and upper-bound
+    ///
+    /// \param [in] value The value to determine if in closed interval
+    /// \param [in] lowerBound Lower bound of the interval
+    /// \param [in] upperBound Upper bound of the interval
+    template <typename Scalar>
+    bool IsInRange(const Scalar value, const Scalar lowerBound, const Scalar upperBound)
+    {
+        return lowerBound <= value && value <= upperBound;
+    }
+
 } // namespace meshkernel

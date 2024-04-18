@@ -28,6 +28,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineAttractionRepulsion.hpp>
+#include <MeshKernel/CurvilinearGrid/UndoActions/CurvilinearGridBlockUndoAction.hpp>
 #include <MeshKernel/Entities.hpp>
 
 using meshkernel::CurvilinearGrid;
@@ -42,7 +43,7 @@ CurvilinearGridLineAttractionRepulsion::CurvilinearGridLineAttractionRepulsion(C
 {
 }
 
-void CurvilinearGridLineAttractionRepulsion::Compute()
+meshkernel::UndoActionPtr CurvilinearGridLineAttractionRepulsion::Compute()
 {
     if (m_grid.IsEmpty())
     {
@@ -65,6 +66,8 @@ void CurvilinearGridLineAttractionRepulsion::Compute()
     auto const endN = m_lines[0].IsNGridLine() ? m_lines[0].m_endCoordinate : m_upperRight.m_n;
     auto const startM = m_lines[0].IsMGridLine() ? m_lines[0].m_startCoordinate : m_lowerLeft.m_m;
     auto const endM = m_lines[0].IsMGridLine() ? m_lines[0].m_endCoordinate : m_upperRight.m_m;
+
+    std::unique_ptr<CurvilinearGridBlockUndoAction> undoAction = CurvilinearGridBlockUndoAction::Create(m_grid, {startN, startM}, {endN + 1, endM + 1});
 
     for (auto n = startN; n <= endN; ++n)
     {
@@ -107,4 +110,6 @@ void CurvilinearGridLineAttractionRepulsion::Compute()
             m_grid.GetNode(n, m) += displacement;
         }
     }
+
+    return undoAction;
 }

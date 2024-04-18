@@ -20,7 +20,7 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineVertic
     curvilinearGridDeRefinement.SetBlock({10, 20}, {20, 20});
 
     // Execute
-    curvilinearGridDeRefinement.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridDeRefinement.Compute();
 
     // Assert (the vertical line at x=15 is removed)
     ASSERT_EQ(4, curvilinearGrid.NumM());
@@ -42,7 +42,7 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGridWithMissingFaces_Shou
     curvilinearGridDeRefinement.SetBlock({10, 20}, {20, 20});
 
     // Execute
-    curvilinearGridDeRefinement.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridDeRefinement.Compute();
 
     // Assert
     ASSERT_EQ(6, curvilinearGrid.NumM());
@@ -65,7 +65,7 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineHorizo
     curvilinearGridDeRefinement.SetBlock({10, 10}, {10, 20});
 
     // Execute
-    curvilinearGridDeRefinement.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridDeRefinement.Compute();
 
     // Assert (the vertical line at x=15 is removed)
     ASSERT_EQ(4, curvilinearGrid.NumN());
