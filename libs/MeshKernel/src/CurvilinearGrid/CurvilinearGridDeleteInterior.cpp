@@ -27,8 +27,8 @@
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
-#include "MeshKernel/CurvilinearGrid/CurvilinearGridBlockUndoAction.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp"
+#include "MeshKernel/CurvilinearGrid/UndoActions/CurvilinearGridBlockUndoAction.hpp"
 
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridLine;

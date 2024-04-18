@@ -30,13 +30,13 @@
 #include <vector>
 
 #include <MeshKernel/BoundingBox.hpp>
-#include <MeshKernel/CurvilinearGrid/AddGridLineUndoAction.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridBlockUndoAction.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinementUndoAction.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridUtilities.hpp>
-#include <MeshKernel/CurvilinearGrid/ResetCurvilinearNodeAction.hpp>
+#include <MeshKernel/CurvilinearGrid/UndoActions/AddGridLineUndoAction.hpp>
+#include <MeshKernel/CurvilinearGrid/UndoActions/CurvilinearGridBlockUndoAction.hpp>
+#include <MeshKernel/CurvilinearGrid/UndoActions/CurvilinearGridRefinementUndoAction.hpp>
+#include <MeshKernel/CurvilinearGrid/UndoActions/ResetCurvilinearNodeAction.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh.hpp>

@@ -1,4 +1,4 @@
-#include "MeshKernel/CurvilinearGrid/ResetCurvilinearNodeAction.hpp"
+#include "MeshKernel/CurvilinearGrid/UndoActions/ResetCurvilinearNodeAction.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
 
 std::unique_ptr<meshkernel::ResetCurvilinearNodeAction> meshkernel::ResetCurvilinearNodeAction::Create(CurvilinearGrid& grid,

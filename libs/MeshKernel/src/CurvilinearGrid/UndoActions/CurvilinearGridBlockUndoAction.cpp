@@ -1,4 +1,4 @@
-#include "MeshKernel/CurvilinearGrid/CurvilinearGridBlockUndoAction.hpp"
+#include "MeshKernel/CurvilinearGrid/UndoActions/CurvilinearGridBlockUndoAction.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
 
 std::unique_ptr<meshkernel::CurvilinearGridBlockUndoAction> meshkernel::CurvilinearGridBlockUndoAction::Create(CurvilinearGrid& grid,

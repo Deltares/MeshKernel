@@ -18,6 +18,7 @@ set(AVERAGING_STRATEGIES_SRC_DIR ${SRC_DIR}/AveragingStrategies)
 set(CURVILINEAR_GRID_SRC_DIR ${SRC_DIR}/CurvilinearGrid)
 set(UTILITIES_SRC_DIR ${SRC_DIR}/Utilities)
 set(UNDO_SRC_DIR ${PROJECT_SOURCE_DIR}/src/UndoActions)
+set(CURVILINEAR_UNDO_SRC_DIR ${CURVILINEAR_GRID_SRC_DIR}/UndoActions)
 
 # include directories
 set(INC_DIR ${PROJECT_SOURCE_DIR}/include)
@@ -26,6 +27,7 @@ set(AVERAGING_STRATEGIES_INC_DIR ${DOMAIN_INC_DIR}/AveragingStrategies)
 set(CURVILINEAR_GRID_INC_DIR ${DOMAIN_INC_DIR}/CurvilinearGrid)
 set(UTILITIES_INC_DIR ${DOMAIN_INC_DIR}/Utilities)
 set(UNDO_INC_DIR ${DOMAIN_INC_DIR}/UndoActions)
+set(CURVILINEAR_UNDO_INC_DIR ${CURVILINEAR_GRID_INC_DIR}/UndoActions)
 
 # list of target sources
 set(
@@ -91,11 +93,9 @@ set(
 
 set(
   CURVILINEAR_GRID_SRC_LIST
-  ${CURVILINEAR_GRID_SRC_DIR}/AddGridLineUndoAction.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGrid.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridAlgorithm.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridBlock.cpp
-  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridBlockUndoAction.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridCurvature.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridDeRefinement.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridDeleteExterior.cpp
@@ -110,11 +110,18 @@ set(
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridOrthogonalization.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridRectangular.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridRefinement.cpp
-  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridRefinementUndoAction.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothing.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothness.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapping.cpp
-  ${CURVILINEAR_GRID_SRC_DIR}/ResetCurvilinearNodeAction.cpp
+)
+
+
+set(
+  CURVILINEAR_GRID_UNDO_ACTION_SRC_LIST
+  ${CURVILINEAR_UNDO_SRC_DIR}/AddGridLineUndoAction.cpp
+  ${CURVILINEAR_UNDO_SRC_DIR}/CurvilinearGridBlockUndoAction.cpp
+  ${CURVILINEAR_UNDO_SRC_DIR}/CurvilinearGridRefinementUndoAction.cpp
+  ${CURVILINEAR_UNDO_SRC_DIR}/ResetCurvilinearNodeAction.cpp
 )
 
 # list of target headers
@@ -197,11 +204,9 @@ set(
 
 set(
   CURVILINEAR_GRID_INC_LIST
-  ${CURVILINEAR_GRID_INC_DIR}/AddGridLineUndoAction.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGrid.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridAlgorithm.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridBlock.hpp
-  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridBlockUndoAction.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridCurvature.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridDeRefinement.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridDeleteExterior.hpp
@@ -217,11 +222,18 @@ set(
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridOrthogonalization.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridRectangular.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridRefinement.hpp
-  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridRefinementUndoAction.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothing.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothness.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapping.hpp
-  ${CURVILINEAR_GRID_INC_DIR}/ResetCurvilinearNodeAction.hpp
+)
+
+
+set(
+  CURVILINEAR_UNDO_ACTION_INC_LIST
+  ${CURVILINEAR_UNDO_INC_DIR}/AddGridLineUndoAction.hpp
+  ${CURVILINEAR_UNDO_INC_DIR}/CurvilinearGridBlockUndoAction.hpp
+  ${CURVILINEAR_UNDO_INC_DIR}/CurvilinearGridRefinementUndoAction.hpp
+  ${CURVILINEAR_UNDO_INC_DIR}/ResetCurvilinearNodeAction.hpp
 )
 
 set(
@@ -241,6 +253,7 @@ target_sources(
     ${UNDO_SRC_LIST}
     ${AVERAGING_STRATEGIES_SRC_LIST}
     ${CURVILINEAR_GRID_SRC_LIST}
+    ${CURVILINEAR_GRID_UNDO_ACTION_SRC_LIST}
   PUBLIC
     FILE_SET HEADERS
       BASE_DIRS
@@ -322,12 +335,14 @@ install(TARGETS ${TARGET_NAME} FILE_SET HEADERS DESTINATION "include")
 source_group("Source Files" FILES ${SRC_LIST})
 source_group("Source Files/AveragingStrategies" FILES ${AVERAGING_STRATEGIES_SRC_LIST})
 source_group("Source Files/CurvilinearGrid" FILES ${CURVILINEAR_GRID_SRC_LIST})
+source_group("Source Files/CurvilinearGrid/UndoActions" FILES ${CURVILINEAR_GRID_UNDO_ACTION_SRC_LIST})
 source_group("Source Files/UndoActions" FILES ${UNDO_SRC_LIST})
 
 # group the headers in IDE tree
 source_group("Header Files" FILES ${INC_LIST})
 source_group("Header Files/AveragingStrategies" FILES ${AVERAGING_STRATEGIES_INC_LIST})
 source_group("Header Files/CurvilinearGrid" FILES ${CURVILINEAR_GRID_INC_LIST})
+source_group("Header Files/CurvilinearGrid/UndoActions" FILES ${CURVILINEAR_UNDO_ACTION_INC_LIST})
 source_group("Header Files/UndoActions" FILES ${UNDO_INC_LIST})
 source_group("Header Files/Utilities" FILES ${UTILITIES_INC_LIST})
 

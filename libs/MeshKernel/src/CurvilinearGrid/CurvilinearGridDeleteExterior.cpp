@@ -26,9 +26,10 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteExterior.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp"
+#include "MeshKernel/CurvilinearGrid/UndoActions/CurvilinearGridBlockUndoAction.hpp"
 #include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
-#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridLine;
