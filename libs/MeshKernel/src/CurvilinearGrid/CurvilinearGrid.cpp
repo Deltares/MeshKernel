@@ -1118,9 +1118,3 @@ void CurvilinearGrid::CommitAction(const ResetCurvilinearNodeAction& undoAction)
         SetFlatCopies();
     }
 }
-
-void CurvilinearGrid::printGraph(std::ostream& out)
-{
-    SetFlatCopies();
-    Print(m_nodes, m_edges, out);
-}

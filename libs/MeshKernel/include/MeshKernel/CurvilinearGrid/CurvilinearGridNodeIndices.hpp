@@ -29,6 +29,7 @@
 #include <stddef.h>
 
 #include <MeshKernel/Constants.hpp>
+#include <MeshKernel/Exceptions.hpp>
 
 namespace meshkernel
 {
@@ -55,6 +56,16 @@ namespace meshkernel
 
         CurvilinearGridNodeIndices& operator+=(const CurvilinearGridNodeIndices& val)
         {
+            if (!IsValid())
+            {
+                throw ConstraintError("Invalid node index");
+            }
+
+            if (!val.IsValid())
+            {
+                throw ConstraintError("Invalid node index increment");
+            }
+
             m_n += val.m_n;
             m_m += val.m_m;
             return *this;
@@ -62,6 +73,16 @@ namespace meshkernel
 
         CurvilinearGridNodeIndices& operator-=(const CurvilinearGridNodeIndices& val)
         {
+            if (!IsValid())
+            {
+                throw ConstraintError("Invalid node index");
+            }
+
+            if (!val.IsValid())
+            {
+                throw ConstraintError("Invalid node index increment");
+            }
+
             m_n -= val.m_n;
             m_m -= val.m_m;
             return *this;

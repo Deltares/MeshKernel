@@ -398,9 +398,6 @@ namespace meshkernel
         /// @brief Restore grid to state after node was modified
         void CommitAction(const ResetCurvilinearNodeAction& undoAction);
 
-        /// @brief Prints the node and edge connectivity to the output stream in a form that can be read by Octave/Matlab
-        void printGraph(std::ostream& out = std::cout);
-
     private:
         /// @brief Remove invalid nodes.
         /// This function is recursive

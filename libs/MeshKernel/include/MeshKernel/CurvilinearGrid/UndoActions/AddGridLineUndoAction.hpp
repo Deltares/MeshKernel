@@ -28,8 +28,6 @@
 #pragma once
 
 #include <memory>
-#include <utility>
-#include <vector>
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp"
 #include "MeshKernel/UndoActions/BaseMeshUndoAction.hpp"
