@@ -892,7 +892,7 @@ TEST(CurvilinearBasicTests, CompoundTest)
     }
 }
 
-TEST(CurvilinearBasicTests, InsertFaceBug)
+TEST(CurvilinearBasicTests, InsertMultipleFacesAlongAllBoundaryEdges)
 {
     constexpr double originX = 0.0;
     constexpr double originY = 0.0;
