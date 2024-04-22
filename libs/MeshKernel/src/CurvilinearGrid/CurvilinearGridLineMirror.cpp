@@ -78,19 +78,19 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
 
     switch (gridLineType)
     {
-    case Left: // Bottom
+    case Bottom:
         lowerLeft = {0, m_lines[0].m_startCoordinate};
         upperRight = {1, m_lines[0].m_endCoordinate + 1};
         break;
-    case Right: // Top
+    case Top:
         lowerLeft = {m_grid.NumN() - 1, m_lines[0].m_startCoordinate};
         upperRight = {m_grid.NumN() - 0, m_lines[0].m_endCoordinate + 1};
         break;
-    case Up: // Right
+    case Right:
         lowerLeft = {m_lines[0].m_startCoordinate, m_grid.NumM() - 1};
         upperRight = {m_lines[0].m_endCoordinate + 1, m_grid.NumM() - 0};
         break;
-    case Bottom: // Left
+    case Left:
         lowerLeft = {0, m_lines[0].m_startCoordinate};
         upperRight = {m_lines[0].m_endCoordinate + 1, m_lines[0].m_startCoordinate + 1};
         break;
@@ -102,24 +102,24 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
 
     for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
     {
-        if (gridLineType == Left)
+        if (gridLineType == Bottom)
         {
             m_grid.GetNode(0, i) = m_grid.GetNode(1, i) * a +
                                    m_grid.GetNode(2, i) * b;
         }
-        if (gridLineType == Right)
+        if (gridLineType == Top)
         {
             auto const last_row = (UInt)m_grid.NumN() - 1;
             m_grid.GetNode(last_row, i) = m_grid.GetNode(last_row - 1, i) * a +
                                           m_grid.GetNode(last_row - 2, i) * b;
         }
-        if (gridLineType == Up)
+        if (gridLineType == Right)
         {
             auto const last_col = (UInt)m_grid.NumM() - 1;
             m_grid.GetNode(i, last_col) = m_grid.GetNode(i, last_col - 1) * a +
                                           m_grid.GetNode(i, last_col - 2) * b;
         }
-        if (gridLineType == Bottom)
+        if (gridLineType == Left)
         {
             m_grid.GetNode(i, 0) = m_grid.GetNode(i, 1) * a +
                                    m_grid.GetNode(i, 2) * b;

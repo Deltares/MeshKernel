@@ -891,3 +891,102 @@ TEST(CurvilinearBasicTests, CompoundTest)
         EXPECT_NEAR(refinedPoints[i].y, grid->Node(i).y, tolerance);
     }
 }
+
+TEST(CurvilinearBasicTests, InsertFaceBug)
+{
+    constexpr double originX = 0.0;
+    constexpr double originY = 0.0;
+
+    constexpr double deltaX = 1.0;
+    constexpr double deltaY = 1.0;
+
+    constexpr size_t nx = 11;
+    constexpr size_t ny = 11;
+
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    grid->SetFlatCopies();
+    grid->ComputeGridNodeTypes();
+
+    EXPECT_EQ(grid->NumN(), ny);
+    EXPECT_EQ(grid->NumM(), nx);
+
+    // Add element to bottom (south) of the grid
+    // The number of rows in the array of points should be increased by 1
+    [[maybe_unused]] auto undoAction1b = grid->InsertFace({0.5, 0.0});
+    EXPECT_EQ(grid->NumN(), ny + 1);
+    EXPECT_EQ(grid->NumM(), nx);
+
+    // Add another element to bottom (south) of the grid
+    // The number of rows in the array of points should not be increased
+    [[maybe_unused]] auto undoAction2b = grid->InsertFace({3.5, 0.0});
+    EXPECT_EQ(grid->NumN(), ny + 1);
+    EXPECT_EQ(grid->NumM(), nx);
+
+    // Add another element to bottom (south) of the grid
+    // The number of rows in the array of points should not be increased
+    [[maybe_unused]] auto undoAction3b = grid->InsertFace({2.5, 0.0});
+    EXPECT_EQ(grid->NumN(), ny + 1);
+    EXPECT_EQ(grid->NumM(), nx);
+
+    //--------------------------------
+
+    // Add element to left (west) of the grid
+    // The number of columns in the array of points should be increased by 1
+    [[maybe_unused]] auto undoAction1l = grid->InsertFace({0.0, 0.5});
+    EXPECT_EQ(grid->NumN(), ny + 1);
+    EXPECT_EQ(grid->NumM(), nx + 1);
+
+    // Add another element to left (west) of the grid
+    // The number of columns in the array of points should not be increased
+    [[maybe_unused]] auto undoAction2l = grid->InsertFace({0.0, 3.5});
+    EXPECT_EQ(grid->NumN(), ny + 1);
+    EXPECT_EQ(grid->NumM(), nx + 1);
+
+    // Add another element to left (west) of the grid
+    // The number of columns in the array of points should not be increased
+    [[maybe_unused]] auto undoAction3l = grid->InsertFace({0.0, 2.5});
+    EXPECT_EQ(grid->NumN(), ny + 1);
+    EXPECT_EQ(grid->NumM(), nx + 1);
+
+    //--------------------------------
+
+    // Add element to top (north) of the grid
+    // The number of rows in the array of points should be increased by another 1
+    [[maybe_unused]] auto undoAction1t = grid->InsertFace({0.5, 10.0});
+    EXPECT_EQ(grid->NumN(), ny + 2);
+    EXPECT_EQ(grid->NumM(), nx + 1);
+
+    // Add another element to top (north) of the grid
+    // The number of rows in the array of points should not be increased
+    [[maybe_unused]] auto undoAction2t = grid->InsertFace({3.5, 10.0});
+    EXPECT_EQ(grid->NumN(), ny + 2);
+    EXPECT_EQ(grid->NumM(), nx + 1);
+
+    // Add another element to top (north) of the grid
+    // The number of rows in the array of points should not be increased
+    [[maybe_unused]] auto undoAction3t = grid->InsertFace({2.5, 10.0});
+    EXPECT_EQ(grid->NumN(), ny + 2);
+    EXPECT_EQ(grid->NumM(), nx + 1);
+
+    //--------------------------------
+
+    // Add element to right (east) of the grid
+    // The number of columns in the array of points should be increased by another 1
+    [[maybe_unused]] auto undoAction1r = grid->InsertFace({10.0, 0.5});
+    EXPECT_EQ(grid->NumN(), ny + 2);
+    EXPECT_EQ(grid->NumM(), nx + 2);
+
+    // Add another element to right (east) of the grid
+    // The number of columns in the array of points should not be increased
+    [[maybe_unused]] auto undoAction2r = grid->InsertFace({10.0, 3.5});
+    EXPECT_EQ(grid->NumN(), ny + 2);
+    EXPECT_EQ(grid->NumM(), nx + 2);
+
+    // Add another element to right (east) of the grid
+    // The number of columns in the array of points should not be increased
+    [[maybe_unused]] auto undoAction3r = grid->InsertFace({10.0, 2.5});
+    EXPECT_EQ(grid->NumN(), ny + 2);
+    EXPECT_EQ(grid->NumM(), nx + 2);
+
+    //--------------------------------
+}
