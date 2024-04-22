@@ -789,21 +789,6 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_compute_inner_ortogonalization_iteration(int meshKernelId);
 
-        /// @brief Gets the mesh location closet to a specific coordinate.
-        /// @param[in] meshKernelId The id of the mesh state
-        /// @param[in] xCoordinate The input xCoordinate
-        /// @param[in] yCoordinate The input yCoordinate
-        /// @param[in] locationType The location type
-        /// @param[in] boundingBox The input bounding box
-        /// @param[out] locationIndex The location index
-        /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_get_location_index(int meshKernelId,
-                                                          double xCoordinate,
-                                                          double yCoordinate,
-                                                          int locationType,
-                                                          const BoundingBox& boundingBox,
-                                                          int& locationIndex);
-
         /// @brief Rotate a mesh2d about a point.
         ///
         /// @param[in] meshKernelId The id of the mesh state
@@ -1053,6 +1038,21 @@ namespace meshkernelapi
         /// @param[in,out] edges Pointer to memory where the indices of the hanging edges will be stored
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_hanging_edges(int meshKernelId, int* edges);
+
+        /// @brief Gets the mesh location closet to a specific coordinate.
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] xCoordinate The input xCoordinate
+        /// @param[in] yCoordinate The input yCoordinate
+        /// @param[in] locationType The location type
+        /// @param[in] boundingBox The input bounding box
+        /// @param[out] locationIndex The location index
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_location_index(int meshKernelId,
+                                                          double xCoordinate,
+                                                          double yCoordinate,
+                                                          int locationType,
+                                                          const BoundingBox& boundingBox,
+                                                          int& locationIndex);
 
         /// @brief Retrieves the boundaries of a mesh as a series of separated polygons.
         ///

@@ -317,7 +317,7 @@ void CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
     {
         for (UInt m = 0; m < NumM() - 1; ++m)
         {
-            if (m_gridFacesMask(n, m))
+            if (IsFaceMaskValid(n, m))
             {
                 validNodeMask[n][m] = true;
                 validNodeMask[n][m + 1] = true;
@@ -1015,6 +1015,7 @@ void CurvilinearGrid::RestoreAction(const AddGridLineUndoAction& undoAction)
     // The node and edge trees need to be rebuilt
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
+    m_gridIndices = ComputeNodeIndices();
 
     // Since the size of the grid has changed the node-vector needs to be reset
     ComputeGridNodeTypes();
@@ -1026,6 +1027,7 @@ void CurvilinearGrid::CommitAction(const AddGridLineUndoAction& undoAction)
     m_endOffset -= undoAction.EndOffset();
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
+    m_gridIndices = ComputeNodeIndices();
     ComputeGridNodeTypes();
 }
 
@@ -1050,6 +1052,7 @@ void CurvilinearGrid::RestoreAction(CurvilinearGridRefinementUndoAction& undoAct
     undoAction.Swap(m_gridNodes, m_startOffset, m_endOffset);
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
+    m_gridIndices = ComputeNodeIndices();
     ComputeGridNodeTypes();
 }
 
@@ -1058,6 +1061,7 @@ void CurvilinearGrid::CommitAction(CurvilinearGridRefinementUndoAction& undoActi
     undoAction.Swap(m_gridNodes, m_startOffset, m_endOffset);
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
+    m_gridIndices = ComputeNodeIndices();
     ComputeGridNodeTypes();
 }
 
