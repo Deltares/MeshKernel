@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.17"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>MeshKernel: /home/runner/work/MeshKernel/MeshKernel/libs/MeshKernelApi/include/MeshKernelApi/Mesh1D.hpp Source File</title>
+<title>MeshKernel: /home/runner/work/MeshKernel/MeshKernel/libs/MeshKernelApi/include/MeshKernelApi/BoundingBox.hpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -74,12 +74,12 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">Mesh1D.hpp</div>  </div>
+<div class="title">BoundingBox.hpp</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">//---- GPL ---------------------------------------------------------------------</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">//</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">// Copyright (C)  Stichting Deltares, 2011-2020.</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">// Copyright (C)  Stichting Deltares, 2011-2021.</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">//</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">// This program is free software: you can redistribute it and/or modify</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">// it under the terms of the GNU General Public License as published by</span></div>
@@ -106,30 +106,28 @@ $(function() {
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#pragma once</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacemeshkernelapi.html">meshkernelapi</a></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;{</div>
-<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="structmeshkernelapi_1_1_mesh1_d.html">   33</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="structmeshkernelapi_1_1_mesh1_d.html">Mesh1D</a></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    {</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="structmeshkernelapi_1_1_mesh1_d.html#adb3a270df6aaa1b67be8260f33a76552">   36</a></span>&#160;        <span class="keywordtype">int</span>* <a class="code" href="structmeshkernelapi_1_1_mesh1_d.html#adb3a270df6aaa1b67be8260f33a76552">edge_nodes</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="structmeshkernelapi_1_1_mesh1_d.html#a97f68f54d7b204c198fe655b9551b4cb">   38</a></span>&#160;        <span class="keywordtype">double</span>* <a class="code" href="structmeshkernelapi_1_1_mesh1_d.html#a97f68f54d7b204c198fe655b9551b4cb">node_x</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="structmeshkernelapi_1_1_mesh1_d.html#a6471e0c2a8f03e8e3cc4819f7af1c9d5">   40</a></span>&#160;        <span class="keywordtype">double</span>* <a class="code" href="structmeshkernelapi_1_1_mesh1_d.html#a6471e0c2a8f03e8e3cc4819f7af1c9d5">node_y</a> = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="structmeshkernelapi_1_1_mesh1_d.html#a062befa1256e3080889ffe68fda0488e">   42</a></span>&#160;        <span class="keywordtype">int</span> <a class="code" href="structmeshkernelapi_1_1_mesh1_d.html#a062befa1256e3080889ffe68fda0488e">num_nodes</a>;</div>
-<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="structmeshkernelapi_1_1_mesh1_d.html#a4ac44ee2ed95ef29d6b250b61d81b662">   44</a></span>&#160;        <span class="keywordtype">int</span> <a class="code" href="structmeshkernelapi_1_1_mesh1_d.html#a4ac44ee2ed95ef29d6b250b61d81b662">num_valid_nodes</a>;</div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="structmeshkernelapi_1_1_mesh1_d.html#af1a1e2f5f2b2761803b5b42b4e54bc3f">   46</a></span>&#160;        <span class="keywordtype">int</span> <a class="code" href="structmeshkernelapi_1_1_mesh1_d.html#af1a1e2f5f2b2761803b5b42b4e54bc3f">num_edges</a>;</div>
-<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="structmeshkernelapi_1_1_mesh1_d.html#add2bcc8e19c87ecedde7bfd9316c8526">   48</a></span>&#160;        <span class="keywordtype">int</span> <a class="code" href="structmeshkernelapi_1_1_mesh1_d.html#add2bcc8e19c87ecedde7bfd9316c8526">num_valid_edges</a>;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    };</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;} <span class="comment">// namespace meshkernelapi</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;limits&gt;</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="namespacemeshkernelapi.html">   32</a></span>&#160;<span class="keyword">namespace </span><a class="code" href="namespacemeshkernelapi.html">meshkernelapi</a></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;{</div>
+<div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="structmeshkernelapi_1_1_bounding_box.html">   35</a></span>&#160;    <span class="keyword">struct </span><a class="code" href="structmeshkernelapi_1_1_bounding_box.html">BoundingBox</a></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    {</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="structmeshkernelapi_1_1_bounding_box.html#a7f0a620580830fd6ea3c4a1445ac425b">   38</a></span>&#160;        <span class="keywordtype">double</span> <a class="code" href="structmeshkernelapi_1_1_bounding_box.html#a7f0a620580830fd6ea3c4a1445ac425b">xLowerLeft</a> = std::numeric_limits&lt;double&gt;::lowest();</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="structmeshkernelapi_1_1_bounding_box.html#af31e8671e9e9460b9a0f2a9cf0dec099">   41</a></span>&#160;        <span class="keywordtype">double</span> <a class="code" href="structmeshkernelapi_1_1_bounding_box.html#af31e8671e9e9460b9a0f2a9cf0dec099">yLowerLeft</a> = std::numeric_limits&lt;double&gt;::lowest();</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
+<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="structmeshkernelapi_1_1_bounding_box.html#a1db175c0e061d06fca74aa2f0b51d0b0">   44</a></span>&#160;        <span class="keywordtype">double</span> <a class="code" href="structmeshkernelapi_1_1_bounding_box.html#a1db175c0e061d06fca74aa2f0b51d0b0">xUpperRight</a> = std::numeric_limits&lt;double&gt;::max();</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="structmeshkernelapi_1_1_bounding_box.html#a0acec99294dbef5c3a2056f3186e471f">   47</a></span>&#160;        <span class="keywordtype">double</span> <a class="code" href="structmeshkernelapi_1_1_bounding_box.html#a0acec99294dbef5c3a2056f3186e471f">yUpperRight</a> = std::numeric_limits&lt;double&gt;::max();</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    };</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;} <span class="comment">// namespace meshkernelapi</span></div>
 </div><!-- fragment --></div><!-- contents -->
-<div class="ttc" id="astructmeshkernelapi_1_1_mesh1_d_html_adb3a270df6aaa1b67be8260f33a76552"><div class="ttname"><a href="structmeshkernelapi_1_1_mesh1_d.html#adb3a270df6aaa1b67be8260f33a76552">meshkernelapi::Mesh1D::edge_nodes</a></div><div class="ttdeci">int * edge_nodes</div><div class="ttdoc">The nodes composing each mesh 1d edge.</div><div class="ttdef"><b>Definition:</b> Mesh1D.hpp:36</div></div>
-<div class="ttc" id="astructmeshkernelapi_1_1_mesh1_d_html_a6471e0c2a8f03e8e3cc4819f7af1c9d5"><div class="ttname"><a href="structmeshkernelapi_1_1_mesh1_d.html#a6471e0c2a8f03e8e3cc4819f7af1c9d5">meshkernelapi::Mesh1D::node_y</a></div><div class="ttdeci">double * node_y</div><div class="ttdoc">The y-coordinates of the mesh nodes.</div><div class="ttdef"><b>Definition:</b> Mesh1D.hpp:40</div></div>
-<div class="ttc" id="astructmeshkernelapi_1_1_mesh1_d_html_a062befa1256e3080889ffe68fda0488e"><div class="ttname"><a href="structmeshkernelapi_1_1_mesh1_d.html#a062befa1256e3080889ffe68fda0488e">meshkernelapi::Mesh1D::num_nodes</a></div><div class="ttdeci">int num_nodes</div><div class="ttdoc">The number of 1d nodes.</div><div class="ttdef"><b>Definition:</b> Mesh1D.hpp:42</div></div>
-<div class="ttc" id="astructmeshkernelapi_1_1_mesh1_d_html_add2bcc8e19c87ecedde7bfd9316c8526"><div class="ttname"><a href="structmeshkernelapi_1_1_mesh1_d.html#add2bcc8e19c87ecedde7bfd9316c8526">meshkernelapi::Mesh1D::num_valid_edges</a></div><div class="ttdeci">int num_valid_edges</div><div class="ttdoc">The number of valid 1d edges.</div><div class="ttdef"><b>Definition:</b> Mesh1D.hpp:48</div></div>
-<div class="ttc" id="astructmeshkernelapi_1_1_mesh1_d_html_a97f68f54d7b204c198fe655b9551b4cb"><div class="ttname"><a href="structmeshkernelapi_1_1_mesh1_d.html#a97f68f54d7b204c198fe655b9551b4cb">meshkernelapi::Mesh1D::node_x</a></div><div class="ttdeci">double * node_x</div><div class="ttdoc">The x-coordinates of the mesh nodes.</div><div class="ttdef"><b>Definition:</b> Mesh1D.hpp:38</div></div>
-<div class="ttc" id="astructmeshkernelapi_1_1_mesh1_d_html_a4ac44ee2ed95ef29d6b250b61d81b662"><div class="ttname"><a href="structmeshkernelapi_1_1_mesh1_d.html#a4ac44ee2ed95ef29d6b250b61d81b662">meshkernelapi::Mesh1D::num_valid_nodes</a></div><div class="ttdeci">int num_valid_nodes</div><div class="ttdoc">The number of valid 1d nodes.</div><div class="ttdef"><b>Definition:</b> Mesh1D.hpp:44</div></div>
-<div class="ttc" id="astructmeshkernelapi_1_1_mesh1_d_html"><div class="ttname"><a href="structmeshkernelapi_1_1_mesh1_d.html">meshkernelapi::Mesh1D</a></div><div class="ttdoc">A struct used to describe the values of a mesh 1d in a C-compatible manner.</div><div class="ttdef"><b>Definition:</b> Mesh1D.hpp:33</div></div>
-<div class="ttc" id="astructmeshkernelapi_1_1_mesh1_d_html_af1a1e2f5f2b2761803b5b42b4e54bc3f"><div class="ttname"><a href="structmeshkernelapi_1_1_mesh1_d.html#af1a1e2f5f2b2761803b5b42b4e54bc3f">meshkernelapi::Mesh1D::num_edges</a></div><div class="ttdeci">int num_edges</div><div class="ttdoc">The number of 1d edges.</div><div class="ttdef"><b>Definition:</b> Mesh1D.hpp:46</div></div>
+<div class="ttc" id="astructmeshkernelapi_1_1_bounding_box_html_a1db175c0e061d06fca74aa2f0b51d0b0"><div class="ttname"><a href="structmeshkernelapi_1_1_bounding_box.html#a1db175c0e061d06fca74aa2f0b51d0b0">meshkernelapi::BoundingBox::xUpperRight</a></div><div class="ttdeci">double xUpperRight</div><div class="ttdoc">The bounding box upper right x coordinate.</div><div class="ttdef"><b>Definition:</b> BoundingBox.hpp:44</div></div>
+<div class="ttc" id="astructmeshkernelapi_1_1_bounding_box_html_a7f0a620580830fd6ea3c4a1445ac425b"><div class="ttname"><a href="structmeshkernelapi_1_1_bounding_box.html#a7f0a620580830fd6ea3c4a1445ac425b">meshkernelapi::BoundingBox::xLowerLeft</a></div><div class="ttdeci">double xLowerLeft</div><div class="ttdoc">The bounding box lower left x coordinate.</div><div class="ttdef"><b>Definition:</b> BoundingBox.hpp:38</div></div>
+<div class="ttc" id="astructmeshkernelapi_1_1_bounding_box_html_af31e8671e9e9460b9a0f2a9cf0dec099"><div class="ttname"><a href="structmeshkernelapi_1_1_bounding_box.html#af31e8671e9e9460b9a0f2a9cf0dec099">meshkernelapi::BoundingBox::yLowerLeft</a></div><div class="ttdeci">double yLowerLeft</div><div class="ttdoc">The bounding box lower left y coordinate.</div><div class="ttdef"><b>Definition:</b> BoundingBox.hpp:41</div></div>
+<div class="ttc" id="astructmeshkernelapi_1_1_bounding_box_html"><div class="ttname"><a href="structmeshkernelapi_1_1_bounding_box.html">meshkernelapi::BoundingBox</a></div><div class="ttdoc">A struct describing a bounding box.</div><div class="ttdef"><b>Definition:</b> BoundingBox.hpp:35</div></div>
 <div class="ttc" id="anamespacemeshkernelapi_html"><div class="ttname"><a href="namespacemeshkernelapi.html">meshkernelapi</a></div><div class="ttdoc">Contains all structs and functions exposed at the API level.</div><div class="ttdef"><b>Definition:</b> BoundingBox.hpp:32</div></div>
+<div class="ttc" id="astructmeshkernelapi_1_1_bounding_box_html_a0acec99294dbef5c3a2056f3186e471f"><div class="ttname"><a href="structmeshkernelapi_1_1_bounding_box.html#a0acec99294dbef5c3a2056f3186e471f">meshkernelapi::BoundingBox::yUpperRight</a></div><div class="ttdeci">double yUpperRight</div><div class="ttdoc">The bounding box upper right y coordinate.</div><div class="ttdef"><b>Definition:</b> BoundingBox.hpp:47</div></div>
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by &#160;<a href="http://www.doxygen.org/index.html">

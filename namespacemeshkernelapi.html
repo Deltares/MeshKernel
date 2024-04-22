@@ -82,6 +82,9 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_bounding_box.html">BoundingBox</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct describing a bounding box.  <a href="structmeshkernelapi_1_1_bounding_box.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_contacts.html">Contacts</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe contacts between a 1d and a 2d mesh.  <a href="structmeshkernelapi_1_1_contacts.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -191,6 +194,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a82506e242e61fa0a70d63e669a936d67"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a82506e242e61fa0a70d63e669a936d67">mkernel_curvilinear_get_dimensions</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_curvilinear_grid.html">CurvilinearGrid</a> &amp;curvilinearGrid)</td></tr>
 <tr class="memdesc:a82506e242e61fa0a70d63e669a936d67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the curvilinear grid dimensions as a <a class="el" href="structmeshkernelapi_1_1_curvilinear_grid.html" title="A struct used to describe the values of a curvilinear grid in a C-compatible manner.">CurvilinearGrid</a> struct (converted as set of edges and nodes).  <a href="namespacemeshkernelapi.html#a82506e242e61fa0a70d63e669a936d67">More...</a><br /></td></tr>
 <tr class="separator:a82506e242e61fa0a70d63e669a936d67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f93061a0c885e18b266968ebf45e69e"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0f93061a0c885e18b266968ebf45e69e">mkernel_curvilinear_get_location_index</a> (int meshKernelId, double xCoordinate, double yCoordinate, int locationType, const <a class="el" href="structmeshkernelapi_1_1_bounding_box.html">BoundingBox</a> &amp;boundingBox, int &amp;locationIndex)</td></tr>
+<tr class="memdesc:a0f93061a0c885e18b266968ebf45e69e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the grid location closet to a specific coordinate.  <a href="namespacemeshkernelapi.html#a0f93061a0c885e18b266968ebf45e69e">More...</a><br /></td></tr>
+<tr class="separator:a0f93061a0c885e18b266968ebf45e69e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a613dd90bec5a91a28dee0d31788401a7"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a613dd90bec5a91a28dee0d31788401a7">mkernel_curvilinear_initialize_line_shift</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:a613dd90bec5a91a28dee0d31788401a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the curvilinear line shift algorithm.  <a href="namespacemeshkernelapi.html#a613dd90bec5a91a28dee0d31788401a7">More...</a><br /></td></tr>
 <tr class="separator:a613dd90bec5a91a28dee0d31788401a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -448,6 +454,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a2423ff72e320079ef555cbd7413fe767"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a2423ff72e320079ef555cbd7413fe767">mkernel_mesh2d_get_hanging_edges</a> (int meshKernelId, int *edges)</td></tr>
 <tr class="memdesc:a2423ff72e320079ef555cbd7413fe767"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the indices of hanging edges. An hanging edge is an edge where one of the two nodes is not connected.  <a href="namespacemeshkernelapi.html#a2423ff72e320079ef555cbd7413fe767">More...</a><br /></td></tr>
 <tr class="separator:a2423ff72e320079ef555cbd7413fe767"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab1d39c897149389496581641de8a216"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aab1d39c897149389496581641de8a216">mkernel_mesh2d_get_location_index</a> (int meshKernelId, double xCoordinate, double yCoordinate, int locationType, const <a class="el" href="structmeshkernelapi_1_1_bounding_box.html">BoundingBox</a> &amp;boundingBox, int &amp;locationIndex)</td></tr>
+<tr class="memdesc:aab1d39c897149389496581641de8a216"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mesh location closet to a specific coordinate.  <a href="namespacemeshkernelapi.html#aab1d39c897149389496581641de8a216">More...</a><br /></td></tr>
+<tr class="separator:aab1d39c897149389496581641de8a216"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9dd8b018fc9893667066ec6bc59a0107"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a9dd8b018fc9893667066ec6bc59a0107">mkernel_mesh2d_get_mesh_boundaries_as_polygons</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;boundaryPolygons)</td></tr>
 <tr class="memdesc:a9dd8b018fc9893667066ec6bc59a0107"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the boundaries of a mesh as a series of separated polygons.  <a href="namespacemeshkernelapi.html#a9dd8b018fc9893667066ec6bc59a0107">More...</a><br /></td></tr>
 <tr class="separator:a9dd8b018fc9893667066ec6bc59a0107"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1802,6 +1811,72 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">curvilinearGrid</td><td>The structure containing the dimensions of the curvilinear grid. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a0f93061a0c885e18b266968ebf45e69e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f93061a0c885e18b266968ebf45e69e">&#9670;&nbsp;</a></span>mkernel_curvilinear_get_location_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_curvilinear_get_location_index </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xCoordinate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yCoordinate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>locationType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_bounding_box.html">BoundingBox</a> &amp;&#160;</td>
+          <td class="paramname"><em>boundingBox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>locationIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the grid location closet to a specific coordinate. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xCoordinate</td><td>The input xCoordinate </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yCoordinate</td><td>The input yCoordinate </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">locationType</td><td>The location type </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">boundingBox</td><td>The input bounding box </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">locationIndex</td><td>The location index </td></tr>
   </table>
   </dd>
 </dl>
@@ -5117,6 +5192,72 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">edges</td><td>Pointer to memory where the indices of the hanging edges will be stored </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="aab1d39c897149389496581641de8a216"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab1d39c897149389496581641de8a216">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_location_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_get_location_index </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xCoordinate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yCoordinate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>locationType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_bounding_box.html">BoundingBox</a> &amp;&#160;</td>
+          <td class="paramname"><em>boundingBox</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>locationIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the mesh location closet to a specific coordinate. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xCoordinate</td><td>The input xCoordinate </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yCoordinate</td><td>The input yCoordinate </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">locationType</td><td>The location type </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">boundingBox</td><td>The input bounding box </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">locationIndex</td><td>The location index </td></tr>
   </table>
   </dd>
 </dl>
