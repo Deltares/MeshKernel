@@ -126,7 +126,5 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
         }
     }
 
-    m_grid.SetFlatCopies();
-
     return undoAction;
 }
