@@ -28,11 +28,3 @@ std::uint64_t meshkernel::MeshConversionAction::MemorySize() const
 {
     return sizeof(*this) + m_nodes.capacity() * sizeof(Point);
 }
-
-void meshkernel::MeshConversionAction::Print(std::ostream& out) const
-{
-    out << "MeshConversionAction: state " << to_string(GetState())
-        << ", projection: " << ProjectionToString(m_projection)
-        << ", number of nodes: " << m_nodes.size()
-        << std::endl;
-}

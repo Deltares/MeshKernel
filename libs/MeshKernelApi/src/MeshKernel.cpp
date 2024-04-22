@@ -2938,7 +2938,7 @@ namespace meshkernelapi
             // Execute
             meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid, refinement);
             curvilinearGridRefinement.SetBlock(firstPoint, secondPoint);
-            curvilinearGridRefinement.Compute();
+            meshKernelState[meshKernelId].m_undoStack.Add(curvilinearGridRefinement.Compute());
         }
         catch (...)
         {
@@ -2968,7 +2968,7 @@ namespace meshkernelapi
             meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid);
 
             curvilinearGridDeRefinement.SetBlock(firstPoint, secondPoint);
-            curvilinearGridDeRefinement.Compute();
+            meshKernelState[meshKernelId].m_undoStack.Add(curvilinearGridDeRefinement.Compute());
         }
         catch (...)
         {
@@ -3430,7 +3430,7 @@ namespace meshkernelapi
             }
 
             // Execute
-            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->Compute();
+            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->Compute());
         }
         catch (...)
         {
@@ -3497,7 +3497,7 @@ namespace meshkernelapi
                                                                           static_cast<meshkernel::UInt>(smoothingIterations));
 
             curvilinearGridSmoothing.SetBlock(firstPoint, secondPoint);
-            curvilinearGridSmoothing.Compute();
+            meshKernelState[meshKernelId].m_undoStack.Add(curvilinearGridSmoothing.Compute());
         }
         catch (...)
         {
@@ -3684,7 +3684,7 @@ namespace meshkernelapi
             }
             meshkernel::Point const fromPoint{xFromCoordinate, yFromCoordinate};
             meshkernel::Point const toPoint{xToCoordinate, yToCoordinate};
-            meshKernelState[meshKernelId].m_curvilinearGridLineShift->MoveNode(fromPoint, toPoint);
+            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGridLineShift->MoveNode(fromPoint, toPoint));
         }
         catch (...)
         {
@@ -3708,7 +3708,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Curvilinear grid line shift algorithm instance is null.");
             }
 
-            meshKernelState[meshKernelId].m_curvilinearGridLineShift->Compute();
+            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGridLineShift->Compute());
         }
         catch (...)
         {
@@ -3758,7 +3758,7 @@ namespace meshkernelapi
 
             meshkernel::Point const point{xCoordinate, yCoordinate};
 
-            meshKernelState[meshKernelId].m_curvilinearGrid->InsertFace(point);
+            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGrid->InsertFace(point));
         }
         catch (...)
         {
@@ -3831,7 +3831,7 @@ namespace meshkernelapi
             curvilinearDeleteExterior.SetBlock({xFirstPointCoordinate, yFirstPointCoordinate},
                                                {xSecondPointCoordinate, ySecondPointCoordinate});
 
-            curvilinearDeleteExterior.Compute();
+            meshKernelState[meshKernelId].m_undoStack.Add(curvilinearDeleteExterior.Compute());
         }
         catch (...)
         {
@@ -3868,7 +3868,7 @@ namespace meshkernelapi
             curvilinearDeleteInterior.SetBlock({xFirstPointCoordinate, yFirstPointCoordinate},
                                                {xSecondPointCoordinate, ySecondPointCoordinate});
 
-            curvilinearDeleteInterior.Compute();
+            meshKernelState[meshKernelId].m_undoStack.Add(curvilinearDeleteInterior.Compute());
         }
         catch (...)
         {
@@ -3906,7 +3906,7 @@ namespace meshkernelapi
             meshkernel::Point const upperRight{xUpperRightCorner, yUpperRightCorner};
             curvilinearLineAttractionRepulsion.SetBlock(lowerLeft, upperRight);
 
-            curvilinearLineAttractionRepulsion.Compute();
+            meshKernelState[meshKernelId].m_undoStack.Add(curvilinearLineAttractionRepulsion.Compute());
         }
         catch (...)
         {
@@ -3944,7 +3944,7 @@ namespace meshkernelapi
 
             curvilinearGridLineMirror.SetLine({xFirstGridLineNode, yFirstGridLineNode}, {xSecondGridLineNode, ySecondGridLineNode});
 
-            curvilinearGridLineMirror.Compute();
+            meshKernelState[meshKernelId].m_undoStack.Add(curvilinearGridLineMirror.Compute());
         }
         catch (...)
         {
@@ -3975,7 +3975,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
             }
 
-            meshKernelState[meshKernelId].m_curvilinearGrid->DeleteNode({xPointCoordinate, yPointCoordinate});
+            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGrid->DeleteNode({xPointCoordinate, yPointCoordinate}));
         }
         catch (...)
         {
@@ -4006,7 +4006,7 @@ namespace meshkernelapi
             meshkernel::Point const fromPoint{xFromPoint, yFromPoint};
             meshkernel::Point const toPoint{xToPoint, yToPoint};
 
-            meshKernelState[meshKernelId].m_curvilinearGrid->MoveNode(fromPoint, toPoint);
+            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGrid->MoveNode(fromPoint, toPoint));
         }
         catch (...)
         {

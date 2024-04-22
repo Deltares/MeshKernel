@@ -19,7 +19,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnLeftBoundary_ShouldCorrectlySumC
     const auto p1 = curvilinearGrid->GetNode(1, 1);
 
     // Execute
-    curvilinearLineMirror.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearLineMirror.Compute();
 
     EXPECT_EQ(4, curvilinearGrid->NumM());
     EXPECT_EQ(2, curvilinearGrid->NumN());
@@ -46,7 +46,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldCorrectlySum
     const auto p1 = curvilinearGrid->GetNode(1, 1);
 
     // Execute
-    curvilinearLineMirror.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearLineMirror.Compute();
 
     EXPECT_EQ(4, curvilinearGrid->NumM());
     EXPECT_EQ(2, curvilinearGrid->NumN());
@@ -66,7 +66,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnBottomBoundary_ShouldAddFacesOnB
     curvilinearLineMirror.SetLine({79983.0, 366936.2}, {80155.8, 366529.5});
 
     // Execute
-    curvilinearLineMirror.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearLineMirror.Compute();
 
     // Asserts
     constexpr double tolerance = 1e-6;
@@ -101,7 +101,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnUpperBoundary_ShouldAddFacesOnUp
     curvilinearLineMirror.SetLine({80960.2, 366520.7}, {80609.8, 367406.0});
 
     // Execute
-    curvilinearLineMirror.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearLineMirror.Compute();
 
     // Asserts
     ASSERT_EQ(10, curvilinearGrid->NumM());
@@ -129,7 +129,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnLeftBoundary_ShouldAddFacesOnLef
     curvilinearLineMirror.SetLine({79983.0, 366936.2}, {80609.8, 367406.0});
 
     // Execute
-    curvilinearLineMirror.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearLineMirror.Compute();
 
     // Asserts
     constexpr double tolerance = 1e-6;
@@ -163,7 +163,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldAddFacesOnRi
     curvilinearLineMirror.SetLine({80155.8, 366529.5}, {80960.2, 366520.72});
 
     // Execute
-    curvilinearLineMirror.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearLineMirror.Compute();
 
     // Asserts
     ASSERT_EQ(6, curvilinearGrid->NumN());

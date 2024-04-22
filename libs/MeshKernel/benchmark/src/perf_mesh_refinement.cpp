@@ -58,7 +58,7 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
                                       std::move(interpolator),
                                       mesh_refinement_parameters);
 
-        meshRefinement.Compute();
+        [[maybe_unused]] auto dummyUndoAction = meshRefinement.Compute();
     }
 }
 
@@ -112,7 +112,7 @@ static void BM_MeshRefinementBasedOnPolygons(benchmark::State& state)
 
         MeshRefinement meshRefinement(*mesh, polygon, mesh_refinement_parameters);
 
-        meshRefinement.Compute();
+        [[maybe_unused]] auto dummyUndoAction = meshRefinement.Compute();
     }
 }
 BENCHMARK(BM_MeshRefinementBasedOnPolygons)

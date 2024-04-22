@@ -60,17 +60,3 @@ std::uint64_t meshkernel::CompoundUndoAction::MemorySize() const
 
     return size;
 }
-
-void meshkernel::CompoundUndoAction::Print(std::ostream& out) const
-{
-    out << "CompoundUndoAction: " << m_undoActions.size() << std::endl;
-
-    UInt count = 0;
-
-    for (const UndoActionPtr& action : m_undoActions)
-    {
-        out << "action: " << std::setw(4) << count << ": ";
-        action->Print(out);
-        ++count;
-    }
-}

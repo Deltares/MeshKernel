@@ -56,9 +56,6 @@ namespace meshkernel
         /// @brief Get the initial node
         const Point& UpdatedNode() const;
 
-        /// @brief Print the reset node action to the stream
-        void Print(std::ostream& out = std::cout) const override;
-
     private:
         /// @brief The node identifier
         UInt m_nodeId;

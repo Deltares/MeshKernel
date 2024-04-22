@@ -51,7 +51,7 @@ namespace meshkernel
         };
 
         /// @brief Return the string representation of the State enum value
-        static std::string to_string(const State state);
+        static const std::string& to_string(const State state);
 
         /// @brief Default constructor
         UndoAction() = default;
@@ -76,9 +76,6 @@ namespace meshkernel
 
         /// \brief Compute the approximate amount of memory being used, in bytes.
         virtual std::uint64_t MemorySize() const;
-
-        /// @brief Print the undo action to the stream
-        virtual void Print(std::ostream& out = std::cout) const;
 
     private:
         /// @brief Operation to apply the changes required by the UndoAction

@@ -69,9 +69,6 @@ namespace meshkernel
         /// \brief Compute the approximate amount of memory being used, in bytes.
         std::uint64_t MemorySize() const override;
 
-        /// @brief Print the add node action to the stream
-        void Print(std::ostream& out = std::cout) const override;
-
     private:
         /// @brief Minimum x-value
         double m_xMin;

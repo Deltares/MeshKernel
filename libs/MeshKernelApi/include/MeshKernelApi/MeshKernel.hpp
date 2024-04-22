@@ -59,6 +59,18 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_allocate_state(int projectionType, int& meshKernelId);
 
+        /// @brief Attempt to undo by one undo-action.
+        /// @param[in] meshKernelId The id of the mesh state.
+        /// @param[out] undone Indicates if the undo action was actually undone
+        /// @returns Error code
+        MKERNEL_API int mkernel_undo_state(int meshKernelId, bool& undone);
+
+        /// @brief Attempt to redo by one undo-action.
+        /// @param[in] meshKernelId The id of the mesh state.
+        /// @param[out] redone Indicates if the redo action was actually redone
+        /// @returns Error code
+        MKERNEL_API int mkernel_redo_state(int meshKernelId, bool& redone);
+
         /// @brief Clear the undo state.
         /// @param[in] meshKernelId The id of the mesh state.
         /// @returns Error code

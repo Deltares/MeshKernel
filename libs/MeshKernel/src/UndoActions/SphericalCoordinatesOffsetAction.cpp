@@ -56,33 +56,8 @@ void meshkernel::SphericalCoordinatesOffsetAction::UndoOffset(std::vector<Point>
     }
 }
 
-/// \brief Compute the approximate amount of memory being used, in bytes.
 std::uint64_t meshkernel::SphericalCoordinatesOffsetAction::MemorySize() const
 {
     std::uint64_t size = sizeof(*this) + static_cast<std::uint64_t>(m_offsetNodesDecrease.capacity() + m_offsetNodesIncrease.capacity()) * sizeof(UInt);
     return size;
-}
-
-/// @brief Print the add node action to the stream
-void meshkernel::SphericalCoordinatesOffsetAction::Print(std::ostream& out) const
-{
-    out << "SphericalCoordinatesOffsetAction: state " << to_string(GetState())
-        << ", x-minimum = " << m_xMin
-        << ", x-maximum = " << m_xMax
-        << std::endl;
-
-    out << "  nodes with offset decrease:";
-
-    for (UInt node : m_offsetNodesDecrease)
-    {
-        out << " " << node;
-    }
-    out << ", increase:";
-
-    for (UInt node : m_offsetNodesIncrease)
-    {
-        out << " " << node;
-    }
-
-    out << std::endl;
 }

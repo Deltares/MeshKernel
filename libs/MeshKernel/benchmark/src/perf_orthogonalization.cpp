@@ -67,7 +67,7 @@ static void BM_Orthogonalization(benchmark::State& state)
 
                 node.x += trans_x;
                 node.y += trans_y;
-                mesh->SetNode(i, node);
+                [[maybe_unused]] auto dummyUndoAction = mesh->ResetNode(i, node);
             }
         }
 
@@ -100,7 +100,7 @@ static void BM_Orthogonalization(benchmark::State& state)
             project_to_land_Boundary,
             orthogonalization_parameters);
 
-        orthogonalization.Initialize();
+        [[maybe_unused]] auto dummyUndoAction = orthogonalization.Initialize();
 
         orthogonalization.Compute();
     }
