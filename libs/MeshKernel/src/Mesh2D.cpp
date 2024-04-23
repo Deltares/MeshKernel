@@ -139,8 +139,8 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
         validEdgesCount++;
     }
 
-    m_nodesRTreeRequiresUpdate = true;
-    m_edgesRTreeRequiresUpdate = true;
+    SetNodesRTreeRequiresUpdate(true);
+    SetEdgesRTreeRequiresUpdate(true);
 
     m_edges = edges;
     m_nodes = inputNodes;
@@ -1383,7 +1383,8 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::TriangulateFaces()
         }
     }
 
-    m_edgesRTreeRequiresUpdate = true;
+    SetEdgesRTreeRequiresUpdate(true);
+
     return triangulationAction;
 }
 
@@ -1654,11 +1655,20 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMesh(const Polygons& polyg
 
     for (UInt n = 0; n < GetNumNodes(); ++n)
     {
-        auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(m_nodes[n]);
-        if (isInPolygon)
+        if (m_nodes[n].IsValid())
         {
-            isNodeInsidePolygon[n] = true;
-            deleteNode[n] = !invertDeletion;
+            auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(m_nodes[n]);
+
+            if (isInPolygon)
+            {
+                isNodeInsidePolygon[n] = true;
+                deleteNode[n] = !invertDeletion;
+            }
+        }
+        else
+        {
+            isNodeInsidePolygon[n] = false;
+            deleteNode[n] = false;
         }
     }
 
@@ -1738,8 +1748,8 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMesh(const Polygons& polyg
         }
     }
 
-    m_nodesRTreeRequiresUpdate = true;
-    m_edgesRTreeRequiresUpdate = true;
+    SetNodesRTreeRequiresUpdate(true);
+    SetEdgesRTreeRequiresUpdate(true);
 
     Administrate(deleteMeshAction.get());
     return deleteMeshAction;
@@ -1831,7 +1841,7 @@ std::vector<meshkernel::UInt> Mesh2D::PointFaceIndices(const std::vector<Point>&
 
     for (UInt i = 0; i < numPoints; ++i)
     {
-        const auto edgeIndex = FindEdgeCloseToAPoint(points[i]);
+        const auto edgeIndex = FindLocationIndex(points[i], Location::Edges);
 
         if (edgeIndex == constants::missing::uintValue)
         {
@@ -2225,9 +2235,9 @@ std::unique_ptr<Mesh2D> Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     mergedMesh.m_faceArea.insert(mergedMesh.m_faceArea.end(), mesh2.m_faceArea.begin(), mesh2.m_faceArea.end());
 
     // Indicate that the mesh state has changed and the r-trees will need to be re-computed when required.
-    mergedMesh.m_nodesRTreeRequiresUpdate = true;
-    mergedMesh.m_edgesRTreeRequiresUpdate = true;
-    mergedMesh.m_facesRTreeRequiresUpdate = true;
+    mergedMesh.SetNodesRTreeRequiresUpdate(true);
+    mergedMesh.SetEdgesRTreeRequiresUpdate(true);
+    mergedMesh.SetFacesRTreeRequiresUpdate(true);
 
     return std::make_unique<Mesh2D>(mergedMesh.m_edges,
                                     mergedMesh.m_nodes,

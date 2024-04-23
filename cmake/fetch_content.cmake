@@ -20,7 +20,7 @@ endif()
 
 if(ENABLE_BENCHMARKING)
   # check if it's a release or release with debug information build
-  set(VALID_BUILD_TYPES "RELEASE" "RELWITHDEBINFO")
+  set(VALID_BUILD_TYPES "RELEASE" "RELWITHDEBINFO" "DEBUG")
   # upcase the build type to make the option case-insensitive
   string(TOUPPER "${CMAKE_BUILD_TYPE}" UPCASED_CMAKE_BUILD_TYPE)
   if(UPCASED_CMAKE_BUILD_TYPE IN_LIST VALID_BUILD_TYPES)

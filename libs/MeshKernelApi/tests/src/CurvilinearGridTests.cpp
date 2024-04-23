@@ -6,6 +6,8 @@
 #include <MeshKernelApi/MeshKernel.hpp>
 
 #include "CartesianApiTestFixture.hpp"
+#include "MeshKernelApi/BoundingBox.hpp"
+
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
@@ -984,3 +986,54 @@ TEST(CurvilinearGrid, MakeRectangular_ConvertToMesh2D)
     ASSERT_EQ(mesh2d.num_nodes, 36);
     ASSERT_EQ(mesh2d.num_edges, 60);
 }
+
+class CurvilinearLocationIndexTests : public ::testing::TestWithParam<std::tuple<meshkernel::Point, meshkernel::Location, int>>
+{
+public:
+    [[nodiscard]] static std::vector<std::tuple<meshkernel::Point, meshkernel::Location, int>> GetData()
+    {
+        return {
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{-1.0, -1.0}, meshkernel::Location::Nodes, 0),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{18.0, 18.0}, meshkernel::Location::Nodes, 10),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{5.0, -1.0}, meshkernel::Location::Edges, 12),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{11.0, 13.0}, meshkernel::Location::Edges, 5),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{0.5, 0.5}, meshkernel::Location::Faces, 0),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{18.0, 18.0}, meshkernel::Location::Faces, 4),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{7.0, 14.0}, meshkernel::Location::Faces, 3)};
+    }
+};
+
+TEST_P(CurvilinearLocationIndexTests, GetLocationIndex_OnACurvilinearGrid_ShouldGetTheLocationIndex)
+{
+    // Prepare
+    auto const& [point, location, expectedIndex] = GetParam();
+
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    makeGridParameters.origin_x = 0.0;
+
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = 10.0;
+    makeGridParameters.block_size_y = 10.0;
+    makeGridParameters.num_columns = 3;
+    makeGridParameters.num_rows = 3;
+
+    int meshKernelId = 0;
+    const int projectionType = 0;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    int locationIndex = -1;
+    const meshkernelapi::BoundingBox boundingBox;
+    auto const locationInt = static_cast<int>(location);
+    errorCode = mkernel_curvilinear_get_location_index(meshKernelId, point.x, point.y, locationInt, boundingBox, locationIndex);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    ASSERT_EQ(locationIndex, expectedIndex);
+}
+INSTANTIATE_TEST_SUITE_P(LocationIndexParametrizedTests, CurvilinearLocationIndexTests, ::testing::ValuesIn(CurvilinearLocationIndexTests::GetData()));

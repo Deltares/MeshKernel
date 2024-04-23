@@ -329,9 +329,6 @@ std::vector<bool> Polygons::PointsInPolygons(const std::vector<Point>& points) c
 {
     std::vector<bool> result(points.size(), false);
 
-    // TODO if possible improve performance of polygon.Contains, perhaps with
-    // multiple points in a single call.
-    // Then this loop has to be changed.
     for (UInt i = 0; i < points.size(); ++i)
     {
         const auto [isInPolygon, polygonIndex] = IsPointInPolygons(points[i]);

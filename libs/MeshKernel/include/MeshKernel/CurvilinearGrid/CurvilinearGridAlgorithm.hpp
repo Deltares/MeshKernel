@@ -27,9 +27,10 @@
 
 #pragma once
 
-#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
-#include <MeshKernel/Splines.hpp>
+#include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp"
+#include "MeshKernel/Splines.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 namespace meshkernel
 {
@@ -44,7 +45,7 @@ namespace meshkernel
         explicit CurvilinearGridAlgorithm(CurvilinearGrid& grid);
 
         /// @brief Executes the algorithm
-        virtual void Compute() = 0;
+        virtual UndoActionPtr Compute() = 0;
 
         /// @brief Sets a block where the algorithm should execute
         /// @param[in] firstCornerPoint            The first point defining the bounding box

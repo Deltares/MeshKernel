@@ -18,10 +18,3 @@ const meshkernel::Edge& meshkernel::DeleteEdgeAction::GetEdge() const
 {
     return m_edge;
 }
-
-void meshkernel::DeleteEdgeAction::Print(std::ostream& out) const
-{
-    out << fmt_ns::vformat("DeleteEdgeAction: state {}, edgeId {}, edge {{{}, {}}}",
-                           fmt_ns::make_format_args(to_string(GetState()), m_edgeId, m_edge.first, m_edge.second));
-    out << std::endl;
-}

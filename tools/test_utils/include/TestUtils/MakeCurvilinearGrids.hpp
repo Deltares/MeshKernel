@@ -53,3 +53,7 @@ std::unique_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGridWithMissing
 /// @brief Makes a curvilinear grid
 /// @return A pointer to a curvilinear grid
 std::unique_ptr<meshkernel::CurvilinearGrid> MakeCurvilinearGrid(double originX, double originY, double deltaX, double deltaY, size_t nx, size_t ny);
+
+/// @brief Makes a curvilinear grid with the nodes shifted randomly by a small amount
+/// @return A pointer to a curvilinear grid
+std::unique_ptr<meshkernel::CurvilinearGrid> MakeCurvilinearGridRand(double originX, double originY, double deltaX, double deltaY, size_t nx, size_t ny, double fraction, bool displaceBoundary = true);

@@ -48,6 +48,7 @@
 /// @brief Contains all structs and functions exposed at the API level
 namespace meshkernelapi
 {
+    struct BoundingBox;
 #ifdef __cplusplus
     extern "C"
     {
@@ -57,6 +58,18 @@ namespace meshkernelapi
         /// @param[out] meshKernelId The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_allocate_state(int projectionType, int& meshKernelId);
+
+        /// @brief Attempt to undo by one undo-action.
+        /// @param[in] meshKernelId The id of the mesh state.
+        /// @param[out] undone Indicates if the undo action was actually undone
+        /// @returns Error code
+        MKERNEL_API int mkernel_undo_state(int meshKernelId, bool& undone);
+
+        /// @brief Attempt to redo by one undo-action.
+        /// @param[in] meshKernelId The id of the mesh state.
+        /// @param[out] redone Indicates if the redo action was actually redone
+        /// @returns Error code
+        MKERNEL_API int mkernel_redo_state(int meshKernelId, bool& redone);
 
         /// @brief Clear the undo state.
         /// @param[in] meshKernelId The id of the mesh state.
@@ -286,6 +299,21 @@ namespace meshkernelapi
         /// @param[out] curvilinearGrid The structure containing the dimensions of the curvilinear grid.
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_get_dimensions(int meshKernelId, CurvilinearGrid& curvilinearGrid);
+
+        /// @brief Gets the grid location closet to a specific coordinate.
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] xCoordinate The input xCoordinate
+        /// @param[in] yCoordinate The input yCoordinate
+        /// @param[in] locationType The location type
+        /// @param[in] boundingBox The input bounding box
+        /// @param[out] locationIndex The location index
+        /// @returns Error code
+        MKERNEL_API int mkernel_curvilinear_get_location_index(int meshKernelId,
+                                                               double xCoordinate,
+                                                               double yCoordinate,
+                                                               int locationType,
+                                                               const BoundingBox& boundingBox,
+                                                               int& locationIndex);
 
         /// @brief Initializes the curvilinear line shift algorithm
         /// @param[in] meshKernelId The id of the mesh state
@@ -1010,6 +1038,21 @@ namespace meshkernelapi
         /// @param[in,out] edges Pointer to memory where the indices of the hanging edges will be stored
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_hanging_edges(int meshKernelId, int* edges);
+
+        /// @brief Gets the mesh location closet to a specific coordinate.
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] xCoordinate The input xCoordinate
+        /// @param[in] yCoordinate The input yCoordinate
+        /// @param[in] locationType The location type
+        /// @param[in] boundingBox The input bounding box
+        /// @param[out] locationIndex The location index
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_location_index(int meshKernelId,
+                                                          double xCoordinate,
+                                                          double yCoordinate,
+                                                          int locationType,
+                                                          const BoundingBox& boundingBox,
+                                                          int& locationIndex);
 
         /// @brief Retrieves the boundaries of a mesh as a series of separated polygons.
         ///

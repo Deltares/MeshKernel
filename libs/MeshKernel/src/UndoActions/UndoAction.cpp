@@ -1,6 +1,6 @@
 #include "MeshKernel/UndoActions/UndoAction.hpp"
 
-std::string meshkernel::UndoAction::to_string(const State state)
+const std::string& meshkernel::UndoAction::to_string(const State state)
 {
     static std::string committedStr = "Committed";
     static std::string restoredStr = "Restored";
@@ -38,11 +38,6 @@ void meshkernel::UndoAction::Restore()
         DoRestore();
         m_state = State::Restored;
     }
-}
-
-void meshkernel::UndoAction::Print(std::ostream& out [[maybe_unused]]) const
-{
-    // do nothing for the default
 }
 
 std::uint64_t meshkernel::UndoAction::MemorySize() const

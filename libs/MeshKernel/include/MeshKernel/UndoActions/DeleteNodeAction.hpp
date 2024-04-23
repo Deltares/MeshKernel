@@ -66,9 +66,6 @@ namespace meshkernel
         /// \brief Compute the approximate amount of memory being used, in bytes.
         std::uint64_t MemorySize() const override;
 
-        /// @brief Print the delete node action to the stream
-        void Print(std::ostream& out = std::cout) const override;
-
     private:
         /// @brief Commit the action of deleting a node and all connecting edges
         void DoCommit() override;

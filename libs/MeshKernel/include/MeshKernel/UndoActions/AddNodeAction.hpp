@@ -54,9 +54,6 @@ namespace meshkernel
         /// @brief Get the node location
         const Point& Node() const;
 
-        /// @brief Print the add node action to the stream
-        void Print(std::ostream& out = std::cout) const override;
-
     private:
         /// @brief The node identifier
         UInt m_nodeId;

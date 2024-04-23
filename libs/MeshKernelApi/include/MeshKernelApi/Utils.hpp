@@ -30,6 +30,7 @@
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
@@ -387,10 +388,28 @@ namespace meshkernelapi
     static void SetCurvilinearGridApiData(const meshkernel::CurvilinearGrid& curvilinearGrid,
                                           CurvilinearGrid& curvilinearGridApi)
     {
-        for (meshkernel::UInt n = 0; n < curvilinearGrid.GetNumNodes(); n++)
+        if (curvilinearGridApi.num_n != static_cast<int>(curvilinearGrid.NumN()))
         {
-            curvilinearGridApi.node_x[n] = curvilinearGrid.Node(n).x;
-            curvilinearGridApi.node_y[n] = curvilinearGrid.Node(n).y;
+            throw meshkernel::ConstraintError("The number of rows in the api structure does not equal the number of rows in the grid, {} /= {}",
+                                              curvilinearGridApi.num_n, curvilinearGrid.NumN());
+        }
+
+        if (curvilinearGridApi.num_m != static_cast<int>(curvilinearGrid.NumM()))
+        {
+            throw meshkernel::ConstraintError("The number of columns in the api structure does not equal the number of columns in the grid, {} /= {}",
+                                              curvilinearGridApi.num_m, curvilinearGrid.NumM());
+        }
+
+        int count = 0;
+
+        for (meshkernel::UInt n = 0; n < curvilinearGrid.NumN(); n++)
+        {
+            for (meshkernel::UInt m = 0; m < curvilinearGrid.NumM(); m++)
+            {
+                curvilinearGridApi.node_x[count] = curvilinearGrid.GetNode(n, m).x;
+                curvilinearGridApi.node_y[count] = curvilinearGrid.GetNode(n, m).y;
+                ++count;
+            }
         }
     }
 

@@ -21,7 +21,7 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGrid_ShouldRefine)
     curvilinearGridRefinement.SetBlock({10, 20}, {20, 20});
 
     // Execute
-    curvilinearGridRefinement.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridRefinement.Compute();
 
     // Assert
     ASSERT_EQ(4, curvilinearGrid.NumM());
@@ -67,7 +67,7 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGridWithMissingFaces_Should
     curvilinearGridRefinement.SetBlock({10, 20}, {20, 20});
 
     // Execute
-    curvilinearGridRefinement.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridRefinement.Compute();
 
     // Assert
     ASSERT_EQ(4, curvilinearGrid.NumM());
