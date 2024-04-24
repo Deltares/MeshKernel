@@ -47,6 +47,6 @@ namespace meshkernel
     };
 
     /// @brief Get string representation of the NodeType
-    const std::string toString(const NodeType nodeType);
+    const std::string& toString(const NodeType nodeType);
 
 } // namespace meshkernel

@@ -27,7 +27,7 @@
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridUtilities.hpp"
 
-const std::string meshkernel::toString(const NodeType nodeType)
+const std::string& meshkernel::toString(const NodeType nodeType)
 {
 
     static const std::string strBottomLeft = "BottomLeft";
