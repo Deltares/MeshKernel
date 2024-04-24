@@ -234,10 +234,10 @@ UInt Mesh2DToCurvilinear::ComputeNeighbouringFaceNodes(const UInt face,
     const auto iSecondCommonNode = m_i[secondCommonNode] + m_directionsDeltas[d][0];
     const auto jSecondCommonNode = m_j[secondCommonNode] + m_directionsDeltas[d][1];
 
-    const auto invalid = m_i[firstOtherNode] != missing::intValue && m_i[firstOtherNode] != iFirstOtherNode ||
-                         m_j[firstOtherNode] != missing::intValue && m_j[firstOtherNode] != jFirstOtherNode ||
-                         m_i[secondOtherNode] != missing::intValue && m_i[secondOtherNode] != iSecondCommonNode ||
-                         m_j[secondOtherNode] != missing::intValue && m_j[secondOtherNode] != jSecondCommonNode;
+    const auto invalid = (m_i[firstOtherNode] != missing::intValue && m_i[firstOtherNode] != iFirstOtherNode) ||
+                         (m_j[firstOtherNode] != missing::intValue && m_j[firstOtherNode] != jFirstOtherNode) ||
+                         (m_i[secondOtherNode] != missing::intValue && m_i[secondOtherNode] != iSecondCommonNode) ||
+                         (m_j[secondOtherNode] != missing::intValue && m_j[secondOtherNode] != jSecondCommonNode);
 
     if (!invalid)
     {
