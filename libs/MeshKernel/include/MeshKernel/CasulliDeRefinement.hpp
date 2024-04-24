@@ -55,12 +55,12 @@ namespace meshkernel
         // WTF
         enum class ElementMask
         {
-            A,         //< front, 'A' cell (used to be node, delete it):  1
-            B,         //< front, 'B' cell (used to be link, keep it):    2
-            C,         //< 'C' cell (used to be cell, keep it):           3
-            NotA,      //< not in front, 'A' cell:                       -1
-            NotB,      //< not in front, 'B' cell:                       -2
-            Unassigned //<                                                0
+            A = 1,         //< front, 'A' cell (used to be node, delete it):  1
+            B = 2,         //< front, 'B' cell (used to be link, keep it):    2
+            C = 3,         //< 'C' cell (used to be cell, keep it):           3
+            NotA = -1,     //< not in front, 'A' cell:                       -1
+            NotB = -2,     //< not in front, 'B' cell:                       -2
+            Unassigned = 0 //<                                                0
         };
 
         // TODO how much of this is shared with the Casulli refinement?
@@ -128,6 +128,20 @@ namespace meshkernel
         static bool ElementIsSeed(const Mesh2D& mesh, const Polygons& polygon, const UInt face);
 
         static UInt FindElementSeedIndex(const Mesh2D& mesh, const Polygons& polygon);
+
+        static void FindSurroundingCells(const Mesh2D& mesh,
+                                         const Polygons& polygon [[maybe_unused]],
+                                         const UInt kCell,
+                                         const UInt nMax,
+                                         UInt& nDirect, UInt& nIndirect,
+                                         std::vector<UInt>& kDirect,
+                                         std::vector<UInt>& kIndirect,
+                                         std::vector<std::array<UInt, 2>>& kne);
+
+        static void DoDeRefinement(const Mesh2D& mesh, const Polygons& polygon);
+
+        static void UpdateFrontList(const Mesh& mesh, const std::vector<UInt>& frontList, std::vector<UInt>& frontListCopy, const UInt kNew);
+
     };
 
 } // namespace meshkernel

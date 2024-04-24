@@ -1,4 +1,5 @@
 #include "MeshKernel/BilinearInterpolationOnGriddedSamples.hpp"
+#include "MeshKernel/CasulliDeRefinement.hpp"
 #include "MeshKernel/CasulliRefinement.hpp"
 #include "MeshKernel/SamplesHessianCalculator.hpp"
 
@@ -1841,4 +1842,17 @@ TEST(MeshRefinement, CasulliPatchRefinement)
             ++count;
         }
     }
+}
+
+TEST(MeshRefinement, CasulliDeRefinement)
+{
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 5, 5);
+    Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
+    mesh.Administrate();
+
+    std::cout << "mesh size: " << curviMesh->NumN () << "   " << curviMesh->NumM () << std::endl;
+
+    meshkernel::CasulliDeRefinement::Compute (mesh);
+
 }
