@@ -73,7 +73,7 @@ std::unique_ptr<CurvilinearGrid> Mesh2DToCurvilinear::Compute(const Point& point
         throw AlgorithmError("The initial face does not contain the starting point");
     }
 
-    // build local coordinate system
+    // 3. Build the local coordinate system
     const auto numNodes = m_mesh.GetNumNodes();
     m_i = std::vector(numNodes, missing::intValue);
     m_j = std::vector(numNodes, missing::intValue);
@@ -99,9 +99,9 @@ std::unique_ptr<CurvilinearGrid> Mesh2DToCurvilinear::Compute(const Point& point
     m_i[fourthNodeIndex] = 0;
     m_j[fourthNodeIndex] = 1;
 
+    // 4. Grow the front using the breath first search algorithm
     const auto numFaces = m_mesh.GetNumFaces();
     std::vector visitedFace(numFaces, false);
-
     std::queue<UInt> q;
     q.push(initialFaceIndex);
 
@@ -152,7 +152,6 @@ Eigen::Matrix<UInt, 2, 2> Mesh2DToCurvilinear::ComputeLocalNodeMapping(UInt face
     const auto minI = *std::ranges::min_element(localI);
     const auto minJ = *std::ranges::min_element(localJ);
 
-    // build a local mapping
     Eigen::Matrix<UInt, 2, 2> matrix;
     for (UInt i = 0; i < localI.size(); ++i)
     {
@@ -179,7 +178,7 @@ Eigen::Matrix<UInt, 2, 2> Mesh2DToCurvilinear::ComputeLocalNodeMapping(UInt face
 UInt Mesh2DToCurvilinear::ComputeNeighbouringFaceNodes(const UInt face,
                                                        const Eigen::Matrix<UInt, 2, 2>& localNodeMapping,
                                                        const UInt d,
-                                                       std::vector<bool>& visitedFace)
+                                                       const std::vector<bool>& visitedFace)
 {
 
     const auto firstNode = localNodeMapping(m_nodeFrom[d][0], m_nodeFrom[d][1]);
@@ -224,28 +223,28 @@ UInt Mesh2DToCurvilinear::ComputeNeighbouringFaceNodes(const UInt face,
     const auto nextEdgeInNewFace = m_mesh.m_facesEdges[newFace][nextEdgeIndexInNewFace];
     const auto firstCommonNode = m_mesh.FindCommonNode(edgeIndex, nextEdgeInNewFace);
     const auto firstOtherNode = OtherNodeOfEdge(m_mesh.GetEdge(nextEdgeInNewFace), firstCommonNode);
-    const auto i_firstOtherNode = m_i[firstCommonNode] + m_directionsDeltas[d][0];
-    const auto j_firstOtherNode = m_j[firstCommonNode] + m_directionsDeltas[d][1];
+    const auto iFirstOtherNode = m_i[firstCommonNode] + m_directionsDeltas[d][0];
+    const auto jFirstOtherNode = m_j[firstCommonNode] + m_directionsDeltas[d][1];
 
     auto previousEdgeIndexInNewFace = edgeIndexInNewFace - 1;
     previousEdgeIndexInNewFace = previousEdgeIndexInNewFace == -1 ? 3 : previousEdgeIndexInNewFace;
     const auto previousEdgeInNewFace = m_mesh.m_facesEdges[newFace][previousEdgeIndexInNewFace];
     const auto secondCommonNode = m_mesh.FindCommonNode(edgeIndex, previousEdgeInNewFace);
     const auto secondOtherNode = OtherNodeOfEdge(m_mesh.GetEdge(previousEdgeInNewFace), secondCommonNode);
-    const auto i_secondCommonNode = m_i[secondCommonNode] + m_directionsDeltas[d][0];
-    const auto j_secondCommonNode = m_j[secondCommonNode] + m_directionsDeltas[d][1];
+    const auto iSecondCommonNode = m_i[secondCommonNode] + m_directionsDeltas[d][0];
+    const auto jSecondCommonNode = m_j[secondCommonNode] + m_directionsDeltas[d][1];
 
-    const auto invalid = m_i[firstOtherNode] != missing::intValue && m_i[firstOtherNode] != i_firstOtherNode ||
-                         m_j[firstOtherNode] != missing::intValue && m_j[firstOtherNode] != j_firstOtherNode ||
-                         m_i[secondOtherNode] != missing::intValue && m_i[secondOtherNode] != i_secondCommonNode ||
-                         m_j[secondOtherNode] != missing::intValue && m_j[secondOtherNode] != j_secondCommonNode;
+    const auto invalid = m_i[firstOtherNode] != missing::intValue && m_i[firstOtherNode] != iFirstOtherNode ||
+                         m_j[firstOtherNode] != missing::intValue && m_j[firstOtherNode] != jFirstOtherNode ||
+                         m_i[secondOtherNode] != missing::intValue && m_i[secondOtherNode] != iSecondCommonNode ||
+                         m_j[secondOtherNode] != missing::intValue && m_j[secondOtherNode] != jSecondCommonNode;
 
     if (!invalid)
     {
-        m_i[firstOtherNode] = i_firstOtherNode;
-        m_j[firstOtherNode] = j_firstOtherNode;
-        m_i[secondOtherNode] = i_secondCommonNode;
-        m_j[secondOtherNode] = j_secondCommonNode;
+        m_i[firstOtherNode] = iFirstOtherNode;
+        m_j[firstOtherNode] = jFirstOtherNode;
+        m_i[secondOtherNode] = iSecondCommonNode;
+        m_j[secondOtherNode] = jSecondCommonNode;
         return newFace;
     }
     return missing::uintValue;

@@ -59,7 +59,7 @@ namespace meshkernel
         [[nodiscard]] UInt ComputeNeighbouringFaceNodes(const UInt face,
                                                         const Eigen::Matrix<UInt, 2, 2>& localNodeMapping,
                                                         const UInt d,
-                                                        std::vector<bool>& visitedFace);
+                                                        const std::vector<bool>& visitedFace);
 
         /// @brief Computes the final curvilinear matrix
         [[nodiscard]] lin_alg::Matrix<Point> ComputeCurvilinearMatrix();
@@ -71,19 +71,19 @@ namespace meshkernel
         std::array<std::array<int, 2>, 4> m_nodeFrom = {{{0, 0},
                                                          {0, 0},
                                                          {1, 0},
-                                                         {1, 1}}}; ///< The mesh where the edges should be found
+                                                         {1, 1}}}; ///< starting edge node indices for each direction in the local mapping
 
         std::array<std::array<int, 2>, 4> m_nodeTo = {{{0, 1},
                                                        {1, 0},
                                                        {1, 1},
-                                                       {0, 1}}}; ///< The mesh where the edges should be found
+                                                       {0, 1}}}; ///< ending edge node indices for each direction in the local mapping
 
         std::array<std::array<int, 2>, 4> m_directionsDeltas = {{{-1, 0},
                                                                  {0, -1},
                                                                  {1, 0},
-                                                                 {0, 1}}}; ///< The mesh where the edges should be found
+                                                                 {0, 1}}}; ///< increments for the new nodes depending on the node direction
 
-        int n_maxNumRowsColumns = 1000000; ///< The mesh where the edges should be found
+        const int n_maxNumRowsColumns = 1000000; ///< The maximum number of allowed rows or columns
     };
 
 } // namespace meshkernel
