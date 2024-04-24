@@ -1,20 +1,20 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <MeshKernel/MeshTransformation.hpp>
-#include <MeshKernel/Parameters.hpp>
+#include "MeshKernel/MeshTransformation.hpp"
+#include "MeshKernel/Parameters.hpp"
 
-#include <MeshKernelApi/CurvilinearGrid.hpp>
-#include <MeshKernelApi/GeometryList.hpp>
-#include <MeshKernelApi/Mesh1D.hpp>
-#include <MeshKernelApi/Mesh2D.hpp>
-#include <MeshKernelApi/MeshKernel.hpp>
-#include <Version/Version.hpp>
+#include "MeshKernelApi/BoundingBox.hpp"
+#include "MeshKernelApi/GeometryList.hpp"
+#include "MeshKernelApi/Mesh1D.hpp"
+#include "MeshKernelApi/Mesh2D.hpp"
+#include "MeshKernelApi/MeshKernel.hpp"
+#include "Version/Version.hpp"
 
-#include <TestUtils/Definitions.hpp>
-#include <TestUtils/MakeCurvilinearGrids.hpp>
-#include <TestUtils/MakeMeshes.hpp>
-#include <TestUtils/SampleFileReader.hpp>
+#include "TestUtils/Definitions.hpp"
+#include "TestUtils/MakeCurvilinearGrids.hpp"
+#include "TestUtils/MakeMeshes.hpp"
+#include "TestUtils/SampleFileReader.hpp"
 
 #include <memory>
 #include <numeric>
@@ -3194,3 +3194,57 @@ TEST_F(CartesianApiTestFixture, InsertEdgeFromCoordinates_OnNonEmptyMesh_ShouldI
     ASSERT_EQ(26, mesh2d.num_nodes);
     ASSERT_EQ(41, mesh2d.num_edges);
 }
+
+class MeshLocationIndexTests : public ::testing::TestWithParam<std::tuple<meshkernel::Point, meshkernel::Location, int>>
+{
+public:
+    [[nodiscard]] static std::vector<std::tuple<meshkernel::Point, meshkernel::Location, int>> GetData()
+    {
+        return {
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{-1.0, -1.0}, meshkernel::Location::Nodes, 0),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{18.0, 18.0}, meshkernel::Location::Nodes, 10),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{5.0, -1.0}, meshkernel::Location::Edges, 12),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{11.0, 13.0}, meshkernel::Location::Edges, 5),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{0.5, 0.5}, meshkernel::Location::Faces, 0),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{18.0, 18.0}, meshkernel::Location::Faces, 4),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{7.0, 14.0}, meshkernel::Location::Faces, 3)};
+    }
+};
+
+TEST_P(MeshLocationIndexTests, GetLocationIndex_OnAMesh_ShouldGetTheLocationIndex)
+{
+    // Prepare
+    auto const& [point, location, expectedIndex] = GetParam();
+
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    makeGridParameters.origin_x = 0.0;
+
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = 10.0;
+    makeGridParameters.block_size_y = 10.0;
+    makeGridParameters.num_columns = 3;
+    makeGridParameters.num_rows = 3;
+
+    int meshKernelId = 0;
+    const int projectionType = 0;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    int locationIndex = -1;
+    const meshkernelapi::BoundingBox boundingBox;
+    auto const locationInt = static_cast<int>(location);
+    errorCode = mkernel_mesh2d_get_location_index(meshKernelId, point.x, point.y, locationInt, boundingBox, locationIndex);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    ASSERT_EQ(locationIndex, expectedIndex);
+}
+INSTANTIATE_TEST_SUITE_P(LocationIndexParametrizedTests, MeshLocationIndexTests, ::testing::ValuesIn(MeshLocationIndexTests::GetData()));

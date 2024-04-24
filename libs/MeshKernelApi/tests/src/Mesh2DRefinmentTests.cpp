@@ -16,8 +16,6 @@
 #include "CartesianApiTestFixture.hpp"
 #include "MeshKernel/AveragingInterpolation.hpp"
 #include "MeshKernel/MeshRefinement.hpp"
-#include "MeshKernel/SamplesHessianCalculator.hpp"
-#include "SampleFileWriter.hpp"
 #include "SampleGenerator.hpp"
 
 namespace fs = std::filesystem;

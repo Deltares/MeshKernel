@@ -1,5 +1,3 @@
-#include "MeshKernelApi/Mesh2D.hpp"
-
 #include "MeshKernel/Mesh2DIntersections.hpp"
 
 #include <chrono>
