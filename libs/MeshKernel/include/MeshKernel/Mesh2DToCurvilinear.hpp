@@ -60,28 +60,22 @@ namespace meshkernel
 
         std::unique_ptr<CurvilinearGrid> Compute(const Point& point)
         {
-            m_mesh.Administrate();
+            // 1. Find the face index
             m_mesh.BuildTree(Location::Faces);
-            m_mesh.SearchNearestLocation(point, Location::Faces);
-            if (m_mesh.GetNumLocations(Location::Faces) <= 0)
-            {
-                throw AlgorithmError("No valid face found close to the initial point.");
-            }
-
-            const auto initialFace = m_mesh.GetLocationsIndices(0, Location::Faces);
-            if (m_mesh.GetNumFaceEdges(initialFace) != geometric::numNodesInQuadrilateral)
+            const auto initialFaceIndex = m_mesh.FindLocationIndex(point, Location::Faces);
+            if (m_mesh.GetNumFaceEdges(initialFaceIndex) != geometric::numNodesInQuadrilateral)
             {
                 throw AlgorithmError("The initial face is not a quadrilateral");
             }
 
-            // Check the seed point is contained
+            // 2. Check if the point is inside the face
             std::vector<Point> polygonPoints;
             for (UInt n = 0; n < geometric::numNodesInQuadrilateral; ++n)
             {
-                const auto node = m_mesh.m_facesNodes[initialFace][n];
+                const auto node = m_mesh.m_facesNodes[initialFaceIndex][n];
                 polygonPoints.emplace_back(m_mesh.Node(node));
             }
-            const auto node = m_mesh.m_facesNodes[initialFace][0];
+            const auto node = m_mesh.m_facesNodes[initialFaceIndex][0];
             polygonPoints.emplace_back(m_mesh.Node(node));
 
             Polygon polygon(polygonPoints, m_mesh.m_projection);
@@ -95,10 +89,10 @@ namespace meshkernel
             m_i = std::vector(numNodes, missing::intValue);
             m_j = std::vector(numNodes, missing::intValue);
 
-            const auto firstEdge = m_mesh.m_facesEdges[initialFace][0];
-            const auto secondEdge = m_mesh.m_facesEdges[initialFace][1];
-            const auto thirdEdge = m_mesh.m_facesEdges[initialFace][2];
-            const auto fourthEdge = m_mesh.m_facesEdges[initialFace][3];
+            const auto firstEdge = m_mesh.m_facesEdges[initialFaceIndex][0];
+            const auto secondEdge = m_mesh.m_facesEdges[initialFaceIndex][1];
+            const auto thirdEdge = m_mesh.m_facesEdges[initialFaceIndex][2];
+            const auto fourthEdge = m_mesh.m_facesEdges[initialFaceIndex][3];
 
             const auto firstNodeIndex = m_mesh.FindCommonNode(firstEdge, secondEdge);
             m_i[firstNodeIndex] = 0;
@@ -120,13 +114,13 @@ namespace meshkernel
             std::vector visitedFace(numFaces, false);
 
             std::queue<UInt> q;
-            q.push(initialFace);
+            q.push(initialFaceIndex);
 
             while (!q.empty())
             {
                 const auto face = q.front();
-
                 q.pop();
+
                 if (visitedFace[face])
                 {
                     continue;
@@ -149,7 +143,7 @@ namespace meshkernel
                 }
             }
 
-            const auto matrix = ComputeMatrix();
+            const auto matrix = ComputeCurvilinearMatrix();
             return std::make_unique<CurvilinearGrid>(matrix, m_mesh.m_projection);
         }
 
@@ -229,16 +223,16 @@ namespace meshkernel
             }
 
             int edgeIndexInNewFace = 0;
-            for (UInt e = 0; e < m_mesh.GetNumFaceEdges(newFace); ++e)
+            for (UInt e = 0u; e < geometric::numNodesInQuadrilateral; ++e)
             {
                 if (m_mesh.m_facesEdges[newFace][e] == edgeIndex)
                 {
-                    edgeIndexInNewFace = e;
+                    edgeIndexInNewFace = static_cast<int>(e);
                     break;
                 }
             }
             auto nextEdgeIndexInNewFace = edgeIndexInNewFace + 1;
-            nextEdgeIndexInNewFace = nextEdgeIndexInNewFace > 3 ? 0 : nextEdgeIndexInNewFace;
+            nextEdgeIndexInNewFace = nextEdgeIndexInNewFace == 4 ? 0 : nextEdgeIndexInNewFace;
             const auto nextEdgeInNewFace = m_mesh.m_facesEdges[newFace][nextEdgeIndexInNewFace];
             const auto firstCommonNode = m_mesh.FindCommonNode(edgeIndex, nextEdgeInNewFace);
             const auto firstOtherNode = OtherNodeOfEdge(m_mesh.GetEdge(nextEdgeInNewFace), firstCommonNode);
@@ -246,7 +240,7 @@ namespace meshkernel
             const auto j_firstOtherNode = m_j[firstCommonNode] + m_directionsDeltas[d][1];
 
             auto previousEdgeIndexInNewFace = edgeIndexInNewFace - 1;
-            previousEdgeIndexInNewFace = previousEdgeIndexInNewFace < 0 ? 3 : previousEdgeIndexInNewFace;
+            previousEdgeIndexInNewFace = previousEdgeIndexInNewFace == -1 ? 3 : previousEdgeIndexInNewFace;
             const auto previousEdgeInNewFace = m_mesh.m_facesEdges[newFace][previousEdgeIndexInNewFace];
             const auto secondCommonNode = m_mesh.FindCommonNode(edgeIndex, previousEdgeInNewFace);
             const auto secondOtherNode = OtherNodeOfEdge(m_mesh.GetEdge(previousEdgeInNewFace), secondCommonNode);
@@ -269,7 +263,7 @@ namespace meshkernel
             return missing::uintValue;
         }
 
-        lin_alg::Matrix<Point> ComputeMatrix()
+        lin_alg::Matrix<Point> ComputeCurvilinearMatrix()
         {
 
             int minI = n_maxNumRowsColumns;
@@ -311,11 +305,6 @@ namespace meshkernel
                 if (i != missing::intValue && j != missing::intValue)
                 {
                     result(i, j) = m_mesh.Node(n);
-                }
-                else
-                {
-                    result(i, j) = Point(missing::doubleValue,
-                                         missing::doubleValue);
                 }
             }
             return result;
