@@ -881,7 +881,6 @@ TEST(CurvilinearBasicTests, InsertMultipleFacesAlongAllBoundaryEdges)
     constexpr size_t ny = 11;
 
     std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
-    grid->SetFlatCopies();
     grid->ComputeGridNodeTypes();
 
     EXPECT_EQ(grid->NumN(), ny);
