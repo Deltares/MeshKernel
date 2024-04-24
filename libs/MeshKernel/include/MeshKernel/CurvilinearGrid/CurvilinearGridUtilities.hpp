@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <string>
+
 namespace meshkernel
 {
     /// @brief An enum for curvilinear node types
@@ -43,4 +45,8 @@ namespace meshkernel
         InternalValid, //(10)
         Invalid        //(0)
     };
+
+    /// @brief Get string representation of the NodeType
+    const std::string& toString(const NodeType nodeType);
+
 } // namespace meshkernel

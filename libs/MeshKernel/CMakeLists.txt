@@ -113,6 +113,7 @@ set(
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothing.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothness.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapping.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridUtilities.cpp
 )
 
 
@@ -225,6 +226,7 @@ set(
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothing.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothness.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapping.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridUtilities.hpp
 )
 
 

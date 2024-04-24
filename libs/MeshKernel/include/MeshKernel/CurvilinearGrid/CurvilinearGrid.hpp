@@ -59,10 +59,10 @@ namespace meshkernel
         /// @brief An enum for boundary grid line types
         enum class BoundaryGridLineType
         {
-            Left,   ///< Bottom of domain
-            Right,  ///<
-            Bottom, ///<
-            Up      ///< Right side of domain
+            Bottom,
+            Right,
+            Top,
+            Left
         };
 
         /// @brief Default constructor
