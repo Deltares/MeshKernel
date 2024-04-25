@@ -131,9 +131,7 @@ std::unique_ptr<CurvilinearGrid> Mesh2DToCurvilinear::Compute(const Point& point
             }
         }
     }
-
-    const auto matrix = ComputeCurvilinearMatrix();
-    return std::make_unique<CurvilinearGrid>(matrix, m_mesh.m_projection);
+    return std::make_unique<CurvilinearGrid>(ComputeCurvilinearMatrix(), m_mesh.m_projection);
 }
 
 Eigen::Matrix<UInt, 2, 2> Mesh2DToCurvilinear::ComputeLocalNodeMapping(UInt face) const

@@ -68,20 +68,20 @@ namespace meshkernel
         std::vector<int> m_i; ///< The i indices of each node on the curvilinear grid
         std::vector<int> m_j; ///< The j indices of each node on the curvilinear grid
 
-        std::array<std::array<int, 2>, 4> m_nodeFrom = {{{0, 0},
-                                                         {0, 0},
-                                                         {1, 0},
-                                                         {1, 1}}}; ///< starting edge node indices for each direction in the local mapping
+        const std::array<std::array<int, 2>, 4> m_nodeFrom = {{{0, 0},
+                                                               {0, 0},
+                                                               {1, 0},
+                                                               {1, 1}}}; ///< starting edge node indices for each direction in the local mapping
 
-        std::array<std::array<int, 2>, 4> m_nodeTo = {{{0, 1},
-                                                       {1, 0},
-                                                       {1, 1},
-                                                       {0, 1}}}; ///< ending edge node indices for each direction in the local mapping
+        const std::array<std::array<int, 2>, 4> m_nodeTo = {{{0, 1},
+                                                             {1, 0},
+                                                             {1, 1},
+                                                             {0, 1}}}; ///< ending edge node indices for each direction in the local mapping
 
-        std::array<std::array<int, 2>, 4> m_directionsDeltas = {{{-1, 0},
-                                                                 {0, -1},
-                                                                 {1, 0},
-                                                                 {0, 1}}}; ///< increments for the new nodes depending on the node direction
+        const std::array<std::array<int, 2>, 4> m_directionsDeltas = {{{-1, 0},
+                                                                       {0, -1},
+                                                                       {1, 0},
+                                                                       {0, 1}}}; ///< increments for the new nodes depending on the node direction
 
         const int n_maxNumRowsColumns = 1000000; ///< The maximum number of allowed rows or columns
     };
