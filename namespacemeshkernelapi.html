@@ -400,6 +400,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a8a14647b813f56d13fdfc182a9f95011"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8a14647b813f56d13fdfc182a9f95011">mkernel_mesh2d_convert_projection</a> (int meshKernelId, int projectionType, const char *const zoneString)</td></tr>
 <tr class="memdesc:a8a14647b813f56d13fdfc182a9f95011"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the projection of a mesh2d.  <a href="namespacemeshkernelapi.html#a8a14647b813f56d13fdfc182a9f95011">More...</a><br /></td></tr>
 <tr class="separator:a8a14647b813f56d13fdfc182a9f95011"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76a9720954ca157a1ba2ccfd35bbf183"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a76a9720954ca157a1ba2ccfd35bbf183">mkernel_mesh2d_convert_to_curvilinear</a> (int meshKernelId, double xPointCoordinate, double yPointCoordinate)</td></tr>
+<tr class="memdesc:a76a9720954ca157a1ba2ccfd35bbf183"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a mesh to a curvilinear mesh.  <a href="namespacemeshkernelapi.html#a76a9720954ca157a1ba2ccfd35bbf183">More...</a><br /></td></tr>
+<tr class="separator:a76a9720954ca157a1ba2ccfd35bbf183"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00ba5182f31ea1567bc258bb95cad221"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a00ba5182f31ea1567bc258bb95cad221">mkernel_mesh2d_count_hanging_edges</a> (int meshKernelId, int &amp;numEdges)</td></tr>
 <tr class="memdesc:a00ba5182f31ea1567bc258bb95cad221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the number of hanging edges in a mesh2d. An hanging edge is an edge where one of the two nodes is not connected.  <a href="namespacemeshkernelapi.html#a00ba5182f31ea1567bc258bb95cad221">More...</a><br /></td></tr>
 <tr class="separator:a00ba5182f31ea1567bc258bb95cad221"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -4345,6 +4348,51 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">projectionType</td><td>The new projection for the mesh </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">zoneString</td><td>The UTM zone and information string </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a76a9720954ca157a1ba2ccfd35bbf183"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76a9720954ca157a1ba2ccfd35bbf183">&#9670;&nbsp;</a></span>mkernel_mesh2d_convert_to_curvilinear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_convert_to_curvilinear </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>xPointCoordinate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>yPointCoordinate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Converts a mesh to a curvilinear mesh. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">xPointCoordinate</td><td>The x coordinate of the point where to start the conversion point coordinate </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">yPointCoordinate</td><td>The y point coordinate </td></tr>
   </table>
   </dd>
 </dl>
