@@ -855,6 +855,14 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_convert_projection(int meshKernelId, int projectionType, const char* const zoneString);
 
+        /// @brief Converts a mesh to a curvilinear mesh
+        ///
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] xPointCoordinate The x coordinate of the point where to start the conversion point coordinate
+        /// @param[in] yPointCoordinate The y point coordinate
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_convert_to_curvilinear(int meshKernelId, double xPointCoordinate, double yPointCoordinate);
+
         /// @brief Count the number of hanging edges in a mesh2d.
         /// An hanging edge is an edge where one of the two nodes is not connected.
         /// @param[in] meshKernelId The id of the mesh state
