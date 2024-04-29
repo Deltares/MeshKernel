@@ -3248,3 +3248,95 @@ TEST_P(MeshLocationIndexTests, GetLocationIndex_OnAMesh_ShouldGetTheLocationInde
     ASSERT_EQ(locationIndex, expectedIndex);
 }
 INSTANTIATE_TEST_SUITE_P(LocationIndexParametrizedTests, MeshLocationIndexTests, ::testing::ValuesIn(MeshLocationIndexTests::GetData()));
+
+TEST(Mesh2d, GetFacePolygons_OnAValidMesh_ShouldGetFacePolygons)
+{
+    int meshKernelId;
+    int isGeographic = 0;
+    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+
+    meshkernelapi::Mesh2D mesh2d;
+    std::vector<double> node_x{
+        0,
+        1,
+        2,
+        3,
+        0,
+        1,
+        2,
+        3,
+        0,
+        1,
+        2,
+        3,
+        0,
+        1};
+
+    std::vector<double> node_y{
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        2,
+        3,
+        3};
+
+    std::vector<int> edge_nodes{
+        0, 4,
+        1, 5,
+        2, 6,
+        3, 7,
+
+        4, 8,
+        5, 9,
+        6, 10,
+        7, 11,
+
+        8, 12,
+        12, 13,
+
+        0, 1,
+        1, 2,
+        2, 3,
+
+        5, 6,
+        6, 7,
+
+        8, 9,
+        9, 10,
+        10, 11,
+
+        12, 13};
+
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+    mesh2d.num_edges = static_cast<int>(edge_nodes.size() * 0.5);
+    mesh2d.num_nodes = static_cast<int>(node_x.size());
+
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    int geometryListDimension = -1;
+    errorCode = meshkernelapi::mkernel_curvilinear_get_face_polygons_dimension(meshKernelId, 6, geometryListDimension);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(8, geometryListDimension);
+
+    meshkernelapi::GeometryList geometryList;
+    geometryList.num_coordinates = geometryListDimension;
+    auto coordinates_x = std::vector<double>(geometryListDimension);
+    auto coordinates_y = std::vector<double>(geometryListDimension);
+    geometryList.coordinates_x = coordinates_x.data();
+    geometryList.coordinates_y = coordinates_y.data();
+    geometryList.num_coordinates = geometryListDimension;
+
+    errorCode = meshkernelapi::mkernel_curvilinear_get_face_polygons(meshKernelId, 6, geometryList);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+}
