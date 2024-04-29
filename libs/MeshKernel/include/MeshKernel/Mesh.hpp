@@ -192,8 +192,11 @@ namespace meshkernel
         /// @brief Set the node to a new value, this value may be the in-valid value.
         [[nodiscard]] std::unique_ptr<ResetNodeAction> ResetNode(const UInt index, const Point& newValue);
 
-        /// @brief Get the edge
+        /// @brief Get constant reference to an edge
         const Edge& GetEdge(const UInt index) const;
+
+        /// @brief Get a non-constant reference to an edge
+        Edge& GetEdge(const UInt index);
 
         /// @brief Get all edges
         // TODO get rid of this function
@@ -539,6 +542,16 @@ inline void meshkernel::Mesh::SetNodes(const std::vector<Point>& newValues)
 }
 
 inline const meshkernel::Edge& meshkernel::Mesh::GetEdge(const UInt index) const
+{
+    if (index >= GetNumEdges())
+    {
+        throw ConstraintError("The edge index, {}, is not in range.", index);
+    }
+
+    return m_edges[index];
+}
+
+inline meshkernel::Edge& meshkernel::Mesh::GetEdge(const UInt index)
 {
     if (index >= GetNumEdges())
     {

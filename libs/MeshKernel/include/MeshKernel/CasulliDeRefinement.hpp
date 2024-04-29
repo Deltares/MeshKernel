@@ -92,25 +92,25 @@ namespace meshkernel
         ///
         /// @param [in] mesh The Mesh
         /// @param [in, out] nodeMask Node mask information
-        static void InitialiseBoundaryNodes(const Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
+        static void InitialiseBoundaryNodes(Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
 
         /// @brief Initialise node mask for corner nodes
         ///
         /// @param [in] mesh The Mesh
         /// @param [in, out] nodeMask Node mask information
-        static void InitialiseCornerNodes(const Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
+        static void InitialiseCornerNodes(Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
 
         /// @brief Initialise node mask for face nodes
         ///
         /// @param [in] mesh The Mesh
         /// @param [in, out] nodeMask Node mask information
-        static void InitialiseFaceNodes(const Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
+        static void InitialiseFaceNodes(Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
 
         /// @brief Initialise the node mask array.
         ///
         /// @param [in] mesh Mesh used to initialise the node mask
         /// @param [in] polygon Only nodes inside the polygon are to be considered
-        static std::vector<NodeMask> InitialiseNodeMask(const Mesh2D& mesh, const Polygons& polygon);
+        static std::vector<NodeMask> InitialiseNodeMask(Mesh2D& mesh, const Polygons& polygon);
 
         /// @brief Find elements and nodes that form the patch of elements directly connected to the node.
         ///
@@ -119,29 +119,61 @@ namespace meshkernel
         /// @param [out] sharedFaces Identifiers of all faces directly connected to the node
         /// @param [out] connectedNodes Identifiers of the nodes of all faces connected to the node
         /// @param [out] faceNodeMapping Mapping from node index to the position in connectedNodes list.
-        static void FindPatchIds(const Mesh2D& mesh,
+        static void FindPatchIds(Mesh2D& mesh,
                                  const UInt currentNode,
                                  std::vector<UInt>& sharedFaces,
                                  std::vector<UInt>& connectedNodes,
                                  std::vector<std::vector<UInt>>& faceNodeMapping);
 
-        static bool ElementIsSeed(const Mesh2D& mesh, const Polygons& polygon, const UInt face);
+        static bool ElementIsSeed(Mesh2D& mesh, const Polygons& polygon, const UInt face);
 
-        static UInt FindElementSeedIndex(const Mesh2D& mesh, const Polygons& polygon);
+        static UInt FindElementSeedIndex(Mesh2D& mesh, const Polygons& polygon);
 
-        static void FindSurroundingCells(const Mesh2D& mesh,
+        static void FindSurroundingCells(Mesh2D& mesh,
                                          const Polygons& polygon [[maybe_unused]],
                                          const UInt kCell,
-                                         const UInt nMax,
                                          UInt& nDirect, UInt& nIndirect,
                                          std::vector<UInt>& kDirect,
                                          std::vector<UInt>& kIndirect,
-                                         std::vector<std::array<UInt, 2>>& kne);
+                                         std::vector<std::array<int, 2>>& kne);
 
-        static void DoDeRefinement(const Mesh2D& mesh, const Polygons& polygon);
+        static void DoDeRefinement(Mesh2D& mesh, const Polygons& polygon);
 
         static void UpdateFrontList(const Mesh& mesh, const std::vector<UInt>& frontList, std::vector<UInt>& frontListCopy, const UInt kNew);
 
+        static void DeleteCell(Mesh2D& mesh,
+                               const Polygons& polygon,
+                               const UInt k,
+                               const std::vector<UInt>& kDirect,
+                               const std::vector<UInt>& kIndirect,
+                               const std::vector<std::array<int, 2>>& kne,
+                               bool& jaDeleted);
+
+        static void StoreMesh(Mesh2D& mesh, const UInt k,
+                              const std::vector<UInt>& kDirect,
+                              const std::vector<UInt>& kIndirect,
+                              std::vector<UInt>& savedNodes,
+                              std::vector<Edge>& savedEdges,
+                              std::vector<UInt>& saveCells);
+
+        static void CleanUpLink(Mesh2D& mesh, const UInt L);
+
+        template <typename T>
+        static void ShiftArray(const UInt location, std::vector<T>& array)
+        {
+            if (location < array.size() - 1)
+            {
+
+                for (UInt i = location; i < array.size() - 1; ++i)
+                {
+                    array[i] = array[i + 1];
+                }
+            }
+        }
+
+        static UInt FindCommonNode(const Mesh2D& mesh, const UInt L1, const UInt L2);
+
+        static bool IsConvexCell(const Mesh2D& mesh, const UInt cell);
     };
 
 } // namespace meshkernel

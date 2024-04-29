@@ -1850,9 +1850,19 @@ TEST(MeshRefinement, CasulliDeRefinement)
     auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 5, 5);
     Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
     mesh.Administrate();
+    // meshkernel::Print(mesh.Nodes(), mesh.Edges());
 
-    std::cout << "mesh size: " << curviMesh->NumN () << "   " << curviMesh->NumM () << std::endl;
+    std::cout << " nodes: " << std::endl
+              << mesh.Node(7).x << "  " << mesh.Node(7).y << std::endl
+              << mesh.Node(8).x << "  " << mesh.Node(8).y << std::endl
+              << mesh.Node(13).x << "  " << mesh.Node(13).y << std::endl
+              << mesh.Node(12).x << "  " << mesh.Node(12).y << std::endl
+              << std::endl;
 
-    meshkernel::CasulliDeRefinement::Compute (mesh);
+    std::cout << "mesh size: " << curviMesh->NumN() << "   " << curviMesh->NumM() << std::endl;
 
+    meshkernel::CasulliDeRefinement::Compute(mesh);
+    // mesh.Administrate();
+
+    meshkernel::Print(mesh.Nodes(), mesh.Edges());
 }

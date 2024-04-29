@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include "MeshKernel/Exceptions.hpp"
 #include <cmath>
 #include <concepts>
 #include <limits>
@@ -63,6 +64,38 @@ namespace meshkernel
     bool IsInRange(const Scalar value, const Scalar lowerBound, const Scalar upperBound)
     {
         return lowerBound <= value && value <= upperBound;
+    }
+
+    /// \brief Get the next index, wrapping around if index is at
+    ///
+    /// Range is in [0, size - 1]
+    static UInt RotateIndex(const UInt index, const UInt size, const bool forward)
+    {
+        if (size == 0)
+        {
+            throw ConstraintError("Invalid range for index rotation");
+        }
+
+        if (index >= size)
+        {
+            throw ConstraintError("Index is out of range of array: {} not in [0 .. {}]", index, size - 1);
+        }
+
+        if (forward)
+        {
+            return index == size - 1 ? 0 : index + 1;
+        }
+        else
+        {
+            return index == 0 ? size - 1 : index - 1;
+        }
+    }
+
+    /// \brief Get the next index, wrapping around if index is at
+    template <typename Type>
+    UInt RotateIndex(const UInt index, const std::vector<Type>& vec, const bool forward)
+    {
+        return RotateIndex(index, static_cast<UInt>(vec.size()), forward);
     }
 
 } // namespace meshkernel

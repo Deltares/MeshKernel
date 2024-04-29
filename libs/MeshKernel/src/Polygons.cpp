@@ -325,6 +325,33 @@ std::tuple<bool, meshkernel::UInt> Polygons::IsPointInPolygons(const Point& poin
     return {false, constants::missing::uintValue};
 }
 
+bool Polygons::IsPointInAnyPolygon(const Point& point) const
+{
+    // empty polygon means everything is included
+    if (IsEmpty())
+    {
+        return true;
+    }
+
+    for (UInt i = 0; i < m_enclosures.size(); ++i)
+    {
+        PolygonalEnclosure::Region containingRegion = m_enclosures[i].ContainsRegion(point);
+
+        if (containingRegion == PolygonalEnclosure::Region::Exterior)
+        {
+            // Point was found in
+            return true;
+        }
+        else if (containingRegion == PolygonalEnclosure::Region::Interior)
+        {
+            // Point can be found in an hole in the polygon
+            break;
+        }
+    }
+
+    return false;
+}
+
 std::vector<bool> Polygons::PointsInPolygons(const std::vector<Point>& points) const
 {
     std::vector<bool> result(points.size(), false);
