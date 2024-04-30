@@ -27,6 +27,7 @@
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteExterior.hpp"
 #include "MeshKernel/Mesh2DIntersections.hpp"
+#include "MeshKernel/Mesh2DToCurvilinear.hpp"
 #include "MeshKernel/SamplesHessianCalculator.hpp"
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
@@ -842,6 +843,28 @@ namespace meshkernelapi
                                                       meshkernel::ProjectionToString(targetProjection));
                 }
             }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_convert_to_curvilinear(int meshKernelId, double xPointCoordinate, double yPointCoordinate)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(*meshKernelState[meshKernelId].m_mesh2d);
+
+            meshKernelState[meshKernelId].m_curvilinearGrid = mesh2DToCurvilinear.Compute({xPointCoordinate, yPointCoordinate});
+            meshKernelState[meshKernelId].m_mesh2d = std::make_unique<meshkernel::Mesh2D>(meshKernelState[meshKernelId].m_projection);
         }
         catch (...)
         {
