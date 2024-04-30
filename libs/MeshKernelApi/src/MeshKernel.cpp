@@ -617,14 +617,21 @@ namespace meshkernelapi
             for (meshkernel::UInt f = 0u; f < numFaces; ++f)
             {
                 const auto& faceNodes = meshKernelState[meshKernelId].m_mesh2d->m_facesNodes[f];
-                if (faceNodes.size() < numNodes)
+                const auto faceNodesSize = static_cast<int>(faceNodes.size());
+                if (faceNodesSize != numNodes)
                 {
                     continue;
+                }
+                if (count != 0)
+                {
+                    facePolygons.coordinates_x[count] = meshkernel::constants::missing::doubleValue;
+                    facePolygons.coordinates_y[count] = meshkernel::constants::missing::doubleValue;
+                    count++;
                 }
 
                 for (int n = 0; n < faceNodes.size(); ++n)
                 {
-                    const auto currentNode = meshKernelState[meshKernelId].m_mesh2d->Node(faceNodes[0]);
+                    const auto currentNode = meshKernelState[meshKernelId].m_mesh2d->Node(faceNodes[n]);
                     facePolygons.coordinates_x[count] = currentNode.x;
                     facePolygons.coordinates_y[count] = currentNode.y;
                     count++;
@@ -632,9 +639,6 @@ namespace meshkernelapi
                 const auto currentNode = meshKernelState[meshKernelId].m_mesh2d->Node(faceNodes[0]);
                 facePolygons.coordinates_x[count] = currentNode.x;
                 facePolygons.coordinates_y[count] = currentNode.y;
-                count++;
-                facePolygons.coordinates_x[count] = meshkernel::constants::missing::doubleValue;
-                facePolygons.coordinates_y[count] = meshkernel::constants::missing::doubleValue;
                 count++;
             }
         }
@@ -656,15 +660,19 @@ namespace meshkernelapi
             }
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
             const auto numFaces = meshKernelState[meshKernelId].m_mesh2d->GetNumFaces();
-            dim = 0;
+            int num_faces = 0;
             for (meshkernel::UInt f = 0u; f < numFaces; ++f)
             {
-                const auto& faceNodesSize = meshKernelState[meshKernelId].m_mesh2d->m_facesNodes[f].size();
-                if (faceNodesSize < numNodes)
+                const auto faceNodesSize = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->m_facesNodes[f].size());
+                if (faceNodesSize != numNodes)
                 {
                     continue;
                 }
-                dim += static_cast<int>(faceNodesSize) + 2;
+                num_faces += 1;
+            }
+            if (num_faces > 0)
+            {
+                dim = (numNodes + 2) * (num_faces - 1) + numNodes + 1;
             }
         }
         catch (...)

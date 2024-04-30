@@ -3267,7 +3267,6 @@ TEST(Mesh2d, GetFacePolygons_OnAValidMesh_ShouldGetFacePolygons)
         3,
         0,
         1,
-        2,
         3,
         0,
         1};
@@ -3284,36 +3283,27 @@ TEST(Mesh2d, GetFacePolygons_OnAValidMesh_ShouldGetFacePolygons)
         2,
         2,
         2,
-        2,
         3,
         3};
 
-    std::vector<int> edge_nodes{
+    std::vector edge_nodes{
         0, 4,
         1, 5,
         2, 6,
         3, 7,
-
         4, 8,
         5, 9,
-        6, 10,
-        7, 11,
-
-        8, 12,
-        12, 13,
-
+        7, 10,
+        8, 11,
+        10, 12,
         0, 1,
         1, 2,
         2, 3,
-
         5, 6,
         6, 7,
-
         8, 9,
         9, 10,
-        10, 11,
-
-        12, 13};
+        11, 12};
 
     mesh2d.node_x = node_x.data();
     mesh2d.node_y = node_y.data();
@@ -3325,18 +3315,48 @@ TEST(Mesh2d, GetFacePolygons_OnAValidMesh_ShouldGetFacePolygons)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     int geometryListDimension = -1;
-    errorCode = meshkernelapi::mkernel_curvilinear_get_face_polygons_dimension(meshKernelId, 6, geometryListDimension);
+    errorCode = meshkernelapi::mkernel_curvilinear_get_face_polygons_dimension(meshKernelId, 5, geometryListDimension);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(8, geometryListDimension);
+    ASSERT_EQ(13, geometryListDimension);
 
     meshkernelapi::GeometryList geometryList;
-    geometryList.num_coordinates = geometryListDimension;
-    auto coordinates_x = std::vector<double>(geometryListDimension);
-    auto coordinates_y = std::vector<double>(geometryListDimension);
-    geometryList.coordinates_x = coordinates_x.data();
-    geometryList.coordinates_y = coordinates_y.data();
+    auto facesXCoordinates = std::vector<double>(geometryListDimension);
+    auto facesYCoordinates = std::vector<double>(geometryListDimension);
+    geometryList.coordinates_x = facesXCoordinates.data();
+    geometryList.coordinates_y = facesYCoordinates.data();
     geometryList.num_coordinates = geometryListDimension;
 
-    errorCode = meshkernelapi::mkernel_curvilinear_get_face_polygons(meshKernelId, 6, geometryList);
+    errorCode = meshkernelapi::mkernel_curvilinear_get_face_polygons(meshKernelId, 5, geometryList);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    const auto expectedFacesXCoordinates = std::vector<double>{1.0000,
+                                                               2.0000,
+                                                               3.0000,
+                                                               3.0000,
+                                                               1.0000,
+                                                               1.0000,
+                                                               -999.0,
+                                                               0.0000,
+                                                               1.0000,
+                                                               3.0000,
+                                                               1.0000,
+                                                               0.0000,
+                                                               0.0000};
+
+    const auto expectedFacesYCoordinates = std::vector<double>{1.0000,
+                                                               1.0000,
+                                                               1.0000,
+                                                               2.0000,
+                                                               2.0000,
+                                                               1.0000,
+                                                               -999.0,
+                                                               2.0000,
+                                                               2.0000,
+                                                               2.0000,
+                                                               3.0000,
+                                                               3.0000,
+                                                               2.0000};
+
+    ASSERT_THAT(expectedFacesXCoordinates, ::testing::ContainerEq(facesXCoordinates));
+    ASSERT_THAT(expectedFacesYCoordinates, ::testing::ContainerEq(facesYCoordinates));
 }
