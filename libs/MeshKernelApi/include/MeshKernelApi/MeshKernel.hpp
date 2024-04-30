@@ -312,9 +312,9 @@ namespace meshkernelapi
         ///
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] numNodes The number of edges
-        /// @param[out] dim The dimension of the geometry list containing the face polygons
+        /// @param[out] geometryListDimension The dimension of the geometry list containing the face polygons
         /// @returns Error code
-        MKERNEL_API int mkernel_curvilinear_get_face_polygons_dimension(int meshKernelId, int numNodes, int& dim);
+        MKERNEL_API int mkernel_curvilinear_get_face_polygons_dimension(int meshKernelId, int numNodes, int& geometryListDimension);
 
         /// @brief Gets the grid location closet to a specific coordinate.
         /// @param[in] meshKernelId The id of the mesh state

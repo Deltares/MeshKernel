@@ -649,7 +649,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_get_face_polygons_dimension(int meshKernelId, int numNodes, int& dim)
+    MKERNEL_API int mkernel_curvilinear_get_face_polygons_dimension(int meshKernelId, int numNodes, int& geometryListDimension)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -660,7 +660,7 @@ namespace meshkernelapi
             }
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
             const auto numFaces = meshKernelState[meshKernelId].m_mesh2d->GetNumFaces();
-            int num_faces = 0;
+            int numMatchingFaces = 0;
             for (meshkernel::UInt f = 0u; f < numFaces; ++f)
             {
                 const auto faceNodesSize = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->m_facesNodes[f].size());
@@ -668,11 +668,11 @@ namespace meshkernelapi
                 {
                     continue;
                 }
-                num_faces += 1;
+                numMatchingFaces += 1;
             }
-            if (num_faces > 0)
+            if (numMatchingFaces > 0)
             {
-                dim = (numNodes + 2) * (num_faces - 1) + numNodes + 1;
+                geometryListDimension = (numNodes + 2) * (numMatchingFaces - 1) + numNodes + 1;
             }
         }
         catch (...)
