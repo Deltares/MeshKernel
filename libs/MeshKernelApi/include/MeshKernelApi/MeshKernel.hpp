@@ -1047,18 +1047,18 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_hanging_edges(int meshKernelId, int* edges);
 
-        /// @brief Gets the faces polygons with a number of edges larger or equal to numEdges
+        /// @brief Gets the faces polygons with a number of edges larger or equal to numNodes
         ///
         /// @param[in] meshKernelId The id of the mesh state
-        /// @param[in] numNodes The number of edges
+        /// @param[in] numNodes The number of nodes
         /// @param[in] facePolygons The resulting face polygons
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_face_polygons(int meshKernelId, int numNodes, GeometryList& facePolygons);
 
-        /// @brief Gets the dimension of faces polygons with a number of edges larger or equal to numEdges
+        /// @brief Gets the dimension of faces polygons with a number of edges larger or equal to numNodes
         ///
         /// @param[in] meshKernelId The id of the mesh state
-        /// @param[in] numNodes The number of edges
+        /// @param[in] numNodes The number of nodes
         /// @param[out] geometryListDimension The dimension of the geometry list containing the face polygons
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_face_polygons_dimension(int meshKernelId, int numNodes, int& geometryListDimension);
