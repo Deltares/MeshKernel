@@ -219,16 +219,32 @@ void meshkernel::CasulliDeRefinement::FindSurroundingCells(Mesh2D& mesh,
                 {
                     if (kne[i][0] == constants::missing::intValue)
                     {
+                        // std::cout << "setting kne[i,0] to positive " << static_cast<int>(kCell2) << std::endl;
                         kne[i][0] = static_cast<int>(kCell2);
                     }
                     else
                     {
+                        // std::cout << "setting kne[i,1] to positive " << static_cast<int>(kCell2) << std::endl;
                         kne[i][1] = static_cast<int>(kCell2);
                     }
                 }
             }
         }
     }
+
+    // std::cout << "Direct connected:" << std::endl;
+    // for (UInt i = 0; i < kDirect.size(); ++i)
+    // {
+    //     std::cout << "Direct          " << i + 1 << "          " << kDirect[i] + 1 << std::endl;
+    // }
+    // // std::cout << std::endl;
+
+    // std::cout << "Indirect connected:" << std::endl;
+    // for (UInt i = 0; i < kIndirect.size(); ++i)
+    // {
+    //     std::cout << "Indirect          " << i + 1 << "          " << kIndirect[i] + 1 << std::endl;
+    // }
+    // // std::cout << std::endl;
 }
 
 bool meshkernel::CasulliDeRefinement::ElementIsSeed(Mesh2D& mesh, const Polygons& polygon [[maybe_unused]], const UInt face)
@@ -288,7 +304,6 @@ meshkernel::UInt meshkernel::CasulliDeRefinement::FindElementSeedIndex(Mesh2D& m
         {
 
             if (mesh.m_numFacesNodes[face] != constants::geometric::numNodesInQuadrilateral)
-            // if (mesh.m_facesNodes[face].size() != constants::geometric::numNodesInQuadrilateral)
             {
                 continue;
             }
@@ -339,11 +354,8 @@ void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
 {
     [[maybe_unused]] UInt seedElement = FindElementSeedIndex(mesh, polygon);
     [[maybe_unused]] UInt iterationCount = 0;
-    [[maybe_unused]] UInt nMax = 10;              // fix
-    [[maybe_unused]] UInt numFront = 1;           // fix
-    [[maybe_unused]] UInt maxIterationCount = 10; // fix
-
-    [[maybe_unused]] UInt maxNumFront = 10; // fix
+    [[maybe_unused]] UInt nMax = 1000;              // fix
+    [[maybe_unused]] UInt maxIterationCount = 1000; // fix
 
     [[maybe_unused]] UInt nDirect = 0;                          // fix
     [[maybe_unused]] UInt nIndirect = 0;                        // fix
@@ -368,6 +380,7 @@ void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
             UInt k = frontIndex[i];
             UInt kOther = constants::missing::uintValue;
 
+            // get the connected cells
             FindSurroundingCells(mesh, polygon, k, nDirect, nIndirect, kDirect, kIndirect, kne);
 
             if (cellMask[k] == ElementMask::A)
@@ -382,7 +395,10 @@ void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
                         continue;
                     }
 
-                    if ((cellMask[kOther] != ElementMask::A && cellMask[kOther] != ElementMask::NotA) && (cellMask[kOther] != ElementMask::B && cellMask[kOther] != ElementMask::NotB))
+                    int enumVal = int(cellMask[kOther]);
+
+                    if (std::abs(enumVal) != 1 && std::abs(enumVal) != 2)
+                    // if ((cellMask[kOther] != ElementMask::A && cellMask[kOther] != ElementMask::NotA) && (cellMask[kOther] != ElementMask::B && cellMask[kOther] != ElementMask::NotB))
                     {
                         cellMask[kOther] = ElementMask::B;
                         UpdateFrontList(mesh, frontIndex, frontIndexCopy, kOther);
@@ -418,9 +434,12 @@ void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
                         continue;
                     }
 
-                    if ((cellMask[kOther] != ElementMask::C) &&
-                        (cellMask[kOther] != ElementMask::A && cellMask[kOther] != ElementMask::NotA) &&
-                        (cellMask[kOther] != ElementMask::B && cellMask[kOther] != ElementMask::NotB))
+                    int enumVal = int(cellMask[kOther]);
+
+                    if (enumVal != 3 && std::abs(enumVal) != 1 && std::abs(enumVal) != 2)
+                    // if ((cellMask[kOther] != ElementMask::C) &&
+                    //     (cellMask[kOther] != ElementMask::A && cellMask[kOther] != ElementMask::NotA) &&
+                    //     (cellMask[kOther] != ElementMask::B && cellMask[kOther] != ElementMask::NotB))
                     {
                         cellMask[kOther] = ElementMask::A;
                         UpdateFrontList(mesh, frontIndex, frontIndexCopy, kOther);
@@ -436,9 +455,12 @@ void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
                         continue;
                     }
 
-                    if ((cellMask[kOther] != ElementMask::B && cellMask[kOther] != ElementMask::NotB) &&
-                        (cellMask[kOther] != ElementMask::A && cellMask[kOther] != ElementMask::NotA) &&
-                        cellMask[kOther] != ElementMask::C)
+                    int enumVal = int(cellMask[kOther]);
+
+                    if (std::abs(enumVal) != 2 && std::abs(enumVal) != 1 && enumVal != 3)
+                    // if ((cellMask[kOther] != ElementMask::B && cellMask[kOther] != ElementMask::NotB) &&
+                    //     (cellMask[kOther] != ElementMask::A && cellMask[kOther] != ElementMask::NotA) &&
+                    //     cellMask[kOther] != ElementMask::C)
                     {
                         cellMask[kOther] = ElementMask::B;
                         UpdateFrontList(mesh, frontIndex, frontIndexCopy, kOther);
@@ -450,6 +472,13 @@ void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
         }
 
         frontIndex = frontIndexCopy;
+    }
+
+    std::cout << "cell mask" << std::endl;
+
+    for (UInt i = 0; i < cellMask.size(); ++i)
+    {
+        std::cout << "value: " << i << "  " << int(cellMask[i]) << std::endl;
     }
 
     //--------------------------------
@@ -473,8 +502,6 @@ void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
 // print mesh.Node(0).x
 
 // print mesh.Node(1).x
-
-
 
 void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
                                                  const Polygons& polygon,
@@ -525,7 +552,7 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
     //  check if the cell is a cornercell
     kk = 0;
 
-    // TOOD Change to for loop and break
+    // TODO Change to for loop and break
     while ((kk < mesh.m_numFacesNodes[k] - 1) && noGo)
     {
         ++kk;
@@ -597,14 +624,12 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
 
     p /= factor;
 
-    // std::transform(mesh.m_facesNodes[k].begin(), mesh.m_facesNodes[k].end(),
-    //                [&grid = mesh, newP = p](const UInt id)
-    //                { mesh.Node(id) = newP; });
-
     for (UInt i = 0; i < mesh.m_numFacesNodes[k]; ++i)
-    // for (UInt i = 0; i < mesh.m_facesNodes[k].size(); ++i)
     {
-        std::cout << "reset node: from " << mesh.m_facesNodes[k][i] << "  " << mesh.Node(mesh.m_facesNodes[k][i]).x << ", " << mesh.Node(mesh.m_facesNodes[k][i]).y << "    to " << p.x << ", " << p.y << std::endl;
+        // std::cout << "reset node: from "
+        //           << mesh.m_facesNodes[k][i] << "  "
+        //           << mesh.Node(mesh.m_facesNodes[k][i]).x << ", " << mesh.Node(mesh.m_facesNodes[k][i]).y
+        //           << "    to " << p.x << ", " << p.y << std::endl;
         auto undoAction = mesh.ResetNode(mesh.m_facesNodes[k][i], p);
     }
 
@@ -659,7 +684,7 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
                     continue;
                 }
 
-                UInt iR = 1 - i;//i == 1 ? 0 : 1; // 1 - i
+                UInt iR = 1 - i; // i == 1 ? 0 : 1; // 1 - i
                 UInt kcR = kne[kk][iR] == constants::missing::intValue ? constants::missing::uintValue : static_cast<UInt>(kne[kk][iR]);
 
                 if (kcL == constants::missing::uintValue || kcR == constants::missing::uintValue)
@@ -709,7 +734,6 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
 
                         break;
                     }
-
                 }
 
                 if (L1 != constants::missing::uintValue)
@@ -757,7 +781,7 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
                     UInt i = 0;
 
                     // TODO should this be i < mesh.m_numFacesNodes[kcell1] - 1?
-                    while (i < mesh.m_numFacesNodes[kcell1] &&
+                    while (i < mesh.m_numFacesNodes[kcell1] - 0 &&
                            mesh.m_facesNodes[kcell1][i] != mesh.GetEdge(L).first &&
                            mesh.m_facesNodes[kcell1][i] != mesh.GetEdge(L).second &&
                            mesh.m_facesNodes[kcell1][i] != mesh.m_facesNodes[k][0])
@@ -793,7 +817,6 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
     int maxVal = std::numeric_limits<int>::lowest();
 
     for (UInt i = 0; i < mesh.m_numFacesNodes[k]; ++i)
-    // for (UInt i = 0; i < mesh.m_facesNodes[k].size(); ++i)
     {
         maxVal = std::max(maxVal, mesh.m_nodesTypes[mesh.m_facesNodes[k][i]]);
     }
@@ -805,7 +828,7 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
 
     // merge nodes
 
-    std::cout << "reset node: from " << k1 << "  " << mesh.Node(k1).x << ", " << mesh.Node(k1).y << "    to " << p.x << ", " << p.y << std::endl;
+    // std::cout << "reset node: from " << k1 << "  " << mesh.Node(k1).x << ", " << mesh.Node(k1).y << "    to " << p.x << ", " << p.y << std::endl;
     auto undoAction = mesh.ResetNode(k1, p);
     // mesh.Node(k1) = p;
 
@@ -842,7 +865,6 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
     }
 
     // remove unwanted boundary node: a non-corner node that is shared by two boundary links
-
     for (UInt kk = 0; kk < kIndirect.size(); ++kk)
     {
         UInt kcell = kIndirect[kk];
@@ -854,7 +876,6 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
         }
 
         for (UInt i = 0; i < mesh.m_numFacesNodes[kcell]; ++i)
-        // for (UInt i = 0; i < mesh.m_facesNodes[kcell].size(); ++i)
         {
             UInt K2 = mesh.m_facesNodes[kcell][i];
             UInt L = mesh.m_facesEdges[kcell][i];
@@ -880,54 +901,60 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
                         // ShiftArray(i, mesh.m_facesNodes[kcell]);
                         // ShiftArray(i, mesh.m_facesEdges[kcell]);
 
-                        for (UInt jj = i; jj < mesh.m_numFacesNodes[kcell]; ++jj)
-                        {
-                            mesh.m_facesNodes[kcell][jj] = mesh.m_facesNodes[kcell][jj + 1];
-                            mesh.m_facesEdges[kcell][jj] = mesh.m_facesEdges[kcell][jj + 1];
-                        }
+                        UInt N = mesh.m_numFacesNodes[kcell];
 
-                        --mesh.m_numFacesNodes[kcell];
-
-                        // redirect node of the link that is kept
-                        if (mesh.GetEdge(L1).first == K2)
+                        if (N > 3)
                         {
-                            mesh.GetEdge(L1).first = mesh.GetEdge(L).first + mesh.GetEdge(L).second - K2;
+
+                            for (UInt jj = i; jj < mesh.m_numFacesNodes[kcell]; ++jj)
+                            {
+                                mesh.m_facesNodes[kcell][jj] = mesh.m_facesNodes[kcell][jj + 1];
+                                mesh.m_facesEdges[kcell][jj] = mesh.m_facesEdges[kcell][jj + 1];
+                            }
+
+                            --mesh.m_numFacesNodes[kcell];
+
+                            // redirect node of the link that is kept
+                            if (mesh.GetEdge(L1).first == K2)
+                            {
+                                mesh.GetEdge(L1).first = mesh.GetEdge(L).first + mesh.GetEdge(L).second - K2;
+                            }
+                            else
+                            {
+                                mesh.GetEdge(L1).second = mesh.GetEdge(L).first + mesh.GetEdge(L).second - K2;
+                            }
+
+                            // delete other link
+
+                            CleanUpLink(mesh, L);
+                            // std::cout << "reset node: from " << K2 << "  " << mesh.Node(K2).x << ", " << mesh.Node(K2).y << "    to " << constants::missing::doubleValue << ", " << constants::missing::doubleValue << std::endl;
+                            auto undoAcction = mesh.ResetNode(K2, {constants::missing::doubleValue, constants::missing::doubleValue});
+                            continueOuterLoop = true;
+                            break;
                         }
                         else
                         {
-                            mesh.GetEdge(L1).second = mesh.GetEdge(L).first + mesh.GetEdge(L).second - K2;
-                        }
+                            mesh.m_numFacesNodes[kcell] = 0;
+                            CleanUpLink(mesh, L);
+                            CleanUpLink(mesh, L1);
+                            UInt L2 = std::accumulate(mesh.m_facesEdges[kcell].begin(), mesh.m_facesEdges[kcell].begin() + 3, 0) - L - L1;
 
-                        // delete other link
-
-                        CleanUpLink(mesh, L);
-                        std::cout << "reset node: from " << K2 << "  " << mesh.Node(K2).x << ", " << mesh.Node(K2).y << "    to " << constants::missing::doubleValue << ", " << constants::missing::doubleValue << std::endl;
-                        auto undoAcction = mesh.ResetNode(K2, {constants::missing::doubleValue, constants::missing::doubleValue});
-                        continueOuterLoop = true;
-                        break;
-                    }
-                    else
-                    {
-                        mesh.m_numFacesNodes[kcell] = 0;
-                        CleanUpLink(mesh, L);
-                        CleanUpLink(mesh, L1);
-                        UInt L2 = std::accumulate(mesh.m_facesEdges[kcell].begin(), mesh.m_facesEdges[kcell].begin() + 3, 0) - L - L1;
-
-                        if (mesh.m_edgesNumFaces[L2] > 1)
-                        {
-                            if (mesh.m_edgesFaces[L2][0] == kcell)
+                            if (mesh.m_edgesNumFaces[L2] > 1)
                             {
-                                mesh.m_edgesNumFaces[L2] = 1;
-                                mesh.m_edgesFaces[L2][0] = mesh.m_edgesFaces[L2][1];
+                                if (mesh.m_edgesFaces[L2][0] == kcell)
+                                {
+                                    mesh.m_edgesNumFaces[L2] = 1;
+                                    mesh.m_edgesFaces[L2][0] = mesh.m_edgesFaces[L2][1];
+                                }
+                                else if (mesh.m_edgesFaces[L2][1] == kcell)
+                                {
+                                    mesh.m_edgesNumFaces[L2] = 1;
+                                }
                             }
-                            else if (mesh.m_edgesFaces[L2][1] == kcell)
-                            {
-                                mesh.m_edgesNumFaces[L2] = 1;
-                            }
-                        }
 
-                        continueOuterLoop = true;
-                        break;
+                            continueOuterLoop = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -1034,6 +1061,13 @@ meshkernel::UInt meshkernel::CasulliDeRefinement::FindCommonNode(const Mesh2D& m
 void meshkernel::CasulliDeRefinement::CleanUpLink(Mesh2D& mesh, const UInt L)
 {
 
+    if (L == 4 or L == 23)
+    {
+        [[maybe_unused]] int dummy;
+        dummy = 1;
+        // return;
+    }
+
     std::cout << " cleanup link: " << L << "  ";
     if (mesh.GetEdge(L).first != constants::missing::uintValue)
     {
@@ -1065,10 +1099,9 @@ void meshkernel::CasulliDeRefinement::CleanUpLink(Mesh2D& mesh, const UInt L)
         }
 
         // UInt N = mesh.m_nodesNumEdges[k];
-        UInt j = constants::missing::uintValue; // mesh.m_nodesEdges[k].size();
+        UInt j = constants::missing::uintValue;
 
         for (UInt jj = 0; jj < mesh.m_nodesNumEdges[k]; ++jj)
-        // for (UInt jj = 0; jj < mesh.m_nodesEdges[k].size(); ++jj)
         {
             if (mesh.m_nodesEdges[k][jj] == L)
             {
@@ -1090,7 +1123,7 @@ void meshkernel::CasulliDeRefinement::CleanUpLink(Mesh2D& mesh, const UInt L)
         {
             // Error?
             // call qnerror('cleanup_nod: link not found', ' ', ' ')
-            std::cout << "cleanup_nod: link not found "<< std::endl;
+            std::cout << "cleanup_nod: link not found " << std::endl;
             return;
         }
 
@@ -1109,7 +1142,7 @@ void meshkernel::CasulliDeRefinement::StoreMesh(Mesh2D& mesh, const UInt k,
                                                 std::vector<UInt>& savedCells)
 {
 
-    [[maybe_unused]] UInt maxCells = 1u + kDirect.size() + kIndirect.size();
+    UInt maxCells = 1u + kDirect.size() + kIndirect.size();
     std::vector<UInt> allCellIds;
     allCellIds.reserve(maxCells);
 
