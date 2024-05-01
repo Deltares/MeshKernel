@@ -159,23 +159,6 @@ std::unique_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGridWithMissing
 
 std::unique_ptr<meshkernel::CurvilinearGrid> MakeCurvilinearGrid(double originX, double originY, double deltaX, double deltaY, size_t nx, size_t ny)
 {
-    // double x = originX;
-
-    // lin_alg::Matrix<meshkernel::Point> points(ny, nx);
-
-    // for (size_t m = 0; m < nx; ++m)
-    // {
-    //     double y = originY;
-
-    //     for (size_t n = 0; n < ny; ++n)
-    //     {
-    //         points(n, m) = meshkernel::Point(x, y);
-    //         y += deltaY;
-    //     }
-
-    //     x += deltaX;
-    // }
-
     double y = originY;
 
     lin_alg::Matrix<meshkernel::Point> points(ny, nx);

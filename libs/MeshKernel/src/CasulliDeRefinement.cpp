@@ -85,6 +85,8 @@ void meshkernel::CasulliDeRefinement::FindSurroundingCells(Mesh2D& mesh,
     {
         UInt L = mesh.m_facesEdges[kCell][kk];
 
+        [[maybe_unused]] auto xxx = mesh.m_facesNodes[kCell];
+
         if (mesh.m_edgesNumFaces[L] < 2)
         {
             continue;
@@ -193,10 +195,12 @@ void meshkernel::CasulliDeRefinement::FindSurroundingCells(Mesh2D& mesh,
                 {
                     if (kne[i][0] == constants::missing::intValue)
                     {
+                        std::cout << "setting kne[i,0] to negative " << -static_cast<int>(kCell2) << std::endl;
                         kne[i][0] = -static_cast<int>(kCell2);
                     }
                     else
                     {
+                        std::cout << "setting kne[i,1] to negative " << -static_cast<int>(kCell2) << std::endl;
                         kne[i][1] = -static_cast<int>(kCell2);
                     }
 
@@ -264,7 +268,6 @@ meshkernel::UInt meshkernel::CasulliDeRefinement::FindElementSeedIndex(Mesh2D& m
         UInt k1 = mesh.m_edgesFaces[e][0];
 
         if (mesh.m_numFacesNodes[k1] != constants::geometric::numNodesInQuadrilateral)
-        // if (mesh.m_facesNodes[k1].size() != constants::geometric::numNodesInQuadrilateral)
         {
             continue;
         }
@@ -465,6 +468,14 @@ void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
     }
 }
 
+// print mesh.m_facesNodes[kCell]
+
+// print mesh.Node(0).x
+
+// print mesh.Node(1).x
+
+
+
 void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
                                                  const Polygons& polygon,
                                                  const UInt k,
@@ -516,12 +527,11 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
 
     // TOOD Change to for loop and break
     while ((kk < mesh.m_numFacesNodes[k] - 1) && noGo)
-    // while ((kk < mesh.m_facesNodes[k].size() - 1) && noGo)
     {
         ++kk;
         UInt knod = mesh.m_facesNodes[k][kk];
 
-        if (mesh.m_nodesTypes[knod] == 3 && mesh.m_nodesNumEdges[knod] < 2)
+        if (mesh.m_nodesTypes[knod] == 3 && mesh.m_nodesNumEdges[knod] <= 2)
         {
             noGo = false;
         }
@@ -598,23 +608,23 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
         auto undoAction = mesh.ResetNode(mesh.m_facesNodes[k][i], p);
     }
 
-    for (UInt kk = 0; kk < kDirect.size(); ++kk)
-    {
-        UInt kcell1 = kDirect[kk];
+    // for (UInt kk = 0; kk < kDirect.size(); ++kk)
+    // {
+    //     UInt kcell1 = kDirect[kk];
 
-        if (mesh.m_numFacesNodes[kcell1] < 4)
-        {
-            for (UInt j = 0; j < mesh.m_numFacesNodes[kcell1]; ++j)
-            {
-                UInt L = mesh.m_facesEdges[kcell1][j];
+    //     if (mesh.m_numFacesNodes[kcell1] < 4)
+    //     {
+    //         for (UInt j = 0; j < mesh.m_numFacesNodes[kcell1]; ++j)
+    //         {
+    //             UInt L = mesh.m_facesEdges[kcell1][j];
 
-                if (mesh.m_edgesNumFaces[L] < 2)
-                {
-                    CleanUpLink(mesh, L);
-                }
-            }
-        }
-    }
+    //             if (mesh.m_edgesNumFaces[L] < 2)
+    //             {
+    //                 CleanUpLink(mesh, L);
+    //             }
+    //         }
+    //     }
+    // }
 
     //--------------------------------
 
@@ -638,25 +648,19 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
             }
 
             // Find adjacent direct neighbours
-            UInt L1 = 0;
+            UInt L1 = constants::missing::uintValue;
 
             for (UInt i = 0; i < 2; ++i)
             {
-                UInt kcL = kne[kk][i] == constants::missing::intValue ? constants::missing::uintValue : kne[kk][i];
+                UInt kcL = kne[kk][i] == constants::missing::intValue ? constants::missing::uintValue : static_cast<UInt>(kne[kk][i]);
 
                 if (kcL == constants::missing::uintValue)
                 {
                     continue;
                 }
-                // if (kcL == constants::missing::uintValue)
-                // {
-                //     continue;
-                // }
 
-                UInt iR = i == 1 ? 0 : 1; // 1 - i
-
-                UInt kcR = kne[kk][iR] == constants::missing::intValue ? constants::missing::uintValue : kne[kk][iR];
-                // UInt kcR = kne[kk][iR];
+                UInt iR = 1 - i;//i == 1 ? 0 : 1; // 1 - i
+                UInt kcR = kne[kk][iR] == constants::missing::intValue ? constants::missing::uintValue : static_cast<UInt>(kne[kk][iR]);
 
                 if (kcL == constants::missing::uintValue || kcR == constants::missing::uintValue)
                 {
@@ -678,7 +682,7 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
 
                     if (mesh.m_edgesFaces[L][0] == kcell1 && mesh.m_edgesFaces[L][1] == kcL)
                     {
-                        if (kcR != 0)
+                        if (kcR != constants::missing::uintValue)
                         {
                             mesh.m_edgesFaces[L][0] = kcR;
                         }
@@ -693,7 +697,7 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
                     }
                     else if (mesh.m_edgesFaces[L][1] == kcell1 && mesh.m_edgesFaces[L][0] == kcL)
                     {
-                        if (kcR != 0)
+                        if (kcR != constants::missing::uintValue)
                         {
                             mesh.m_edgesFaces[L][1] = kcR;
                         }
@@ -702,10 +706,12 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
                             mesh.m_edgesFaces[L][1] = constants::missing::uintValue;
                             mesh.m_edgesNumFaces[L] = 1;
                         }
+
+                        break;
                     }
 
-                    break;
                 }
+
                 if (L1 != constants::missing::uintValue)
                 {
                     mesh.m_facesEdges[kcL][j] = L1;
@@ -720,6 +726,9 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
         }
         else
         {
+
+            // polygons of degree higher than three: remove node and link
+
             for (UInt j = 0; j < mesh.m_numFacesNodes[kcell1]; ++j)
             {
                 UInt L = mesh.m_facesEdges[kcell1][j];
@@ -747,6 +756,7 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
 
                     UInt i = 0;
 
+                    // TODO should this be i < mesh.m_numFacesNodes[kcell1] - 1?
                     while (i < mesh.m_numFacesNodes[kcell1] &&
                            mesh.m_facesNodes[kcell1][i] != mesh.GetEdge(L).first &&
                            mesh.m_facesNodes[kcell1][i] != mesh.GetEdge(L).second &&
@@ -867,11 +877,18 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
                     // this node may be outside polygon: ignore
                     if (mesh.m_nodesTypes[K2] != 3 && polygon.IsPointInAnyPolygon(mesh.Node(K2)))
                     {
-                        ShiftArray(i, mesh.m_facesNodes[kcell]);
-                        ShiftArray(i, mesh.m_facesEdges[kcell]);
-                        --mesh.m_numFacesNodes[kcell];
-                        // redirect node of the link that is kept
+                        // ShiftArray(i, mesh.m_facesNodes[kcell]);
+                        // ShiftArray(i, mesh.m_facesEdges[kcell]);
 
+                        for (UInt jj = i; jj < mesh.m_numFacesNodes[kcell]; ++jj)
+                        {
+                            mesh.m_facesNodes[kcell][jj] = mesh.m_facesNodes[kcell][jj + 1];
+                            mesh.m_facesEdges[kcell][jj] = mesh.m_facesEdges[kcell][jj + 1];
+                        }
+
+                        --mesh.m_numFacesNodes[kcell];
+
+                        // redirect node of the link that is kept
                         if (mesh.GetEdge(L1).first == K2)
                         {
                             mesh.GetEdge(L1).first = mesh.GetEdge(L).first + mesh.GetEdge(L).second - K2;
@@ -1073,6 +1090,7 @@ void meshkernel::CasulliDeRefinement::CleanUpLink(Mesh2D& mesh, const UInt L)
         {
             // Error?
             // call qnerror('cleanup_nod: link not found', ' ', ' ')
+            std::cout << "cleanup_nod: link not found "<< std::endl;
             return;
         }
 
