@@ -1,9 +1,8 @@
-name: Build and test (master/release)
+name: Build and test (release)
 
 on:
   push:
     branches:
-      - master
       - "release/v[0-9].[0-9].[0-9]"
   pull_request:
     types:
@@ -20,8 +19,10 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - macos-12
-          - macos-14
+          - macos-12 # x86_64 (free)
+          - macos-13 # x86_64 (free)
+          - macos-13-xlarge # arm64 (billable)
+          - macos-14 # arm64 (free)
         build_type:
           - Release
 
