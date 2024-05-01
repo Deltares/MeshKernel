@@ -995,6 +995,9 @@ public:
         return {
             std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{-1.0, -1.0}, meshkernel::Location::Nodes, 0),
             std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{18.0, 18.0}, meshkernel::Location::Nodes, 10),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{21.0, 21.0}, meshkernel::Location::Nodes, 10),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{20.0, 20.0}, meshkernel::Location::Nodes, 10),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{19.0, 19.0}, meshkernel::Location::Nodes, 10),
             std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{5.0, -1.0}, meshkernel::Location::Edges, 12),
             std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{11.0, 13.0}, meshkernel::Location::Edges, 5),
             std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{0.5, 0.5}, meshkernel::Location::Faces, 0),

@@ -3367,7 +3367,7 @@ TEST(Mesh2d, GetFacePolygons_OnAValidMesh_ShouldGetFacePolygons)
     geometryList.coordinates_y = facesYCoordinates.data();
     geometryList.num_coordinates = geometryListDimension;
 
-    errorCode = meshkernelapi::mkernel_mesh2d_get_face_polygons(meshKernelId, 5, geometryList);
+    errorCode = mkernel_mesh2d_get_face_polygons(meshKernelId, 5, geometryList);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     const auto expectedFacesXCoordinates = std::vector<double>{1.0000,
