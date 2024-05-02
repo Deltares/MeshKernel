@@ -1847,15 +1847,64 @@ TEST(MeshRefinement, CasulliPatchRefinement)
 TEST(MeshRefinement, CasulliDeRefinement)
 {
 
-    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 5, 5);
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, 20, 31);
     Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
     mesh.Administrate();
     // meshkernel::Print(mesh.Nodes(), mesh.Edges());
-
-    std::cout << "mesh size: " << curviMesh->NumN() << "   " << curviMesh->NumM() << std::endl;
 
     meshkernel::CasulliDeRefinement::Compute(mesh);
     // mesh.Administrate();
 
     meshkernel::Print(mesh.Nodes(), mesh.Edges());
+}
+
+TEST(MeshRefinement, CasulliDeRefinementPatch)
+{
+
+    // Polygon sample
+    std::vector<Point> points{{5.0, 5.0}, {15.0, 10.0}, {18.0, 23.0}, {3.0, 28.0}, {5.0, 5.0}};
+
+    // // Polygon sample
+    // std::vector<Point> points{{5.0, 5.0}, {15.0, 5.0}, {15.0, 15.0}, {5.0, 15.0}, {5.0, 5.0}};
+
+    meshkernel::Polygons polygon(points, Projection::cartesian);
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, 20, 31);
+    Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
+    mesh.Administrate();
+    // meshkernel::Print(mesh.Nodes(), mesh.Edges());
+
+    meshkernel::CasulliDeRefinement::Compute(mesh, polygon);
+    mesh.Administrate();
+
+    meshkernel::Print(mesh.Nodes(), mesh.Edges());
+}
+
+TEST(MeshRefinement, CasulliDeRefinementPatchTheAll)
+{
+
+    // Polygon sample
+    std::vector<Point> points{{5.0, 5.0}, {15.0, 10.0}, {18.0, 23.0}, {3.0, 28.0}, {5.0, 5.0}};
+
+    // // Polygon sample
+    // std::vector<Point> points{{5.0, 5.0}, {15.0, 5.0}, {15.0, 15.0}, {5.0, 15.0}, {5.0, 5.0}};
+
+    meshkernel::Polygons polygon(points, Projection::cartesian);
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, 20, 31);
+    Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
+    mesh.Administrate();
+    // meshkernel::Print(mesh.Nodes(), mesh.Edges());
+
+    meshkernel::CasulliDeRefinement::Compute(mesh, polygon);
+    mesh.DeleteInvalidNodesAndEdges();
+    // mesh.Administrate();
+    mesh.Administrate();
+
+    Mesh2D mesh2(mesh.Edges(), mesh.Nodes(), Projection::cartesian);
+
+    meshkernel::CasulliDeRefinement::Compute(mesh2);
+    mesh2.Administrate();
+
+    meshkernel::Print(mesh2.Nodes(), mesh2.Edges());
 }
