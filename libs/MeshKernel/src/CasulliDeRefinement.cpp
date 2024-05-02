@@ -474,11 +474,18 @@ void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
         frontIndex = frontIndexCopy;
     }
 
-    std::cout << "cell mask" << std::endl;
+    int count = 1;
 
     for (UInt i = 0; i < cellMask.size(); ++i)
     {
-        std::cout << "value: " << i << "  " << int(cellMask[i]) << std::endl;
+        if (cellMask[i] == ElementMask::NotA && mesh.m_numFacesNodes[i] > 0)
+        {
+            std::cout << "centrex ( " << count << " ) = " << mesh.m_facesCircumcenters[i].x << ";" << std::endl;
+            std::cout << "centrey ( " << count << " ) = " << mesh.m_facesCircumcenters[i].y << ";" << std::endl;
+            ++count;
+        }
+
+        // std::cout << "value: " << i << "  " << int(cellMask[i]) << std::endl;
     }
 
     //--------------------------------
