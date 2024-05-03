@@ -718,8 +718,7 @@ CurvilinearGrid::BoundaryGridLineType CurvilinearGrid::GetBoundaryGridLineType(C
     }
 
     if (firstNodeType == NodeType::Bottom || secondNodeType == NodeType::Bottom ||
-        (firstNodeType == NodeType::BottomLeft && secondNodeType == NodeType::BottomRight) ||
-        (firstNodeType == NodeType::BottomRight && secondNodeType == NodeType::BottomLeft))
+        (firstNodeType == NodeType::BottomLeft && secondNodeType == NodeType::BottomRight))
     {
         return BoundaryGridLineType::Left;
     }
@@ -736,9 +735,26 @@ CurvilinearGrid::BoundaryGridLineType CurvilinearGrid::GetBoundaryGridLineType(C
         return BoundaryGridLineType::Bottom;
     }
     if (firstNodeType == NodeType::Right || secondNodeType == NodeType::Right ||
-        (firstNodeType == NodeType::BottomRight && secondNodeType == NodeType::UpperRight) ||
-        (firstNodeType == NodeType::UpperRight && secondNodeType == NodeType::BottomRight))
+        (firstNodeType == NodeType::BottomRight && secondNodeType == NodeType::UpperRight))
     {
+        return BoundaryGridLineType::Top;
+    }
+
+    // Corner nodes
+    if (firstNode.m_m == secondNode.m_m) // Left or Right
+    {
+        if (GetNode(firstNode.m_n, firstNode.m_m + 1).IsValid() && GetNode(secondNode.m_n, secondNode.m_m + 1).IsValid())
+        {
+            return BoundaryGridLineType::Left;
+        }
+        return BoundaryGridLineType::Right;
+    }
+    if (firstNode.m_n == secondNode.m_n) // Bottom or top
+    {
+        if (GetNode(firstNode.m_n + 1, firstNode.m_m).IsValid() && GetNode(secondNode.m_n + 1, secondNode.m_m).IsValid())
+        {
+            return BoundaryGridLineType::Bottom;
+        }
         return BoundaryGridLineType::Top;
     }
 

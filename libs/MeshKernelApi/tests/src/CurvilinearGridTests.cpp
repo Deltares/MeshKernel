@@ -1040,3 +1040,59 @@ TEST_P(CurvilinearLocationIndexTests, GetLocationIndex_OnACurvilinearGrid_Should
     ASSERT_EQ(locationIndex, expectedIndex);
 }
 INSTANTIATE_TEST_SUITE_P(LocationIndexParametrizedTests, CurvilinearLocationIndexTests, ::testing::ValuesIn(CurvilinearLocationIndexTests::GetData()));
+
+class CurvilinearCornersTests : public ::testing::TestWithParam<std::tuple<meshkernel::Point, meshkernel::Point, int, int>>
+{
+public:
+    [[nodiscard]] static std::vector<std::tuple<meshkernel::Point, meshkernel::Point, int, int>> GetData()
+    {
+        return {
+            std::make_tuple<meshkernel::Point, meshkernel::Point, int, int>(meshkernel::Point{-0.5, 0.5}, meshkernel::Point{-0.3, 1.5}, 4, 3),
+            std::make_tuple<meshkernel::Point, meshkernel::Point, int, int>(meshkernel::Point{-0.5, 0.5}, meshkernel::Point{-0.5, 1.1}, 4, 3),
+            std::make_tuple<meshkernel::Point, meshkernel::Point, int, int>(meshkernel::Point{2.5, 0.5}, meshkernel::Point{2.5, 1.1}, 4, 3),
+            std::make_tuple<meshkernel::Point, meshkernel::Point, int, int>(meshkernel::Point{2.5, 0.5}, meshkernel::Point{2.1, 1.5}, 4, 3),
+            std::make_tuple<meshkernel::Point, meshkernel::Point, int, int>(meshkernel::Point{0.5, -0.5}, meshkernel::Point{1.1, -0.5}, 3, 4),
+            std::make_tuple<meshkernel::Point, meshkernel::Point, int, int>(meshkernel::Point{0.5, -0.5}, meshkernel::Point{1.5, -0.1}, 3, 4),
+            std::make_tuple<meshkernel::Point, meshkernel::Point, int, int>(meshkernel::Point{1.5, -0.5}, meshkernel::Point{0.9, -0.5}, 3, 4),
+            std::make_tuple<meshkernel::Point, meshkernel::Point, int, int>(meshkernel::Point{1.5, -0.5}, meshkernel::Point{0.5, -0.1}, 3, 4)};
+    }
+};
+
+TEST_P(CurvilinearCornersTests, InsertAFace_OnACurvilinearGrid_ShouldInsertFaces)
+{
+    // Prepare
+    auto const& [firstPoint, secondPoint, expectedM, expectedN] = GetParam();
+
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    makeGridParameters.origin_x = 0.0;
+
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = 1.0;
+    makeGridParameters.block_size_y = 1.0;
+    makeGridParameters.num_columns = 2;
+    makeGridParameters.num_rows = 2;
+
+    int meshKernelId = 0;
+    const int projectionType = 0;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    errorCode = meshkernelapi::mkernel_curvilinear_insert_face(meshKernelId, firstPoint.x, firstPoint.y);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_insert_face(meshKernelId, secondPoint.x, secondPoint.y);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert
+    meshkernelapi::CurvilinearGrid curvilinearGrid{};
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(expectedM, curvilinearGrid.num_m);
+    ASSERT_EQ(expectedN, curvilinearGrid.num_n);
+}
+INSTANTIATE_TEST_SUITE_P(CurvilinearCornersParametrizedTests, CurvilinearCornersTests, ::testing::ValuesIn(CurvilinearCornersTests::GetData()));
