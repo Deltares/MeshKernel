@@ -2274,7 +2274,7 @@ std::vector<meshkernel::BoundingBox> Mesh2D::GetEdgesBoundingBoxes() const
     {
         if (e.first == constants::missing::uintValue || e.second == constants::missing::uintValue)
         {
-            result.emplace_back(CreateEmptyBoundingBox());
+            result.emplace_back(CreateNonOverlappingBoundingBox());
             continue;
         }
 
