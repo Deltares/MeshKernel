@@ -2246,20 +2246,24 @@ std::unique_ptr<Mesh2D> Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
 
 meshkernel::BoundingBox Mesh2D::GetBoundingBox() const
 {
-
     Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
-    Point upperRight = -lowerLeft;
+    Point upperRight(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
 
     const auto numNodes = GetNumNodes();
-    for (UInt e = 0; e < numNodes; ++e)
+    for (UInt n = 0; n < numNodes; ++n)
     {
-        lowerLeft.x = std::min(lowerLeft.x, m_nodes[e].x);
-        lowerLeft.y = std::min(lowerLeft.y, m_nodes[e].y);
-        upperRight.x = std::max(upperRight.x, m_nodes[e].x);
-        upperRight.y = std::max(upperRight.y, m_nodes[e].y);
+        [[unlikely]] if (!m_nodes[n].IsValid())
+        {
+            continue;
+        }
+
+        lowerLeft.x = std::min(lowerLeft.x, m_nodes[n].x);
+        lowerLeft.y = std::min(lowerLeft.y, m_nodes[n].y);
+        upperRight.x = std::max(upperRight.x, m_nodes[n].x);
+        upperRight.y = std::max(upperRight.y, m_nodes[n].y);
     }
 
-    return BoundingBox(lowerLeft, upperRight);
+    return {lowerLeft, upperRight};
 }
 
 std::vector<meshkernel::BoundingBox> Mesh2D::GetEdgesBoundingBoxes() const
@@ -2268,6 +2272,12 @@ std::vector<meshkernel::BoundingBox> Mesh2D::GetEdgesBoundingBoxes() const
     result.reserve(GetNumEdges());
     for (const auto& e : m_edges)
     {
+        if (e.first == constants::missing::uintValue || e.second == constants::missing::uintValue)
+        {
+            result.emplace_back(CreateNonOverlappingBoundingBox());
+            continue;
+        }
+
         result.emplace_back(BoundingBox::CreateBoundingBox(m_nodes[e.first], m_nodes[e.second]));
     }
 

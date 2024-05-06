@@ -1338,3 +1338,75 @@ TEST(Mesh2D, Mesh2DToCurvilinear_WithMixedMesh_ShouldCreatePartialCurvilinearMes
     ASSERT_EQ(0.0, curvilinearGrid->GetNode(2, 2).x);
     ASSERT_EQ(20.0, curvilinearGrid->GetNode(2, 2).y);
 }
+
+TEST(Mesh2D, GetBoundingBox_WithANonEmptyMesh_ShouldGetAValidBoundingBox)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(10,
+                                                    10,
+                                                    10.0,
+                                                    10.0,
+                                                    meshkernel::Projection::cartesian);
+    // Execute
+    const auto boundingBox = mesh->GetBoundingBox();
+
+    // Assert
+    ASSERT_EQ(boundingBox.lowerLeft().x, 0.0);
+    ASSERT_EQ(boundingBox.lowerLeft().y, 0.0);
+    ASSERT_EQ(boundingBox.upperRight().x, 10.0);
+    ASSERT_EQ(boundingBox.upperRight().y, 10.0);
+}
+
+TEST(Mesh2D, GetBoundingBox_WithAnEmptyMesh_ShouldGetAnEmptyBoundingBox)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(10,
+                                                    10,
+                                                    10.0,
+                                                    10.0,
+                                                    meshkernel::Projection::cartesian);
+
+    const auto polygon = meshkernel::Polygons({}, meshkernel::Projection::cartesian);
+    const auto deletionOption = meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected;
+
+    meshkernel::Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    meshkernel::Point upperRight(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
+
+    // Execute
+    auto undoAction = mesh->DeleteMesh(polygon, deletionOption, false);
+    auto boundingBox = mesh->GetBoundingBox();
+
+    // Assert
+    ASSERT_EQ(boundingBox.lowerLeft().x, lowerLeft.x);
+    ASSERT_EQ(boundingBox.lowerLeft().y, lowerLeft.y);
+    ASSERT_EQ(boundingBox.upperRight().x, upperRight.x);
+    ASSERT_EQ(boundingBox.upperRight().y, upperRight.y);
+}
+
+TEST(Mesh2D, GetEdgesBoundingBox_WithAnInvalidEdge_ShouldGetOneInvalidEdgeBoundingBox)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(10,
+                                                    10,
+                                                    10.0,
+                                                    10.0,
+                                                    meshkernel::Projection::cartesian);
+    // Execute
+    const auto undoAction = mesh->DeleteEdge(0);
+    const auto edgesBoundingBoxes = mesh->GetEdgesBoundingBoxes();
+
+    // Assert
+    meshkernel::Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    meshkernel::Point upperRight(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
+
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(edgesBoundingBoxes[0].lowerLeft().x, lowerLeft.x, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[0].lowerLeft().y, lowerLeft.y, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[0].upperRight().x, upperRight.x, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[0].upperRight().y, upperRight.y, tolerance);
+
+    ASSERT_NEAR(edgesBoundingBoxes[1].lowerLeft().x, 0.0, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[1].lowerLeft().y, 1.1111111111111112, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[1].upperRight().x, 1.1111111111111112, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[1].upperRight().y, 1.1111111111111112, tolerance);
+}
