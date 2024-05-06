@@ -11,9 +11,11 @@
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
+using namespace meshkernel;
+
 TEST(CurvilinearGrid, MakeRectangular_OnSphericalCoordinates_ShouldMakeCurvilinearGrid)
 {
-    meshkernel::MakeGridParameters makeGridParameters;
+    MakeGridParameters makeGridParameters;
 
     makeGridParameters.origin_x = -1.0;
     makeGridParameters.origin_y = 49.1;
@@ -50,7 +52,7 @@ TEST(CurvilinearGrid, MakeRectangular_OnSphericalCoordinatesWithpolygon_ShouldMa
     const double lonRes = 0.2;
     const double latRes = 0.2;
 
-    meshkernel::MakeGridParameters makeGridParameters;
+    MakeGridParameters makeGridParameters;
     makeGridParameters.origin_x = -6;
     makeGridParameters.origin_y = 15.5;
     makeGridParameters.num_rows = static_cast<int>(std::ceil((latMax - latMin) / latRes));
@@ -109,7 +111,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearComputeTransfiniteFromPolygon_ShouldC
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
+    geometryListIn.geometry_separator = constants::missing::doubleValue;
     std::vector<double> xCoordinatesIn{0, 5, 10, 10, 10, 5, 0, 0, 0};
     std::vector<double> yCoordinatesIn{0, 0, 0, 5, 10, 10, 10, 5, 0};
     std::vector<double> valuesIn{0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -144,7 +146,7 @@ TEST_F(CartesianApiTestFixture, MakeCurvilinearGridThroughApi)
     // Prepare
     auto const meshKernelId = GetMeshKernelId();
 
-    meshkernel::MakeGridParameters makeGridParameters;
+    MakeGridParameters makeGridParameters;
 
     makeGridParameters.num_columns = 3;
     makeGridParameters.num_rows = 2;
@@ -195,20 +197,20 @@ TEST_F(CartesianApiTestFixture, GenerateTransfiniteCurvilinearGridThroughApi)
     auto const meshKernelId = GetMeshKernelId();
 
     meshkernelapi::GeometryList geometryListIn;
-    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
-    std::vector xCoordinates{1.340015E+02, 3.642529E+02, 6.927549E+02, meshkernel::constants::missing::doubleValue,
-                             2.585022E+02, 4.550035E+02, 8.337558E+02, meshkernel::constants::missing::doubleValue,
-                             1.002513E+02, 4.610035E+02, meshkernel::constants::missing::doubleValue,
+    geometryListIn.geometry_separator = constants::missing::doubleValue;
+    std::vector xCoordinates{1.340015E+02, 3.642529E+02, 6.927549E+02, constants::missing::doubleValue,
+                             2.585022E+02, 4.550035E+02, 8.337558E+02, constants::missing::doubleValue,
+                             1.002513E+02, 4.610035E+02, constants::missing::doubleValue,
                              6.522547E+02, 7.197551E+02};
 
-    std::vector yCoordinates{2.546282E+02, 4.586302E+02, 5.441311E+02, meshkernel::constants::missing::doubleValue,
-                             6.862631E+01, 2.726284E+02, 3.753794E+02, meshkernel::constants::missing::doubleValue,
-                             4.068797E+02, 7.912642E+01, meshkernel::constants::missing::doubleValue,
+    std::vector yCoordinates{2.546282E+02, 4.586302E+02, 5.441311E+02, constants::missing::doubleValue,
+                             6.862631E+01, 2.726284E+02, 3.753794E+02, constants::missing::doubleValue,
+                             4.068797E+02, 7.912642E+01, constants::missing::doubleValue,
                              6.026317E+02, 2.681283E+02};
 
-    std::vector zCoordinates{0.0, 0.0, 0.0, meshkernel::constants::missing::doubleValue,
-                             0.0, 0.0, 0.0, meshkernel::constants::missing::doubleValue,
-                             0.0, 0.0, meshkernel::constants::missing::doubleValue,
+    std::vector zCoordinates{0.0, 0.0, 0.0, constants::missing::doubleValue,
+                             0.0, 0.0, 0.0, constants::missing::doubleValue,
+                             0.0, 0.0, constants::missing::doubleValue,
                              0.0, 0.0};
 
     geometryListIn.coordinates_x = xCoordinates.data();
@@ -216,7 +218,7 @@ TEST_F(CartesianApiTestFixture, GenerateTransfiniteCurvilinearGridThroughApi)
     geometryListIn.values = zCoordinates.data();
     geometryListIn.num_coordinates = static_cast<int>(xCoordinates.size());
 
-    meshkernel::CurvilinearParameters curvilinearParameters;
+    CurvilinearParameters curvilinearParameters;
 
     curvilinearParameters.m_refinement = 10;
     curvilinearParameters.n_refinement = 10;
@@ -246,14 +248,14 @@ TEST_F(CartesianApiTestFixture, GenerateOrthogonalCurvilinearGridThroughApi)
 
     meshkernelapi::GeometryList geometryListIn;
 
-    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
-    std::vector xCoordinates{1.175014E+02, 3.755030E+02, 7.730054E+02, meshkernel::constants::missing::doubleValue,
+    geometryListIn.geometry_separator = constants::missing::doubleValue;
+    std::vector xCoordinates{1.175014E+02, 3.755030E+02, 7.730054E+02, constants::missing::doubleValue,
                              4.100089E+01, 3.410027E+02};
 
-    std::vector yCoordinates{2.437587E+01, 3.266289E+02, 4.563802E+02, meshkernel::constants::missing::doubleValue,
+    std::vector yCoordinates{2.437587E+01, 3.266289E+02, 4.563802E+02, constants::missing::doubleValue,
                              2.388780E+02, 2.137584E+01};
 
-    std::vector zCoordinates{0.0, 0.0, 0.0, meshkernel::constants::missing::doubleValue,
+    std::vector zCoordinates{0.0, 0.0, 0.0, constants::missing::doubleValue,
                              0.0, 0.0};
 
     geometryListIn.coordinates_x = xCoordinates.data();
@@ -261,10 +263,10 @@ TEST_F(CartesianApiTestFixture, GenerateOrthogonalCurvilinearGridThroughApi)
     geometryListIn.values = zCoordinates.data();
     geometryListIn.num_coordinates = static_cast<int>(xCoordinates.size());
 
-    meshkernel::CurvilinearParameters curvilinearParameters;
+    CurvilinearParameters curvilinearParameters;
     curvilinearParameters.m_refinement = 40;
     curvilinearParameters.n_refinement = 10;
-    meshkernel::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    SplinesToCurvilinearParameters splinesToCurvilinearParameters;
     splinesToCurvilinearParameters.aspect_ratio = 0.1;
     splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
     splinesToCurvilinearParameters.average_width = 500.0;
@@ -356,7 +358,7 @@ TEST_F(CartesianApiTestFixture, Orthogonalize_CurvilinearGrid_ShouldOrthogonaliz
     auto errorCode = meshkernelapi::mkernel_curvilinear_move_node(meshKernelId, 10.0, 20.0, 18.0, 12.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    meshkernel::OrthogonalizationParameters orthogonalizationParameters{};
+    OrthogonalizationParameters orthogonalizationParameters{};
     orthogonalizationParameters.outer_iterations = 1;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
@@ -556,8 +558,8 @@ TEST_F(CartesianApiTestFixture, CurvilinearComputeOrthogonalGridFromSplines_Shou
     splines.coordinates_y = coordinatesY.data();
     splines.num_coordinates = static_cast<int>(coordinatesX.size());
 
-    meshkernel::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
-    meshkernel::CurvilinearParameters curvilinearParameters{};
+    SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+    CurvilinearParameters curvilinearParameters{};
 
     curvilinearParameters.m_refinement = 20;
     curvilinearParameters.n_refinement = 40;
@@ -713,7 +715,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearDeleteNode_ShouldDeleteNode)
 TEST(CurvilinearGrid, MakeRectangularOnDefinedExtension_OnSphericalCoordinates_ShouldMakeCurvilinearGrid)
 {
     // Setup
-    meshkernel::MakeGridParameters makeGridParameters;
+    MakeGridParameters makeGridParameters;
     makeGridParameters.origin_x = 0.0;
     makeGridParameters.origin_y = 0.0;
     makeGridParameters.upper_right_x = 10.0;
@@ -801,7 +803,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearDeleteInterior_OnCurvilinearGrid_Shou
 
 TEST(CurvilinearGrid, MakeRectangular_ComputeSmoothnessTest)
 {
-    meshkernel::MakeGridParameters makeGridParameters;
+    MakeGridParameters makeGridParameters;
 
     makeGridParameters.origin_x = 0.0;
     makeGridParameters.origin_y = 0.0;
@@ -849,7 +851,7 @@ TEST(CurvilinearGrid, MakeRectangular_ComputeSmoothnessTest)
 
 TEST(CurvilinearGrid, MakeRectangular_ComputeCurvatureTest)
 {
-    meshkernel::MakeGridParameters makeGridParameters;
+    MakeGridParameters makeGridParameters;
 
     makeGridParameters.origin_x = 0.0;
     makeGridParameters.origin_y = 0.0;
@@ -911,7 +913,7 @@ TEST(CurvilinearGrid, MakeRectangular_ComputeCurvatureTest)
 TEST(CurvilinearGrid, MakeRectangular_ConvertToMesh2D)
 {
     // Prepare
-    meshkernel::MakeGridParameters makeGridParameters;
+    MakeGridParameters makeGridParameters;
 
     makeGridParameters.origin_x = 0.0;
     makeGridParameters.origin_y = 0.0;
@@ -937,7 +939,7 @@ TEST(CurvilinearGrid, MakeRectangular_ConvertToMesh2D)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d{};
-    errorCode = meshkernelapi::mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Data for translated mesh
@@ -965,7 +967,7 @@ TEST(CurvilinearGrid, MakeRectangular_ConvertToMesh2D)
     mesh2d.face_x = face_x.data();
     mesh2d.face_y = face_y.data();
 
-    errorCode = meshkernelapi::mkernel_mesh2d_get_data(meshKernelId, mesh2d);
+    errorCode = mkernel_mesh2d_get_data(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // assert
@@ -987,22 +989,22 @@ TEST(CurvilinearGrid, MakeRectangular_ConvertToMesh2D)
     ASSERT_EQ(mesh2d.num_edges, 60);
 }
 
-class CurvilinearLocationIndexTests : public ::testing::TestWithParam<std::tuple<meshkernel::Point, meshkernel::Location, int>>
+class CurvilinearLocationIndexTests : public testing::TestWithParam<std::tuple<Point, Location, int>>
 {
 public:
-    [[nodiscard]] static std::vector<std::tuple<meshkernel::Point, meshkernel::Location, int>> GetData()
+    [[nodiscard]] static std::vector<std::tuple<Point, Location, int>> GetData()
     {
         return {
-            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{-1.0, -1.0}, meshkernel::Location::Nodes, 0),
-            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{18.0, 18.0}, meshkernel::Location::Nodes, 10),
-            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{21.0, 21.0}, meshkernel::Location::Nodes, 10),
-            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{20.0, 20.0}, meshkernel::Location::Nodes, 10),
-            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{19.0, 19.0}, meshkernel::Location::Nodes, 10),
-            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{5.0, -1.0}, meshkernel::Location::Edges, 12),
-            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{11.0, 13.0}, meshkernel::Location::Edges, 5),
-            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{0.5, 0.5}, meshkernel::Location::Faces, 0),
-            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{18.0, 18.0}, meshkernel::Location::Faces, 4),
-            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{7.0, 14.0}, meshkernel::Location::Faces, 3)};
+            std::make_tuple<Point, Location, int>(Point{-1.0, -1.0}, Location::Nodes, 0),
+            std::make_tuple<Point, Location, int>(Point{18.0, 18.0}, Location::Nodes, 10),
+            std::make_tuple<Point, Location, int>(Point{21.0, 21.0}, Location::Nodes, 10),
+            std::make_tuple<Point, Location, int>(Point{20.0, 20.0}, Location::Nodes, 10),
+            std::make_tuple<Point, Location, int>(Point{19.0, 19.0}, Location::Nodes, 10),
+            std::make_tuple<Point, Location, int>(Point{5.0, -1.0}, Location::Edges, 12),
+            std::make_tuple<Point, Location, int>(Point{11.0, 13.0}, Location::Edges, 5),
+            std::make_tuple<Point, Location, int>(Point{0.5, 0.5}, Location::Faces, 0),
+            std::make_tuple<Point, Location, int>(Point{18.0, 18.0}, Location::Faces, 4),
+            std::make_tuple<Point, Location, int>(Point{7.0, 14.0}, Location::Faces, 3)};
     }
 };
 
@@ -1011,7 +1013,7 @@ TEST_P(CurvilinearLocationIndexTests, GetLocationIndex_OnACurvilinearGrid_Should
     // Prepare
     auto const& [point, location, expectedIndex] = GetParam();
 
-    meshkernel::MakeGridParameters makeGridParameters;
+    MakeGridParameters makeGridParameters;
 
     makeGridParameters.origin_x = 0.0;
 
@@ -1041,20 +1043,20 @@ TEST_P(CurvilinearLocationIndexTests, GetLocationIndex_OnACurvilinearGrid_Should
 }
 INSTANTIATE_TEST_SUITE_P(LocationIndexParametrizedTests, CurvilinearLocationIndexTests, ::testing::ValuesIn(CurvilinearLocationIndexTests::GetData()));
 
-class CurvilinearCornersTests : public ::testing::TestWithParam<std::tuple<meshkernel::Point, meshkernel::Point, int, int>>
+class CurvilinearCornersTests : public testing::TestWithParam<std::tuple<Point, Point, int, int>>
 {
 public:
-    [[nodiscard]] static std::vector<std::tuple<meshkernel::Point, meshkernel::Point, int, int>> GetData()
+    [[nodiscard]] static std::vector<std::tuple<Point, Point, int, int>> GetData()
     {
         return {
-            std::make_tuple<meshkernel::Point, meshkernel::Point, int, int>(meshkernel::Point{-0.5, 0.5}, meshkernel::Point{-0.3, 1.5}, 4, 3),
-            std::make_tuple<meshkernel::Point, meshkernel::Point, int, int>(meshkernel::Point{-0.5, 0.5}, meshkernel::Point{-0.5, 1.1}, 4, 3),
-            std::make_tuple<meshkernel::Point, meshkernel::Point, int, int>(meshkernel::Point{2.5, 0.5}, meshkernel::Point{2.5, 1.1}, 4, 3),
-            std::make_tuple<meshkernel::Point, meshkernel::Point, int, int>(meshkernel::Point{2.5, 0.5}, meshkernel::Point{2.1, 1.5}, 4, 3),
-            std::make_tuple<meshkernel::Point, meshkernel::Point, int, int>(meshkernel::Point{0.5, -0.5}, meshkernel::Point{1.1, -0.5}, 3, 4),
-            std::make_tuple<meshkernel::Point, meshkernel::Point, int, int>(meshkernel::Point{0.5, -0.5}, meshkernel::Point{1.5, -0.1}, 3, 4),
-            std::make_tuple<meshkernel::Point, meshkernel::Point, int, int>(meshkernel::Point{1.5, -0.5}, meshkernel::Point{0.9, -0.5}, 3, 4),
-            std::make_tuple<meshkernel::Point, meshkernel::Point, int, int>(meshkernel::Point{1.5, -0.5}, meshkernel::Point{0.5, -0.1}, 3, 4)};
+            std::make_tuple<Point, Point, int, int>(Point{-0.5, 0.5}, Point{-0.3, 1.5}, 4, 3),
+            std::make_tuple<Point, Point, int, int>(Point{-0.5, 0.5}, Point{-0.5, 1.1}, 4, 3),
+            std::make_tuple<Point, Point, int, int>(Point{2.5, 0.5}, Point{2.5, 1.1}, 4, 3),
+            std::make_tuple<Point, Point, int, int>(Point{2.5, 0.5}, Point{2.1, 1.5}, 4, 3),
+            std::make_tuple<Point, Point, int, int>(Point{0.5, -0.5}, Point{1.1, -0.5}, 3, 4),
+            std::make_tuple<Point, Point, int, int>(Point{0.5, -0.5}, Point{1.5, -0.1}, 3, 4),
+            std::make_tuple<Point, Point, int, int>(Point{1.5, -0.5}, Point{0.9, -0.5}, 3, 4),
+            std::make_tuple<Point, Point, int, int>(Point{1.5, -0.5}, Point{0.5, -0.1}, 3, 4)};
     }
 };
 
@@ -1063,7 +1065,7 @@ TEST_P(CurvilinearCornersTests, InsertAFace_OnACurvilinearGrid_ShouldInsertFaces
     // Prepare
     auto const& [firstPoint, secondPoint, expectedM, expectedN] = GetParam();
 
-    meshkernel::MakeGridParameters makeGridParameters;
+    MakeGridParameters makeGridParameters;
 
     makeGridParameters.origin_x = 0.0;
 

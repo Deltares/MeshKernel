@@ -3370,33 +3370,33 @@ TEST(Mesh2d, GetFacePolygons_OnAValidMesh_ShouldGetFacePolygons)
     errorCode = mkernel_mesh2d_get_face_polygons(meshKernelId, 5, geometryList);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    const auto expectedFacesXCoordinates = std::vector<double>{1.0000,
-                                                               2.0000,
-                                                               3.0000,
-                                                               3.0000,
-                                                               1.0000,
-                                                               1.0000,
-                                                               -999.0,
-                                                               0.0000,
-                                                               1.0000,
-                                                               3.0000,
-                                                               1.0000,
-                                                               0.0000,
-                                                               0.0000};
+    const auto expectedFacesXCoordinates = std::vector{1.0000,
+                                                       2.0000,
+                                                       3.0000,
+                                                       3.0000,
+                                                       1.0000,
+                                                       1.0000,
+                                                       -999.0,
+                                                       0.0000,
+                                                       1.0000,
+                                                       3.0000,
+                                                       1.0000,
+                                                       0.0000,
+                                                       0.0000};
 
-    const auto expectedFacesYCoordinates = std::vector<double>{1.0000,
-                                                               1.0000,
-                                                               1.0000,
-                                                               2.0000,
-                                                               2.0000,
-                                                               1.0000,
-                                                               -999.0,
-                                                               2.0000,
-                                                               2.0000,
-                                                               2.0000,
-                                                               3.0000,
-                                                               3.0000,
-                                                               2.0000};
+    const auto expectedFacesYCoordinates = std::vector{1.0000,
+                                                       1.0000,
+                                                       1.0000,
+                                                       2.0000,
+                                                       2.0000,
+                                                       1.0000,
+                                                       -999.0,
+                                                       2.0000,
+                                                       2.0000,
+                                                       2.0000,
+                                                       3.0000,
+                                                       3.0000,
+                                                       2.0000};
 
     ASSERT_THAT(expectedFacesXCoordinates, ::testing::ContainerEq(facesXCoordinates));
     ASSERT_THAT(expectedFacesYCoordinates, ::testing::ContainerEq(facesYCoordinates));

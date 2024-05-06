@@ -1893,7 +1893,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_face_polygons(int meshKernelId, int numNodes, GeometryList& facePolygons)
+    MKERNEL_API int mkernel_mesh2d_get_face_polygons(int meshKernelId, int numEdges, const GeometryList& facePolygons)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -1905,11 +1905,11 @@ namespace meshkernelapi
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
             const auto numFaces = meshKernelState[meshKernelId].m_mesh2d->GetNumFaces();
             meshkernel::UInt count = 0;
-            for (meshkernel::UInt f = 0u; f < numFaces; ++f)
+            for (meshkernel::UInt f = 0; f < numFaces; ++f)
             {
                 const auto& faceNodes = meshKernelState[meshKernelId].m_mesh2d->m_facesNodes[f];
-                const auto faceNodesSize = static_cast<int>(faceNodes.size());
-                if (faceNodesSize != numNodes)
+                const auto faceNumEdges = static_cast<int>(faceNodes.size());
+                if (faceNumEdges != numEdges)
                 {
                     continue;
                 }
@@ -1922,12 +1922,12 @@ namespace meshkernelapi
 
                 for (meshkernel::UInt n = 0u; n < faceNodes.size(); ++n)
                 {
-                    const auto currentNode = meshKernelState[meshKernelId].m_mesh2d->Node(faceNodes[n]);
+                    const auto& currentNode = meshKernelState[meshKernelId].m_mesh2d->Node(faceNodes[n]);
                     facePolygons.coordinates_x[count] = currentNode.x;
                     facePolygons.coordinates_y[count] = currentNode.y;
                     count++;
                 }
-                const auto currentNode = meshKernelState[meshKernelId].m_mesh2d->Node(faceNodes[0]);
+                const auto& currentNode = meshKernelState[meshKernelId].m_mesh2d->Node(faceNodes[0]);
                 facePolygons.coordinates_x[count] = currentNode.x;
                 facePolygons.coordinates_y[count] = currentNode.y;
                 count++;
@@ -1940,7 +1940,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_face_polygons_dimension(int meshKernelId, int numNodes, int& geometryListDimension)
+    MKERNEL_API int mkernel_mesh2d_get_face_polygons_dimension(int meshKernelId, int numEdges, int& geometryListDimension)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -1952,10 +1952,10 @@ namespace meshkernelapi
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
             const auto numFaces = meshKernelState[meshKernelId].m_mesh2d->GetNumFaces();
             int numMatchingFaces = 0;
-            for (meshkernel::UInt f = 0u; f < numFaces; ++f)
+            for (meshkernel::UInt f = 0; f < numFaces; ++f)
             {
-                const auto faceNodesSize = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->m_facesNodes[f].size());
-                if (faceNodesSize != numNodes)
+                const auto faceNumEdges = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->m_facesNodes[f].size());
+                if (faceNumEdges != numEdges)
                 {
                     continue;
                 }
@@ -1963,7 +1963,7 @@ namespace meshkernelapi
             }
             if (numMatchingFaces > 0)
             {
-                geometryListDimension = (numNodes + 2) * (numMatchingFaces - 1) + numNodes + 1;
+                geometryListDimension = (numEdges + 2) * (numMatchingFaces - 1) + numEdges + 1;
             }
         }
         catch (...)
