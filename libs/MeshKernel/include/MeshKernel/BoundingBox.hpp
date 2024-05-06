@@ -164,7 +164,7 @@ namespace meshkernel
     };
 
     /// @brief Merge two bounding boxes into a single bounding box that will contain both of the original.
-    BoundingBox Merge(const BoundingBox& b1, const BoundingBox& b2);
+    static BoundingBox Merge(const BoundingBox& b1, const BoundingBox& b2);
 
     /// @brief Create a non overlapping bounding box
     static BoundingBox CreateNonOverlappingBoundingBox();
@@ -211,15 +211,15 @@ void meshkernel::BoundingBox::Reset(const std::vector<T>& points, size_t start, 
     m_upperRight = Point(maxx, maxy);
 }
 
-inline meshkernel::BoundingBox meshkernel::Merge(const BoundingBox& b1, const BoundingBox& b2)
+meshkernel::BoundingBox meshkernel::Merge(const BoundingBox& b1, const BoundingBox& b2)
 {
     Point lowerLeft{std::min(b1.lowerLeft().x, b2.lowerLeft().x), std::min(b1.lowerLeft().y, b2.lowerLeft().y)};
     Point upperRight{std::max(b1.upperRight().x, b2.upperRight().x), std::max(b1.upperRight().y, b2.upperRight().y)};
 
-    return BoundingBox(lowerLeft, upperRight);
+    return {lowerLeft, upperRight};
 }
 
-inline meshkernel::BoundingBox meshkernel::CreateNonOverlappingBoundingBox()
+meshkernel::BoundingBox meshkernel::CreateNonOverlappingBoundingBox()
 {
     Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
     Point upperRight(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
