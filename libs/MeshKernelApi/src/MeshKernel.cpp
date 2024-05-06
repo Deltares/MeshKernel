@@ -1893,6 +1893,86 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_mesh2d_get_face_polygons(int meshKernelId, int numEdges, const GeometryList& facePolygons)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+            meshKernelState[meshKernelId].m_mesh2d->Administrate();
+            const auto numFaces = meshKernelState[meshKernelId].m_mesh2d->GetNumFaces();
+            meshkernel::UInt count = 0;
+            for (meshkernel::UInt f = 0; f < numFaces; ++f)
+            {
+                const auto& faceNodes = meshKernelState[meshKernelId].m_mesh2d->m_facesNodes[f];
+                const auto faceNumEdges = static_cast<int>(faceNodes.size());
+                if (faceNumEdges != numEdges)
+                {
+                    continue;
+                }
+                if (count != 0)
+                {
+                    facePolygons.coordinates_x[count] = missing::doubleValue;
+                    facePolygons.coordinates_y[count] = missing::doubleValue;
+                    count++;
+                }
+
+                for (meshkernel::UInt n = 0u; n < faceNodes.size(); ++n)
+                {
+                    const auto& currentNode = meshKernelState[meshKernelId].m_mesh2d->Node(faceNodes[n]);
+                    facePolygons.coordinates_x[count] = currentNode.x;
+                    facePolygons.coordinates_y[count] = currentNode.y;
+                    count++;
+                }
+                const auto& currentNode = meshKernelState[meshKernelId].m_mesh2d->Node(faceNodes[0]);
+                facePolygons.coordinates_x[count] = currentNode.x;
+                facePolygons.coordinates_y[count] = currentNode.y;
+                count++;
+            }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_get_face_polygons_dimension(int meshKernelId, int numEdges, int& geometryListDimension)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+            meshKernelState[meshKernelId].m_mesh2d->Administrate();
+            const auto numFaces = meshKernelState[meshKernelId].m_mesh2d->GetNumFaces();
+            int numMatchingFaces = 0;
+            for (meshkernel::UInt f = 0; f < numFaces; ++f)
+            {
+                const auto faceNumEdges = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->m_facesNodes[f].size());
+                if (faceNumEdges != numEdges)
+                {
+                    continue;
+                }
+                numMatchingFaces += 1;
+            }
+            if (numMatchingFaces > 0)
+            {
+                geometryListDimension = (numEdges + 2) * (numMatchingFaces - 1) + numEdges + 1;
+            }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_polygon_get_offset(int meshKernelId, const GeometryList& geometryListIn, int inWard, double distance, GeometryList& geometryListOut)
     {
         lastExitCode = meshkernel::ExitCode::Success;
