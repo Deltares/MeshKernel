@@ -53,9 +53,6 @@ namespace meshkernel
         /// @brief Get the edge
         const Edge& GetEdge() const;
 
-        /// @brief Print the add edge action to the stream
-        void Print(std::ostream& out = std::cout) const override;
-
     private:
         /// @brief The edge identifier
         UInt m_edgeId;

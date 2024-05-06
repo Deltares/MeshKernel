@@ -69,16 +69,3 @@ std::uint64_t meshkernel::DeleteNodeAction::MemorySize() const
 
     return size;
 }
-
-void meshkernel::DeleteNodeAction::Print(std::ostream& out) const
-{
-    out << fmt_ns::vformat("DeleteNodeAction: state {}, nodeId {}, node {{{}, {}}}",
-                           fmt_ns::make_format_args(to_string(GetState()), m_nodeId, m_node.x, m_node.y));
-
-    for (const std::unique_ptr<DeleteEdgeAction>& action : m_deletedEdges)
-    {
-        // Provide some indentation
-        out << "  ";
-        action->Print(out);
-    }
-}

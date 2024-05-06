@@ -13,6 +13,7 @@
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/Operations.hpp" // can delete after test
 
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"

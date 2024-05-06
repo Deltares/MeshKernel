@@ -167,7 +167,7 @@ namespace meshkernel
     BoundingBox Merge(const BoundingBox& b1, const BoundingBox& b2);
 
     /// @brief Create a non overlapping bounding box
-    BoundingBox CreateEmptyBoundingBox();
+    static BoundingBox CreateEmptyBoundingBox();
 
 } // namespace meshkernel
 
@@ -223,7 +223,7 @@ inline meshkernel::BoundingBox meshkernel::CreateEmptyBoundingBox()
 {
     Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
     Point upperRight(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
-    return BoundingBox(lowerLeft, upperRight);
+    return {lowerLeft, upperRight};
 }
 
 inline meshkernel::Vector meshkernel::BoundingBox::Delta() const

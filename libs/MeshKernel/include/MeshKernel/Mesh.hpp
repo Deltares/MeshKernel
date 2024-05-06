@@ -254,22 +254,22 @@ namespace meshkernel
         /// @param[in] nodeindex The index of the node to move
         [[nodiscard]] std::unique_ptr<UndoAction> MoveNode(Point newPoint, UInt nodeindex);
 
-        /// @brief Get the index of a node close to a point
+        /// @brief Get the index of a location (node/edge or face) close to a point
         /// @param[in] point The starting point from where to start the search
-        /// @param[in] nodeMask The mask to apply to mesh nodes, if the mask value is false, the next closest node will be considered
+        /// @param[in] location The location
+        /// @param[in] locationMask The mask to apply to each location
+        /// @param[in] boundingBox The bounding box
         /// @returns The index of the closest node
-        [[nodiscard]] UInt FindNodeCloseToAPoint(Point point, const std::vector<bool>& nodeMask);
+        [[nodiscard]] UInt FindLocationIndex(Point point,
+                                             Location location,
+                                             const std::vector<bool>& locationMask = {},
+                                             const BoundingBox& boundingBox = {});
 
         /// @brief Get the index of a node close to a point
         /// @param[in] point The starting point from where to start the search
         /// @param[in] searchRadius The search radius
         /// @returns The index of the closest node
         [[nodiscard]] UInt FindNodeCloseToAPoint(Point const& point, double searchRadius);
-
-        /// Finds the closest edge close to a point
-        /// @param[in] point The starting point from where to start the search
-        /// @returns The index of the closest edge
-        [[nodiscard]] UInt FindEdgeCloseToAPoint(Point point);
 
         /// @brief Deletes an edge
         /// @param[in] edge The edge index
@@ -318,44 +318,10 @@ namespace meshkernel
         /// @return The max edge length
         double ComputeMaxLengthSurroundingEdges(UInt node);
 
-        /// @brief Build the rtree for the corresponding location, using all locations
-        /// @param[in] meshLocation The mesh location for which the RTree is build
-        void BuildTree(Location meshLocation);
-
         /// @brief Build the rtree for the corresponding location, using only the locations inside the bounding box
-        /// @param[in] meshLocation The mesh location for which the RTree is build
+        /// @param[in] location The mesh location for which the RTree is build
         /// @param[in] boundingBox The bounding box
-        void BuildTree(Location meshLocation, const BoundingBox& boundingBox);
-
-        /// @brief Search all points sorted by proximity to another point.
-        /// @param[in] point The reference point.
-        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchNearestLocation(Point point, Location meshLocation);
-
-        /// @brief Search the nearest point within a radius to another point.
-        /// @param[in] point The reference point.
-        /// @param[in] squaredRadius the squared value of the radius.
-        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchNearestLocation(Point point, double squaredRadius, Location meshLocation);
-
-        /// @brief Search the nearest points within a radius to another point.
-        /// @param[in] point The reference point.
-        /// @param[in] squaredRadius the squared value of the radius.
-        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchLocations(Point point, double squaredRadius, Location meshLocation);
-
-        /// @brief Gets the search results.
-        /// To be used after \ref SearchLocations or \ref SearchNearestLocation.
-        ///
-        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        /// @return The number of found neighbors.
-        UInt GetNumLocations(Location meshLocation) const;
-
-        /// @brief Gets the index of the location, sorted by proximity. To be used after SearchNearestLocation or SearchNearestLocation.
-        /// @param[in] index The closest neighbor index (index 0 corresponds to the closest).
-        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        /// @return The index of the closest location.
-        [[nodiscard]] UInt GetLocationsIndices(UInt index, Location meshLocation);
+        void BuildTree(Location location, const BoundingBox& boundingBox = {});
 
         /// @brief Computes a vector with the mesh locations coordinates (nodes, edges or faces coordinates).
         ///
@@ -453,6 +419,21 @@ namespace meshkernel
         /// Restore mesh to state before edge was deleted
         void RestoreAction(const DeleteEdgeAction& undoAction);
 
+        /// @brief Get a reference to the RTree for a specific location
+        RTreeBase& GetRTree(Location location) const { return *m_RTrees.at(location); }
+
+        /// @brief Set the m_nodesRTreeRequiresUpdate flag
+        /// @param[in] value The value of the flag
+        void SetNodesRTreeRequiresUpdate(bool value) { m_nodesRTreeRequiresUpdate = value; }
+
+        /// @brief Set the m_edgesRTreeRequiresUpdate flag
+        /// @param[in] value The value of the flag
+        void SetEdgesRTreeRequiresUpdate(bool value) { m_edgesRTreeRequiresUpdate = value; }
+
+        /// @brief Set the m_facesRTreeRequiresUpdate flag
+        /// @param[in] value The value of the flag
+        void SetFacesRTreeRequiresUpdate(bool value) { m_facesRTreeRequiresUpdate = value; }
+
         // nodes
         std::vector<std::vector<UInt>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
         std::vector<UInt> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
@@ -475,15 +456,6 @@ namespace meshkernel
 
         Projection m_projection; ///< The projection used
 
-        // counters
-        bool m_nodesRTreeRequiresUpdate = true;  ///< m_nodesRTree requires an update
-        bool m_edgesRTreeRequiresUpdate = true;  ///< m_edgesRTree requires an update
-        bool m_facesRTreeRequiresUpdate = true;  ///< m_facesRTree requires an update
-        std::unique_ptr<RTreeBase> m_nodesRTree; ///< Spatial R-Tree used to inquire node nodes
-        std::unique_ptr<RTreeBase> m_edgesRTree; ///< Spatial R-Tree used to inquire edges centers
-        std::shared_ptr<RTreeBase> m_facesRTree; ///< Spatial R-Tree used to inquire face circumcenters
-        BoundingBox m_boundingBoxCache;          ///< Caches the last bounding box used for selecting the locations
-
         // constants
         static constexpr UInt m_maximumNumberOfEdgesPerNode = 16;                                  ///< Maximum number of edges per node
         static constexpr UInt m_maximumNumberOfEdgesPerFace = 6;                                   ///< Maximum number of edges per face
@@ -497,6 +469,13 @@ namespace meshkernel
 
     private:
         static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate
+
+        // RTrees
+        bool m_nodesRTreeRequiresUpdate = true;                            ///< m_nodesRTree requires an update
+        bool m_edgesRTreeRequiresUpdate = true;                            ///< m_edgesRTree requires an update
+        bool m_facesRTreeRequiresUpdate = true;                            ///< m_facesRTree requires an update
+        std::unordered_map<Location, std::unique_ptr<RTreeBase>> m_RTrees; ///< The RTrees to use
+        BoundingBox m_boundingBoxCache;                                    ///< Caches the last bounding box used for selecting the locations
 
         /// @brief Set nodes and edges that are not connected to be invalid.
         void SetUnConnectedNodesAndEdgesToInvalid(CompoundUndoAction* undoAction);

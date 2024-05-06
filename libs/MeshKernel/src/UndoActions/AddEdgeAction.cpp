@@ -18,10 +18,3 @@ const meshkernel::Edge& meshkernel::AddEdgeAction::GetEdge() const
 {
     return m_edge;
 }
-
-void meshkernel::AddEdgeAction::Print(std::ostream& out) const
-{
-    out << fmt_ns::vformat("AddEdgeAction: state {}, edgeId {}, edge {{{}, {}}}",
-                           fmt_ns::make_format_args(to_string(GetState()), m_edgeId, m_edge.first, m_edge.second));
-    out << std::endl;
-}

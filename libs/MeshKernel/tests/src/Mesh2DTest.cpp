@@ -1,22 +1,20 @@
-#include "MeshKernelApi/Mesh2D.hpp"
-
-#include "MeshKernel/Mesh2DIntersections.hpp"
-
 #include <chrono>
 #include <gmock/gmock-matchers.h>
 #include <gtest/gtest.h>
 #include <random>
 
-#include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Mesh.hpp>
-#include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/RemoveDisconnectedRegions.hpp>
-#include <TestUtils/Definitions.hpp>
-#include <TestUtils/MakeMeshes.hpp>
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Mesh.hpp"
+#include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/Mesh2DIntersections.hpp"
+#include "MeshKernel/Mesh2DToCurvilinear.hpp"
+#include "MeshKernel/Operations.hpp"
+#include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/RemoveDisconnectedRegions.hpp"
 
-#include <MeshKernel/Operations.hpp>
+#include "TestUtils/Definitions.hpp"
+#include "TestUtils/MakeMeshes.hpp"
 
 TEST(Mesh2D, OneQuadTestConstructor)
 {
@@ -1231,6 +1229,114 @@ TEST(Mesh2D, DeleteMesh_WithPolygonAndIncludedCircumcenters_ShouldDeleteInnerFac
         EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
         EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
     }
+}
+
+TEST(Mesh2D, Mesh2DToCurvilinear_WithRectangularMesh_ShouldCreateFullCurvilinearMesh)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(3,
+                                                    3,
+                                                    10.0,
+                                                    10.0,
+                                                    meshkernel::Projection::cartesian);
+    meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(*mesh);
+
+    // Execute
+    const meshkernel::Point point(5.0, 5.0);
+    const auto curvilinearGrid = mesh2DToCurvilinear.Compute(point);
+
+    // Assert
+    ASSERT_EQ(3, curvilinearGrid->NumM());
+    ASSERT_EQ(3, curvilinearGrid->NumN());
+    ASSERT_EQ(9, curvilinearGrid->GetNumNodes());
+
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).y);
+
+    ASSERT_EQ(5.0, curvilinearGrid->GetNode(0, 1).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 1).y);
+
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(0, 0).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 0).y);
+}
+
+TEST(Mesh2D, Mesh2DToCurvilinear_WithStartingPointOutsideMesh_ShouldThrowAnException)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(3,
+                                                    3,
+                                                    10.0,
+                                                    10.0,
+                                                    meshkernel::Projection::cartesian);
+    meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(*mesh);
+
+    // Execute
+    const meshkernel::Point point(-20.0, -20.0);
+
+    // Assert
+    EXPECT_THROW(mesh2DToCurvilinear.Compute(point), meshkernel::AlgorithmError);
+}
+
+TEST(Mesh2D, Mesh2DToCurvilinear_WithMixedMesh_ShouldCreatePartialCurvilinearMesh)
+{
+    // Prepare a mixed mesh with two triangles at the boundary
+    std::vector<meshkernel::Point> nodes;
+    nodes.push_back({-10.0, 0.0});
+    nodes.push_back({0.0, 0.0});
+    nodes.push_back({10.0, 0.0});
+    nodes.push_back({20.0, 0.0});
+    nodes.push_back({0.0, 10.0});
+    nodes.push_back({10.0, 10.0});
+    nodes.push_back({20.0, 10.0});
+    nodes.push_back({0.0, 20.0});
+    nodes.push_back({10.0, 20.0});
+
+    std::vector<meshkernel::Edge> edges;
+    edges.push_back({0, 4});
+    edges.push_back({0, 1});
+    edges.push_back({1, 4});
+    edges.push_back({1, 2});
+    edges.push_back({2, 5});
+    edges.push_back({2, 3});
+    edges.push_back({3, 6});
+    edges.push_back({4, 7});
+    edges.push_back({4, 5});
+    edges.push_back({5, 8});
+    edges.push_back({5, 6});
+    edges.push_back({7, 8});
+    edges.push_back({6, 8});
+
+    // 2 Execute
+    auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+    meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(mesh);
+    const meshkernel::Point point(5.0, 5.0);
+    const auto curvilinearGrid = mesh2DToCurvilinear.Compute(point);
+
+    // Assert
+    ASSERT_EQ(3, curvilinearGrid->NumM());
+    ASSERT_EQ(3, curvilinearGrid->NumN());
+    ASSERT_EQ(9, curvilinearGrid->GetNumNodes());
+
+    ASSERT_EQ(20.0, curvilinearGrid->GetNode(0, 0).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 0).y);
+    ASSERT_EQ(20.0, curvilinearGrid->GetNode(1, 0).x);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 0).y);
+    ASSERT_EQ(-999.0, curvilinearGrid->GetNode(2, 0).x);
+    ASSERT_EQ(-999.0, curvilinearGrid->GetNode(2, 0).y);
+
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(0, 1).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 1).y);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 1).x);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 1).y);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(2, 1).x);
+    ASSERT_EQ(20.0, curvilinearGrid->GetNode(2, 1).y);
+
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).y);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(1, 2).x);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 2).y);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(2, 2).x);
+    ASSERT_EQ(20.0, curvilinearGrid->GetNode(2, 2).y);
 }
 
 TEST(Mesh2D, GetBoundingBox_WithANonEmptyMesh_ShouldGetAValidBoundingBox)

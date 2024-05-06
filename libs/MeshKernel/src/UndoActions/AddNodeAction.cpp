@@ -17,10 +17,3 @@ const meshkernel::Point& meshkernel::AddNodeAction::Node() const
 {
     return m_node;
 }
-
-void meshkernel::AddNodeAction::Print(std::ostream& out) const
-{
-    out << fmt_ns::vformat("AddNodeAction: state {}, nodeId {}, node {{{}, {}}}",
-                           fmt_ns::make_format_args(to_string(GetState()), m_nodeId, m_node.x, m_node.y));
-    out << std::endl;
-}

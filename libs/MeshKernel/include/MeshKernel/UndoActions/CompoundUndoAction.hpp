@@ -39,8 +39,6 @@ namespace meshkernel
     class CompoundUndoAction : public UndoAction
     {
     public:
-        // TODO how to make std::vector<std::unique_ptr<const UndoAction>>
-        //
         /// @brief Iterator over composite undo actions.
         using const_iterator = std::vector<std::unique_ptr<UndoAction>>::const_iterator;
 
@@ -58,9 +56,6 @@ namespace meshkernel
 
         /// \brief Compute the approximate amount of memory being used, in bytes.
         std::uint64_t MemorySize() const override;
-
-        /// @brief Print the compound undo action to the stream
-        void Print(std::ostream& out = std::cout) const override;
 
     private:
         /// @brief Commit all undo actions.

@@ -81,15 +81,16 @@ TEST(CurvilinearGridUniform, MakeCurvilinearInEmptyPolygonSpherical)
 
     // 2 Execution
     CurvilinearGridRectangular const curvilinearGridCreateRectangular(Projection::spherical);
-    const auto [nodes, edges, gridIndices] = curvilinearGridCreateRectangular.Compute(numColumns,
-                                                                                      numRows,
-                                                                                      originX,
-                                                                                      originY,
-                                                                                      angle,
-                                                                                      blockSizeX,
-                                                                                      blockSizeY)
-                                                 ->ConvertCurvilinearToNodesAndEdges();
+    const auto curvilinearGrid = curvilinearGridCreateRectangular.Compute(numColumns,
+                                                                          numRows,
+                                                                          originX,
+                                                                          originY,
+                                                                          angle,
+                                                                          blockSizeX,
+                                                                          blockSizeY);
 
+    const auto nodes = curvilinearGrid->ComputeNodes();
+    const auto edges = curvilinearGrid->ComputeEdges();
     Mesh2D mesh(edges, nodes, Projection::spherical);
 
     // 3 Assert
@@ -125,7 +126,7 @@ TEST(CurvilinearGridUniformCurvilinearGridUniform, InsertFace_OnBottomLeft_Shoul
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     // Execution
-    curvilinearGrid->InsertFace({80009.0, 366937.0});
+    auto dummyUndoAction = curvilinearGrid->InsertFace({80009.0, 366937.0});
 
     // Assert the new coordinates
     constexpr double tolerance = 1e-12;
@@ -144,7 +145,7 @@ TEST(CurvilinearGridUniform, InsertFace_OnBottomRight_ShouldInsertFace)
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     // Execution
-    curvilinearGrid->InsertFace({80166.0, 366544.0});
+    auto dummyUndoAction = curvilinearGrid->InsertFace({80166.0, 366544.0});
 
     // Assert the new coordinates
     constexpr double tolerance = 1e-12;
@@ -163,7 +164,7 @@ TEST(CurvilinearGridUniform, InsertFace_OnTopLeft_ShouldInsertFace)
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     // Execution
-    curvilinearGrid->InsertFace({80612.0, 367407.0});
+    auto dummyUndoAction = curvilinearGrid->InsertFace({80612.0, 367407.0});
 
     // Assert the new coordinates
     constexpr double tolerance = 1e-12;
@@ -182,7 +183,7 @@ TEST(CurvilinearGridUniform, InsertFace_OnTopRight_ShouldInsertFace)
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     // Execution
-    curvilinearGrid->InsertFace({80870.0, 366541.0});
+    auto dummyUndoAction = curvilinearGrid->InsertFace({80870.0, 366541.0});
 
     // Assert the new coordinates
     constexpr double tolerance = 1e-12;
@@ -201,7 +202,7 @@ TEST(CurvilinearGridUniform, InsertFace_OnGridWithHoles_ShouldInsertFace)
     const auto curvilinearGrid = MakeSmallCurvilinearGridWithMissingFaces();
 
     // Execution
-    curvilinearGrid->InsertFace({80398.0, 366854.0});
+    auto dummyUndoAction = curvilinearGrid->InsertFace({80398.0, 366854.0});
 
     // Assert the new coordinates
     constexpr double tolerance = 1e-12;
@@ -232,7 +233,7 @@ TEST(CurvilinearGridUniform, DeleteNode_OnUniformGrid_ShouldDeleteNode)
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     // Execute
-    curvilinearGrid->DeleteNode({80398.0, 366854.0});
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGrid->DeleteNode({80398.0, 366854.0});
 
     // The number of nodes was 45 now is 44
     auto const numValidNodes = CurvilinearGridCountValidNodes(*curvilinearGrid);
@@ -266,7 +267,7 @@ void TestDeleteInteriorNodes(meshkernel::CurvilinearGrid& curvilinearGrid,
     curvilinearGridDeleteInterior.m_upperRight = {upperLimitI + 1, upperLimitJ + 1};
 
     // Delete the nodes interior to a block
-    curvilinearGridDeleteInterior.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridDeleteInterior.Compute();
 
     auto inRange = [](const meshkernel::UInt v, const meshkernel::UInt l, const meshkernel::UInt u)
     { return l <= v && v <= u; };
@@ -384,7 +385,7 @@ void TestDeleteExteriorNodes(meshkernel::CurvilinearGrid& curvilinearGrid,
     curvilinearGridDeleteExterior.m_upperRight = {upperLimitI, upperLimitJ};
 
     // Delete the nodes outside of a block
-    curvilinearGridDeleteExterior.Compute();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridDeleteExterior.Compute();
 
     auto inRange = [](const meshkernel::UInt v, const meshkernel::UInt l, const meshkernel::UInt u)
     { return l <= v && v <= u; };
@@ -526,7 +527,9 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
     EXPECT_EQ(3, grid->NumM());
     EXPECT_EQ(2, grid->NumN());
 
-    const auto [nodes, edges, gridIndices] = grid->ConvertCurvilinearToNodesAndEdges();
+    const auto nodes = grid->ComputeNodes();
+    const auto edges = grid->ComputeEdges();
+
     const std::vector<Point> expected_nodes = {{2., 1.}, {4., 1.}, {6., 1.}, {2., 2.}, {4., 2.}, {6., 2.}};
 
     EXPECT_EQ(expected_nodes.size(), nodes.size());
@@ -552,7 +555,9 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
 
     grid->GetNode(1, 2).SetInvalid();
 
-    const auto [nodes, edges, gridIndices] = grid->ConvertCurvilinearToNodesAndEdges();
+    const auto nodes = grid->ComputeNodes();
+    const auto edges = grid->ComputeEdges();
+
     const std::vector<Point> expected_nodes = {{2., 1.}, {4., 1.}, {6., 1.}, {2., 2.}, {4., 2.}, {-999., -999.}};
 
     EXPECT_EQ(expected_nodes.size(), nodes.size());
@@ -576,7 +581,9 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
     EXPECT_EQ(3, grid->NumM());
     EXPECT_EQ(2, grid->NumN());
 
-    const auto [nodes, edges, gridIndices] = grid->ConvertCurvilinearToNodesAndEdges();
+    const auto nodes = grid->ComputeNodes();
+    const auto edges = grid->ComputeEdges();
+
     const std::vector<Edge> expected_edges = {{{0u, 3u}, {1u, 4u}, {2u, 5u}, {0u, 1u}, {1u, 2u}, {3u, 4u}, {4u, 5u}}};
 
     EXPECT_EQ(expected_edges.size(), edges.size());
@@ -602,7 +609,9 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
 
     grid->GetNode(1, 0).SetInvalid();
 
-    const auto [nodes, edges, gridIndices] = grid->ConvertCurvilinearToNodesAndEdges();
+    const auto nodes = grid->ComputeNodes();
+    const auto edges = grid->ComputeEdges();
+
     const std::vector<Edge> expected_edges = {{{0u, 3u}, {1u, 4u}, {2u, 5u}, {0u, 1u}, {1u, 2u}, {3u, 4u}, {4u, 5u}}};
 
     EXPECT_EQ(expected_edges.size(), edges.size());
@@ -614,3 +623,33 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
             << "[" << edges[i].first << "," << edges[i].second << "]";
     }
 }
+
+class CurvilinearGridUniformTests : public ::testing::TestWithParam<std::tuple<meshkernel::Point, int>>
+{
+public:
+    [[nodiscard]] static std::vector<std::tuple<Point, int>> GetData()
+    {
+        return {
+            std::make_tuple<Point, int>(Point{10.0, 30.0}, 14),
+            std::make_tuple<Point, int>(Point{0.0, 30.0}, 15),
+            std::make_tuple<Point, int>(Point{30.0, 30.0}, 15),
+            std::make_tuple<Point, int>(Point{10.0, 10.0}, 12),
+            std::make_tuple<Point, int>(Point{20.0, 10.0}, 12)};
+    }
+};
+
+TEST_P(CurvilinearGridUniformTests, parameters)
+{
+    // Get the test parameters
+    auto const& [point, expectedNumNodes] = GetParam();
+
+    // Prepare
+    const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 4, 4);
+
+    // Execute
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGrid->DeleteNode(point);
+
+    auto const numValidNodes = CurvilinearGridCountValidNodes(*curvilinearGrid);
+    ASSERT_EQ(numValidNodes, expectedNumNodes);
+}
+INSTANTIATE_TEST_SUITE_P(curvilinearGridDeletionTests, CurvilinearGridUniformTests, ::testing::ValuesIn(CurvilinearGridUniformTests::GetData()));

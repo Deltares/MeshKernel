@@ -115,10 +115,8 @@ namespace meshkernel
         /// @brief Determines if one of the point coordinates equals to \p missingValue
         [[nodiscard]] bool IsValid(const double missingValue = constants::missing::doubleValue) const
         {
-            const bool isInvalid = IsEqual(x, missingValue) ||
-                                   IsEqual(y, missingValue) ||
-                                   IsEqual(x, constants::missing::innerOuterSeparator) ||
-                                   IsEqual(y, constants::missing::innerOuterSeparator);
+            bool isInvalid = IsEqual(x, missingValue) ||
+                             IsEqual(y, missingValue);
 
             return !isInvalid;
         }
