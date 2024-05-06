@@ -62,8 +62,8 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliDeRefinement::Compute
     //     // and null refinement action
     // }
 
-    // mesh.DeleteInvalidNodesAndEdges();
-    // mesh.Administrate();
+    mesh.DeleteInvalidNodesAndEdges();
+    mesh.Administrate();
 
     return refinementAction;
 }

@@ -1858,7 +1858,7 @@ TEST(MeshRefinement, CasulliDeRefinement)
     meshkernel::Print(mesh.Nodes(), mesh.Edges());
 }
 
-TEST(MeshRefinement, LoadNcFile)
+TEST(MeshRefinement, CasulliDeRefinementLoadNcFile)
 {
     auto mesh = ReadLegacyMesh2DFromFile("/home/wcs1/MeshKernel/MeshKernel03/build_deb/casulli_deref_patch2.nc");
     mesh->Administrate();
@@ -1869,7 +1869,7 @@ TEST(MeshRefinement, LoadNcFile)
     meshkernel::Print(mesh2.Nodes(), mesh2.Edges());
 }
 
-TEST(MeshRefinement, LoadThenRefine)
+TEST(MeshRefinement, CasulliDeRefinementLoadThenRefine)
 {
     auto mesh = ReadLegacyMesh2DFromFile("/home/wcs1/MeshKernel/MeshKernel03/build_deb/casulli_deref_patch2.nc");
     mesh->Administrate();
@@ -1896,7 +1896,7 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<meshkernel::Edge>> Refine
     return {mesh.Nodes(), mesh.Edges()};
 }
 
-TEST(MeshRefinement, Refine2)
+TEST(MeshRefinement, CasulliDeRefinementRefine2)
 {
     std::cout.precision(20);
     std::vector<Point> points{{55.0, 55.0}, {155.0, 105.0}, {175.0, 225.0}, {25.0, 274.0}, {55.0, 55.0}};
@@ -1913,34 +1913,57 @@ TEST(MeshRefinement, Refine2)
     meshkernel::Print(nodes2, edges2);
 }
 
-TEST(MeshRefinement, Refine3)
+TEST(MeshRefinement, CasulliDeRefinementRefine3)
 {
     std::cout.precision(20);
     std::vector<Point> points{{55.0, 55.0}, {155.0, 105.0}, {175.0, 225.0}, {25.0, 274.0}, {55.0, 55.0}};
     meshkernel::Polygons polygon(points, Projection::cartesian);
 
-    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 20, 31);
+    std::vector<meshkernel::Edge> edges;
+    std::vector<meshkernel::Point> nodes;
+
+    // std::vector<meshkernel::Edge> edgesC;
+    // std::vector<meshkernel::Point> nodesC;
+
+    // {
+    //     std::unique_ptr<meshkernel::CurvilinearGrid> curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 20, 31);
+    //     edgesC = curviMesh->Edges();
+    //     nodesC = curviMesh->Nodes();
+    // }
+
+    // {
+    //     std::unique_ptr<meshkernel::Mesh2D> mesh = MakeRectangularMeshForTesting(20, 31, 190.0, 300.0, Projection::cartesian, {0.0, 0.0});
+
+    //     mesh->Administrate();
+    //     mesh->ComputeCircumcentersMassCentersAndFaceAreas(true);
+
+    //     meshkernel::CasulliDeRefinement::Compute(*mesh, polygon);
+    //     mesh->DeleteInvalidNodesAndEdges();
+    //     mesh->Administrate();
+    //     edges = mesh->Edges();
+    //     nodes = mesh->Nodes();
+    //     // meshkernel::Print(mesh->Nodes(), mesh->Edges());
+    //     // return;
+    // }
+
+    // {
+    std::unique_ptr<meshkernel::CurvilinearGrid> curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 20, 31);
     Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
 
-    {
-        mesh.Administrate();
-        mesh.ComputeCircumcentersMassCentersAndFaceAreas(true);
-        meshkernel::CasulliDeRefinement::Compute(mesh, polygon);
-        mesh.DeleteInvalidNodesAndEdges();
-        mesh.Administrate();
-    }
-
-    std::vector<meshkernel::Edge> edges = mesh.Edges();
-    std::vector<meshkernel::Point> nodes = mesh.Nodes();
+    mesh.Administrate();
+    mesh.ComputeCircumcentersMassCentersAndFaceAreas(true);
+    meshkernel::CasulliDeRefinement::Compute(mesh, polygon);
+    mesh.DeleteInvalidNodesAndEdges();
+    mesh.Administrate();
+    edges = mesh.Edges();
+    nodes = mesh.Nodes();
 
     Mesh2D mesh2(edges, nodes, Projection::cartesian);
-    {
-        mesh2.Administrate();
-        mesh2.ComputeCircumcentersMassCentersAndFaceAreas(true);
-        meshkernel::CasulliDeRefinement::Compute(mesh2);
-        mesh2.DeleteInvalidNodesAndEdges();
-        mesh2.Administrate();
-    }
+    mesh2.Administrate();
+    mesh2.ComputeCircumcentersMassCentersAndFaceAreas(true);
+    meshkernel::CasulliDeRefinement::Compute(mesh2);
+    mesh2.DeleteInvalidNodesAndEdges();
+    mesh2.Administrate();
 
     meshkernel::Print(mesh2.Nodes(), mesh2.Edges());
 }
@@ -2007,4 +2030,35 @@ TEST(MeshRefinement, CasulliDeRefinementPatchTheAll)
     mesh2.Administrate();
 
     meshkernel::Print(mesh2.Nodes(), mesh2.Edges());
+}
+
+TEST(MeshRefinement, CasulliDeRefinementPatchCompareWithInteractor)
+{
+    auto interactorMesh = ReadLegacyMesh2DFromFile("/home/wcs1/MeshKernel/MeshKernel03/build_deb/casulli_deref_patch2.nc");
+
+    std::vector<Point> points{{55.0, 55.0}, {155.0, 105.0}, {175.0, 225.0}, {25.0, 274.0}, {55.0, 55.0}};
+    meshkernel::Polygons polygon(points, Projection::cartesian);
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 20, 31);
+    Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
+    mesh.Administrate();
+
+    meshkernel::CasulliDeRefinement::Compute(mesh, polygon);
+
+    ASSERT_EQ(mesh.GetNumNodes(), interactorMesh->GetNumNodes());
+    ASSERT_EQ(mesh.GetNumEdges(), interactorMesh->GetNumEdges());
+
+    constexpr double tolerance = 1.0e-10;
+
+    for (UInt i = 0u; i < mesh.GetNumNodes(); ++i)
+    {
+        EXPECT_NEAR(interactorMesh->Node(i).x, mesh.Node(i).x, tolerance);
+        EXPECT_NEAR(interactorMesh->Node(i).y, mesh.Node(i).y, tolerance);
+    }
+
+    for (UInt i = 0u; i < mesh.GetNumEdges(); ++i)
+    {
+        EXPECT_EQ(interactorMesh->GetEdge(i).first, mesh.GetEdge(i).first);
+        EXPECT_EQ(interactorMesh->GetEdge(i).second, mesh.GetEdge(i).second);
+    }
 }
