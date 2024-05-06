@@ -104,12 +104,10 @@ void meshkernel::CasulliDeRefinement::FindSurroundingCells(Mesh2D& mesh,
             }
         }
 
-        if (alreadyVisited)
+        if (!alreadyVisited)
         {
-            continue;
+            kDirect.push_back(kCell2);
         }
-
-        kDirect.push_back(kCell2);
     }
 
     // find the cells indirectly connected cells
@@ -534,8 +532,8 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
     // return if so
     while (!noGo && kk < mesh.m_numFacesNodes[k])
     {
-        ++kk;
         UInt klin = mesh.m_facesEdges[k][kk];
+        ++kk;
 
         if (mesh.GetEdge(klin).first == constants::missing::uintValue ||
             mesh.GetEdge(klin).second == constants::missing::uintValue)
@@ -562,13 +560,14 @@ void meshkernel::CasulliDeRefinement::DeleteCell(Mesh2D& mesh,
     // TODO Change to for loop and break
     while ((kk < mesh.m_numFacesNodes[k] - 1) && noGo)
     {
-        ++kk;
         UInt knod = mesh.m_facesNodes[k][kk];
 
         if (mesh.m_nodesTypes[knod] == 3 && mesh.m_nodesNumEdges[knod] <= 2)
         {
             noGo = false;
         }
+
+        ++kk;
     }
 
     //--------------------------------
