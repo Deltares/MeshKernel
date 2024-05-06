@@ -457,6 +457,12 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a2423ff72e320079ef555cbd7413fe767"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a2423ff72e320079ef555cbd7413fe767">mkernel_mesh2d_get_hanging_edges</a> (int meshKernelId, int *edges)</td></tr>
 <tr class="memdesc:a2423ff72e320079ef555cbd7413fe767"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the indices of hanging edges. An hanging edge is an edge where one of the two nodes is not connected.  <a href="namespacemeshkernelapi.html#a2423ff72e320079ef555cbd7413fe767">More...</a><br /></td></tr>
 <tr class="separator:a2423ff72e320079ef555cbd7413fe767"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7017faa5415bfe805793341015380efd"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a7017faa5415bfe805793341015380efd">mkernel_mesh2d_get_face_polygons</a> (int meshKernelId, int numEdges, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;facePolygons)</td></tr>
+<tr class="memdesc:a7017faa5415bfe805793341015380efd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the faces polygons with a number of edges larger or equal to numEdges.  <a href="namespacemeshkernelapi.html#a7017faa5415bfe805793341015380efd">More...</a><br /></td></tr>
+<tr class="separator:a7017faa5415bfe805793341015380efd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed0ef73c3fc68077dfa50d6b1ab855b7"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aed0ef73c3fc68077dfa50d6b1ab855b7">mkernel_mesh2d_get_face_polygons_dimension</a> (int meshKernelId, int numEdges, int &amp;geometryListDimension)</td></tr>
+<tr class="memdesc:aed0ef73c3fc68077dfa50d6b1ab855b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the dimension of faces polygons with a number of edges larger or equal to numNodes.  <a href="namespacemeshkernelapi.html#aed0ef73c3fc68077dfa50d6b1ab855b7">More...</a><br /></td></tr>
+<tr class="separator:aed0ef73c3fc68077dfa50d6b1ab855b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab1d39c897149389496581641de8a216"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aab1d39c897149389496581641de8a216">mkernel_mesh2d_get_location_index</a> (int meshKernelId, double xCoordinate, double yCoordinate, int locationType, const <a class="el" href="structmeshkernelapi_1_1_bounding_box.html">BoundingBox</a> &amp;boundingBox, int &amp;locationIndex)</td></tr>
 <tr class="memdesc:aab1d39c897149389496581641de8a216"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mesh location closet to a specific coordinate.  <a href="namespacemeshkernelapi.html#aab1d39c897149389496581641de8a216">More...</a><br /></td></tr>
 <tr class="separator:aab1d39c897149389496581641de8a216"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -5202,6 +5208,96 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">xUpperRightBoundingBox</td><td>The x coordinate of the upper right corner of the bounding box </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">yUpperRightBoundingBox</td><td>The y coordinate of the upper right corner of the bounding box </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">edgeIndex</td><td>The found edge index </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a7017faa5415bfe805793341015380efd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7017faa5415bfe805793341015380efd">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_face_polygons()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_get_face_polygons </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>numEdges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>facePolygons</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the faces polygons with a number of edges larger or equal to numEdges. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">numEdges</td><td>The number of edges </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">facePolygons</td><td>The resulting face polygons </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="aed0ef73c3fc68077dfa50d6b1ab855b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed0ef73c3fc68077dfa50d6b1ab855b7">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_face_polygons_dimension()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_get_face_polygons_dimension </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>numEdges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>geometryListDimension</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the dimension of faces polygons with a number of edges larger or equal to numNodes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">numEdges</td><td>The number of edges </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">geometryListDimension</td><td>The dimension of the geometry list containing the face polygons </td></tr>
   </table>
   </dd>
 </dl>
