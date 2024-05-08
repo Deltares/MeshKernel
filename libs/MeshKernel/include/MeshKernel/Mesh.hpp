@@ -37,6 +37,7 @@
 #include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
 #include "MeshKernel/UndoActions/DeleteEdgeAction.hpp"
 #include "MeshKernel/UndoActions/DeleteNodeAction.hpp"
+#include "MeshKernel/UndoActions/FullUnstructuredGridUndo.hpp"
 #include "MeshKernel/UndoActions/MeshConversionAction.hpp"
 #include "MeshKernel/UndoActions/NodeTranslationAction.hpp"
 #include "MeshKernel/UndoActions/ResetEdgeAction.hpp"
@@ -416,6 +417,9 @@ namespace meshkernel
         /// @brief Apply the delete edge action
         void CommitAction(const DeleteEdgeAction& undoAction);
 
+        /// @brief Set the node and edge values.
+        void CommitAction(FullUnstructuredGridUndo& undoAction);
+
         /// @brief Undo the reset node action
         ///
         /// Restore mesh to state before node was reset
@@ -455,6 +459,11 @@ namespace meshkernel
         ///
         /// Restore mesh to state before edge was deleted
         void RestoreAction(const DeleteEdgeAction& undoAction);
+
+        /// @brief Undo entire node and edge values
+        ///
+        /// Restore mesh to previous state.
+        void RestoreAction(FullUnstructuredGridUndo& undoAction);
 
         // nodes
         std::vector<std::vector<UInt>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)

@@ -34,6 +34,7 @@ using namespace std;
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/UndoActions/AddNodeAction.hpp"
 #include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
+#include "MeshKernel/UndoActions/FullUnstructuredGridUndo.hpp"
 
 std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliDeRefinement::Compute(Mesh2D& mesh)
 {
@@ -43,7 +44,7 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliDeRefinement::Compute
 
 std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliDeRefinement::Compute(Mesh2D& mesh, const Polygons& polygon)
 {
-    std::unique_ptr<CompoundUndoAction> refinementAction = CompoundUndoAction::Create();
+    std::unique_ptr<FullUnstructuredGridUndo> refinementAction = FullUnstructuredGridUndo::Create(mesh);
     const std::vector<Point> meshNodes(mesh.Nodes());
     const std::vector<Edge> meshEdges(mesh.Edges());
 

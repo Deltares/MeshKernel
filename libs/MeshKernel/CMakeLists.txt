@@ -72,6 +72,7 @@ set(
   ${UNDO_SRC_DIR}/CompoundUndoAction.cpp
   ${UNDO_SRC_DIR}/DeleteEdgeAction.cpp
   ${UNDO_SRC_DIR}/DeleteNodeAction.cpp
+  ${UNDO_SRC_DIR}/FullUnstructuredGridUndo.cpp
   ${UNDO_SRC_DIR}/MeshConversionAction.cpp
   ${UNDO_SRC_DIR}/NodeTranslationAction.cpp
   ${UNDO_SRC_DIR}/ResetEdgeAction.cpp
@@ -181,6 +182,7 @@ set(
   ${UNDO_INC_DIR}/BaseMeshUndoAction.hpp
   ${UNDO_INC_DIR}/DeleteEdgeAction.hpp
   ${UNDO_INC_DIR}/DeleteNodeAction.hpp
+  ${UNDO_INC_DIR}/FullUnstructuredGridUndo.hpp
   ${UNDO_INC_DIR}/MeshConversionAction.hpp
   ${UNDO_INC_DIR}/NodeTranslationAction.hpp
   ${UNDO_INC_DIR}/ResetEdgeAction.hpp

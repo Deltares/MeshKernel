@@ -1283,6 +1283,12 @@ void Mesh::CommitAction(MeshConversionAction& undoAction)
     undoAction.Swap(m_nodes, m_projection);
 }
 
+void Mesh::CommitAction(FullUnstructuredGridUndo& undoAction)
+{
+    undoAction.Swap(m_nodes, m_edges);
+    Administrate();
+}
+
 void Mesh::RestoreAction(const AddNodeAction& undoAction)
 {
     m_nodes[undoAction.NodeId()] = Point(constants::missing::doubleValue, constants::missing::doubleValue);
@@ -1329,4 +1335,10 @@ void Mesh::RestoreAction(NodeTranslationAction& undoAction)
 void Mesh::RestoreAction(MeshConversionAction& undoAction)
 {
     undoAction.Swap(m_nodes, m_projection);
+}
+
+void Mesh::RestoreAction(FullUnstructuredGridUndo& undoAction)
+{
+    undoAction.Swap(m_nodes, m_edges);
+    Administrate();
 }
