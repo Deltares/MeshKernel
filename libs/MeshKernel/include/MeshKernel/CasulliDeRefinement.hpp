@@ -43,27 +43,30 @@ namespace meshkernel
         /// @brief Compute the Casulli de-refinement for the entire mesh.
         ///
         /// @param [in, out] mesh Mesh to be de-refined
-        /* [[nodiscard]] */  std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh);
+        /* [[nodiscard]] */ std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh);
 
-        std::vector<Point> ElementsToDelete (Mesh2D& mesh, const Polygons& polygon);
+        /// @brief Compute centres of elements to be deleted.
+        ///
+        /// Requires that the element mass centres are computed.
+        std::vector<Point> ElementsToDelete(const Mesh2D& mesh, const Polygons& polygon);
 
         /// @brief Compute the Casulli de-refinement for the part of the mesh inside the polygon
         ///
         /// @param [in, out] mesh Mesh to be de-refined
         /// @param [in] polygon Area within which the mesh will be de-refined
-        /* [[nodiscard]] */  std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh, const Polygons& polygon);
+        /* [[nodiscard]] */ std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh, const Polygons& polygon);
 
     private:
         // WTF
         enum class ElementMask
-            {
-                A = 1,         //< front, 'A' cell (used to be node, delete it):  1
-                B = 2,         //< front, 'B' cell (used to be link, keep it):    2
-                C = 3,         //< 'C' cell (used to be cell, keep it):           3
-                NotA = -1,     //< not in front, 'A' cell:                       -1
-                NotB = -2,     //< not in front, 'B' cell:                       -2
-                Unassigned = 0 //<                                                0
-            };
+        {
+            A = 1,         //< front, 'A' cell (used to be node, delete it):  1
+            B = 2,         //< front, 'B' cell (used to be link, keep it):    2
+            C = 3,         //< 'C' cell (used to be cell, keep it):           3
+            NotA = -1,     //< not in front, 'A' cell:                       -1
+            NotB = -2,     //< not in front, 'B' cell:                       -2
+            Unassigned = 0 //<                                                0
+        };
 
         /// @brief Initial size of the edge array
         static const UInt InitialEdgeArraySize = 100;
@@ -174,8 +177,7 @@ namespace meshkernel
         /// @brief Compute the mesh node types.
         ///
         /// Uses the m_nodeTypes has been generated in the mesh.
-        std::vector<int> ComputeNodeTypes (const Mesh2D& mesh, const Polygons& polygon);
-
+        std::vector<int> ComputeNodeTypes(const Mesh2D& mesh, const Polygons& polygon);
     };
 
 } // namespace meshkernel

@@ -433,14 +433,14 @@ void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
     std::vector<UInt> directlyConnected;
     std::vector<UInt> indirectlyConnected;
     std::vector<std::array<int, 2>> kne(nMax);
-    std::vector<int> nodeTypes (ComputeNodeTypes (mesh, polygon));
+    std::vector<int> nodeTypes(ComputeNodeTypes(mesh, polygon));
     directlyConnected.reserve(nMax);
     indirectlyConnected.reserve(nMax);
 
     refinementSuccessful = true;
 
     std::vector<ElementMask> cellMask(InitialiseElementMask(mesh, nodeTypes, polygon));
-    mesh.ComputeCircumcentersMassCentersAndFaceAreas (true);
+    mesh.ComputeCircumcentersMassCentersAndFaceAreas(true);
 
     for (UInt k = 0; k < cellMask.size(); ++k)
     {
@@ -1035,28 +1035,27 @@ bool meshkernel::CasulliDeRefinement::IsElementConvex(const Mesh2D& mesh, const 
     return true;
 }
 
-std::vector<int> meshkernel::CasulliDeRefinement::ComputeNodeTypes (const Mesh2D& mesh, const Polygons& polygon)
+std::vector<int> meshkernel::CasulliDeRefinement::ComputeNodeTypes(const Mesh2D& mesh, const Polygons& polygon)
 {
-    std::vector<int> nodeTypes (mesh.GetNumNodes ());
+    std::vector<int> nodeTypes(mesh.GetNumNodes());
 
-    for (UInt i = 0; i < mesh.GetNumNodes (); ++i)
+    for (UInt i = 0; i < mesh.GetNumNodes(); ++i)
     {
-        if (polygon.IsPointInAnyPolygon (mesh.Node (i)))
+        if (polygon.IsPointInAnyPolygon(mesh.Node(i)))
         {
-            nodeTypes [i] = mesh.m_nodesTypes [i];
+            nodeTypes[i] = mesh.m_nodesTypes[i];
         }
     }
 
     return nodeTypes;
 }
 
-std::vector<meshkernel::Point> meshkernel::CasulliDeRefinement::ElementsToDelete (Mesh2D& mesh, const Polygons& polygon)
+std::vector<meshkernel::Point> meshkernel::CasulliDeRefinement::ElementsToDelete(const Mesh2D& mesh, const Polygons& polygon)
 {
-    std::vector<int> nodeTypes (ComputeNodeTypes (mesh, polygon));
+    std::vector<int> nodeTypes(ComputeNodeTypes(mesh, polygon));
     std::vector<ElementMask> cellMask(InitialiseElementMask(mesh, nodeTypes, polygon));
     std::vector<Point> elementCentres;
-    elementCentres.reserve (cellMask.size ());
-    mesh.ComputeCircumcentersMassCentersAndFaceAreas (true);
+    elementCentres.reserve(cellMask.size());
 
     for (UInt k = 0; k < cellMask.size(); ++k)
     {
@@ -1066,16 +1065,16 @@ std::vector<meshkernel::Point> meshkernel::CasulliDeRefinement::ElementsToDelete
 
             for (UInt j = 0; j < mesh.m_numFacesNodes[k]; ++j)
             {
-                if (nodeTypes[mesh.m_facesNodes [k][j]] > 0)
+                if (nodeTypes[mesh.m_facesNodes[k][j]] > 0)
                 {
                     toDelete = true;
                     break;
                 }
             }
 
-            if (toDelete )
+            if (toDelete)
             {
-                elementCentres.push_back (mesh.m_facesMassCenters [k]);
+                elementCentres.push_back(mesh.m_facesMassCenters[k]);
             }
         }
     }
