@@ -62,11 +62,10 @@ TEST(CurvilinearBasicTests, SimpleAddGridLineAtBoundary)
     constexpr size_t ny = 13;
 
     std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
-    grid->SetFlatCopies();
     grid->ComputeGridNodeTypes();
 
     // Nodes in the original mesh
-    const std::vector<mk::Point> originalPoints = grid->Nodes();
+    const std::vector<mk::Point> originalPoints = grid->ComputeNodes();
     bool addedLine = false;
     std::unique_ptr<mk::UndoAction> undoAction;
 
@@ -108,7 +107,6 @@ TEST(CurvilinearBasicTests, SimpleDeleteInterior)
     constexpr size_t ny = 10;
 
     std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
-    grid->SetFlatCopies();
     grid->ComputeGridNodeTypes();
 
     mk::CurvilinearGridDeleteInterior deleteInterior(*grid);
@@ -231,8 +229,7 @@ TEST(CurvilinearBasicTests, AddGridLinesAllRound)
 
     std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
     // Nodes in the original mesh
-    const std::vector<mk::Point> originalPoints = grid->Nodes();
-    grid->SetFlatCopies();
+    const std::vector<mk::Point> originalPoints = grid->ComputeNodes();
     grid->ComputeGridNodeTypes();
 
     //--------------------------------
@@ -409,7 +406,6 @@ TEST(CurvilinearBasicTests, GridSmoothing)
     constexpr size_t ny = 30;
 
     std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGridRand(originX, originY, deltaX, deltaY, nx, ny, 0.4);
-    grid->SetFlatCopies();
 
     const lin_alg::Matrix<mk::Point> originalPoints = grid->GetNodes();
 
@@ -420,7 +416,6 @@ TEST(CurvilinearBasicTests, GridSmoothing)
     std::unique_ptr<mk::UndoAction> undoAction = curvilinearGridSmoothing.Compute();
 
     undoAction->Restore();
-    grid->SetFlatCopies();
 
     constexpr double tolerance = 1.0e-12;
 
@@ -450,7 +445,6 @@ TEST(CurvilinearBasicTests, GridOrthogonalisation)
 
     std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGridRand(originX, originY, deltaX, deltaY, nx, ny, 0.4, false);
     grid->ComputeGridNodeTypes();
-    grid->SetFlatCopies();
 
     const lin_alg::Matrix<mk::Point> originalPoints = grid->GetNodes();
 
@@ -496,7 +490,6 @@ TEST(CurvilinearBasicTests, Derefinement)
 
     std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
     grid->ComputeGridNodeTypes();
-    grid->SetFlatCopies();
 
     const lin_alg::Matrix<mk::Point> originalPoints = grid->GetNodes();
 
@@ -535,8 +528,7 @@ TEST(CurvilinearBasicTests, UndoLineAttractor)
     auto grid = MakeSmallCurvilinearGrid();
 
     grid->ComputeGridNodeTypes();
-    grid->SetFlatCopies();
-    const std::vector<mk::Point> originalPoints = grid->Nodes();
+    const std::vector<mk::Point> originalPoints = grid->ComputeNodes();
 
     mk::CurvilinearGridLineAttractionRepulsion lineAttractor(*grid, 0.5);
 
@@ -545,7 +537,6 @@ TEST(CurvilinearBasicTests, UndoLineAttractor)
 
     std::unique_ptr<mk::UndoAction> undoAction = lineAttractor.Compute();
     grid->ComputeGridNodeTypes();
-    grid->SetFlatCopies();
 
     // Asserts
     constexpr double tolerance = 1e-6;
@@ -563,7 +554,6 @@ TEST(CurvilinearBasicTests, UndoLineAttractor)
     ASSERT_NEAR(366555.11052078847, grid->GetNode(4, 2).y, tolerance);
 
     undoAction->Restore();
-    grid->SetFlatCopies();
 
     ASSERT_EQ(originalPoints.size(), grid->GetNumNodes());
 
@@ -578,8 +568,7 @@ TEST(CurvilinearBasicTests, UndoLineShift)
 {
     // Set-up
     const auto grid = MakeSmallCurvilinearGrid();
-    grid->SetFlatCopies();
-    const std::vector<mk::Point> originalPoints = grid->Nodes();
+    const std::vector<mk::Point> originalPoints = grid->ComputeNodes();
 
     meshkernel::CurvilinearGridLineShift curvilinearLineShift(*grid);
 
@@ -591,7 +580,6 @@ TEST(CurvilinearBasicTests, UndoLineShift)
 
     // The second actio is to shift the line
     auto undoLineShift = curvilinearLineShift.Compute();
-    grid->SetFlatCopies();
 
     // Asserts
     const double tolerance = 1e-6;
@@ -639,7 +627,6 @@ TEST(CurvilinearBasicTests, UndoLineShift)
     // Need to undo both actions
     undoLineShift->Restore();
     undoMoveNode->Restore();
-    grid->SetFlatCopies();
 
     ASSERT_EQ(originalPoints.size(), grid->GetNumNodes());
 
@@ -662,8 +649,7 @@ TEST(CurvilinearBasicTests, AnotherTest11)
     constexpr size_t ny = 30;
 
     std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
-    grid->SetFlatCopies();
-    const std::vector<mk::Point> originalPoints = grid->Nodes();
+    const std::vector<mk::Point> originalPoints = grid->ComputeNodes();
 
     meshkernel::CurvilinearGridLineShift lineShift(*grid);
 
@@ -679,8 +665,6 @@ TEST(CurvilinearBasicTests, AnotherTest11)
 
     undoLineShift->Restore();
     undoMoveNode->Restore();
-
-    grid->SetFlatCopies();
 
     ASSERT_EQ(originalPoints.size(), grid->GetNumNodes());
 
@@ -719,11 +703,10 @@ TEST(CurvilinearBasicTests, CompoundTest)
 
     mk::UndoActionStack undoActions;
     std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
-    grid->SetFlatCopies();
     grid->ComputeGridNodeTypes();
 
     // Nodes in the original mesh
-    const std::vector<mk::Point> originalPoints = grid->Nodes();
+    const std::vector<mk::Point> originalPoints = grid->ComputeNodes();
 
     meshkernel::CurvilinearGridLineShift lineShift(*grid);
 
@@ -850,17 +833,13 @@ TEST(CurvilinearBasicTests, CompoundTest)
 
     //--------------------------------
 
-    grid->SetFlatCopies();
-
     // Nodes in the grid after all actions
-    const std::vector<mk::Point> refinedPoints = grid->Nodes();
+    const std::vector<mk::Point> refinedPoints = grid->ComputeNodes();
 
     while (undoActions.Undo())
     {
         // Nothing else to do
     }
-
-    grid->SetFlatCopies();
 
     constexpr double tolerance = 1.0e-12;
 
@@ -882,12 +861,108 @@ TEST(CurvilinearBasicTests, CompoundTest)
         // Nothing else to do
     }
 
-    grid->SetFlatCopies();
-
     // Points should be same as in the refined mesh after all actions have bene redone
     for (mk::UInt i = 0; i < grid->GetNumNodes(); ++i)
     {
         EXPECT_NEAR(refinedPoints[i].x, grid->Node(i).x, tolerance);
         EXPECT_NEAR(refinedPoints[i].y, grid->Node(i).y, tolerance);
     }
+}
+
+TEST(CurvilinearBasicTests, InsertMultipleFacesAlongAllBoundaryEdges)
+{
+    constexpr double originX = 0.0;
+    constexpr double originY = 0.0;
+
+    constexpr double deltaX = 1.0;
+    constexpr double deltaY = 1.0;
+
+    constexpr size_t nx = 11;
+    constexpr size_t ny = 11;
+
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    grid->ComputeGridNodeTypes();
+
+    EXPECT_EQ(grid->NumN(), ny);
+    EXPECT_EQ(grid->NumM(), nx);
+
+    // Add element to bottom (south) of the grid
+    // The number of rows in the array of points should be increased by 1
+    [[maybe_unused]] auto undoAction1b = grid->InsertFace({0.5, 0.0});
+    EXPECT_EQ(grid->NumN(), ny + 1);
+    EXPECT_EQ(grid->NumM(), nx);
+
+    // Add another element to bottom (south) of the grid
+    // The number of rows in the array of points should not be increased
+    [[maybe_unused]] auto undoAction2b = grid->InsertFace({3.5, 0.0});
+    EXPECT_EQ(grid->NumN(), ny + 1);
+    EXPECT_EQ(grid->NumM(), nx);
+
+    // Add another element to bottom (south) of the grid
+    // The number of rows in the array of points should not be increased
+    [[maybe_unused]] auto undoAction3b = grid->InsertFace({2.5, 0.0});
+    EXPECT_EQ(grid->NumN(), ny + 1);
+    EXPECT_EQ(grid->NumM(), nx);
+
+    //--------------------------------
+
+    // Add element to left (west) of the grid
+    // The number of columns in the array of points should be increased by 1
+    [[maybe_unused]] auto undoAction1l = grid->InsertFace({0.0, 0.5});
+    EXPECT_EQ(grid->NumN(), ny + 1);
+    EXPECT_EQ(grid->NumM(), nx + 1);
+
+    // Add another element to left (west) of the grid
+    // The number of columns in the array of points should not be increased
+    [[maybe_unused]] auto undoAction2l = grid->InsertFace({0.0, 3.5});
+    EXPECT_EQ(grid->NumN(), ny + 1);
+    EXPECT_EQ(grid->NumM(), nx + 1);
+
+    // Add another element to left (west) of the grid
+    // The number of columns in the array of points should not be increased
+    [[maybe_unused]] auto undoAction3l = grid->InsertFace({0.0, 2.5});
+    EXPECT_EQ(grid->NumN(), ny + 1);
+    EXPECT_EQ(grid->NumM(), nx + 1);
+
+    //--------------------------------
+
+    // Add element to top (north) of the grid
+    // The number of rows in the array of points should be increased by another 1
+    [[maybe_unused]] auto undoAction1t = grid->InsertFace({0.5, 10.0});
+    EXPECT_EQ(grid->NumN(), ny + 2);
+    EXPECT_EQ(grid->NumM(), nx + 1);
+
+    // Add another element to top (north) of the grid
+    // The number of rows in the array of points should not be increased
+    [[maybe_unused]] auto undoAction2t = grid->InsertFace({3.5, 10.0});
+    EXPECT_EQ(grid->NumN(), ny + 2);
+    EXPECT_EQ(grid->NumM(), nx + 1);
+
+    // Add another element to top (north) of the grid
+    // The number of rows in the array of points should not be increased
+    [[maybe_unused]] auto undoAction3t = grid->InsertFace({2.5, 10.0});
+    EXPECT_EQ(grid->NumN(), ny + 2);
+    EXPECT_EQ(grid->NumM(), nx + 1);
+
+    //--------------------------------
+
+    // Add element to right (east) of the grid
+    // The number of columns in the array of points should be increased by another 1
+    [[maybe_unused]] auto undoAction1r = grid->InsertFace({10.0, 0.5});
+    EXPECT_EQ(grid->NumN(), ny + 2);
+    EXPECT_EQ(grid->NumM(), nx + 2);
+
+    // Add another element to right (east) of the grid
+    // The number of columns in the array of points should not be increased
+    [[maybe_unused]] auto undoAction2r = grid->InsertFace({10.0, 3.5});
+    EXPECT_EQ(grid->NumN(), ny + 2);
+    EXPECT_EQ(grid->NumM(), nx + 2);
+
+    // Add another element to right (east) of the grid
+    // The number of columns in the array of points should not be increased
+    [[maybe_unused]] auto undoAction3r = grid->InsertFace({10.0, 2.5});
+    EXPECT_EQ(grid->NumN(), ny + 2);
+    EXPECT_EQ(grid->NumM(), nx + 2);
+
+    //--------------------------------
 }
