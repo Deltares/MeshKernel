@@ -32,6 +32,7 @@
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
 #include <MeshKernel/AveragingInterpolation.hpp>
 #include <MeshKernel/BilinearInterpolationOnGriddedSamples.hpp>
+#include <MeshKernel/CasulliDeRefinement.hpp>
 #include <MeshKernel/CasulliRefinement.hpp>
 #include <MeshKernel/ConnectMeshes.hpp>
 #include <MeshKernel/Constants.hpp>
@@ -2207,6 +2208,92 @@ namespace meshkernelapi
             }
 
             meshKernelState[meshKernelId].m_undoStack.Add(meshkernel::CasulliRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d));
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_casulli_refinement_on_polygon(int meshKernelId, GeometryList* polygons)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (polygons == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Polygons is null.");
+            }
+
+            // Convert polygon date from GeometryList to Polygons
+            auto polygonPoints = ConvertGeometryListToPointVector(*polygons);
+            const meshkernel::Polygons meshKernelPolygons(polygonPoints,
+                                                          meshKernelState[meshKernelId].m_mesh2d->m_projection);
+
+            meshKernelState[meshKernelId].m_undoStack.Add(meshkernel::CasulliRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d,
+                                                                                                 meshKernelPolygons));
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_casulli_derefinement(int meshKernelId)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            meshkernel::CasulliDeRefinement casulliDerefinement;
+
+            meshKernelState[meshKernelId].m_undoStack.Add(casulliDerefinement.Compute(*meshKernelState[meshKernelId].m_mesh2d));
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_casulli_derefinement_on_polygon(int meshKernelId, GeometryList* polygons)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (polygons == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Polygons is null.");
+            }
+
+            // Convert polygon date from GeometryList to Polygons
+            auto polygonPoints = ConvertGeometryListToPointVector(*polygons);
+            const meshkernel::Polygons meshKernelPolygons(polygonPoints,
+                                                          meshKernelState[meshKernelId].m_mesh2d->m_projection);
+
+            meshkernel::CasulliDeRefinement casulliDerefinement;
+
+            meshKernelState[meshKernelId].m_undoStack.Add(casulliDerefinement.Compute(*meshKernelState[meshKernelId].m_mesh2d,
+                                                                                      meshKernelPolygons));
         }
         catch (...)
         {
