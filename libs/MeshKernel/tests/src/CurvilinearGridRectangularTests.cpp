@@ -81,15 +81,16 @@ TEST(CurvilinearGridUniform, MakeCurvilinearInEmptyPolygonSpherical)
 
     // 2 Execution
     CurvilinearGridRectangular const curvilinearGridCreateRectangular(Projection::spherical);
-    const auto [nodes, edges, gridIndices] = curvilinearGridCreateRectangular.Compute(numColumns,
-                                                                                      numRows,
-                                                                                      originX,
-                                                                                      originY,
-                                                                                      angle,
-                                                                                      blockSizeX,
-                                                                                      blockSizeY)
-                                                 ->ConvertCurvilinearToNodesAndEdges();
+    const auto curvilinearGrid = curvilinearGridCreateRectangular.Compute(numColumns,
+                                                                          numRows,
+                                                                          originX,
+                                                                          originY,
+                                                                          angle,
+                                                                          blockSizeX,
+                                                                          blockSizeY);
 
+    const auto nodes = curvilinearGrid->ComputeNodes();
+    const auto edges = curvilinearGrid->ComputeEdges();
     Mesh2D mesh(edges, nodes, Projection::spherical);
 
     // 3 Assert
@@ -526,7 +527,9 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
     EXPECT_EQ(3, grid->NumM());
     EXPECT_EQ(2, grid->NumN());
 
-    const auto [nodes, edges, gridIndices] = grid->ConvertCurvilinearToNodesAndEdges();
+    const auto nodes = grid->ComputeNodes();
+    const auto edges = grid->ComputeEdges();
+
     const std::vector<Point> expected_nodes = {{2., 1.}, {4., 1.}, {6., 1.}, {2., 2.}, {4., 2.}, {6., 2.}};
 
     EXPECT_EQ(expected_nodes.size(), nodes.size());
@@ -552,7 +555,9 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
 
     grid->GetNode(1, 2).SetInvalid();
 
-    const auto [nodes, edges, gridIndices] = grid->ConvertCurvilinearToNodesAndEdges();
+    const auto nodes = grid->ComputeNodes();
+    const auto edges = grid->ComputeEdges();
+
     const std::vector<Point> expected_nodes = {{2., 1.}, {4., 1.}, {6., 1.}, {2., 2.}, {4., 2.}, {-999., -999.}};
 
     EXPECT_EQ(expected_nodes.size(), nodes.size());
@@ -576,7 +581,9 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
     EXPECT_EQ(3, grid->NumM());
     EXPECT_EQ(2, grid->NumN());
 
-    const auto [nodes, edges, gridIndices] = grid->ConvertCurvilinearToNodesAndEdges();
+    const auto nodes = grid->ComputeNodes();
+    const auto edges = grid->ComputeEdges();
+
     const std::vector<Edge> expected_edges = {{{0u, 3u}, {1u, 4u}, {2u, 5u}, {0u, 1u}, {1u, 2u}, {3u, 4u}, {4u, 5u}}};
 
     EXPECT_EQ(expected_edges.size(), edges.size());
@@ -602,7 +609,9 @@ TEST(CurvilinearGridUniform, ConvertCurvilinearToNodesAndEdges_ReturnsSerialized
 
     grid->GetNode(1, 0).SetInvalid();
 
-    const auto [nodes, edges, gridIndices] = grid->ConvertCurvilinearToNodesAndEdges();
+    const auto nodes = grid->ComputeNodes();
+    const auto edges = grid->ComputeEdges();
+
     const std::vector<Edge> expected_edges = {{{0u, 3u}, {1u, 4u}, {2u, 5u}, {0u, 1u}, {1u, 2u}, {3u, 4u}, {4u, 5u}}};
 
     EXPECT_EQ(expected_edges.size(), edges.size());

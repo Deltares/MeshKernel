@@ -48,6 +48,7 @@ set(
   ${SRC_DIR}/Mesh2D.cpp
   ${SRC_DIR}/Mesh2DGenerateGlobal.cpp
   ${SRC_DIR}/Mesh2DIntersections.cpp
+  ${SRC_DIR}/Mesh2DToCurvilinear.cpp
   ${SRC_DIR}/MeshRefinement.cpp
   ${SRC_DIR}/Network1D.cpp
   ${SRC_DIR}/Operations.cpp
@@ -115,6 +116,7 @@ set(
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothing.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothness.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapping.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridUtilities.cpp
 )
 
 
@@ -150,6 +152,7 @@ set(
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
   ${DOMAIN_INC_DIR}/Mesh2DGenerateGlobal.hpp
   ${DOMAIN_INC_DIR}/Mesh2DIntersections.hpp
+  ${DOMAIN_INC_DIR}/Mesh2DToCurvilinear.hpp
   ${DOMAIN_INC_DIR}/MeshConversion.hpp
   ${DOMAIN_INC_DIR}/MeshInterpolation.hpp
   ${DOMAIN_INC_DIR}/MeshRefinement.hpp
@@ -229,6 +232,7 @@ set(
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothing.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothness.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapping.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridUtilities.hpp
 )
 
 

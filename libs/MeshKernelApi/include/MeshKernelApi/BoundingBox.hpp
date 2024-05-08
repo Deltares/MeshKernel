@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2024.
+// Copyright (C)  Stichting Deltares, 2011-2021.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,26 +27,23 @@
 
 #pragma once
 
-#include <string>
+#include <limits>
 
-namespace meshkernel
+namespace meshkernelapi
 {
-    /// @brief An enum for curvilinear node types
-    enum class NodeType
+    /// @brief A struct describing a bounding box
+    struct BoundingBox
     {
-        BottomLeft,    //(11)
-        UpperLeft,     //(14)
-        BottomRight,   //(12)
-        UpperRight,    //(13)
-        Left,          //(4)
-        Right,         //(2)
-        Bottom,        //(1)
-        Up,            //(3)
-        InternalValid, //(10)
-        Invalid        //(0)
+        /// @brief The bounding box lower left x coordinate
+        double xLowerLeft = std::numeric_limits<double>::lowest();
+
+        /// @brief The bounding box lower left y coordinate
+        double yLowerLeft = std::numeric_limits<double>::lowest();
+
+        /// @brief The bounding box upper right x coordinate
+        double xUpperRight = std::numeric_limits<double>::max();
+
+        /// @brief The bounding box upper right y coordinate
+        double yUpperRight = std::numeric_limits<double>::max();
     };
-
-    /// @brief Get string representation of the NodeType
-    const std::string& toString(const NodeType nodeType);
-
-} // namespace meshkernel
+} // namespace meshkernelapi

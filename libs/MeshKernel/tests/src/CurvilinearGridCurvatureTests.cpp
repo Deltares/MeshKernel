@@ -31,10 +31,8 @@
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridCurvature.hpp"
-#include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Utilities/LinearAlgebra.hpp"
-#include "TestUtils/MakeCurvilinearGrids.hpp"
 
 namespace mk = meshkernel;
 
