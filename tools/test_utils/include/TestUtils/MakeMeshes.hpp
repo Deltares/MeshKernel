@@ -56,14 +56,16 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     double dim_x,
     double dim_y,
     meshkernel::Projection projection,
-    meshkernel::Point const& origin = {0.0, 0.0});
+    meshkernel::Point const& origin = {0.0, 0.0},
+    const bool indexIncreasing = false);
 
 std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     meshkernel::UInt n,
     meshkernel::UInt m,
     double delta,
     meshkernel::Projection projection,
-    meshkernel::Point const& origin = {0.0, 0.0});
+    meshkernel::Point const& origin = {0.0, 0.0},
+    const bool indexIncreasing = false);
 
 std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTestingRand(
     meshkernel::UInt n,

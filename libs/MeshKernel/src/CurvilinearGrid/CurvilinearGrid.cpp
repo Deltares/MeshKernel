@@ -182,10 +182,10 @@ CurvilinearGrid::ConvertCurvilinearToNodesAndEdges() const
                                                        constants::missing::uintValue});
 
     UInt ind = 0;
-        for (UInt m = 0; m < NumM(); m++)
-        {
     for (UInt n = 0; n < NumN(); n++)
     {
+        for (UInt m = 0; m < NumM(); m++)
+        {
             nodes[ind] = GetNode(n, m);
             nodeIndices(n, m) = ind;
             gridIndices[ind] = {n, m};
@@ -195,21 +195,22 @@ CurvilinearGrid::ConvertCurvilinearToNodesAndEdges() const
 
     ind = 0;
 
-        for (UInt m = 0; m < NumM() - 1; m++)
-        {
-    for (UInt n = 0; n < NumN(); n++)
+    for (UInt n = 0; n < NumN() - 1; n++)
     {
+        for (UInt m = 0; m < NumM(); m++)
+        {
             edges[ind].first = nodeIndices(n, m);
-            edges[ind].second = nodeIndices(n, m + 1);
+            edges[ind].second = nodeIndices(n + 1, m);
             ind++;
         }
     }
-        for (UInt m = 0; m < NumM(); m++)
-        {
-    for (UInt n = 0; n < NumN() - 1; n++)
+
+    for (UInt n = 0; n < NumN(); n++)
     {
+        for (UInt m = 0; m < NumM() - 1; m++)
+        {
             edges[ind].first = nodeIndices(n, m);
-            edges[ind].second = nodeIndices(n + 1, m);
+            edges[ind].second = nodeIndices(n, m + 1);
             ind++;
         }
     }

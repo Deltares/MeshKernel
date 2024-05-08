@@ -203,13 +203,16 @@ void meshkernel::CasulliDeRefinement::FindSurroundingCells(const Mesh2D& mesh,
     FindAdjacentCells(mesh, directlyConnected, indirectlyConnected, kne);
 }
 
-bool meshkernel::CasulliDeRefinement::ElementIsSeed(const Mesh2D& mesh, const Polygons& polygon [[maybe_unused]], const UInt element)
+bool meshkernel::CasulliDeRefinement::ElementIsSeed(const Mesh2D& mesh,
+                                                    const std::vector<int>& nodeTypes,
+                                                    const Polygons& polygon [[maybe_unused]],
+                                                    const UInt element)
 {
     bool isSeed = true;
 
     for (UInt i = 0; i < mesh.m_numFacesNodes[element]; ++i)
     {
-        if (mesh.m_nodesTypes[mesh.m_facesNodes[element][i]] == 0)
+        if (nodeTypes[mesh.m_facesNodes[element][i]] == 0)
         {
             isSeed = false;
             break;
@@ -219,7 +222,9 @@ bool meshkernel::CasulliDeRefinement::ElementIsSeed(const Mesh2D& mesh, const Po
     return isSeed;
 }
 
-meshkernel::UInt meshkernel::CasulliDeRefinement::FindElementSeedIndex(const Mesh2D& mesh, const Polygons& polygon)
+meshkernel::UInt meshkernel::CasulliDeRefinement::FindElementSeedIndex(const Mesh2D& mesh,
+                                                                       const std::vector<int>& nodeTypes,
+                                                                       const Polygons& polygon)
 {
     UInt seedIndex = constants::missing::uintValue;
 
@@ -232,7 +237,7 @@ meshkernel::UInt meshkernel::CasulliDeRefinement::FindElementSeedIndex(const Mes
 
         const Edge& edge = mesh.GetEdge(e);
 
-        if (mesh.m_nodesTypes[edge.first] != 2 || mesh.m_nodesTypes[edge.second] != 2)
+        if (nodeTypes[edge.first] != 2 || nodeTypes[edge.second] != 2)
         {
             continue;
         }
@@ -244,7 +249,7 @@ meshkernel::UInt meshkernel::CasulliDeRefinement::FindElementSeedIndex(const Mes
             continue;
         }
 
-        if (ElementIsSeed(mesh, polygon, elementId))
+        if (ElementIsSeed(mesh, nodeTypes, polygon, elementId))
         {
             seedIndex = elementId;
             break;
@@ -262,7 +267,7 @@ meshkernel::UInt meshkernel::CasulliDeRefinement::FindElementSeedIndex(const Mes
                 continue;
             }
 
-            if (!ElementIsSeed(mesh, polygon, face))
+            if (!ElementIsSeed(mesh, nodeTypes, polygon, face))
             {
                 continue;
             }
@@ -300,9 +305,10 @@ void meshkernel::CasulliDeRefinement::AddElementToList(const Mesh& mesh, const s
 }
 
 std::vector<meshkernel::CasulliDeRefinement::ElementMask> meshkernel::CasulliDeRefinement::InitialiseElementMask(const Mesh2D& mesh,
+                                                                                                                 const std::vector<int>& nodeTypes,
                                                                                                                  const Polygons& polygon)
 {
-    UInt seedElement = FindElementSeedIndex(mesh, polygon);
+    UInt seedElement = FindElementSeedIndex(mesh, nodeTypes, polygon);
     UInt iterationCount = 0;
     UInt nMax = 1000;              // fix
     UInt maxIterationCount = 1000; // fix
@@ -427,19 +433,21 @@ void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
     std::vector<UInt> directlyConnected;
     std::vector<UInt> indirectlyConnected;
     std::vector<std::array<int, 2>> kne(nMax);
+    std::vector<int> nodeTypes (ComputeNodeTypes (mesh, polygon));
     directlyConnected.reserve(nMax);
     indirectlyConnected.reserve(nMax);
 
     refinementSuccessful = true;
 
-    std::vector<ElementMask> cellMask(InitialiseElementMask(mesh, polygon));
+    std::vector<ElementMask> cellMask(InitialiseElementMask(mesh, nodeTypes, polygon));
+    mesh.ComputeCircumcentersMassCentersAndFaceAreas (true);
 
     for (UInt k = 0; k < cellMask.size(); ++k)
     {
         if (cellMask[k] == ElementMask::NotA && mesh.m_numFacesNodes[k] > 0)
         {
             FindSurroundingCells(mesh, polygon, k, directlyConnected, indirectlyConnected, kne);
-            DeleteElement(mesh, polygon, k, directlyConnected, indirectlyConnected, kne);
+            DeleteElement(mesh, nodeTypes, polygon, k, directlyConnected, indirectlyConnected, kne);
 
             // if (!elementDeleted)
             // {
@@ -450,7 +458,10 @@ void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
     }
 }
 
-bool meshkernel::CasulliDeRefinement::ElementCannotBeDeleted(const Mesh2D& mesh, const Polygons& polygon, const UInt elementId)
+bool meshkernel::CasulliDeRefinement::ElementCannotBeDeleted(const Mesh2D& mesh,
+                                                             const std::vector<int>& nodeTypes,
+                                                             const Polygons& polygon,
+                                                             const UInt elementId)
 {
     bool noGo = false;
 
@@ -472,8 +483,8 @@ bool meshkernel::CasulliDeRefinement::ElementCannotBeDeleted(const Mesh2D& mesh,
 
         if (mesh.m_edgesNumFaces[edgeId] == 2)
         {
-            if (mesh.m_nodesTypes[mesh.GetEdge(edgeId).first] != 1 &&
-                mesh.m_nodesTypes[mesh.GetEdge(edgeId).second] != 1)
+            if (nodeTypes[mesh.GetEdge(edgeId).first] != 1 &&
+                nodeTypes[mesh.GetEdge(edgeId).second] != 1)
             {
                 noGo = true;
                 break;
@@ -487,7 +498,7 @@ bool meshkernel::CasulliDeRefinement::ElementCannotBeDeleted(const Mesh2D& mesh,
     {
         UInt nodeId = mesh.m_facesNodes[elementId][i];
 
-        if (mesh.m_nodesTypes[nodeId] == 3 && mesh.m_nodesNumEdges[nodeId] <= 2)
+        if (nodeTypes[nodeId] == 3 && mesh.m_nodesNumEdges[nodeId] <= 2)
         {
             noGo = false;
             break;
@@ -511,7 +522,9 @@ bool meshkernel::CasulliDeRefinement::ElementCannotBeDeleted(const Mesh2D& mesh,
     return noGo;
 }
 
-meshkernel::Point meshkernel::CasulliDeRefinement::ComputeNewNodeCoordinates(const Mesh2D& mesh, const UInt elementId)
+meshkernel::Point meshkernel::CasulliDeRefinement::ComputeNewNodeCoordinates(const Mesh2D& mesh,
+                                                                             const std::vector<int>& nodeTypes,
+                                                                             const UInt elementId)
 {
 
     Point newNode(0.0, 0.0);
@@ -522,11 +535,11 @@ meshkernel::Point meshkernel::CasulliDeRefinement::ComputeNewNodeCoordinates(con
         double fac = 1.0;
         UInt nodeId = mesh.m_facesNodes[elementId][i];
 
-        if (mesh.m_nodesTypes[nodeId] == 2 || mesh.m_nodesTypes[nodeId] == 4)
+        if (nodeTypes[nodeId] == 2 || nodeTypes[nodeId] == 4)
         {
             fac = 1.0e45;
         }
-        else if (mesh.m_nodesTypes[nodeId] == 3)
+        else if (nodeTypes[nodeId] == 3)
         {
             factor = 1.0;
             newNode = mesh.Node(nodeId);
@@ -700,13 +713,15 @@ void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& me
     }
 }
 
-int meshkernel::CasulliDeRefinement::GetNodeCode(const Mesh2D& mesh, const UInt elementId)
+int meshkernel::CasulliDeRefinement::GetNodeCode(const Mesh2D& mesh,
+                                                 const std::vector<int>& nodeTypes,
+                                                 const UInt elementId)
 {
     int nodeCode = std::numeric_limits<int>::lowest();
 
     for (UInt i = 0; i < mesh.m_numFacesNodes[elementId]; ++i)
     {
-        nodeCode = std::max(nodeCode, mesh.m_nodesTypes[mesh.m_facesNodes[elementId][i]]);
+        nodeCode = std::max(nodeCode, nodeTypes[mesh.m_facesNodes[elementId][i]]);
     }
 
     return nodeCode;
@@ -739,7 +754,10 @@ void meshkernel::CasulliDeRefinement::RedirectNodesOfConnectedElements(Mesh2D& m
     }
 }
 
-void meshkernel::CasulliDeRefinement::RemoveUnwantedBoundaryNodes(Mesh2D& mesh, const Polygons& polygon, const std::vector<UInt>& indirectlyConnected)
+void meshkernel::CasulliDeRefinement::RemoveUnwantedBoundaryNodes(Mesh2D& mesh,
+                                                                  const std::vector<int>& nodeTypes,
+                                                                  const Polygons& polygon,
+                                                                  const std::vector<UInt>& indirectlyConnected)
 {
     for (UInt kk = 0; kk < indirectlyConnected.size(); ++kk)
     {
@@ -772,7 +790,7 @@ void meshkernel::CasulliDeRefinement::RemoveUnwantedBoundaryNodes(Mesh2D& mesh, 
                     }
 
                     // this node may be outside polygon: ignore
-                    if (mesh.m_nodesTypes[nodeId] != 3 && polygon.IsPointInAnyPolygon(mesh.Node(nodeId)))
+                    if (nodeTypes[nodeId] != 3 && polygon.IsPointInAnyPolygon(mesh.Node(nodeId)))
                     {
                         if (mesh.m_numFacesNodes[connectedElementId] > 3)
                         {
@@ -835,6 +853,7 @@ void meshkernel::CasulliDeRefinement::RemoveUnwantedBoundaryNodes(Mesh2D& mesh, 
 }
 
 void meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
+                                                    std::vector<int>& nodeTypes,
                                                     const Polygons& polygon,
                                                     const UInt elementId,
                                                     const std::vector<UInt>& directlyConnected,
@@ -846,12 +865,12 @@ void meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
         return;
     }
 
-    if (ElementCannotBeDeleted(mesh, polygon, elementId))
+    if (ElementCannotBeDeleted(mesh, nodeTypes, polygon, elementId))
     {
         return;
     }
 
-    Point newNode(ComputeNewNodeCoordinates(mesh, elementId));
+    Point newNode(ComputeNewNodeCoordinates(mesh, nodeTypes, elementId));
 
     for (UInt i = 0; i < mesh.m_numFacesNodes[elementId]; ++i)
     {
@@ -865,7 +884,7 @@ void meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
     // Set the node code
 
     UInt nodeId = mesh.m_facesNodes[elementId][0];
-    mesh.m_nodesTypes[nodeId] = GetNodeCode(mesh, elementId);
+    nodeTypes[nodeId] = GetNodeCode(mesh, nodeTypes, elementId);
 
     // merge nodes
     auto undoAction = mesh.ResetNode(nodeId, newNode);
@@ -878,7 +897,7 @@ void meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
     // redirect nodes of indirectly connected cells, deactivate polygons of degree smaller than three
     RedirectNodesOfConnectedElements(mesh, elementId, nodeId, indirectlyConnected);
     // remove unwanted boundary node: a non-corner node that is shared by two boundary links
-    RemoveUnwantedBoundaryNodes(mesh, polygon, indirectlyConnected);
+    RemoveUnwantedBoundaryNodes(mesh, nodeTypes, polygon, indirectlyConnected);
     // redirect nodes of directly connected cells and deactivate polygons of degree smaller than three
     RedirectNodesOfConnectedElements(mesh, elementId, nodeId, directlyConnected);
 
@@ -988,40 +1007,6 @@ void meshkernel::CasulliDeRefinement::CleanUpEdge(Mesh2D& mesh, const UInt edgeI
     mesh.GetEdge(edgeId).second = constants::missing::uintValue;
 }
 
-void meshkernel::CasulliDeRefinement::StoreMesh(Mesh2D& mesh, const UInt k,
-                                                const std::vector<UInt>& directlyConnected,
-                                                const std::vector<UInt>& indirectlyConnected,
-                                                std::vector<UInt>& savedNodes,
-                                                std::vector<Edge>& savedEdges,
-                                                std::vector<UInt>& savedCells)
-{
-
-    UInt maxCells = 1u + directlyConnected.size() + indirectlyConnected.size();
-    std::vector<UInt> allCellIds;
-    allCellIds.reserve(maxCells);
-
-    allCellIds.push_back(k);
-    allCellIds.insert(allCellIds.end(), directlyConnected.begin(), directlyConnected.end());
-    allCellIds.insert(allCellIds.end(), indirectlyConnected.begin(), indirectlyConnected.end());
-
-    [[maybe_unused]] UInt numberOfNodes = std::accumulate(allCellIds.begin(), allCellIds.end(), 0,
-                                                          [&grid = mesh](const UInt total, const UInt index)
-                                                          {
-                                                              return total + grid.m_numFacesNodes[index];
-                                                          });
-
-    [[maybe_unused]] UInt maxNodes = numberOfNodes;
-    [[maybe_unused]] UInt maxLinks = numberOfNodes;
-
-    savedNodes.reserve(maxNodes);
-    savedEdges.reserve(maxLinks);
-    savedCells.reserve(maxCells);
-
-    // for (UInt i = 0; i < maxCells; ++)
-    // {
-    // }
-}
-
 bool meshkernel::CasulliDeRefinement::IsElementConvex(const Mesh2D& mesh, const UInt cell)
 {
     constexpr double TOL = 0.000001;
@@ -1040,6 +1025,7 @@ bool meshkernel::CasulliDeRefinement::IsElementConvex(const Mesh2D& mesh, const 
         UInt node3 = mesh.m_facesNodes[cell][ip2];
 
         double cosphi = NormalizedInnerProductTwoSegments(mesh.Node(node1), mesh.Node(node2), mesh.Node(node2), mesh.Node(node3), mesh.m_projection);
+
         if (std::abs(1.0 - std::abs(cosphi) < TOL))
         {
             return false;
@@ -1047,4 +1033,52 @@ bool meshkernel::CasulliDeRefinement::IsElementConvex(const Mesh2D& mesh, const 
     }
 
     return true;
+}
+
+std::vector<int> meshkernel::CasulliDeRefinement::ComputeNodeTypes (const Mesh2D& mesh, const Polygons& polygon)
+{
+    std::vector<int> nodeTypes (mesh.GetNumNodes ());
+
+    for (UInt i = 0; i < mesh.GetNumNodes (); ++i)
+    {
+        if (polygon.IsPointInAnyPolygon (mesh.Node (i)))
+        {
+            nodeTypes [i] = mesh.m_nodesTypes [i];
+        }
+    }
+
+    return nodeTypes;
+}
+
+std::vector<meshkernel::Point> meshkernel::CasulliDeRefinement::ElementsToDelete (Mesh2D& mesh, const Polygons& polygon)
+{
+    std::vector<int> nodeTypes (ComputeNodeTypes (mesh, polygon));
+    std::vector<ElementMask> cellMask(InitialiseElementMask(mesh, nodeTypes, polygon));
+    std::vector<Point> elementCentres;
+    elementCentres.reserve (cellMask.size ());
+    mesh.ComputeCircumcentersMassCentersAndFaceAreas (true);
+
+    for (UInt k = 0; k < cellMask.size(); ++k)
+    {
+        if (cellMask[k] == ElementMask::NotA && mesh.m_numFacesNodes[k] > 0)
+        {
+            bool toDelete = false;
+
+            for (UInt j = 0; j < mesh.m_numFacesNodes[k]; ++j)
+            {
+                if (nodeTypes[mesh.m_facesNodes [k][j]] > 0)
+                {
+                    toDelete = true;
+                    break;
+                }
+            }
+
+            if (toDelete )
+            {
+                elementCentres.push_back (mesh.m_facesMassCenters [k]);
+            }
+        }
+    }
+
+    return elementCentres;
 }

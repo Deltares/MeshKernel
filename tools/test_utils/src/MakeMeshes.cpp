@@ -176,7 +176,8 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     double dim_x,
     double dim_y,
     meshkernel::Projection projection,
-    meshkernel::Point const& origin)
+    meshkernel::Point const& origin,
+    const bool indexIncreasing)
 {
     std::vector<std::vector<meshkernel::UInt>> node_indices(n, std::vector<meshkernel::UInt>(m));
     std::vector<meshkernel::Point> nodes(n * m);
@@ -214,7 +215,15 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
         {
             for (meshkernel::UInt j = 0; j < m - 1; ++j)
             {
-                edges[index] = {node_indices[i][j + 1], node_indices[i][j]};
+                if(indexIncreasing)
+                {
+                    edges[index] = {node_indices[i][j], node_indices[i][j + 1]};
+                }
+                else
+                {
+                    edges[index] = {node_indices[i][j + 1], node_indices[i][j]};
+                }
+
                 index++;
             }
         }
@@ -228,7 +237,8 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     meshkernel::UInt m,
     double delta,
     meshkernel::Projection projection,
-    meshkernel::Point const& origin)
+    meshkernel::Point const& origin,
+    const bool indexIncreasing)
 {
     double const dim_x = delta * static_cast<double>(n - 1);
     double const dim_y = delta * static_cast<double>(m - 1);
@@ -238,7 +248,8 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
         dim_x,
         dim_y,
         projection,
-        origin);
+        origin,
+        indexIncreasing);
 }
 
 std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTestingRand(

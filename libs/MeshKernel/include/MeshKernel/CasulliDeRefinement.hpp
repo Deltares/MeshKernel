@@ -43,121 +43,139 @@ namespace meshkernel
         /// @brief Compute the Casulli de-refinement for the entire mesh.
         ///
         /// @param [in, out] mesh Mesh to be de-refined
-        /* [[nodiscard]] */ static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh);
+        /* [[nodiscard]] */  std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh);
+
+        std::vector<Point> ElementsToDelete (Mesh2D& mesh, const Polygons& polygon);
 
         /// @brief Compute the Casulli de-refinement for the part of the mesh inside the polygon
         ///
         /// @param [in, out] mesh Mesh to be de-refined
         /// @param [in] polygon Area within which the mesh will be de-refined
-        /* [[nodiscard]] */ static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh, const Polygons& polygon);
+        /* [[nodiscard]] */  std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh, const Polygons& polygon);
 
     private:
         // WTF
         enum class ElementMask
-        {
-            A = 1,         //< front, 'A' cell (used to be node, delete it):  1
-            B = 2,         //< front, 'B' cell (used to be link, keep it):    2
-            C = 3,         //< 'C' cell (used to be cell, keep it):           3
-            NotA = -1,     //< not in front, 'A' cell:                       -1
-            NotB = -2,     //< not in front, 'B' cell:                       -2
-            Unassigned = 0 //<                                                0
-        };
+            {
+                A = 1,         //< front, 'A' cell (used to be node, delete it):  1
+                B = 2,         //< front, 'B' cell (used to be link, keep it):    2
+                C = 3,         //< 'C' cell (used to be cell, keep it):           3
+                NotA = -1,     //< not in front, 'A' cell:                       -1
+                NotB = -2,     //< not in front, 'B' cell:                       -2
+                Unassigned = 0 //<                                                0
+            };
 
         /// @brief Initial size of the edge array
-        static constexpr UInt InitialEdgeArraySize = 100;
+        static const UInt InitialEdgeArraySize = 100;
 
         /// @brief The maximum number of nodes that a newly created element can have.
-        static constexpr UInt MaximumNumberOfNodesInNewlyCreatedElements = 4;
+        static const UInt MaximumNumberOfNodesInNewlyCreatedElements = 4;
 
         /// @brief Indicate if the element can be a seed element or not.
-        static bool ElementIsSeed(const Mesh2D& mesh, const Polygons& polygon, const UInt element);
+        bool ElementIsSeed(const Mesh2D& mesh,
+                           const std::vector<int>& nodeTypes,
+                           const Polygons& polygon,
+                           const UInt element);
 
         /// @brief Find the seed element id to start the mesh de-refinement.
-        static UInt FindElementSeedIndex(const Mesh2D& mesh, const Polygons& polygon);
+        UInt FindElementSeedIndex(const Mesh2D& mesh,
+                                  const std::vector<int>& nodeTypes,
+                                  const Polygons& polygon);
 
         /// @brief Find all elements that are connected along edges to elementId.
-        static void FindDirectlyConnectedCells(const Mesh2D& mesh,
-                                               const UInt elementId,
-                                               std::vector<UInt>& connected);
+        void FindDirectlyConnectedCells(const Mesh2D& mesh,
+                                        const UInt elementId,
+                                        std::vector<UInt>& connected);
 
         /// @brief Find all elements that are connected by nodes to elementId.
-        static void FindIndirectlyConnectedCells(const Mesh2D& mesh,
-                                                 const UInt elementId,
-                                                 const std::vector<UInt>& directlyConnected,
-                                                 std::vector<UInt>& indirectlyConnected);
+        void FindIndirectlyConnectedCells(const Mesh2D& mesh,
+                                          const UInt elementId,
+                                          const std::vector<UInt>& directlyConnected,
+                                          std::vector<UInt>& indirectlyConnected);
 
         /// @brief Find element id's
-        static void FindAdjacentCells(const Mesh2D& mesh,
-                                      const std::vector<UInt>& directlyConnected,
-                                      const std::vector<UInt>& indirectlyConnected,
-                                      std::vector<std::array<int, 2>>& kne);
+        void FindAdjacentCells(const Mesh2D& mesh,
+                               const std::vector<UInt>& directlyConnected,
+                               const std::vector<UInt>& indirectlyConnected,
+                               std::vector<std::array<int, 2>>& kne);
 
         /// @brief Find the elements that are connected to the elementId.
-        static void FindSurroundingCells(const Mesh2D& mesh,
-                                         const Polygons& polygon [[maybe_unused]],
-                                         const UInt elementId,
-                                         std::vector<UInt>& directlyConnected,
-                                         std::vector<UInt>& indirectlyConnected,
-                                         std::vector<std::array<int, 2>>& kne);
+        void FindSurroundingCells(const Mesh2D& mesh,
+                                  const Polygons& polygon [[maybe_unused]],
+                                  const UInt elementId,
+                                  std::vector<UInt>& directlyConnected,
+                                  std::vector<UInt>& indirectlyConnected,
+                                  std::vector<std::array<int, 2>>& kne);
 
         /// @brief Initialise the element mask.
-        static std::vector<ElementMask> InitialiseElementMask(const Mesh2D& mesh,
-                                                              const Polygons& polygon);
+        std::vector<ElementMask> InitialiseElementMask(const Mesh2D& mesh,
+                                                       const std::vector<int>& nodeTypes,
+                                                       const Polygons& polygon);
 
         /// \brief Determine if the element can be deleted from the mesh or not.
-        static bool ElementCannotBeDeleted(const Mesh2D& mesh, const Polygons& polygon, const UInt elementId);
+        bool ElementCannotBeDeleted(const Mesh2D& mesh,
+                                    const std::vector<int>& nodeTypes,
+                                    const Polygons& polygon,
+                                    const UInt elementId);
 
         /// @brief Compute coordinates of the new node.
-        static Point ComputeNewNodeCoordinates(const Mesh2D& mesh, const UInt nodeId);
+        Point ComputeNewNodeCoordinates(const Mesh2D& mesh,
+                                        const std::vector<int>& nodeTypes,
+                                        const UInt nodeId);
 
         /// @brief
-        static void UpdateDirectlyConnectedElements(Mesh2D& mesh,
-                                                    const UInt elementId,
-                                                    const std::vector<UInt>& directlyConnected,
-                                                    const std::vector<std::array<int, 2>>& kne);
+        void UpdateDirectlyConnectedElements(Mesh2D& mesh,
+                                             const UInt elementId,
+                                             const std::vector<UInt>& directlyConnected,
+                                             const std::vector<std::array<int, 2>>& kne);
 
         /// @brief Get the most significant node type for all nodes of the element.
-        static int GetNodeCode(const Mesh2D& mesh, const UInt elementId);
+        int GetNodeCode(const Mesh2D& mesh,
+                        const std::vector<int>& nodeTypes,
+                        const UInt elementId);
 
         /// @brief Add element id to the list of id's
         ///
         /// only added is it is not already on the list and the element is a quadrilateral
-        static void AddElementToList(const Mesh& mesh, const std::vector<UInt>& frontList, std::vector<UInt>& frontListCopy, const UInt kNew);
+        void AddElementToList(const Mesh& mesh, const std::vector<UInt>& frontList, std::vector<UInt>& frontListCopy, const UInt kNew);
 
         /// @brief Redirect nodes of connected cells, deactivate polygons of degree smaller than three
-        static void RedirectNodesOfConnectedElements(Mesh2D& mesh, const UInt elementId, const UInt nodeId, const std::vector<UInt>& indirectlyConnected);
+        void RedirectNodesOfConnectedElements(Mesh2D& mesh, const UInt elementId, const UInt nodeId, const std::vector<UInt>& indirectlyConnected);
 
         /// @brief Removes nodes from the boundary that will not be part of the de-refined mesh.
-        static void RemoveUnwantedBoundaryNodes(Mesh2D& mesh, const Polygons& polygon, const std::vector<UInt>& indirectlyConnected);
+        void RemoveUnwantedBoundaryNodes(Mesh2D& mesh,
+                                         const std::vector<int>& nodeTypes,
+                                         const Polygons& polygon,
+                                         const std::vector<UInt>& indirectlyConnected);
 
         /// @brief Delete an element
-        static void DeleteElement(Mesh2D& mesh,
-                                  const Polygons& polygon,
-                                  const UInt elementId,
-                                  const std::vector<UInt>& directlyConnected,
-                                  const std::vector<UInt>& indirectlyConnected,
-                                  const std::vector<std::array<int, 2>>& kne);
-
-        static void StoreMesh(Mesh2D& mesh, const UInt elementId,
-                              const std::vector<UInt>& directlyConnected,
-                              const std::vector<UInt>& indirectlyConnected,
-                              std::vector<UInt>& savedNodes,
-                              std::vector<Edge>& savedEdges,
-                              std::vector<UInt>& saveCells);
+        void DeleteElement(Mesh2D& mesh,
+                           std::vector<int>& nodeTypes,
+                           const Polygons& polygon,
+                           const UInt elementId,
+                           const std::vector<UInt>& directlyConnected,
+                           const std::vector<UInt>& indirectlyConnected,
+                           const std::vector<std::array<int, 2>>& kne);
 
         /// @brief Clean up the edge
-        static void CleanUpEdge(Mesh2D& mesh, const UInt edgeId);
+        void CleanUpEdge(Mesh2D& mesh, const UInt edgeId);
 
         /// @brief Find the id of the shared node for two edges.
         ///
         /// If no node is shared then return null value
-        static UInt FindCommonNode(const Mesh2D& mesh, const UInt edgeId1, const UInt edgeId2);
+        UInt FindCommonNode(const Mesh2D& mesh, const UInt edgeId1, const UInt edgeId2);
 
         /// @brief Determine if the element is convex
-        static bool IsElementConvex(const Mesh2D& mesh, const UInt cell);
+        bool IsElementConvex(const Mesh2D& mesh, const UInt cell);
 
         /// @brief Do the Casullu de-refinement
-        static void DoDeRefinement(Mesh2D& mesh, const Polygons& polygon, bool& refinementSuccessful);
+        void DoDeRefinement(Mesh2D& mesh, const Polygons& polygon, bool& refinementSuccessful);
+
+        /// @brief Compute the mesh node types.
+        ///
+        /// Uses the m_nodeTypes has been generated in the mesh.
+        std::vector<int> ComputeNodeTypes (const Mesh2D& mesh, const Polygons& polygon);
+
     };
 
 } // namespace meshkernel
