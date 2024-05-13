@@ -118,7 +118,7 @@ namespace meshkernel
                                         const std::vector<int>& nodeTypes,
                                         const UInt nodeId);
 
-        /// @brief
+        /// @brief Update the mesh members for the mesh description and connectivity.
         void UpdateDirectlyConnectedElements(Mesh2D& mesh,
                                              const UInt elementId,
                                              const std::vector<UInt>& directlyConnected,
