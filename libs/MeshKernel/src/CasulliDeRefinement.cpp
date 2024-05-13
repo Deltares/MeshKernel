@@ -561,7 +561,7 @@ void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& me
                 // TODO what about negative values?
                 // ******** DO not know how to get into here to be able to test. ********
                 // probably set to the null value
-                UInt leftElementId = kne[k][i] == constants::missing::intValue ? constants::missing::uintValue : static_cast<UInt>(kne[k][i]);
+                UInt leftElementId = kne[k][i] == constants::missing::intValue || kne[k][i] < 0 ? constants::missing::uintValue : static_cast<UInt>(kne[k][i]);
 
                 if (leftElementId == constants::missing::uintValue)
                 {
@@ -570,7 +570,7 @@ void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& me
 
                 UInt oppositeSide = 1 - i;
                 // TODO what about negative values?
-                UInt rightElementId = kne[k][oppositeSide] == constants::missing::intValue ? constants::missing::uintValue : static_cast<UInt>(kne[k][oppositeSide]);
+                UInt rightElementId = kne[k][oppositeSide] == constants::missing::intValue || kne[k][oppositeSide] < 0 ? constants::missing::uintValue : static_cast<UInt>(kne[k][oppositeSide]);
 
                 if (leftElementId == constants::missing::uintValue || rightElementId == constants::missing::uintValue)
                 {
