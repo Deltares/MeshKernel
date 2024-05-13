@@ -180,7 +180,6 @@ void meshkernel::CasulliDeRefinement::FindAdjacentCells(const Mesh2D& mesh,
 }
 
 void meshkernel::CasulliDeRefinement::FindSurroundingCells(const Mesh2D& mesh,
-                                                           const Polygons& polygon [[maybe_unused]],
                                                            const UInt elementId,
                                                            std::vector<UInt>& directlyConnected,
                                                            std::vector<UInt>& indirectlyConnected,
@@ -193,7 +192,6 @@ void meshkernel::CasulliDeRefinement::FindSurroundingCells(const Mesh2D& mesh,
 
 bool meshkernel::CasulliDeRefinement::ElementIsSeed(const Mesh2D& mesh,
                                                     const std::vector<int>& nodeTypes,
-                                                    const Polygons& polygon [[maybe_unused]],
                                                     const UInt element)
 {
     bool isSeed = true;
@@ -211,8 +209,7 @@ bool meshkernel::CasulliDeRefinement::ElementIsSeed(const Mesh2D& mesh,
 }
 
 meshkernel::UInt meshkernel::CasulliDeRefinement::FindElementSeedIndex(const Mesh2D& mesh,
-                                                                       const std::vector<int>& nodeTypes,
-                                                                       const Polygons& polygon)
+                                                                       const std::vector<int>& nodeTypes)
 {
     UInt seedIndex = constants::missing::uintValue;
 
@@ -237,7 +234,7 @@ meshkernel::UInt meshkernel::CasulliDeRefinement::FindElementSeedIndex(const Mes
             continue;
         }
 
-        if (ElementIsSeed(mesh, nodeTypes, polygon, elementId))
+        if (ElementIsSeed(mesh, nodeTypes, elementId))
         {
             seedIndex = elementId;
             break;
@@ -255,7 +252,7 @@ meshkernel::UInt meshkernel::CasulliDeRefinement::FindElementSeedIndex(const Mes
                 continue;
             }
 
-            if (!ElementIsSeed(mesh, nodeTypes, polygon, face))
+            if (!ElementIsSeed(mesh, nodeTypes, face))
             {
                 continue;
             }
@@ -293,10 +290,9 @@ void meshkernel::CasulliDeRefinement::AddElementToList(const Mesh& mesh, const s
 }
 
 std::vector<meshkernel::CasulliDeRefinement::ElementMask> meshkernel::CasulliDeRefinement::InitialiseElementMask(const Mesh2D& mesh,
-                                                                                                                 const std::vector<int>& nodeTypes,
-                                                                                                                 const Polygons& polygon)
+                                                                                                                 const std::vector<int>& nodeTypes)
 {
-    UInt seedElement = FindElementSeedIndex(mesh, nodeTypes, polygon);
+    UInt seedElement = FindElementSeedIndex(mesh, nodeTypes);
     UInt iterationCount = 0;
     UInt nMax = 1000;              // fix
     UInt maxIterationCount = 1000; // fix
@@ -327,7 +323,7 @@ std::vector<meshkernel::CasulliDeRefinement::ElementMask> meshkernel::CasulliDeR
             UInt elementId = frontIndex[i];
 
             // get the connected cells
-            FindSurroundingCells(mesh, polygon, elementId, directlyConnected, indirectlyConnected, kne);
+            FindSurroundingCells(mesh, elementId, directlyConnected, indirectlyConnected, kne);
 
             if (cellMask[elementId] == ElementMask::A)
             {
@@ -425,14 +421,14 @@ void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
     directlyConnected.reserve(nMax);
     indirectlyConnected.reserve(nMax);
 
-    std::vector<ElementMask> cellMask(InitialiseElementMask(mesh, nodeTypes, polygon));
+    std::vector<ElementMask> cellMask(InitialiseElementMask(mesh, nodeTypes));
     mesh.ComputeCircumcentersMassCentersAndFaceAreas(true);
 
     for (UInt k = 0; k < cellMask.size(); ++k)
     {
         if (cellMask[k] == ElementMask::NotA && mesh.m_numFacesNodes[k] > 0)
         {
-            FindSurroundingCells(mesh, polygon, k, directlyConnected, indirectlyConnected, kne);
+            FindSurroundingCells(mesh, k, directlyConnected, indirectlyConnected, kne);
             DeleteElement(mesh, nodeTypes, polygon, k, directlyConnected, indirectlyConnected, kne);
         }
     }
@@ -971,7 +967,7 @@ std::vector<int> meshkernel::CasulliDeRefinement::ComputeNodeTypes(const Mesh2D&
 std::vector<meshkernel::Point> meshkernel::CasulliDeRefinement::ElementsToDelete(const Mesh2D& mesh, const Polygons& polygon)
 {
     std::vector<int> nodeTypes(ComputeNodeTypes(mesh, polygon));
-    std::vector<ElementMask> cellMask(InitialiseElementMask(mesh, nodeTypes, polygon));
+    std::vector<ElementMask> cellMask(InitialiseElementMask(mesh, nodeTypes));
     std::vector<Point> elementCentres;
     elementCentres.reserve(cellMask.size());
 

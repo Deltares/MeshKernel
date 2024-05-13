@@ -73,13 +73,11 @@ namespace meshkernel
         /// @brief Indicate if the element can be a seed element or not.
         bool ElementIsSeed(const Mesh2D& mesh,
                            const std::vector<int>& nodeTypes,
-                           const Polygons& polygon,
                            const UInt element);
 
         /// @brief Find the seed element id to start the mesh de-refinement.
         UInt FindElementSeedIndex(const Mesh2D& mesh,
-                                  const std::vector<int>& nodeTypes,
-                                  const Polygons& polygon);
+                                  const std::vector<int>& nodeTypes);
 
         /// @brief Find all elements that are connected along edges to elementId.
         void FindDirectlyConnectedCells(const Mesh2D& mesh,
@@ -100,7 +98,6 @@ namespace meshkernel
 
         /// @brief Find the elements that are connected to the elementId.
         void FindSurroundingCells(const Mesh2D& mesh,
-                                  const Polygons& polygon [[maybe_unused]],
                                   const UInt elementId,
                                   std::vector<UInt>& directlyConnected,
                                   std::vector<UInt>& indirectlyConnected,
@@ -108,8 +105,7 @@ namespace meshkernel
 
         /// @brief Initialise the element mask.
         std::vector<ElementMask> InitialiseElementMask(const Mesh2D& mesh,
-                                                       const std::vector<int>& nodeTypes,
-                                                       const Polygons& polygon);
+                                                       const std::vector<int>& nodeTypes);
 
         /// \brief Determine if the element can be deleted from the mesh or not.
         bool ElementCannotBeDeleted(const Mesh2D& mesh,
