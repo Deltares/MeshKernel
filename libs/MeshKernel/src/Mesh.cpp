@@ -507,6 +507,16 @@ std::unique_ptr<meshkernel::ResetNodeAction> Mesh::ResetNode(const UInt nodeId, 
     return undoAction;
 }
 
+void Mesh::SetNode(const UInt nodeId, const Point& newValue)
+{
+    if (nodeId >= GetNumNodes())
+    {
+        throw ConstraintError("The node index, {}, is not in range.", nodeId);
+    }
+
+    m_nodes[nodeId] = newValue;
+}
+
 std::unique_ptr<meshkernel::DeleteEdgeAction> Mesh::DeleteEdge(UInt edge)
 {
     if (edge == constants::missing::uintValue) [[unlikely]]

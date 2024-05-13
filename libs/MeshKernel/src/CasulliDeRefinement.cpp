@@ -141,14 +141,10 @@ void meshkernel::CasulliDeRefinement::FindAdjacentCells(const Mesh2D& mesh,
                 {
                     if (kne[i][0] == constants::missing::intValue)
                     {
-                        // TODO how better to handle negative values
-                        // Cannot get into here
                         kne[i][0] = -static_cast<int>(neighbouringElementId);
                     }
                     else
                     {
-                        // TODO how better to handle negative values
-                        // Cannot get into here
                         kne[i][1] = -static_cast<int>(neighbouringElementId);
                     }
 
@@ -558,9 +554,6 @@ void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& me
 
             for (UInt i = 0; i < 2; ++i)
             {
-                // TODO what about negative values?
-                // ******** DO not know how to get into here to be able to test. ********
-                // probably set to the null value
                 UInt leftElementId = kne[k][i] == constants::missing::intValue || kne[k][i] < 0 ? constants::missing::uintValue : static_cast<UInt>(kne[k][i]);
 
                 if (leftElementId == constants::missing::uintValue)
@@ -569,7 +562,6 @@ void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& me
                 }
 
                 UInt oppositeSide = 1 - i;
-                // TODO what about negative values?
                 UInt rightElementId = kne[k][oppositeSide] == constants::missing::intValue || kne[k][oppositeSide] < 0 ? constants::missing::uintValue : static_cast<UInt>(kne[k][oppositeSide]);
 
                 if (leftElementId == constants::missing::uintValue || rightElementId == constants::missing::uintValue)
@@ -577,7 +569,6 @@ void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& me
                     continue;
                 }
 
-                // TODO may be better to copy loop variable value on exit
                 UInt j;
                 UInt edgeId = constants::missing::uintValue;
 
@@ -624,8 +615,6 @@ void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& me
 
                 if (otherEdgeId != constants::missing::uintValue)
                 {
-                    // TODO it is possible for j to be out of bounds
-                    // **** j is used here ****
                     mesh.m_facesEdges[leftElementId][j] = otherEdgeId;
                     CleanUpEdge(mesh, edgeId);
                 }
@@ -662,8 +651,7 @@ void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& me
 
                     UInt i = 0;
 
-                    // TODO should this be i < mesh.m_numFacesNodes[connectedElementId] - 1?
-                    while (i < mesh.m_numFacesNodes[connectedElementId] - 0 &&
+                    while (i < mesh.m_numFacesNodes[connectedElementId] &&
                            mesh.m_facesNodes[connectedElementId][i] != mesh.GetEdge(edgeId).first &&
                            mesh.m_facesNodes[connectedElementId][i] != mesh.GetEdge(edgeId).second &&
                            mesh.m_facesNodes[connectedElementId][i] != mesh.m_facesNodes[elementId][0])
@@ -677,9 +665,7 @@ void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& me
                     }
                     else
                     {
-                        // call qnerror('coarsen_mesh: no node found', ' ', ' ')
-                        // No node found
-                        std::cout << "coarsen_mesh: no node found " << std::endl;
+                        // Error: No node found
                     }
 
                     mesh.m_numFacesNodes[connectedElementId] = ndum;
@@ -788,7 +774,7 @@ void meshkernel::CasulliDeRefinement::RemoveUnwantedBoundaryNodes(Mesh2D& mesh,
                             // delete other link
 
                             CleanUpEdge(mesh, edgeId);
-                            auto undoAction = mesh.ResetNode(nodeId, {constants::missing::doubleValue, constants::missing::doubleValue});
+                            mesh.SetNode(nodeId, {constants::missing::doubleValue, constants::missing::doubleValue});
                             continueOuterLoop = true;
                             break;
                         }
@@ -850,7 +836,7 @@ void meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
 
     for (UInt i = 0; i < mesh.m_numFacesNodes[elementId]; ++i)
     {
-        auto undoAction = mesh.ResetNode(mesh.m_facesNodes[elementId][i], newNode);
+        mesh.SetNode(mesh.m_facesNodes[elementId][i], newNode);
     }
 
     UInt N = mesh.m_numFacesNodes[elementId];
@@ -863,7 +849,7 @@ void meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
     nodeTypes[nodeId] = GetNodeCode(mesh, nodeTypes, elementId);
 
     // merge nodes
-    auto undoAction = mesh.ResetNode(nodeId, newNode);
+    mesh.SetNode(nodeId, newNode);
 
     for (UInt kk = 1; kk < N; ++kk)
     {
@@ -936,9 +922,7 @@ void meshkernel::CasulliDeRefinement::CleanUpEdge(Mesh2D& mesh, const UInt edgeI
         }
         else
         {
-            // Error?
-            // call qnerror('cleanup_nod: link not found', ' ', ' ')
-            std::cout << "cleanup_nod: link not found " << std::endl;
+            // Error: no link found
             return;
         }
 

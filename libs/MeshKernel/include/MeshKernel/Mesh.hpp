@@ -190,6 +190,9 @@ namespace meshkernel
         /// @brief Set all nodes to a new set of values.
         void SetNodes(const std::vector<Point>& newValues);
 
+        /// @brief Set a node to a new value, bypassing the undo action.
+        void SetNode(const UInt index, const Point& newValue);
+
         /// @brief Set the node to a new value, this value may be the in-valid value.
         [[nodiscard]] std::unique_ptr<ResetNodeAction> ResetNode(const UInt index, const Point& newValue);
 
