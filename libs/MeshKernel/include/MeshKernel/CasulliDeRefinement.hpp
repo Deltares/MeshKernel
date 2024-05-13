@@ -43,21 +43,23 @@ namespace meshkernel
         /// @brief Compute the Casulli de-refinement for the entire mesh.
         ///
         /// @param [in, out] mesh Mesh to be de-refined
-        /* [[nodiscard]] */ std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh);
-
-        /// @brief Compute centres of elements to be deleted.
-        ///
-        /// Requires that the element mass centres are computed.
-        std::vector<Point> ElementsToDelete(const Mesh2D& mesh, const Polygons& polygon);
+        std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh);
 
         /// @brief Compute the Casulli de-refinement for the part of the mesh inside the polygon
         ///
         /// @param [in, out] mesh Mesh to be de-refined
         /// @param [in] polygon Area within which the mesh will be de-refined
-        /* [[nodiscard]] */ std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh, const Polygons& polygon);
+        std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh, const Polygons& polygon);
+
+        /// @brief Compute centres of elements to be deleted.
+        ///
+        /// Requires that the element mass-centres are pre-computed.
+        std::vector<Point> ElementsToDelete(const Mesh2D& mesh, const Polygons& polygon);
 
     private:
-        // WTF
+        /// @brief Element mask values used in the de-refinement procedure.
+        ///
+        /// Enumeration comments are from the original Fortran code.
         enum class ElementMask
         {
             A = 1,         //< front, 'A' cell (used to be node, delete it):  1
@@ -65,14 +67,8 @@ namespace meshkernel
             C = 3,         //< 'C' cell (used to be cell, keep it):           3
             NotA = -1,     //< not in front, 'A' cell:                       -1
             NotB = -2,     //< not in front, 'B' cell:                       -2
-            Unassigned = 0 //<                                                0
+            Unassigned = 0 //< not assigned a value                           0
         };
-
-        /// @brief Initial size of the edge array
-        static const UInt InitialEdgeArraySize = 100;
-
-        /// @brief The maximum number of nodes that a newly created element can have.
-        static const UInt MaximumNumberOfNodesInNewlyCreatedElements = 4;
 
         /// @brief Indicate if the element can be a seed element or not.
         bool ElementIsSeed(const Mesh2D& mesh,
@@ -172,7 +168,7 @@ namespace meshkernel
         bool IsElementConvex(const Mesh2D& mesh, const UInt cell);
 
         /// @brief Do the Casullu de-refinement
-        void DoDeRefinement(Mesh2D& mesh, const Polygons& polygon, bool& refinementSuccessful);
+        void DoDeRefinement(Mesh2D& mesh, const Polygons& polygon);
 
         /// @brief Compute the mesh node types.
         ///

@@ -3543,3 +3543,142 @@ TEST(Mesh2D, CasulliDeRefinementWholeMesh)
         EXPECT_EQ(originalEdges[i], mesh2d.edge_nodes[i]);
     }
 }
+
+TEST(Mesh2D, CasulliDeRefinementElementsWholeMesh)
+{
+    // Prepare
+    int meshKernelId;
+    const int isGeographic = 0;
+    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+
+    const int numElementsX = 10;
+    const int numElementsY = 10;
+    const int numElements = numElementsX * numElementsY;
+
+    // Set-up new mesh
+    auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(numElementsX, numElementsY, 1.0);
+
+    std::vector<double> originalNodesX(node_x);
+    std::vector<double> originalNodesY(node_y);
+    std::vector<int> originalEdges(edge_nodes);
+
+    std::vector<double> edgeCentresX(num_edges);
+    std::vector<double> edgeCentresY(num_edges);
+    std::vector<int> edgeFaces(2 * num_edges);
+    std::vector<double> faceCentresX(numElements);
+    std::vector<double> faceCentresY(numElements);
+    std::vector<int> faceNodes(numElements * 4);
+    std::vector<int> faceEdges(numElements * 4);
+    std::vector<int> nodesPerFace(numElements);
+
+    std::vector<double> removedElementCentresX(num_nodes);
+    std::vector<double> removedElementCentresY(num_nodes);
+    meshkernelapi::GeometryList elementsToRemove;
+
+    elementsToRemove.coordinates_x = removedElementCentresX.data();
+    elementsToRemove.coordinates_y = removedElementCentresY.data();
+
+    meshkernelapi::Mesh2D mesh2d{};
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+    mesh2d.edge_x = edgeCentresX.data();
+    mesh2d.edge_y = edgeCentresY.data();
+    mesh2d.edge_faces = edgeFaces.data();
+    mesh2d.face_x = faceCentresX.data();
+    mesh2d.face_y = faceCentresY.data();
+    mesh2d.face_nodes = faceNodes.data();
+    mesh2d.face_edges = faceEdges.data();
+    mesh2d.nodes_per_face = nodesPerFace.data();
+
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement_elements(meshKernelId, &elementsToRemove);
+    const std::vector<meshkernel::Point> removedElementCentres{{1.5, 0.5}, {1.5, 2.5}, {1.5, 4.5}, {1.5, 6.5}, {1.5, 8.5}, {3.5, 0.5}, {3.5, 2.5}, {3.5, 4.5}, {3.5, 6.5}, {3.5, 8.5}, {5.5, 0.5}, {5.5, 2.5}, {5.5, 4.5}, {5.5, 6.5}, {5.5, 8.5}, {7.5, 0.5}, {7.5, 2.5}, {7.5, 4.5}, {7.5, 6.5}, {7.5, 8.5}, {9.5, 0.5}, {9.5, 2.5}, {9.5, 4.5}, {9.5, 6.5}, {9.5, 8.5}};
+
+    ASSERT_EQ(elementsToRemove.num_coordinates, static_cast<int>(removedElementCentres.size()));
+    constexpr double tolerance = 1.0e-12;
+
+    for (int i = 0; i < elementsToRemove.num_coordinates; ++i)
+    {
+        EXPECT_NEAR(removedElementCentres[i].x, elementsToRemove.coordinates_x[i], tolerance);
+        EXPECT_NEAR(removedElementCentres[i].y, elementsToRemove.coordinates_y[i], tolerance);
+    }
+}
+
+TEST(Mesh2D, CasulliDeRefinementElementsMeshRegion)
+{
+    // Prepare
+    int meshKernelId;
+    const int isGeographic = 0;
+    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+
+    const int numElementsX = 10;
+    const int numElementsY = 10;
+    const int numElements = numElementsX * numElementsY;
+
+    // Set-up new mesh
+    auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(numElementsX, numElementsY, 1.0);
+
+    std::vector<double> originalNodesX(node_x);
+    std::vector<double> originalNodesY(node_y);
+    std::vector<int> originalEdges(edge_nodes);
+
+    std::vector<double> edgeCentresX(num_edges);
+    std::vector<double> edgeCentresY(num_edges);
+    std::vector<int> edgeFaces(2 * num_edges);
+    std::vector<double> faceCentresX(numElements);
+    std::vector<double> faceCentresY(numElements);
+    std::vector<int> faceNodes(numElements * 4);
+    std::vector<int> faceEdges(numElements * 4);
+    std::vector<int> nodesPerFace(numElements);
+
+    std::vector<double> polygonPointsX({2.5, 7.5, 5.5, 2.5});
+    std::vector<double> polygonPointsY({2.5, 4.5, 8.5, 2.5});
+    meshkernelapi::GeometryList polygon;
+    polygon.num_coordinates = 4;
+    polygon.coordinates_x = polygonPointsX.data();
+    polygon.coordinates_y = polygonPointsY.data();
+
+    std::vector<double> removedElementCentresX(num_nodes);
+    std::vector<double> removedElementCentresY(num_nodes);
+    meshkernelapi::GeometryList elementsToRemove;
+
+    elementsToRemove.coordinates_x = removedElementCentresX.data();
+    elementsToRemove.coordinates_y = removedElementCentresY.data();
+
+    meshkernelapi::Mesh2D mesh2d{};
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+    mesh2d.edge_x = edgeCentresX.data();
+    mesh2d.edge_y = edgeCentresY.data();
+    mesh2d.edge_faces = edgeFaces.data();
+    mesh2d.face_x = faceCentresX.data();
+    mesh2d.face_y = faceCentresY.data();
+    mesh2d.face_nodes = faceNodes.data();
+    mesh2d.face_edges = faceEdges.data();
+    mesh2d.nodes_per_face = nodesPerFace.data();
+
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement_elements_on_polygon(meshKernelId, &polygon, &elementsToRemove);
+    const std::vector<meshkernel::Point> removedElementCentres{{2.5, 2.5}, {4.5, 4.5}, {4.5, 6.5}, {6.5, 4.5}, {6.5, 6.5}};
+
+    ASSERT_EQ(elementsToRemove.num_coordinates, static_cast<int>(removedElementCentres.size()));
+    constexpr double tolerance = 1.0e-12;
+
+    for (int i = 0; i < elementsToRemove.num_coordinates; ++i)
+    {
+        EXPECT_NEAR(removedElementCentres[i].x, elementsToRemove.coordinates_x[i], tolerance);
+        EXPECT_NEAR(removedElementCentres[i].y, elementsToRemove.coordinates_y[i], tolerance);
+    }
+}

@@ -48,20 +48,7 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliDeRefinement::Compute
     const std::vector<Point> meshNodes(mesh.Nodes());
     const std::vector<Edge> meshEdges(mesh.Edges());
 
-    bool refinementSuccessful = false;
-    DoDeRefinement(mesh, polygon, refinementSuccessful);
-
-    // if (!refinementSuccessful)
-    // {
-    //     mesh.SetNodes ();
-    //     mesh.SetEdges ();
-    // }
-
-    // if (restoreMesh)
-    // {
-    //     // restore grid
-    //     // and null refinement action
-    // }
+    DoDeRefinement(mesh, polygon);
 
     mesh.DeleteInvalidNodesAndEdges();
     mesh.Administrate();
@@ -428,7 +415,7 @@ std::vector<meshkernel::CasulliDeRefinement::ElementMask> meshkernel::CasulliDeR
     return cellMask;
 }
 
-void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygons& polygon, bool& refinementSuccessful)
+void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygons& polygon)
 {
     UInt nMax = 1000;
     std::vector<UInt> directlyConnected;
@@ -437,8 +424,6 @@ void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
     std::vector<int> nodeTypes(ComputeNodeTypes(mesh, polygon));
     directlyConnected.reserve(nMax);
     indirectlyConnected.reserve(nMax);
-
-    refinementSuccessful = true;
 
     std::vector<ElementMask> cellMask(InitialiseElementMask(mesh, nodeTypes, polygon));
     mesh.ComputeCircumcentersMassCentersAndFaceAreas(true);
@@ -449,12 +434,6 @@ void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
         {
             FindSurroundingCells(mesh, polygon, k, directlyConnected, indirectlyConnected, kne);
             DeleteElement(mesh, nodeTypes, polygon, k, directlyConnected, indirectlyConnected, kne);
-
-            // if (!elementDeleted)
-            // {
-            //     refinementSuccessful = false;
-            //     break;
-            // }
         }
     }
 }
@@ -813,7 +792,7 @@ void meshkernel::CasulliDeRefinement::RemoveUnwantedBoundaryNodes(Mesh2D& mesh,
                             // delete other link
 
                             CleanUpEdge(mesh, edgeId);
-                            auto undoAcction = mesh.ResetNode(nodeId, {constants::missing::doubleValue, constants::missing::doubleValue});
+                            auto undoAction = mesh.ResetNode(nodeId, {constants::missing::doubleValue, constants::missing::doubleValue});
                             continueOuterLoop = true;
                             break;
                         }
