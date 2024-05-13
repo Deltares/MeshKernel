@@ -164,9 +164,6 @@ namespace meshkernel
         /// If no node is shared then return null value
         UInt FindCommonNode(const Mesh2D& mesh, const UInt edgeId1, const UInt edgeId2);
 
-        /// @brief Determine if the element is convex
-        bool IsElementConvex(const Mesh2D& mesh, const UInt cell);
-
         /// @brief Do the Casullu de-refinement
         void DoDeRefinement(Mesh2D& mesh, const Polygons& polygon);
 

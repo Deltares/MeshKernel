@@ -890,40 +890,6 @@ void meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
 
     // deactivate cell
     mesh.m_numFacesNodes[elementId] = 0;
-    bool noGo = false;
-
-    if (!noGo)
-    {
-        //    check and see if
-        //        the altered indirectly connected cells are non convex
-        //     restore and return if so
-
-        //    check convexity
-        noGo = false;
-        UInt kk = 0;
-
-        // TODO change to for loop
-        while (kk < indirectlyConnected.size())
-        {
-            if (IsElementConvex(mesh, indirectlyConnected[kk]))
-            {
-                noGo = true;
-                break;
-            }
-
-            ++kk;
-        }
-
-        // if (noGo)
-        // {
-        //     ja = false;
-        // }
-
-        // if (ja)
-        // {
-        //     // local_netrestore ();
-        // }
-    }
 }
 
 meshkernel::UInt meshkernel::CasulliDeRefinement::FindCommonNode(const Mesh2D& mesh, const UInt edgeId1, const UInt edgeId2)
@@ -985,34 +951,6 @@ void meshkernel::CasulliDeRefinement::CleanUpEdge(Mesh2D& mesh, const UInt edgeI
 
     mesh.GetEdge(edgeId).first = constants::missing::uintValue;
     mesh.GetEdge(edgeId).second = constants::missing::uintValue;
-}
-
-bool meshkernel::CasulliDeRefinement::IsElementConvex(const Mesh2D& mesh, const UInt cell)
-{
-    constexpr double TOL = 0.000001;
-
-    const UInt N = mesh.m_numFacesNodes[cell];
-
-    for (UInt i = 0; i < N; ++i)
-    {
-        // Next index
-        UInt ip1 = RotateIndex(i, N, true /* forward */);
-        // next next index
-        UInt ip2 = RotateIndex(ip1, N, true /* forward */);
-
-        UInt node1 = mesh.m_facesNodes[cell][i];
-        UInt node2 = mesh.m_facesNodes[cell][ip1];
-        UInt node3 = mesh.m_facesNodes[cell][ip2];
-
-        double cosphi = NormalizedInnerProductTwoSegments(mesh.Node(node1), mesh.Node(node2), mesh.Node(node2), mesh.Node(node3), mesh.m_projection);
-
-        if (std::abs(1.0 - std::abs(cosphi) < TOL))
-        {
-            return false;
-        }
-    }
-
-    return true;
 }
 
 std::vector<int> meshkernel::CasulliDeRefinement::ComputeNodeTypes(const Mesh2D& mesh, const Polygons& polygon)
