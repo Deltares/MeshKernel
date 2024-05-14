@@ -38,8 +38,8 @@ std::vector<meshkernel::Edge> ReadEdgeFile(std::string const& filePath)
     while (std::getline(infile, line))
     {
         std::istringstream iss(line);
-        double edgeStart;
-        double edgeEnd;
+        meshkernel::UInt edgeStart;
+        meshkernel::UInt edgeEnd;
 
         iss >> edgeStart;
         iss >> edgeEnd;
