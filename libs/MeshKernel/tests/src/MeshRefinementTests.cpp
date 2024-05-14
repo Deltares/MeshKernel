@@ -1986,7 +1986,7 @@ TEST(MeshRefinement, CasulliDeRefinementPolygon)
 
     meshkernel::CasulliDeRefinement casulliDerefinement;
 
-    casulliDerefinement.Compute(mesh, polygon);
+    auto undoAction = casulliDerefinement.Compute(mesh, polygon);
 
     //--------------------------------
     // Now compare de-refined mesh with one produced by interactor.
@@ -2030,10 +2030,10 @@ TEST(MeshRefinement, CasulliDeRefinementPolygonThenAll)
     meshkernel::CasulliDeRefinement casulliDerefinement;
 
     // Derefine on polygon
-    casulliDerefinement.Compute(mesh, polygon);
+    auto undoAction = casulliDerefinement.Compute(mesh, polygon);
 
     // Derefine on all
-    casulliDerefinement.Compute(mesh);
+    undoAction = casulliDerefinement.Compute(mesh);
 
     //--------------------------------
     // Now compare de-refined mesh with one produced by interactor.
