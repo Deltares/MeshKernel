@@ -3448,6 +3448,7 @@ TEST(Mesh2D, CasulliRefinementWholeMesh)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     errorCode = meshkernelapi::mkernel_mesh2d_casulli_refinement(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::Mesh2D refinedMesh2d{};
 
@@ -3503,6 +3504,7 @@ TEST(Mesh2D, CasulliDeRefinementWholeMesh)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::Mesh2D derefinedMesh2d{};
 
@@ -3598,6 +3600,8 @@ TEST(Mesh2D, CasulliDeRefinementElementsWholeMesh)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement_elements(meshKernelId, &elementsToRemove);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
     const std::vector<meshkernel::Point> removedElementCentres{{1.5, 0.5}, {1.5, 2.5}, {1.5, 4.5}, {1.5, 6.5}, {1.5, 8.5}, {3.5, 0.5}, {3.5, 2.5}, {3.5, 4.5}, {3.5, 6.5}, {3.5, 8.5}, {5.5, 0.5}, {5.5, 2.5}, {5.5, 4.5}, {5.5, 6.5}, {5.5, 8.5}, {7.5, 0.5}, {7.5, 2.5}, {7.5, 4.5}, {7.5, 6.5}, {7.5, 8.5}, {9.5, 0.5}, {9.5, 2.5}, {9.5, 4.5}, {9.5, 6.5}, {9.5, 8.5}};
 
     ASSERT_EQ(elementsToRemove.num_coordinates, static_cast<int>(removedElementCentres.size()));
@@ -3671,6 +3675,8 @@ TEST(Mesh2D, CasulliDeRefinementElementsMeshRegion)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement_elements_on_polygon(meshKernelId, &polygon, &elementsToRemove);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
     const std::vector<meshkernel::Point> removedElementCentres{{2.5, 2.5}, {4.5, 4.5}, {4.5, 6.5}, {6.5, 4.5}, {6.5, 6.5}};
 
     ASSERT_EQ(elementsToRemove.num_coordinates, static_cast<int>(removedElementCentres.size()));
