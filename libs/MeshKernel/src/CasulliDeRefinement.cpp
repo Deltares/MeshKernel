@@ -26,8 +26,6 @@
 //------------------------------------------------------------------------------
 
 #include <algorithm>
-#include <iostream> // REMOVE
-using namespace std;
 
 #include "MeshKernel/CasulliDeRefinement.hpp"
 #include "MeshKernel/Exceptions.hpp"
@@ -48,10 +46,19 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliDeRefinement::Compute
     const std::vector<Point> meshNodes(mesh.Nodes());
     const std::vector<Edge> meshEdges(mesh.Edges());
 
-    DoDeRefinement(mesh, polygon);
-
-    mesh.DeleteInvalidNodesAndEdges();
-    mesh.Administrate();
+    if (DoDeRefinement(mesh, polygon))
+    {
+        mesh.DeleteInvalidNodesAndEdges();
+        mesh.Administrate();
+    }
+    else
+    {
+        // The de-refinement failed, restore the original mesh
+        refinementAction->Restore();
+        // Reset the undo action to a null action
+        refinementAction.reset(nullptr);
+        throw AlgorithmError("Unable to compute the Casulli de-refinement");
+    }
 
     return refinementAction;
 }
@@ -407,7 +414,7 @@ std::vector<meshkernel::CasulliDeRefinement::ElementMask> meshkernel::CasulliDeR
     return cellMask;
 }
 
-void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygons& polygon)
+bool meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygons& polygon)
 {
     UInt nMax = 1000;
     std::vector<UInt> directlyConnected;
@@ -425,9 +432,15 @@ void meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
         if (cellMask[k] == ElementMask::NotA && mesh.m_numFacesNodes[k] > 0)
         {
             FindSurroundingCells(mesh, k, directlyConnected, indirectlyConnected, kne);
-            DeleteElement(mesh, nodeTypes, polygon, k, directlyConnected, indirectlyConnected, kne);
+
+            if (!DeleteElement(mesh, nodeTypes, polygon, k, directlyConnected, indirectlyConnected, kne))
+            {
+                return false;
+            }
         }
     }
+
+    return true;
 }
 
 bool meshkernel::CasulliDeRefinement::ElementCannotBeDeleted(const Mesh2D& mesh,
@@ -527,7 +540,7 @@ meshkernel::Point meshkernel::CasulliDeRefinement::ComputeNewNodeCoordinates(con
     return newNode;
 }
 
-void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& mesh,
+bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& mesh,
                                                                       const UInt elementId,
                                                                       const std::vector<UInt>& directlyConnected,
                                                                       const std::vector<std::array<int, 2>>& kne)
@@ -545,7 +558,10 @@ void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& me
 
                 if (mesh.m_edgesNumFaces[edgeId] < 2)
                 {
-                    CleanUpEdge(mesh, edgeId);
+                    if (!CleanUpEdge(mesh, edgeId))
+                    {
+                        return false;
+                    }
                 }
             }
 
@@ -616,7 +632,11 @@ void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& me
                 if (otherEdgeId != constants::missing::uintValue)
                 {
                     mesh.m_facesEdges[leftElementId][j] = otherEdgeId;
-                    CleanUpEdge(mesh, edgeId);
+
+                    if (!CleanUpEdge(mesh, edgeId))
+                    {
+                        return false;
+                    }
                 }
 
                 otherEdgeId = edgeId;
@@ -673,6 +693,8 @@ void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& me
             }
         }
     }
+
+    return true;
 }
 
 int meshkernel::CasulliDeRefinement::GetNodeCode(const Mesh2D& mesh,
@@ -716,7 +738,7 @@ void meshkernel::CasulliDeRefinement::RedirectNodesOfConnectedElements(Mesh2D& m
     }
 }
 
-void meshkernel::CasulliDeRefinement::RemoveUnwantedBoundaryNodes(Mesh2D& mesh,
+bool meshkernel::CasulliDeRefinement::RemoveUnwantedBoundaryNodes(Mesh2D& mesh,
                                                                   const std::vector<int>& nodeTypes,
                                                                   const Polygons& polygon,
                                                                   const std::vector<UInt>& indirectlyConnected)
@@ -773,7 +795,11 @@ void meshkernel::CasulliDeRefinement::RemoveUnwantedBoundaryNodes(Mesh2D& mesh,
 
                             // delete other link
 
-                            CleanUpEdge(mesh, edgeId);
+                            if (CleanUpEdge(mesh, edgeId))
+                            {
+                                return false;
+                            }
+
                             mesh.SetNode(nodeId, {constants::missing::doubleValue, constants::missing::doubleValue});
                             continueOuterLoop = true;
                             break;
@@ -781,8 +807,12 @@ void meshkernel::CasulliDeRefinement::RemoveUnwantedBoundaryNodes(Mesh2D& mesh,
                         else
                         {
                             mesh.m_numFacesNodes[connectedElementId] = 0;
-                            CleanUpEdge(mesh, edgeId);
-                            CleanUpEdge(mesh, previousEdgeId);
+
+                            if (!CleanUpEdge(mesh, edgeId) || !CleanUpEdge(mesh, previousEdgeId))
+                            {
+                                return false;
+                            }
+
                             // previous-previous edgeId (not a real word)
                             UInt antePreviousEdgeId = std::accumulate(mesh.m_facesEdges[connectedElementId].begin(), mesh.m_facesEdges[connectedElementId].begin() + 3, 0) - edgeId - previousEdgeId;
 
@@ -812,9 +842,11 @@ void meshkernel::CasulliDeRefinement::RemoveUnwantedBoundaryNodes(Mesh2D& mesh,
             continue;
         }
     }
+
+    return true;
 }
 
-void meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
+bool meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
                                                     std::vector<int>& nodeTypes,
                                                     const Polygons& polygon,
                                                     const UInt elementId,
@@ -824,12 +856,12 @@ void meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
 {
     if (directlyConnected.size() == 0 || indirectlyConnected.size() == 0)
     {
-        return;
+        return true;
     }
 
     if (ElementCannotBeDeleted(mesh, nodeTypes, polygon, elementId))
     {
-        return;
+        return true;
     }
 
     Point newNode(ComputeNewNodeCoordinates(mesh, nodeTypes, elementId));
@@ -840,7 +872,11 @@ void meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
     }
 
     UInt N = mesh.m_numFacesNodes[elementId];
-    UpdateDirectlyConnectedElements(mesh, elementId, directlyConnected, kne);
+
+    if (!UpdateDirectlyConnectedElements(mesh, elementId, directlyConnected, kne))
+    {
+        return false;
+    }
 
     //--------------------------------
     // Set the node code
@@ -858,8 +894,12 @@ void meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
 
     // redirect nodes of indirectly connected cells, deactivate polygons of degree smaller than three
     RedirectNodesOfConnectedElements(mesh, elementId, nodeId, indirectlyConnected);
+
     // remove unwanted boundary node: a non-corner node that is shared by two boundary links
-    RemoveUnwantedBoundaryNodes(mesh, nodeTypes, polygon, indirectlyConnected);
+    if (!RemoveUnwantedBoundaryNodes(mesh, nodeTypes, polygon, indirectlyConnected))
+    {
+        return false;
+    }
     // redirect nodes of directly connected cells and deactivate polygons of degree smaller than three
     RedirectNodesOfConnectedElements(mesh, elementId, nodeId, directlyConnected);
 
@@ -867,11 +907,16 @@ void meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
     for (UInt i = 0; i < mesh.m_numFacesNodes[elementId]; ++i)
     {
         UInt L = mesh.m_facesEdges[elementId][i];
-        CleanUpEdge(mesh, L);
+
+        if (!CleanUpEdge(mesh, L))
+        {
+            return false;
+        }
     }
 
     // deactivate cell
     mesh.m_numFacesNodes[elementId] = 0;
+    return true;
 }
 
 meshkernel::UInt meshkernel::CasulliDeRefinement::FindCommonNode(const Mesh2D& mesh, const UInt edgeId1, const UInt edgeId2)
@@ -892,7 +937,7 @@ meshkernel::UInt meshkernel::CasulliDeRefinement::FindCommonNode(const Mesh2D& m
     return constants::missing::uintValue;
 }
 
-void meshkernel::CasulliDeRefinement::CleanUpEdge(Mesh2D& mesh, const UInt edgeId)
+bool meshkernel::CasulliDeRefinement::CleanUpEdge(Mesh2D& mesh, const UInt edgeId)
 {
 
     for (UInt i = 0; i < 2; ++i)
@@ -923,7 +968,7 @@ void meshkernel::CasulliDeRefinement::CleanUpEdge(Mesh2D& mesh, const UInt edgeI
         else
         {
             // Error: no link found
-            return;
+            return false;
         }
 
         --mesh.m_nodesNumEdges[nodeId];
@@ -931,6 +976,7 @@ void meshkernel::CasulliDeRefinement::CleanUpEdge(Mesh2D& mesh, const UInt edgeI
 
     mesh.GetEdge(edgeId).first = constants::missing::uintValue;
     mesh.GetEdge(edgeId).second = constants::missing::uintValue;
+    return true;
 }
 
 std::vector<int> meshkernel::CasulliDeRefinement::ComputeNodeTypes(const Mesh2D& mesh, const Polygons& polygon)

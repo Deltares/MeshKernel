@@ -43,13 +43,13 @@ namespace meshkernel
         /// @brief Compute the Casulli de-refinement for the entire mesh.
         ///
         /// @param [in, out] mesh Mesh to be de-refined
-        std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh);
+        [[nodiscard]] std::unique_ptr<UndoAction> Compute(Mesh2D& mesh);
 
         /// @brief Compute the Casulli de-refinement for the part of the mesh inside the polygon
         ///
         /// @param [in, out] mesh Mesh to be de-refined
         /// @param [in] polygon Area within which the mesh will be de-refined
-        std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh, const Polygons& polygon);
+        [[nodiscard]] std::unique_ptr<UndoAction> Compute(Mesh2D& mesh, const Polygons& polygon);
 
         /// @brief Compute centres of elements to be deleted.
         ///
@@ -119,10 +119,10 @@ namespace meshkernel
                                         const UInt nodeId);
 
         /// @brief Update the mesh members for the mesh description and connectivity.
-        void UpdateDirectlyConnectedElements(Mesh2D& mesh,
-                                             const UInt elementId,
-                                             const std::vector<UInt>& directlyConnected,
-                                             const std::vector<std::array<int, 2>>& kne);
+        [[nodiscard]] bool UpdateDirectlyConnectedElements(Mesh2D& mesh,
+                                                           const UInt elementId,
+                                                           const std::vector<UInt>& directlyConnected,
+                                                           const std::vector<std::array<int, 2>>& kne);
 
         /// @brief Get the most significant node type for all nodes of the element.
         int GetNodeCode(const Mesh2D& mesh,
@@ -138,22 +138,24 @@ namespace meshkernel
         void RedirectNodesOfConnectedElements(Mesh2D& mesh, const UInt elementId, const UInt nodeId, const std::vector<UInt>& indirectlyConnected);
 
         /// @brief Removes nodes from the boundary that will not be part of the de-refined mesh.
-        void RemoveUnwantedBoundaryNodes(Mesh2D& mesh,
-                                         const std::vector<int>& nodeTypes,
-                                         const Polygons& polygon,
-                                         const std::vector<UInt>& indirectlyConnected);
+        [[nodiscard]] bool RemoveUnwantedBoundaryNodes(Mesh2D& mesh,
+                                                       const std::vector<int>& nodeTypes,
+                                                       const Polygons& polygon,
+                                                       const std::vector<UInt>& indirectlyConnected);
 
         /// @brief Delete an element
-        void DeleteElement(Mesh2D& mesh,
-                           std::vector<int>& nodeTypes,
-                           const Polygons& polygon,
-                           const UInt elementId,
-                           const std::vector<UInt>& directlyConnected,
-                           const std::vector<UInt>& indirectlyConnected,
-                           const std::vector<std::array<int, 2>>& kne);
+        [[nodiscard]] bool DeleteElement(Mesh2D& mesh,
+                                         std::vector<int>& nodeTypes,
+                                         const Polygons& polygon,
+                                         const UInt elementId,
+                                         const std::vector<UInt>& directlyConnected,
+                                         const std::vector<UInt>& indirectlyConnected,
+                                         const std::vector<std::array<int, 2>>& kne);
 
         /// @brief Clean up the edge
-        void CleanUpEdge(Mesh2D& mesh, const UInt edgeId);
+        ///
+        /// @returns Indicates if the cleanp-up was successful or not
+        [[nodiscard]] bool CleanUpEdge(Mesh2D& mesh, const UInt edgeId);
 
         /// @brief Find the id of the shared node for two edges.
         ///
@@ -161,7 +163,7 @@ namespace meshkernel
         UInt FindCommonNode(const Mesh2D& mesh, const UInt edgeId1, const UInt edgeId2);
 
         /// @brief Do the Casullu de-refinement
-        void DoDeRefinement(Mesh2D& mesh, const Polygons& polygon);
+        [[nodiscard]] bool DoDeRefinement(Mesh2D& mesh, const Polygons& polygon);
 
         /// @brief Compute the mesh node types.
         ///
