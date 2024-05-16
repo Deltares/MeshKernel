@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/LandBoundary.hpp"
@@ -132,7 +133,16 @@ namespace meshkernel
         /// @param[in] endSplineSegment The end of the spline segment to consider
         /// @param[in] point The point to account for in the calculation
         /// @returns The point on a spline segment which is the closest to the input point
-        Point ComputeClosestPointOnSplineSegment(UInt index, double startSplineSegment, double endSplineSegment, Point point);
+        Point ComputeClosestPointOnSplineSegment(UInt index, double startSplineSegment, double endSplineSegment, Point point) const;
+
+        /// @brief Computes the point on a spline segment which is the closest to another point
+        /// @param[in] index The spline index
+        /// @param[in] point The point to account for in the calculation
+        /// @returns The point on a spline segment which is the closest to the input point
+        Point ComputeClosestPoint(UInt index, Point point) const;
+
+        /// @brief Compute the boundary box for the spline indicated by splineIndex.
+        BoundingBox GetBoundingBox(const UInt splineIndex) const;
 
         /// @brief Get the number of splines
         /// @return the number of splines
@@ -216,7 +226,7 @@ namespace meshkernel
         /// @param[in] splines A pointer to splines
         /// @param[in] splineIndex The index of the current spline
         /// @param[in] point The point from where the distance is calculated
-        FuncDistanceFromAPoint(Splines* splines,
+        FuncDistanceFromAPoint(const Splines* splines,
                                UInt splineIndex,
                                Point point) : m_spline(splines),
                                               m_splineIndex(splineIndex),
@@ -235,7 +245,7 @@ namespace meshkernel
             return ComputeDistance(m_point, pointOnSpline, Projection::cartesian);
         }
 
-        Splines* m_spline;                  ///< Pointer to splines
+        const Splines* m_spline;            ///< Pointer to splines
         UInt m_splineIndex;                 ///< Spline index
         Point m_point;                      ///< The point from where the distance is calculated
         double m_DimensionalDistance = 0.0; ///< Dimensional distance

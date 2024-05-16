@@ -2,8 +2,11 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSnapping.hpp>
+#include <MeshKernel/CurvilinearGrid/SnapGridToLandBoundary.hpp>
+#include <MeshKernel/CurvilinearGrid/SnapGridToSpline.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
+#include <TestUtils/MakeCurvilinearGrids.hpp>
 
 using namespace meshkernel;
 
@@ -32,7 +35,7 @@ namespace snapping
 
 } // namespace snapping
 
-TEST(CurvilinearGridSnapping, SnappingThreeSides)
+TEST(SnapCurvilinearGridToLandBoundary, SnappingThreeSides)
 
 {
 
@@ -90,7 +93,7 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
 
     CurvilinearGrid grid(gridPoints, Projection::cartesian);
     snappingLine = std::vector{Point(100, 0), Point(100, 100)};
-    CurvilinearGridSnapping snappingEast(grid, eastLandBoundary, snappingLine);
+    SnapGridToLandBoundary snappingEast(grid, eastLandBoundary, snappingLine);
 
     // First snap the east boundary of the domain
     [[maybe_unused]] auto dummyUndoAction = snappingEast.Compute();
@@ -114,7 +117,7 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
 
     CurvilinearGrid grid2(grid.GetNodes(), Projection::cartesian);
     snappingLine = std::vector{Point(0, 90.0), Point(0.0, 0.0)};
-    CurvilinearGridSnapping snappingWest(grid2, westLandBoundary, snappingLine);
+    SnapGridToLandBoundary snappingWest(grid2, westLandBoundary, snappingLine);
 
     // Next snap the west boundary of the domain
     dummyUndoAction = snappingWest.Compute();
@@ -162,7 +165,7 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
 
     CurvilinearGrid grid3(grid2.GetNodes(), Projection::cartesian);
     snappingLine = std::vector{Point({0.0e+00, 1.0e+02}), Point({1.043040e+02, 9.715260e+01})};
-    CurvilinearGridSnapping snappingNorth(grid3, northLandBoundary, snappingLine);
+    SnapGridToLandBoundary snappingNorth(grid3, northLandBoundary, snappingLine);
 
     // Finally snap the north boundary of the domain
     dummyUndoAction = snappingNorth.Compute();
@@ -207,7 +210,7 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
     }
 }
 
-TEST(CurvilinearGridSnapping, SnappingLineToLandBoundaryNorthTheWest)
+TEST(SnapCurvilinearGridToLandBoundary, SnappingLineToLandBoundaryNorthTheWest)
 {
 
     // Tests snapping of a non-square grid
@@ -248,7 +251,7 @@ TEST(CurvilinearGridSnapping, SnappingLineToLandBoundaryNorthTheWest)
     CurvilinearGrid grid(gridPoints, Projection::cartesian);
 
     std::vector<Point> snappingLine{Point(50.0, 100.0), Point(0.0, 100.0)};
-    CurvilinearGridSnapping snappingNorth(grid, northLandBoundary, snappingLine);
+    SnapGridToLandBoundary snappingNorth(grid, northLandBoundary, snappingLine);
 
     [[maybe_unused]] auto dummyUndoAction = snappingNorth.Compute();
 
@@ -288,7 +291,7 @@ TEST(CurvilinearGridSnapping, SnappingLineToLandBoundaryNorthTheWest)
 
     CurvilinearGrid grid2(grid.GetNodes(), Projection::cartesian);
     snappingLine = std::vector{Point(0.0, 90.0), Point(0.0, 0.0)};
-    CurvilinearGridSnapping snappingWest(grid2, westLandBoundary, snappingLine);
+    SnapGridToLandBoundary snappingWest(grid2, westLandBoundary, snappingLine);
     dummyUndoAction = snappingWest.Compute();
 
     for (UInt i = 0; i < gridPoints.rows(); ++i)
@@ -308,7 +311,7 @@ TEST(CurvilinearGridSnapping, SnappingLineToLandBoundaryNorthTheWest)
     }
 }
 
-TEST(CurvilinearGridSnapping, SnapBoundaryRegionToEastOnePoint)
+TEST(SnapCurvilinearGridToLandBoundary, SnapBoundaryRegionToEastOnePoint)
 {
 
     // Tests snapping of a partial grid line (from node (10,1) to (10,9))
@@ -345,7 +348,7 @@ TEST(CurvilinearGridSnapping, SnapBoundaryRegionToEastOnePoint)
                                                            {4.303172000000e+00, 9.975620656674e+00, 1.997519460719e+01, 2.997476855770e+01, 3.997434250822e+01, 4.997391645874e+01, 5.997349040925e+01, 6.997306435977e+01, 7.997263831028e+01, 8.997221226080e+01, 9.715259600000e+01}};
 
     CurvilinearGrid grid(gridPoints, Projection::cartesian);
-    CurvilinearGridSnapping snapping(grid, eastLandBoundary, snappingLine);
+    SnapGridToLandBoundary snapping(grid, eastLandBoundary, snappingLine);
 
     [[maybe_unused]] auto dummyUndoAction = snapping.Compute();
 
@@ -365,7 +368,7 @@ TEST(CurvilinearGridSnapping, SnapBoundaryRegionToEastOnePoint)
     }
 }
 
-TEST(CurvilinearGridSnapping, SnapBoundaryRegionToEastTwoPoints)
+TEST(SnapCurvilinearGridToLandBoundary, SnapBoundaryRegionToEastTwoPoints)
 {
     // Tests snapping of a partial grid line (from node (10,1) to (10,9))
     // Region is defined by points to the left of the grid line to be snapped (bounded by (3,0) (3,10))
@@ -406,7 +409,7 @@ TEST(CurvilinearGridSnapping, SnapBoundaryRegionToEastTwoPoints)
 
     CurvilinearGrid grid(gridPoints, Projection::cartesian);
 
-    CurvilinearGridSnapping snapping(grid, eastLandBoundary, snappingLine);
+    SnapGridToLandBoundary snapping(grid, eastLandBoundary, snappingLine);
 
     // Compute snapping to land boundary
     [[maybe_unused]] auto dummyUndoAction = snapping.Compute();
@@ -429,7 +432,7 @@ TEST(CurvilinearGridSnapping, SnapBoundaryRegionToEastTwoPoints)
     }
 }
 
-TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToWest)
+TEST(SnapCurvilinearGridToLandBoundary, SnapPartialBoundaryRegionToWest)
 {
 
     // Tests snapping of partial region to a land boundary.
@@ -474,7 +477,7 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToWest)
 
     CurvilinearGrid grid(gridPoints, Projection::cartesian);
 
-    CurvilinearGridSnapping snapping(grid, westLandBoundary, snappingLine);
+    SnapGridToLandBoundary snapping(grid, westLandBoundary, snappingLine);
 
     // Compute snapping to land boundary
     [[maybe_unused]] auto dummyUndoAction = snapping.Compute();
@@ -496,7 +499,7 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToWest)
     }
 }
 
-TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToNorthTwoPoints)
+TEST(SnapCurvilinearGridToLandBoundary, SnapPartialBoundaryRegionToNorthTwoPoints)
 {
     // Tests snapping of partial line section to a land boundary.
     // The line section is defined by first the grid line {(0,10), (9,10)}
@@ -541,7 +544,7 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToNorthTwoPoints)
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.000000000000e+01, 8.000000000000e+01, 9.000000000000e+01, 1.000000000000e+02}};
 
     CurvilinearGrid grid(gridPoints, Projection::cartesian);
-    CurvilinearGridSnapping snapping(grid, northLandBoundary, snappingLine);
+    SnapGridToLandBoundary snapping(grid, northLandBoundary, snappingLine);
 
     // Compute snapping to land boundary
     [[maybe_unused]] auto dummyUndoAction = snapping.Compute();
@@ -563,7 +566,7 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToNorthTwoPoints)
     }
 }
 
-TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToNorthFourPoints)
+TEST(SnapCurvilinearGridToLandBoundary, SnapPartialBoundaryRegionToNorthFourPoints)
 {
     // Test smoothing with a 10x10 grid, and a boundary defined on the north of the grid
     // the snapping line is defined by a large section (2,10) to (10,10) along the north boundary
@@ -609,7 +612,7 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToNorthFourPoints)
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.025755535907e+01, 8.087934900000e+01, 9.150114264093e+01, 1.017586980000e+02}};
 
     CurvilinearGrid grid(gridPoints, Projection::cartesian);
-    CurvilinearGridSnapping snapping(grid, northLandBoundary, snappingLine);
+    SnapGridToLandBoundary snapping(grid, northLandBoundary, snappingLine);
 
     // Compute snapping to land boundary
     [[maybe_unused]] auto dummyUndoAction = snapping.Compute();
@@ -631,7 +634,7 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToNorthFourPoints)
     }
 }
 
-TEST(CurvilinearGridSnapping, SnapPartialOffsetBoundaryRegionToNorthFourPoints)
+TEST(SnapCurvilinearGridToLandBoundary, SnapPartialOffsetBoundaryRegionToNorthFourPoints)
 {
     // Test smoothing with a 10x10 grid, and a boundary defined on the north of the grid
     // the snapping line is defined by a small section (0,10) to (4,10) along the north boundary
@@ -678,7 +681,7 @@ TEST(CurvilinearGridSnapping, SnapPartialOffsetBoundaryRegionToNorthFourPoints)
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.0e+01, 8.0e+01, 9.000000000000e+01, 1.000000000000e+02}};
 
     CurvilinearGrid grid(gridPoints, Projection::cartesian);
-    CurvilinearGridSnapping snapping(grid, northLandBoundary, snappingLine);
+    SnapGridToLandBoundary snapping(grid, northLandBoundary, snappingLine);
 
     // Compute snapping to land boundary
     [[maybe_unused]] auto dummyUndoAction = snapping.Compute();
@@ -700,7 +703,7 @@ TEST(CurvilinearGridSnapping, SnapPartialOffsetBoundaryRegionToNorthFourPoints)
     }
 }
 
-TEST(CurvilinearGridSnapping, ChecksForFailingTests)
+TEST(SnapCurvilinearGridToLandBoundary, ChecksForFailingTests)
 {
 
     // Tests the snapping throws exceptions when expected.
@@ -712,13 +715,45 @@ TEST(CurvilinearGridSnapping, ChecksForFailingTests)
     std::vector<Point> snappingLine{Point(0.0, 100.0)};
 
     // Test should throw as there is only a single point defined for the grid line
-    EXPECT_THROW([[maybe_unused]] CurvilinearGridSnapping snapping(grid, eastLandBoundary, snappingLine), ConstraintError);
+    EXPECT_THROW([[maybe_unused]] SnapGridToLandBoundary snapping(grid, eastLandBoundary, snappingLine), ConstraintError);
 
     // Test should throw as there are more than four points defined for the grid line and region
     snappingLine = std::vector<Point>{Point(100, 10), Point(100, 90), Point(30.0, 0.0), Point(30.0, 100.0), Point(50.0, 100.0)};
-    EXPECT_THROW([[maybe_unused]] CurvilinearGridSnapping snapping(grid, eastLandBoundary, snappingLine), ConstraintError);
+    EXPECT_THROW([[maybe_unused]] SnapGridToLandBoundary snapping(grid, eastLandBoundary, snappingLine), ConstraintError);
 
     // Test should throw as one of the points is not valid
     snappingLine = std::vector<Point>{Point(100, 10), Point(100, 90), Point(/*Invalid point*/), Point(30.0, 100.0)};
-    EXPECT_THROW([[maybe_unused]] CurvilinearGridSnapping snapping(grid, eastLandBoundary, snappingLine), ConstraintError);
+    EXPECT_THROW([[maybe_unused]] SnapGridToLandBoundary snapping(grid, eastLandBoundary, snappingLine), ConstraintError);
+}
+
+TEST(SnapCurvilinearGridToSpline, SnapToSpline)
+{
+    std::unique_ptr<meshkernel::CurvilinearGrid> mesh = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, 11, 11);
+
+    // std::vector<meshkernel::Point> splinePoints({{11.0, 0.0}, {11.5, 10.0}});
+    // std::vector<meshkernel::Point> splinePoints({{11.0, 0.0}, {11.5, 3.5}, {11.5, 7.0}, {11.2, 10.0}});
+    std::vector<meshkernel::Point> splinePoints({{11.0000, 0.0000},
+                                                 {11.5878, 1.0000},
+                                                 {11.9511, 2.0000},
+                                                 {11.9511, 3.0000},
+                                                 {11.5878, 4.0000},
+                                                 {11.0000, 5.0000},
+                                                 {10.4122, 6.0000},
+                                                 {10.0489, 7.0000},
+                                                 {10.0489, 8.0000},
+                                                 {10.4122, 9.0000},
+                                                 {11.0000, 10.0000}});
+
+    std::vector<meshkernel::Point> snappingPoints({{10.0, 10.0}, {10.0, 0.0}});
+    // std::vector<meshkernel::Point> snappingPoints({{10.0, 10.0}, {10.0, 0.0}, {6.0, 8.0}});
+    // std::vector<meshkernel::Point> snappingPoints({{10.0, 0.0}, {10.0, 10.0}, {6.0, 8.0}});
+
+    meshkernel::Splines splines;
+    splines.AddSpline(splinePoints);
+
+    meshkernel::SnapGridToSpline snapping(*mesh, splines, snappingPoints);
+
+    [[maybe_unused]] auto undoAction = snapping.Compute();
+
+    meshkernel::Print(mesh->ComputeNodes(), mesh->ComputeEdges());
 }
