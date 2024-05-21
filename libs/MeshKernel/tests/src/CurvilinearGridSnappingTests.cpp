@@ -764,40 +764,40 @@ TEST(SnapCurvilinearGridToSpline, SnapToSplineWholeEdgeDefinedRegion)
     constexpr double tolerance = 1.0e-12;
 
     // Compare mesh points with original mesh upto column 8
-    for (meshkernel::UInt i = 0; i < mesh->NumN (); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->NumN(); ++i)
     {
         for (meshkernel::UInt j = 0; j < 9; ++j)
         {
-            EXPECT_NEAR (meshCopy->GetNode (i, j).x, mesh->GetNode (i, j).x, tolerance);
-            EXPECT_NEAR (meshCopy->GetNode (i, j).y, mesh->GetNode (i, j).y, tolerance);
+            EXPECT_NEAR(meshCopy->GetNode(i, j).x, mesh->GetNode(i, j).x, tolerance);
+            EXPECT_NEAR(meshCopy->GetNode(i, j).y, mesh->GetNode(i, j).y, tolerance);
         }
     }
 
     // Compare mesh points with translated points for column 9
-    for (meshkernel::UInt i = 0; i < mesh->NumN (); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->NumN(); ++i)
     {
-        EXPECT_NEAR (xPointsCol09[i], mesh->GetNode (i, 9).x, tolerance);
-        EXPECT_NEAR (yPointsCol09[i], mesh->GetNode (i, 9).y, tolerance);
+        EXPECT_NEAR(xPointsCol09[i], mesh->GetNode(i, 9).x, tolerance);
+        EXPECT_NEAR(yPointsCol09[i], mesh->GetNode(i, 9).y, tolerance);
     }
 
     // Compare mesh points with translated points for column 10
-    for (meshkernel::UInt i = 0; i < mesh->NumN (); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->NumN(); ++i)
     {
-        EXPECT_NEAR (xPointsCol10[i], mesh->GetNode (i, 10).x, tolerance);
-        EXPECT_NEAR (yPointsCol10[i], mesh->GetNode (i, 10).y, tolerance);
+        EXPECT_NEAR(xPointsCol10[i], mesh->GetNode(i, 10).x, tolerance);
+        EXPECT_NEAR(yPointsCol10[i], mesh->GetNode(i, 10).y, tolerance);
     }
 
     //--------------------------------
     // Now check the undo
 
-    undoAction->Restore ();
+    undoAction->Restore();
 
-    for (meshkernel::UInt i = 0; i < mesh->NumN (); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->NumN(); ++i)
     {
-        for (meshkernel::UInt j = 0; j < mesh->NumM (); ++j)
+        for (meshkernel::UInt j = 0; j < mesh->NumM(); ++j)
         {
-            EXPECT_EQ (mesh->GetNode (i, j).x, meshCopy->GetNode (i, j).x);
-            EXPECT_EQ (mesh->GetNode (i, j).y, meshCopy->GetNode (i, j).y);
+            EXPECT_EQ(mesh->GetNode(i, j).x, meshCopy->GetNode(i, j).x);
+            EXPECT_EQ(mesh->GetNode(i, j).y, meshCopy->GetNode(i, j).y);
         }
     }
 }
@@ -858,27 +858,26 @@ TEST(SnapCurvilinearGridToSpline, SnapToSplinePartialEdgeDefaultRegion)
     // There are some differences in the optimised and non-optimised calculations, so a slightly weakened tolerance is used.
     constexpr double tolerance = 2.0e-5;
 
-    for (meshkernel::UInt i = 0; i < mesh->NumN (); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->NumN(); ++i)
     {
-        for (meshkernel::UInt j = 0; j < mesh->NumM (); ++j)
+        for (meshkernel::UInt j = 0; j < mesh->NumM(); ++j)
         {
-            EXPECT_NEAR (mesh->GetNode (i, j).x, xPoints [i][j], tolerance);
-            EXPECT_NEAR (mesh->GetNode (i, j).y, yPoints [i][j], tolerance);
+            EXPECT_NEAR(mesh->GetNode(i, j).x, xPoints[i][j], tolerance);
+            EXPECT_NEAR(mesh->GetNode(i, j).y, yPoints[i][j], tolerance);
         }
     }
 
     //--------------------------------
     // Now check the undo
 
-    undoAction->Restore ();
+    undoAction->Restore();
 
-
-    for (meshkernel::UInt i = 0; i < mesh->NumN (); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->NumN(); ++i)
     {
-        for (meshkernel::UInt j = 0; j < mesh->NumM (); ++j)
+        for (meshkernel::UInt j = 0; j < mesh->NumM(); ++j)
         {
-            EXPECT_EQ (mesh->GetNode (i, j).x, meshCopy->GetNode (i, j).x);
-            EXPECT_EQ (mesh->GetNode (i, j).y, meshCopy->GetNode (i, j).y);
+            EXPECT_EQ(mesh->GetNode(i, j).x, meshCopy->GetNode(i, j).x);
+            EXPECT_EQ(mesh->GetNode(i, j).y, meshCopy->GetNode(i, j).y);
         }
     }
 }

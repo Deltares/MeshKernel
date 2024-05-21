@@ -52,6 +52,8 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothness.hpp>
+#include <MeshKernel/CurvilinearGrid/SnapGridToLandBoundary.hpp>
+#include <MeshKernel/CurvilinearGrid/SnapGridToSpline.hpp>
 #include <MeshKernel/Definitions.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
@@ -4117,6 +4119,116 @@ namespace meshkernelapi
         }
         return lastExitCode;
     }
+
+    MKERNEL_API int mkernel_curvilinear_snap_to_landboundary(int meshKernelId,
+                                                             const GeometryList& land,
+                                                             double sectionControlPoint1x,
+                                                             double sectionControlPoint1y,
+                                                             double sectionControlPoint2x,
+                                                             double sectionControlPoint2y,
+                                                             double regionControlPointX,
+                                                             double regionControlPointY)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (land.num_coordinates == 0)
+            {
+                throw meshkernel::MeshKernelError("Land boundary has no point values.");
+            }
+
+            if (land.coordinates_x == nullptr || land.coordinates_y == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Land boundary data is null.");
+            }
+
+            std::vector<meshkernel::Point> landBoundaryPoints(ConvertGeometryListToPointVector(land));
+            std::vector<meshkernel::Point> controlPoints (regionControlPointX == meshkernel::constants::missing::doubleValue ? 2 : 3);
+
+            controlPoints[0] = {sectionControlPoint1x, sectionControlPoint1y};
+            controlPoints[1] = {sectionControlPoint2x, sectionControlPoint2y};
+
+            if (regionControlPointX != meshkernel::constants::missing::doubleValue)
+            {
+                controlPoints[2] = {regionControlPointX, regionControlPointY};
+            }
+
+            meshkernel::LandBoundary landBoundary(landBoundaryPoints);
+
+            //--------------------------------
+            // Snap curvilinear grid to the land boundary
+            meshkernel::SnapGridToLandBoundary gridSnapping (*meshKernelState[meshKernelId].m_curvilinearGrid, landBoundary, controlPoints);
+            meshKernelState[meshKernelId].m_undoStack.Add(gridSnapping.Compute ());
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_snap_to_spline(int meshKernelId,
+                                                       const GeometryList& spline,
+                                                       double sectionControlPoint1x,
+                                                       double sectionControlPoint1y,
+                                                       double sectionControlPoint2x,
+                                                       double sectionControlPoint2y,
+                                                       double regionControlPointX,
+                                                       double regionControlPointY)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (spline.num_coordinates == 0)
+            {
+                throw meshkernel::MeshKernelError("Spline has no point values.");
+            }
+
+            if (spline.coordinates_x == nullptr || spline.coordinates_y == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Spline data is null.");
+            }
+
+            std::vector<meshkernel::Point> splinePoints(ConvertGeometryListToPointVector(spline));
+            std::vector<meshkernel::Point> controlPoints (regionControlPointX == meshkernel::constants::missing::doubleValue ? 2 : 3);
+
+            controlPoints[0] = {sectionControlPoint1x, sectionControlPoint1y};
+            controlPoints[1] = {sectionControlPoint2x, sectionControlPoint2y};
+
+            if (regionControlPointX != meshkernel::constants::missing::doubleValue)
+            {
+                controlPoints[2] = {regionControlPointX, regionControlPointY};
+            }
+
+            meshkernel::Splines mkSpline(meshKernelState[meshKernelId].m_curvilinearGrid->projection());
+
+            mkSpline.AddSpline(splinePoints);
+
+            //--------------------------------
+            // Snap curvilinear grid to the spline
+
+            meshkernel::SnapGridToSpline gridSnapping (*meshKernelState[meshKernelId].m_curvilinearGrid, mkSpline, controlPoints);
+            meshKernelState[meshKernelId].m_undoStack.Add(gridSnapping.Compute ());
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
 
     MKERNEL_API double mkernel_get_separator()
     {
