@@ -759,7 +759,7 @@ TEST(SnapCurvilinearGridToSpline, SnapToSplineWholeEdgeDefinedRegion)
 
     meshkernel::SnapGridToSpline snapping(*mesh, splines, snappingPoints);
 
-    [[maybe_unused]] auto undoAction = snapping.Compute();
+    auto undoAction = snapping.Compute();
 
     constexpr double tolerance = 1.0e-12;
 
@@ -852,7 +852,7 @@ TEST(SnapCurvilinearGridToSpline, SnapToSplinePartialEdgeDefaultRegion)
 
     meshkernel::SnapGridToSpline snapping(*mesh, splines, snappingPoints);
 
-    [[maybe_unused]] auto undoAction = snapping.Compute();
+    auto undoAction = snapping.Compute();
 
     // The tolerance to which the expected and calculated mesh points should be compared.
     // There are some differences in the optimised and non-optimised calculations, so a slightly weakened tolerance is used.
