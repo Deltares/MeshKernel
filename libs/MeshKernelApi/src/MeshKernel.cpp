@@ -4149,7 +4149,7 @@ namespace meshkernelapi
             }
 
             std::vector<meshkernel::Point> landBoundaryPoints(ConvertGeometryListToPointVector(land));
-            std::vector<meshkernel::Point> controlPoints (regionControlPointX == meshkernel::constants::missing::doubleValue ? 2 : 3);
+            std::vector<meshkernel::Point> controlPoints(regionControlPointX == meshkernel::constants::missing::doubleValue ? 2 : 3);
 
             controlPoints[0] = {sectionControlPoint1x, sectionControlPoint1y};
             controlPoints[1] = {sectionControlPoint2x, sectionControlPoint2y};
@@ -4163,8 +4163,8 @@ namespace meshkernelapi
 
             //--------------------------------
             // Snap curvilinear grid to the land boundary
-            meshkernel::SnapGridToLandBoundary gridSnapping (*meshKernelState[meshKernelId].m_curvilinearGrid, landBoundary, controlPoints);
-            meshKernelState[meshKernelId].m_undoStack.Add(gridSnapping.Compute ());
+            meshkernel::SnapGridToLandBoundary gridSnapping(*meshKernelState[meshKernelId].m_curvilinearGrid, landBoundary, controlPoints);
+            meshKernelState[meshKernelId].m_undoStack.Add(gridSnapping.Compute());
         }
         catch (...)
         {
@@ -4202,7 +4202,7 @@ namespace meshkernelapi
             }
 
             std::vector<meshkernel::Point> splinePoints(ConvertGeometryListToPointVector(spline));
-            std::vector<meshkernel::Point> controlPoints (regionControlPointX == meshkernel::constants::missing::doubleValue ? 2 : 3);
+            std::vector<meshkernel::Point> controlPoints(regionControlPointX == meshkernel::constants::missing::doubleValue ? 2 : 3);
 
             controlPoints[0] = {sectionControlPoint1x, sectionControlPoint1y};
             controlPoints[1] = {sectionControlPoint2x, sectionControlPoint2y};
@@ -4219,8 +4219,8 @@ namespace meshkernelapi
             //--------------------------------
             // Snap curvilinear grid to the spline
 
-            meshkernel::SnapGridToSpline gridSnapping (*meshKernelState[meshKernelId].m_curvilinearGrid, mkSpline, controlPoints);
-            meshKernelState[meshKernelId].m_undoStack.Add(gridSnapping.Compute ());
+            meshkernel::SnapGridToSpline gridSnapping(*meshKernelState[meshKernelId].m_curvilinearGrid, mkSpline, controlPoints);
+            meshKernelState[meshKernelId].m_undoStack.Add(gridSnapping.Compute());
         }
         catch (...)
         {
@@ -4228,7 +4228,6 @@ namespace meshkernelapi
         }
         return lastExitCode;
     }
-
 
     MKERNEL_API double mkernel_get_separator()
     {

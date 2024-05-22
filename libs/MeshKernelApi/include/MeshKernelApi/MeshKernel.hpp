@@ -575,7 +575,6 @@ namespace meshkernelapi
                                                                   double xUpperRightCornerSmootingArea,
                                                                   double yUpperRightCornerSmootingArea);
 
-
         /// @brief Sets the curvilinear grid
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] land         The land boundary
