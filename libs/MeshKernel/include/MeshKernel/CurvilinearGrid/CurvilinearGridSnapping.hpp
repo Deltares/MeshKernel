@@ -27,6 +27,10 @@
 
 #pragma once
 
+#include <memory>
+#include <tuple>
+#include <vector>
+
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
 #include <MeshKernel/CurvilinearGrid/MeshSmoothingCalculator.hpp>

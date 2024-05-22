@@ -1,5 +1,6 @@
 #include "MeshKernel/CurvilinearGrid/MeshSmoothingCalculator.hpp"
 
+#include <cmath>
 #include <numbers>
 
 meshkernel::DirectionalSmoothingCalculator::DirectionalSmoothingCalculator(const CurvilinearGridNodeIndices& lowerLeft,

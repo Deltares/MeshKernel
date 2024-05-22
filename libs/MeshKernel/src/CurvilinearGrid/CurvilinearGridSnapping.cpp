@@ -4,8 +4,7 @@
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Vector.hpp"
 
-#include <cmath>
-#include <numbers>
+#include <algorithm>
 
 meshkernel::CurvilinearGridSnapping::CurvilinearGridSnapping(CurvilinearGrid& grid,
                                                              const std::vector<Point>& points) : m_grid(grid),
