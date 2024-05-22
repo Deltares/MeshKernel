@@ -28,7 +28,6 @@
 #pragma once
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
 #include <MeshKernel/CurvilinearGrid/MeshSmoothingCalculator.hpp>
 #include <MeshKernel/Entities.hpp>
@@ -38,7 +37,7 @@ namespace meshkernel
 {
 
     /// @brief Smoothly snap the grid to a land boundary or spline.
-    class CurvilinearGridSnapping : public CurvilinearGridAlgorithm
+    class CurvilinearGridSnapping
     {
     public:
         /// @brief constructor
@@ -48,8 +47,11 @@ namespace meshkernel
         CurvilinearGridSnapping(CurvilinearGrid& grid,
                                 const std::vector<Point>& points);
 
+        /// @brief Default destructor
+        virtual ~CurvilinearGridSnapping() = default;
+
         /// @brief Executes the snapping and smoothing algorithm
-        [[nodiscard]] UndoActionPtr Compute() override;
+        [[nodiscard]] UndoActionPtr Compute();
 
     private:
         /// @brief Tolerance to determine if point is on (close to) boundary
@@ -59,18 +61,20 @@ namespace meshkernel
         ///
         /// Used when there are exactly 2 domain boundary points selected, to include a predefined smoothing region.
         /// Value for nump from modgr4.f90
-        static constexpr UInt predefinedSmootingRegionFactor = 80;
+        static constexpr UInt predefinedSmoothingRegionFactor = 80;
 
         /// @brief Smoothing region scaling.
         ///
         /// Used when there are more than 2 domain boundary points selected, to include a user defined smoothing region.
         /// Value from modgr4.f90
-        static constexpr UInt userDefinedSmootingRegionFactor = 10000;
+        static constexpr UInt userDefinedSmoothingRegionFactor = 10000;
 
         /// @brief Allocate the grid smoothing calculator
         std::unique_ptr<MeshSmoothingCalculator> AllocateGridSmoothingCalculator() const;
 
         /// @brief Allocate the grid smoothing calculator
+        ///
+        /// Abstract factory like method allocating the required smoothing calculator.
         virtual std::unique_ptr<MeshSmoothingCalculator> AllocateGridSmoothingCalculator(const CurvilinearGrid& originalGrid,
                                                                                          const CurvilinearGrid& snappedGrid) const = 0;
 
@@ -83,6 +87,7 @@ namespace meshkernel
 
         /// @brief Apply the smoothing to the grid
         /// @param [in] snappedNodeIndex Index of the grid point snapped to the land boundary or spline
+        /// @param [in] smoothingFactor  Calculate how much smoothing translation is required for this index
         void ApplySmoothingToGrid(const CurvilinearGridNodeIndices& snappedNodeIndex,
                                   const MeshSmoothingCalculator& smoothingFactor);
 
@@ -90,9 +95,12 @@ namespace meshkernel
         void Initialise();
 
         /// @brief The grid to be smoothed
+        CurvilinearGrid& m_grid;
+
+        /// @brief Copy of the grid to be smoothed
         const CurvilinearGrid m_originalGrid;
 
-        /// @brief The control points for the snapping.
+        /// @brief The control points for the snapping
         const std::vector<Point> m_controlPoints;
 
         /// @brief The start point index of the grid line to be snapped

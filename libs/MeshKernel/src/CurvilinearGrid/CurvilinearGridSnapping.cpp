@@ -8,7 +8,7 @@
 #include <numbers>
 
 meshkernel::CurvilinearGridSnapping::CurvilinearGridSnapping(CurvilinearGrid& grid,
-                                                             const std::vector<Point>& points) : CurvilinearGridAlgorithm(grid),
+                                                             const std::vector<Point>& points) : m_grid(grid),
                                                                                                  m_originalGrid(grid),
                                                                                                  m_controlPoints(points)
 {
@@ -69,18 +69,18 @@ meshkernel::CurvilinearGridSnapping::ComputeLoopBounds(const CurvilinearGridNode
 
     if (m_controlPoints.size() == 2)
     {
-        const auto m1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_m + 1 - predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m) - 1);
-        const auto m2 = static_cast<UInt>(std::min<int>(m_grid.NumM(), snappedNodeIndex.m_m + 1 + predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m) - 1);
-        const auto n1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_n + 1 - predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n) - 1);
-        const auto n2 = static_cast<UInt>(std::min<int>(m_grid.NumN(), snappedNodeIndex.m_n + 1 + predefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n) - 1);
+        const auto m1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_m + 1 - predefinedSmoothingRegionFactor * m_smoothingRegionIndicator.m_m) - 1);
+        const auto m2 = static_cast<UInt>(std::min<int>(m_grid.NumM(), snappedNodeIndex.m_m + 1 + predefinedSmoothingRegionFactor * m_smoothingRegionIndicator.m_m) - 1);
+        const auto n1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_n + 1 - predefinedSmoothingRegionFactor * m_smoothingRegionIndicator.m_n) - 1);
+        const auto n2 = static_cast<UInt>(std::min<int>(m_grid.NumN(), snappedNodeIndex.m_n + 1 + predefinedSmoothingRegionFactor * m_smoothingRegionIndicator.m_n) - 1);
         return {CurvilinearGridNodeIndices(n1, m1), CurvilinearGridNodeIndices(n2, m2)};
     }
 
-    const auto n1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_n, snappedNodeIndex.m_n + 1 - userDefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n - 1));
-    const auto m1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_m, snappedNodeIndex.m_m + 1 - userDefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m - 1));
+    const auto n1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_n, snappedNodeIndex.m_n + 1 - userDefinedSmoothingRegionFactor * m_smoothingRegionIndicator.m_n - 1));
+    const auto m1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_m, snappedNodeIndex.m_m + 1 - userDefinedSmoothingRegionFactor * m_smoothingRegionIndicator.m_m - 1));
 
-    const auto n2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_n, snappedNodeIndex.m_n + 1 + userDefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_n - 1));
-    const auto m2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_m, snappedNodeIndex.m_m + 1 + userDefinedSmootingRegionFactor * m_smoothingRegionIndicator.m_m - 1));
+    const auto n2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_n, snappedNodeIndex.m_n + 1 + userDefinedSmoothingRegionFactor * m_smoothingRegionIndicator.m_n - 1));
+    const auto m2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_m, snappedNodeIndex.m_m + 1 + userDefinedSmoothingRegionFactor * m_smoothingRegionIndicator.m_m - 1));
 
     const auto first = CurvilinearGridNodeIndices(n1, m1);
     const auto second = CurvilinearGridNodeIndices(n2, m2);

@@ -1,5 +1,7 @@
 #include "MeshKernel/CurvilinearGrid/MeshSmoothingCalculator.hpp"
 
+#include <numbers>
+
 meshkernel::DirectionalSmoothingCalculator::DirectionalSmoothingCalculator(const CurvilinearGridNodeIndices& lowerLeft,
                                                                            const CurvilinearGridNodeIndices& upperRight,
                                                                            const CurvilinearGridNodeIndices& regionIndicator) : m_indexBoxLowerLeft(lowerLeft),
