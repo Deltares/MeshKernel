@@ -109,6 +109,12 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:a0fa4028baafe51cdd5e87fe898b4a426"><td class="memItemLeft" align="right" valign="top">MKERNEL_API double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a> ()</td></tr>
+<tr class="memdesc:a0fa4028baafe51cdd5e87fe898b4a426"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the double value used in the back-end library as separator and missing value.  <a href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">More...</a><br /></td></tr>
+<tr class="separator:a0fa4028baafe51cdd5e87fe898b4a426"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a329b68c1ddf16b487d2954b65481e3c4"><td class="memItemLeft" align="right" valign="top">MKERNEL_API double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a329b68c1ddf16b487d2954b65481e3c4">mkernel_get_inner_outer_separator</a> ()</td></tr>
+<tr class="memdesc:a329b68c1ddf16b487d2954b65481e3c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the double value used to separate the inner part of a polygon from its outer part.  <a href="namespacemeshkernelapi.html#a329b68c1ddf16b487d2954b65481e3c4">More...</a><br /></td></tr>
+<tr class="separator:a329b68c1ddf16b487d2954b65481e3c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e737d3ce03b109b6aaff17396f63aac"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8e737d3ce03b109b6aaff17396f63aac">mkernel_allocate_state</a> (int projectionType, int &amp;meshKernelId)</td></tr>
 <tr class="memdesc:a8e737d3ce03b109b6aaff17396f63aac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new mesh state and returns the generated <code>meshKernelId</code>.  <a href="namespacemeshkernelapi.html#a8e737d3ce03b109b6aaff17396f63aac">More...</a><br /></td></tr>
 <tr class="separator:a8e737d3ce03b109b6aaff17396f63aac"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -266,6 +272,12 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:ad19958bebc2ca018eca5e3da034deb0c"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ad19958bebc2ca018eca5e3da034deb0c">mkernel_curvilinear_smoothing_directional</a> (int meshKernelId, int smoothingIterations, double xFirstGridlineNode, double yFirstGridlineNode, double xSecondGridLineNode, double ySecondGridLineNode, double xLowerLeftCornerSmoothingArea, double yLowerLeftCornerSmoothingArea, double xUpperRightCornerSmootingArea, double yUpperRightCornerSmootingArea)</td></tr>
 <tr class="memdesc:ad19958bebc2ca018eca5e3da034deb0c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smooths a curvilinear grid along the direction specified by a segment.  <a href="namespacemeshkernelapi.html#ad19958bebc2ca018eca5e3da034deb0c">More...</a><br /></td></tr>
 <tr class="separator:ad19958bebc2ca018eca5e3da034deb0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91770126953a7fe176cce86c51aba5c7"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a91770126953a7fe176cce86c51aba5c7">mkernel_curvilinear_snap_to_landboundary</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;land, double sectionControlPoint1x, double sectionControlPoint1y, double sectionControlPoint2x, double sectionControlPoint2y, double regionControlPointX=<a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a>(), double regionControlPointY=<a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a>())</td></tr>
+<tr class="memdesc:a91770126953a7fe176cce86c51aba5c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the curvilinear grid.  <a href="namespacemeshkernelapi.html#a91770126953a7fe176cce86c51aba5c7">More...</a><br /></td></tr>
+<tr class="separator:a91770126953a7fe176cce86c51aba5c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41794e15c663467d71e75c78fa30dd26"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a41794e15c663467d71e75c78fa30dd26">mkernel_curvilinear_snap_to_spline</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;spline, double sectionControlPoint1x, double sectionControlPoint1y, double sectionControlPoint2x, double sectionControlPoint2y, double regionControlPointX=<a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a>(), double regionControlPointY=<a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a>())</td></tr>
+<tr class="memdesc:a41794e15c663467d71e75c78fa30dd26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the curvilinear grid.  <a href="namespacemeshkernelapi.html#a41794e15c663467d71e75c78fa30dd26">More...</a><br /></td></tr>
+<tr class="separator:a41794e15c663467d71e75c78fa30dd26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57d1b16ba8121e1f11b1692b755647c3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a57d1b16ba8121e1f11b1692b755647c3">mkernel_deallocate_state</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:a57d1b16ba8121e1f11b1692b755647c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocate mesh state.  <a href="namespacemeshkernelapi.html#a57d1b16ba8121e1f11b1692b755647c3">More...</a><br /></td></tr>
 <tr class="separator:a57d1b16ba8121e1f11b1692b755647c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -556,12 +568,6 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:aec33ed1cc636956cc68a7c1886447107"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aec33ed1cc636956cc68a7c1886447107">mkernel_mesh2d_add</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
 <tr class="memdesc:aec33ed1cc636956cc68a7c1886447107"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a mesh to the <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">meshkernel::Mesh2D</a> state.  <a href="namespacemeshkernelapi.html#aec33ed1cc636956cc68a7c1886447107">More...</a><br /></td></tr>
 <tr class="separator:aec33ed1cc636956cc68a7c1886447107"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0fa4028baafe51cdd5e87fe898b4a426"><td class="memItemLeft" align="right" valign="top">MKERNEL_API double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a> ()</td></tr>
-<tr class="memdesc:a0fa4028baafe51cdd5e87fe898b4a426"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the double value used in the back-end library as separator and missing value.  <a href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">More...</a><br /></td></tr>
-<tr class="separator:a0fa4028baafe51cdd5e87fe898b4a426"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a329b68c1ddf16b487d2954b65481e3c4"><td class="memItemLeft" align="right" valign="top">MKERNEL_API double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a329b68c1ddf16b487d2954b65481e3c4">mkernel_get_inner_outer_separator</a> ()</td></tr>
-<tr class="memdesc:a329b68c1ddf16b487d2954b65481e3c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the double value used to separate the inner part of a polygon from its outer part.  <a href="namespacemeshkernelapi.html#a329b68c1ddf16b487d2954b65481e3c4">More...</a><br /></td></tr>
-<tr class="separator:a329b68c1ddf16b487d2954b65481e3c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91b94c6f1ad7b5e521d17453a944bacd"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a91b94c6f1ad7b5e521d17453a944bacd">mkernel_mesh2d_triangulation_interpolation</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;samples, int locationType, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;results)</td></tr>
 <tr class="memdesc:a91b94c6f1ad7b5e521d17453a944bacd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Triangle interpolation (ec_module)  <a href="namespacemeshkernelapi.html#a91b94c6f1ad7b5e521d17453a944bacd">More...</a><br /></td></tr>
 <tr class="separator:a91b94c6f1ad7b5e521d17453a944bacd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -2945,6 +2951,166 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">yLowerLeftCornerSmoothingArea</td><td>The y coordinate of the lower left corner of the smoothing area </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">xUpperRightCornerSmootingArea</td><td>The x coordinate of the upper right corner of the smoothing area </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">yUpperRightCornerSmootingArea</td><td>The y coordinate of the upper right corner of the smoothing area </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a91770126953a7fe176cce86c51aba5c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91770126953a7fe176cce86c51aba5c7">&#9670;&nbsp;</a></span>mkernel_curvilinear_snap_to_landboundary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_curvilinear_snap_to_landboundary </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>land</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>sectionControlPoint1x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>sectionControlPoint1y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>sectionControlPoint2x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>sectionControlPoint2y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>regionControlPointX</em> = <code><a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a>()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>regionControlPointY</em> = <code><a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a>()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the curvilinear grid. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">land</td><td>The land boundary </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sectionControlPoint1x</td><td>Start point x-coordinate for boundary section </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sectionControlPoint1y</td><td>Start point y-coordinate for boundary section </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sectionControlPoint2x</td><td>End point x-coordinate for boundary section </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sectionControlPoint2y</td><td>End point y-coordinate for boundary section </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">regionControlPointX</td><td>X-coordinate of region defining point, if null value then use default region </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">regionControlPointY</td><td>Y-coordinate of region defining point, if null value then use default region </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a41794e15c663467d71e75c78fa30dd26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41794e15c663467d71e75c78fa30dd26">&#9670;&nbsp;</a></span>mkernel_curvilinear_snap_to_spline()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_curvilinear_snap_to_spline </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>spline</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>sectionControlPoint1x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>sectionControlPoint1y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>sectionControlPoint2x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>sectionControlPoint2y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>regionControlPointX</em> = <code><a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a>()</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>regionControlPointY</em> = <code><a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a>()</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the curvilinear grid. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">spline</td><td>The spline </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sectionControlPoint1x</td><td>Start point x-coordinate for boundary section </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sectionControlPoint1y</td><td>Start point y-coordinate for boundary section </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sectionControlPoint2x</td><td>End point x-coordinate for boundary section </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sectionControlPoint2y</td><td>End point y-coordinate for boundary section </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">regionControlPointX</td><td>X-coordinate of region defining point, if null value then use default region </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">regionControlPointY</td><td>Y-coordinate of region defining point, if null value then use default region </td></tr>
   </table>
   </dd>
 </dl>
