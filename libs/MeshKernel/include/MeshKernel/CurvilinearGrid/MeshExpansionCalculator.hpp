@@ -36,70 +36,70 @@
 namespace meshkernel
 {
 
-    /// @brief Computes smoothing factor for a point in the grid.
-    class MeshSmoothingCalculator
+    /// @brief Computes expansion factor for a point in the grid.
+    class MeshExpansionCalculator
     {
     public:
         /// @brief Default destructor
-        virtual ~MeshSmoothingCalculator() = default;
+        virtual ~MeshExpansionCalculator() = default;
 
-        /// @brief Compute the mesh smoothing factor.
+        /// @brief Compute the mesh expansion factor.
         ///
         /// @param [in] snappedNodeIndex Index of the snapped grid point
-        /// @param [in] gridLinePointIndex Current point on the smoothing grid line.
+        /// @param [in] gridLinePointIndex Current point on the expansion grid line.
         virtual double compute(const CurvilinearGridNodeIndices& snappedNodeIndex,
                                const CurvilinearGridNodeIndices& gridLinePointIndex) const = 0;
     };
 
-    /// @brief Computes the directional smoothing factor for a point in the grid.
+    /// @brief Computes the directional expansion factor for a point in the grid.
     ///
-    /// The size of the smoothing region is determine by the user selected points.
-    class DirectionalSmoothingCalculator : public MeshSmoothingCalculator
+    /// The size of the expansion region is determine by the user selected points.
+    class UserDefinedRegionExpasionCalculator : public MeshExpansionCalculator
     {
     public:
         /// @brief Constructor
-        /// @param [in] lowerLeft       Index of lower left point of smoothing region
-        /// @param [in] upperRight      Index of upper right point of smoothing region
+        /// @param [in] lowerLeft       Index of lower left point of expansion region
+        /// @param [in] upperRight      Index of upper right point of expansion region
         /// @param [in] regionIndicator
-        DirectionalSmoothingCalculator(const CurvilinearGridNodeIndices& lowerLeft,
-                                       const CurvilinearGridNodeIndices& upperRight,
-                                       const CurvilinearGridNodeIndices& regionIndicator);
+        UserDefinedRegionExpasionCalculator(const CurvilinearGridNodeIndices& lowerLeft,
+                                            const CurvilinearGridNodeIndices& upperRight,
+                                            const CurvilinearGridNodeIndices& regionIndicator);
 
-        /// @brief Compute the directional smoothing factor.
+        /// @brief Compute the directional expansion factor.
         /// @param [in] snappedNodeIndex Index of the snapped grid point
         double compute(const CurvilinearGridNodeIndices& snappedNodeIndex,
                        const CurvilinearGridNodeIndices& gridLinePointIndex) const override;
 
     private:
-        /// @brief Index of lower left point of smoothing region
+        /// @brief Index of lower left point of expansion region
         CurvilinearGridNodeIndices m_indexBoxLowerLeft;
 
-        /// @brief Index of upper right point of smoothing region
+        /// @brief Index of upper right point of expansion region
         CurvilinearGridNodeIndices m_indexBoxUpperRight;
 
-        /// @brief Indicator for the smoothing direction.
-        CurvilinearGridNodeIndices m_smoothingRegionIndicator;
+        /// @brief Indicator for the expansion direction.
+        CurvilinearGridNodeIndices m_expansionRegionIndicator;
     };
 
-    /// @brief Computes the non-directional smoothing factor for a point in the grid.
+    /// @brief Computes the non-directional expansion factor for a point in the grid.
     ///
-    /// The size of the smoothing region is pre-determined.
-    class NonDirectionalSmoothingCalculator : public MeshSmoothingCalculator
+    /// The size of the expansion region is pre-determined.
+    class DefaultRegionExpasionCalculator : public MeshExpansionCalculator
     {
     public:
         /// @brief Constructor
-        /// @param [in] The starting (before smoothing) grid
-        /// @param [in] The grid to which smoothing is to be applied
+        /// @param [in] The starting (before expansion) grid
+        /// @param [in] The grid to which expansion is to be applied
         /// @param [in] The landboundary
-        NonDirectionalSmoothingCalculator(const CurvilinearGrid& originalGrid,
-                                          const CurvilinearGrid& snappedGrid,
-                                          const LandBoundary& landBoundary);
+        DefaultRegionExpasionCalculator(const CurvilinearGrid& originalGrid,
+                                        const CurvilinearGrid& snappedGrid,
+                                        const LandBoundary& landBoundary);
 
-        NonDirectionalSmoothingCalculator(const CurvilinearGrid& originalGrid,
-                                          const CurvilinearGrid& snappedGrid,
-                                          const Splines& spline);
+        DefaultRegionExpasionCalculator(const CurvilinearGrid& originalGrid,
+                                        const CurvilinearGrid& snappedGrid,
+                                        const Splines& spline);
 
-        /// @brief Compute the non-direcitonal smoothing factor.
+        /// @brief Compute the non-direcitonal expansion factor.
         /// @param [in] snappedNodeIndex Index of the snapped grid point
         double compute(const CurvilinearGridNodeIndices& snappedNodeIndex,
                        const CurvilinearGridNodeIndices& gridLinePointIndex) const override;
@@ -110,23 +110,23 @@ namespace meshkernel
         /// Value from editgridlineblok.f90
         static constexpr double aspectRatio = 990.0 / 1600.0;
 
-        /// @brief How much to enlarge the size of the smoothing region bounding box dimensions.
-        static constexpr double smoothingRegionEnlargementFactor = 1.2;
+        /// @brief How much to enlarge the size of the expansion region bounding box dimensions.
+        static constexpr double expansionRegionEnlargementFactor = 1.2;
 
-        /// @brief Compute the minimum smoothing region radius.
+        /// @brief Compute the minimum expansion region radius.
         ///
-        /// Used to set the m_smoothingRegionMinimum member.
-        static double CalculateSmoothingRegion(const BoundingBox& gridBoundingBox,
+        /// Used to set the m_expansionRegionMinimum member.
+        static double CalculateExpansionRegion(const BoundingBox& gridBoundingBox,
                                                const BoundingBox& entityBoundingBox);
 
-        /// @brief The original grid before smoothing
+        /// @brief The original grid before expansion
         const CurvilinearGrid& m_originalGrid;
 
-        /// @brief The grid to which the smoothing is to be applied.
+        /// @brief The grid to which the expansion is to be applied.
         const CurvilinearGrid& m_snappedGrid;
 
-        /// @brief The minimum smoothing region radius
-        double m_smoothingRegionMinimum{0.0};
+        /// @brief The minimum expansion region radius
+        double m_expansionRegionMinimum{0.0};
     };
 
 } // namespace meshkernel

@@ -58,7 +58,7 @@ void meshkernel::CurvilinearGridSnapping::Initialise()
         }
     }
 
-    m_smoothingRegionIndicator = CurvilinearGridNodeIndices(std::min<UInt>(1, m_lineEndIndex.m_m - m_lineStartIndex.m_m),
+    m_expansionRegionIndicator = CurvilinearGridNodeIndices(std::min<UInt>(1, m_lineEndIndex.m_m - m_lineStartIndex.m_m),
                                                             std::min<UInt>(1, m_lineEndIndex.m_n - m_lineStartIndex.m_n));
 }
 
@@ -68,18 +68,18 @@ meshkernel::CurvilinearGridSnapping::ComputeLoopBounds(const CurvilinearGridNode
 
     if (m_controlPoints.size() == 2)
     {
-        const auto m1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_m + 1 - predefinedSmoothingRegionFactor * m_smoothingRegionIndicator.m_m) - 1);
-        const auto m2 = static_cast<UInt>(std::min<int>(m_grid.NumM(), snappedNodeIndex.m_m + 1 + predefinedSmoothingRegionFactor * m_smoothingRegionIndicator.m_m) - 1);
-        const auto n1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_n + 1 - predefinedSmoothingRegionFactor * m_smoothingRegionIndicator.m_n) - 1);
-        const auto n2 = static_cast<UInt>(std::min<int>(m_grid.NumN(), snappedNodeIndex.m_n + 1 + predefinedSmoothingRegionFactor * m_smoothingRegionIndicator.m_n) - 1);
+        const auto m1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_m + 1 - predefinedExpansionRegionFactor * m_expansionRegionIndicator.m_m) - 1);
+        const auto m2 = static_cast<UInt>(std::min<int>(m_grid.NumM(), snappedNodeIndex.m_m + 1 + predefinedExpansionRegionFactor * m_expansionRegionIndicator.m_m) - 1);
+        const auto n1 = static_cast<UInt>(std::max<int>(1, snappedNodeIndex.m_n + 1 - predefinedExpansionRegionFactor * m_expansionRegionIndicator.m_n) - 1);
+        const auto n2 = static_cast<UInt>(std::min<int>(m_grid.NumN(), snappedNodeIndex.m_n + 1 + predefinedExpansionRegionFactor * m_expansionRegionIndicator.m_n) - 1);
         return {CurvilinearGridNodeIndices(n1, m1), CurvilinearGridNodeIndices(n2, m2)};
     }
 
-    const auto n1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_n, snappedNodeIndex.m_n + 1 - userDefinedSmoothingRegionFactor * m_smoothingRegionIndicator.m_n - 1));
-    const auto m1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_m, snappedNodeIndex.m_m + 1 - userDefinedSmoothingRegionFactor * m_smoothingRegionIndicator.m_m - 1));
+    const auto n1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_n, snappedNodeIndex.m_n + 1 - userDefinedExpansionRegionFactor * m_expansionRegionIndicator.m_n - 1));
+    const auto m1 = static_cast<UInt>(std::max<int>(m_indexBoxLowerLeft.m_m, snappedNodeIndex.m_m + 1 - userDefinedExpansionRegionFactor * m_expansionRegionIndicator.m_m - 1));
 
-    const auto n2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_n, snappedNodeIndex.m_n + 1 + userDefinedSmoothingRegionFactor * m_smoothingRegionIndicator.m_n - 1));
-    const auto m2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_m, snappedNodeIndex.m_m + 1 + userDefinedSmoothingRegionFactor * m_smoothingRegionIndicator.m_m - 1));
+    const auto n2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_n, snappedNodeIndex.m_n + 1 + userDefinedExpansionRegionFactor * m_expansionRegionIndicator.m_n - 1));
+    const auto m2 = static_cast<UInt>(std::min<int>(m_indexBoxUpperRight.m_m, snappedNodeIndex.m_m + 1 + userDefinedExpansionRegionFactor * m_expansionRegionIndicator.m_m - 1));
 
     const auto first = CurvilinearGridNodeIndices(n1, m1);
     const auto second = CurvilinearGridNodeIndices(n2, m2);
@@ -87,26 +87,26 @@ meshkernel::CurvilinearGridSnapping::ComputeLoopBounds(const CurvilinearGridNode
     return {first, second};
 }
 
-std::unique_ptr<meshkernel::MeshSmoothingCalculator> meshkernel::CurvilinearGridSnapping::AllocateGridSmoothingCalculator() const
+std::unique_ptr<meshkernel::MeshExpansionCalculator> meshkernel::CurvilinearGridSnapping::AllocateMeshExpansionCalculator() const
 {
-    std::unique_ptr<MeshSmoothingCalculator> smoothingCalculator;
+    std::unique_ptr<MeshExpansionCalculator> expansionCalculator;
 
     if (m_controlPoints.size() > 2u)
     {
-        // User defined smoothing region
-        smoothingCalculator = std::make_unique<DirectionalSmoothingCalculator>(m_indexBoxLowerLeft, m_indexBoxUpperRight, m_smoothingRegionIndicator);
+        // User defined expansion region
+        expansionCalculator = std::make_unique<UserDefinedRegionExpasionCalculator>(m_indexBoxLowerLeft, m_indexBoxUpperRight, m_expansionRegionIndicator);
     }
     else
     {
-        // Predefined smoothing region from mesh entity, e.g. spline or land boundary
-        smoothingCalculator = AllocateGridSmoothingCalculator(m_originalGrid, m_grid);
+        // Predefined expansion region from mesh entity, e.g. spline or land boundary
+        expansionCalculator = AllocateMeshExpansionCalculator(m_originalGrid, m_grid);
     }
 
-    return smoothingCalculator;
+    return expansionCalculator;
 }
 
-void meshkernel::CurvilinearGridSnapping::ApplySmoothingToGrid(const CurvilinearGridNodeIndices& snappedNodeIndex,
-                                                               const MeshSmoothingCalculator& smoothingFactor)
+void meshkernel::CurvilinearGridSnapping::ApplyExpansionToGrid(const CurvilinearGridNodeIndices& snappedNodeIndex,
+                                                               const MeshExpansionCalculator& expansionFactor)
 {
     auto [lowerBound, upperBound] = ComputeLoopBounds(snappedNodeIndex);
 
@@ -124,7 +124,7 @@ void meshkernel::CurvilinearGridSnapping::ApplySmoothingToGrid(const Curvilinear
 
             if (m_originalGrid.GetNode(gridLinePointIndex).IsValid())
             {
-                const double factor = smoothingFactor.compute(snappedNodeIndex, gridLinePointIndex);
+                const double factor = expansionFactor.compute(snappedNodeIndex, gridLinePointIndex);
 
                 if (factor > 0.0)
                 {
@@ -138,7 +138,7 @@ void meshkernel::CurvilinearGridSnapping::ApplySmoothingToGrid(const Curvilinear
 meshkernel::UndoActionPtr meshkernel::CurvilinearGridSnapping::Compute()
 {
     std::unique_ptr<CurvilinearGridBlockUndoAction> undoAction = CurvilinearGridBlockUndoAction::Create(m_grid, {0, 0}, {m_grid.NumN(), m_grid.NumM()});
-    std::unique_ptr<MeshSmoothingCalculator> smoothingCalculator = AllocateGridSmoothingCalculator();
+    std::unique_ptr<MeshExpansionCalculator> expansionCalculator = AllocateMeshExpansionCalculator();
 
     CurvilinearGridNodeIndices snappedNodeIndex;
 
@@ -163,7 +163,7 @@ meshkernel::UndoActionPtr meshkernel::CurvilinearGridSnapping::Compute()
             // grid point (at the same index) snapped to the boundary.
             if (!IsEqual(currentPoint, m_grid.GetNode(snappedNodeIndex), epsilon))
             {
-                ApplySmoothingToGrid(snappedNodeIndex, *smoothingCalculator);
+                ApplyExpansionToGrid(snappedNodeIndex, *expansionCalculator);
             }
         }
     }

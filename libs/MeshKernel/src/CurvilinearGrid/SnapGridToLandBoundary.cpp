@@ -8,10 +8,10 @@ meshkernel::SnapGridToLandBoundary::SnapGridToLandBoundary(CurvilinearGrid& grid
 {
 }
 
-std::unique_ptr<meshkernel::MeshSmoothingCalculator> meshkernel::SnapGridToLandBoundary::AllocateGridSmoothingCalculator(const CurvilinearGrid& originalGrid,
+std::unique_ptr<meshkernel::MeshExpansionCalculator> meshkernel::SnapGridToLandBoundary::AllocateMeshExpansionCalculator(const CurvilinearGrid& originalGrid,
                                                                                                                          const CurvilinearGrid& snappedGrid) const
 {
-    return std::make_unique<NonDirectionalSmoothingCalculator>(originalGrid, snappedGrid, m_landBoundary);
+    return std::make_unique<DefaultRegionExpasionCalculator>(originalGrid, snappedGrid, m_landBoundary);
 }
 
 meshkernel::Point meshkernel::SnapGridToLandBoundary::FindNearestPoint(const Point& currentPoint) const

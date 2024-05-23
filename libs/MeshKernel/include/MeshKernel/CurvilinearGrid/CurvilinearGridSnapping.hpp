@@ -33,7 +33,7 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
-#include <MeshKernel/CurvilinearGrid/MeshSmoothingCalculator.hpp>
+#include <MeshKernel/CurvilinearGrid/MeshExpansionCalculator.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/UndoActions/UndoAction.hpp>
 
@@ -47,53 +47,53 @@ namespace meshkernel
         /// @brief constructor
         /// @param [in] grid         The input curvilinear grid
         /// @param [in] landBoundary The land boundary to which the grid is to be snapped.
-        /// @param [in] points       The points used to control the snapping and smoothing.
+        /// @param [in] points       The points used to control the snapping and expansion.
         CurvilinearGridSnapping(CurvilinearGrid& grid,
                                 const std::vector<Point>& points);
 
         /// @brief Default destructor
         virtual ~CurvilinearGridSnapping() = default;
 
-        /// @brief Executes the snapping and smoothing algorithm
+        /// @brief Executes the snapping and expansion algorithm
         [[nodiscard]] UndoActionPtr Compute();
 
     private:
         /// @brief Tolerance to determine if point is on (close to) boundary
         static constexpr double epsilon = 1.0e-5;
 
-        /// @brief Smoothing region scaling.
+        /// @brief Expansion region scaling.
         ///
-        /// Used when there are exactly 2 domain boundary points selected, to include a predefined smoothing region.
+        /// Used when there are exactly 2 domain boundary points selected, to include a predefined expansion region.
         /// Value for nump from modgr4.f90
-        static constexpr UInt predefinedSmoothingRegionFactor = 80;
+        static constexpr UInt predefinedExpansionRegionFactor = 80;
 
-        /// @brief Smoothing region scaling.
+        /// @brief Expansion region scaling.
         ///
-        /// Used when there are more than 2 domain boundary points selected, to include a user defined smoothing region.
+        /// Used when there are more than 2 domain boundary points selected, to include a user defined expansion region.
         /// Value from modgr4.f90
-        static constexpr UInt userDefinedSmoothingRegionFactor = 10000;
+        static constexpr UInt userDefinedExpansionRegionFactor = 10000;
 
-        /// @brief Allocate the grid smoothing calculator
-        std::unique_ptr<MeshSmoothingCalculator> AllocateGridSmoothingCalculator() const;
+        /// @brief Allocate the grid expansion calculator
+        std::unique_ptr<MeshExpansionCalculator> AllocateMeshExpansionCalculator() const;
 
-        /// @brief Allocate the grid smoothing calculator
+        /// @brief Allocate the grid expansion calculator
         ///
-        /// Abstract factory like method allocating the required smoothing calculator.
-        virtual std::unique_ptr<MeshSmoothingCalculator> AllocateGridSmoothingCalculator(const CurvilinearGrid& originalGrid,
+        /// Abstract factory like method allocating the required expansion calculator.
+        virtual std::unique_ptr<MeshExpansionCalculator> AllocateMeshExpansionCalculator(const CurvilinearGrid& originalGrid,
                                                                                          const CurvilinearGrid& snappedGrid) const = 0;
 
         /// @brief Find the closest point to the current point given.
         virtual Point FindNearestPoint(const Point& currentPoint) const = 0;
 
-        /// @brief Compute the loop bounds for the smoothing.
+        /// @brief Compute the loop bounds for the expansion.
         /// @param [in] snappedNodeIndex Index of the grid point snapped to the land boundary or spline
         std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> ComputeLoopBounds(const CurvilinearGridNodeIndices& snappedNodeIndex) const;
 
-        /// @brief Apply the smoothing to the grid
+        /// @brief Apply the expansion to the grid
         /// @param [in] snappedNodeIndex Index of the grid point snapped to the land boundary or spline
-        /// @param [in] smoothingFactor  Calculate how much smoothing translation is required for this index
-        void ApplySmoothingToGrid(const CurvilinearGridNodeIndices& snappedNodeIndex,
-                                  const MeshSmoothingCalculator& smoothingFactor);
+        /// @param [in] expansionFactor  Calculate how much expansion translation is required for this index
+        void ApplyExpansionToGrid(const CurvilinearGridNodeIndices& snappedNodeIndex,
+                                  const MeshExpansionCalculator& expansionFactor);
 
         /// @brief Initialise member variables
         void Initialise();
@@ -114,12 +114,12 @@ namespace meshkernel
         CurvilinearGridNodeIndices m_lineEndIndex;
 
         /// @brief The start points index of the grid line to be snapped
-        CurvilinearGridNodeIndices m_smoothingRegionIndicator;
+        CurvilinearGridNodeIndices m_expansionRegionIndicator;
 
-        /// @brief Index of lower left point for smoothing region
+        /// @brief Index of lower left point for expansion region
         CurvilinearGridNodeIndices m_indexBoxLowerLeft;
 
-        /// @brief Index of upper right point for smoothing region
+        /// @brief Index of upper right point for expansion region
         CurvilinearGridNodeIndices m_indexBoxUpperRight;
     };
 

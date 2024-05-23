@@ -32,6 +32,7 @@
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridSnapping.hpp"
+#include "MeshKernel/CurvilinearGrid/MeshExpansionCalculator.hpp"
 #include "MeshKernel/Point.hpp"
 #include "MeshKernel/Splines.hpp"
 
@@ -45,15 +46,15 @@ namespace meshkernel
         /// @brief constructor
         /// @param [in] grid   The input curvilinear grid
         /// @param [in] spline The spline to which the grid is to be snapped.
-        /// @param [in] points The points used to control the snapping and smoothing.
+        /// @param [in] points The points used to control the snapping and expansion.
         SnapGridToSpline(CurvilinearGrid& grid,
                          const Splines& spline,
                          const std::vector<Point>& points);
 
     private:
-        /// @brief Allocate a mesh smoothing calculator
-        std::unique_ptr<MeshSmoothingCalculator>
-        AllocateGridSmoothingCalculator(const CurvilinearGrid& originalGrid,
+        /// @brief Allocate a mesh expansion calculator
+        std::unique_ptr<MeshExpansionCalculator>
+        AllocateMeshExpansionCalculator(const CurvilinearGrid& originalGrid,
                                         const CurvilinearGrid& snappedGrid) const override;
 
         /// @brief Find the nearest point to the spline

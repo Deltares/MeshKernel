@@ -6,10 +6,10 @@ meshkernel::SnapGridToSpline::SnapGridToSpline(CurvilinearGrid& grid,
 {
 }
 
-std::unique_ptr<meshkernel::MeshSmoothingCalculator> meshkernel::SnapGridToSpline::AllocateGridSmoothingCalculator(const CurvilinearGrid& originalGrid,
+std::unique_ptr<meshkernel::MeshExpansionCalculator> meshkernel::SnapGridToSpline::AllocateMeshExpansionCalculator(const CurvilinearGrid& originalGrid,
                                                                                                                    const CurvilinearGrid& snappedGrid) const
 {
-    return std::make_unique<NonDirectionalSmoothingCalculator>(originalGrid, snappedGrid, m_spline);
+    return std::make_unique<DefaultRegionExpasionCalculator>(originalGrid, snappedGrid, m_spline);
 }
 
 meshkernel::Point meshkernel::SnapGridToSpline::FindNearestPoint(const Point& currentPoint) const
