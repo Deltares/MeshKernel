@@ -87,9 +87,9 @@ meshkernel::CurvilinearGridSnapping::ComputeLoopBounds(const CurvilinearGridNode
     return {first, second};
 }
 
-std::unique_ptr<meshkernel::MeshExpansionCalculator> meshkernel::CurvilinearGridSnapping::AllocateMeshExpansionCalculator() const
+std::unique_ptr<meshkernel::CurvilinearGridMeshExpansionCalculator> meshkernel::CurvilinearGridSnapping::AllocateCurvilinearGridMeshExpansionCalculator() const
 {
-    std::unique_ptr<MeshExpansionCalculator> expansionCalculator;
+    std::unique_ptr<CurvilinearGridMeshExpansionCalculator> expansionCalculator;
 
     if (m_controlPoints.size() > 2u)
     {
@@ -99,14 +99,14 @@ std::unique_ptr<meshkernel::MeshExpansionCalculator> meshkernel::CurvilinearGrid
     else
     {
         // Predefined expansion region from mesh entity, e.g. spline or land boundary
-        expansionCalculator = AllocateMeshExpansionCalculator(m_originalGrid, m_grid);
+        expansionCalculator = AllocateCurvilinearGridMeshExpansionCalculator(m_originalGrid, m_grid);
     }
 
     return expansionCalculator;
 }
 
 void meshkernel::CurvilinearGridSnapping::ApplyExpansionToGrid(const CurvilinearGridNodeIndices& snappedNodeIndex,
-                                                               const MeshExpansionCalculator& expansionFactor)
+                                                               const CurvilinearGridMeshExpansionCalculator& expansionFactor)
 {
     auto [lowerBound, upperBound] = ComputeLoopBounds(snappedNodeIndex);
 
@@ -138,7 +138,7 @@ void meshkernel::CurvilinearGridSnapping::ApplyExpansionToGrid(const Curvilinear
 meshkernel::UndoActionPtr meshkernel::CurvilinearGridSnapping::Compute()
 {
     std::unique_ptr<CurvilinearGridBlockUndoAction> undoAction = CurvilinearGridBlockUndoAction::Create(m_grid, {0, 0}, {m_grid.NumN(), m_grid.NumM()});
-    std::unique_ptr<MeshExpansionCalculator> expansionCalculator = AllocateMeshExpansionCalculator();
+    std::unique_ptr<CurvilinearGridMeshExpansionCalculator> expansionCalculator = AllocateCurvilinearGridMeshExpansionCalculator();
 
     CurvilinearGridNodeIndices snappedNodeIndex;
 

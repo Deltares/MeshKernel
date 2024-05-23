@@ -1,4 +1,4 @@
-#include "MeshKernel/CurvilinearGrid/MeshExpansionCalculator.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridMeshExpansionCalculator.hpp"
 
 #include <cmath>
 #include <numbers>

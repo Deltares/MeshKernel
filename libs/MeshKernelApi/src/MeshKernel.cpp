@@ -52,8 +52,8 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothness.hpp>
-#include <MeshKernel/CurvilinearGrid/SnapGridToLandBoundary.hpp>
-#include <MeshKernel/CurvilinearGrid/SnapGridToSpline.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridSnapGridToLandBoundary.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridSnapGridToSpline.hpp>
 #include <MeshKernel/Definitions.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
@@ -4163,7 +4163,7 @@ namespace meshkernelapi
 
             //--------------------------------
             // Snap curvilinear grid to the land boundary
-            meshkernel::SnapGridToLandBoundary gridSnapping(*meshKernelState[meshKernelId].m_curvilinearGrid, landBoundary, controlPoints);
+            meshkernel::CurvilinearGridSnapGridToLandBoundary gridSnapping(*meshKernelState[meshKernelId].m_curvilinearGrid, landBoundary, controlPoints);
             meshKernelState[meshKernelId].m_undoStack.Add(gridSnapping.Compute());
         }
         catch (...)
@@ -4219,7 +4219,7 @@ namespace meshkernelapi
             //--------------------------------
             // Snap curvilinear grid to the spline
 
-            meshkernel::SnapGridToSpline gridSnapping(*meshKernelState[meshKernelId].m_curvilinearGrid, mkSpline, controlPoints);
+            meshkernel::CurvilinearGridSnapGridToSpline gridSnapping(*meshKernelState[meshKernelId].m_curvilinearGrid, mkSpline, controlPoints);
             meshKernelState[meshKernelId].m_undoStack.Add(gridSnapping.Compute());
         }
         catch (...)

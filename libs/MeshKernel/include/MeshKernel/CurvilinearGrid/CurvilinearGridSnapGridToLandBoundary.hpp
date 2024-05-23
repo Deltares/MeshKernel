@@ -31,8 +31,8 @@
 #include <vector>
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridMeshExpansionCalculator.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridSnapping.hpp"
-#include "MeshKernel/CurvilinearGrid/MeshExpansionCalculator.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/LandBoundary.hpp"
 #include "MeshKernel/Point.hpp"
@@ -41,22 +41,22 @@ namespace meshkernel
 {
 
     /// @brief Smoothly snap the grid to a land boundary.
-    class SnapGridToLandBoundary : public CurvilinearGridSnapping
+    class CurvilinearGridSnapGridToLandBoundary : public CurvilinearGridSnapping
     {
     public:
         /// @brief constructor
         /// @param [in] grid         The input curvilinear grid
         /// @param [in] landBoundary The land boundary to which the grid is to be snapped.
         /// @param [in] points       The points used to control the snapping and expansion.
-        SnapGridToLandBoundary(CurvilinearGrid& grid,
-                               const LandBoundary& landBounday,
-                               const std::vector<Point>& points);
+        CurvilinearGridSnapGridToLandBoundary(CurvilinearGrid& grid,
+                                              const LandBoundary& landBounday,
+                                              const std::vector<Point>& points);
 
     private:
         /// @brief Allocate the grid expansion calculator
-        std::unique_ptr<MeshExpansionCalculator>
-        AllocateMeshExpansionCalculator(const CurvilinearGrid& originalGrid,
-                                        const CurvilinearGrid& snappedGrid) const override;
+        std::unique_ptr<CurvilinearGridMeshExpansionCalculator>
+        AllocateCurvilinearGridMeshExpansionCalculator(const CurvilinearGrid& originalGrid,
+                                                       const CurvilinearGrid& snappedGrid) const override;
 
         /// @brief Find the nearest point to the land boundary
         Point FindNearestPoint(const Point& currentPoint) const override;

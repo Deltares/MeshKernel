@@ -37,11 +37,11 @@ namespace meshkernel
 {
 
     /// @brief Computes expansion factor for a point in the grid.
-    class MeshExpansionCalculator
+    class CurvilinearGridMeshExpansionCalculator
     {
     public:
         /// @brief Default destructor
-        virtual ~MeshExpansionCalculator() = default;
+        virtual ~CurvilinearGridMeshExpansionCalculator() = default;
 
         /// @brief Compute the mesh expansion factor.
         ///
@@ -54,7 +54,7 @@ namespace meshkernel
     /// @brief Computes the directional expansion factor for a point in the grid.
     ///
     /// The size of the expansion region is determine by the user selected points.
-    class UserDefinedRegionExpasionCalculator : public MeshExpansionCalculator
+    class UserDefinedRegionExpasionCalculator : public CurvilinearGridMeshExpansionCalculator
     {
     public:
         /// @brief Constructor
@@ -84,7 +84,7 @@ namespace meshkernel
     /// @brief Computes the non-directional expansion factor for a point in the grid.
     ///
     /// The size of the expansion region is pre-determined.
-    class DefaultRegionExpasionCalculator : public MeshExpansionCalculator
+    class DefaultRegionExpasionCalculator : public CurvilinearGridMeshExpansionCalculator
     {
     public:
         /// @brief Constructor

@@ -32,8 +32,8 @@
 #include <vector>
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridMeshExpansionCalculator.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
-#include <MeshKernel/CurvilinearGrid/MeshExpansionCalculator.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/UndoActions/UndoAction.hpp>
 
@@ -74,13 +74,13 @@ namespace meshkernel
         static constexpr UInt userDefinedExpansionRegionFactor = 10000;
 
         /// @brief Allocate the grid expansion calculator
-        std::unique_ptr<MeshExpansionCalculator> AllocateMeshExpansionCalculator() const;
+        std::unique_ptr<CurvilinearGridMeshExpansionCalculator> AllocateCurvilinearGridMeshExpansionCalculator() const;
 
         /// @brief Allocate the grid expansion calculator
         ///
         /// Abstract factory like method allocating the required expansion calculator.
-        virtual std::unique_ptr<MeshExpansionCalculator> AllocateMeshExpansionCalculator(const CurvilinearGrid& originalGrid,
-                                                                                         const CurvilinearGrid& snappedGrid) const = 0;
+        virtual std::unique_ptr<CurvilinearGridMeshExpansionCalculator> AllocateCurvilinearGridMeshExpansionCalculator(const CurvilinearGrid& originalGrid,
+                                                                                                                       const CurvilinearGrid& snappedGrid) const = 0;
 
         /// @brief Find the closest point to the current point given.
         virtual Point FindNearestPoint(const Point& currentPoint) const = 0;
@@ -93,7 +93,7 @@ namespace meshkernel
         /// @param [in] snappedNodeIndex Index of the grid point snapped to the land boundary or spline
         /// @param [in] expansionFactor  Calculate how much expansion translation is required for this index
         void ApplyExpansionToGrid(const CurvilinearGridNodeIndices& snappedNodeIndex,
-                                  const MeshExpansionCalculator& expansionFactor);
+                                  const CurvilinearGridMeshExpansionCalculator& expansionFactor);
 
         /// @brief Initialise member variables
         void Initialise();
