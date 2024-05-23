@@ -57,17 +57,25 @@ namespace meshkernel
         std::vector<Point> ElementsToDelete(const Mesh2D& mesh, const Polygons& polygon) const;
 
     private:
-        /// @brief Element mask values used in the de-refinement procedure.
+        /// @brief Maximum number of iterations allowed when initialising the element mask
+        static const UInt maxIterationCount = 1000;
+
+        /// @brief Maximum reserve size for arrays used in the de-refinement
+        static const UInt maximumSize = 1000;
+
+        /// @brief Label for the element in the de-refined grid.
         ///
-        /// Enumeration comments are from the original Fortran code.
-        enum class ElementMask
+        /// The prefix, e.g. WasNode, indicates the original mesh entity around/from which the de-refined element was constructed.
+        /// First and after suffix, indicates the order in which the elements are to be processed.
+        /// Enumeration values and comments are from the original Fortran code.
+        enum class ElementType
         {
-            A = 1,         //< front, 'A' cell (used to be node, delete it):  1
-            B = 2,         //< front, 'B' cell (used to be link, keep it):    2
-            C = 3,         //< 'C' cell (used to be cell, keep it):           3
-            NotA = -1,     //< not in front, 'A' cell:                       -1
-            NotB = -2,     //< not in front, 'B' cell:                       -2
-            Unassigned = 0 //< not assigned a value                           0
+            WasNodeFirst = 1,  //< front, 'A' cell (used to be node, delete it):  1
+            WasEdgeFirst = 2,  //< front, 'B' cell (used to be link, keep it):    2
+            WasCell = 3,       //< 'C' cell (used to be cell, keep it):           3
+            WasNodeAfter = -1, //< not in front, 'A' cell:                       -1
+            WasEdgeAfter = -2, //< not in front, 'B' cell:                       -2
+            Unassigned = 0     //< not assigned a value                           0
         };
 
         /// @brief Indicate if the element can be a seed element or not.
@@ -104,7 +112,7 @@ namespace meshkernel
                                   std::vector<std::array<int, 2>>& kne) const;
 
         /// @brief Initialise the element mask.
-        std::vector<ElementMask> InitialiseElementMask(const Mesh2D& mesh,
+        std::vector<ElementType> InitialiseElementType(const Mesh2D& mesh,
                                                        const std::vector<int>& nodeTypes) const;
 
         /// \brief Determine if the element can be deleted from the mesh or not.
@@ -132,7 +140,7 @@ namespace meshkernel
         /// @brief Add element id to the list of id's
         ///
         /// only added is it is not already on the list and the element is a quadrilateral
-        void AddElementToList(const Mesh& mesh, const std::vector<UInt>& frontList, std::vector<UInt>& frontListCopy, const UInt kNew) const;
+        void AddElementToList(const Mesh& mesh, const std::vector<UInt>& frontList, std::vector<UInt>& frontListCopy, const UInt elementId) const;
 
         /// @brief Redirect nodes of connected cells, deactivate polygons of degree smaller than three
         void RedirectNodesOfConnectedElements(Mesh2D& mesh, const UInt elementId, const UInt nodeId, const std::vector<UInt>& indirectlyConnected) const;
@@ -156,11 +164,6 @@ namespace meshkernel
         ///
         /// @returns Indicates if the cleanp-up was successful or not
         [[nodiscard]] bool CleanUpEdge(Mesh2D& mesh, const UInt edgeId) const;
-
-        /// @brief Find the id of the shared node for two edges.
-        ///
-        /// If no node is shared then return null value
-        UInt FindCommonNode(const Mesh2D& mesh, const UInt edgeId1, const UInt edgeId2) const;
 
         /// @brief Do the Casullu de-refinement
         [[nodiscard]] bool DoDeRefinement(Mesh2D& mesh, const Polygons& polygon) const;

@@ -115,21 +115,32 @@ namespace meshkernel
 
     UInt NextCircularForwardIndex(UInt currentIndex, UInt size)
     {
-        UInt index = currentIndex + 1;
-        if (index >= size)
+        if (size == 0)
         {
-            index = index - size;
+            throw ConstraintError("Invalid rotation range ");
         }
-        return index;
+
+        if (currentIndex >= size)
+        {
+            throw ConstraintError("Index is out of range: {} not in [0 .. {}]", currentIndex, size - 1);
+        }
+
+        return currentIndex == size - 1 ? 0 : currentIndex + 1;
     }
 
     UInt NextCircularBackwardIndex(UInt currentIndex, UInt size)
     {
-        if (currentIndex == 0)
+        if (size == 0)
         {
-            return currentIndex + size - 1;
+            throw ConstraintError("Invalid rotation range ");
         }
-        return currentIndex - 1;
+
+        if (currentIndex >= size)
+        {
+            throw ConstraintError("Index is out of range: {} not in [0 .. {}]", currentIndex, size - 1);
+        }
+
+        return currentIndex == 0 ? size - 1 : currentIndex - 1;
     }
 
     bool IsPointOnPole(const Point& point)
