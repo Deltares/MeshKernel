@@ -492,12 +492,12 @@ inline meshkernel::Point& meshkernel::CurvilinearGrid::GetNode(const UInt n, con
 
     if (n >= m_gridNodes.rows()) [[unlikely]]
     {
-        throw ConstraintError("Invalid row index {} > {}", n, m_gridNodes.rows());
+        throw ConstraintError("Invalid row index {} >= {}", n, m_gridNodes.rows());
     }
 
     if (m >= m_gridNodes.cols()) [[unlikely]]
     {
-        throw ConstraintError("Invalid column index {} > {}", m, m_gridNodes.cols());
+        throw ConstraintError("Invalid column index {} >= {}", m, m_gridNodes.cols());
     }
 
     m_nodesRTreeRequiresUpdate = true;
@@ -512,12 +512,12 @@ meshkernel::Point const& meshkernel::CurvilinearGrid::GetNode(const UInt n, cons
 
     if (n >= m_gridNodes.rows()) [[unlikely]]
     {
-        throw ConstraintError("Invalid row index {} > {}", n, m_gridNodes.rows());
+        throw ConstraintError("Invalid row index {} >= {}", n, m_gridNodes.rows());
     }
 
     if (m >= m_gridNodes.cols()) [[unlikely]]
     {
-        throw ConstraintError("Invalid column index {} > {}", m, m_gridNodes.cols());
+        throw ConstraintError("Invalid column index {} >= {}", m, m_gridNodes.cols());
     }
     return m_gridNodes(n + m_startOffset.m_n, m + m_startOffset.m_m);
 }

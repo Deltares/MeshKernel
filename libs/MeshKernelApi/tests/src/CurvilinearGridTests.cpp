@@ -1098,3 +1098,243 @@ TEST_P(CurvilinearCornersTests, InsertAFace_OnACurvilinearGrid_ShouldInsertFaces
     ASSERT_EQ(expectedN, curvilinearGrid.num_n);
 }
 INSTANTIATE_TEST_SUITE_P(CurvilinearCornersParametrizedTests, CurvilinearCornersTests, ::testing::ValuesIn(CurvilinearCornersTests::GetData()));
+
+TEST(CurvilinearGrid, SnapToLandBoundary)
+{
+    constexpr double tolerance = 1.0e-10;
+
+    // Prepare
+    int meshKernelId;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    makeGridParameters.num_columns = 10;
+    makeGridParameters.num_rows = 10;
+    makeGridParameters.angle = 0.0;
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = 10.0;
+    makeGridParameters.block_size_y = 10.0;
+
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGrid{};
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    std::vector<double> node_x(curvilinearGrid.num_m * curvilinearGrid.num_n);
+    std::vector<double> node_y(curvilinearGrid.num_m * curvilinearGrid.num_n);
+    curvilinearGrid.node_x = node_x.data();
+    curvilinearGrid.node_y = node_y.data();
+    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Make copy of node values.
+    std::vector<double> originalNodeX(node_x);
+    std::vector<double> originalNodeY(node_y);
+
+    std::vector<double> expectedPointsX{0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0,
+                                        0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0,
+                                        0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0,
+                                        0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0,
+                                        0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0,
+                                        0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0,
+                                        0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0,
+                                        0.01774961128485, 10.01533144852, 19.98050480592, 29.97597166392, 39.97143852191, 50.0447171313, 60.0262335099, 69.96945303784, 79.9410737541, 90.08118201565, 100.0,
+                                        0.1556264747728, 10.13442431202, 19.8290684635, 29.78932241507, 39.74957636663, 50.39207447388, 60.23001228601, 69.73216787907, 79.48334170402, 90.71179423073, 100.0,
+                                        0.3316761521277, 10.28648942044, 19.6357052077, 29.55099714999, 39.46628909227, 50.83560173828, 60.49020958726, 69.42918756326, 78.89888121011, 91.51699877479, 100.0,
+                                        0.4105750388196, 10.35463931961, 19.54904702213, 29.44418867202, 39.3393303219, 51.03437408427, 60.60682029451, 69.29340310761, 78.63694785711, 91.87786136221, 100.0};
+
+    std::vector<double> expectedPointsY{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                        10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0,
+                                        20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 20.0,
+                                        30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 30.0,
+                                        40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0,
+                                        50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0, 50.0,
+                                        60.0, 60.0, 60.0, 60.0, 60.0, 60.0, 60.0, 60.0, 60.0, 60.0, 60.0,
+                                        70.23666072723, 70.20441866004, 70.18938128575, 70.23341738295, 70.27745348015, 70.21158750721, 70.12412878028, 70.11524478944, 70.22231155967, 70.20664439596, 70.0,
+                                        82.07501303012, 81.79231843049, 81.66047252617, 82.0465757743, 82.43267902243, 81.85517402742, 81.08834634086, 81.01045256871, 81.94920124036, 81.81183341756, 80.0,
+                                        94.42233455747, 93.81984672774, 93.53885249278, 94.36172816257, 95.18460383235, 93.95380659904, 92.31951875183, 92.1535090375, 94.15420042167, 93.86143769632, 90.0,
+                                        105.4743163503, 104.728509145, 104.3806722017, 105.3992929494, 106.4179136971, 104.8943352951, 102.8712842195, 102.6657842326, 105.1423986574, 104.7799937436, 100.0};
+
+    // Set up land boundary
+
+    // std::vector<double> landXCoordinates({11.0000, 11.5878, 11.9511, 11.9511, 11.5878, 11.0000, 10.4122, 10.0489, 10.0489, 10.4122, 11.0000});
+    // std::vector<double> landYCoordinates({0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0});
+
+    std::vector<double> landXCoordinates({-10.614098, -1.765560, 17.628498, 42.355930, 65.871231, 85.992554, 99.568405});
+    std::vector<double> landYCoordinates({100.910210, 105.637527, 104.182968, 106.728447, 101.758698, 107.092087, 101.758698});
+
+    // Not part of the unit test but added to ensure arrays are the same size
+    ASSERT_EQ(landXCoordinates.size(), landYCoordinates.size());
+
+    meshkernelapi::GeometryList land;
+    land.geometry_separator = constants::missing::doubleValue;
+    land.inner_outer_separator = constants::missing::innerOuterSeparator;
+    land.num_coordinates = static_cast<int>(landXCoordinates.size());
+    land.coordinates_x = landXCoordinates.data();
+    land.coordinates_y = landYCoordinates.data();
+
+    //--------------------------------
+
+    double sectionControlPoint1x = 0.0;
+    double sectionControlPoint1y = 100.0;
+    double sectionControlPoint2x = 90.0;
+    double sectionControlPoint2y = 100.0;
+
+    errorCode = meshkernelapi::mkernel_curvilinear_snap_to_landboundary(meshKernelId, land,
+                                                                        sectionControlPoint1x,
+                                                                        sectionControlPoint1y,
+                                                                        sectionControlPoint2x,
+                                                                        sectionControlPoint2y);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    for (int i = 0; i < curvilinearGrid.num_m * curvilinearGrid.num_n; ++i)
+    {
+        EXPECT_NEAR(curvilinearGrid.node_x[i], expectedPointsX[i], tolerance);
+        EXPECT_NEAR(curvilinearGrid.node_y[i], expectedPointsY[i], tolerance);
+    }
+
+    //--------------------------------
+    // Now undo snapping.
+
+    bool didUndoOfDeleteNode = false;
+
+    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfDeleteNode);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndoOfDeleteNode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    for (int i = 0; i < curvilinearGrid.num_m * curvilinearGrid.num_n; ++i)
+    {
+        EXPECT_NEAR(curvilinearGrid.node_x[i], originalNodeX[i], tolerance);
+        EXPECT_NEAR(curvilinearGrid.node_y[i], originalNodeY[i], tolerance);
+    }
+}
+
+TEST(CurvilinearGrid, SnapToSpline)
+{
+    constexpr double tolerance = 2.0e-5;
+
+    // Prepare
+    int meshKernelId;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    makeGridParameters.num_columns = 10;
+    makeGridParameters.num_rows = 10;
+    makeGridParameters.angle = 0.0;
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = 1.0;
+    makeGridParameters.block_size_y = 1.0;
+
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGrid{};
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    std::vector<double> node_x(curvilinearGrid.num_m * curvilinearGrid.num_n);
+    std::vector<double> node_y(curvilinearGrid.num_m * curvilinearGrid.num_n);
+    curvilinearGrid.node_x = node_x.data();
+    curvilinearGrid.node_y = node_y.data();
+    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Make copy of node values.
+    std::vector<double> originalNodeX(node_x);
+    std::vector<double> originalNodeY(node_y);
+
+    std::vector<double> expectedPointsX{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+                                        0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.014873267871414519, 8.372359722435612994, 9.916182851714186341, 11.17180940417338775,
+                                        0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.021612916987076680, 8.541090219036453490, 10.33134050232082579, 11.70280126708063406,
+                                        0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.021612921838043420, 8.541090340482851317, 10.33134080113699937, 11.70280164927028110,
+                                        0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.014873257214348179, 8.372359455630595804, 9.916182195246349806, 11.17180856454275784,
+                                        0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.009231913341891662, 8.231125581765601495, 9.568679376010450710, 10.72734808288726427,
+                                        0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.004257781943209693, 8.106595706893173769, 9.262276376411159973, 10.33545478808742679,
+                                        0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.000598733449153954, 8.014989592258231710, 9.036881559829700095, 10.04717197944511220,
+                                        0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.000598734163229864, 8.014989610135470954, 9.036881603816251385, 10.04717203570446493,
+                                        0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0,
+                                        0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0};
+
+    // The expected (y-) points, generated by interactor.
+    std::vector<double> expectedPointsY{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                        1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9907980331007956165, 0.7696241424499061790, 0.4331653038203038264, 0.2750112858449960118,
+                                        2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 1.990363764459876617, 1.758752009170715835, 1.406414660633680480, 1.240796876357717071,
+                                        3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.009636224659985260, 3.241247718439566050, 3.593584669157450229, 3.759202266436699524,
+                                        4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.009201984124368678, 4.230376288790720807, 4.566835757237710958, 4.724990071261565561,
+                                        5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.005581416323523491, 5.139733557614412973, 5.343811324323562317, 5.439739013178277460,
+                                        6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.001994298641023740, 6.049928266931340559, 6.122847395199174869, 6.157123365388534886,
+                                        7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.000114079035108183, 7.002856025872458368, 7.007027188416842911, 7.008987862473465391,
+                                        8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 7.999885924712966556, 7.997144067962484115, 7.992973042461954059, 7.991012432823422884,
+                                        9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0,
+                                        10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0};
+
+    // Set up the spline
+
+    std::vector<double> splineXCoordinates({11.0000, 11.5878, 11.9511, 11.9511, 11.5878, 11.0000, 10.4122, 10.0489, 10.0489, 10.4122, 11.0000});
+    std::vector<double> splineYCoordinates({0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0});
+
+    // Not part of the unit test but added to ensure arrays are the same size
+    ASSERT_EQ(splineXCoordinates.size(), splineYCoordinates.size());
+
+    meshkernelapi::GeometryList spline;
+    spline.geometry_separator = constants::missing::doubleValue;
+    spline.inner_outer_separator = constants::missing::innerOuterSeparator;
+    spline.num_coordinates = static_cast<int>(splineXCoordinates.size());
+    spline.coordinates_x = splineXCoordinates.data();
+    spline.coordinates_y = splineYCoordinates.data();
+
+    //--------------------------------
+
+    double sectionControlPoint1x = 10.0;
+    double sectionControlPoint1y = 8.0;
+    double sectionControlPoint2x = 10.0;
+    double sectionControlPoint2y = 1.0;
+
+    errorCode = meshkernelapi::mkernel_curvilinear_snap_to_spline(meshKernelId, spline,
+                                                                  sectionControlPoint1x,
+                                                                  sectionControlPoint1y,
+                                                                  sectionControlPoint2x,
+                                                                  sectionControlPoint2y);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    for (int i = 0; i < curvilinearGrid.num_m * curvilinearGrid.num_n; ++i)
+    {
+        EXPECT_NEAR(curvilinearGrid.node_x[i], expectedPointsX[i], tolerance);
+        EXPECT_NEAR(curvilinearGrid.node_y[i], expectedPointsY[i], tolerance);
+    }
+
+    //--------------------------------
+    // Now undo snapping.
+
+    bool didUndoOfDeleteNode = false;
+
+    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfDeleteNode);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndoOfDeleteNode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    for (int i = 0; i < curvilinearGrid.num_m * curvilinearGrid.num_n; ++i)
+    {
+        EXPECT_NEAR(curvilinearGrid.node_x[i], originalNodeX[i], tolerance);
+        EXPECT_NEAR(curvilinearGrid.node_y[i], originalNodeY[i], tolerance);
+    }
+}
