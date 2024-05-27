@@ -192,7 +192,7 @@ meshkernel::UndoActionPtr meshkernel::CurvilinearGridSnapping::Compute()
 
     std::unique_ptr<MeshSmoothingCalculator> smoothingFactorCalculator;
 
-    // TODO probably can reduce storage required. m_lineStartIndex.m_m and m_lineEndIndex
+    // probably can reduce storage required. m_lineStartIndex.m_m and m_lineEndIndex
     std::unique_ptr<CurvilinearGridBlockUndoAction> undoAction = CurvilinearGridBlockUndoAction::Create(m_grid, {0, 0}, {m_grid.NumN(), m_grid.NumM()});
 
     if (m_points.size() > 2)
