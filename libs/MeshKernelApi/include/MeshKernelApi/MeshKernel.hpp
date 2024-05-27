@@ -53,6 +53,15 @@ namespace meshkernelapi
     extern "C"
     {
 #endif
+
+        /// @brief Gets the double value used in the back-end library as separator and missing value
+        /// @return The double missing value used in mesh kernel
+        MKERNEL_API double mkernel_get_separator();
+
+        /// @brief Gets the double value used to separate the inner part of a polygon from its outer part
+        /// @return The double missing value used in mesh kernel
+        MKERNEL_API double mkernel_get_inner_outer_separator();
+
         /// @brief Creates a new mesh state and returns the generated \p meshKernelId
         /// @param[in] projectionType  Cartesian (0), spherical (1) or spherical accurate(2) state
         /// @param[out] meshKernelId The id of the mesh state
@@ -565,6 +574,44 @@ namespace meshkernelapi
                                                                   double yLowerLeftCornerSmoothingArea,
                                                                   double xUpperRightCornerSmootingArea,
                                                                   double yUpperRightCornerSmootingArea);
+
+        /// @brief Sets the curvilinear grid
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] land         The land boundary
+        /// @param[in] sectionControlPoint1x Start point x-coordinate for boundary section
+        /// @param[in] sectionControlPoint1y Start point y-coordinate for boundary section
+        /// @param[in] sectionControlPoint2x End point x-coordinate for boundary section
+        /// @param[in] sectionControlPoint2y End point y-coordinate for boundary section
+        /// @param[in] regionControlPointX X-coordinate of region defining point, if null value then use default region
+        /// @param[in] regionControlPointY Y-coordinate of region defining point, if null value then use default region
+        /// @returns Error code
+        MKERNEL_API int mkernel_curvilinear_snap_to_landboundary(int meshKernelId,
+                                                                 const GeometryList& land,
+                                                                 double sectionControlPoint1x,
+                                                                 double sectionControlPoint1y,
+                                                                 double sectionControlPoint2x,
+                                                                 double sectionControlPoint2y,
+                                                                 double regionControlPointX = mkernel_get_separator(),
+                                                                 double regionControlPointY = mkernel_get_separator());
+
+        /// @brief Sets the curvilinear grid
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] spline       The spline
+        /// @param[in] sectionControlPoint1x Start point x-coordinate for boundary section
+        /// @param[in] sectionControlPoint1y Start point y-coordinate for boundary section
+        /// @param[in] sectionControlPoint2x End point x-coordinate for boundary section
+        /// @param[in] sectionControlPoint2y End point y-coordinate for boundary section
+        /// @param[in] regionControlPointX X-coordinate of region defining point, if null value then use default region
+        /// @param[in] regionControlPointY Y-coordinate of region defining point, if null value then use default region
+        /// @returns Error code
+        MKERNEL_API int mkernel_curvilinear_snap_to_spline(int meshKernelId,
+                                                           const GeometryList& spline,
+                                                           double sectionControlPoint1x,
+                                                           double sectionControlPoint1y,
+                                                           double sectionControlPoint2x,
+                                                           double sectionControlPoint2y,
+                                                           double regionControlPointX = mkernel_get_separator(),
+                                                           double regionControlPointY = mkernel_get_separator());
 
         /// @brief Deallocate mesh state
         /// @param[in] meshKernelId The id of the mesh state
@@ -1404,14 +1451,6 @@ namespace meshkernelapi
         /// @param[in] mesh2d       The Mesh2D data
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_add(int meshKernelId, const Mesh2D& mesh2d);
-
-        /// @brief Gets the double value used in the back-end library as separator and missing value
-        /// @return The double missing value used in mesh kernel
-        MKERNEL_API double mkernel_get_separator();
-
-        /// @brief Gets the double value used to separate the inner part of a polygon from its outer part
-        /// @return The double missing value used in mesh kernel
-        MKERNEL_API double mkernel_get_inner_outer_separator();
 
         /// @brief Triangle interpolation (ec_module)
         ///

@@ -62,7 +62,7 @@ namespace meshkernel
         }
 
         bool inRange = false;
-        UInt startRange;
+        UInt startRange = 0;
         for (auto n = start; n < end; n++)
         {
             if (!IsEqual(vec[n].x, separator) && !inRange)
