@@ -3059,6 +3059,7 @@ TEST(Mesh2D, Mesh2DAddEdge)
     // allocate state
     int mk_id = 0;
     errorCode = mkernel_allocate_state(0, mk_id);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // first initialise using the first mesh, mesh2d
     errorCode = mkernel_mesh2d_set(mk_id, mesh2d);
@@ -3110,6 +3111,7 @@ TEST(Mesh2D, Mesh2DInsertNode)
     // allocate state
     int mk_id = 0;
     errorCode = mkernel_allocate_state(0, mk_id);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // first initialise using the first mesh, mesh2d
     errorCode = mkernel_mesh2d_set(mk_id, mesh2d);
