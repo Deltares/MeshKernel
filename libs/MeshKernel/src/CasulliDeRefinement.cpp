@@ -529,6 +529,154 @@ meshkernel::Point meshkernel::CasulliDeRefinement::ComputeNewNodeCoordinates(con
     return newNode;
 }
 
+bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedTriangleElements(Mesh2D& mesh,
+                                                                              const UInt index,
+                                                                              const UInt connectedElementId,
+                                                                              const std::vector<std::array<int, 2>>& kne) const
+{
+
+    for (UInt j = 0; j < mesh.m_numFacesNodes[connectedElementId]; ++j)
+    {
+        UInt edgeId = mesh.m_facesEdges[connectedElementId][j];
+
+        if (mesh.m_edgesNumFaces[edgeId] < 2 && !CleanUpEdge(mesh, edgeId))
+        {
+            return false;
+        }
+    }
+
+    // Find adjacent direct neighbours
+    UInt otherEdgeId = constants::missing::uintValue;
+
+    for (UInt i = 0; i < 2; ++i)
+    {
+        UInt leftElementId = kne[index][i] == constants::missing::intValue || kne[index][i] < 0 ? constants::missing::uintValue : static_cast<UInt>(kne[index][i]);
+
+        if (leftElementId == constants::missing::uintValue)
+        {
+            continue;
+        }
+
+        UInt oppositeSide = 1 - i;
+        UInt rightElementId = kne[index][oppositeSide] == constants::missing::intValue || kne[index][oppositeSide] < 0 ? constants::missing::uintValue : static_cast<UInt>(kne[index][oppositeSide]);
+
+        if (leftElementId == constants::missing::uintValue || rightElementId == constants::missing::uintValue)
+        {
+            continue;
+        }
+
+        UInt j;
+        UInt edgeId = constants::missing::uintValue;
+
+        // find the common link
+        for (j = 0; j < mesh.m_numFacesNodes[leftElementId]; ++j)
+        {
+            edgeId = mesh.m_facesEdges[leftElementId][j];
+
+            if (mesh.m_edgesNumFaces[edgeId] < 2)
+            {
+                continue;
+            }
+
+            if (mesh.m_edgesFaces[edgeId][0] == connectedElementId && mesh.m_edgesFaces[edgeId][1] == leftElementId)
+            {
+                if (rightElementId != constants::missing::uintValue)
+                {
+                    mesh.m_edgesFaces[edgeId][0] = rightElementId;
+                }
+                else
+                {
+                    mesh.m_edgesFaces[edgeId][0] = mesh.m_edgesFaces[edgeId][1];
+                    mesh.m_edgesFaces[edgeId][1] = constants::missing::uintValue;
+                    mesh.m_edgesNumFaces[edgeId] = 1;
+                }
+
+                break;
+            }
+            else if (mesh.m_edgesFaces[edgeId][1] == connectedElementId && mesh.m_edgesFaces[edgeId][0] == leftElementId)
+            {
+                if (rightElementId != constants::missing::uintValue)
+                {
+                    mesh.m_edgesFaces[edgeId][1] = rightElementId;
+                }
+                else
+                {
+                    mesh.m_edgesFaces[edgeId][1] = constants::missing::uintValue;
+                    mesh.m_edgesNumFaces[edgeId] = 1;
+                }
+
+                break;
+            }
+        }
+
+        if (otherEdgeId != constants::missing::uintValue)
+        {
+            mesh.m_facesEdges[leftElementId][j] = otherEdgeId;
+
+            if (!CleanUpEdge(mesh, edgeId))
+            {
+                return false;
+            }
+        }
+
+        otherEdgeId = edgeId;
+    }
+
+    // deactivate cell
+    mesh.m_numFacesNodes[connectedElementId] = 0;
+    return true;
+}
+
+void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedNonTriangleElements(Mesh2D& mesh,
+                                                                                 const UInt index,
+                                                                                 const UInt elementId,
+                                                                                 const UInt connectedElementId) const
+{
+    // polygons of degree higher than three: remove node and link
+
+    for (UInt j = 0; j < mesh.m_numFacesNodes[connectedElementId]; ++j)
+    {
+        UInt edgeId = mesh.m_facesEdges[connectedElementId][j];
+
+        if (mesh.m_edgesNumFaces[edgeId] < 2)
+        {
+            continue;
+        }
+
+        if (mesh.m_edgesFaces[edgeId][0] == elementId || mesh.m_edgesFaces[edgeId][1] == elementId)
+        {
+            UInt ndum = mesh.m_numFacesNodes[connectedElementId] - 1;
+
+            std::shift_left(mesh.m_facesEdges[connectedElementId].begin() + j, mesh.m_facesEdges[connectedElementId].begin() + ndum, 1);
+
+            // remove one node per removed link
+            // take the first node that has not been removed before, but not the node that is kept,
+            // which is the first of the center cell
+
+            UInt i = 0;
+
+            while (i < mesh.m_numFacesNodes[connectedElementId] &&
+                   mesh.m_facesNodes[connectedElementId][i] != mesh.GetEdge(edgeId).first &&
+                   mesh.m_facesNodes[connectedElementId][i] != mesh.GetEdge(edgeId).second &&
+                   mesh.m_facesNodes[connectedElementId][i] != mesh.m_facesNodes[elementId][0])
+            {
+                ++i;
+            }
+
+            if (index < mesh.m_numFacesNodes[connectedElementId])
+            {
+                std::shift_left(mesh.m_facesNodes[connectedElementId].begin() + i, mesh.m_facesNodes[connectedElementId].begin() + ndum, 1);
+            }
+            else
+            {
+                throw AlgorithmError("No node found in Casulli de-refinement");
+            }
+
+            mesh.m_numFacesNodes[connectedElementId] = ndum;
+        }
+    }
+}
+
 bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& mesh,
                                                                       const UInt elementId,
                                                                       const std::vector<UInt>& directlyConnected,
@@ -540,143 +688,14 @@ bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& me
 
         if (mesh.m_numFacesNodes[connectedElementId] < constants::geometric::numNodesInQuadrilateral)
         {
-
-            for (UInt j = 0; j < mesh.m_numFacesNodes[connectedElementId]; ++j)
+            if (!UpdateDirectlyConnectedTriangleElements(mesh, k, connectedElementId, kne))
             {
-                UInt edgeId = mesh.m_facesEdges[connectedElementId][j];
-
-                if (mesh.m_edgesNumFaces[edgeId] < 2 && !CleanUpEdge(mesh, edgeId))
-                {
-                    return false;
-                }
+                return false;
             }
-
-            // Find adjacent direct neighbours
-            UInt otherEdgeId = constants::missing::uintValue;
-
-            for (UInt i = 0; i < 2; ++i)
-            {
-                UInt leftElementId = kne[k][i] == constants::missing::intValue || kne[k][i] < 0 ? constants::missing::uintValue : static_cast<UInt>(kne[k][i]);
-
-                if (leftElementId == constants::missing::uintValue)
-                {
-                    continue;
-                }
-
-                UInt oppositeSide = 1 - i;
-                UInt rightElementId = kne[k][oppositeSide] == constants::missing::intValue || kne[k][oppositeSide] < 0 ? constants::missing::uintValue : static_cast<UInt>(kne[k][oppositeSide]);
-
-                if (leftElementId == constants::missing::uintValue || rightElementId == constants::missing::uintValue)
-                {
-                    continue;
-                }
-
-                UInt j;
-                UInt edgeId = constants::missing::uintValue;
-
-                // find the common link
-                for (j = 0; j < mesh.m_numFacesNodes[leftElementId]; ++j)
-                {
-                    edgeId = mesh.m_facesEdges[leftElementId][j];
-
-                    if (mesh.m_edgesNumFaces[edgeId] < 2)
-                    {
-                        continue;
-                    }
-
-                    if (mesh.m_edgesFaces[edgeId][0] == connectedElementId && mesh.m_edgesFaces[edgeId][1] == leftElementId)
-                    {
-                        if (rightElementId != constants::missing::uintValue)
-                        {
-                            mesh.m_edgesFaces[edgeId][0] = rightElementId;
-                        }
-                        else
-                        {
-                            mesh.m_edgesFaces[edgeId][0] = mesh.m_edgesFaces[edgeId][1];
-                            mesh.m_edgesFaces[edgeId][1] = constants::missing::uintValue;
-                            mesh.m_edgesNumFaces[edgeId] = 1;
-                        }
-
-                        break;
-                    }
-                    else if (mesh.m_edgesFaces[edgeId][1] == connectedElementId && mesh.m_edgesFaces[edgeId][0] == leftElementId)
-                    {
-                        if (rightElementId != constants::missing::uintValue)
-                        {
-                            mesh.m_edgesFaces[edgeId][1] = rightElementId;
-                        }
-                        else
-                        {
-                            mesh.m_edgesFaces[edgeId][1] = constants::missing::uintValue;
-                            mesh.m_edgesNumFaces[edgeId] = 1;
-                        }
-
-                        break;
-                    }
-                }
-
-                if (otherEdgeId != constants::missing::uintValue)
-                {
-                    mesh.m_facesEdges[leftElementId][j] = otherEdgeId;
-
-                    if (!CleanUpEdge(mesh, edgeId))
-                    {
-                        return false;
-                    }
-                }
-
-                otherEdgeId = edgeId;
-            }
-
-            // deactivate cell
-            mesh.m_numFacesNodes[connectedElementId] = 0;
         }
         else
         {
-
-            // polygons of degree higher than three: remove node and link
-
-            for (UInt j = 0; j < mesh.m_numFacesNodes[connectedElementId]; ++j)
-            {
-                UInt edgeId = mesh.m_facesEdges[connectedElementId][j];
-
-                if (mesh.m_edgesNumFaces[edgeId] < 2)
-                {
-                    continue;
-                }
-
-                if (mesh.m_edgesFaces[edgeId][0] == elementId || mesh.m_edgesFaces[edgeId][1] == elementId)
-                {
-                    UInt ndum = mesh.m_numFacesNodes[connectedElementId] - 1;
-
-                    std::shift_left(mesh.m_facesEdges[connectedElementId].begin() + j, mesh.m_facesEdges[connectedElementId].begin() + ndum, 1);
-
-                    // remove one node per removed link
-                    // take the first node that has not been removed before, but not the node that is kept,
-                    // which is the first of the center cell
-
-                    UInt i = 0;
-
-                    while (i < mesh.m_numFacesNodes[connectedElementId] &&
-                           mesh.m_facesNodes[connectedElementId][i] != mesh.GetEdge(edgeId).first &&
-                           mesh.m_facesNodes[connectedElementId][i] != mesh.GetEdge(edgeId).second &&
-                           mesh.m_facesNodes[connectedElementId][i] != mesh.m_facesNodes[elementId][0])
-                    {
-                        ++i;
-                    }
-
-                    if (k < mesh.m_numFacesNodes[connectedElementId])
-                    {
-                        std::shift_left(mesh.m_facesNodes[connectedElementId].begin() + i, mesh.m_facesNodes[connectedElementId].begin() + ndum, 1);
-                    }
-                    else
-                    {
-                        throw AlgorithmError("No node found in Casulli de-refinement");
-                    }
-
-                    mesh.m_numFacesNodes[connectedElementId] = ndum;
-                }
-            }
+            UpdateDirectlyConnectedNonTriangleElements(mesh, k, elementId, connectedElementId);
         }
     }
 

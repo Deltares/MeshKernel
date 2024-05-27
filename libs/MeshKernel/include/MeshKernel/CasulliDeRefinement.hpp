@@ -132,6 +132,20 @@ namespace meshkernel
                                                            const std::vector<UInt>& directlyConnected,
                                                            const std::vector<std::array<int, 2>>& kne) const;
 
+        /// @brief Update the mesh members for the mesh description and connectivity for triangle elements
+        bool UpdateDirectlyConnectedTriangleElements(Mesh2D& mesh,
+                                                     const UInt index,
+                                                     const UInt connectedElementId,
+                                                     const std::vector<std::array<int, 2>>& kne) const;
+
+        /// @brief Update the mesh members for the mesh description and connectivity for non-triangle elements
+        ///
+        /// That is, element with 4 or more edges.
+        void UpdateDirectlyConnectedNonTriangleElements(Mesh2D& mesh,
+                                                        const UInt index,
+                                                        const UInt elementId,
+                                                        const UInt connectedElementId) const;
+
         /// @brief Get the most significant node type for all nodes of the element.
         int GetNodeCode(const Mesh2D& mesh,
                         const std::vector<int>& nodeTypes,
