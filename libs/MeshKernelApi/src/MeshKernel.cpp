@@ -77,6 +77,7 @@
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
+#include <MeshKernel/UndoActions/UndoActionStack.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
 #include <MeshKernelApi/MeshKernel.hpp>
@@ -102,6 +103,9 @@ namespace meshkernelapi
     static meshkernel::ExitCode lastExitCode = meshkernel::ExitCode::Success;
     static meshkernel::UInt invalidMeshIndex{0};
     static meshkernel::Location invalidMeshLocation{meshkernel::Location::Unknown};
+
+    /// @brief Stack of undo actions
+    static meshkernel::UndoActionStack undoStack;
 
     static meshkernel::ExitCode HandleException(std::exception_ptr exception_ptr = std::current_exception())
     {
@@ -168,19 +172,14 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_undo_state(int meshKernelId, bool& undone)
+    MKERNEL_API int mkernel_undo_state(bool& undone)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         undone = false;
 
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
-            {
-                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
-            }
-
-            undone = meshKernelState[meshKernelId].m_undoStack.Undo();
+            undone = undoStack.Undo();
         }
         catch (...)
         {
@@ -189,19 +188,14 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_redo_state(int meshKernelId, bool& redone)
+    MKERNEL_API int mkernel_redo_state(bool& redone)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         redone = false;
 
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
-            {
-                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
-            }
-
-            redone = meshKernelState[meshKernelId].m_undoStack.Commit();
+            redone = undoStack.Commit();
         }
         catch (...)
         {
@@ -210,18 +204,13 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_clear_undo_state(int meshKernelId)
+    MKERNEL_API int mkernel_clear_undo_state()
     {
         lastExitCode = meshkernel::ExitCode::Success;
 
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
-            {
-                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
-            }
-
-            meshKernelState[meshKernelId].m_undoStack.Clear();
+            undoStack.Clear();
         }
         catch (...)
         {
@@ -251,7 +240,7 @@ namespace meshkernelapi
             const meshkernel::Polygons meshKernelPolygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             const auto deletionOptionEnum = static_cast<meshkernel::Mesh2D::DeleteMeshOptions>(deletionOption);
 
-            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteMesh(meshKernelPolygon, deletionOptionEnum, invertDeletionBool));
+            undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteMesh(meshKernelPolygon, deletionOptionEnum, invertDeletionBool));
         }
         catch (...)
         {
@@ -747,13 +736,13 @@ namespace meshkernelapi
                 if (sourceProjection == meshkernel::Projection::cartesian)
                 {
                     meshkernel::ConvertCartesianToSpherical conversion(zoneString);
-                    meshKernelState[meshKernelId].m_undoStack.Add(meshkernel::MeshConversion::Compute(*meshKernelState[meshKernelId].m_mesh2d, conversion));
+                    undoStack.Add(meshkernel::MeshConversion::Compute(*meshKernelState[meshKernelId].m_mesh2d, conversion));
                     meshKernelState[meshKernelId].m_projection = conversion.TargetProjection();
                 }
                 else if (sourceProjection == meshkernel::Projection::spherical)
                 {
                     meshkernel::ConvertSphericalToCartesian conversion(zoneString);
-                    meshKernelState[meshKernelId].m_undoStack.Add(meshkernel::MeshConversion::Compute(*meshKernelState[meshKernelId].m_mesh2d, conversion));
+                    undoStack.Add(meshkernel::MeshConversion::Compute(*meshKernelState[meshKernelId].m_mesh2d, conversion));
                     meshKernelState[meshKernelId].m_projection = conversion.TargetProjection();
                 }
                 else
@@ -845,7 +834,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteHangingEdges());
+            undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteHangingEdges());
         }
         catch (...)
         {
@@ -891,7 +880,7 @@ namespace meshkernelapi
                                                                        std::move(landBoundary),
                                                                        static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
                                                                        orthogonalizationParameters);
-            meshKernelState[meshKernelId].m_undoStack.Add(ortogonalization.Initialize());
+            undoStack.Add(ortogonalization.Initialize());
             ortogonalization.Compute();
         }
         catch (...)
@@ -939,7 +928,7 @@ namespace meshkernelapi
                                                                                                                                 std::move(landBoundary),
                                                                                                                                 static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
                                                                                                                                 orthogonalizationParameters);
-            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_meshOrthogonalization->Initialize());
+            undoStack.Add(meshKernelState[meshKernelId].m_meshOrthogonalization->Initialize());
         }
         catch (...)
         {
@@ -1553,7 +1542,7 @@ namespace meshkernelapi
 
             const auto minEdgeLength = meshKernelState[meshKernelId].m_mesh2d->ComputeMinEdgeLength(polygon);
             const auto searchRadius = std::max(1e-6, minEdgeLength * 0.1);
-            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, searchRadius));
+            undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, searchRadius));
         }
         catch (...)
         {
@@ -1576,7 +1565,7 @@ namespace meshkernelapi
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, mergingDistance));
+            undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, mergingDistance));
         }
         catch (...)
         {
@@ -1595,7 +1584,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->MergeTwoNodes(firstNode, secondNode));
+            undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->MergeTwoNodes(firstNode, secondNode));
         }
         catch (...)
         {
@@ -1687,7 +1676,7 @@ namespace meshkernelapi
             }
 
             auto [edgeId, undoAction] = meshKernelState[meshKernelId].m_mesh2d->ConnectNodes(startNode, endNode);
-            meshKernelState[meshKernelId].m_undoStack.Add(std::move(undoAction));
+            undoStack.Add(std::move(undoAction));
 
             new_edge_index = static_cast<int>(edgeId);
         }
@@ -1758,7 +1747,7 @@ namespace meshkernelapi
             if (edgeId != meshkernel::constants::missing::uintValue)
             {
                 compoundUndoAction->Add(std::move(action));
-                meshKernelState[meshKernelId].m_undoStack.Add(std::move(compoundUndoAction));
+                undoStack.Add(std::move(compoundUndoAction));
             }
             edgeIndex = static_cast<int>(edgeId);
         }
@@ -1782,7 +1771,7 @@ namespace meshkernelapi
             meshkernel::Point const nodeCoordinateVector{xCoordinate, yCoordinate};
 
             auto [nodeId, undoAction] = meshKernelState[meshKernelId].m_mesh2d->InsertNode(nodeCoordinateVector);
-            meshKernelState[meshKernelId].m_undoStack.Add(std::move(undoAction));
+            undoStack.Add(std::move(undoAction));
 
             nodeIndex = static_cast<int>(nodeId);
         }
@@ -1803,7 +1792,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteNode(nodeIndex));
+            undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteNode(nodeIndex));
         }
         catch (...)
         {
@@ -1824,7 +1813,7 @@ namespace meshkernelapi
 
             meshkernel::Point newPosition{xCoordinate, yCoordinate};
 
-            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->MoveNode(newPosition, nodeIndex));
+            undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->MoveNode(newPosition, nodeIndex));
         }
         catch (...)
         {
@@ -1854,7 +1843,7 @@ namespace meshkernelapi
             meshkernel::BoundingBox boundingBox{{xLowerLeftBoundingBox, yLowerLeftBoundingBox}, {xUpperRightBoundingBox, yUpperRightBoundingBox}};
 
             const auto edgeIndex = meshKernelState[meshKernelId].m_mesh2d->FindLocationIndex(point, meshkernel::Location::Edges, {}, boundingBox);
-            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteEdge(edgeIndex));
+            undoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteEdge(edgeIndex));
         }
         catch (...)
         {
@@ -2074,7 +2063,7 @@ namespace meshkernelapi
             meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
                                                       std::move(averaging),
                                                       meshRefinementParameters);
-            meshKernelState[meshKernelId].m_undoStack.Add(meshRefinement.Compute());
+            undoStack.Add(meshRefinement.Compute());
         }
         catch (...)
         {
@@ -2126,7 +2115,7 @@ namespace meshkernelapi
             meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
                                                       std::move(averaging),
                                                       meshRefinementParameters);
-            meshKernelState[meshKernelId].m_undoStack.Add(meshRefinement.Compute());
+            undoStack.Add(meshRefinement.Compute());
         }
         catch (...)
         {
@@ -2158,7 +2147,7 @@ namespace meshkernelapi
                                                       std::move(interpolant),
                                                       meshRefinementParameters,
                                                       useNodalRefinement);
-            meshKernelState[meshKernelId].m_undoStack.Add(meshRefinement.Compute());
+            undoStack.Add(meshRefinement.Compute());
         }
         catch (...)
         {
@@ -2188,7 +2177,7 @@ namespace meshkernelapi
             const auto polygon = meshkernel::Polygons(points, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d, polygon, meshRefinementParameters);
-            meshKernelState[meshKernelId].m_undoStack.Add(meshRefinement.Compute());
+            undoStack.Add(meshRefinement.Compute());
         }
         catch (...)
         {
@@ -2212,7 +2201,7 @@ namespace meshkernelapi
             }
 
             meshkernel::RemoveDisconnectedRegions removeDisconnectedRegions;
-            meshKernelState[meshKernelId].m_undoStack.Add(removeDisconnectedRegions.Compute(*meshKernelState[meshKernelId].m_mesh2d));
+            undoStack.Add(removeDisconnectedRegions.Compute(*meshKernelState[meshKernelId].m_mesh2d));
         }
         catch (...)
         {
@@ -2342,7 +2331,7 @@ namespace meshkernelapi
             // Translate origin back to centre of rotation
             transformation.compose(meshkernel::Translation(meshkernel::Vector(centreX, centreY)));
 
-            meshKernelState[meshKernelId].m_undoStack.Add(meshkernel::MeshTransformation::Compute(*meshKernelState[meshKernelId].m_mesh2d, transformation));
+            undoStack.Add(meshkernel::MeshTransformation::Compute(*meshKernelState[meshKernelId].m_mesh2d, transformation));
         }
         catch (...)
         {
@@ -2363,7 +2352,7 @@ namespace meshkernelapi
             }
 
             meshkernel::Translation translation(meshkernel::Vector(translationX, translationY));
-            meshKernelState[meshKernelId].m_undoStack.Add(meshkernel::MeshTransformation::Compute(*meshKernelState[meshKernelId].m_mesh2d, translation));
+            undoStack.Add(meshkernel::MeshTransformation::Compute(*meshKernelState[meshKernelId].m_mesh2d, translation));
         }
         catch (...)
         {
@@ -2383,7 +2372,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshKernelState[meshKernelId].m_undoStack.Add(meshkernel::CasulliRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d));
+            undoStack.Add(meshkernel::CasulliRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d));
         }
         catch (...)
         {
@@ -2597,7 +2586,7 @@ namespace meshkernelapi
 
             const meshkernel::FlipEdges flipEdges(*meshKernelState[meshKernelId].m_mesh2d, landBoundary, triangulateFaces, projectToLandBoundary);
 
-            meshKernelState[meshKernelId].m_undoStack.Add(flipEdges.Compute());
+            undoStack.Add(flipEdges.Compute());
         }
         catch (...)
         {
@@ -2796,7 +2785,7 @@ namespace meshkernelapi
             std::unique_ptr<meshkernel::CompoundUndoAction> undoSmallFlowEdges = meshkernel::CompoundUndoAction::Create();
             undoSmallFlowEdges->Add(meshKernelState[meshKernelId].m_mesh2d->DeleteSmallFlowEdges(smallFlowEdgesThreshold));
             undoSmallFlowEdges->Add(meshKernelState[meshKernelId].m_mesh2d->DeleteSmallTrianglesAtBoundaries(minFractionalAreaTriangles));
-            meshKernelState[meshKernelId].m_undoStack.Add(std::move(undoSmallFlowEdges));
+            undoStack.Add(std::move(undoSmallFlowEdges));
         }
         catch (...)
         {
@@ -2976,7 +2965,7 @@ namespace meshkernelapi
             }
 
             const auto mergedMeshes = meshkernel::Mesh2D::Merge(*meshKernelState[meshKernelId].m_mesh2d, *meshToConnect);
-            meshKernelState[meshKernelId].m_undoStack.Add(meshkernel::ConnectMeshes::Compute(*mergedMeshes, searchFraction));
+            undoStack.Add(meshkernel::ConnectMeshes::Compute(*mergedMeshes, searchFraction));
             meshKernelState[meshKernelId].m_mesh2d->SetNodes(mergedMeshes->Nodes());
             meshKernelState[meshKernelId].m_mesh2d->SetEdges(mergedMeshes->Edges());
             meshKernelState[meshKernelId].m_mesh2d->m_projection = mergedMeshes->m_projection;
@@ -3041,7 +3030,7 @@ namespace meshkernelapi
             // Execute
             meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid, refinement);
             curvilinearGridRefinement.SetBlock(firstPoint, secondPoint);
-            meshKernelState[meshKernelId].m_undoStack.Add(curvilinearGridRefinement.Compute());
+            undoStack.Add(curvilinearGridRefinement.Compute());
         }
         catch (...)
         {
@@ -3071,7 +3060,7 @@ namespace meshkernelapi
             meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid);
 
             curvilinearGridDeRefinement.SetBlock(firstPoint, secondPoint);
-            meshKernelState[meshKernelId].m_undoStack.Add(curvilinearGridDeRefinement.Compute());
+            undoStack.Add(curvilinearGridDeRefinement.Compute());
         }
         catch (...)
         {
@@ -3533,7 +3522,7 @@ namespace meshkernelapi
             }
 
             // Execute
-            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->Compute());
+            undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->Compute());
         }
         catch (...)
         {
@@ -3600,7 +3589,7 @@ namespace meshkernelapi
                                                                           static_cast<meshkernel::UInt>(smoothingIterations));
 
             curvilinearGridSmoothing.SetBlock(firstPoint, secondPoint);
-            meshKernelState[meshKernelId].m_undoStack.Add(curvilinearGridSmoothing.Compute());
+            undoStack.Add(curvilinearGridSmoothing.Compute());
         }
         catch (...)
         {
@@ -3787,7 +3776,7 @@ namespace meshkernelapi
             }
             meshkernel::Point const fromPoint{xFromCoordinate, yFromCoordinate};
             meshkernel::Point const toPoint{xToCoordinate, yToCoordinate};
-            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGridLineShift->MoveNode(fromPoint, toPoint));
+            undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGridLineShift->MoveNode(fromPoint, toPoint));
         }
         catch (...)
         {
@@ -3811,7 +3800,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Curvilinear grid line shift algorithm instance is null.");
             }
 
-            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGridLineShift->Compute());
+            undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGridLineShift->Compute());
         }
         catch (...)
         {
@@ -3861,7 +3850,7 @@ namespace meshkernelapi
 
             meshkernel::Point const point{xCoordinate, yCoordinate};
 
-            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGrid->InsertFace(point));
+            undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGrid->InsertFace(point));
         }
         catch (...)
         {
@@ -3934,7 +3923,7 @@ namespace meshkernelapi
             curvilinearDeleteExterior.SetBlock({xFirstPointCoordinate, yFirstPointCoordinate},
                                                {xSecondPointCoordinate, ySecondPointCoordinate});
 
-            meshKernelState[meshKernelId].m_undoStack.Add(curvilinearDeleteExterior.Compute());
+            undoStack.Add(curvilinearDeleteExterior.Compute());
         }
         catch (...)
         {
@@ -3971,7 +3960,7 @@ namespace meshkernelapi
             curvilinearDeleteInterior.SetBlock({xFirstPointCoordinate, yFirstPointCoordinate},
                                                {xSecondPointCoordinate, ySecondPointCoordinate});
 
-            meshKernelState[meshKernelId].m_undoStack.Add(curvilinearDeleteInterior.Compute());
+            undoStack.Add(curvilinearDeleteInterior.Compute());
         }
         catch (...)
         {
@@ -4009,7 +3998,7 @@ namespace meshkernelapi
             meshkernel::Point const upperRight{xUpperRightCorner, yUpperRightCorner};
             curvilinearLineAttractionRepulsion.SetBlock(lowerLeft, upperRight);
 
-            meshKernelState[meshKernelId].m_undoStack.Add(curvilinearLineAttractionRepulsion.Compute());
+            undoStack.Add(curvilinearLineAttractionRepulsion.Compute());
         }
         catch (...)
         {
@@ -4047,7 +4036,7 @@ namespace meshkernelapi
 
             curvilinearGridLineMirror.SetLine({xFirstGridLineNode, yFirstGridLineNode}, {xSecondGridLineNode, ySecondGridLineNode});
 
-            meshKernelState[meshKernelId].m_undoStack.Add(curvilinearGridLineMirror.Compute());
+            undoStack.Add(curvilinearGridLineMirror.Compute());
         }
         catch (...)
         {
@@ -4078,7 +4067,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
             }
 
-            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGrid->DeleteNode({xPointCoordinate, yPointCoordinate}));
+            undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGrid->DeleteNode({xPointCoordinate, yPointCoordinate}));
         }
         catch (...)
         {
@@ -4109,7 +4098,7 @@ namespace meshkernelapi
             meshkernel::Point const fromPoint{xFromPoint, yFromPoint};
             meshkernel::Point const toPoint{xToPoint, yToPoint};
 
-            meshKernelState[meshKernelId].m_undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGrid->MoveNode(fromPoint, toPoint));
+            undoStack.Add(meshKernelState[meshKernelId].m_curvilinearGrid->MoveNode(fromPoint, toPoint));
         }
         catch (...)
         {

@@ -3036,6 +3036,9 @@ TEST(Mesh2D, Mesh2DAddEdge)
 {
     using namespace meshkernelapi;
 
+    int errorCode = mkernel_clear_undo_state();
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
     meshkernel::UInt const num_nodes_x = 4;
     meshkernel::UInt const num_nodes_y = 4;
     double const delta = 1.0;
@@ -3055,7 +3058,7 @@ TEST(Mesh2D, Mesh2DAddEdge)
 
     // allocate state
     int mk_id = 0;
-    int errorCode = mkernel_allocate_state(0, mk_id);
+    errorCode = mkernel_allocate_state(0, mk_id);
 
     // first initialise using the first mesh, mesh2d
     errorCode = mkernel_mesh2d_set(mk_id, mesh2d);
@@ -3068,13 +3071,13 @@ TEST(Mesh2D, Mesh2DAddEdge)
 
     // Should be only a single item on the undo action stack
     bool undoInsertEdge = false;
-    errorCode = mkernel_undo_state(mk_id, undoInsertEdge);
+    errorCode = mkernel_undo_state(undoInsertEdge);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_TRUE(undoInsertEdge);
 
     // Should be no items on the undo action stack
     undoInsertEdge = false;
-    errorCode = mkernel_undo_state(mk_id, undoInsertEdge);
+    errorCode = mkernel_undo_state(undoInsertEdge);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_FALSE(undoInsertEdge);
 }
@@ -3082,6 +3085,10 @@ TEST(Mesh2D, Mesh2DAddEdge)
 TEST(Mesh2D, Mesh2DInsertNode)
 {
     using namespace meshkernelapi;
+
+    // Clear the undo stack before starting the test.
+    int errorCode = mkernel_clear_undo_state();
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::UInt const num_nodes_x = 4;
     meshkernel::UInt const num_nodes_y = 4;
@@ -3102,7 +3109,7 @@ TEST(Mesh2D, Mesh2DInsertNode)
 
     // allocate state
     int mk_id = 0;
-    int errorCode = mkernel_allocate_state(0, mk_id);
+    errorCode = mkernel_allocate_state(0, mk_id);
 
     // first initialise using the first mesh, mesh2d
     errorCode = mkernel_mesh2d_set(mk_id, mesh2d);
@@ -3117,13 +3124,13 @@ TEST(Mesh2D, Mesh2DInsertNode)
 
     // Should be only a single item on the undo action stack
     bool undoInsertNode = false;
-    errorCode = mkernel_undo_state(mk_id, undoInsertNode);
+    errorCode = mkernel_undo_state(undoInsertNode);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_TRUE(undoInsertNode);
 
     // Should be zero items on the undo action stack.
     undoInsertNode = false;
-    errorCode = mkernel_undo_state(mk_id, undoInsertNode);
+    errorCode = mkernel_undo_state(undoInsertNode);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_FALSE(undoInsertNode);
 }
