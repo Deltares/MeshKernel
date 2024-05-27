@@ -3413,13 +3413,7 @@ TEST(Mesh2D, CasulliRefinementErrorCases)
     errorCode = meshkernelapi::mkernel_mesh2d_casulli_refinement(meshKernelId + 1);
     ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
 
-    errorCode = meshkernelapi::mkernel_mesh2d_casulli_refinement_on_polygon(meshKernelId, nullptr);
-    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
-
     errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement(meshKernelId + 1);
-    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
-
-    errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement_on_polygon(meshKernelId, nullptr);
     ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
 }
 
@@ -3599,7 +3593,7 @@ TEST(Mesh2D, CasulliDeRefinementElementsWholeMesh)
     auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement_elements(meshKernelId, &elementsToRemove);
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement_elements(meshKernelId, elementsToRemove);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     const std::vector<meshkernel::Point> removedElementCentres{{1.5, 0.5}, {1.5, 2.5}, {1.5, 4.5}, {1.5, 6.5}, {1.5, 8.5}, {3.5, 0.5}, {3.5, 2.5}, {3.5, 4.5}, {3.5, 6.5}, {3.5, 8.5}, {5.5, 0.5}, {5.5, 2.5}, {5.5, 4.5}, {5.5, 6.5}, {5.5, 8.5}, {7.5, 0.5}, {7.5, 2.5}, {7.5, 4.5}, {7.5, 6.5}, {7.5, 8.5}, {9.5, 0.5}, {9.5, 2.5}, {9.5, 4.5}, {9.5, 6.5}, {9.5, 8.5}};
@@ -3674,7 +3668,7 @@ TEST(Mesh2D, CasulliDeRefinementElementsMeshRegion)
     auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement_elements_on_polygon(meshKernelId, &polygon, &elementsToRemove);
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement_elements_on_polygon(meshKernelId, polygon, elementsToRemove);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     const std::vector<meshkernel::Point> removedElementCentres{{2.5, 2.5}, {4.5, 4.5}, {4.5, 6.5}, {6.5, 4.5}, {6.5, 6.5}};

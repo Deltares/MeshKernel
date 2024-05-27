@@ -2395,7 +2395,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_casulli_refinement_on_polygon(int meshKernelId, GeometryList* polygons)
+    MKERNEL_API int mkernel_mesh2d_casulli_refinement_on_polygon(int meshKernelId, const GeometryList& polygons)
     {
         lastExitCode = meshkernel::ExitCode::Success;
 
@@ -2406,13 +2406,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            if (polygons == nullptr)
-            {
-                throw meshkernel::MeshKernelError("Polygons is null.");
-            }
-
             // Convert polygon date from GeometryList to Polygons
-            auto polygonPoints = ConvertGeometryListToPointVector(*polygons);
+            auto polygonPoints = ConvertGeometryListToPointVector(polygons);
             const meshkernel::Polygons meshKernelPolygons(polygonPoints,
                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
@@ -2426,7 +2421,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_casulli_derefinement_elements(int meshKernelId, GeometryList* elements)
+    MKERNEL_API int mkernel_mesh2d_casulli_derefinement_elements(int meshKernelId, GeometryList& elements)
     {
         lastExitCode = meshkernel::ExitCode::Success;
 
@@ -2437,12 +2432,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            if (elements == nullptr)
-            {
-                throw meshkernel::MeshKernelError("element list is null.");
-            }
-
-            if (elements->coordinates_x == nullptr || elements->coordinates_y == nullptr)
+            if (elements.coordinates_x == nullptr || elements.coordinates_y == nullptr)
             {
                 throw meshkernel::MeshKernelError("element coordinate list is null.");
             }
@@ -2452,12 +2442,12 @@ namespace meshkernelapi
 
             std::vector<meshkernel::Point> elementCentres(casulliDerefinement.ElementsToDelete(*meshKernelState[meshKernelId].m_mesh2d, polygons));
 
-            elements->num_coordinates = static_cast<int>(elementCentres.size());
+            elements.num_coordinates = static_cast<int>(elementCentres.size());
 
             for (size_t i = 0; i < elementCentres.size(); ++i)
             {
-                elements->coordinates_x[i] = elementCentres[i].x;
-                elements->coordinates_y[i] = elementCentres[i].y;
+                elements.coordinates_x[i] = elementCentres[i].x;
+                elements.coordinates_y[i] = elementCentres[i].y;
             }
         }
         catch (...)
@@ -2467,7 +2457,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_casulli_derefinement_elements_on_polygon(int meshKernelId, GeometryList* polygonGeometry, GeometryList* elements)
+    MKERNEL_API int mkernel_mesh2d_casulli_derefinement_elements_on_polygon(int meshKernelId, const GeometryList& polygonGeometry, GeometryList& elements)
     {
         lastExitCode = meshkernel::ExitCode::Success;
 
@@ -2478,35 +2468,25 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            if (polygonGeometry == nullptr)
-            {
-                throw meshkernel::MeshKernelError("Polygons geometry is null.");
-            }
-
-            if (elements == nullptr)
-            {
-                throw meshkernel::MeshKernelError("element list is null.");
-            }
-
-            if (elements->coordinates_x == nullptr || elements->coordinates_y == nullptr)
+            if (elements.coordinates_x == nullptr || elements.coordinates_y == nullptr)
             {
                 throw meshkernel::MeshKernelError("element coordinate list is null.");
             }
 
             // Convert polygon date from GeometryList to Polygons
-            auto polygonPoints = ConvertGeometryListToPointVector(*polygonGeometry);
+            auto polygonPoints = ConvertGeometryListToPointVector(polygonGeometry);
             const meshkernel::Polygons polygons(polygonPoints,
                                                 meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             meshkernel::CasulliDeRefinement casulliDerefinement;
             std::vector<meshkernel::Point> elementCentres(casulliDerefinement.ElementsToDelete(*meshKernelState[meshKernelId].m_mesh2d, polygons));
 
-            elements->num_coordinates = static_cast<int>(elementCentres.size());
+            elements.num_coordinates = static_cast<int>(elementCentres.size());
 
             for (size_t i = 0; i < elementCentres.size(); ++i)
             {
-                elements->coordinates_x[i] = elementCentres[i].x;
-                elements->coordinates_y[i] = elementCentres[i].y;
+                elements.coordinates_x[i] = elementCentres[i].x;
+                elements.coordinates_y[i] = elementCentres[i].y;
             }
         }
         catch (...)
@@ -2538,7 +2518,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_casulli_derefinement_on_polygon(int meshKernelId, GeometryList* polygons)
+    MKERNEL_API int mkernel_mesh2d_casulli_derefinement_on_polygon(int meshKernelId, const GeometryList& polygons)
     {
         lastExitCode = meshkernel::ExitCode::Success;
 
@@ -2549,13 +2529,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            if (polygons == nullptr)
-            {
-                throw meshkernel::MeshKernelError("Polygons is null.");
-            }
-
             // Convert polygon date from GeometryList to Polygons
-            auto polygonPoints = ConvertGeometryListToPointVector(*polygons);
+            auto polygonPoints = ConvertGeometryListToPointVector(polygons);
             const meshkernel::Polygons meshKernelPolygons(polygonPoints,
                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
