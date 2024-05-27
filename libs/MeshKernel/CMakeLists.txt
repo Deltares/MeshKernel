@@ -115,6 +115,9 @@ set(
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothness.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapping.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridUtilities.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridMeshExpansionCalculator.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapGridToLandBoundary.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapGridToSpline.cpp
 )
 
 
@@ -229,6 +232,9 @@ set(
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothness.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapping.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridUtilities.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridMeshExpansionCalculator.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapGridToLandBoundary.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapGridToSpline.hpp
 )
 
 

@@ -416,11 +416,28 @@ Splines::ComputePointOnSplineFromAdimensionalDistance(UInt index,
     return {points, adimensionalDistances};
 }
 
-meshkernel::Point Splines::ComputeClosestPointOnSplineSegment(UInt index, double startSplineSegment, double endSplineSegment, Point point)
+meshkernel::Point Splines::ComputeClosestPointOnSplineSegment(UInt index, double startSplineSegment, double endSplineSegment, Point point) const
 {
     FuncDistanceFromAPoint func(this, index, point);
     const auto adimensionalDistance = FindFunctionRootWithGoldenSectionSearch(func, startSplineSegment, endSplineSegment);
     return ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistance);
+}
+
+meshkernel::Point Splines::ComputeClosestPoint(UInt index, Point point) const
+{
+    return ComputeClosestPointOnSplineSegment(index, 0.0, static_cast<double>(m_splineNodes[index].size() - 1), point);
+}
+
+meshkernel::BoundingBox Splines::GetBoundingBox(const UInt splineIndex) const
+{
+    if (splineIndex >= m_splineNodes.size())
+    {
+        throw meshkernel::ConstraintError("Invalid spline index: {}, not in range 0 .. {}",
+                                          splineIndex,
+                                          GetNumSplines() - 1);
+    }
+
+    return BoundingBox(m_splineNodes[splineIndex]);
 }
 
 void Splines::SnapSpline(const size_t splineIndex,
