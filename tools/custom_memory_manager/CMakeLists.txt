@@ -25,7 +25,7 @@ set(
   ${SRC_DIR}/new_delete_global_replacements.cpp
 )
 
-# list of tagret headers
+# list of target headers
 set(
   INC_LIST
   ${INC_DIR}/custom_memory_manager.hpp
