@@ -33,13 +33,28 @@
 namespace meshkernel
 {
 
+    // TODO rename, there exists a class CurvilinearGridGridFromSplines
+    // Or rename the other
     class CurvilinearGridSplineToGrid
     {
-    public :
+    public:
+        void Compute(const Splines& splines, CurvilinearGrid& grid) const;
 
-        void Compute (const Splines& splines, CurvilinearGrid& grid) const;
+    private:
+        using DoubleVector = std::vector<double>;
+        using DoubleMatrix = std::vector<DoubleVector>;
 
-    private :
+        UInt longestSplineLength(const Splines& splines) const;
+        void sectr(Splines& splines, lin_alg::Matrix<double>& splineIntersections) const;
+        bool checkSplines(const Splines& splines) const;
+
+        void determineIntersection(Splines& splines,
+                                   const UInt i,
+                                   const UInt j,
+                                   UInt& numberTimesCrossing,
+                                   double& crossProductOfIntersection,
+                                   double& firstNormalisedIntersectionLength,
+                                   double& secondNormalisedIntersectionLength) const;
     };
 
-}
+} // namespace meshkernel

@@ -2,6 +2,7 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridSplineToGrid.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Parameters.hpp>
@@ -980,4 +981,32 @@ TEST(CurvilinearGridFromSplines, Compute_ThreeLongitudinalSplinesTwoCrossingSpli
     ASSERT_NEAR(370675.06421111501, curviGrid->GetNode(2, 6).y, tolerance);
     ASSERT_NEAR(370676.02282016393, curviGrid->GetNode(2, 7).y, tolerance);
     ASSERT_NEAR(370675.67515379097, curviGrid->GetNode(2, 8).y, tolerance);
+}
+
+TEST(CurvilinearGridFromSplines, GridFromSplines)
+{
+    namespace mk = meshkernel;
+
+    // Bottom boundary
+    std::vector<mk::Point> spline1{{-1.0, 0.0}, {11.0, 0.0}};
+
+    // right boundary
+    std::vector<mk::Point> spline2{{10.0, -1.0}, {10.0, 11.0}};
+
+    // top boundary
+    std::vector<mk::Point> spline3{{11.0, 10.0}, {-1.0, 10.0}};
+
+    // left boundary
+    std::vector<mk::Point> spline4{{0.0, 11.0}, {0.0, -1.0}};
+
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+    splines->AddSpline(spline1);
+    splines->AddSpline(spline2);
+    splines->AddSpline(spline3);
+    splines->AddSpline(spline4);
+
+    mk::CurvilinearGridSplineToGrid splinesToGrid;
+    mk::CurvilinearGrid grid(Projection::cartesian);
+
+    splinesToGrid.Compute(*splines, grid);
 }
