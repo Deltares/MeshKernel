@@ -133,6 +133,17 @@ void Splines::SwapSplines(const UInt firstSpline, const UInt secondSpline)
     std::swap(m_splinesLength[firstSpline], m_splinesLength[secondSpline]);
 }
 
+void Splines::Reverse(const UInt splineIndex)
+{
+    if (splineIndex > GetNumSplines())
+    {
+        throw ConstraintError("Invalid spline index: {} not in 0 .. {}", splineIndex, GetNumSplines() - 1);
+    }
+
+    std::ranges::reverse(m_splineNodes[splineIndex]);
+    std::ranges::reverse(m_splineDerivatives[splineIndex]);
+}
+
 void Splines::AddPointInExistingSpline(UInt splineIndex, const Point& point)
 {
     if (splineIndex > GetNumSplines())
@@ -175,6 +186,7 @@ bool Splines::GetSplinesIntersection(UInt first,
                                                            m_splineNodes[second][nn + 1],
                                                            false,
                                                            m_projection);
+
             if (areCrossing)
             {
                 if (numNodesFirstSpline == 2)
