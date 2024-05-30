@@ -50,20 +50,41 @@ ComputeEdgesAndNodes(
     std::filesystem::path const& file_path,
     meshkernel::Mesh::Type meshType);
 
+/// @brief Generate a regular grid using the unstructured grid class.
+///
+/// @param n number of points in x-direction
+/// @param m number of points in y-direction
+/// @param dim_x grid extent in x-direction
+/// @param dim_y grid extent in y-direction
+/// @param origin grid origin
+/// @param ewIndexIncreasing Increasing (or decreasing) node indices for edges in east-west direction
+/// @param nsIndexIncreasing Increasing (or decreasing) node indices for edges in north-south direction
 std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     meshkernel::UInt n,
     meshkernel::UInt m,
     double dim_x,
     double dim_y,
     meshkernel::Projection projection,
-    meshkernel::Point const& origin = {0.0, 0.0});
+    meshkernel::Point const& origin = {0.0, 0.0},
+    const bool ewIndexIncreasing = true,
+    const bool nsIndexIncreasing = false);
 
+/// @brief Generate a regular grid using the unstructured grid class.
+///
+/// @param n number of points in x-direction
+/// @param m number of points in y-direction
+/// @param delta grid delta (in both directions)
+/// @param origin grid origin
+/// @param ewIndexIncreasing Increasing (or decreasing) node indices for edges in east-west direction
+/// @param nsIndexIncreasing Increasing (or decreasing) node indices for edges in north-south direction
 std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     meshkernel::UInt n,
     meshkernel::UInt m,
     double delta,
     meshkernel::Projection projection,
-    meshkernel::Point const& origin = {0.0, 0.0});
+    meshkernel::Point const& origin = {0.0, 0.0},
+    const bool ewIndexIncreasing = true,
+    const bool nsIndexIncreasing = false);
 
 std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTestingRand(
     meshkernel::UInt n,

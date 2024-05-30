@@ -33,6 +33,7 @@ set(CURVILINEAR_UNDO_INC_DIR ${CURVILINEAR_GRID_INC_DIR}/UndoActions)
 set(
   SRC_LIST
   ${SRC_DIR}/AveragingInterpolation.cpp
+  ${SRC_DIR}/CasulliDeRefinement.cpp
   ${SRC_DIR}/CasulliRefinement.cpp
   ${SRC_DIR}/ConnectMeshes.cpp
   ${SRC_DIR}/Contacts.cpp
@@ -72,6 +73,7 @@ set(
   ${UNDO_SRC_DIR}/CompoundUndoAction.cpp
   ${UNDO_SRC_DIR}/DeleteEdgeAction.cpp
   ${UNDO_SRC_DIR}/DeleteNodeAction.cpp
+  ${UNDO_SRC_DIR}/FullUnstructuredGridUndo.cpp
   ${UNDO_SRC_DIR}/MeshConversionAction.cpp
   ${UNDO_SRC_DIR}/NodeTranslationAction.cpp
   ${UNDO_SRC_DIR}/ResetEdgeAction.cpp
@@ -135,6 +137,7 @@ set(
   ${DOMAIN_INC_DIR}/AveragingInterpolation.hpp
   ${DOMAIN_INC_DIR}/BilinearInterpolationOnGriddedSamples.hpp
   ${DOMAIN_INC_DIR}/BoundingBox.hpp
+  ${DOMAIN_INC_DIR}/CasulliDeRefinement.hpp
   ${DOMAIN_INC_DIR}/CasulliRefinement.hpp
   ${DOMAIN_INC_DIR}/ConnectMeshes.hpp
   ${DOMAIN_INC_DIR}/Constants.hpp
@@ -185,6 +188,7 @@ set(
   ${UNDO_INC_DIR}/BaseMeshUndoAction.hpp
   ${UNDO_INC_DIR}/DeleteEdgeAction.hpp
   ${UNDO_INC_DIR}/DeleteNodeAction.hpp
+  ${UNDO_INC_DIR}/FullUnstructuredGridUndo.hpp
   ${UNDO_INC_DIR}/MeshConversionAction.hpp
   ${UNDO_INC_DIR}/NodeTranslationAction.hpp
   ${UNDO_INC_DIR}/ResetEdgeAction.hpp

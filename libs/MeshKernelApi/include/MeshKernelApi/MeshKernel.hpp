@@ -867,10 +867,40 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_translate(int meshKernelId, double translationX, double translationY);
 
+        /// @brief Get list of elements that will be removed after the Casulli de-refinement algorithm
+        /// @param[in]     meshKernelId  The id of the mesh state
+        /// @param[in,out] elements      List of elements to be removed.
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_casulli_derefinement_elements(int meshKernelId, GeometryList& elements);
+
+        /// @brief Get list of elements that will be removed after the Casulli de-refinement algorithm
+        /// @param[in]     meshKernelId    The id of the mesh state
+        /// @param[in]     polygonGeometry The input polygon geometry
+        /// @param[in,out] elements        List of elements to be removed.
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_casulli_derefinement_elements_on_polygon(int meshKernelId, const GeometryList& polygonGeometry, GeometryList& elements);
+
+        /// @brief De-refine mesh using the Casulli de-refinement algorithm
+        /// @param[in]  meshKernelId  The id of the mesh state
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_casulli_derefinement(int meshKernelId);
+
+        /// @brief De-refine mesh using the Casulli de-refinement algorithm
+        /// @param[in]  meshKernelId  The id of the mesh state
+        /// @param[in]  polygons  The input polygons
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_casulli_derefinement_on_polygon(int meshKernelId, const GeometryList& polygons);
+
         /// @brief Refine mesh using the Casulli refinement algorithm
         /// @param[in]  meshKernelId  The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_casulli_refinement(int meshKernelId);
+
+        /// @brief Refine mesh using the Casulli refinement algorithm
+        /// @param[in]  meshKernelId  The id of the mesh state
+        /// @param[in]  polygons  The input polygons
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_casulli_refinement_on_polygon(int meshKernelId, const GeometryList& polygons);
 
         /// The function modifies the mesh for achieving orthogonality between the edges and the segments connecting the face circumcenters.
         /// The amount of orthogonality is traded against the mesh smoothing (in this case the equality of face areas).
