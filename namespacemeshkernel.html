@@ -100,6 +100,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct describing the three coordinates in a cartesian projection.  <a href="structmeshkernel_1_1_cartesian3_d_point.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_casulli_de_refinement.html">CasulliDeRefinement</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the Casulli de-refinement for a mesh.  <a href="classmeshkernel_1_1_casulli_de_refinement.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_casulli_refinement.html">CasulliRefinement</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the Casulli refinement for a mesh.  <a href="classmeshkernel_1_1_casulli_refinement.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -425,10 +428,10 @@ const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a cl
 <tr class="memdesc:aa72d2c72f71ee69084ae3a53bd98f29e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Algorithm performing the zero's search using the golden section algorithm's.  <a href="namespacemeshkernel.html#aa72d2c72f71ee69084ae3a53bd98f29e">More...</a><br /></td></tr>
 <tr class="separator:aa72d2c72f71ee69084ae3a53bd98f29e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a07e59ae3e0731bf406306aa4deb20eee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a07e59ae3e0731bf406306aa4deb20eee">NextCircularForwardIndex</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> currentIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> size)</td></tr>
-<tr class="memdesc:a07e59ae3e0731bf406306aa4deb20eee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the next forward index.  <a href="namespacemeshkernel.html#a07e59ae3e0731bf406306aa4deb20eee">More...</a><br /></td></tr>
+<tr class="memdesc:a07e59ae3e0731bf406306aa4deb20eee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the next forward index, for a range in 0 .. size-1.  <a href="namespacemeshkernel.html#a07e59ae3e0731bf406306aa4deb20eee">More...</a><br /></td></tr>
 <tr class="separator:a07e59ae3e0731bf406306aa4deb20eee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6560021860904bb4568f5e214453822c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a6560021860904bb4568f5e214453822c">NextCircularBackwardIndex</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> currentIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> size)</td></tr>
-<tr class="memdesc:a6560021860904bb4568f5e214453822c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the next backward index.  <a href="namespacemeshkernel.html#a6560021860904bb4568f5e214453822c">More...</a><br /></td></tr>
+<tr class="memdesc:a6560021860904bb4568f5e214453822c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the next backward index, for a range in 0 .. size-1.  <a href="namespacemeshkernel.html#a6560021860904bb4568f5e214453822c">More...</a><br /></td></tr>
 <tr class="separator:a6560021860904bb4568f5e214453822c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a944190110ee7b7ddafca823efcb04d71"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a944190110ee7b7ddafca823efcb04d71">IsPointOnPole</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;point)</td></tr>
 <tr class="memdesc:a944190110ee7b7ddafca823efcb04d71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines if a point is close to the poles (latitude close to 90 degrees).  <a href="namespacemeshkernel.html#a944190110ee7b7ddafca823efcb04d71">More...</a><br /></td></tr>
@@ -2721,7 +2724,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Get the next backward index. </p>
+<p>Get the next backward index, for a range in 0 .. size-1. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">currentIndex</td><td>The current index. </td></tr>
@@ -2759,7 +2762,7 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p>Get the next forward index. </p>
+<p>Get the next forward index, for a range in 0 .. size-1. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">currentIndex</td><td>The current index. </td></tr>
