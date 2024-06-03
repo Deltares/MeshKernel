@@ -124,11 +124,11 @@ namespace meshkernel
         /// @param[in] maximumGridHeight Maximum grid height
         /// @param[in] isSpacingCurvatureAdapted Is spacing-curvature adapted
         /// @param[in] distances The dimensional distances of each point
-        /// @returns The points along the splineand the adimensional distances of each point
+        /// @returns The points along the spline and the adimensional distances of each point
         std::tuple<std::vector<Point>, std::vector<double>> ComputePointOnSplineFromAdimensionalDistance(UInt index,
                                                                                                          double maximumGridHeight,
                                                                                                          bool isSpacingCurvatureAdapted,
-                                                                                                         const std::vector<double>& distances);
+                                                                                                         const std::vector<double>& distances) const;
 
         /// @brief Computes the point on a spline segment which is the closest to another point
         /// @param[in] index The spline index
@@ -185,19 +185,13 @@ namespace meshkernel
         /// @param[in] splineIndex The index of the current spline
         /// @param[in] isSpacingCurvatureAdapted Is spacing curvature adapted
         /// @param[in] h When accounting for curvature, the height to use
-        FuncAdimensionalToDimensionalDistanceOnSpline(Splines* splines,
+        FuncAdimensionalToDimensionalDistanceOnSpline(const Splines& splines,
                                                       UInt splineIndex,
                                                       bool isSpacingCurvatureAdapted,
                                                       double h) : m_spline(splines),
                                                                   m_splineIndex(splineIndex),
                                                                   m_isSpacingCurvatureAdapted(isSpacingCurvatureAdapted),
-                                                                  m_h(h)
-        {
-            if (m_spline == nullptr)
-            {
-                throw std::invalid_argument("FuncAdimensionalToDimensionalDistanceOnSpline::m_spline is nullptr");
-            }
-        };
+                                                                  m_h(h) {}
 
         /// @brief Set dimensional distance
         /// @param[in] distance distance
@@ -209,12 +203,12 @@ namespace meshkernel
         /// @brief This is the function we want to find the root of
         double operator()(double adimensionalDistanceReferencePoint) const
         {
-            auto distanceFromReferencePoint = m_spline->ComputeSplineLength(m_splineIndex, 0.0, adimensionalDistanceReferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
+            auto distanceFromReferencePoint = m_spline.ComputeSplineLength(m_splineIndex, 0.0, adimensionalDistanceReferencePoint, m_numSamples, m_isSpacingCurvatureAdapted, m_h, 0.1);
             distanceFromReferencePoint = std::abs(distanceFromReferencePoint - m_DimensionalDistance);
             return distanceFromReferencePoint;
         }
 
-        Splines* m_spline = nullptr;        ///< Pointer to splines
+        const Splines& m_spline;            ///< Reference to splines
         UInt m_splineIndex;                 ///< Spline index
         bool m_isSpacingCurvatureAdapted;   ///< Is spacing curvature adapted
         double m_h;                         ///< When accounting for curvature, the height to use
@@ -229,26 +223,20 @@ namespace meshkernel
         /// @param[in] splines A pointer to splines
         /// @param[in] splineIndex The index of the current spline
         /// @param[in] point The point from where the distance is calculated
-        FuncDistanceFromAPoint(const Splines* splines,
+        FuncDistanceFromAPoint(const Splines& splines,
                                UInt splineIndex,
                                Point point) : m_spline(splines),
                                               m_splineIndex(splineIndex),
-                                              m_point(point)
-        {
-            if (m_spline == nullptr)
-            {
-                throw std::invalid_argument("FuncDistanceFromAPoint::m_spline is nullptr");
-            }
-        };
+                                              m_point(point) {}
 
         /// @brief This is the function we want to find the root of
         double operator()(double adimensionalDistanceReferencePoint) const
         {
-            const auto pointOnSpline = ComputePointOnSplineAtAdimensionalDistance(m_spline->m_splineNodes[m_splineIndex], m_spline->m_splineDerivatives[m_splineIndex], adimensionalDistanceReferencePoint);
+            const auto pointOnSpline = ComputePointOnSplineAtAdimensionalDistance(m_spline.m_splineNodes[m_splineIndex], m_spline.m_splineDerivatives[m_splineIndex], adimensionalDistanceReferencePoint);
             return ComputeDistance(m_point, pointOnSpline, Projection::cartesian);
         }
 
-        const Splines* m_spline;            ///< Pointer to splines
+        const Splines& m_spline;            ///< Reference to splines
         UInt m_splineIndex;                 ///< Spline index
         Point m_point;                      ///< The point from where the distance is calculated
         double m_DimensionalDistance = 0.0; ///< Dimensional distance

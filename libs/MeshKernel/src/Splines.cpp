@@ -135,7 +135,7 @@ void Splines::SwapSplines(const UInt firstSpline, const UInt secondSpline)
 
 void Splines::Reverse(const UInt splineIndex)
 {
-    if (splineIndex > GetNumSplines())
+    if (splineIndex >= GetNumSplines())
     {
         throw ConstraintError("Invalid spline index: {} not in 0 .. {}", splineIndex, GetNumSplines() - 1);
     }
@@ -407,13 +407,13 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<double>>
 Splines::ComputePointOnSplineFromAdimensionalDistance(UInt index,
                                                       double maximumGridHeight,
                                                       bool isSpacingCurvatureAdapted,
-                                                      const std::vector<double>& distances)
+                                                      const std::vector<double>& distances) const
 {
 
     std::vector<Point> points(distances.size());
     std::vector<double> adimensionalDistances(distances.size());
 
-    FuncAdimensionalToDimensionalDistanceOnSpline func(this, index, isSpacingCurvatureAdapted, maximumGridHeight);
+    FuncAdimensionalToDimensionalDistanceOnSpline func(*this, index, isSpacingCurvatureAdapted, maximumGridHeight);
     const auto numNodes = static_cast<UInt>(m_splineNodes[index].size());
     for (UInt i = 0, size = static_cast<UInt>(distances.size()); i < size; ++i)
     {
@@ -430,7 +430,7 @@ Splines::ComputePointOnSplineFromAdimensionalDistance(UInt index,
 
 meshkernel::Point Splines::ComputeClosestPointOnSplineSegment(UInt index, double startSplineSegment, double endSplineSegment, Point point) const
 {
-    FuncDistanceFromAPoint func(this, index, point);
+    FuncDistanceFromAPoint func(*this, index, point);
     const auto adimensionalDistance = FindFunctionRootWithGoldenSectionSearch(func, startSplineSegment, endSplineSegment);
     return ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistance);
 }
