@@ -45,8 +45,25 @@ namespace meshkernel
         using DoubleMatrix = std::vector<DoubleVector>;
 
         UInt longestSplineLength(const Splines& splines) const;
-        void sectr(Splines& splines, lin_alg::Matrix<double>& splineIntersections) const;
+
+        void sectr(Splines& splines,
+                   lin_alg::Matrix<double>& splineIntersections,
+                   lin_alg::Matrix<int>& mn12) const;
+
+        void splrgf(Splines& splines,
+                    const lin_alg::Matrix<double>& splineIntersections,
+                    const lin_alg::Matrix<int>& mn12,
+                    CurvilinearGrid& grid) const;
+
+        void makespl(const Splines& splines,
+                     const UInt whichSpline,
+                     const std::vector<double>& intersectionPoints) const;
+
         bool checkSplines(const Splines& splines) const;
+
+        // great name
+        std::vector<double> paktij(const lin_alg::Matrix<double>& splineIntersections,
+                                   const UInt whichRow) const;
 
         void determineIntersection(Splines& splines,
                                    const UInt i,

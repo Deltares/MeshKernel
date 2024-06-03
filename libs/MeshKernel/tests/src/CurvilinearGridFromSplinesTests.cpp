@@ -8,6 +8,8 @@
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Splines.hpp>
 
+#include <fstream>
+
 using namespace meshkernel;
 
 TEST(CurvilinearGridFromSplines, ComputeSplinesProperties)
@@ -983,6 +985,54 @@ TEST(CurvilinearGridFromSplines, Compute_ThreeLongitudinalSplinesTwoCrossingSpli
     ASSERT_NEAR(370675.67515379097, curviGrid->GetNode(2, 8).y, tolerance);
 }
 
+meshkernel::Splines LoadSplines(const std::string& fileName)
+{
+
+    std::ifstream splineFile;
+    splineFile.open(fileName.c_str());
+
+    meshkernel::Splines splines(Projection::cartesian);
+    std::string line;
+
+    std::vector<meshkernel::Point> splinePoints;
+
+    while (std::getline(splineFile, line))
+    {
+        if (size_t found = line.find("L00"); found != std::string::npos)
+        {
+            std::getline(splineFile, line);
+            std::istringstream sizes(line);
+
+            meshkernel::UInt numPoints = 0;
+            meshkernel::UInt numDim = 0;
+
+            sizes >> numPoints;
+            sizes >> numDim;
+
+            splinePoints.clear();
+            splinePoints.reserve(numPoints);
+
+            for (meshkernel::UInt i = 0; i < numPoints; ++i)
+            {
+                std::getline(splineFile, line);
+                std::istringstream values(line);
+                double x;
+                double y;
+                values >> x;
+                values >> y;
+                splinePoints.emplace_back(meshkernel::Point(x, y));
+            }
+
+            splines.AddSpline(splinePoints);
+        }
+    }
+
+    std::cout << "number of splines: " << splines.GetNumSplines() << std::endl;
+
+    splineFile.close();
+    return splines;
+}
+
 TEST(CurvilinearGridFromSplines, GridFromSplines)
 {
     namespace mk = meshkernel;
@@ -991,7 +1041,8 @@ TEST(CurvilinearGridFromSplines, GridFromSplines)
     std::vector<mk::Point> spline1{{-1.0, 0.0}, {11.0, 0.0}};
 
     // right boundary
-    std::vector<mk::Point> spline2{{10.0, -1.0}, {10.0, 11.0}};
+    std::vector<mk::Point> spline2{{10.0, 11.0}, {10.0, -1.0}};
+    // std::vector<mk::Point> spline2{{10.0, -1.0}, {10.0, 11.0}};
 
     // top boundary
     std::vector<mk::Point> spline3{{11.0, 10.0}, {-1.0, 10.0}};
@@ -999,11 +1050,14 @@ TEST(CurvilinearGridFromSplines, GridFromSplines)
     // left boundary
     std::vector<mk::Point> spline4{{0.0, 11.0}, {0.0, -1.0}};
 
-    auto splines = std::make_shared<Splines>(Projection::cartesian);
-    splines->AddSpline(spline1);
-    splines->AddSpline(spline2);
-    splines->AddSpline(spline3);
-    splines->AddSpline(spline4);
+    LoadSplines("/home/wcs1/MeshKernel/MeshKernel/build_deb/044.txt");
+
+    // auto splines = std::make_shared<Splines>(Projection::cartesian);
+    auto splines = std::make_shared<Splines>(LoadSplines("/home/wcs1/MeshKernel/MeshKernel/build_deb/044.txt"));
+    // splines->AddSpline(spline1);
+    // splines->AddSpline(spline2);
+    // splines->AddSpline(spline3);
+    // splines->AddSpline(spline4);
 
     mk::CurvilinearGridSplineToGrid splinesToGrid;
     mk::CurvilinearGrid grid(Projection::cartesian);
