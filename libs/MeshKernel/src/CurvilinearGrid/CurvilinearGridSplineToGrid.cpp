@@ -513,32 +513,150 @@ void meshkernel::CurvilinearGridSplineToGrid::getdis(const Splines& splines,
                                                      double& tValue,
                                                      double& sValue) const
 {
-    double ts = std::min(ts, stattic_cast<double>(splines.m_splineNodes[whichSpline].size()));
     double dt = 0.1;
-    double xt0 = splines.m_splineNodes[whichSpline].x;
-    double yt0 = splines.m_splineNodes[whichSpline].y;
+    double t0 = 0.0;
+    Point startPoint = splines.m_splineNodes[whichSpline][0];
+    Point endPoint;
+    double t1;
+    tValue = std::min(tValue, static_cast<double>(splines.m_splineNodes[whichSpline].size()));
     sValue = 0.0;
-    tValue = 0.0;
 
     do
     {
         t1 = t0 + dt;
 
-        if (t1 < ts)
+        if (t1 < tValue)
         {
+            endPoint = splines.Evaluate (whichSpline, t1);
         }
         else
         {
+            endPoint = splines.Evaluate (whichSpline, tValue);
         }
 
-        ss += dbdistance();
+        std::cout << " end point " << endPoint.x << "  "<< endPoint.y << std::endl;
 
-    } while (t1 < ts);
+        sValue += ComputeDistance(startPoint, endPoint, splines.m_projection);
+        startPoint = endPoint;
+        t0 = t1;
+
+    } while (t1 < tValue);
+
+    std::cout << " sValue "<< tValue << "  " << sValue << std::endl;
+}
+
+void meshkernel::CurvilinearGridSplineToGrid::makesr (const double ar,
+                                                      const double s0,
+                                                      const double s1,
+                                                      std::vector<double>& sr) const
+{
+    double ds = 1.0;
+    sr[0] = 0.0;
+
+    std::cout << " sr " << ar << " :";
+
+    for (UInt k = 0; k < sr.size () - 1; ++k)
+    {
+        sr[k+1] = sr[k] + ds;
+
+        std::cout << " {" << sr [k] << "  " << sr [k+1] << "  " << ds  << "}";
+
+        ds *= ar;
+    }
+
+    std::cout << std::endl;
+
+    [[maybe_unused]] double fac = (s1 -s0) / sr [sr.size () - 1];
+
+    for (UInt k = 0; k < sr.size (); ++k)
+    {
+        sr [k] = s0 + fac * sr [k];
+    }
+
+}
+
+void meshkernel::CurvilinearGridSplineToGrid::makessq(const std::vector<double>& s, // intersectionPoints
+                                                      const UInt mFac,
+                                                      std::vector<double>& ssq) const
+{
+    if (s.size () == 2)
+    {
+        for (UInt i = 0; i <= mFac; ++i)
+        {
+            ssq [i] = s[0] + (s[1] - s[0]) * static_cast<double>(i) / static_cast<double>(mFac);
+        }
+    }
+    else if (s.size () >= 3)
+    {
+        std::vector<double> a (s.size ());
+        std::vector<double> sl (mFac + 1);
+        std::vector<double> sr (mFac + 1);
+
+        // std::vector<double> glad (intersectionPoints.size ());
+
+        // for (UInt i = 1; i < intersectionPoints.size () - 1; ++i)
+        // {
+        //     glad[i] = (s[i+1] - s[i]) / (s[i] - s[i - 1]);
+        // }
+
+        std::cout << "a : ";
+
+        for (UInt i = 1; i < s.size () - 1; ++i)
+        {
+            a[i] = (s[i+1] - s[i]) / (s[i] - s[i - 1]);
+            std::cout << " {" << i << ", " << a[i] << "  " << s[i+1] << "  " << s[i] << "  " << s[i - 1] << "}, ";
+        }
+
+        std::cout << std::endl;
+
+        a[0] = a[1];
+        a[s.size () - 1] = a[s.size () - 2];
+
+        std::cout << " ssq = ";
+        // UInt kr = 0;
+
+        for (UInt i = 0; i < s.size () - 1; ++i)
+        {
+            std::cout << a[i + 1] << " --- ";
+            double ar = std::pow (a[i + 1], 1.0 / static_cast<double>(mFac));
+            makesr (ar, s [i], s[i+1], sr);
+
+            double al = std::pow (a[i], 1.0 / static_cast<double>(mFac));
+            makesr (al, s [i], s[i+1], sl);
+
+            for (UInt k = 1; k <= mFac + 1; ++k)
+            {
+                UInt kr = i * mFac + k - 1;
+                // std::cout << kr << "  ";
+                ar = static_cast<double>(k - 1) / static_cast<double>(mFac);
+                al = 1.0 - ar;
+                ssq[kr] = ar * sr [k - 1] + al * sl[k-1];
+
+                if (!std::isfinite (ssq[kr]))
+                {
+                    std::cout << "{ " << ar << "  " << al << "  " << k << "  " << ar << "  " << sr [k - 1] << "  " << al  << "  " << sl[k-1] << "} ";// << std::endl;
+                }
+
+                // std::cout << "{ "  << ssq[kr];
+                ar = (ssq[kr] - s[i]) / (s[i+1] - s[i]);
+                al = 1.0 - ar;
+                ssq[kr] = ar * sr [k - 1] + al * sl[k - 1];
+                // ++kr;
+            }
+
+        }
+
+        std::cout << std::endl;
+    }
+
 }
 
 void meshkernel::CurvilinearGridSplineToGrid::makespl(const Splines& splines,
                                                       const UInt whichSpline,
-                                                      const std::vector<double>& intersectionPoints) const
+                                                      const UInt mFac,
+                                                      const std::vector<double>& intersectionPoints //,
+                                                      // std::vector<Point>& gridPoints
+) const
 {
     // evaluate the spline at the intersection points
     bool curvatureAdapted = false;                              // Parameter H is not used in getdis.f90
@@ -550,17 +668,37 @@ void meshkernel::CurvilinearGridSplineToGrid::makespl(const Splines& splines,
 
     for (UInt i = 0; i < distances.size(); ++i)
     {
-        std::cout << "{" << splinePoints[i].x << ", " << splinePoints[i].y << ", " << distances[i] << "}, ";
+        std::cout << "{" << splinePoints[i].x << ", " << splinePoints[i].y << ", " << distances[i] << ", " << intersectionPoints [i] << "}, ";
     }
 
     std::cout << std::endl;
 
     //--------------------------------
     // getdis
+
+    std::vector<double> t (intersectionPoints);
+    std::vector<double> s (intersectionPoints.size());
+
     for (UInt i = 0; i < intersectionPoints.size(); ++i)
     {
-        getdis(splines, whichSpline, splinePoints, t[i], s[i]);
+        getdis(splines, whichSpline, t[i], s[i]);
     }
+
+    std::vector<double> ssq ((intersectionPoints.size() - 1 ) * mFac + 1, -999.0);
+
+    if (intersectionPoints.size () >= 2)
+    {
+        makessq (s, mFac, ssq);
+
+        // std::cout << "ssq ";
+
+        // for (UInt i = 0; i < ssq.size (); ++i) {
+        //     std::cout << ssq[i] << "  ";
+        // }
+
+        // std::cout << std::endl;
+    }
+
 }
 
 void meshkernel::CurvilinearGridSplineToGrid::splrgf(Splines& splines,
@@ -568,8 +706,8 @@ void meshkernel::CurvilinearGridSplineToGrid::splrgf(Splines& splines,
                                                      const lin_alg::Matrix<int>& mn12,
                                                      CurvilinearGrid& grid [[maybe_unused]]) const
 {
-    UInt nfac = 10;
-    UInt mfac = 10;
+    UInt nFac = 10;
+    UInt mFac = 10;
 
     // TOOD can this be changed to just 'i'
     for (UInt i1 = 0; i1 < splines.GetNumSplines(); ++i1)
@@ -594,18 +732,18 @@ void meshkernel::CurvilinearGridSplineToGrid::splrgf(Splines& splines,
         if (i1 + 1 <= intersectionPoints.size())
         {
             // std::tie(pointsAlongSpline, normalisedDistances) = splines.ComputePointOnSplineFromAdimensionalDistance(i1, );
-            makespl(splines, i1, intersectionPoints);
-            jj = (mn12(i1, 0) - 1) * nfac + 1;
-            ii1 = (mn12(i1, 1) - 1) * mfac + 1;
-            ii2 = (mn12(i1, 2) - 1) * mfac + 1;
+            makespl(splines, i1, mFac, intersectionPoints);
+            jj = (mn12(i1, 0) - 1) * nFac + 1;
+            ii1 = (mn12(i1, 1) - 1) * mFac + 1;
+            ii2 = (mn12(i1, 2) - 1) * mFac + 1;
         }
         else
         {
             // std::tie(pointsAlongSpline, normalisedDistances) = splines.ComputePointOnSplineFromAdimensionalDistance(i1, );
-            makespl(splines, i1, intersectionPoints);
-            jj = (mn12(i1, 0) - 1) * mfac + 1;
-            ii1 = (mn12(i1, 1) - 1) * nfac + 1;
-            ii2 = (mn12(i1, 2) - 1) * nfac + 1;
+            makespl(splines, i1, nFac, intersectionPoints);
+            jj = (mn12(i1, 0) - 1) * mFac + 1;
+            ii1 = (mn12(i1, 1) - 1) * nFac + 1;
+            ii2 = (mn12(i1, 2) - 1) * nFac + 1;
         }
 
         // UInt k = 0;
@@ -634,8 +772,8 @@ void meshkernel::CurvilinearGridSplineToGrid::splrgf(Splines& splines,
         // }
     }
 
-    // UInt ncr = (ns - 1) * nfac + 1;
-    // UInt mcr = (ms - 1) * mfac + 1;
+    // UInt ncr = (ns - 1) * nFac + 1;
+    // UInt mcr = (ms - 1) * mFac + 1;
 
     // std::vector<double> x1(nmax);
     // std::vector<double> x2(nmax);
@@ -656,12 +794,12 @@ void meshkernel::CurvilinearGridSplineToGrid::splrgf(Splines& splines,
     //         x4[1] = constants::missing::doubleValue;
 
     //         // TOOD check k and l loop range
-    //         for (UInt k = 1; k < mfac + 1; ++k)
+    //         for (UInt k = 1; k < mFac + 1; ++k)
     //         {
-    //             for (UInt l = 1; l < nfac + 1; ++l)
+    //             for (UInt l = 1; l < nFac + 1; ++l)
     //             {
-    //                 ki = (i - 1) * mfac + k;
-    //                 lj = (j - 1) * mfac + l;
+    //                 ki = (i - 1) * mFac + k;
+    //                 lj = (j - 1) * mFac + l;
 
     //                 if (xc(ki, lj) != constants::missing::doubleValue)
     //                 {
@@ -672,7 +810,7 @@ void meshkernel::CurvilinearGridSplineToGrid::splrgf(Splines& splines,
     //                         x1[l] = xc(ki, lj);
     //                         y1[l] = yc(ki, lj);
     //                     }
-    //                     if (k == mfac + 1)
+    //                     if (k == mFac + 1)
     //                     {
     //                         x2[l] = xc(ki, lj);
     //                         y2[l] = yc(ki, lj);
@@ -682,7 +820,7 @@ void meshkernel::CurvilinearGridSplineToGrid::splrgf(Splines& splines,
     //                         x3[k] = xc(ki, lj);
     //                         y3[k] = yc(ki, lj);
     //                     }
-    //                     if (l == nfac + 1)
+    //                     if (l == nFac + 1)
     //                     {
     //                         x4[k] = xc(ki, lj);
     //                         y4[k] = yc(ki, lj);
@@ -718,12 +856,12 @@ void meshkernel::CurvilinearGridSplineToGrid::splrgf(Splines& splines,
     //         {
     //             tranfn2();
 
-    //             for (UInt k = 1; k <= mfac + 1; ++k)
+    //             for (UInt k = 1; k <= mFac + 1; ++k)
     //             {
-    //                 for (UInt l = 1; l <= nfac + 1; ++l)
+    //                 for (UInt l = 1; l <= nFac + 1; ++l)
     //                 {
-    //                     ki = (i - 1) * mfac + k;
-    //                     lj = (j - 1) * nfac + l;
+    //                     ki = (i - 1) * mFac + k;
+    //                     lj = (j - 1) * nFac + l;
 
     //                     if (xc(ki, lj) == constants::missing::doubleValue)
     //                     {
