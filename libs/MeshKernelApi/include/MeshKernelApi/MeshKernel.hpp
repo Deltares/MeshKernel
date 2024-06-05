@@ -69,21 +69,18 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_allocate_state(int projectionType, int& meshKernelId);
 
         /// @brief Attempt to undo by one undo-action.
-        /// @param[in] meshKernelId The id of the mesh state.
         /// @param[out] undone Indicates if the undo action was actually undone
         /// @returns Error code
-        MKERNEL_API int mkernel_undo_state(int meshKernelId, bool& undone);
+        MKERNEL_API int mkernel_undo_state(bool& undone);
 
         /// @brief Attempt to redo by one undo-action.
-        /// @param[in] meshKernelId The id of the mesh state.
         /// @param[out] redone Indicates if the redo action was actually redone
         /// @returns Error code
-        MKERNEL_API int mkernel_redo_state(int meshKernelId, bool& redone);
+        MKERNEL_API int mkernel_redo_state(bool& redone);
 
         /// @brief Clear the undo state.
-        /// @param[in] meshKernelId The id of the mesh state.
         /// @returns Error code
-        MKERNEL_API int mkernel_clear_undo_state(int meshKernelId);
+        MKERNEL_API int mkernel_clear_undo_state();
 
         /// @brief Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
         ///
@@ -1585,18 +1582,6 @@ namespace meshkernelapi
                                                              GeometryList& polygon,
                                                              int startIndex,
                                                              int endIndex);
-
-        /// @brief Attempt to redo by one undo-action.
-        /// @param[in] meshKernelId The id of the mesh state.
-        /// @param[out] redone Indicates if the redo action was actually redone
-        /// @returns Error code
-        MKERNEL_API int mkernel_redo_state(int meshKernelId, bool& redone);
-
-        /// @brief Attempt to undo by one undo-action.
-        /// @param[in] meshKernelId The id of the mesh state.
-        /// @param[out] undone Indicates if the undo action was actually undone
-        /// @returns Error code
-        MKERNEL_API int mkernel_undo_state(int meshKernelId, bool& undone);
 
 #ifdef __cplusplus
     }

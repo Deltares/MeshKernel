@@ -137,6 +137,7 @@ void meshkernel::CurvilinearGridSnapping::ApplyExpansionToGrid(const Curvilinear
 
 meshkernel::UndoActionPtr meshkernel::CurvilinearGridSnapping::Compute()
 {
+    // probably can reduce storage required. m_lineStartIndex.m_m and m_lineEndIndex
     std::unique_ptr<CurvilinearGridBlockUndoAction> undoAction = CurvilinearGridBlockUndoAction::Create(m_grid, {0, 0}, {m_grid.NumN(), m_grid.NumM()});
     std::unique_ptr<CurvilinearGridMeshExpansionCalculator> expansionCalculator = AllocateCurvilinearGridMeshExpansionCalculator();
 
