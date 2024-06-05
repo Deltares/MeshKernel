@@ -3522,7 +3522,7 @@ TEST(Mesh2D, CasulliDeRefinementWholeMesh)
     // Now check undo
 
     bool didUndo = false;
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
 

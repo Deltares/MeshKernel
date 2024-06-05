@@ -2421,8 +2421,8 @@ namespace meshkernelapi
             const meshkernel::Polygons meshKernelPolygons(polygonPoints,
                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            meshKernelState[meshKernelId].m_undoStack.Add(meshkernel::CasulliRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d,
-                                                                                                 meshKernelPolygons));
+            meshKernelUndoStack.Add(meshkernel::CasulliRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d,
+                                                                           meshKernelPolygons));
         }
         catch (...)
         {
@@ -2519,7 +2519,7 @@ namespace meshkernelapi
 
             meshkernel::CasulliDeRefinement casulliDerefinement;
 
-            meshKernelState[meshKernelId].m_undoStack.Add(casulliDerefinement.Compute(*meshKernelState[meshKernelId].m_mesh2d));
+            meshKernelUndoStack.Add(casulliDerefinement.Compute(*meshKernelState[meshKernelId].m_mesh2d));
         }
         catch (...)
         {
@@ -2546,8 +2546,8 @@ namespace meshkernelapi
 
             meshkernel::CasulliDeRefinement casulliDerefinement;
 
-            meshKernelState[meshKernelId].m_undoStack.Add(casulliDerefinement.Compute(*meshKernelState[meshKernelId].m_mesh2d,
-                                                                                      meshKernelPolygons));
+            meshKernelUndoStack.Add(casulliDerefinement.Compute(*meshKernelState[meshKernelId].m_mesh2d,
+                                                                meshKernelPolygons));
         }
         catch (...)
         {
