@@ -1053,7 +1053,9 @@ TEST(CurvilinearGridFromSplines, GridFromSplines)
     LoadSplines("/home/wcs1/MeshKernel/MeshKernel/build_deb/044.txt");
 
     // auto splines = std::make_shared<Splines>(Projection::cartesian);
-    auto splines = std::make_shared<Splines>(LoadSplines("/home/wcs1/MeshKernel/MeshKernel/build_deb/044.txt"));
+
+    auto splines = std::make_shared<Splines>(LoadSplines("/home/senior/MeshKernel/MeshKernel01/build_debug/044.txt"));
+    // auto splines = std::make_shared<Splines>(LoadSplines("/home/wcs1/MeshKernel/MeshKernel/build_deb/044.txt"));
     // splines->AddSpline(spline1);
     // splines->AddSpline(spline2);
     // splines->AddSpline(spline3);

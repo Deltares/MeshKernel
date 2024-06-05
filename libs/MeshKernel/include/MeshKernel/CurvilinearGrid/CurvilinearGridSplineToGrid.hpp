@@ -57,7 +57,22 @@ namespace meshkernel
 
         void makespl(const Splines& splines,
                      const UInt whichSpline,
+                     const UInt mFac,
                      const std::vector<double>& intersectionPoints) const;
+
+        void makessq(const std::vector<double>& fixedPoints,
+                     const UInt mFac,
+                     std::vector<double>& ssq) const;
+
+        void makesr (const double ar,
+                     const double s0,
+                     const double s1,
+                     std::vector<double>& sr) const;
+
+        void getdis(const Splines& splines,
+                    const UInt whichSpline,
+                    double& tValue,
+                    double& sValue) const;
 
         bool checkSplines(const Splines& splines) const;
 
