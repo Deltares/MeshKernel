@@ -1411,7 +1411,7 @@ TEST(Mesh2D, GetEdgesBoundingBox_WithAnInvalidEdge_ShouldGetOneInvalidEdgeBoundi
     ASSERT_NEAR(edgesBoundingBoxes[1].upperRight().y, 1.1111111111111112, tolerance);
 }
 
-TEST(Mesh2D, GetSmothness_OnTriangularMesh_ShouldgetSmoothnessValues)
+TEST(Mesh2D, GetSmoothness_OnTriangularMesh_ShouldgetSmoothnessValues)
 {
     // Setup
     const auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
