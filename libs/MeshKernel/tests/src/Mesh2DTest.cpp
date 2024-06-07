@@ -1410,3 +1410,35 @@ TEST(Mesh2D, GetEdgesBoundingBox_WithAnInvalidEdge_ShouldGetOneInvalidEdgeBoundi
     ASSERT_NEAR(edgesBoundingBoxes[1].upperRight().x, 1.1111111111111112, tolerance);
     ASSERT_NEAR(edgesBoundingBoxes[1].upperRight().y, 1.1111111111111112, tolerance);
 }
+
+TEST(Mesh2D, GetSmothness_OnTriangularMesh_ShouldgetSmothnessValues)
+{
+    // Setup
+    const auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
+
+    // Execute
+    const auto smothness = mesh->GetSmoothness();
+
+    // Assert
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(1.0000000000000047, smothness[0], tolerance);
+    ASSERT_NEAR(1.5393847629344886, smothness[10], tolerance);
+    ASSERT_NEAR(1.1609660187036754, smothness[20], tolerance);
+    ASSERT_NEAR(1.4420158602682915, smothness[30], tolerance);
+}
+
+TEST(Mesh2D, GetOrthogonality_OnTriangularMesh_ShouldGetOrthogonalityValues)
+{
+    // Setup
+    const auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
+
+    // Execute
+    const auto orthogonality = mesh->GetOrthogonality();
+
+    // Assert
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(1.0566340037701503e-15, orthogonality[0], tolerance);
+    ASSERT_NEAR(0.052159566591519289, orthogonality[10], tolerance);
+    ASSERT_NEAR(1.0342915752434056e-15, orthogonality[20], tolerance);
+    ASSERT_NEAR(0.045878303256790140, orthogonality[30], tolerance);
+}
