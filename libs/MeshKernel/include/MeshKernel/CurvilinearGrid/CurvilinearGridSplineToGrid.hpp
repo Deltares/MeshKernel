@@ -41,33 +41,64 @@ namespace meshkernel
         void Compute(const Splines& splines, CurvilinearGrid& grid) const;
 
     private:
-        using DoubleVector = std::vector<double>;
-        using DoubleMatrix = std::vector<DoubleVector>;
+        //
+#undef USE_EIGEN
+
+#ifdef USE_EIGEN
+        template <typename T, int storage = Eigen::ColMajor>
+        using EigenMatrix = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, storage>;
+#else
+        template <typename Type>
+        using DoubleVector = std::vector<Type>;
+
+        template <typename Type>
+        using EigenMatrix = std::vector<DoubleVector<Type>>;
+
+        template <typename T>
+        void SwapColumns(std::vector<std::vector<T>>& v, UInt firstColumn, UInt secondColumn) const
+        {
+            for (UInt i = 0; i < v.size(); i++)
+            {
+                if (firstColumn >= v[i].size() || secondColumn >= v[i].size())
+                {
+                    continue;
+                }
+
+                std::swap(v[i][firstColumn], v[i][secondColumn]);
+            }
+        }
+
+#endif
+
+        using AnotherMatrix = std::vector<std::array<int, 3>>;
 
         UInt longestSplineLength(const Splines& splines) const;
 
         void sectr(Splines& splines,
-                   lin_alg::Matrix<double>& splineIntersections,
-                   lin_alg::Matrix<int>& mn12) const;
+                   EigenMatrix<double>& splineIntersections,
+                   AnotherMatrix& mn12,
+                   UInt& numi) const;
 
         void splrgf(Splines& splines,
-                    const lin_alg::Matrix<double>& splineIntersections,
-                    const lin_alg::Matrix<int>& mn12,
-                    CurvilinearGrid& grid) const;
+                    const EigenMatrix<double>& splineIntersections,
+                    const AnotherMatrix& mn12,
+                    CurvilinearGrid& grid,
+                    const UInt numi) const;
 
         void makespl(const Splines& splines,
                      const UInt whichSpline,
                      const UInt mFac,
-                     const std::vector<double>& intersectionPoints) const;
+                     std::vector<double>& intersectionPoints,
+                     std::vector<Point>& gridPoints) const;
 
         void makessq(const std::vector<double>& fixedPoints,
                      const UInt mFac,
                      std::vector<double>& ssq) const;
 
-        void makesr (const double ar,
-                     const double s0,
-                     const double s1,
-                     std::vector<double>& sr) const;
+        void makesr(const double ar,
+                    const double s0,
+                    const double s1,
+                    std::vector<double>& sr) const;
 
         void getdis(const Splines& splines,
                     const UInt whichSpline,
@@ -76,8 +107,13 @@ namespace meshkernel
 
         bool checkSplines(const Splines& splines) const;
 
+        Point GetXy(const Splines& splines,
+                    const UInt whichSpline,
+                    const std::vector<double>& intersectionPoints,
+                    const double ssq) const;
+
         // great name
-        std::vector<double> paktij(const lin_alg::Matrix<double>& splineIntersections,
+        std::vector<double> paktij(const EigenMatrix<double>& splineIntersections,
                                    const UInt whichRow) const;
 
         void determineIntersection(Splines& splines,

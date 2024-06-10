@@ -483,9 +483,11 @@ namespace meshkernel
         const double eps = 1e-5;
         const double splFac = 1.0;
         const auto coordinate = std::floor(pointAdimensionalCoordinate);
+
         if (pointAdimensionalCoordinate - coordinate < eps)
         {
-            return pointCoordinate = coordinates[static_cast<UInt>(coordinate)];
+            return pointCoordinate = coordinates.at(static_cast<UInt>(coordinate));
+            // return pointCoordinate = coordinates[static_cast<UInt>(coordinate)];
         }
 
         const UInt low = static_cast<UInt>(coordinate);
@@ -493,8 +495,11 @@ namespace meshkernel
         const double a = high - pointAdimensionalCoordinate;
         const double b = pointAdimensionalCoordinate - low;
 
-        pointCoordinate = coordinates[low] * a + coordinates[high] * b +
-                          (coordinatesDerivatives[low] * (pow(a, 3) - a) + coordinatesDerivatives[high] * (pow(b, 3) - b)) / 6.0 * splFac;
+        pointCoordinate = coordinates.at(low) * a + coordinates.at(high) * b +
+                          (coordinatesDerivatives.at(low) * (pow(a, 3) - a) + coordinatesDerivatives.at(high) * (pow(b, 3) - b)) / 6.0 * splFac;
+
+        // pointCoordinate = coordinates[low] * a + coordinates[high] * b +
+        //                   (coordinatesDerivatives[low] * (pow(a, 3) - a) + coordinatesDerivatives[high] * (pow(b, 3) - b)) / 6.0 * splFac;
 
         return pointCoordinate;
     }

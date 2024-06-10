@@ -130,6 +130,7 @@ void Splines::SwapSplines(const UInt firstSpline, const UInt secondSpline)
 
     m_splineNodes[firstSpline].swap(m_splineNodes[secondSpline]);
     m_splineDerivatives[firstSpline].swap(m_splineDerivatives[secondSpline]);
+
     std::swap(m_splinesLength[firstSpline], m_splinesLength[secondSpline]);
 }
 
@@ -449,9 +450,8 @@ meshkernel::Point Splines::Evaluate(UInt whichSpline, const double parameter) co
                                           GetNumSplines() - 1);
     }
 
-    return ComputePointOnSplineAtAdimensionalDistance (m_splineNodes [whichSpline], m_splineDerivatives [whichSpline], parameter);
+    return ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[whichSpline], m_splineDerivatives[whichSpline], parameter);
 }
-
 
 meshkernel::BoundingBox Splines::GetBoundingBox(const UInt splineIndex) const
 {
@@ -463,6 +463,18 @@ meshkernel::BoundingBox Splines::GetBoundingBox(const UInt splineIndex) const
     }
 
     return BoundingBox(m_splineNodes[splineIndex]);
+}
+
+meshkernel::UInt Splines::Size(const UInt whichSpline) const
+{
+    if (whichSpline >= m_splineNodes.size())
+    {
+        throw meshkernel::ConstraintError("Invalid spline index: {}, not in range 0 .. {}",
+                                          whichSpline,
+                                          GetNumSplines() - 1);
+    }
+
+    return static_cast<UInt>(m_splineNodes[whichSpline].size());
 }
 
 void Splines::SnapSpline(const size_t splineIndex,
