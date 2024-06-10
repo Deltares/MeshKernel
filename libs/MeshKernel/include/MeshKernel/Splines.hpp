@@ -154,6 +154,10 @@ namespace meshkernel
         /// @return the number of splines
         auto GetNumSplines() const { return static_cast<UInt>(m_splineNodes.size()); }
 
+        /// @brief Get the size of a specific spline
+        /// @return the size of the desired spline
+        UInt Size(const UInt whichSpline) const;
+
         std::vector<std::vector<Point>> m_splineNodes;       ///< The spline corner points
         std::vector<std::vector<Point>> m_splineDerivatives; ///< The spline derivatives at the corner points
         std::vector<double> m_splinesLength;                 ///< The length of each spline

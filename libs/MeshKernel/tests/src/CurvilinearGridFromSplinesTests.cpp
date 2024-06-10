@@ -1033,6 +1033,135 @@ meshkernel::Splines LoadSplines(const std::string& fileName)
     return splines;
 }
 
+meshkernel::CurvilinearGrid LoadCurvilinearGrid(const std::string& fileName)
+{
+    std::ifstream splineFile;
+    splineFile.open(fileName.c_str());
+
+    meshkernel::Splines splines(Projection::cartesian);
+    std::string line;
+
+    std::vector<meshkernel::Point> splinePoints;
+
+    // read header
+    while (std::getline(splineFile, line))
+    {
+        if (line[0] != '*')
+        {
+            break;
+        }
+    }
+
+    if (size_t found = line.find("Missing Value="); found != std::string::npos)
+    {
+        found = line.find("= ");
+        std::istringstream missingValueLine(line.substr(found + 2));
+        double missingValue;
+        missingValueLine >> missingValue;
+        std::cout << "found = " << found << "  " << missingValue << std::endl;
+    }
+
+    UInt rows = 0;
+    UInt cols = 0;
+
+    if (std::getline(splineFile, line))
+    {
+        std::istringstream sizeLine(line);
+        sizeLine >> rows;
+        sizeLine >> cols;
+        std::cout << " sizes: " << rows << "  " << cols << std::endl;
+    }
+
+    if (std::getline(splineFile, line))
+    {
+        std::istringstream sizeLine(line);
+        UInt z1, z2, z3;
+        sizeLine >> z1;
+        sizeLine >> z2;
+        sizeLine >> z3;
+        std::cout << " zeros: " << z1 << "  " << z2 << "  " << z3 << std::endl;
+    }
+
+    lin_alg::Matrix<Point> gridNodes(rows, cols);
+    UInt currentRow = 0;
+    UInt currentCol = 0;
+
+    for (UInt c = 0; c < cols; ++c)
+    {
+        std::getline(splineFile, line);
+
+        if (size_t found = line.find("ETA="); found != std::string::npos)
+        {
+            // Ignore ETA=
+            found += 4;
+            std::stringstream values(line.substr(found));
+            values >> currentCol;
+            --currentCol;
+            currentRow = 0;
+            double coord;
+
+            while (values >> coord)
+            {
+                gridNodes(currentRow, currentCol).x = coord;
+                ++currentRow;
+            }
+
+            while (currentRow < rows)
+            {
+                std::getline(splineFile, line);
+                std::stringstream values(line);
+                double coord;
+
+                while (values >> coord)
+                {
+                    gridNodes(currentRow, currentCol).x = coord;
+                    ++currentRow;
+                }
+            }
+        }
+    }
+
+    for (UInt c = 0; c < cols; ++c)
+    {
+        std::getline(splineFile, line);
+
+        if (size_t found = line.find("ETA="); found != std::string::npos)
+        {
+
+            // Ignore ETA=
+            found += 4;
+            std::stringstream values(line.substr(found));
+            values >> currentCol;
+            --currentCol;
+            currentRow = 0;
+            double coord;
+
+            while (values >> coord)
+            {
+                gridNodes(currentRow, currentCol).y = coord;
+                ++currentRow;
+            }
+
+            while (currentRow < rows)
+            {
+                std::getline(splineFile, line);
+                std::stringstream values(line);
+                double coord;
+
+                while (values >> coord)
+                {
+                    gridNodes(currentRow, currentCol).y = coord;
+                    ++currentRow;
+                }
+            }
+        }
+    }
+
+    meshkernel::CurvilinearGrid grid(gridNodes, meshkernel::Projection::cartesian);
+
+    return grid;
+}
+
 TEST(CurvilinearGridFromSplines, GridFromSplines)
 {
     namespace mk = meshkernel;
@@ -1045,24 +1174,132 @@ TEST(CurvilinearGridFromSplines, GridFromSplines)
     // std::vector<mk::Point> spline2{{10.0, -1.0}, {10.0, 11.0}};
 
     // top boundary
+    // std::vector<mk::Point> spline3{{11.0, 10.0}, {6.666, 9.5}, {3.333, 10.5}, {-1.0, 10.0}};
     std::vector<mk::Point> spline3{{11.0, 10.0}, {-1.0, 10.0}};
 
     // left boundary
+    // std::vector<mk::Point> spline4{{0.0, 11.0}, {1.0, 7.5}, {-1.0, 3.5}, {0.0, -1.0}};
     std::vector<mk::Point> spline4{{0.0, 11.0}, {0.0, -1.0}};
 
-    LoadSplines("/home/wcs1/MeshKernel/MeshKernel/build_deb/044.txt");
-
-    // auto splines = std::make_shared<Splines>(Projection::cartesian);
-
-    auto splines = std::make_shared<Splines>(LoadSplines("/home/senior/MeshKernel/MeshKernel01/build_debug/044.txt"));
-    // auto splines = std::make_shared<Splines>(LoadSplines("/home/wcs1/MeshKernel/MeshKernel/build_deb/044.txt"));
-    // splines->AddSpline(spline1);
-    // splines->AddSpline(spline2);
-    // splines->AddSpline(spline3);
-    // splines->AddSpline(spline4);
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+    splines->AddSpline(spline1);
+    splines->AddSpline(spline2);
+    splines->AddSpline(spline3);
+    splines->AddSpline(spline4);
 
     mk::CurvilinearGridSplineToGrid splinesToGrid;
     mk::CurvilinearGrid grid(Projection::cartesian);
 
     splinesToGrid.Compute(*splines, grid);
+}
+
+TEST(CurvilinearGridFromSplines, GridFromSplines1a)
+{
+    namespace mk = meshkernel;
+
+    // Bottom boundary
+    std::vector<mk::Point> spline1{{-1.0, 0.0}, {11.0, 0.0}};
+
+    // right boundary
+    // std::vector<mk::Point> spline2{{10.0, 11.0}, {10.0, -1.0}};
+    std::vector<mk::Point> spline2{{10.0, -1.0}, {10.0, 11.0}};
+
+    // top boundary
+    // std::vector<mk::Point> spline3{{11.0, 10.0}, {6.666, 9.5}, {3.333, 10.5}, {-1.0, 10.0}};
+    std::vector<mk::Point> spline3{{11.0, 10.0}, {-1.0, 10.0}};
+
+    // left boundary
+    std::vector<mk::Point> spline4{{0.0, 11.0}, {-1.0, 7.5}, {1.0, 3.5}, {0.0, -1.0}};
+    // std::vector<mk::Point> spline4{{2.0, 11.0}, {0.0, -1.0}};
+    // std::vector<mk::Point> spline4{{0.0, 11.0}, {0.0, -1.0}};
+
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+    splines->AddSpline(spline1);
+    splines->AddSpline(spline2);
+    splines->AddSpline(spline3);
+    splines->AddSpline(spline4);
+
+    mk::CurvilinearGridSplineToGrid splinesToGrid;
+    mk::CurvilinearGrid grid(Projection::cartesian);
+
+    splinesToGrid.Compute(*splines, grid);
+}
+
+TEST(CurvilinearGridFromSplines, GridFromSplines2)
+{
+    namespace mk = meshkernel;
+
+    // auto splines = std::make_shared<Splines>(LoadSplines("/home/senior/MeshKernel/MeshKernel01/build_debug/044.txt"));
+    auto splines = std::make_shared<Splines>(LoadSplines("/home/wcs1/MeshKernel/MeshKernel/build_deb/044.txt"));
+
+    mk::CurvilinearGridSplineToGrid splinesToGrid;
+    mk::CurvilinearGrid grid(Projection::cartesian);
+
+    splinesToGrid.Compute(*splines, grid);
+}
+
+TEST(CurvilinearGridFromSplines, GridFromSplines3)
+{
+    namespace mk = meshkernel;
+
+    // Bottom boundary
+    std::vector<mk::Point> spline1{{-1.0, 0.0}, {11.0, 0.0}};
+
+    // right boundary
+    std::vector<mk::Point> spline2{{10.0, 11.0}, {10.0, -1.0}};
+    // std::vector<mk::Point> spline2{{10.0, -1.0}, {10.0, 11.0}};
+
+    // top boundary 1
+    std::vector<mk::Point> spline3a{{11.0, 9.0}, {4.0, 11.5}};
+
+    // top boundary 2
+    std::vector<mk::Point> spline3b{{6.0, 11.5}, {-1.0, 9.0}};
+
+    // left boundary
+    std::vector<mk::Point> spline4{{0.0, 11.0}, {0.0, -1.0}};
+
+    // LoadSplines("/home/wcs1/MeshKernel/MeshKernel/build_deb/044.txt");
+
+    // auto splines = std::make_shared<Splines>(LoadSplines("/home/senior/MeshKernel/MeshKernel01/build_debug/044.txt"));
+    // auto splines = std::make_shared<Splines>(LoadSplines("/home/wcs1/MeshKernel/MeshKernel/build_deb/044.txt"));
+
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+    splines->AddSpline(spline1);
+    splines->AddSpline(spline2);
+    splines->AddSpline(spline3a);
+    splines->AddSpline(spline3b);
+    splines->AddSpline(spline4);
+
+    mk::CurvilinearGridSplineToGrid splinesToGrid;
+    mk::CurvilinearGrid grid(Projection::cartesian);
+
+    splinesToGrid.Compute(*splines, grid);
+}
+
+TEST(CurvilinearGridFromSplines, GridFromSplines4)
+{
+    namespace mk = meshkernel;
+    mk::CurvilinearGrid interactorGrid(LoadCurvilinearGrid("/home/wcs1/MeshKernel/MeshKernel/build_deb/splgrid2.grd"));
+
+    // auto splines = std::make_shared<Splines>(LoadSplines("/home/senior/MeshKernel/MeshKernel01/build_debug/044.txt"));
+    auto splines = std::make_shared<Splines>(LoadSplines("/home/wcs1/MeshKernel/MeshKernel/build_deb/044.txt"));
+
+    mk::CurvilinearGridSplineToGrid splinesToGrid;
+    mk::CurvilinearGrid grid(Projection::cartesian);
+
+    splinesToGrid.Compute(*splines, grid);
+
+    auto interactorPoints = interactorGrid.ComputeNodes();
+    auto interactorEdges = interactorGrid.ComputeEdges();
+
+    auto computedPoints = grid.ComputeNodes();
+    auto computedEdges = grid.ComputeEdges();
+
+    std::cout << interactorPoints.size() << "  " << computedPoints.size() << std::endl;
+    std::cout << interactorEdges.size() << "  " << computedEdges.size() << std::endl;
+
+    meshkernel::Print(interactorGrid.ComputeNodes(), interactorGrid.ComputeEdges());
+    // meshkernel::Print(grid.ComputeNodes(), grid.ComputeEdges());
+
+    // std::cout << "size: " << numNodes, numEdges <<
 }
