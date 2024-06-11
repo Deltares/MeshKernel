@@ -28,6 +28,7 @@
 #pragma once
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
+#include "MeshKernel/Parameters.hpp"
 #include "MeshKernel/Splines.hpp"
 
 namespace meshkernel
@@ -38,14 +39,16 @@ namespace meshkernel
     class CurvilinearGridSplineToGrid
     {
     public:
-        void Compute(const Splines& splines, CurvilinearGrid& grid) const;
+        void Compute(const Splines& splines,
+                     const CurvilinearParameters& curvilinearParameters,
+                     CurvilinearGrid& grid) const;
 
     private:
         //
 #undef USE_EIGEN
 
 #ifdef USE_EIGEN
-        template <typename T, int storage = Eigen::ColMajor>
+        template <typename T, int storage = Eigen::RowMajor>
         using EigenMatrix = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, storage>;
 #else
         template <typename Type>
@@ -77,13 +80,15 @@ namespace meshkernel
         void sectr(Splines& splines,
                    EigenMatrix<double>& splineIntersections,
                    AnotherMatrix& mn12,
-                   UInt& numi) const;
+                   UInt& numMSplines) const;
 
         void splrgf(Splines& splines,
                     const EigenMatrix<double>& splineIntersections,
                     const AnotherMatrix& mn12,
                     CurvilinearGrid& grid,
-                    const UInt numi) const;
+                    const UInt numMSplines,
+                    const UInt mFac,
+                    const UInt nFac) const;
 
         void makespl(const Splines& splines,
                      const UInt whichSpline,
@@ -123,6 +128,14 @@ namespace meshkernel
                                    double& crossProductOfIntersection,
                                    double& firstNormalisedIntersectionLength,
                                    double& secondNormalisedIntersectionLength) const;
+
+        void assignBoundaryPoint (const UInt loopIndex,
+                                  const UInt boundaryIndex,
+                                  const UInt mnFac,
+                                  std::vector<Point>& startBoundaryPoints,
+                                  std::vector<Point>& endBoundaryPoints,
+                                  const Point gridNode) const;
+
     };
 
 } // namespace meshkernel
