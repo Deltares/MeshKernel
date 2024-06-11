@@ -200,6 +200,23 @@ namespace meshkernel
                                                                   m_isSpacingCurvatureAdapted(isSpacingCurvatureAdapted),
                                                                   m_h(h) {}
 
+        /// @brief Constructor
+        /// @param[in] splines A pointer to splines
+        /// @param[in] splineIndex The index of the current spline
+        /// @param[in] isSpacingCurvatureAdapted Is spacing curvature adapted
+        /// @param[in] h When accounting for curvature, the height to use
+        /// @param[in] distance The dimensional distance
+        FuncAdimensionalToDimensionalDistanceOnSpline(const Splines& splines,
+                                                      UInt splineIndex,
+                                                      bool isSpacingCurvatureAdapted,
+                                                      double h,
+                                                      double distance) : m_spline(splines),
+                                                                        m_splineIndex(splineIndex),
+                                                                        m_isSpacingCurvatureAdapted(isSpacingCurvatureAdapted),
+                                                                        m_h(h),
+                                                                        m_DimensionalDistance(distance){}
+
+
         /// @brief Set dimensional distance
         /// @param[in] distance distance
         void SetDimensionalDistance(double distance)
