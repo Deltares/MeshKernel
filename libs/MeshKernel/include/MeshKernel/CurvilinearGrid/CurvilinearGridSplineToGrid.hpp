@@ -43,7 +43,16 @@ namespace meshkernel
                      const CurvilinearParameters& curvilinearParameters,
                      CurvilinearGrid& grid) const;
 
+        // CurvilinearGrid Compute(const Splines& splines,
+        //                         const CurvilinearParameters& curvilinearParameters) const;
+
     private:
+        /// @brief Maximum number of spline points allowed when doubling of the spline points.
+        static const UInt MaximumNumberOfSplinePoints = 10; // TODO make higher for production code
+
+        /// @brief The maximum number of
+        static const UInt MaximumCumulativeUnlabeledSplineCount = 1000;
+
         //
 #undef USE_EIGEN
 
@@ -77,10 +86,12 @@ namespace meshkernel
 
         UInt longestSplineLength(const Splines& splines) const;
 
-        void sectr(Splines& splines,
-                   EigenMatrix<double>& splineIntersections,
-                   AnotherMatrix& mn12,
-                   UInt& numMSplines) const;
+        /// @brief Double the number of spline support points for all splines.
+        void DoubleSplinePoints(Splines& splines) const;
+
+        void ComputeSplineIntersections(Splines& splines,
+                                        EigenMatrix<double>& splineIntersections,
+                                        UInt& numMSplines) const;
 
         void splrgf(Splines& splines,
                     const EigenMatrix<double>& splineIntersections,
@@ -90,11 +101,11 @@ namespace meshkernel
                     const UInt mFac,
                     const UInt nFac) const;
 
-        void makespl(const Splines& splines,
-                     const UInt whichSpline,
-                     const UInt mFac,
-                     std::vector<double>& intersectionPoints,
-                     std::vector<Point>& gridPoints) const;
+        void GenerateGridPoints(const Splines& splines,
+                                const UInt whichSpline,
+                                const UInt mFac,
+                                std::vector<double>& intersectionPoints,
+                                std::vector<Point>& gridPoints) const;
 
         void makessq(const std::vector<double>& fixedPoints,
                      const UInt mFac,
@@ -110,32 +121,62 @@ namespace meshkernel
                     double& tValue,
                     double& sValue) const;
 
-        bool checkSplines(const Splines& splines) const;
+        bool CheckSplines(const Splines& splines) const;
+
+        void OrderSplines(Splines& splines,
+                          const UInt numMSplines,
+                          EigenMatrix<double>& splineIntersections) const;
+
+        bool SortSplines(Splines& splines,
+                         const UInt outerStartIndex,
+                         const UInt outerEndIndex,
+                         const UInt innerStartIndex,
+                         const UInt innerEndIndex,
+                         EigenMatrix<double>& splineIntersections,
+                         bool& jaChange) const;
 
         Point GetXy(const Splines& splines,
                     const UInt whichSpline,
                     const std::vector<double>& intersectionPoints,
                     const double ssq) const;
 
-        // great name
-        std::vector<double> paktij(const EigenMatrix<double>& splineIntersections,
-                                   const UInt whichRow) const;
+        // great name (paktij)
+        std::vector<double> CompressRow(const EigenMatrix<double>& splineIntersections,
+                                        const UInt whichRow) const;
 
         void determineIntersection(Splines& splines,
-                                   const UInt i,
-                                   const UInt j,
+                                   const UInt splineI,
+                                   const UInt splineJ,
                                    UInt& numberTimesCrossing,
                                    double& crossProductOfIntersection,
                                    double& firstNormalisedIntersectionLength,
                                    double& secondNormalisedIntersectionLength) const;
 
-        void assignBoundaryPoint (const UInt loopIndex,
-                                  const UInt boundaryIndex,
-                                  const UInt mnFac,
-                                  std::vector<Point>& startBoundaryPoints,
-                                  std::vector<Point>& endBoundaryPoints,
-                                  const Point gridNode) const;
+        bool ComputeInteractions(Splines& splines,
+                                 std::vector<int>& splineType,
+                                 EigenMatrix<double>& splineIntersections) const;
 
+        /// @brief One or more splines remain unlabeled.
+        /// @return true if one or more splines is unlabeled, false if all splines have been labeled.
+        bool SplinesRemainUnlabeled(const std::vector<int>& splineType, UInt& unlabledSplineCount) const;
+
+        void SortInteractionsOnSplineType(Splines& splines,
+                                          std::vector<int>& splineType,
+                                          EigenMatrix<double>& splineIntersections) const;
+
+        UInt GetNumberOfSplinesInDirectionM(const std::vector<int>& splineType) const;
+
+        void ComputeSplineInteractions(const Splines& splines,
+                                       const UInt numMSplines,
+                                       const EigenMatrix<double>& splineIntersections,
+                                       AnotherMatrix& splineInteraction) const;
+
+        void assignBoundaryPoint(const UInt loopIndex,
+                                 const UInt boundaryIndex,
+                                 const UInt mnFac,
+                                 std::vector<Point>& startBoundaryPoints,
+                                 std::vector<Point>& endBoundaryPoints,
+                                 const Point gridNode) const;
     };
 
 } // namespace meshkernel

@@ -70,6 +70,11 @@ namespace meshkernel
         /// @param[in] splines The spline corner points
         void AddSpline(const std::vector<Point>& splines);
 
+        /// @brief Replaces an existing spline
+        /// @param[in] splineIndex The index of the spline to be replaced
+        /// @param[in] splinePoints The spline points
+        void Replace(const UInt splineIndex, const std::vector<Point>& splinePoints);
+
         /// @brief Swap all the data for two splines.
         ///
         /// On exit the contents of the two splines will be swapped
@@ -158,6 +163,9 @@ namespace meshkernel
         /// @return the size of the desired spline
         UInt Size(const UInt whichSpline) const;
 
+        /// @brief Get the spline with the largest number of spline points.
+        UInt MaxSize() const;
+
         std::vector<std::vector<Point>> m_splineNodes;       ///< The spline corner points
         std::vector<std::vector<Point>> m_splineDerivatives; ///< The spline derivatives at the corner points
         std::vector<double> m_splinesLength;                 ///< The length of each spline
@@ -182,6 +190,9 @@ namespace meshkernel
 
         /// @brief Allocate spline properties vectors
         void AllocateSplinesProperties();
+
+        /// @brief Compute the second order derivative of the spline.
+        static std::vector<Point> ComputeSplineDerivative(const std::vector<Point>& splinesNodes);
     };
 
     /// @brief This structure is used to create a function for converting an adimensional distance on a spline to a dimensional one
@@ -211,11 +222,10 @@ namespace meshkernel
                                                       bool isSpacingCurvatureAdapted,
                                                       double h,
                                                       double distance) : m_spline(splines),
-                                                                        m_splineIndex(splineIndex),
-                                                                        m_isSpacingCurvatureAdapted(isSpacingCurvatureAdapted),
-                                                                        m_h(h),
-                                                                        m_DimensionalDistance(distance){}
-
+                                                                         m_splineIndex(splineIndex),
+                                                                         m_isSpacingCurvatureAdapted(isSpacingCurvatureAdapted),
+                                                                         m_h(h),
+                                                                         m_DimensionalDistance(distance) {}
 
         /// @brief Set dimensional distance
         /// @param[in] distance distance

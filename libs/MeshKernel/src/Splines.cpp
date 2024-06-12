@@ -78,25 +78,39 @@ void Splines::AddSpline(const std::vector<Point>& splines, UInt start, UInt size
     m_splineNodes.emplace_back(splinesNodes);
 
     // compute second order derivatives
+    m_splineDerivatives.emplace_back(ComputeSplineDerivative(splinesNodes));
+    m_splinesLength.emplace_back(ComputeSplineLength(GetNumSplines() - 1, 0.0, static_cast<double>(size - 1)));
+}
+
+std::vector<meshkernel::Point> Splines::ComputeSplineDerivative(const std::vector<Point>& splinesNodes)
+{
     std::vector<Point> splineDerivatives(splinesNodes.size());
     const auto indices = FindIndices(splinesNodes, 0, static_cast<UInt>(splinesNodes.size()), constants::missing::doubleValue);
+
     for (auto index : indices)
     {
         const auto& [startIndex, endIndex] = index;
         const auto derivatives = SplineAlgorithms::SecondOrderDerivative(splinesNodes, startIndex, endIndex);
+
         for (auto j = startIndex; j <= endIndex; ++j)
         {
             splineDerivatives[j] = derivatives[j - startIndex];
         }
     }
-    m_splineDerivatives.emplace_back(splineDerivatives);
 
-    m_splinesLength.emplace_back(ComputeSplineLength(GetNumSplines() - 1, 0.0, static_cast<double>(size - 1)));
+    return splineDerivatives;
 }
 
 void Splines::AddSpline(const std::vector<Point>& splines)
 {
     AddSpline(splines, 0, static_cast<UInt>(splines.size()));
+}
+
+void Splines::Replace(const UInt splineIndex, const std::vector<Point>& splinePoints)
+{
+    m_splineNodes[splineIndex] = splinePoints;
+    m_splineDerivatives[splineIndex] = ComputeSplineDerivative(splinePoints);
+    m_splinesLength[splineIndex] = ComputeSplineLength(splineIndex, 0.0, static_cast<double>(splinePoints.size() - 1));
 }
 
 void Splines::DeleteSpline(UInt splineIndex)
@@ -475,6 +489,23 @@ meshkernel::UInt Splines::Size(const UInt whichSpline) const
     }
 
     return static_cast<UInt>(m_splineNodes[whichSpline].size());
+}
+
+meshkernel::UInt Splines::MaxSize() const
+{
+    UInt splineIndex = constants::missing::uintValue;
+    UInt splineSize = 0;
+
+    for (UInt i = 0; i < GetNumSplines(); ++i)
+    {
+        if (m_splineNodes[i].size() > splineSize)
+        {
+            splineSize = m_splineNodes[i].size();
+            splineIndex = i;
+        }
+    }
+
+    return splineIndex;
 }
 
 void Splines::SnapSpline(const size_t splineIndex,
