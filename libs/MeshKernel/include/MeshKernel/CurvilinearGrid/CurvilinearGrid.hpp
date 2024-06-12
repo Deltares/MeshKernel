@@ -71,6 +71,9 @@ namespace meshkernel
         /// @brief Copy constructor taking only a curvilinear grid
         CurvilinearGrid(const CurvilinearGrid& grid);
 
+        /// @brief Move constructor taking only a curvilinear grid
+        CurvilinearGrid(CurvilinearGrid&& grid);
+
         /// @brief Constructor taking only a projection
         explicit CurvilinearGrid(Projection projection);
 
