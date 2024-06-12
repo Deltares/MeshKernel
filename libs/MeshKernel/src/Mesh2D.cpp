@@ -1211,13 +1211,13 @@ std::vector<double> Mesh2D::GetSmoothness()
             const auto leftFaceArea = m_faceArea[firstFaceIndex];
             const auto rightFaceArea = m_faceArea[secondFaceIndex];
 
-            if (leftFaceArea < m_minimumCellArea || rightFaceArea < m_minimumCellArea)
+            if (leftFaceArea > m_minimumCellArea && rightFaceArea > m_minimumCellArea)
             {
                 val = rightFaceArea / leftFaceArea;
-            }
-            if (val < 1.0)
-            {
-                val = 1.0 / val;
+                if (val < 1.0)
+                {
+                    val = 1.0 / val;
+                }
             }
         }
         result[e] = val;
