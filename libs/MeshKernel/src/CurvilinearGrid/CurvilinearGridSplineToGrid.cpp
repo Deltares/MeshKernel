@@ -20,33 +20,22 @@ void meshkernel::CurvilinearGridSplineToGrid::Compute(const Splines& splines,
         throw ConstraintError("One or more splines has one or fewer support points");
     }
 
+    // Make copy of spline because the may be changed
+    // i.e. the order may change and the number of spline points may increase.
     Splines splinesCopy(splines);
-    EigenMatrix<double> splineIntersections(splines.GetNumSplines(), DoubleVector<double>(splines.GetNumSplines(), 0.0));
-    // EigenMatrix<double> splineIntersections(splines.GetNumSplines(), splines.GetNumSplines());
+    VectorOfDoubleVectors splineIntersections(splines.GetNumSplines(), DoubleVector(splines.GetNumSplines(), 0.0));
 
-    UInt mFac = curvilinearParameters.m_refinement;
-    UInt nFac = curvilinearParameters.n_refinement;
+    UInt mRefinement = curvilinearParameters.m_refinement;
+    UInt nRefinement = curvilinearParameters.n_refinement;
 
-    AnotherMatrix splineInteraction(splines.GetNumSplines()); // mn12
-
+    // mn12 in Fortran.
+    VectorOfThreeInts splineInteraction(splines.GetNumSplines());
     UInt numMSplines = 0;
 
     ComputeSplineIntersections(splinesCopy, splineIntersections, numMSplines);
     OrderSplines(splinesCopy, numMSplines, splineIntersections);
-    ComputeSplineInteractions(splinesCopy, numMSplines, splineIntersections, splineInteraction);
-    splrgf(splinesCopy, splineIntersections, splineInteraction, grid, numMSplines, mFac, nFac);
-}
-
-meshkernel::UInt meshkernel::CurvilinearGridSplineToGrid::longestSplineLength(const Splines& splines) const
-{
-    UInt result = 0;
-
-    for (UInt i = 0; i < splines.GetNumSplines(); ++i)
-    {
-        result = std::max(result, splines.Size(i));
-    }
-
-    return result;
+    DetermineSplineOrientation(splinesCopy, numMSplines, splineIntersections, splineInteraction);
+    GenerateGrid(splinesCopy, splineIntersections, splineInteraction, numMSplines, mRefinement, nRefinement, grid);
 }
 
 bool meshkernel::CurvilinearGridSplineToGrid::CheckSplines(const Splines& splines) const
@@ -62,7 +51,7 @@ bool meshkernel::CurvilinearGridSplineToGrid::CheckSplines(const Splines& spline
     return true;
 }
 
-void meshkernel::CurvilinearGridSplineToGrid::determineIntersection(Splines& splines,
+void meshkernel::CurvilinearGridSplineToGrid::DetermineIntersection(Splines& splines,
                                                                     const UInt splineI,
                                                                     const UInt splineJ,
                                                                     UInt& numberTimesCrossing,
@@ -113,85 +102,95 @@ void meshkernel::CurvilinearGridSplineToGrid::DoubleSplinePoints(Splines& spline
     }
 }
 
-bool meshkernel::CurvilinearGridSplineToGrid::ComputeInteractions(Splines& splines,
-                                                                  std::vector<int>& splineType,
-                                                                  EigenMatrix<double>& splineIntersections) const
+bool meshkernel::CurvilinearGridSplineToGrid::ComputeAndCheckIntersection(Splines& splines,
+                                                                          const UInt splineI,
+                                                                          const UInt splineJ,
+                                                                          std::vector<int>& splineType,
+                                                                          VectorOfDoubleVectors& splineIntersections) const
 {
     UInt maxSplineSize = splines.Size(splines.MaxSize());
 
-    std::fill(splineIntersections.begin(), splineIntersections.end(), std::vector<double>(splines.GetNumSplines(), 0.0));
+    double crossProduct;
+    double normalisedIntersectionSplineI;
+    double normalisedIntersectionSplineJ;
+    UInt numberTimesCrossing = 0;
+
+    // TODO need to know if two splines cross more than 1 time
+    DetermineIntersection(splines, splineI, splineJ, numberTimesCrossing, crossProduct, normalisedIntersectionSplineI, normalisedIntersectionSplineJ);
+
+    if (numberTimesCrossing == 1)
+    {
+
+        if (splineType[splineI] * splineType[splineJ] == 1)
+        {
+            if (maxSplineSize > MaximumNumberOfSplinePoints / 2)
+            {
+                throw AlgorithmError("splines both in m- and n-direction: spline {} and {}", splineI + 1, splineJ + 1);
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else if (splineType[splineI] == 0 && splineType[splineJ] == 0)
+        {
+            throw AlgorithmError("Both spline {} and {} are undefined", splineI + 1, splineJ + 1);
+        }
+        else if (splineType[splineJ] == 0)
+        {
+            splineType[splineJ] = -splineType[splineI];
+
+            if (crossProduct * static_cast<double>(splineType[splineI]) < 0.0)
+            {
+                splines.Reverse(splineJ);
+                // Reverse the normalised distance
+                normalisedIntersectionSplineJ = static_cast<double>(splines.Size(splineJ)) - 1.0 - normalisedIntersectionSplineJ;
+            }
+        }
+        else if (splineType[splineI] == 0)
+        {
+            splineType[splineI] = -splineType[splineJ];
+
+            if (crossProduct * static_cast<double>(splineType[splineJ]) > 0.0)
+            {
+                splines.Reverse(splineI);
+                // Reverse the normalised distance
+                normalisedIntersectionSplineI = static_cast<double>(splines.Size(splineI)) - 1.0 - normalisedIntersectionSplineI;
+            }
+        }
+
+        splineIntersections[splineI][splineJ] = normalisedIntersectionSplineI;
+        splineIntersections[splineJ][splineI] = normalisedIntersectionSplineJ;
+    }
+    else if (numberTimesCrossing > 1)
+    {
+        if (maxSplineSize > MaximumNumberOfSplinePoints / 2)
+        {
+            throw AlgorithmError("Splines {} and {}, appear to intersect more that one time", splineI + 1, splineJ + 1);
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool meshkernel::CurvilinearGridSplineToGrid::ComputeInteractions(Splines& splines,
+                                                                  std::vector<int>& splineType,
+                                                                  VectorOfDoubleVectors& splineIntersections) const
+{
+
+    std::fill(splineIntersections.begin(), splineIntersections.end(), DoubleVector(splines.GetNumSplines(), 0.0));
 
     for (UInt splineI = 0; splineI < splines.GetNumSplines(); ++splineI)
     {
         for (UInt splineJ = splineI + 1; splineJ < splines.GetNumSplines(); ++splineJ)
         {
-            double crossProduct;
-            double normalisedIntersectionSplineI;
-            double normalisedIntersectionSplineJ;
-            UInt numberTimesCrossing = 0;
-
-            // TODO need to know if two splines cross more than 1 time
-            determineIntersection(splines, splineI, splineJ, numberTimesCrossing, crossProduct, normalisedIntersectionSplineI, normalisedIntersectionSplineJ);
-
-            if (numberTimesCrossing == 1)
+            if (ComputeAndCheckIntersection(splines, splineI, splineJ, splineType, splineIntersections))
             {
-
-                if (splineType[splineI] * splineType[splineJ] == 1)
-                {
-                    if (maxSplineSize > MaximumNumberOfSplinePoints / 2)
-                    {
-                        throw AlgorithmError("splines both in m- and n-direction: spline {} and {}", splineI + 1, splineJ + 1);
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-                else if (splineType[splineI] == 0 && splineType[splineJ] == 0)
-                {
-                    throw AlgorithmError("Both spline {} and {} are undefined", splineI + 1, splineJ + 1);
-                }
-                else if (splineType[splineJ] == 0)
-                {
-                    splineType[splineJ] = -splineType[splineI];
-
-                    if (crossProduct * static_cast<double>(splineType[splineI]) < 0.0)
-                    {
-                        splines.Reverse(splineJ);
-                        // Reverse the normalised distance
-                        normalisedIntersectionSplineJ = static_cast<double>(splines.Size(splineJ)) - 1.0 - normalisedIntersectionSplineJ;
-                    }
-                }
-                else if (splineType[splineI] == 0)
-                {
-                    splineType[splineI] = -splineType[splineJ];
-
-                    if (crossProduct * static_cast<double>(splineType[splineJ]) > 0.0)
-                    {
-                        splines.Reverse(splineI);
-                        // Reverse the normalised distance
-                        normalisedIntersectionSplineI = static_cast<double>(splines.Size(splineI)) - 1.0 - normalisedIntersectionSplineI;
-                    }
-                }
-
-#ifdef USE_EIGEN
-                splineIntersections(splineI, splineJ) = normalisedIntersectionSplineI;
-                splineIntersections(splineJ, splineI) = normalisedIntersectionSplineJ;
-#else
-                splineIntersections[splineI][splineJ] = normalisedIntersectionSplineI;
-                splineIntersections[splineJ][splineI] = normalisedIntersectionSplineJ;
-#endif
-            }
-            else if (numberTimesCrossing > 1)
-            {
-                if (maxSplineSize > MaximumNumberOfSplinePoints / 2)
-                {
-                    throw AlgorithmError("Splines {} and {}, appear to intersect more that one time", splineI + 1, splineJ + 1);
-                }
-                else
-                {
-                    return true;
-                }
+                return true;
             }
         }
     }
@@ -221,7 +220,7 @@ bool meshkernel::CurvilinearGridSplineToGrid::SplinesRemainUnlabeled(const std::
 
 void meshkernel::CurvilinearGridSplineToGrid::SortInteractionsOnSplineType(Splines& splines,
                                                                            std::vector<int>& splineType,
-                                                                           EigenMatrix<double>& splineIntersections) const
+                                                                           VectorOfDoubleVectors& splineIntersections) const
 {
     // sorteren op type, eerst de horizontalen (N = CONSTANT)
     for (UInt i = 0; i < splines.GetNumSplines(); ++i)
@@ -234,13 +233,8 @@ void meshkernel::CurvilinearGridSplineToGrid::SortInteractionsOnSplineType(Splin
                 {
                     splines.SwapSplines(i, j);
 
-#ifdef USE_EIGEN
-                    splineIntersections.row(i).swap(splineIntersections.row(j));
-                    splineIntersections.col(i).swap(splineIntersections.col(j));
-#else
                     splineIntersections[i].swap(splineIntersections[j]);
                     SwapColumns(splineIntersections, i, j);
-#endif
 
                     splineType[i] = 1;
                     splineType[j] = -1;
@@ -251,90 +245,12 @@ void meshkernel::CurvilinearGridSplineToGrid::SortInteractionsOnSplineType(Splin
     }
 }
 
-meshkernel::UInt meshkernel::CurvilinearGridSplineToGrid::GetNumberOfSplinesInDirectionM(const std::vector<int>& splineType) const
-{
-    UInt numMSplines = constants::missing::uintValue;
-
-    for (UInt i = 0; i < splineType.size(); ++i)
-    {
-        if (splineType[i] == -1)
-        {
-            numMSplines = i;
-            break;
-        }
-    }
-
-    return numMSplines;
-}
-
-// bool meshkernel::CurvilinearGridSplineToGrid::SortSplinesOnM(Splines& splines,
-//                                                              const UInt outerStartIndex,
-//                                                              const UInt outerEndIndex,
-//                                                              const UInt innerStartIndex,
-//                                                              const UInt innerEndIndex,
-//                                                              EigenMatrix<double>& splineIntersections,
-//                                                              UInt& count) const
-// {
-
-//     for (UInt i = outerStartIndex; i < outerEndIndex; ++i)
-//     {
-//         for (UInt j = innerStartIndex; j < innerendIndex; ++j)
-//         {
-// #ifdef USE_EIGEN
-//             if (splineIntersections(i, j) != 0.0)
-// #else
-//             if (splineIntersections[i][j] != 0.0)
-// #endif
-//             {
-//                 for (UInt k = j + 1; k < splines.GetNumSplines(); ++k)
-//                 {
-// #ifdef USE_EIGEN
-//                     if (splineIntersections(i, k) != 0.0)
-// #else
-//                     if (splineIntersections[i][k] != 0.0)
-// #endif
-//                     {
-
-// #ifdef USE_EIGEN
-//                         if (splineIntersections(i, j) > splineIntersections(i, k))
-// #else
-//                         if (splineIntersections[i][j] > splineIntersections[i][k])
-// #endif
-//                         {
-//                             splines.SwapSplines(j, k);
-
-// #ifdef USE_EIGEN
-//                             splineIntersections.row(j).swap(splineIntersections.row(k));
-//                             splineIntersections.col(j).swap(splineIntersections.col(k));
-// #else
-//                             splineIntersections[j].swap(splineIntersections[k]);
-//                             SwapColumns(splineIntersections, j, k);
-// #endif
-
-//                             ++count;
-
-//                             if (count > splines.GetNumSplines())
-//                             {
-//                                 // error message: PROBLEM IN SPLINE ORDERING, MODIFY SPLINES
-//                             }
-
-//                             return true;
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-
-//     return false;
-// }
-
 bool meshkernel::CurvilinearGridSplineToGrid::SortSplines(Splines& splines,
                                                           const UInt outerStartIndex,
                                                           const UInt outerEndIndex,
                                                           const UInt innerStartIndex,
                                                           const UInt innerEndIndex,
-                                                          EigenMatrix<double>& splineIntersections,
+                                                          VectorOfDoubleVectors& splineIntersections,
                                                           bool& jaChange) const
 {
     UInt count = 0;
@@ -344,36 +260,19 @@ bool meshkernel::CurvilinearGridSplineToGrid::SortSplines(Splines& splines,
         for (UInt j = innerStartIndex; j < innerEndIndex; ++j)
         {
 
-#ifdef USE_EIGEN
-            if (splineIntersections(i, j) != 0.0)
-#else
             if (splineIntersections[i][j] != 0.0)
-#endif
             {
                 for (UInt k = j + 1; k < innerEndIndex; ++k)
                 {
-#ifdef USE_EIGEN
-                    if (splineIntersections(i, k) != 0.0)
-#else
                     if (splineIntersections[i][k] != 0.0)
-#endif
                     {
 
-#ifdef USE_EIGEN
-                        if (splineIntersections(i, j) > splineIntersections(i, k))
-#else
                         if (splineIntersections[i][j] > splineIntersections[i][k])
-#endif
                         {
                             splines.SwapSplines(j, k);
 
-#ifdef USE_EIGEN
-                            splineIntersections.row(j).swap(splineIntersections.row(k));
-                            splineIntersections.col(j).swap(splineIntersections.col(k));
-#else
                             splineIntersections[j].swap(splineIntersections[k]);
                             SwapColumns(splineIntersections, j, k);
-#endif
 
                             jaChange = true;
                             ++count;
@@ -396,7 +295,7 @@ bool meshkernel::CurvilinearGridSplineToGrid::SortSplines(Splines& splines,
 
 void meshkernel::CurvilinearGridSplineToGrid::OrderSplines(Splines& splines,
                                                            const UInt numMSplines,
-                                                           EigenMatrix<double>& splineIntersections) const
+                                                           VectorOfDoubleVectors& splineIntersections) const
 {
     bool repeatBoth = true;
     UInt iterations = 0;
@@ -433,13 +332,13 @@ void meshkernel::CurvilinearGridSplineToGrid::OrderSplines(Splines& splines,
     }
 }
 
-void meshkernel::CurvilinearGridSplineToGrid::ComputeSplineInteractions(const Splines& splines,
-                                                                        const UInt numMSplines,
-                                                                        const EigenMatrix<double>& splineIntersections,
-                                                                        AnotherMatrix& splineInteraction) const
+void meshkernel::CurvilinearGridSplineToGrid::DetermineSplineOrientation(const Splines& splines,
+                                                                         const UInt numMSplines,
+                                                                         const VectorOfDoubleVectors& splineIntersections,
+                                                                         VectorOfThreeInts& splineInteraction) const
 {
 
-    std::ranges::fill(splineInteraction, std::array<int, 3>({0, 0, 0}));
+    std::ranges::fill(splineInteraction, ArrayOfThree({0, 0, 0}));
 
     // Eerst alles ranken in N richting
     for (UInt i = 0; i < numMSplines; ++i)
@@ -453,11 +352,7 @@ void meshkernel::CurvilinearGridSplineToGrid::ComputeSplineInteractions(const Sp
 
             for (UInt k = 0; k <= i; ++k)
             {
-#ifdef USE_EIGEN
-                if (splineIntersections(j, k) != 0.0)
-#else
                 if (splineIntersections[j][k] != 0.0)
-#endif
                 {
                     maxn = splineInteraction[jjlast][0] + 1;
                     jjlast = k;
@@ -471,11 +366,7 @@ void meshkernel::CurvilinearGridSplineToGrid::ComputeSplineInteractions(const Sp
 
         for (UInt j = numMSplines; j < splines.GetNumSplines(); ++j)
         {
-#ifdef USE_EIGEN
-            if (splineIntersections(j, i) != 0.0)
-#else
             if (splineIntersections[j][i] != 0.0)
-#endif
             {
                 maxn = std::max(maxn, splineInteraction[j][1]);
             }
@@ -496,11 +387,7 @@ void meshkernel::CurvilinearGridSplineToGrid::ComputeSplineInteractions(const Sp
 
             for (UInt k = numMSplines; k <= i; ++k)
             {
-#ifdef USE_EIGEN
-                if (splineIntersections(j, k) != 0.0)
-#else
                 if (splineIntersections[j][k] != 0.0)
-#endif
                 {
                     maxm = splineInteraction[iilast][0] + 1;
                     iilast = k;
@@ -514,11 +401,7 @@ void meshkernel::CurvilinearGridSplineToGrid::ComputeSplineInteractions(const Sp
 
         for (UInt j = 0; j < numMSplines; ++j)
         {
-#ifdef USE_EIGEN
-            if (splineIntersections(j, i) != 0.0)
-#else
             if (splineIntersections[j][i] != 0.0)
-#endif
             {
                 maxm = std::max(maxm, splineInteraction[j][2]);
             }
@@ -542,11 +425,7 @@ void meshkernel::CurvilinearGridSplineToGrid::ComputeSplineInteractions(const Sp
     {
         for (UInt j = numMSplines; j < splines.GetNumSplines(); ++j)
         {
-#ifdef USE_EIGEN
-            if (splineIntersections(i, j) != 0.0)
-#else
             if (splineIntersections[i][j] != 0.0)
-#endif
             {
                 if (splineInteraction[i][1] == 0)
                 {
@@ -564,11 +443,7 @@ void meshkernel::CurvilinearGridSplineToGrid::ComputeSplineInteractions(const Sp
     {
         for (UInt j = 0; j < numMSplines; ++j)
         {
-#ifdef USE_EIGEN
-            if (splineIntersections(i, j) != 0.0)
-#else
             if (splineIntersections[i][j] != 0.0)
-#endif
             {
                 if (splineInteraction[i][1] == 0)
                 {
@@ -582,7 +457,7 @@ void meshkernel::CurvilinearGridSplineToGrid::ComputeSplineInteractions(const Sp
 }
 
 void meshkernel::CurvilinearGridSplineToGrid::ComputeSplineIntersections(Splines& splines,
-                                                                         EigenMatrix<double>& splineIntersections,
+                                                                         VectorOfDoubleVectors& splineIntersections,
                                                                          UInt& numMSplines) const
 {
     std::vector<int> splineType(splines.GetNumSplines(), 0);
@@ -599,7 +474,7 @@ void meshkernel::CurvilinearGridSplineToGrid::ComputeSplineIntersections(Splines
         {
             cumulativeUnlabelledSplineCount = 0;
             DoubleSplinePoints(splines);
-            // Reset spline type info after doubleing of the number of spline points
+            // Reset spline type info after doubling of the number of spline points
             std::ranges::fill(splineType, 0);
             splineType[0] = 1;
         }
@@ -607,24 +482,15 @@ void meshkernel::CurvilinearGridSplineToGrid::ComputeSplineIntersections(Splines
     } while (SplinesRemainUnlabeled(splineType, cumulativeUnlabelledSplineCount));
 
     SortInteractionsOnSplineType(splines, splineType, splineIntersections);
-    numMSplines = GetNumberOfSplinesInDirectionM(splineType);
+    numMSplines = FindIndex(splineType, -1);
 }
 
-std::vector<double> meshkernel::CurvilinearGridSplineToGrid::CompressRow(const EigenMatrix<double>& splineIntersections,
+std::vector<double> meshkernel::CurvilinearGridSplineToGrid::CompressRow(const VectorOfDoubleVectors& splineIntersections,
                                                                          const UInt whichRow) const
 {
-    std::vector<double> compressedRow;
+    DoubleVector compressedRow;
     compressedRow.reserve(splineIntersections.size());
 
-#ifdef USE_EIGEN
-    for (UInt col = 0; col < splineIntersections.cols(); ++col)
-    {
-        if (splineIntersections(whichRow, col) != 0.0)
-        {
-            compressedRow.push_back(splineIntersections(whichRow, col));
-        }
-    }
-#else
     for (UInt col = 0; col < splineIntersections.size(); ++col)
     {
         if (splineIntersections[whichRow][col] != 0.0)
@@ -632,124 +498,122 @@ std::vector<double> meshkernel::CurvilinearGridSplineToGrid::CompressRow(const E
             compressedRow.push_back(splineIntersections[whichRow][col]);
         }
     }
-#endif
 
     return compressedRow;
 }
 
-void meshkernel::CurvilinearGridSplineToGrid::getdis(const Splines& splines,
-                                                     const UInt whichSpline,
-                                                     double& tValue,
-                                                     double& sValue) const
+void meshkernel::CurvilinearGridSplineToGrid::ComputeSplineIntervalLength(const Splines& splines,
+                                                                          const UInt whichSpline,
+                                                                          double& normalisedDistance,
+                                                                          double& intervalLength) const
 {
-    double dt = 0.1;
-    double t0 = 0.0;
     Point startPoint = splines.m_splineNodes[whichSpline][0];
     Point endPoint;
-    double t1;
+    double stepSize = 0.1;
+    double intervalStart = 0.0;
+    double intervalEnd;
 
-    // in getdis.f90 this is: tValue = std::min(tValue, static_cast<double>(splines.m_splineNodes[whichSpline].size()))
+    // in getdis.f90 this is: normalisedDistance = std::min(normalisedDistance, static_cast<double>(splines.m_splineNodes[whichSpline].size()))
     // without the -1. I think the fortran is incorrect, there should be the -1
-    tValue = std::min(tValue, static_cast<double>(splines.Size(whichSpline) - 1));
-    sValue = 0.0;
+    normalisedDistance = std::min(normalisedDistance, static_cast<double>(splines.Size(whichSpline) - 1));
+    intervalLength = 0.0;
 
     do
     {
-        t1 = t0 + dt;
+        intervalEnd = intervalStart + stepSize;
 
-        if (t1 < tValue)
+        if (intervalEnd < normalisedDistance)
         {
-            endPoint = splines.Evaluate(whichSpline, t1);
+            endPoint = splines.Evaluate(whichSpline, intervalEnd);
         }
         else
         {
-            // TODO try to remove the 1e-5
-            endPoint = splines.Evaluate(whichSpline, tValue - 1.0e-5);
+            endPoint = splines.Evaluate(whichSpline, normalisedDistance);
         }
 
-        sValue += ComputeDistance(startPoint, endPoint, splines.m_projection);
+        intervalLength += ComputeDistance(startPoint, endPoint, splines.m_projection);
         startPoint = endPoint;
-        t0 = t1;
+        intervalStart = intervalEnd;
 
-    } while (t1 < tValue);
+    } while (intervalEnd < normalisedDistance);
 }
 
-void meshkernel::CurvilinearGridSplineToGrid::makesr(const double ar,
-                                                     const double s0,
-                                                     const double s1,
-                                                     std::vector<double>& sr) const
+void meshkernel::CurvilinearGridSplineToGrid::ComputeExponentialDistances(const double factor,
+                                                                          const double intervalStart,
+                                                                          const double intervalEnd,
+                                                                          DoubleVector& intervalDiscretisation) const
 {
-    double ds = 1.0;
-    sr[0] = 0.0;
+    double step = 1.0;
+    intervalDiscretisation[0] = 0.0;
 
-    for (UInt k = 0; k < sr.size() - 1; ++k)
+    for (UInt k = 0; k < intervalDiscretisation.size() - 1; ++k)
     {
-        sr[k + 1] = sr[k] + ds;
-        ds *= ar;
+        intervalDiscretisation[k + 1] = intervalDiscretisation[k] + step;
+        step *= factor;
     }
 
-    double fac = (s1 - s0) / sr[sr.size() - 1];
+    double stepSize = (intervalEnd - intervalStart) / intervalDiscretisation[intervalDiscretisation.size() - 1];
 
-    for (UInt k = 0; k < sr.size(); ++k)
+    for (double& distance : intervalDiscretisation)
     {
-        sr[k] = s0 + fac * sr[k];
+        distance = intervalStart + stepSize * distance;
     }
 }
 
-void meshkernel::CurvilinearGridSplineToGrid::makessq(const std::vector<double>& s, // intersectionPoints
-                                                      const UInt mnFac,
-                                                      std::vector<double>& ssq) const
+void meshkernel::CurvilinearGridSplineToGrid::ComputeDiscretisedDistances(const DoubleVector& splineIntervalLengths,
+                                                                          const UInt refinementFactor,
+                                                                          DoubleVector& discretisedDistances) const
 {
-    if (s.size() == 2)
+
+    const double refinementFactorInv = 1.0 / static_cast<double>(refinementFactor);
+
+    if (splineIntervalLengths.size() == 2)
     {
-        for (UInt i = 0; i <= mnFac; ++i)
+        for (UInt i = 0; i <= refinementFactor; ++i)
         {
-            ssq[i] = s[0] + (s[1] - s[0]) * static_cast<double>(i) / static_cast<double>(mnFac);
+            discretisedDistances[i] = splineIntervalLengths[0] + (splineIntervalLengths[1] - splineIntervalLengths[0]) * static_cast<double>(i) * refinementFactorInv;
         }
     }
-    else if (s.size() >= 3)
+    else if (splineIntervalLengths.size() >= 3)
     {
-        std::vector<double> a(s.size());
-        std::vector<double> sl(mnFac + 1);
-        std::vector<double> sr(mnFac + 1);
+        DoubleVector intervalRatios(splineIntervalLengths.size());
+        DoubleVector leftDiscretisations(refinementFactor + 1);
+        DoubleVector rightDiscretisations(refinementFactor + 1);
 
-        for (UInt i = 1; i < s.size() - 1; ++i)
+        for (UInt i = 1; i < splineIntervalLengths.size() - 1; ++i)
         {
-            a[i] = (s[i + 1] - s[i]) / (s[i] - s[i - 1]);
+            intervalRatios[i] = (splineIntervalLengths[i + 1] - splineIntervalLengths[i]) / (splineIntervalLengths[i] - splineIntervalLengths[i - 1]);
         }
 
-        a[0] = a[1];
-        a[s.size() - 1] = a[s.size() - 2];
+        intervalRatios[0] = intervalRatios[1];
+        intervalRatios[splineIntervalLengths.size() - 1] = intervalRatios[splineIntervalLengths.size() - 2];
 
-        for (UInt i = 0; i < s.size() - 1; ++i)
+        for (UInt i = 0; i < splineIntervalLengths.size() - 1; ++i)
         {
-            // TODO store value rather that re-compute each time.
-            double ar = std::pow(a[i + 1], 1.0 / static_cast<double>(mnFac));
-            makesr(ar, s[i], s[i + 1], sr);
+            double rightFactor = std::pow(intervalRatios[i + 1], refinementFactorInv);
+            ComputeExponentialDistances(rightFactor, splineIntervalLengths[i], splineIntervalLengths[i + 1], rightDiscretisations);
 
-            double al = std::pow(a[i], 1.0 / static_cast<double>(mnFac));
-            makesr(al, s[i], s[i + 1], sl);
+            double leftFactor = std::pow(intervalRatios[i], refinementFactorInv);
+            ComputeExponentialDistances(leftFactor, splineIntervalLengths[i], splineIntervalLengths[i + 1], leftDiscretisations);
 
-            // TODO try k = 0 and mnFac
-            for (UInt k = 1; k <= mnFac + 1; ++k)
+            for (UInt k = 0; k <= refinementFactor; ++k)
             {
-                UInt kr = i * mnFac + k - 1;
-                ar = static_cast<double>(k - 1) / static_cast<double>(mnFac);
-                al = 1.0 - ar;
-                // TODO store in temporary variable
-                double interp = ar * sr[k - 1] + al * sl[k - 1];
-                ar = (interp - s[i]) / (s[i + 1] - s[i]);
-                al = 1.0 - ar;
-                ssq[kr] = ar * sr[k - 1] + al * sl[k - 1];
+                UInt kr = i * refinementFactor + k;
+                double rightWeight = static_cast<double>(k) * refinementFactorInv;
+                double leftWeight = 1.0 - rightWeight;
+                double interp = rightWeight * rightDiscretisations[k] + leftWeight * leftDiscretisations[k];
+                rightWeight = (interp - splineIntervalLengths[i]) / (splineIntervalLengths[i + 1] - splineIntervalLengths[i]);
+                leftWeight = 1.0 - rightWeight;
+                discretisedDistances[kr] = rightWeight * rightDiscretisations[k] + leftWeight * leftDiscretisations[k];
             }
         }
     }
 }
 
-meshkernel::Point meshkernel::CurvilinearGridSplineToGrid::GetXy(const Splines& splines,
-                                                                 const UInt whichSpline,
-                                                                 const std::vector<double>& intersectionPoints,
-                                                                 const double ssq) const
+meshkernel::Point meshkernel::CurvilinearGridSplineToGrid::ComputePoint(const Splines& splines,
+                                                                        const UInt whichSpline,
+                                                                        const DoubleVector& intersectionPoints,
+                                                                        const double ssq) const
 {
     Point result;
 
@@ -764,10 +628,40 @@ meshkernel::Point meshkernel::CurvilinearGridSplineToGrid::GetXy(const Splines& 
     return result;
 }
 
+void meshkernel::CurvilinearGridSplineToGrid::PrepareNormalisedDistances(const UInt intervalStart,
+                                                                         const UInt intervalEnd,
+                                                                         DoubleVector& normalisedDistances) const
+{
+    bool valuesAreDecreasing = false;
+
+    do
+    {
+        if (valuesAreDecreasing)
+        {
+            valuesAreDecreasing = false;
+
+            for (UInt k = intervalStart + 1; k <= intervalEnd - 1; ++k)
+            {
+                normalisedDistances[k - 1] = 0.5 * (normalisedDistances[k - 2] + normalisedDistances[k]);
+            }
+        }
+
+        for (UInt k = intervalStart; k < intervalEnd - 1; ++k)
+        {
+            if (normalisedDistances[k + 1] < normalisedDistances[k])
+            {
+                valuesAreDecreasing = true;
+                break;
+            }
+        }
+
+    } while (valuesAreDecreasing);
+}
+
 void meshkernel::CurvilinearGridSplineToGrid::GenerateGridPoints(const Splines& splines,
                                                                  const UInt whichSpline,
-                                                                 const UInt mnFac,
-                                                                 std::vector<double>& intersectionPoints,
+                                                                 const UInt refinementFactor,
+                                                                 DoubleVector& intersectionPoints,
                                                                  std::vector<Point>& gridPoints) const
 {
     // evaluate the spline at the intersection points
@@ -776,68 +670,47 @@ void meshkernel::CurvilinearGridSplineToGrid::GenerateGridPoints(const Splines& 
 
     auto [splinePoints, distances] = splines.ComputePointOnSplineFromAdimensionalDistance(whichSpline, maximumGridHeight, curvatureAdapted, intersectionPoints);
 
-    //--------------------------------
-    // getdis
-
-    std::vector<double> s(intersectionPoints.size());
+    // The length of the spline at the intersection points
+    DoubleVector splineIntervalLengths(intersectionPoints.size());
 
     for (UInt i = 0; i < intersectionPoints.size(); ++i)
     {
-        getdis(splines, whichSpline, intersectionPoints[i], s[i]);
+        ComputeSplineIntervalLength(splines, whichSpline, intersectionPoints[i], splineIntervalLengths[i]);
     }
 
-    UInt kmax = (static_cast<UInt>(intersectionPoints.size()) - 1) * mnFac + 1;
+    UInt numberOfPoints = (static_cast<UInt>(intersectionPoints.size()) - 1) * refinementFactor + 1;
 
-    std::vector<double> ssq(kmax, -999.0);
+    DoubleVector normalisedDistances(numberOfPoints, -999.0);
 
     if (intersectionPoints.size() >= 2)
     {
-        makessq(s, mnFac, ssq);
+        ComputeDiscretisedDistances(splineIntervalLengths, refinementFactor, normalisedDistances);
 
         for (UInt l = 1; l <= intersectionPoints.size() - 1; ++l)
         {
-            UInt k1 = mnFac * (l - 1);
-            UInt k2 = k1 + mnFac;
-            bool jaDip = false;
+            UInt intervalStart = refinementFactor * (l - 1);
+            UInt intervalEnd = intervalStart + refinementFactor;
 
-        label_23:
-
-            if (jaDip)
-            {
-                // TODO check indices and loop bounds
-                for (UInt k = k1 + 1; k <= k2 - 1; ++k)
-                {
-                    ssq[k - 1] = 0.5 * (ssq[k - 2] + ssq[k + 0]);
-                }
-            }
-
-            for (UInt k = k1; k < k2 - 1; ++k)
-            {
-                if (ssq[k + 1] < ssq[k])
-                {
-                    jaDip = true;
-                    goto label_23;
-                }
-            }
+            PrepareNormalisedDistances(intervalStart, intervalEnd, normalisedDistances);
         }
     }
     else
     {
-        ssq[0] = intersectionPoints[0];
+        normalisedDistances[0] = intersectionPoints[0];
     }
 
-    gridPoints.resize(kmax);
+    gridPoints.resize(numberOfPoints);
 
-    for (UInt k = 0; k < kmax; ++k)
+    for (UInt k = 0; k < numberOfPoints; ++k)
     {
-        Point p = GetXy(splines, whichSpline, intersectionPoints, ssq[k]);
+        Point p = ComputePoint(splines, whichSpline, intersectionPoints, normalisedDistances[k]);
         gridPoints[k] = p;
     }
 }
 
-void meshkernel::CurvilinearGridSplineToGrid::assignBoundaryPoint(const UInt loopIndex,
+void meshkernel::CurvilinearGridSplineToGrid::AssignBoundaryPoint(const UInt loopIndex,
                                                                   const UInt boundaryIndex,
-                                                                  const UInt mnFac,
+                                                                  const UInt refinementFactor,
                                                                   std::vector<Point>& startBoundaryPoints,
                                                                   std::vector<Point>& endBoundaryPoints,
                                                                   const Point gridNode) const
@@ -846,34 +719,47 @@ void meshkernel::CurvilinearGridSplineToGrid::assignBoundaryPoint(const UInt loo
     {
         startBoundaryPoints[boundaryIndex] = gridNode;
     }
-    else if (loopIndex == mnFac)
+    else if (loopIndex == refinementFactor)
     {
         endBoundaryPoints[boundaryIndex] = gridNode;
     }
 }
 
-void meshkernel::CurvilinearGridSplineToGrid::splrgf(Splines& splines,
-                                                     const EigenMatrix<double>& splineIntersections,
-                                                     const AnotherMatrix& splineInteraction,
-                                                     CurvilinearGrid& grid [[maybe_unused]],
-                                                     const UInt numMSplines,
-                                                     const UInt mFac,
-                                                     const UInt nFac) const
+void meshkernel::CurvilinearGridSplineToGrid::AssignPatchGridPoints(const UInt i, const UInt j, const UInt nRefinement, const UInt mRefinement,
+                                                                    const lin_alg::Matrix<Point>& patchNodes,
+                                                                    lin_alg::Matrix<Point>& gridNodes) const
+{
+
+    for (UInt k2 = 0; k2 <= mRefinement; ++k2)
+    {
+        UInt ki = i * mRefinement + k2;
+
+        for (UInt l2 = 1; l2 <= nRefinement; ++l2)
+        {
+            UInt lj = j * nRefinement + l2;
+
+            if (!gridNodes(lj, ki).IsValid())
+            {
+                gridNodes(lj, ki) = patchNodes(k2, l2);
+            }
+        }
+    }
+}
+
+void meshkernel::CurvilinearGridSplineToGrid::GenerateGridPointsAlongSpline(const Splines& splines,
+                                                                            const VectorOfDoubleVectors& splineIntersections,
+                                                                            const VectorOfThreeInts& splineInteraction,
+                                                                            const UInt numMSplines,
+                                                                            const UInt mRefinement,
+                                                                            const UInt nRefinement,
+                                                                            lin_alg::Matrix<Point>& gridNodes) const
 {
     std::vector<Point> gridPoints;
-    UInt cols = (splines.GetNumSplines() - numMSplines - 1) * mFac + 1;
-    UInt rows = (numMSplines - 1) * nFac + 1;
+    gridPoints.reserve(static_cast<UInt>(std::max(gridNodes.rows(), gridNodes.cols())));
 
-    UInt ns = 0;
-    UInt ms = 0;
-
-    lin_alg::Matrix<Point> gridNodes(rows, cols);
-    gridNodes.fill({constants::missing::doubleValue, constants::missing::doubleValue});
-
-    // TODO can this be changed to just 'i'
     for (UInt splineIndex = 0; splineIndex < splines.GetNumSplines(); ++splineIndex)
     {
-        std::vector<double> intersectionPoints = CompressRow(splineIntersections, splineIndex);
+        DoubleVector intersectionPoints(CompressRow(splineIntersections, splineIndex));
         UInt position;
         UInt startIndex;
         UInt endIndex;
@@ -881,82 +767,81 @@ void meshkernel::CurvilinearGridSplineToGrid::splrgf(Splines& splines,
 
         if (splineIndex < numMSplines)
         {
-            refinementFactor = mFac;
-            position = (splineInteraction[splineIndex][0] - 1) * nFac;
-            startIndex = (splineInteraction[splineIndex][1] - 1) * mFac;
-            endIndex = (splineInteraction[splineIndex][2] - 1) * mFac + 1;
+            refinementFactor = mRefinement;
+            position = (splineInteraction[splineIndex][0] - 1) * nRefinement;
+            startIndex = (splineInteraction[splineIndex][1] - 1) * mRefinement;
+            endIndex = (splineInteraction[splineIndex][2] - 1) * mRefinement + 1;
         }
         else
         {
-            refinementFactor = nFac;
-            position = (splineInteraction[splineIndex][0] - 1) * mFac;
-            startIndex = (splineInteraction[splineIndex][1] - 1) * nFac;
-            endIndex = (splineInteraction[splineIndex][2] - 1) * nFac + 1;
+            refinementFactor = nRefinement;
+            position = (splineInteraction[splineIndex][0] - 1) * mRefinement;
+            startIndex = (splineInteraction[splineIndex][1] - 1) * nRefinement;
+            endIndex = (splineInteraction[splineIndex][2] - 1) * nRefinement + 1;
         }
 
         GenerateGridPoints(splines, splineIndex, refinementFactor, intersectionPoints, gridPoints);
 
-        UInt k = 0;
-
-        // TODO change loop variable name, too confusing ii, splineIndex, startIndex.
-        for (UInt ii = startIndex; ii < endIndex; ++ii)
-        {
-
-            if (k < gridPoints.size())
-            {
-                if (splineIndex < numMSplines)
-                {
-                    gridNodes(position, ii) = gridPoints[k];
-                }
-                else
-                {
-                    gridNodes(ii, position) = gridPoints[k];
-                }
-            }
-
-            ++k;
-        }
+        UInt index = 0;
 
         if (splineIndex < numMSplines)
         {
-            ns = std::max(ns, static_cast<UInt>(splineInteraction[splineIndex][0]));
+            for (UInt i = startIndex; i < endIndex && index < gridPoints.size(); ++i)
+            {
+                gridNodes(position, i) = gridPoints[index];
+                ++index;
+            }
         }
         else
         {
-            ms = std::max(ms, static_cast<UInt>(splineInteraction[splineIndex][0]));
+            for (UInt i = startIndex; i < endIndex && index < gridPoints.size(); ++i)
+            {
+                gridNodes(i, position) = gridPoints[index];
+                ++index;
+            }
         }
     }
+}
 
-    UInt nmax = std::max((ns - 1) * mFac, (ms - 1) * nFac) + 1;
+void meshkernel::CurvilinearGridSplineToGrid::FillPatchesWithPoints(const Splines& splines,
+                                                                    const UInt numMSplines,
+                                                                    const UInt mRefinement,
+                                                                    const UInt nRefinement,
+                                                                    lin_alg::Matrix<Point>& gridNodes) const
+{
+    UInt numNSplines = splines.GetNumSplines() - numMSplines;
+    UInt maximumPointCount = std::max((numMSplines - 1) * mRefinement, (numNSplines - 1) * nRefinement) + 1;
 
-    std::vector<Point> eastBoundaryPoints(nmax);
-    std::vector<Point> westBoundaryPoints(nmax);
-    std::vector<Point> southBoundaryPoints(nmax);
-    std::vector<Point> northBoundaryPoints(nmax);
+    std::vector<Point> eastBoundaryPoints(maximumPointCount);
+    std::vector<Point> westBoundaryPoints(maximumPointCount);
+    std::vector<Point> southBoundaryPoints(maximumPointCount);
+    std::vector<Point> northBoundaryPoints(maximumPointCount);
 
-    for (UInt i = 0; i < ms - 1; ++i)
+    for (UInt i = 0; i < numNSplines - 1; ++i)
     {
-        for (UInt j = 0; j < ns - 1; ++j)
+        for (UInt j = 0; j < numMSplines - 1; ++j)
         {
             eastBoundaryPoints[1].SetInvalid();
             westBoundaryPoints[1].SetInvalid();
             southBoundaryPoints[1].SetInvalid();
             northBoundaryPoints[1].SetInvalid();
 
-            for (UInt k = 0; k <= mFac; ++k)
+            for (UInt k = 0; k <= mRefinement; ++k)
             {
-                UInt ki = i * mFac + k;
+                UInt ki = i * mRefinement + k;
 
-                for (UInt l = 0; l <= nFac; ++l)
+                for (UInt l = 0; l <= nRefinement; ++l)
                 {
-                    UInt lj = j * nFac + l;
+                    UInt lj = j * nRefinement + l;
                     Point gridNode = gridNodes(lj, ki);
 
-                    if (gridNode.IsValid())
+                    if (!gridNode.IsValid())
                     {
-                        assignBoundaryPoint(k, l, mFac, eastBoundaryPoints, westBoundaryPoints, gridNode);
-                        assignBoundaryPoint(l, k, nFac, southBoundaryPoints, northBoundaryPoints, gridNode);
+                        continue;
                     }
+
+                    AssignBoundaryPoint(k, l, mRefinement, eastBoundaryPoints, westBoundaryPoints, gridNode);
+                    AssignBoundaryPoint(l, k, nRefinement, southBoundaryPoints, northBoundaryPoints, gridNode);
                 }
             }
 
@@ -965,33 +850,40 @@ void meshkernel::CurvilinearGridSplineToGrid::splrgf(Splines& splines,
                            southBoundaryPoints[1].IsValid() &&
                            northBoundaryPoints[1].IsValid();
 
-            if (isValid)
+            if (!isValid)
             {
-                auto interpolationResult = DiscretizeTransfinite(eastBoundaryPoints,
-                                                                 westBoundaryPoints,
-                                                                 southBoundaryPoints,
-                                                                 northBoundaryPoints,
-                                                                 splines.m_projection,
-                                                                 nFac,
-                                                                 mFac);
-
-                for (UInt k2 = 0; k2 <= mFac; ++k2)
-                {
-                    UInt ki = i * mFac + k2;
-
-                    for (UInt l2 = 1; l2 <= nFac; ++l2)
-                    {
-                        UInt lj = j * nFac + l2;
-
-                        if (!gridNodes(lj, ki).IsValid())
-                        {
-                            gridNodes(lj, ki) = interpolationResult(k2, l2);
-                        }
-                    }
-                }
+                continue;
             }
+
+            auto interpolationResult = DiscretizeTransfinite(eastBoundaryPoints,
+                                                             westBoundaryPoints,
+                                                             southBoundaryPoints,
+                                                             northBoundaryPoints,
+                                                             splines.m_projection,
+                                                             nRefinement,
+                                                             mRefinement);
+
+            AssignPatchGridPoints(i, j, nRefinement, mRefinement, interpolationResult, gridNodes);
         }
     }
+}
+
+void meshkernel::CurvilinearGridSplineToGrid::GenerateGrid(const Splines& splines,
+                                                           const VectorOfDoubleVectors& splineIntersections,
+                                                           const VectorOfThreeInts& splineInteraction,
+                                                           const UInt numMSplines,
+                                                           const UInt mRefinement,
+                                                           const UInt nRefinement,
+                                                           CurvilinearGrid& grid) const
+{
+    UInt cols = (splines.GetNumSplines() - numMSplines - 1) * mRefinement + 1;
+    UInt rows = (numMSplines - 1) * nRefinement + 1;
+
+    lin_alg::Matrix<Point> gridNodes(rows, cols);
+    gridNodes.fill({constants::missing::doubleValue, constants::missing::doubleValue});
+
+    GenerateGridPointsAlongSpline(splines, splineIntersections, splineInteraction, numMSplines, mRefinement, nRefinement, gridNodes);
+    FillPatchesWithPoints(splines, numMSplines, mRefinement, nRefinement, gridNodes);
 
     grid.SetGridNodes(gridNodes);
 }

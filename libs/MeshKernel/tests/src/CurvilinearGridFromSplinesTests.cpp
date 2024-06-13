@@ -1163,8 +1163,9 @@ meshkernel::CurvilinearGrid LoadCurvilinearGrid(const std::string& fileName)
     return grid;
 }
 
-TEST(CurvilinearGridFromSplines, GridFromSplines)
+TEST(CurvilinearGridFromSplines, GenerateSimpleGridFromSplines)
 {
+    // Generate a grid from four splines forming a square
     namespace mk = meshkernel;
 
     // Bottom boundary
@@ -1172,14 +1173,11 @@ TEST(CurvilinearGridFromSplines, GridFromSplines)
 
     // right boundary
     std::vector<mk::Point> spline2{{10.0, 11.0}, {10.0, -1.0}};
-    // std::vector<mk::Point> spline2{{10.0, -1.0}, {10.0, 11.0}};
 
     // top boundary
-    // std::vector<mk::Point> spline3{{11.0, 10.0}, {6.666, 9.5}, {3.333, 10.5}, {-1.0, 10.0}};
     std::vector<mk::Point> spline3{{11.0, 10.0}, {-1.0, 10.0}};
 
     // left boundary
-    // std::vector<mk::Point> spline4{{0.0, 11.0}, {1.0, 7.5}, {-1.0, 3.5}, {0.0, -1.0}};
     std::vector<mk::Point> spline4{{0.0, 11.0}, {0.0, -1.0}};
 
     auto splines = std::make_shared<Splines>(Projection::cartesian);
@@ -1197,112 +1195,31 @@ TEST(CurvilinearGridFromSplines, GridFromSplines)
     mk::CurvilinearGrid grid(Projection::cartesian);
 
     splinesToGrid.Compute(*splines, curvilinearParameters, grid);
+
+    lin_alg::Matrix<Point> gridNodes = grid.GetNodes();
+
+    constexpr double tolerance = 1.0e-4;
+
+    double meshDeltaX = 10.0 / static_cast<double>(curvilinearParameters.m_refinement);
+    double meshDeltaY = 10.0 / static_cast<double>(curvilinearParameters.n_refinement);
+    double yCoord = 0.0;
+
+    for (UInt i = 0; i < gridNodes.rows(); ++i)
+    {
+        double xCoord = 0.0;
+
+        for (UInt j = 0; j < gridNodes.cols(); ++j)
+        {
+            EXPECT_NEAR(xCoord, gridNodes(i, j).x, tolerance);
+            EXPECT_NEAR(yCoord, gridNodes(i, j).y, tolerance);
+            xCoord += meshDeltaX;
+        }
+
+        yCoord += meshDeltaY;
+    }
 }
 
-#if 0
-TEST(CurvilinearGridFromSplines, GridFromSplines1a)
-{
-    namespace mk = meshkernel;
-
-    // Bottom boundary
-    std::vector<mk::Point> spline1{{-1.0, 0.0}, {11.0, 0.0}};
-
-    // right boundary
-    // std::vector<mk::Point> spline2{{10.0, 11.0}, {10.0, -1.0}};
-    std::vector<mk::Point> spline2{{10.0, -1.0}, {10.0, 11.0}};
-
-    // top boundary
-    // std::vector<mk::Point> spline3{{11.0, 10.0}, {6.666, 9.5}, {3.333, 10.5}, {-1.0, 10.0}};
-    std::vector<mk::Point> spline3{{11.0, 10.0}, {-1.0, 10.0}};
-
-    // left boundary
-    // std::vector<mk::Point> spline4{{0.0, 11.0}, {-1.0, 7.5}, {1.0, 3.5}, {0.0, -1.0}};
-    // std::vector<mk::Point> spline4{{2.0, 11.0}, {0.0, -1.0}};
-    std::vector<mk::Point> spline4{{0.0, 11.0}, {0.0, -1.0}};
-
-    auto splines = std::make_shared<Splines>(Projection::cartesian);
-    splines->AddSpline(spline1);
-    splines->AddSpline(spline2);
-    splines->AddSpline(spline3);
-    splines->AddSpline(spline4);
-
-    mk::CurvilinearParameters curvilinearParameters;
-
-    curvilinearParameters.m_refinement = 4;
-    curvilinearParameters.n_refinement = 4;
-
-    mk::CurvilinearGridSplineToGrid splinesToGrid;
-    mk::CurvilinearGrid grid(Projection::cartesian);
-
-    splinesToGrid.Compute(*splines, curvilinearParameters, grid);
-
-    meshkernel::Print(grid.ComputeNodes(), grid.ComputeEdges());
-}
-
-TEST(CurvilinearGridFromSplines, GridFromSplines2)
-{
-    namespace mk = meshkernel;
-
-    // auto splines = std::make_shared<Splines>(LoadSplines("/home/senior/MeshKernel/MeshKernel01/build_debug/044.txt"));
-    auto splines = std::make_shared<Splines>(LoadSplines("/home/wcs1/MeshKernel/MeshKernel/build_deb/044.txt"));
-
-    mk::CurvilinearParameters curvilinearParameters;
-
-    curvilinearParameters.m_refinement = 6;
-    curvilinearParameters.n_refinement = 3;
-
-    mk::CurvilinearGridSplineToGrid splinesToGrid;
-    mk::CurvilinearGrid grid(Projection::cartesian);
-
-    splinesToGrid.Compute(*splines, curvilinearParameters, grid);
-    meshkernel::Print(grid.ComputeNodes(), grid.ComputeEdges());
-}
-
-TEST(CurvilinearGridFromSplines, GridFromSplines3)
-{
-    namespace mk = meshkernel;
-
-    // Bottom boundary
-    std::vector<mk::Point> spline1{{-1.0, 0.0}, {11.0, 0.0}};
-
-    // right boundary
-    std::vector<mk::Point> spline2{{10.0, 11.0}, {10.0, -1.0}};
-    // std::vector<mk::Point> spline2{{10.0, -1.0}, {10.0, 11.0}};
-
-    // top boundary 1
-    std::vector<mk::Point> spline3a{{11.0, 9.0}, {4.0, 11.5}};
-
-    // top boundary 2
-    std::vector<mk::Point> spline3b{{6.0, 11.5}, {-1.0, 9.0}};
-
-    // left boundary
-    std::vector<mk::Point> spline4{{0.0, 11.0}, {0.0, -1.0}};
-
-    // LoadSplines("/home/wcs1/MeshKernel/MeshKernel/build_deb/044.txt");
-
-    // auto splines = std::make_shared<Splines>(LoadSplines("/home/senior/MeshKernel/MeshKernel01/build_debug/044.txt"));
-    // auto splines = std::make_shared<Splines>(LoadSplines("/home/wcs1/MeshKernel/MeshKernel/build_deb/044.txt"));
-
-    auto splines = std::make_shared<Splines>(Projection::cartesian);
-    splines->AddSpline(spline1);
-    splines->AddSpline(spline2);
-    splines->AddSpline(spline3a);
-    splines->AddSpline(spline3b);
-    splines->AddSpline(spline4);
-
-    mk::CurvilinearParameters curvilinearParameters;
-
-    curvilinearParameters.m_refinement = 5;
-    curvilinearParameters.n_refinement = 10;
-
-    mk::CurvilinearGridSplineToGrid splinesToGrid;
-    mk::CurvilinearGrid grid(Projection::cartesian);
-
-    splinesToGrid.Compute(*splines, curvilinearParameters, grid);
-    meshkernel::Print(grid.ComputeNodes(), grid.ComputeEdges());
-}
-
-TEST(CurvilinearGridFromSplines, GridFromSplines4)
+TEST(CurvilinearGridFromSplines, DISABLED_GridFromSplines4)
 {
     namespace mk = meshkernel;
     // mk::CurvilinearGrid interactorGrid(LoadCurvilinearGrid("/home/senior/MeshKernel/MeshKernel01/build_debug/splgrid2.grd"));
@@ -1330,25 +1247,68 @@ TEST(CurvilinearGridFromSplines, GridFromSplines4)
     std::cout << interactorPoints.size() << "  " << computedPoints.size() << std::endl;
     std::cout << interactorEdges.size() << "  " << computedEdges.size() << std::endl;
 
-    meshkernel::Print(interactorGrid.ComputeNodes(), interactorGrid.ComputeEdges());
+    // meshkernel::Print(interactorGrid.ComputeNodes(), interactorGrid.ComputeEdges());
     // meshkernel::Print(grid.ComputeNodes(), grid.ComputeEdges());
 
     // std::cout << "size: " << numNodes, numEdges <<
 }
 
-TEST(CurvilinearGridFromSplines, GridFromSplines5)
+TEST(CurvilinearGridFromSplines, GenerateGridWithIllDefinedSplines)
 {
+    // Attempt to generate a grid with 5 splines, 2 of which form a single
+    // boundary along the top of the domain.
+    // Should raise a AlgorithmError exception
+
     namespace mk = meshkernel;
 
     // Bottom boundary
     std::vector<mk::Point> spline1{{-1.0, 0.0}, {11.0, 0.0}};
 
     // right boundary
-    // std::vector<mk::Point> spline2{{10.0, 11.0}, {10.0, -1.0}};
+    std::vector<mk::Point> spline2{{10.0, 11.0}, {10.0, -1.0}};
+
+    // top boundary 1
+    std::vector<mk::Point> spline3{{11.0, 9.0}, {4.0, 11.5}};
+
+    // top boundary 2
+    std::vector<mk::Point> spline4{{6.0, 11.5}, {-1.0, 9.0}};
+
+    // left boundary
+    std::vector<mk::Point> spline5{{0.0, 11.0}, {0.0, -1.0}};
+
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+    splines->AddSpline(spline1);
+    splines->AddSpline(spline2);
+    splines->AddSpline(spline3);
+    splines->AddSpline(spline4);
+    splines->AddSpline(spline5);
+
+    mk::CurvilinearParameters curvilinearParameters;
+
+    curvilinearParameters.m_refinement = 5;
+    curvilinearParameters.n_refinement = 10;
+
+    mk::CurvilinearGridSplineToGrid splinesToGrid;
+    mk::CurvilinearGrid grid(Projection::cartesian);
+
+    EXPECT_THROW(splinesToGrid.Compute(*splines, curvilinearParameters, grid), mk::AlgorithmError);
+}
+
+TEST(CurvilinearGridFromSplines, GenerateGridWithDisconectedSpline)
+{
+    // Attempt to generate a grid with 4 splines forming a square and
+    // a fifth disconnected spline.
+    // Should raise a AlgorithmError exception
+
+    namespace mk = meshkernel;
+
+    // Bottom boundary
+    std::vector<mk::Point> spline1{{-1.0, 0.0}, {11.0, 0.0}};
+
+    // right boundary
     std::vector<mk::Point> spline2{{10.0, -1.0}, {10.0, 11.0}};
 
     // top boundary
-    // std::vector<mk::Point> spline3{{11.0, 10.0}, {6.666, 9.5}, {3.333, 10.5}, {-1.0, 10.0}};
     std::vector<mk::Point> spline3{{11.0, 10.0}, {-1.0, 10.0}};
 
     // left boundary
@@ -1372,7 +1332,5 @@ TEST(CurvilinearGridFromSplines, GridFromSplines5)
     mk::CurvilinearGridSplineToGrid splinesToGrid;
     mk::CurvilinearGrid grid(Projection::cartesian);
 
-    splinesToGrid.Compute(*splines, curvilinearParameters, grid);
-    meshkernel::Print(grid.ComputeNodes(), grid.ComputeEdges());
+    EXPECT_THROW(splinesToGrid.Compute(*splines, curvilinearParameters, grid), mk::AlgorithmError);
 }
-#endif
