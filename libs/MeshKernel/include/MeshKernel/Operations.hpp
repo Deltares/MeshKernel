@@ -241,13 +241,13 @@ namespace meshkernel
         return f1 < f2 ? x1 : x2;
     }
 
-    /// @brief Get the next forward index.
+    /// @brief Get the next forward index, for a range in 0 .. size-1.
     /// @param[in] currentIndex The current index.
     /// @param[in] size The size of the vector.
     /// @returns The next forward index.
     [[nodiscard]] UInt NextCircularForwardIndex(UInt currentIndex, UInt size);
 
-    /// @brief Get the next backward index.
+    /// @brief Get the next backward index, for a range in 0 .. size-1.
     /// @param[in] currentIndex The current index.
     /// @param[in] size The size of the vector.
     /// @returns The next backward index.
@@ -516,13 +516,13 @@ namespace meshkernel
     }
 
     /// @brief Computes the transfinite discretization inside the area defined by 4 sides, each one discretized with a series of points (tranfn2).
-    /// @param[in] leftDiscretization   The first side of the area.
-    /// @param[in] rightDiscretization  The second side of the area.
-    /// @param[in] bottomDiscretization The third side of the area.
-    /// @param[in] upperDiscretization  The fourth side of the area.
+    /// @param[in] leftDiscretization   The discretization of the left side.
+    /// @param[in] rightDiscretization  The discretization of the right side.
+    /// @param[in] bottomDiscretization The discretization of the bottom.
+    /// @param[in] upperDiscretization  The discretization of the upper side.
     /// @param[in] projection           The projection to use.
-    /// @param[in] numM                 The number of columns to generate (horizontal direction).
-    /// @param[in] numN                 The number of rows to generate (vertical direction).
+    /// @param[in] numM                 The number of columns to generate.
+    /// @param[in] numN                 The number of rows to generate.
     /// @returns The resulting dicretization (expressed as number of points).
     [[nodiscard]] lin_alg::Matrix<Point> DiscretizeTransfinite(const std::vector<Point>& leftDiscretization,
                                                                const std::vector<Point>& rightDiscretization,

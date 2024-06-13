@@ -29,8 +29,9 @@
 
 #include <memory>
 
-#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp>
+#include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 namespace meshkernel
 {
@@ -45,7 +46,7 @@ namespace meshkernel
         CurvilinearGridSmoothing(CurvilinearGrid& grid, UInt smoothingIterations);
 
         /// @brief Compute curvilinear grid block smoothing (modifies the m_grid nodal values)
-        void Compute() override;
+        [[nodiscard]] UndoActionPtr Compute() override;
 
         /// @brief Compute curvilinear grid line smoothing. The algorithm smooths the grid along the direction specified by the line.
         /// The line must be an m or n grid line of the curvilinear grid.
@@ -61,9 +62,9 @@ namespace meshkernel
 
         /// @brief Projects a point on the closest grid boundary
         /// @param[in] point The point to project
-        /// @param[in] m The current m coordinate on the boundary of the curvilinear grid
         /// @param[in] n The current n coordinate on the boundary of the curvilinear grid
-        void ProjectPointOnClosestGridBoundary(Point const& point, UInt m, UInt n);
+        /// @param[in] m The current m coordinate on the boundary of the curvilinear grid
+        void ProjectPointOnClosestGridBoundary(Point const& point, UInt n, UInt m);
 
         UInt m_smoothingIterations;              ///< The orthogonalization parameters
         lin_alg::Matrix<Point> m_gridNodesCache; ///< A cache for storing current iteration node positions

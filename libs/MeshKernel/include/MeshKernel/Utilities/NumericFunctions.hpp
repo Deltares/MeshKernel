@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include "MeshKernel/Exceptions.hpp"
 #include <cmath>
 #include <concepts>
 #include <limits>
@@ -52,6 +53,49 @@ namespace meshkernel
         const T abs_ref_value = std::abs(ref_value);
 
         return abs_diff < relative_tol * std::min(abs_value, abs_ref_value);
+    }
+
+    /// @brief Determine is a value is in the closed interval, bounded by lower- and upper-bound
+    ///
+    /// \param [in] value The value to determine if in closed interval
+    /// \param [in] lowerBound Lower bound of the interval
+    /// \param [in] upperBound Upper bound of the interval
+    template <typename Scalar>
+    bool IsInRange(const Scalar value, const Scalar lowerBound, const Scalar upperBound)
+    {
+        return lowerBound <= value && value <= upperBound;
+    }
+
+    /// \brief Get the next index, wrapping around if index is at
+    ///
+    /// Range is in [0, size - 1]
+    static UInt RotateIndex(const UInt index, const UInt size, const bool forward)
+    {
+        if (size == 0)
+        {
+            throw ConstraintError("Invalid range for index rotation");
+        }
+
+        if (index >= size)
+        {
+            throw ConstraintError("Index is out of range of array: {} not in [0 .. {}]", index, size - 1);
+        }
+
+        if (forward)
+        {
+            return index == size - 1 ? 0 : index + 1;
+        }
+        else
+        {
+            return index == 0 ? size - 1 : index - 1;
+        }
+    }
+
+    /// \brief Get the next index, wrapping around if index is at
+    template <typename Type>
+    UInt RotateIndex(const UInt index, const std::vector<Type>& vec, const bool forward)
+    {
+        return RotateIndex(index, static_cast<UInt>(vec.size()), forward);
     }
 
 } // namespace meshkernel

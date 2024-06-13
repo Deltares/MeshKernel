@@ -29,11 +29,13 @@
 
 #include <cmath>
 #include <concepts>
+#include <memory>
 
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh.hpp"
 #include "MeshKernel/Point.hpp"
+#include "MeshKernel/UndoActions/NodeTranslationAction.hpp"
 #include "MeshKernel/Vector.hpp"
 
 namespace meshkernel
@@ -263,7 +265,7 @@ namespace meshkernel
     public:
         /// @brief Apply a transformation to a mesh with a Cartesian projection
         template <TransformationFunction Transformation>
-        static void Compute(Mesh& mesh, Transformation transformation)
+        [[nodiscard]] static std::unique_ptr<UndoAction> Compute(Mesh& mesh, Transformation transformation)
         {
             if (mesh.m_projection != transformation.TransformationProjection())
             {
@@ -271,16 +273,28 @@ namespace meshkernel
                                       ProjectionToString(transformation.TransformationProjection()), ProjectionToString(mesh.m_projection));
             }
 
+            std::unique_ptr<NodeTranslationAction> undoAction = NodeTranslationAction::Create(mesh);
+            std::vector<Point> nodes(mesh.Nodes());
+
 #pragma omp parallel for
             for (int i = 0; i < static_cast<int>(mesh.GetNumNodes()); ++i)
             {
-                if (mesh.m_nodes[i].IsValid())
+                if (nodes[i].IsValid())
                 {
-                    mesh.m_nodes[i] = transformation(mesh.m_nodes[i]);
+                    nodes[i] = transformation(nodes[i]);
                 }
+
+#if 0
+                if (mesh.Node(i).IsValid())
+                {
+                    mesh.SetNode(i, transformation(mesh.Node(i)));
+                }
+#endif
             }
 
+            mesh.SetNodes(nodes);
             mesh.Administrate();
+            return undoAction;
         }
     };
 

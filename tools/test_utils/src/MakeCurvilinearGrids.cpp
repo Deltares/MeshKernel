@@ -2,6 +2,8 @@
 #include <MeshKernelApi/CurvilinearGrid.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
+#include <random>
+
 size_t CurvilinearGridCountValidNodes(meshkernelapi::CurvilinearGrid const& curvilinearGrid)
 {
     size_t validNodes = 0;
@@ -24,11 +26,11 @@ size_t CurvilinearGridCountValidNodes(meshkernel::CurvilinearGrid const& curvili
 {
     size_t validNodes = 0;
     size_t index = 0;
-    for (size_t m = 0; m < curvilinearGrid.m_numM; ++m)
+    for (meshkernel::UInt n = 0; n < curvilinearGrid.NumN(); ++n)
     {
-        for (size_t n = 0; n < curvilinearGrid.m_numN; ++n)
+        for (meshkernel::UInt m = 0; m < curvilinearGrid.NumM(); ++m)
         {
-            if (curvilinearGrid.m_gridNodes(m, n).IsValid())
+            if (curvilinearGrid.GetNode(n, m).IsValid())
             {
                 validNodes++;
             }
@@ -42,6 +44,7 @@ std::unique_ptr<meshkernel::CurvilinearGrid> MakeSmallCurvilinearGrid()
 {
     using namespace meshkernel;
     lin_alg::Matrix<Point> grid(5, 9);
+
     grid << //
         Point{7.998379637459554942E+04, 3.669368953805413912E+05},
         Point{8.006531634932766610E+04, 3.669913884352280875E+05},
@@ -158,15 +161,52 @@ std::unique_ptr<meshkernel::CurvilinearGrid> MakeCurvilinearGrid(double originX,
 {
     double y = originY;
 
-    lin_alg::Matrix<meshkernel::Point> points(nx, ny);
+    lin_alg::Matrix<meshkernel::Point> points(ny, nx);
 
-    for (size_t m = 0; m < ny; ++m)
+    for (size_t n = 0; n < ny; ++n)
     {
         double x = originX;
 
-        for (size_t n = 0; n < nx; ++n)
+        for (size_t m = 0; m < nx; ++m)
         {
             points(n, m) = meshkernel::Point(x, y);
+            x += deltaX;
+        }
+
+        y += deltaY;
+    }
+
+    return std::make_unique<meshkernel::CurvilinearGrid>(points, meshkernel::Projection::cartesian);
+}
+
+std::unique_ptr<meshkernel::CurvilinearGrid> MakeCurvilinearGridRand(double originX, double originY, double deltaX, double deltaY, size_t nx, size_t ny, double fraction, bool displaceBoundary)
+{
+    double y = originY;
+    // Create a uniform distribution in 0 .. 1.
+    std::uniform_real_distribution<double> distribution(0.0, 1.0);
+    std::default_random_engine engine;
+
+    lin_alg::Matrix<meshkernel::Point> points(ny, nx);
+
+    for (size_t n = 0; n < ny; ++n)
+    {
+        double x = originX;
+        bool onVerticalBoundary = n == 0 || n == ny - 1;
+
+        for (size_t m = 0; m < nx; ++m)
+        {
+            bool onHorizontalBoundary = m == 0 || m == nx - 1;
+
+            meshkernel::Vector displacement(distribution(engine) * fraction * deltaX,
+                                            distribution(engine) * fraction * deltaY);
+            meshkernel::Point meshPoint(x, y);
+
+            if ((displaceBoundary && (onVerticalBoundary || onHorizontalBoundary)) || (!onVerticalBoundary && !onHorizontalBoundary))
+            {
+                meshPoint += displacement;
+            }
+
+            points(n, m) = meshPoint;
             x += deltaX;
         }
 

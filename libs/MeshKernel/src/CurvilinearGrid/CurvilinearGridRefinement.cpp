@@ -27,6 +27,7 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
+#include <MeshKernel/CurvilinearGrid/UndoActions/CurvilinearGridRefinementUndoAction.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Operations.hpp>
 
@@ -41,7 +42,7 @@ CurvilinearGridRefinement::CurvilinearGridRefinement(CurvilinearGrid& grid, UInt
     m_splines = Splines(m_grid);
 }
 
-void CurvilinearGridRefinement::Compute()
+meshkernel::UndoActionPtr CurvilinearGridRefinement::Compute()
 {
 
     if (!m_lowerLeft.IsValid() || !m_upperRight.IsValid())
@@ -55,11 +56,13 @@ void CurvilinearGridRefinement::Compute()
         throw std::invalid_argument("CurvilinearGridRefinement::Compute: The selected curvilinear grid nodes are not on the same grid-line");
     }
 
+    std::unique_ptr<CurvilinearGridRefinementUndoAction> undoAction = CurvilinearGridRefinementUndoAction::Create(m_grid);
+
     // Estimate the dimension of the refined grid
     const auto numMToRefine = m_upperRight.m_m - m_lowerLeft.m_m;
     const auto numNToRefine = m_upperRight.m_n - m_lowerLeft.m_n;
-    const UInt maxM = m_grid.m_numM + numMToRefine * (m_refinement - 1);
-    const UInt maxN = m_grid.m_numN + numNToRefine * (m_refinement - 1);
+    const UInt maxM = m_grid.NumM() + numMToRefine * (m_refinement - 1);
+    const UInt maxN = m_grid.NumN() + numNToRefine * (m_refinement - 1);
 
     // Local vector for each curvilinear grid face
     std::vector<Point> bottomRefinement(m_refinement);
@@ -68,40 +71,40 @@ void CurvilinearGridRefinement::Compute()
     std::vector<Point> rightRefinement(m_refinement);
 
     // The refined grid
-    lin_alg::Matrix<Point> refinedGrid(maxM, maxN);
+    lin_alg::Matrix<Point> refinedGrid(maxN, maxM);
 
-    UInt refinedM = 0;
-    for (UInt currentM = 0; currentM < m_grid.m_numM - 1; ++currentM)
+    UInt refinedN = 0;
+    for (UInt currentN = 0; currentN < m_grid.NumN() - 1; ++currentN)
     {
-        UInt localMRefinement = 1;
-        if (currentM >= m_lowerLeft.m_m && currentM < m_upperRight.m_m)
+        UInt localNRefinement = 1;
+        if (currentN >= m_lowerLeft.m_n && currentN < m_upperRight.m_n)
         {
-            localMRefinement = m_refinement;
+            localNRefinement = m_refinement;
         }
 
-        UInt refinedN = 0;
-        for (UInt currentN = 0; currentN < m_grid.m_numN - 1; ++currentN)
+        UInt refinedM = 0;
+        for (UInt currentM = 0; currentM < m_grid.NumM() - 1; ++currentM)
         {
 
-            UInt localNRefinement = 1;
-            if (currentN >= m_lowerLeft.m_n && currentN < m_upperRight.m_n)
+            UInt localMRefinement = 1;
+            if (currentM >= m_lowerLeft.m_m && currentM < m_upperRight.m_m)
             {
-                localNRefinement = m_refinement;
+                localMRefinement = m_refinement;
             }
 
             // Only if all grid nodes of the face are valid, perform transfinite interpolation
-            if (m_grid.m_gridNodes(currentM, currentN).IsValid() &&
-                m_grid.m_gridNodes(currentM + 1, currentN).IsValid() &&
-                m_grid.m_gridNodes(currentM, currentN + 1).IsValid() &&
-                m_grid.m_gridNodes(currentM + 1, currentN + 1).IsValid())
+            if (m_grid.GetNode(currentN, currentM).IsValid() &&
+                m_grid.GetNode(currentN + 1, currentM).IsValid() &&
+                m_grid.GetNode(currentN, currentM + 1).IsValid() &&
+                m_grid.GetNode(currentN + 1, currentM + 1).IsValid())
             {
                 // Calculate m-direction spline points
                 bottomRefinement.clear();
                 topRefinement.clear();
-                for (UInt m = 0; m < localMRefinement + 1; ++m)
+                for (UInt n = 0; n < localNRefinement + 1; ++n)
                 {
-                    const auto splineIndex = currentN;
-                    const auto interpolationPoint = static_cast<double>(currentM) + static_cast<double>(m) / static_cast<double>(localMRefinement);
+                    const auto splineIndex = currentM;
+                    const auto interpolationPoint = static_cast<double>(currentN) + static_cast<double>(n) / static_cast<double>(localNRefinement);
                     bottomRefinement.emplace_back(ComputePointOnSplineAtAdimensionalDistance(m_splines.m_splineNodes[splineIndex], m_splines.m_splineDerivatives[splineIndex], interpolationPoint));
                     topRefinement.emplace_back(ComputePointOnSplineAtAdimensionalDistance(m_splines.m_splineNodes[splineIndex + 1], m_splines.m_splineDerivatives[splineIndex + 1], interpolationPoint));
                 }
@@ -109,10 +112,10 @@ void CurvilinearGridRefinement::Compute()
                 // Calculate m-direction spline points
                 leftRefinement.clear();
                 rightRefinement.clear();
-                for (UInt n = 0; n < localNRefinement + 1; ++n)
+                for (UInt m = 0; m < localMRefinement + 1; ++m)
                 {
-                    const auto splineIndex = m_grid.m_numN + currentM;
-                    const auto interpolationPoint = static_cast<double>(currentN) + static_cast<double>(n) / static_cast<double>(localNRefinement);
+                    const auto splineIndex = m_grid.NumM() + currentN;
+                    const auto interpolationPoint = static_cast<double>(currentM) + static_cast<double>(m) / static_cast<double>(localMRefinement);
                     leftRefinement.emplace_back(ComputePointOnSplineAtAdimensionalDistance(m_splines.m_splineNodes[splineIndex], m_splines.m_splineDerivatives[splineIndex], interpolationPoint));
                     rightRefinement.emplace_back(ComputePointOnSplineAtAdimensionalDistance(m_splines.m_splineNodes[splineIndex + 1], m_splines.m_splineDerivatives[splineIndex + 1], interpolationPoint));
                 }
@@ -122,23 +125,25 @@ void CurvilinearGridRefinement::Compute()
                                                              rightRefinement,
                                                              bottomRefinement,
                                                              topRefinement,
-                                                             m_grid.m_projection,
+                                                             m_grid.projection(),
                                                              localMRefinement,
                                                              localNRefinement);
                 // Copy the local grid into the refined grid
-                for (Eigen::Index m = 0; m < localMRefinement + 1; ++m)
+                for (Eigen::Index n = 0; n < localNRefinement + 1; ++n)
                 {
-                    for (Eigen::Index n = 0; n < localNRefinement + 1; ++n)
+                    for (Eigen::Index m = 0; m < localMRefinement + 1; ++m)
                     {
-                        refinedGrid(refinedM + m, refinedN + n) = localGrid(m, n);
+                        refinedGrid(refinedN + n, refinedM + m) = localGrid(n, m);
                     }
                 }
             }
-            refinedN += localNRefinement;
+            refinedM += localMRefinement;
         }
-        refinedM += localMRefinement;
+        refinedN += localNRefinement;
     }
 
     // Substitute original grid with the refined one
     m_grid.SetGridNodes(refinedGrid);
+
+    return undoAction;
 }

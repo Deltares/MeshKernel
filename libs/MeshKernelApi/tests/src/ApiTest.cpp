@@ -1,25 +1,52 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <MeshKernel/MeshTransformation.hpp>
-#include <MeshKernel/Parameters.hpp>
+#include "MeshKernel/MeshTransformation.hpp"
+#include "MeshKernel/Parameters.hpp"
 
-#include <MeshKernelApi/CurvilinearGrid.hpp>
-#include <MeshKernelApi/GeometryList.hpp>
-#include <MeshKernelApi/Mesh1D.hpp>
-#include <MeshKernelApi/Mesh2D.hpp>
-#include <MeshKernelApi/MeshKernel.hpp>
-#include <Version/Version.hpp>
+#include "MeshKernelApi/BoundingBox.hpp"
+#include "MeshKernelApi/GeometryList.hpp"
+#include "MeshKernelApi/Mesh1D.hpp"
+#include "MeshKernelApi/Mesh2D.hpp"
+#include "MeshKernelApi/MeshKernel.hpp"
+#include "Version/Version.hpp"
 
-#include <TestUtils/Definitions.hpp>
-#include <TestUtils/MakeCurvilinearGrids.hpp>
-#include <TestUtils/MakeMeshes.hpp>
-#include <TestUtils/SampleFileReader.hpp>
+#include "TestUtils/Definitions.hpp"
+#include "TestUtils/MakeCurvilinearGrids.hpp"
+#include "TestUtils/MakeMeshes.hpp"
+#include "TestUtils/SampleFileReader.hpp"
 
 #include <memory>
 #include <numeric>
 
 #include "CartesianApiTestFixture.hpp"
+
+TEST(State, AllocateState)
+{
+    int errorCode;
+    int meshKernelId = 0;
+    // cartesian
+    errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // spherical
+    errorCode = meshkernelapi::mkernel_allocate_state(1, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // spherical accurate
+    errorCode = meshkernelapi::mkernel_allocate_state(2, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // invalid
+    errorCode = meshkernelapi::mkernel_allocate_state(3, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::RangeErrorCode, errorCode);
+    // invalid
+    errorCode = meshkernelapi::mkernel_allocate_state(-1, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::RangeErrorCode, errorCode);
+}
 
 TEST_F(CartesianApiTestFixture, Mesh2DDeleteNode_ShouldDeleteNode)
 {
@@ -37,8 +64,8 @@ TEST_F(CartesianApiTestFixture, Mesh2DDeleteNode_ShouldDeleteNode)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert dimensions
-    ASSERT_EQ(11, mesh2d.num_nodes);
-    ASSERT_EQ(15, mesh2d.num_edges);
+    ASSERT_EQ(11, mesh2d.num_valid_nodes);
+    ASSERT_EQ(15, mesh2d.num_valid_edges);
 
     // Allocate memory and get data
     std::vector<int> edge_faces(mesh2d.num_edges * 2);
@@ -73,39 +100,55 @@ TEST_F(CartesianApiTestFixture, Mesh2DDeleteNode_ShouldDeleteNode)
             |   |   |
             2---5---8
     */
+
+    /*  2---5---8---11
+        |   |   |   |
+        1---4---7---10
+            |   |   |
+            3---6---9
+
+      Node 0 is invalid
+      Edges 0 and 9 are invalid
+
+    */
+
     // Assert data
     const double tolerance = 1e-6;
     // Nodes
-    ASSERT_NEAR(0.0, mesh2d.node_x[0], tolerance);
-    ASSERT_NEAR(1.0, mesh2d.node_y[0], tolerance);
+    EXPECT_NEAR(0.0, mesh2d.node_x[1], tolerance);
+    EXPECT_NEAR(1.0, mesh2d.node_y[1], tolerance);
     // Edges
-    ASSERT_EQ(0, mesh2d.edge_nodes[0]);
-    ASSERT_EQ(3, mesh2d.edge_nodes[1]);
-    ASSERT_NEAR(0.5, mesh2d.edge_x[0], tolerance);
-    ASSERT_NEAR(1.0, mesh2d.edge_y[0], tolerance);
+    EXPECT_EQ(1, mesh2d.edge_nodes[2]);
+    EXPECT_EQ(4, mesh2d.edge_nodes[3]);
+    // TODO should the edge_x/y have the same number of values as there are edges
+    EXPECT_EQ(meshkernel::constants::missing::doubleValue, mesh2d.edge_x[0]);
+    EXPECT_EQ(meshkernel::constants::missing::doubleValue, mesh2d.edge_y[0]);
+
+    EXPECT_NEAR(0.5, mesh2d.edge_x[1], tolerance);
+    EXPECT_NEAR(1.0, mesh2d.edge_y[1], tolerance);
     // First face
-    ASSERT_EQ(0, mesh2d.edge_faces[0]);
-    ASSERT_EQ(-1, mesh2d.edge_faces[1]);
-    ASSERT_EQ(0, mesh2d.edge_faces[2]);
-    ASSERT_EQ(-1, mesh2d.edge_faces[3]);
+    EXPECT_EQ(0, mesh2d.edge_faces[2]);
+    EXPECT_EQ(-1, mesh2d.edge_faces[3]);
+    EXPECT_EQ(0, mesh2d.edge_faces[4]);
+    EXPECT_EQ(-1, mesh2d.edge_faces[5]);
 
-    ASSERT_EQ(0, mesh2d.face_edges[0]);
-    ASSERT_EQ(10, mesh2d.face_edges[1]);
-    ASSERT_EQ(1, mesh2d.face_edges[2]);
-    ASSERT_EQ(8, mesh2d.face_edges[3]);
+    EXPECT_EQ(1, mesh2d.face_edges[0]);
+    EXPECT_EQ(12, mesh2d.face_edges[1]);
+    EXPECT_EQ(2, mesh2d.face_edges[2]);
+    EXPECT_EQ(10, mesh2d.face_edges[3]);
 
-    ASSERT_EQ(4, mesh2d.nodes_per_face[0]);
-    ASSERT_NEAR(0.5, mesh2d.face_x[0], tolerance);
-    ASSERT_NEAR(1.5, mesh2d.face_y[0], tolerance);
+    EXPECT_EQ(4, mesh2d.nodes_per_face[0]);
+    EXPECT_NEAR(0.5, mesh2d.face_x[0], tolerance);
+    EXPECT_NEAR(1.5, mesh2d.face_y[0], tolerance);
     // Second Face
-    ASSERT_EQ(2, mesh2d.face_nodes[4]);
-    ASSERT_EQ(5, mesh2d.face_nodes[5]);
-    ASSERT_EQ(6, mesh2d.face_nodes[6]);
-    ASSERT_EQ(3, mesh2d.face_nodes[7]);
-    ASSERT_EQ(4, mesh2d.nodes_per_face[1]);
+    EXPECT_EQ(3, mesh2d.face_nodes[4]);
+    EXPECT_EQ(6, mesh2d.face_nodes[5]);
+    EXPECT_EQ(7, mesh2d.face_nodes[6]);
+    EXPECT_EQ(4, mesh2d.face_nodes[7]);
+    EXPECT_EQ(4, mesh2d.nodes_per_face[1]);
 
-    ASSERT_NEAR(1.5, mesh2d.face_x[1], tolerance);
-    ASSERT_NEAR(0.5, mesh2d.face_y[1], tolerance);
+    EXPECT_NEAR(1.5, mesh2d.face_x[1], tolerance);
+    EXPECT_NEAR(0.5, mesh2d.face_y[1], tolerance);
 }
 
 TEST_F(CartesianApiTestFixture, FlipEdges_ShouldFlipEdges)
@@ -211,8 +254,8 @@ TEST_F(CartesianApiTestFixture, MergeTwoNodesThroughApi)
 
     // Assert
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(11, mesh2d.num_nodes);
-    ASSERT_EQ(15, mesh2d.num_edges);
+    ASSERT_EQ(11, mesh2d.num_valid_nodes);
+    ASSERT_EQ(15, mesh2d.num_valid_edges);
 }
 
 TEST_F(CartesianApiTestFixture, MergeNodesThroughApi)
@@ -240,8 +283,8 @@ TEST_F(CartesianApiTestFixture, MergeNodesThroughApi)
 
     // Assert (nothing is done, just check that the api communication works)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(12, mesh2d.num_nodes);
-    ASSERT_EQ(17, mesh2d.num_edges);
+    ASSERT_EQ(12, mesh2d.num_valid_nodes);
+    ASSERT_EQ(17, mesh2d.num_valid_edges);
 }
 
 TEST_F(CartesianApiTestFixture, MergeNodesWithMergingDistanceThroughApi)
@@ -260,8 +303,8 @@ TEST_F(CartesianApiTestFixture, MergeNodesWithMergingDistanceThroughApi)
 
     // Assert (nothing is done, just check that the api communication works)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(12, mesh2d.num_nodes);
-    ASSERT_EQ(17, mesh2d.num_edges);
+    ASSERT_EQ(12, mesh2d.num_valid_nodes);
+    ASSERT_EQ(17, mesh2d.num_valid_edges);
 }
 
 TEST_F(CartesianApiTestFixture, OrthogonalizationThroughApi)
@@ -1123,7 +1166,7 @@ TEST_F(CartesianApiTestFixture, MakeCurvilinearGridFromTriangleThroughApi)
     ASSERT_EQ(40, mesh2d.num_edges);
 }
 
-TEST_F(CartesianApiTestFixture, DeleteMesh2D_WithEmptyPolygon_ShouldDeleteMesh2D)
+TEST_F(CartesianApiTestFixture, Delete_WithEmptyPolygon_ShouldDeleteMesh2D)
 {
     // Prepare
     MakeMesh();
@@ -1139,8 +1182,36 @@ TEST_F(CartesianApiTestFixture, DeleteMesh2D_WithEmptyPolygon_ShouldDeleteMesh2D
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
 
     // Assert
-    ASSERT_EQ(0, mesh2d.num_nodes);
-    ASSERT_EQ(0, mesh2d.num_edges);
+    ASSERT_EQ(0, mesh2d.num_valid_nodes);
+    ASSERT_EQ(0, mesh2d.num_valid_edges);
+}
+
+TEST_F(CartesianApiTestFixture, DeleteFaces_WithPolygon_ShouldDeleteMesh2D)
+{
+    // Prepare
+    MakeMesh(4, 4, 2);
+    auto const meshKernelId = GetMeshKernelId();
+
+    // By using an empty list, all nodes will be selected
+    meshkernelapi::GeometryList geometryList{};
+
+    geometryList.num_coordinates = 5;
+    geometryList.geometry_separator = meshkernel::constants::missing::doubleValue;
+    std::vector<double> xCoordinatesOut{2, 6, 6, 2, 2};
+    std::vector<double> yCoordinatesOut{2, 2, 6, 6, 2};
+    geometryList.coordinates_x = xCoordinatesOut.data();
+    geometryList.coordinates_y = yCoordinatesOut.data();
+
+    // Execute
+    int deletionOption = 2;
+    auto errorCode = mkernel_mesh2d_delete(meshKernelId, geometryList, deletionOption, false);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+
+    // Assert
+    ASSERT_EQ(12, mesh2d.num_faces);
 }
 
 TEST_F(CartesianApiTestFixture, GetDimensionsMesh1D_WithMesh1D_ShouldGetDimensionsMesh1D)
@@ -1284,7 +1355,7 @@ TEST_F(CartesianApiTestFixture, GetHangingEdgesMesh2D_WithOneHangingEdges_Should
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(hangingEdges[0], 8);
+    ASSERT_EQ(hangingEdges[0], 9);
 }
 
 TEST_F(CartesianApiTestFixture, DeleteHangingEdgesMesh2D_WithOneHangingEdges_ShouldDeleteOneHangingEdges)
@@ -1300,7 +1371,7 @@ TEST_F(CartesianApiTestFixture, DeleteHangingEdgesMesh2D_WithOneHangingEdges_Sho
     // Before deletion
     meshkernelapi::Mesh2D mesh2d{};
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
-    ASSERT_EQ(mesh2d.num_edges, 16);
+    ASSERT_EQ(mesh2d.num_valid_edges, 16);
 
     // Execute
     errorCode = meshkernelapi::mkernel_mesh2d_delete_hanging_edges(meshKernelId);
@@ -1308,7 +1379,7 @@ TEST_F(CartesianApiTestFixture, DeleteHangingEdgesMesh2D_WithOneHangingEdges_Sho
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
 
     // Assert
-    ASSERT_EQ(mesh2d.num_edges, 15);
+    ASSERT_EQ(mesh2d.num_valid_edges, 15);
 }
 
 TEST_F(CartesianApiTestFixture, ComputeOrthogonalizationMesh2D_WithOrthogonalMesh2D_ShouldOrthogonalize)
@@ -1703,7 +1774,7 @@ TEST_F(CartesianApiTestFixture, Mesh2DDeleteSmallFlowEdgesAndSmallTriangles_OnMe
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // One edge is removed
-    ASSERT_EQ(4, newMesh2d.num_edges);
+    ASSERT_EQ(4, newMesh2d.num_valid_edges);
 }
 
 TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLinesOrthogonalize_ShouldSetFrozenLines)
@@ -1898,8 +1969,8 @@ TEST_F(CartesianApiTestFixture, Network1DToMesh1d_FromPolylines_ShouldGenerateMe
     // Asserts
     meshkernelapi::Mesh1D mesh1dResults;
     errorCode = mkernel_mesh1d_get_dimensions(meshKernelId, mesh1dResults);
-    ASSERT_EQ(41, mesh1dResults.num_nodes);
-    ASSERT_EQ(40, mesh1dResults.num_edges);
+    ASSERT_EQ(41, mesh1dResults.num_valid_nodes);
+    ASSERT_EQ(40, mesh1dResults.num_valid_edges);
 }
 
 TEST(Mesh2D, Mesh2DInitializeOrthogonalization_WithHexagon_ShouldOrthogonalize)
@@ -2961,24 +3032,662 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
-TEST(Mesh2D, mesh2dMakeGlobal_ShouldMakeGlobalMesh)
+TEST(Mesh2D, Mesh2DAddEdge)
 {
     using namespace meshkernelapi;
+
+    int errorCode = mkernel_clear_undo_state();
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernel::UInt const num_nodes_x = 4;
+    meshkernel::UInt const num_nodes_y = 4;
+    double const delta = 1.0;
+
+    // create first mesh
+    auto [num_nodes, num_edges, node_x, node_y, edge_nodes] =
+        MakeRectangularMeshForApiTesting(num_nodes_x,
+                                         num_nodes_y,
+                                         delta,
+                                         meshkernel::Point(0.0, 0.0));
+    Mesh2D mesh2d{};
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+    // allocate state
+    int mk_id = 0;
+    errorCode = mkernel_allocate_state(0, mk_id);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // first initialise using the first mesh, mesh2d
+    errorCode = mkernel_mesh2d_set(mk_id, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    int newEdgeId = -1;
+    errorCode = mkernel_mesh2d_insert_edge(mk_id, 0, 4, newEdgeId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_TRUE(newEdgeId > 0);
+
+    // Should be only a single item on the undo action stack
+    bool undoInsertEdge = false;
+    errorCode = mkernel_undo_state(undoInsertEdge);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_TRUE(undoInsertEdge);
+
+    // Should be no items on the undo action stack
+    undoInsertEdge = false;
+    errorCode = mkernel_undo_state(undoInsertEdge);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_FALSE(undoInsertEdge);
+}
+
+TEST(Mesh2D, Mesh2DInsertNode)
+{
+    using namespace meshkernelapi;
+
+    // Clear the undo stack before starting the test.
+    int errorCode = mkernel_clear_undo_state();
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernel::UInt const num_nodes_x = 4;
+    meshkernel::UInt const num_nodes_y = 4;
+    double const delta = 1.0;
+
+    // create first mesh
+    auto [num_nodes, num_edges, node_x, node_y, edge_nodes] =
+        MakeRectangularMeshForApiTesting(num_nodes_x,
+                                         num_nodes_y,
+                                         delta,
+                                         meshkernel::Point(0.0, 0.0));
+    Mesh2D mesh2d{};
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+    // allocate state
+    int mk_id = 0;
+    errorCode = mkernel_allocate_state(0, mk_id);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // first initialise using the first mesh, mesh2d
+    errorCode = mkernel_mesh2d_set(mk_id, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    //--------------------------------
+
+    int newNodeId = -1;
+    errorCode = mkernel_mesh2d_insert_node(mk_id, 0.5, -1.0, newNodeId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_TRUE(newNodeId > 0);
+
+    // Should be only a single item on the undo action stack
+    bool undoInsertNode = false;
+    errorCode = mkernel_undo_state(undoInsertNode);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_TRUE(undoInsertNode);
+
+    // Should be zero items on the undo action stack.
+    undoInsertNode = false;
+    errorCode = mkernel_undo_state(undoInsertNode);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_FALSE(undoInsertNode);
+}
+
+TEST(Mesh2D, InsertEdgeFromCoordinates_OnEmptyMesh_ShouldInsertNewEdge)
+{
     // Prepare
     int meshKernelId = 0;
-    auto errorCode = mkernel_allocate_state(1, meshKernelId);
+    int errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Execute
-    const int numLongitudeNodes = 19;
-    const int numLatitudeNodes = 25;
-    errorCode = mkernel_mesh2d_make_global(meshKernelId, numLongitudeNodes, numLatitudeNodes);
+    int firstNodeIndex;
+    int secondNodeIndex;
+    int edgeIndex;
+    errorCode = meshkernelapi::mkernel_mesh2d_insert_edge_from_coordinates(meshKernelId,
+                                                                           0,
+                                                                           0,
+                                                                           1,
+                                                                           0,
+                                                                           firstNodeIndex,
+                                                                           secondNodeIndex,
+                                                                           edgeIndex);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    Mesh2D mesh2d{};
-    errorCode = meshkernelapi::mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(0, edgeIndex);
+    ASSERT_EQ(0, firstNodeIndex);
+    ASSERT_EQ(1, secondNodeIndex);
+
+    ASSERT_EQ(2, mesh2d.num_nodes);
+    ASSERT_EQ(1, mesh2d.num_edges);
+}
+
+TEST_F(CartesianApiTestFixture, InsertEdgeFromCoordinates_OnNonEmptyMesh_ShouldInsertNewEdge)
+{
+    // Prepare
+    MakeMesh(4, 4, 2);
+    auto const meshKernelId = GetMeshKernelId();
+
+    // Execute
+    int firstNodeIndex;
+    int secondNodeIndex;
+    int edgeIndex;
+    auto errorCode = meshkernelapi::mkernel_mesh2d_insert_edge_from_coordinates(meshKernelId,
+                                                                                0,
+                                                                                0,
+                                                                                -1.0,
+                                                                                -1.0,
+                                                                                firstNodeIndex,
+                                                                                secondNodeIndex,
+                                                                                edgeIndex);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(mesh2d.num_edges, 1200);
-    ASSERT_EQ(mesh2d.num_nodes, 629);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(40, edgeIndex);
+    ASSERT_EQ(0, firstNodeIndex);
+    ASSERT_EQ(25, secondNodeIndex);
+
+    ASSERT_EQ(26, mesh2d.num_nodes);
+    ASSERT_EQ(41, mesh2d.num_edges);
+}
+
+class MeshLocationIndexTests : public ::testing::TestWithParam<std::tuple<meshkernel::Point, meshkernel::Location, int>>
+{
+public:
+    [[nodiscard]] static std::vector<std::tuple<meshkernel::Point, meshkernel::Location, int>> GetData()
+    {
+        return {
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{-1.0, -1.0}, meshkernel::Location::Nodes, 0),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{18.0, 18.0}, meshkernel::Location::Nodes, 10),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{5.0, -1.0}, meshkernel::Location::Edges, 12),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{11.0, 13.0}, meshkernel::Location::Edges, 5),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{0.5, 0.5}, meshkernel::Location::Faces, 0),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{18.0, 18.0}, meshkernel::Location::Faces, 4),
+            std::make_tuple<meshkernel::Point, meshkernel::Location, int>(meshkernel::Point{7.0, 14.0}, meshkernel::Location::Faces, 3)};
+    }
+};
+
+TEST_P(MeshLocationIndexTests, GetLocationIndex_OnAMesh_ShouldGetTheLocationIndex)
+{
+    // Prepare
+    auto const& [point, location, expectedIndex] = GetParam();
+
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    makeGridParameters.origin_x = 0.0;
+
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = 10.0;
+    makeGridParameters.block_size_y = 10.0;
+    makeGridParameters.num_columns = 3;
+    makeGridParameters.num_rows = 3;
+
+    int meshKernelId = 0;
+    const int projectionType = 0;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    int locationIndex = -1;
+    const meshkernelapi::BoundingBox boundingBox;
+    auto const locationInt = static_cast<int>(location);
+    errorCode = mkernel_mesh2d_get_location_index(meshKernelId, point.x, point.y, locationInt, boundingBox, locationIndex);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    ASSERT_EQ(locationIndex, expectedIndex);
+}
+INSTANTIATE_TEST_SUITE_P(LocationIndexParametrizedTests, MeshLocationIndexTests, ::testing::ValuesIn(MeshLocationIndexTests::GetData()));
+
+TEST(Mesh2D, ConvertToCurvilinear_ShouldConvertMeshToCurvilinear)
+{
+    // create first mesh
+    auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(10, 10, 1.0, meshkernel::Point(0.0, 0.0));
+
+    meshkernelapi::Mesh2D mesh2d{};
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+    // allocate state
+    int meshKernelId = 0;
+    int errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // first initialise using the first mesh, mesh2d
+    errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    errorCode = meshkernelapi::mkernel_mesh2d_convert_to_curvilinear(meshKernelId, 5.0, 5.0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2dOut{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dOut);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearOut{};
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearOut);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(0, mesh2dOut.num_nodes);
+    ASSERT_EQ(0, mesh2dOut.num_edges);
+
+    ASSERT_EQ(11, curvilinearOut.num_m);
+    ASSERT_EQ(11, curvilinearOut.num_n);
+}
+
+TEST(Mesh2d, GetFacePolygons_OnAValidMesh_ShouldGetFacePolygons)
+{
+    int meshKernelId;
+    int isGeographic = 0;
+    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+
+    meshkernelapi::Mesh2D mesh2d;
+    std::vector<double> node_x{
+        0,
+        1,
+        2,
+        3,
+        0,
+        1,
+        2,
+        3,
+        0,
+        1,
+        3,
+        0,
+        1};
+
+    std::vector<double> node_y{
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3,
+        3};
+
+    std::vector edge_nodes{
+        0, 4,
+        1, 5,
+        2, 6,
+        3, 7,
+        4, 8,
+        5, 9,
+        7, 10,
+        8, 11,
+        10, 12,
+        0, 1,
+        1, 2,
+        2, 3,
+        5, 6,
+        6, 7,
+        8, 9,
+        9, 10,
+        11, 12};
+
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+    mesh2d.num_edges = static_cast<int>(edge_nodes.size() * 0.5);
+    mesh2d.num_nodes = static_cast<int>(node_x.size());
+
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    int geometryListDimension = -1;
+    errorCode = meshkernelapi::mkernel_mesh2d_get_face_polygons_dimension(meshKernelId, 5, geometryListDimension);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(13, geometryListDimension);
+
+    meshkernelapi::GeometryList geometryList;
+    auto facesXCoordinates = std::vector<double>(geometryListDimension);
+    auto facesYCoordinates = std::vector<double>(geometryListDimension);
+    geometryList.coordinates_x = facesXCoordinates.data();
+    geometryList.coordinates_y = facesYCoordinates.data();
+    geometryList.num_coordinates = geometryListDimension;
+
+    errorCode = mkernel_mesh2d_get_face_polygons(meshKernelId, 5, geometryList);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    const auto expectedFacesXCoordinates = std::vector{1.0000,
+                                                       2.0000,
+                                                       3.0000,
+                                                       3.0000,
+                                                       1.0000,
+                                                       1.0000,
+                                                       -999.0,
+                                                       0.0000,
+                                                       1.0000,
+                                                       3.0000,
+                                                       1.0000,
+                                                       0.0000,
+                                                       0.0000};
+
+    const auto expectedFacesYCoordinates = std::vector{1.0000,
+                                                       1.0000,
+                                                       1.0000,
+                                                       2.0000,
+                                                       2.0000,
+                                                       1.0000,
+                                                       -999.0,
+                                                       2.0000,
+                                                       2.0000,
+                                                       2.0000,
+                                                       3.0000,
+                                                       3.0000,
+                                                       2.0000};
+
+    ASSERT_THAT(expectedFacesXCoordinates, ::testing::ContainerEq(facesXCoordinates));
+    ASSERT_THAT(expectedFacesYCoordinates, ::testing::ContainerEq(facesYCoordinates));
+}
+
+TEST(Mesh2D, CasulliRefinementErrorCases)
+{
+    // Prepare
+    int meshKernelId;
+    const int isGeographic = 0;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_refinement(meshKernelId + 1);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement(meshKernelId + 1);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+}
+
+TEST(Mesh2D, CasulliRefinementWholeMesh)
+{
+    // Prepare
+    int meshKernelId;
+    const int isGeographic = 0;
+    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+
+    // Set-up new mesh
+    auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(10, 10, 1.0);
+
+    std::vector<double> originalNodesX(node_x);
+    std::vector<double> originalNodesY(node_y);
+    std::vector<int> originalEdges(edge_nodes);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_refinement(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D refinedMesh2d{};
+
+    // Just do a rudimentary check that the number of noeds and edges is greater in the refined mesh.
+
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, refinedMesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    EXPECT_GT(refinedMesh2d.num_nodes, mesh2d.num_nodes);
+    EXPECT_GT(refinedMesh2d.num_edges, mesh2d.num_edges);
+}
+
+TEST(Mesh2D, CasulliDeRefinementWholeMesh)
+{
+    // Prepare
+    int meshKernelId;
+    const int isGeographic = 0;
+    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+
+    // Set-up new mesh
+    auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(20, 20, 1.0);
+
+    std::vector<double> originalNodesX(node_x);
+    std::vector<double> originalNodesY(node_y);
+    std::vector<int> originalEdges(edge_nodes);
+
+    std::vector<double> edgeCentresX(num_edges);
+    std::vector<double> edgeCentresY(num_edges);
+    std::vector<int> edgeFaces(2 * num_edges);
+    std::vector<double> faceCentresX(20 * 20);
+    std::vector<double> faceCentresY(20 * 20);
+    std::vector<int> faceNodes(20 * 20 * 4);
+    std::vector<int> faceEdges(20 * 20 * 4);
+    std::vector<int> nodesPerFace(20 * 20);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+    mesh2d.edge_x = edgeCentresX.data();
+    mesh2d.edge_y = edgeCentresY.data();
+    mesh2d.edge_faces = edgeFaces.data();
+    mesh2d.face_x = faceCentresX.data();
+    mesh2d.face_y = faceCentresY.data();
+    mesh2d.face_nodes = faceNodes.data();
+    mesh2d.face_edges = faceEdges.data();
+    mesh2d.nodes_per_face = nodesPerFace.data();
+
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D derefinedMesh2d{};
+
+    // Just do a rudimentary check that there are fewer nodes and edges in the de-refined mesh.
+
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, derefinedMesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    EXPECT_LT(derefinedMesh2d.num_nodes, mesh2d.num_nodes);
+    EXPECT_LT(derefinedMesh2d.num_edges, mesh2d.num_edges);
+
+    // Now check undo
+
+    bool didUndo = false;
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = mkernel_mesh2d_get_data(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    ASSERT_EQ(static_cast<int>(originalNodesX.size()), mesh2d.num_nodes);
+    ASSERT_EQ(static_cast<int>(originalEdges.size()), 2 * mesh2d.num_edges);
+
+    constexpr double tolerance = 1.0e-12;
+
+    for (size_t i = 0; i < originalNodesX.size(); ++i)
+    {
+        EXPECT_NEAR(originalNodesX[i], mesh2d.node_x[i], tolerance);
+        EXPECT_NEAR(originalNodesY[i], mesh2d.node_y[i], tolerance);
+    }
+
+    for (size_t i = 0; i < static_cast<size_t>(2 * mesh2d.num_edges); ++i)
+    {
+        EXPECT_EQ(originalEdges[i], mesh2d.edge_nodes[i]);
+    }
+}
+
+TEST(Mesh2D, CasulliDeRefinementElementsWholeMesh)
+{
+    // Prepare
+    int meshKernelId;
+    const int isGeographic = 0;
+    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+
+    const int numElementsX = 10;
+    const int numElementsY = 10;
+    const int numElements = numElementsX * numElementsY;
+
+    // Set-up new mesh
+    auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(numElementsX, numElementsY, 1.0);
+
+    std::vector<double> originalNodesX(node_x);
+    std::vector<double> originalNodesY(node_y);
+    std::vector<int> originalEdges(edge_nodes);
+
+    std::vector<double> edgeCentresX(num_edges);
+    std::vector<double> edgeCentresY(num_edges);
+    std::vector<int> edgeFaces(2 * num_edges);
+    std::vector<double> faceCentresX(numElements);
+    std::vector<double> faceCentresY(numElements);
+    std::vector<int> faceNodes(numElements * 4);
+    std::vector<int> faceEdges(numElements * 4);
+    std::vector<int> nodesPerFace(numElements);
+
+    std::vector<double> removedElementCentresX(num_nodes);
+    std::vector<double> removedElementCentresY(num_nodes);
+    meshkernelapi::GeometryList elementsToRemove;
+
+    elementsToRemove.coordinates_x = removedElementCentresX.data();
+    elementsToRemove.coordinates_y = removedElementCentresY.data();
+
+    meshkernelapi::Mesh2D mesh2d{};
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+    mesh2d.edge_x = edgeCentresX.data();
+    mesh2d.edge_y = edgeCentresY.data();
+    mesh2d.edge_faces = edgeFaces.data();
+    mesh2d.face_x = faceCentresX.data();
+    mesh2d.face_y = faceCentresY.data();
+    mesh2d.face_nodes = faceNodes.data();
+    mesh2d.face_edges = faceEdges.data();
+    mesh2d.nodes_per_face = nodesPerFace.data();
+
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement_elements(meshKernelId, elementsToRemove);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    const std::vector<meshkernel::Point> removedElementCentres{{1.5, 0.5}, {1.5, 2.5}, {1.5, 4.5}, {1.5, 6.5}, {1.5, 8.5}, {3.5, 0.5}, {3.5, 2.5}, {3.5, 4.5}, {3.5, 6.5}, {3.5, 8.5}, {5.5, 0.5}, {5.5, 2.5}, {5.5, 4.5}, {5.5, 6.5}, {5.5, 8.5}, {7.5, 0.5}, {7.5, 2.5}, {7.5, 4.5}, {7.5, 6.5}, {7.5, 8.5}, {9.5, 0.5}, {9.5, 2.5}, {9.5, 4.5}, {9.5, 6.5}, {9.5, 8.5}};
+
+    ASSERT_EQ(elementsToRemove.num_coordinates, static_cast<int>(removedElementCentres.size()));
+    constexpr double tolerance = 1.0e-12;
+
+    for (int i = 0; i < elementsToRemove.num_coordinates; ++i)
+    {
+        EXPECT_NEAR(removedElementCentres[i].x, elementsToRemove.coordinates_x[i], tolerance);
+        EXPECT_NEAR(removedElementCentres[i].y, elementsToRemove.coordinates_y[i], tolerance);
+    }
+}
+
+TEST(Mesh2D, CasulliDeRefinementElementsMeshRegion)
+{
+    // Prepare
+    int meshKernelId;
+    const int isGeographic = 0;
+    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+
+    const int numElementsX = 10;
+    const int numElementsY = 10;
+    const int numElements = numElementsX * numElementsY;
+
+    // Set-up new mesh
+    auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(numElementsX, numElementsY, 1.0);
+
+    std::vector<double> originalNodesX(node_x);
+    std::vector<double> originalNodesY(node_y);
+    std::vector<int> originalEdges(edge_nodes);
+
+    std::vector<double> edgeCentresX(num_edges);
+    std::vector<double> edgeCentresY(num_edges);
+    std::vector<int> edgeFaces(2 * num_edges);
+    std::vector<double> faceCentresX(numElements);
+    std::vector<double> faceCentresY(numElements);
+    std::vector<int> faceNodes(numElements * 4);
+    std::vector<int> faceEdges(numElements * 4);
+    std::vector<int> nodesPerFace(numElements);
+
+    std::vector<double> polygonPointsX({2.5, 7.5, 5.5, 2.5});
+    std::vector<double> polygonPointsY({2.5, 4.5, 8.5, 2.5});
+    meshkernelapi::GeometryList polygon;
+    polygon.num_coordinates = 4;
+    polygon.coordinates_x = polygonPointsX.data();
+    polygon.coordinates_y = polygonPointsY.data();
+
+    std::vector<double> removedElementCentresX(num_nodes);
+    std::vector<double> removedElementCentresY(num_nodes);
+    meshkernelapi::GeometryList elementsToRemove;
+
+    elementsToRemove.coordinates_x = removedElementCentresX.data();
+    elementsToRemove.coordinates_y = removedElementCentresY.data();
+
+    meshkernelapi::Mesh2D mesh2d{};
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+    mesh2d.edge_x = edgeCentresX.data();
+    mesh2d.edge_y = edgeCentresY.data();
+    mesh2d.edge_faces = edgeFaces.data();
+    mesh2d.face_x = faceCentresX.data();
+    mesh2d.face_y = faceCentresY.data();
+    mesh2d.face_nodes = faceNodes.data();
+    mesh2d.face_edges = faceEdges.data();
+    mesh2d.nodes_per_face = nodesPerFace.data();
+
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement_elements_on_polygon(meshKernelId, polygon, elementsToRemove);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    const std::vector<meshkernel::Point> removedElementCentres{{2.5, 2.5}, {4.5, 4.5}, {4.5, 6.5}, {6.5, 4.5}, {6.5, 6.5}};
+
+    ASSERT_EQ(elementsToRemove.num_coordinates, static_cast<int>(removedElementCentres.size()));
+    constexpr double tolerance = 1.0e-12;
+
+    for (int i = 0; i < elementsToRemove.num_coordinates; ++i)
+    {
+        EXPECT_NEAR(removedElementCentres[i].x, elementsToRemove.coordinates_x[i], tolerance);
+        EXPECT_NEAR(removedElementCentres[i].y, elementsToRemove.coordinates_y[i], tolerance);
+    }
 }

@@ -17,6 +17,8 @@ set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 set(AVERAGING_STRATEGIES_SRC_DIR ${SRC_DIR}/AveragingStrategies)
 set(CURVILINEAR_GRID_SRC_DIR ${SRC_DIR}/CurvilinearGrid)
 set(UTILITIES_SRC_DIR ${SRC_DIR}/Utilities)
+set(UNDO_SRC_DIR ${PROJECT_SOURCE_DIR}/src/UndoActions)
+set(CURVILINEAR_UNDO_SRC_DIR ${CURVILINEAR_GRID_SRC_DIR}/UndoActions)
 
 # include directories
 set(INC_DIR ${PROJECT_SOURCE_DIR}/include)
@@ -24,12 +26,15 @@ set(DOMAIN_INC_DIR ${INC_DIR}/MeshKernel)
 set(AVERAGING_STRATEGIES_INC_DIR ${DOMAIN_INC_DIR}/AveragingStrategies)
 set(CURVILINEAR_GRID_INC_DIR ${DOMAIN_INC_DIR}/CurvilinearGrid)
 set(UTILITIES_INC_DIR ${DOMAIN_INC_DIR}/Utilities)
+set(UNDO_INC_DIR ${DOMAIN_INC_DIR}/UndoActions)
+set(CURVILINEAR_UNDO_INC_DIR ${CURVILINEAR_GRID_INC_DIR}/UndoActions)
 
 # list of target sources
 set(
   SRC_LIST
   ${SRC_DIR}/AveragingInterpolation.cpp
-  ${SRC_DIR}/BilinearInterpolationOnGriddedSamples.cpp
+  ${SRC_DIR}/CasulliDeRefinement.cpp
+  ${SRC_DIR}/CasulliRefinement.cpp
   ${SRC_DIR}/ConnectMeshes.cpp
   ${SRC_DIR}/Contacts.cpp
   ${SRC_DIR}/Definitions.cpp
@@ -43,6 +48,7 @@ set(
   ${SRC_DIR}/Mesh2D.cpp
   ${SRC_DIR}/Mesh2DGenerateGlobal.cpp
   ${SRC_DIR}/Mesh2DIntersections.cpp
+  ${SRC_DIR}/Mesh2DToCurvilinear.cpp
   ${SRC_DIR}/MeshRefinement.cpp
   ${SRC_DIR}/Network1D.cpp
   ${SRC_DIR}/Operations.cpp
@@ -61,6 +67,23 @@ set(
 )
 
 set(
+  UNDO_SRC_LIST
+  ${UNDO_SRC_DIR}/AddEdgeAction.cpp
+  ${UNDO_SRC_DIR}/AddNodeAction.cpp
+  ${UNDO_SRC_DIR}/CompoundUndoAction.cpp
+  ${UNDO_SRC_DIR}/DeleteEdgeAction.cpp
+  ${UNDO_SRC_DIR}/DeleteNodeAction.cpp
+  ${UNDO_SRC_DIR}/FullUnstructuredGridUndo.cpp
+  ${UNDO_SRC_DIR}/MeshConversionAction.cpp
+  ${UNDO_SRC_DIR}/NodeTranslationAction.cpp
+  ${UNDO_SRC_DIR}/ResetEdgeAction.cpp
+  ${UNDO_SRC_DIR}/ResetNodeAction.cpp
+  ${UNDO_SRC_DIR}/SphericalCoordinatesOffsetAction.cpp
+  ${UNDO_SRC_DIR}/UndoAction.cpp
+  ${UNDO_SRC_DIR}/UndoActionStack.cpp
+)
+
+set(
   AVERAGING_STRATEGIES_SRC_LIST
   ${AVERAGING_STRATEGIES_SRC_DIR}/AveragingStrategyFactory.cpp
   ${AVERAGING_STRATEGIES_SRC_DIR}/ClosestAveragingStrategy.cpp
@@ -75,9 +98,11 @@ set(
   CURVILINEAR_GRID_SRC_LIST
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGrid.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridAlgorithm.cpp
-  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridDeleteInterior.cpp
-  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridDeleteExterior.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridBlock.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridCurvature.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridDeRefinement.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridDeleteExterior.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridDeleteInterior.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridFromPolygon.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridFromSplines.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridFromSplinesTransfinite.cpp
@@ -91,6 +116,19 @@ set(
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothing.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothness.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapping.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridUtilities.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridMeshExpansionCalculator.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapGridToLandBoundary.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapGridToSpline.cpp
+)
+
+
+set(
+  CURVILINEAR_GRID_UNDO_ACTION_SRC_LIST
+  ${CURVILINEAR_UNDO_SRC_DIR}/AddGridLineUndoAction.cpp
+  ${CURVILINEAR_UNDO_SRC_DIR}/CurvilinearGridBlockUndoAction.cpp
+  ${CURVILINEAR_UNDO_SRC_DIR}/CurvilinearGridRefinementUndoAction.cpp
+  ${CURVILINEAR_UNDO_SRC_DIR}/ResetCurvilinearNodeAction.cpp
 )
 
 # list of target headers
@@ -99,6 +137,8 @@ set(
   ${DOMAIN_INC_DIR}/AveragingInterpolation.hpp
   ${DOMAIN_INC_DIR}/BilinearInterpolationOnGriddedSamples.hpp
   ${DOMAIN_INC_DIR}/BoundingBox.hpp
+  ${DOMAIN_INC_DIR}/CasulliDeRefinement.hpp
+  ${DOMAIN_INC_DIR}/CasulliRefinement.hpp
   ${DOMAIN_INC_DIR}/ConnectMeshes.hpp
   ${DOMAIN_INC_DIR}/Constants.hpp
   ${DOMAIN_INC_DIR}/Contacts.hpp
@@ -115,6 +155,7 @@ set(
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
   ${DOMAIN_INC_DIR}/Mesh2DGenerateGlobal.hpp
   ${DOMAIN_INC_DIR}/Mesh2DIntersections.hpp
+  ${DOMAIN_INC_DIR}/Mesh2DToCurvilinear.hpp
   ${DOMAIN_INC_DIR}/MeshConversion.hpp
   ${DOMAIN_INC_DIR}/MeshInterpolation.hpp
   ${DOMAIN_INC_DIR}/MeshRefinement.hpp
@@ -141,6 +182,25 @@ set(
 )
 
 set(
+  UNDO_INC_LIST
+  ${UNDO_INC_DIR}/AddEdgeAction.hpp
+  ${UNDO_INC_DIR}/AddNodeAction.hpp
+  ${UNDO_INC_DIR}/BaseMeshUndoAction.hpp
+  ${UNDO_INC_DIR}/DeleteEdgeAction.hpp
+  ${UNDO_INC_DIR}/DeleteNodeAction.hpp
+  ${UNDO_INC_DIR}/FullUnstructuredGridUndo.hpp
+  ${UNDO_INC_DIR}/MeshConversionAction.hpp
+  ${UNDO_INC_DIR}/NodeTranslationAction.hpp
+  ${UNDO_INC_DIR}/ResetEdgeAction.hpp
+  ${UNDO_INC_DIR}/ResetNodeAction.hpp
+  ${UNDO_INC_DIR}/SphericalCoordinatesOffsetAction.hpp
+  ${UNDO_INC_DIR}/UndoActionStack.hpp
+  ${UNDO_INC_DIR}/CompoundUndoAction.hpp
+  ${UNDO_INC_DIR}/UndoAction.hpp
+)
+
+
+set(
   AVERAGING_STRATEGIES_INC_LIST
   ${AVERAGING_STRATEGIES_INC_DIR}/AveragingStrategy.hpp
   ${AVERAGING_STRATEGIES_INC_DIR}/AveragingStrategyFactory.hpp
@@ -156,9 +216,11 @@ set(
   CURVILINEAR_GRID_INC_LIST
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGrid.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridAlgorithm.hpp
-  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridDeleteInterior.hpp
-  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridDeleteExterior.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridBlock.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridCurvature.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridDeRefinement.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridDeleteExterior.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridDeleteInterior.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridFromPolygon.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridFromSplines.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridFromSplinesTransfinite.hpp
@@ -173,6 +235,19 @@ set(
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothing.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothness.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapping.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridUtilities.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridMeshExpansionCalculator.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapGridToLandBoundary.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapGridToSpline.hpp
+)
+
+
+set(
+  CURVILINEAR_UNDO_ACTION_INC_LIST
+  ${CURVILINEAR_UNDO_INC_DIR}/AddGridLineUndoAction.hpp
+  ${CURVILINEAR_UNDO_INC_DIR}/CurvilinearGridBlockUndoAction.hpp
+  ${CURVILINEAR_UNDO_INC_DIR}/CurvilinearGridRefinementUndoAction.hpp
+  ${CURVILINEAR_UNDO_INC_DIR}/ResetCurvilinearNodeAction.hpp
 )
 
 set(
@@ -189,14 +264,17 @@ target_sources(
   ${TARGET_NAME}
   PRIVATE
     ${SRC_LIST}
+    ${UNDO_SRC_LIST}
     ${AVERAGING_STRATEGIES_SRC_LIST}
     ${CURVILINEAR_GRID_SRC_LIST}
+    ${CURVILINEAR_GRID_UNDO_ACTION_SRC_LIST}
   PUBLIC
     FILE_SET HEADERS
       BASE_DIRS
         ${INC_DIR}
       FILES
         ${INC_LIST}
+        ${UNDO_INC_LIST}
         ${AVERAGING_STRATEGIES_INC_LIST}
         ${CURVILINEAR_GRID_INC_LIST}
         ${UTILITIES_INC_LIST}
@@ -271,11 +349,15 @@ install(TARGETS ${TARGET_NAME} FILE_SET HEADERS DESTINATION "include")
 source_group("Source Files" FILES ${SRC_LIST})
 source_group("Source Files/AveragingStrategies" FILES ${AVERAGING_STRATEGIES_SRC_LIST})
 source_group("Source Files/CurvilinearGrid" FILES ${CURVILINEAR_GRID_SRC_LIST})
+source_group("Source Files/CurvilinearGrid/UndoActions" FILES ${CURVILINEAR_GRID_UNDO_ACTION_SRC_LIST})
+source_group("Source Files/UndoActions" FILES ${UNDO_SRC_LIST})
 
 # group the headers in IDE tree
 source_group("Header Files" FILES ${INC_LIST})
 source_group("Header Files/AveragingStrategies" FILES ${AVERAGING_STRATEGIES_INC_LIST})
 source_group("Header Files/CurvilinearGrid" FILES ${CURVILINEAR_GRID_INC_LIST})
+source_group("Header Files/CurvilinearGrid/UndoActions" FILES ${CURVILINEAR_UNDO_ACTION_INC_LIST})
+source_group("Header Files/UndoActions" FILES ${UNDO_INC_LIST})
 source_group("Header Files/Utilities" FILES ${UTILITIES_INC_LIST})
 
 # Add unit tests
@@ -287,7 +369,3 @@ endif()
 if(ENABLE_BENCHMARKING)
   add_subdirectory(benchmark)
 endif()
-
-
-
-

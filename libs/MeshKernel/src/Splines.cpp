@@ -43,23 +43,18 @@ Splines::Splines(Projection projection) : m_projection(projection) {}
 Splines::Splines(CurvilinearGrid const& grid)
 {
     // first the m_n m_m-gridlines
-    lin_alg::Matrix<Point> mGridLines(grid.m_numN, grid.m_numM);
-    for (UInt n = 0; n < grid.m_numN; ++n)
+    for (UInt n = 0; n < grid.NumM(); ++n)
     {
-        for (UInt m = 0; m < grid.m_numM; ++m)
-        {
-            mGridLines(n, m) = grid.m_gridNodes(m, n);
-        }
-        AddSpline(lin_alg::MatrixRowToSTLVector(mGridLines, n));
+        AddSpline(grid.GetNodeVectorAtN(n));
     }
 
     // then the m_m m_n-gridlines
-    for (UInt m = 0; m < grid.m_numM; ++m)
+    for (UInt m = 0; m < grid.NumN(); ++m)
     {
-        AddSpline(lin_alg::MatrixRowToSTLVector(grid.m_gridNodes, m));
+        AddSpline(grid.GetNodeVectorAtM(m));
     }
 
-    m_projection = grid.m_projection;
+    m_projection = grid.projection();
 }
 
 /// add a new spline, return the index
@@ -421,11 +416,28 @@ Splines::ComputePointOnSplineFromAdimensionalDistance(UInt index,
     return {points, adimensionalDistances};
 }
 
-meshkernel::Point Splines::ComputeClosestPointOnSplineSegment(UInt index, double startSplineSegment, double endSplineSegment, Point point)
+meshkernel::Point Splines::ComputeClosestPointOnSplineSegment(UInt index, double startSplineSegment, double endSplineSegment, Point point) const
 {
     FuncDistanceFromAPoint func(this, index, point);
     const auto adimensionalDistance = FindFunctionRootWithGoldenSectionSearch(func, startSplineSegment, endSplineSegment);
     return ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistance);
+}
+
+meshkernel::Point Splines::ComputeClosestPoint(UInt index, Point point) const
+{
+    return ComputeClosestPointOnSplineSegment(index, 0.0, static_cast<double>(m_splineNodes[index].size() - 1), point);
+}
+
+meshkernel::BoundingBox Splines::GetBoundingBox(const UInt splineIndex) const
+{
+    if (splineIndex >= m_splineNodes.size())
+    {
+        throw meshkernel::ConstraintError("Invalid spline index: {}, not in range 0 .. {}",
+                                          splineIndex,
+                                          GetNumSplines() - 1);
+    }
+
+    return BoundingBox(m_splineNodes[splineIndex]);
 }
 
 void Splines::SnapSpline(const size_t splineIndex,

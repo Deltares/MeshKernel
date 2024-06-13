@@ -24,7 +24,7 @@ TEST(TriangleInterpolation, TriangleInterpolation_OnNodesWithSphericalCoordinate
         {3.5, 3.5, 2.0}};
 
     // Execute
-    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->m_nodes, samples, meshkernel::Projection::spherical);
+    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->Nodes(), samples, meshkernel::Projection::spherical);
     triangulationInterpolation.Compute();
 
     // Assert
@@ -63,7 +63,7 @@ TEST(TriangleInterpolation, InterpolateOnNodes)
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TriangleInterpolationTests/simple_grid_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), static_cast<meshkernel::UInt>(0));
 
-    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->m_nodes, samples, meshkernel::Projection::cartesian);
+    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->Nodes(), samples, meshkernel::Projection::cartesian);
     triangulationInterpolation.Compute();
 
     const auto results = triangulationInterpolation.GetResults();

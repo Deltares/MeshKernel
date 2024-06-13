@@ -98,23 +98,23 @@ TEST(Mesh2D, TriangulateSamplesWithSkinnyTriangle)
     ASSERT_EQ(5, mesh.GetNumNodes());
     ASSERT_EQ(6, mesh.GetNumEdges());
 
-    ASSERT_EQ(3, mesh.m_edges[0].first);
-    ASSERT_EQ(0, mesh.m_edges[0].second);
+    ASSERT_EQ(3, mesh.GetEdge(0).first);
+    ASSERT_EQ(0, mesh.GetEdge(0).second);
 
-    ASSERT_EQ(0, mesh.m_edges[1].first);
-    ASSERT_EQ(1, mesh.m_edges[1].second);
+    ASSERT_EQ(0, mesh.GetEdge(1).first);
+    ASSERT_EQ(1, mesh.GetEdge(1).second);
 
-    ASSERT_EQ(1, mesh.m_edges[2].first);
-    ASSERT_EQ(3, mesh.m_edges[2].second);
+    ASSERT_EQ(1, mesh.GetEdge(2).first);
+    ASSERT_EQ(3, mesh.GetEdge(2).second);
 
-    ASSERT_EQ(4, mesh.m_edges[3].first);
-    ASSERT_EQ(1, mesh.m_edges[3].second);
+    ASSERT_EQ(4, mesh.GetEdge(3).first);
+    ASSERT_EQ(1, mesh.GetEdge(3).second);
 
-    ASSERT_EQ(1, mesh.m_edges[4].first);
-    ASSERT_EQ(2, mesh.m_edges[4].second);
+    ASSERT_EQ(1, mesh.GetEdge(4).first);
+    ASSERT_EQ(2, mesh.GetEdge(4).second);
 
-    ASSERT_EQ(2, mesh.m_edges[5].first);
-    ASSERT_EQ(4, mesh.m_edges[5].second);
+    ASSERT_EQ(2, mesh.GetEdge(5).first);
+    ASSERT_EQ(4, mesh.GetEdge(5).second);
 }
 
 TEST(Mesh, TriangulateSamples)
@@ -271,7 +271,7 @@ TEST(Mesh, NodeMerging)
             nodes[nodeIndex] = {i + x_distribution(generator), j + y_distribution(generator)};
 
             // add artificial edges
-            auto edge = mesh->m_edges[mesh->m_nodesEdges[originalNodeIndex][0]];
+            auto edge = mesh->GetEdge(mesh->m_nodesEdges[originalNodeIndex][0]);
             auto otherNode = edge.first + edge.second - originalNodeIndex;
 
             edges[edgeIndex] = {nodeIndex, otherNode};
@@ -292,11 +292,11 @@ TEST(Mesh, NodeMerging)
 
     // 2. Act
     meshkernel::Polygons polygon;
-    mesh->MergeNodesInPolygon(polygon, 0.001);
+    [[maybe_unused]] auto action = mesh->MergeNodesInPolygon(polygon, 0.001);
 
     // 3. Assert
-    ASSERT_EQ(mesh->GetNumNodes(), n * m);
-    ASSERT_EQ(mesh->GetNumEdges(), (n - 1) * m + (m - 1) * n);
+    ASSERT_EQ(mesh->GetNumValidNodes(), n * m);
+    ASSERT_EQ(mesh->GetNumValidEdges(), (n - 1) * m + (m - 1) * n);
 }
 
 TEST(Mesh, MillionQuads)
@@ -358,18 +358,19 @@ TEST(Mesh, InsertNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
     // insert nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
     meshkernel::Point newPoint{10.0, 10.0};
 
-    const auto newNodeIndex = mesh->InsertNode(newPoint);
+    auto [newNodeIndex, insertAction] = mesh->InsertNode(newPoint);
 
-    mesh->ConnectNodes(0, newNodeIndex);
+    [[maybe_unused]] auto connectAction = mesh->ConnectNodes(0, newNodeIndex);
 
     // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
     mesh->Administrate();
 
     // builds edges RTree
     mesh->BuildTree(meshkernel::Location::Edges);
+    const auto& rtreeEdges = mesh->GetRTree(meshkernel::Location::Edges);
 
     // even if m_edgesRTreeRequiresUpdate = true, m_edgesRTree is initially empty, so it is assumed that is not needed for searches
-    ASSERT_EQ(5, mesh->m_edgesRTree->Size());
+    ASSERT_EQ(5, rtreeEdges.Size());
 }
 
 TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
@@ -379,19 +380,22 @@ TEST(Mesh, DeleteNodeInMeshWithExistingNodesRtreeTriggersRTreeReBuild)
 
     meshkernel::Point newPoint{10.0, 10.0};
     mesh->BuildTree(meshkernel::Location::Nodes);
-    mesh->InsertNode(newPoint);
+    auto& rtree = mesh->GetRTree(meshkernel::Location::Nodes);
+
+    [[maybe_unused]] auto [nodeId, indertAction] = mesh->InsertNode(newPoint);
 
     // delete nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
-    mesh->DeleteNode(0);
+    [[maybe_unused]] auto deleteAction = mesh->DeleteNode(0);
 
     // when m_nodesRTreeRequiresUpdate
+    mesh->DeleteInvalidNodesAndEdges();
     mesh->Administrate();
 
     // building a tree based on nodes
-    mesh->BuildTree(meshkernel::Location::Nodes);
+    rtree.BuildTree(mesh->Nodes());
 
     // After deleting a node, the nodes RTree is reduced
-    ASSERT_EQ(3, mesh->m_nodesRTree->Size());
+    ASSERT_EQ(3, rtree.Size());
 }
 
 TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
@@ -401,19 +405,20 @@ TEST(Mesh, ConnectNodesInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
 
     meshkernel::Point newPoint{10.0, 10.0};
 
-    const auto newNodeIndex = mesh->InsertNode(newPoint);
+    auto [newNodeIndex, insertAction] = mesh->InsertNode(newPoint);
 
     // connect nodes modifies the number of edges, m_nodesRTreeRequiresUpdate is set to true
-    mesh->ConnectNodes(0, newNodeIndex);
+    [[maybe_unused]] auto connectAction = mesh->ConnectNodes(0, newNodeIndex);
 
     // re-do mesh adminstration
     mesh->Administrate();
 
     // re-build tree
     mesh->BuildTree(meshkernel::Location::Edges);
+    const auto& rtree = mesh->GetRTree(meshkernel::Location::Edges);
 
     // even if m_nodesRTreeRequiresUpdate = true, m_nodesRTree is initially empty, so it is assumed that is not needed for searches
-    ASSERT_EQ(5, mesh->m_edgesRTree->Size());
+    ASSERT_EQ(5, rtree.Size());
 }
 
 TEST(Mesh, DeleteEdgeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
@@ -421,9 +426,10 @@ TEST(Mesh, DeleteEdgeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     // 1 Setup
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
     mesh->BuildTree(meshkernel::Location::Edges);
+    const auto& rtree = mesh->GetRTree(meshkernel::Location::Edges);
 
     // DeleteEdge modifies the number of edges, m_edgesRTreeRequiresUpdate is set to true
-    mesh->DeleteEdge(0);
+    [[maybe_unused]] auto action = mesh->DeleteEdge(0);
 
     // re-do mesh administration
     mesh->Administrate();
@@ -432,7 +438,80 @@ TEST(Mesh, DeleteEdgeInMeshWithExistingEdgesRtreeTriggersRTreeReBuild)
     mesh->BuildTree(meshkernel::Location::Edges);
 
     // deleting an edge produces an edges rtree of size 3
-    ASSERT_EQ(3, mesh->m_edgesRTree->Size());
+    ASSERT_EQ(3, rtree.Size());
+}
+
+TEST(Mesh, InsertUnconnectedNodeInMeshIsSetToInvalid)
+{
+    // Setup
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
+    mesh->BuildTree(meshkernel::Location::Nodes);
+    const auto& rtreesNodes = mesh->GetRTree(meshkernel::Location::Nodes);
+
+    // insert nodes modifies the number of nodes, m_nodesRTreeRequiresUpdate is set to true
+    meshkernel::Point newPoint{10.0, 10.0};
+
+    [[maybe_unused]] auto [nodeId, action] = mesh->InsertNode(newPoint);
+
+    // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
+    mesh->Administrate();
+
+    // building a tree based on nodes
+    mesh->BuildTree(meshkernel::Location::Nodes);
+
+    // building the edges rtree
+    mesh->BuildTree(meshkernel::Location::Edges);
+    const auto& rtreeEdges = mesh->GetRTree(meshkernel::Location::Edges);
+
+    // building a tree based on edges
+    EXPECT_EQ(5, mesh->GetNumNodes());
+    EXPECT_EQ(4, mesh->GetNumValidNodes());
+    EXPECT_EQ(4, rtreesNodes.Size());
+    EXPECT_EQ(4, rtreeEdges.Size());
+    // Administrate should set the unconnected node to be invalid.
+    EXPECT_FALSE(mesh->Node(4).IsValid());
+}
+
+TEST(Mesh, EdgeConnectedToInvalidNodeInMeshIsSetToInvalid)
+{
+    // Setup
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
+    mesh->BuildTree(meshkernel::Location::Nodes);
+    const auto& nodesRtree = mesh->GetRTree(meshkernel::Location::Nodes);
+    const auto& edgesRtree = mesh->GetRTree(meshkernel::Location::Edges);
+
+    meshkernel::Point newPoint{meshkernel::constants::missing::doubleValue,
+                               meshkernel::constants::missing::doubleValue};
+    auto [nodeIndex, nodeAction] = mesh->InsertNode(newPoint);
+    auto [edgeIndex, edgeAction] = mesh->ConnectNodes(0, nodeIndex);
+
+    EXPECT_EQ(mesh->GetEdge(edgeIndex).first, 0);
+    EXPECT_EQ(mesh->GetEdge(edgeIndex).second, nodeIndex);
+
+    // when m_nodesRTreeRequiresUpdate = true m_nodesRTree is not empty the mesh.m_nodesRTree is re-build
+    mesh->Administrate();
+
+    // building a tree based on nodes
+    mesh->BuildTree(meshkernel::Location::Nodes);
+
+    // building a tree based on edges
+    mesh->BuildTree(meshkernel::Location::Edges);
+
+    EXPECT_EQ(5, mesh->GetNumNodes());
+    EXPECT_EQ(4, mesh->GetNumValidNodes());
+
+    EXPECT_EQ(5, mesh->GetNumEdges());
+    EXPECT_EQ(4, mesh->GetNumValidEdges());
+
+    EXPECT_EQ(4, nodesRtree.Size());
+    EXPECT_EQ(4, edgesRtree.Size());
+
+    // Administrate should set the unconnected node to be invalid.
+    EXPECT_FALSE(mesh->Node(4).IsValid());
+
+    // Administrate should set the edge connecting an invalid node to be invalid.
+    EXPECT_EQ(mesh->GetEdge(4).first, meshkernel::constants::missing::uintValue);
+    EXPECT_EQ(mesh->GetEdge(4).second, meshkernel::constants::missing::uintValue);
 }
 
 TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
@@ -441,18 +520,21 @@ TEST(Mesh, GetNodeIndexShouldTriggerNodesRTreeBuild)
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     // By default, no nodesRTree is build
-    ASSERT_EQ(0, mesh->m_nodesRTree->Size());
+    const auto& edgesRTree = mesh->GetRTree(meshkernel::Location::Edges);
+    const auto& nodesRTree = mesh->GetRTree(meshkernel::Location::Nodes);
+
+    ASSERT_EQ(0, nodesRTree.Size());
+    ASSERT_EQ(0, edgesRTree.Size());
 
     // FindNodeCloseToAPoint builds m_nodesRTree for searching the nodes
-    mesh->BuildTree(meshkernel::Location::Nodes);
-    const size_t index = mesh->FindNodeCloseToAPoint({1.5, 1.5}, 10.0);
-    ASSERT_TRUE(static_cast<long long>(index) >= 0); // Luca, need a better test here: ASSERT_EQ(index, actual_closest_node_index);
+    const auto index = mesh->FindNodeCloseToAPoint({1.5, 1.5}, 10.0);
+    ASSERT_EQ(3, index);
 
     // m_nodesRTree is build
-    ASSERT_EQ(4, mesh->m_nodesRTree->Size());
+    ASSERT_EQ(4, nodesRTree.Size());
 
     // m_edgesRTree is not build when searching for nodes
-    ASSERT_EQ(0, mesh->m_edgesRTree->Size());
+    ASSERT_EQ(0, edgesRTree.Size());
 }
 
 TEST(Mesh, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
@@ -461,15 +543,19 @@ TEST(Mesh, FindEdgeCloseToAPointShouldTriggerEdgesRTreeBuild)
     auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
 
     // FindEdgeCloseToAPoint builds m_edgesRTree for searching the edges
+
     mesh->BuildTree(meshkernel::Location::Edges);
-    const size_t index = mesh->FindEdgeCloseToAPoint({1.5, 1.5});
-    ASSERT_TRUE(static_cast<long long>(index) >= 0); // Luca, need a better test here: ASSERT_EQ(index, actual_closest_edge_index);
+    const auto& edgesRTree = mesh->GetRTree(meshkernel::Location::Edges);
+    const auto& nodesRTree = mesh->GetRTree(meshkernel::Location::Nodes);
+
+    const auto index = mesh->FindLocationIndex({1.5, 1.5}, meshkernel::Location::Edges);
+    ASSERT_EQ(1, index);
 
     // m_nodesRTree is not build when searching for edges
-    ASSERT_EQ(0, mesh->m_nodesRTree->Size());
+    ASSERT_EQ(0, nodesRTree.Size());
 
     // m_edgesRTree is build
-    ASSERT_EQ(4, mesh->m_edgesRTree->Size());
+    ASSERT_EQ(4, edgesRTree.Size());
 }
 
 TEST(Mesh, GetObtuseTriangles)
@@ -535,9 +621,15 @@ TEST(Mesh, DeleteSmallFlowEdge)
     ASSERT_EQ(8, mesh->GetNumFaces());
 
     // After merging the number of faces is reduced
-    mesh->DeleteSmallFlowEdges(1.0);
+    auto undoAction = mesh->DeleteSmallFlowEdges(1.0);
 
     ASSERT_EQ(3, mesh->GetNumFaces());
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+    ASSERT_EQ(8, mesh->GetNumFaces());
 }
 
 TEST(Mesh, DeleteSmallTrianglesAtBoundaries)
@@ -548,20 +640,28 @@ TEST(Mesh, DeleteSmallTrianglesAtBoundaries)
     ASSERT_EQ(2, mesh->GetNumFaces());
 
     // After merging
-    mesh->DeleteSmallTrianglesAtBoundaries(0.6);
+    auto undoAction = mesh->DeleteSmallTrianglesAtBoundaries(0.6);
 
     ASSERT_EQ(1, mesh->GetNumFaces());
 
     const double tolerance = 1e-8;
-    ASSERT_NEAR(364.17013549804688, mesh->m_nodes[0].x, tolerance);
-    ASSERT_NEAR(295.21142578125000, mesh->m_nodes[1].x, tolerance);
-    ASSERT_NEAR(421.46209716796875, mesh->m_nodes[2].x, tolerance);
-    ASSERT_NEAR(359.79510498046875, mesh->m_nodes[3].x, tolerance);
+    ASSERT_NEAR(364.17013549804688, mesh->Node(0).x, tolerance);
+    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, mesh->Node(1).x, tolerance);
+    ASSERT_NEAR(295.21142578125000, mesh->Node(2).x, tolerance);
+    ASSERT_NEAR(421.46209716796875, mesh->Node(3).x, tolerance);
+    ASSERT_NEAR(359.79510498046875, mesh->Node(4).x, tolerance);
 
-    ASSERT_NEAR(374.00662231445313, mesh->m_nodes[0].y, tolerance);
-    ASSERT_NEAR(300.48181152343750, mesh->m_nodes[1].y, tolerance);
-    ASSERT_NEAR(295.33038330078125, mesh->m_nodes[2].y, tolerance);
-    ASSERT_NEAR(398.59295654296875, mesh->m_nodes[3].y, tolerance);
+    ASSERT_NEAR(374.00662231445313, mesh->Node(0).y, tolerance);
+    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, mesh->Node(1).y, tolerance);
+    ASSERT_NEAR(300.48181152343750, mesh->Node(2).y, tolerance);
+    ASSERT_NEAR(295.33038330078125, mesh->Node(3).y, tolerance);
+    ASSERT_NEAR(398.59295654296875, mesh->Node(4).y, tolerance);
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+    ASSERT_EQ(2, mesh->GetNumFaces());
 }
 
 TEST(Mesh, DeleteHangingEdge)
@@ -593,11 +693,19 @@ TEST(Mesh, DeleteHangingEdge)
     ASSERT_EQ(1, hangingEdges.size());
 
     // Execute
-    mesh.DeleteHangingEdges();
+    auto undoAction = mesh.DeleteHangingEdges();
     hangingEdges = mesh.GetHangingEdges();
 
     // Assert
     ASSERT_EQ(0, hangingEdges.size());
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh.Administrate();
+    // Assert
+    ASSERT_EQ(1, mesh.GetNumFaces());
+    ASSERT_EQ(4, mesh.GetNumEdges());
 }
 
 class MeshDeletion : public ::testing::TestWithParam<std::tuple<meshkernel::Mesh2D::DeleteMeshOptions, bool, int>>
@@ -623,6 +731,9 @@ TEST_P(MeshDeletion, expected_results)
     // Setup
     auto mesh = MakeRectangularMeshForTesting(4, 4, 1.0, meshkernel::Projection::cartesian);
 
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
     std::vector<meshkernel::Point> polygonNodes{
         {-0.5, -1.0},
         {0.8, -1.0},
@@ -633,10 +744,30 @@ TEST_P(MeshDeletion, expected_results)
     const meshkernel::Polygons polygon(polygonNodes, meshkernel::Projection::cartesian);
 
     // Execute
-    mesh->DeleteMesh(polygon, deleteOption, invertSelection);
+    auto undoAction = mesh->DeleteMesh(polygon, deleteOption, invertSelection);
 
     // Assert
-    ASSERT_EQ(numNodes, mesh->GetNumNodes());
+    ASSERT_EQ(numNodes, mesh->GetNumValidNodes());
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+    }
 }
 
 INSTANTIATE_TEST_SUITE_P(Mesh, MeshDeletion, ::testing::ValuesIn(MeshDeletion::GetData()));
@@ -692,14 +823,37 @@ TEST_P(MeshDeletionWithInnerPolygons, expected_results)
     // Setup
     auto mesh = MakeRectangularMeshForTesting(7, 7, 1.0, meshkernel::Projection::cartesian);
 
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
     const meshkernel::Polygons polygon(polygonNodes, meshkernel::Projection::cartesian);
 
     // Execute
-    mesh->DeleteMesh(polygon, deleteOption, invertSelection);
+    auto undoAction = mesh->DeleteMesh(polygon, deleteOption, invertSelection);
 
     // Assert
-    const auto nodes = mesh->m_nodes;
-    ASSERT_EQ(numNodes, mesh->GetNumNodes());
+    const auto nodes = mesh->Nodes();
+    ASSERT_EQ(numNodes, mesh->GetNumValidNodes());
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+    }
 }
 
 INSTANTIATE_TEST_SUITE_P(Mesh, MeshDeletionWithInnerPolygons, ::testing::ValuesIn(MeshDeletionWithInnerPolygons::GetData()));

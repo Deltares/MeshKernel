@@ -30,8 +30,10 @@ set(
   SRC_LIST
   ${SRC_DIR}/MakeCurvilinearGrids.cpp
   ${SRC_DIR}/MakeMeshes.cpp
+  ${SRC_DIR}/MeshReaders.cpp
   ${SRC_DIR}/SampleFileReader.cpp
   ${SRC_DIR}/SampleFileWriter.cpp
+  ${SRC_DIR}/SampleGenerator.cpp
 )
 
 # list of target headers
@@ -40,8 +42,11 @@ set(
   ${DOMAIN_INC_DIR}/Definitions.hpp
   ${DOMAIN_INC_DIR}/MakeCurvilinearGrids.hpp
   ${DOMAIN_INC_DIR}/MakeMeshes.hpp
+  ${DOMAIN_INC_DIR}/MeshReaders.hpp
+  ${DOMAIN_INC_DIR}/MockUndoAction.hpp
   ${DOMAIN_INC_DIR}/SampleFileReader.hpp
   ${DOMAIN_INC_DIR}/SampleFileWriter.hpp
+  ${DOMAIN_INC_DIR}/SampleGenerator.hpp
 )
 
 # add sources to target
@@ -81,4 +86,3 @@ target_include_directories(${TARGET_NAME}
 source_group("Source Files" FILES ${SRC_LIST})
 # group the headers in IDE tree
 source_group("Header Files" FILES ${INC_LIST})
-

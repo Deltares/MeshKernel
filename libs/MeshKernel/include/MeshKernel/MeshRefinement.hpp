@@ -81,6 +81,7 @@ namespace meshkernel
             LandWater = 3
         };
 
+    public:
         /// @brief Enumerator describing the different refinement types
         enum class RefinementType
         {
@@ -89,7 +90,6 @@ namespace meshkernel
             RidgeDetection = 3
         };
 
-    public:
         /// @brief The constructor for refining based on samples
         /// @param[in] mesh The mesh to be refined
         /// @param[in] interpolant The averaging interpolation to use
@@ -129,7 +129,7 @@ namespace meshkernel
         ///    -# Compute if a face should be split, ComputeIfFaceShouldBeSplit
         ///    -# Compute face by splitting edges, RefineFacesBySplittingEdges
         /// 5. Connect hanging nodes if requested, DeleteIsolatedHangingnodes, connect_hanging_nodes
-        void Compute();
+        [[nodiscard]] std::unique_ptr<UndoAction> Compute();
 
     private:
         /// @brief Finds if two edges are brothers, sharing an hanging node. Can be moved to Mesh2D
@@ -185,12 +185,14 @@ namespace meshkernel
         /// @returns The number of hanging nodes
         UInt CountEdgesToRefine(UInt face) const;
 
+#if 0
         /// Deletes isolated hanging nodes(remove_isolated_hanging_nodes)
         /// @returns Number of deleted isolated hanging nodes
         [[nodiscard]] UInt DeleteIsolatedHangingnodes();
+#endif
 
         /// @brief Connect the hanging nodes with triangles (connect_hanging_nodes)
-        void ConnectHangingNodes();
+        std::unique_ptr<meshkernel::UndoAction> ConnectHangingNodes();
 
         /// @brief Smooth the face and edge refinement masks (smooth_jarefine)
         void SmoothRefinementMasks();
@@ -199,7 +201,7 @@ namespace meshkernel
         void ComputeIfFaceShouldBeSplit();
 
         /// @brief The refinement operation by splitting the face (refine_cells)
-        void RefineFacesBySplittingEdges();
+        std::unique_ptr<meshkernel::UndoAction> RefineFacesBySplittingEdges();
 
         /// @brief Compute if an edge must be refined based on the face location type and the Courant criteria
         /// @param edge The index of the edge to be refined

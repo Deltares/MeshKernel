@@ -30,6 +30,7 @@
 #include <cstdint>
 #include <map>
 #include <string>
+#include <vector>
 
 namespace meshkernel
 {
@@ -43,6 +44,12 @@ namespace meshkernel
         spherical = 1,        // jsferic  = 1
         sphericalAccurate = 2 // jasfer3D = 1
     };
+
+    /// @brief Gets the valid projectionbs as vector of integers
+    const std::vector<int>& GetValidProjections();
+
+    /// @brief Gets the valid deletion options as vector of integers
+    const std::vector<int>& GetValidDeletionOptions();
 
     /// @brief Convert an integer value to the Projection enumeration type
     ///
@@ -84,6 +91,16 @@ namespace meshkernel
     {
         M, ///< M-direction
         N  ///< N-direction
+    };
+
+    /// @enum InterpolationDataTypes
+    /// @brief The possible types of the values to be interpolated in the gridded sample
+    enum class InterpolationDataTypes
+    {
+        Short = 0,  ///< short type
+        Float = 1,  ///< float type
+        Int = 2,    ///< int type
+        Double = 3, ///< double type
     };
 
     /// @brief Convert an integer value to the CurvilinearDirection enumeration type

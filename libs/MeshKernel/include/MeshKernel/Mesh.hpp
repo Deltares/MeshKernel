@@ -31,6 +31,18 @@
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/UndoActions/AddEdgeAction.hpp"
+#include "MeshKernel/UndoActions/AddNodeAction.hpp"
+#include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
+#include "MeshKernel/UndoActions/DeleteEdgeAction.hpp"
+#include "MeshKernel/UndoActions/DeleteNodeAction.hpp"
+#include "MeshKernel/UndoActions/FullUnstructuredGridUndo.hpp"
+#include "MeshKernel/UndoActions/MeshConversionAction.hpp"
+#include "MeshKernel/UndoActions/NodeTranslationAction.hpp"
+#include "MeshKernel/UndoActions/ResetEdgeAction.hpp"
+#include "MeshKernel/UndoActions/ResetNodeAction.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 #include "Utilities/RTreeBase.hpp"
 
 /// \namespace meshkernel
@@ -140,6 +152,14 @@ namespace meshkernel
         /// @return The number of valid faces
         [[nodiscard]] auto GetNumFaces() const { return static_cast<UInt>(m_facesNodes.size()); }
 
+        /// @brief Get the number of valid nodes
+        /// @return The number of valid nodes
+        [[nodiscard]] UInt GetNumValidNodes() const;
+
+        /// @brief Get the number of valid edges
+        /// @return The number of valid edges
+        [[nodiscard]] UInt GetNumValidEdges() const;
+
         /// @brief Get the number of edges for a face
         /// @param[in] faceIndex The face index
         /// @return The number of valid faces
@@ -160,37 +180,69 @@ namespace meshkernel
         /// @return If the face is on boundary
         [[nodiscard]] bool IsFaceOnBoundary(UInt face) const;
 
+        /// @brief Get vector of all nodes
+        // TODO Can this be removed?
+        const std::vector<Point>& Nodes() const;
+
+        /// @brief Get the node at the position
+        const Point& Node(const UInt index) const;
+
+        /// @brief Set all nodes to a new set of values.
+        void SetNodes(const std::vector<Point>& newValues);
+
+        /// @brief Set a node to a new value, bypassing the undo action.
+        void SetNode(const UInt index, const Point& newValue);
+
+        /// @brief Set the node to a new value, this value may be the in-valid value.
+        [[nodiscard]] std::unique_ptr<ResetNodeAction> ResetNode(const UInt index, const Point& newValue);
+
+        /// @brief Get constant reference to an edge
+        const Edge& GetEdge(const UInt index) const;
+
+        /// @brief Get a non-constant reference to an edge
+        Edge& GetEdge(const UInt index);
+
+        /// @brief Get all edges
+        // TODO get rid of this function
+        const std::vector<Edge>& Edges() const;
+
+        /// @brief Set all edges to a new set of values.
+        void SetEdges(const std::vector<Edge>& newValues);
+
+        /// @brief Get the local index of the node belong to a face.
+        ///
+        /// If the node cannot be found the null value will be returned.
+        UInt GetLocalFaceNodeIndex(const UInt faceIndex, const UInt nodeIndex) const;
+
         /// @brief Merges two mesh nodes
         /// @param[in] startNode The index of the first node to be merged
         /// @param[in] endNode The second of the second node to be merged
-        void MergeTwoNodes(UInt startNode, UInt endNode);
+        [[nodiscard]] std::unique_ptr<UndoAction> MergeTwoNodes(UInt startNode, UInt endNode);
 
         /// @brief Merge close mesh nodes inside a polygon (MERGENODESINPOLYGON)
         /// @param[in] polygons Polygon where to perform the merging
         /// @param[in] mergingDistance The distance below which two nodes will be merged
-        void MergeNodesInPolygon(const Polygons& polygons, double mergingDistance);
+        [[nodiscard]] std::unique_ptr<UndoAction> MergeNodesInPolygon(const Polygons& polygons, double mergingDistance);
+
+        /// @brief Insert a new node in the mesh (setnewpoint)
+        /// @param[in] newPoint The coordinate of the new point
+        /// @return The index of the new node and the pointer to the undoAction
+        [[nodiscard]] std::tuple<UInt, std::unique_ptr<AddNodeAction>> InsertNode(const Point& newPoint);
 
         /// @brief Connect two existing nodes, checking if the nodes are already connected.
         /// If the nodes are not connected a new edge is formed, otherwise UInt invalid value is returned. (connectdbn)
         /// @param[in] startNode The start node index
         /// @param[in] endNode The end node index
-        /// @return The index of the new edge
-        UInt ConnectNodes(UInt startNode, UInt endNode);
+        /// @return The index of the new edge and the undoAction to connect two nodes
+        [[nodiscard]] std::tuple<UInt, std::unique_ptr<AddEdgeAction>> ConnectNodes(UInt startNode, UInt endNode);
 
-        /// @brief Insert a new node in the mesh (setnewpoint)
-        /// @param[in] newPoint The coordinate of the new point
-        /// @return The index of the new node
-        UInt InsertNode(const Point& newPoint);
+        /// @brief Change the nodes referenced by the edge.
+        [[nodiscard]] std::unique_ptr<ResetEdgeAction> ResetEdge(UInt edgeId, const Edge& edge);
 
-        /// @brief Insert a new edge, assuming two nodes are not already connected
-        /// @param[in] startNode The start node index
-        /// @param[in] endNode The end node index
-        /// @return The index of the new edge
-        UInt InsertEdge(UInt startNode, UInt endNode);
-
-        /// @brief Delete a node
-        /// @param[in] node The index of the node to delete
-        void DeleteNode(UInt node);
+        /// @brief Deletes a node and removes any connected edges
+        /// @param[in] node The node index
+        /// @return The undoAction to delete the node and any connecting edges
+        [[nodiscard]] std::unique_ptr<DeleteNodeAction> DeleteNode(UInt node);
 
         /// @brief Find the edge sharing two nodes
         /// @param[in] firstNodeIndex The index of the first node
@@ -207,13 +259,18 @@ namespace meshkernel
         /// @brief Move a node to a new location
         /// @param[in] newPoint The new location
         /// @param[in] nodeindex The index of the node to move
-        void MoveNode(Point newPoint, UInt nodeindex);
+        [[nodiscard]] std::unique_ptr<UndoAction> MoveNode(Point newPoint, UInt nodeindex);
 
-        /// @brief Get the index of a node close to a point
+        /// @brief Get the index of a location (node/edge or face) close to a point
         /// @param[in] point The starting point from where to start the search
-        /// @param[in] nodeMask The mask to apply to mesh nodes, if the mask value is false, the next closest node will be considered
+        /// @param[in] location The location
+        /// @param[in] locationMask The mask to apply to each location
+        /// @param[in] boundingBox The bounding box
         /// @returns The index of the closest node
-        [[nodiscard]] UInt FindNodeCloseToAPoint(Point point, const std::vector<bool>& nodeMask);
+        [[nodiscard]] UInt FindLocationIndex(Point point,
+                                             Location location,
+                                             const std::vector<bool>& locationMask = {},
+                                             const BoundingBox& boundingBox = {});
 
         /// @brief Get the index of a node close to a point
         /// @param[in] point The starting point from where to start the search
@@ -221,14 +278,10 @@ namespace meshkernel
         /// @returns The index of the closest node
         [[nodiscard]] UInt FindNodeCloseToAPoint(Point const& point, double searchRadius);
 
-        /// Finds the closest edge close to a point
-        /// @param[in] point The starting point from where to start the search
-        /// @returns The index of the closest edge
-        [[nodiscard]] UInt FindEdgeCloseToAPoint(Point point);
-
         /// @brief Deletes an edge
         /// @param[in] edge The edge index
-        void DeleteEdge(UInt edge);
+        /// @return The undoAction to delete the edge
+        [[nodiscard]] std::unique_ptr<DeleteEdgeAction> DeleteEdge(UInt edge);
 
         /// @brief Find the common node two edges share
         /// This method uses return parameters since the success is evaluated in a hot loop
@@ -257,10 +310,10 @@ namespace meshkernel
         void DeleteInvalidNodesAndEdges();
 
         /// @brief Perform complete administration
-        virtual void Administrate();
+        virtual void Administrate(CompoundUndoAction* undoAction = nullptr);
 
         /// @brief Perform node and edges administration
-        void AdministrateNodesEdges();
+        void AdministrateNodesEdges(CompoundUndoAction* undoAction = nullptr);
 
         /// @brief Sort mesh edges around a node in counterclockwise order (Sort_links_ccw)
         /// @param[in] startNode The first node index where to perform edge sorting.
@@ -272,44 +325,10 @@ namespace meshkernel
         /// @return The max edge length
         double ComputeMaxLengthSurroundingEdges(UInt node);
 
-        /// @brief Build the rtree for the corresponding location, using all locations
-        /// @param[in] meshLocation The mesh location for which the RTree is build
-        void BuildTree(Location meshLocation);
-
         /// @brief Build the rtree for the corresponding location, using only the locations inside the bounding box
-        /// @param[in] meshLocation The mesh location for which the RTree is build
+        /// @param[in] location The mesh location for which the RTree is build
         /// @param[in] boundingBox The bounding box
-        void BuildTree(Location meshLocation, const BoundingBox& boundingBox);
-
-        /// @brief Search all points sorted by proximity to another point.
-        /// @param[in] point The reference point.
-        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchNearestLocation(Point point, Location meshLocation);
-
-        /// @brief Search the nearest point within a radius to another point.
-        /// @param[in] point The reference point.
-        /// @param[in] squaredRadius the squared value of the radius.
-        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchNearestLocation(Point point, double squaredRadius, Location meshLocation);
-
-        /// @brief Search the nearest points within a radius to another point.
-        /// @param[in] point The reference point.
-        /// @param[in] squaredRadius the squared value of the radius.
-        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        void SearchLocations(Point point, double squaredRadius, Location meshLocation);
-
-        /// @brief Gets the search results.
-        /// To be used after \ref SearchLocations or \ref SearchNearestLocation.
-        ///
-        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        /// @return The number of found neighbors.
-        UInt GetNumLocations(Location meshLocation) const;
-
-        /// @brief Gets the index of the location, sorted by proximity. To be used after SearchNearestLocation or SearchNearestLocation.
-        /// @param[in] index The closest neighbor index (index 0 corresponds to the closest).
-        /// @param[in] meshLocation The mesh location (e.g. nodes, edge centers or face circumcenters).
-        /// @return The index of the closest location.
-        [[nodiscard]] UInt GetLocationsIndices(UInt index, Location meshLocation);
+        void BuildTree(Location location, const BoundingBox& boundingBox = {});
 
         /// @brief Computes a vector with the mesh locations coordinates (nodes, edges or faces coordinates).
         ///
@@ -329,15 +348,114 @@ namespace meshkernel
         /// @returns The resulting mesh
         Mesh& operator+=(Mesh const& rhs);
 
+        /// @brief Get the mapping/indexing from the node array mapped to valid nodes
+        std::vector<UInt> GetValidNodeMapping() const;
+
+        /// @brief Get the mapping/indexing from the edge array mapped to valid edges
+        std::vector<UInt> GetValidEdgeMapping() const;
+
+        /// @brief Indicate if the edge-id is a valid edge
+        ///
+        /// A valid edge satisfies four conditions:
+        /// The start and end indices are not the null value, if neither is, then
+        /// also the nodes indexed by the edge are valid nodes. If any of these conditions
+        /// is false then the edge is in-valid.
+        bool IsValidEdge(const UInt edgeId) const;
+
+        /// @brief Apply the reset node action
+        void CommitAction(const ResetNodeAction& undoAction);
+
+        /// @brief Apply the add node action
+        void CommitAction(const AddNodeAction& undoAction);
+
+        /// @brief Apply the add edge action
+        void CommitAction(const AddEdgeAction& undoAction);
+
+        /// @brief Apply the reset edge action
+        void CommitAction(const ResetEdgeAction& undoAction);
+
+        /// @brief Apply the delete node action
+        void CommitAction(const DeleteNodeAction& undoAction);
+
+        /// @brief Apply the node translation action
+        void CommitAction(NodeTranslationAction& undoAction);
+
+        /// @brief Apply the node translation action
+        void CommitAction(MeshConversionAction& undoAction);
+
+        /// @brief Apply the delete edge action
+        void CommitAction(const DeleteEdgeAction& undoAction);
+
+        /// @brief Set the node and edge values.
+        void CommitAction(FullUnstructuredGridUndo& undoAction);
+
+        /// @brief Undo the reset node action
+        ///
+        /// Restore mesh to state before node was reset
+        void RestoreAction(const ResetNodeAction& undoAction);
+
+        /// @brief Undo the add node action
+        ///
+        /// Restore mesh to state before node was added
+        void RestoreAction(const AddNodeAction& undoAction);
+
+        /// @brief Undo the add edge action
+        ///
+        /// Restore mesh to state before edge was added
+        void RestoreAction(const AddEdgeAction& undoAction);
+
+        /// @brief Undo the reset edge action
+        ///
+        /// Restore mesh to state before edge was reset
+        void RestoreAction(const ResetEdgeAction& undoAction);
+
+        /// @brief Undo the delete node action
+        ///
+        /// Restore mesh to state before node was deleted
+        void RestoreAction(const DeleteNodeAction& undoAction);
+
+        /// @brief Undo the node translation action
+        ///
+        /// Restore mesh to state before node was translated
+        void RestoreAction(NodeTranslationAction& undoAction);
+
+        /// @brief Undo the node translation action
+        ///
+        /// Restore mesh to state before node was translated
+        void RestoreAction(MeshConversionAction& undoAction);
+
+        /// @brief Undo the delete edge action
+        ///
+        /// Restore mesh to state before edge was deleted
+        void RestoreAction(const DeleteEdgeAction& undoAction);
+
+        /// @brief Undo entire node and edge values
+        ///
+        /// Restore mesh to previous state.
+        void RestoreAction(FullUnstructuredGridUndo& undoAction);
+
+        /// @brief Get a reference to the RTree for a specific location
+        RTreeBase& GetRTree(Location location) const { return *m_RTrees.at(location); }
+
+        /// @brief Set the m_nodesRTreeRequiresUpdate flag
+        /// @param[in] value The value of the flag
+        void SetNodesRTreeRequiresUpdate(bool value) { m_nodesRTreeRequiresUpdate = value; }
+
+        /// @brief Set the m_edgesRTreeRequiresUpdate flag
+        /// @param[in] value The value of the flag
+        void SetEdgesRTreeRequiresUpdate(bool value) { m_edgesRTreeRequiresUpdate = value; }
+
+        /// @brief Set the m_facesRTreeRequiresUpdate flag
+        /// @param[in] value The value of the flag
+        void SetFacesRTreeRequiresUpdate(bool value) { m_facesRTreeRequiresUpdate = value; }
+
         // nodes
-        std::vector<Point> m_nodes;                  ///< The mesh nodes (xk, yk)
         std::vector<std::vector<UInt>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
         std::vector<UInt> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
         std::vector<std::vector<UInt>> m_nodesNodes; ///< For each node, its neighbors
         std::vector<int> m_nodesTypes;               ///< The node types (nb)
 
         // edges
-        std::vector<Edge> m_edges;                     ///< The edges, defined as first and second node(kn)
         std::vector<std::array<UInt, 2>> m_edgesFaces; ///< For each edge, the shared face index (lne)
         std::vector<UInt> m_edgesNumFaces;             ///< For each edge, the number of shared faces(lnn)
         std::vector<double> m_edgeLengths;             ///< The edge lengths
@@ -353,22 +471,96 @@ namespace meshkernel
 
         Projection m_projection; ///< The projection used
 
-        // counters
-        bool m_nodesRTreeRequiresUpdate = true;  ///< m_nodesRTree requires an update
-        bool m_edgesRTreeRequiresUpdate = true;  ///< m_edgesRTree requires an update
-        bool m_facesRTreeRequiresUpdate = true;  ///< m_facesRTree requires an update
-        std::unique_ptr<RTreeBase> m_nodesRTree; ///< Spatial R-Tree used to inquire node nodes
-        std::unique_ptr<RTreeBase> m_edgesRTree; ///< Spatial R-Tree used to inquire edges centers
-        std::shared_ptr<RTreeBase> m_facesRTree; ///< Spatial R-Tree used to inquire face circumcenters
-        BoundingBox m_boundingBoxCache;          ///< Caches the last bounding box used for selecting the locations
-
         // constants
         static constexpr UInt m_maximumNumberOfEdgesPerNode = 16;                                  ///< Maximum number of edges per node
         static constexpr UInt m_maximumNumberOfEdgesPerFace = 6;                                   ///< Maximum number of edges per face
         static constexpr UInt m_maximumNumberOfNodesPerFace = 6;                                   ///< Maximum number of nodes per face
         static constexpr UInt m_maximumNumberOfConnectedNodes = m_maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
 
+    protected:
+        // Make private
+        std::vector<Point> m_nodes; ///< The mesh nodes (xk, yk)
+        std::vector<Edge> m_edges;  ///< The edges, defined as first and second node(kn)
+
     private:
         static double constexpr m_minimumDeltaCoordinate = 1e-14; ///< Minimum delta coordinate
+
+        // RTrees
+        bool m_nodesRTreeRequiresUpdate = true;                            ///< m_nodesRTree requires an update
+        bool m_edgesRTreeRequiresUpdate = true;                            ///< m_edgesRTree requires an update
+        bool m_facesRTreeRequiresUpdate = true;                            ///< m_facesRTree requires an update
+        std::unordered_map<Location, std::unique_ptr<RTreeBase>> m_RTrees; ///< The RTrees to use
+        BoundingBox m_boundingBoxCache;                                    ///< Caches the last bounding box used for selecting the locations
+
+        /// @brief Set nodes and edges that are not connected to be invalid.
+        void SetUnConnectedNodesAndEdgesToInvalid(CompoundUndoAction* undoAction);
+
+        /// @brief Find all nodes that are connected to an edge.
+        ///
+        /// Also count the number of edges that have either invalid index values or
+        /// reference invalid nodes
+        void FindConnectedNodes(std::vector<bool>& connectedNodes,
+                                UInt& numInvalidEdges) const;
+
+        /// @brief Invalidate any not connected to any edge.
+        void InvalidateUnConnectedNodes(const std::vector<bool>& connectedNodes,
+                                        UInt& numInvalidNodes,
+                                        CompoundUndoAction* undoAction = nullptr);
     };
 } // namespace meshkernel
+
+inline const std::vector<meshkernel::Point>& meshkernel::Mesh::Nodes() const
+{
+    return m_nodes;
+}
+
+inline const meshkernel::Point& meshkernel::Mesh::Node(const UInt index) const
+{
+    if (index >= GetNumNodes())
+    {
+        throw ConstraintError("The node index, {}, is not in range.", index);
+    }
+
+    return m_nodes[index];
+}
+
+inline void meshkernel::Mesh::SetNodes(const std::vector<Point>& newValues)
+{
+    m_nodes = newValues;
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+    m_facesRTreeRequiresUpdate = true;
+}
+
+inline const meshkernel::Edge& meshkernel::Mesh::GetEdge(const UInt index) const
+{
+    if (index >= GetNumEdges())
+    {
+        throw ConstraintError("The edge index, {}, is not in range.", index);
+    }
+
+    return m_edges[index];
+}
+
+inline meshkernel::Edge& meshkernel::Mesh::GetEdge(const UInt index)
+{
+    if (index >= GetNumEdges())
+    {
+        throw ConstraintError("The edge index, {}, is not in range.", index);
+    }
+
+    return m_edges[index];
+}
+
+inline const std::vector<meshkernel::Edge>& meshkernel::Mesh::Edges() const
+{
+    return m_edges;
+}
+
+inline void meshkernel::Mesh::SetEdges(const std::vector<Edge>& newValues)
+{
+    m_edges = newValues;
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+    m_facesRTreeRequiresUpdate = true;
+}

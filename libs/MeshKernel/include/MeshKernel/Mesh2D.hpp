@@ -34,6 +34,9 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Polygon.hpp>
+#include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
+#include <MeshKernel/UndoActions/SphericalCoordinatesOffsetAction.hpp>
+#include <MeshKernel/UndoActions/UndoAction.hpp>
 
 /// \namespace meshkernel
 /// @brief Contains the logic of the C++ static library
@@ -52,11 +55,15 @@ namespace meshkernel
     class Mesh2D final : public Mesh
     {
     public:
+        using Mesh::CommitAction;
+        using Mesh::RestoreAction;
+
         /// Enumerator describing the different options to delete a mesh
         enum DeleteMeshOptions
         {
             InsideNotIntersected = 0,
-            InsideAndIntersected = 1
+            InsideAndIntersected = 1,
+            FacesWithIncludedCircumcenters = 2
         };
 
         /// Enumerator describing the different node types
@@ -106,7 +113,7 @@ namespace meshkernel
         Mesh2D(const std::vector<Point>& nodes, const Polygons& polygons, Projection projection);
 
         /// @brief Perform complete administration
-        void Administrate() override;
+        void Administrate(CompoundUndoAction* undoAction = nullptr) override;
 
         /// @brief Compute face circumcenters
         void ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters = false);
@@ -122,8 +129,16 @@ namespace meshkernel
 
         /// @brief Offset the x coordinates if m_projection is spherical
         /// @param[in] minx
-        /// @param[in] miny
-        void OffsetSphericalCoordinates(double minx, double miny);
+        /// @param[in] maxx
+        [[nodiscard]] std::unique_ptr<SphericalCoordinatesOffsetAction> OffsetSphericalCoordinates(double minx, double maxx);
+
+        /// @brief Apply the coordinate offset action
+        void CommitAction(const SphericalCoordinatesOffsetAction& undoAction);
+
+        /// @brief Undo the coordinate offset action
+        ///
+        /// Restore mesh to state before coordinate offset action was applied
+        void RestoreAction(const SphericalCoordinatesOffsetAction& undoAction);
 
         /// @brief For a face create a closed polygon and fill local mapping caches (get_cellpolygon)
         /// @param[in]  faceIndex              The face index
@@ -183,7 +198,7 @@ namespace meshkernel
         /// -   All small flow edges are flagged with invalid indices and removed
         ///     from the mesh. Removal occors in the \ref Mesh2D::Administrate method.
         /// @param[in] smallFlowEdgesThreshold The configurable threshold for detecting the small flow edges
-        void DeleteSmallFlowEdges(double smallFlowEdgesThreshold);
+        [[nodiscard]] std::unique_ptr<meshkernel::UndoAction> DeleteSmallFlowEdges(double smallFlowEdgesThreshold);
 
         /// @brief Deletes small triangles at the boundaries (removesmallflowlinks, part 2)
         ///
@@ -202,7 +217,7 @@ namespace meshkernel
         /// where the internal angle is closer to 90 degrees).
         /// @param[in] minFractionalAreaTriangles Small triangles at the boundaries will be eliminated.
         /// This threshold is the ration of the face area to the average area of neighboring faces.
-        void DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles);
+        [[nodiscard]] std::unique_ptr<UndoAction> DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles);
 
         /// @brief Computes m_nodesNodes, see class members
         void ComputeNodeNeighbours();
@@ -223,10 +238,10 @@ namespace meshkernel
         void ClassifyNodes();
 
         /// @brief Deletes coinciding triangles
-        void DeleteDegeneratedTriangles();
+        [[nodiscard]] std::unique_ptr<UndoAction> DeleteDegeneratedTriangles();
 
         /// @brief Transform non-triangular faces in triangular faces
-        void TriangulateFaces();
+        [[nodiscard]] std::unique_ptr<UndoAction> TriangulateFaces();
 
         /// @brief Make a dual face around the node, enlarged by a factor
         /// @param[in] node The node index
@@ -259,7 +274,7 @@ namespace meshkernel
         [[nodiscard]] std::vector<UInt> GetHangingEdges() const;
 
         /// @brief Deletes the hanging edges
-        void DeleteHangingEdges();
+        [[nodiscard]] std::unique_ptr<UndoAction> DeleteHangingEdges();
 
         /// @brief For a collection of points, compute the face indices including them.
         /// @param[in] points The input point vector.
@@ -271,7 +286,7 @@ namespace meshkernel
         ///                           If this Polygons instance contains multiple polygons, the first one will be taken.
         /// @param[in] deletionOption The deletion option
         /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
-        void DeleteMesh(const Polygons& polygon, int deletionOption, bool invertDeletion);
+        [[nodiscard]] std::unique_ptr<UndoAction> DeleteMesh(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion);
 
         /// @brief Inquire if a segment is crossing a face
         /// @param[in] firstPoint The first point of the segment
@@ -327,6 +342,43 @@ namespace meshkernel
         /// @return The mesh edges bounding boxes
         [[nodiscard]] std::vector<BoundingBox> GetEdgesBoundingBoxes() const;
 
+        /// @brief Find all faces that have the given node as a vertex.
+        ///
+        /// @param [in] nodeIndex Index of the node
+        /// @param [out] sharedFaces On exit will contain only indices of faces that contain nodeIndex as a node.
+        void FindFacesConnectedToNode(UInt nodeIndex, std::vector<UInt>& sharedFaces) const;
+
+        /// @brief Get indices of all nodes that are connected directly to a give node along connected edges
+        ///
+        /// @param [in] nodeIndex Index of the node
+        /// @param [out] connectedNodes
+        void GetConnectingNodes(UInt nodeIndex, std::vector<UInt>& connectedNodes) const;
+
+        /// @brief Find all unique nodes.
+        ///
+        /// @param [in] nodeIndex Index of the node
+        /// @param [in] sharedFaces List of faces that share the nodeIndex as a common node
+        /// @param [in, out] connectedNodes List of nodes that are in the patch of shared faces
+        /// @param [out] faceNodeMapping Mapping from node index to the position in connectedNodes list.
+        void FindNodesSharedByFaces(UInt nodeIndex, const std::vector<UInt>& sharedFaces, std::vector<UInt>& connectedNodes, std::vector<std::vector<UInt>>& faceNodeMapping) const;
+
+        /// @brief Determine if the node is at the start or end of the edge.
+        ///
+        /// Returns 0 when the node is at the start of the edge, 1 when it is at the end
+        /// and the null value when the edge is not connected to the node.
+        UInt IsStartOrEnd(const UInt edgeId, const UInt nodeId) const;
+
+        /// @brief Determine if the element lies on the left or right side of the edge
+        ///
+        /// Returns 0 when the element is on the left and 1 when it is on the right.
+        /// If one or other edge is not connected to the element then a null value will be returned.
+        UInt IsLeftOrRight(const UInt elementId, const UInt edgeId) const;
+
+        /// @brief Find the id of the element that is common to both edges.
+        ///
+        /// If no such element can be found then the null value will be returned.
+        UInt FindCommonFace(const UInt edge1, const UInt edge2) const;
+
     private:
         // orthogonalization
         static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length
@@ -337,6 +389,12 @@ namespace meshkernel
 
         /// @brief Bounded array for storing hanging node indices.
         using HangingNodeIndexArray = std::array<UInt, m_maximumNumberOfHangingNodesAlongEdge>;
+
+        /// @brief Deletes the mesh faces inside a polygon
+        /// @param[in] polygon        The polygon where to perform the operation
+        ///                           If this Polygons instance contains multiple polygons, the first one will be taken.
+        /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
+        [[nodiscard]] std::unique_ptr<UndoAction> DeleteMeshFaces(const Polygons& polygon, bool invertDeletion);
 
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param[in] startNode The starting node
@@ -384,8 +442,8 @@ namespace meshkernel
                                                    const std::vector<UInt>& numFaceNodes);
 
         /// @brief Perform complete administration
-        /// @param[in] face_mappings_given True if face mappings are given, false otherwise
-        void DoAdministration();
+        /// @param[in,out] undoAction if not null then collect any undo actions generated during the administration.
+        void DoAdministration(CompoundUndoAction* undoAction = nullptr);
     };
 
 } // namespace meshkernel

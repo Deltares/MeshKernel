@@ -39,7 +39,7 @@ namespace meshkernel
         /// @brief The number of columns in x direction
         int num_columns = 3;
 
-        /// @brief The number of columns in y direction
+        /// @brief The number of rows in y direction
         int num_rows = 3;
 
         /// @brief The grid angle

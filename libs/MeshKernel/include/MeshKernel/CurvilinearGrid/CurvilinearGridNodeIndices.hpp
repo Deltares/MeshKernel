@@ -29,6 +29,7 @@
 #include <stddef.h>
 
 #include <MeshKernel/Constants.hpp>
+#include <MeshKernel/Exceptions.hpp>
 
 namespace meshkernel
 {
@@ -37,12 +38,12 @@ namespace meshkernel
     struct CurvilinearGridNodeIndices
     {
         /// @brief Default constructor sets the indices to invalid
-        CurvilinearGridNodeIndices() : m_m(constants::missing::uintValue), m_n(constants::missing::uintValue){};
+        CurvilinearGridNodeIndices() : m_n(constants::missing::uintValue), m_m(constants::missing::uintValue) {}
 
         /// @brief Constructor sets indices from values
         /// @param[in] m The m index
         /// @param[in] n The n index
-        CurvilinearGridNodeIndices(UInt m, UInt n) : m_m(m), m_n(n){};
+        CurvilinearGridNodeIndices(UInt n, UInt m) : m_n(n), m_m(m) {}
 
         /// @brief Determines if one of the indices  equals to \p missingValue
         [[nodiscard]] bool IsValid(const UInt missingValue = constants::missing::uintValue) const
@@ -53,15 +54,49 @@ namespace meshkernel
         /// @brief Overloads equality with another CurvilinearGridNodeIndices
         bool operator==(const CurvilinearGridNodeIndices& rhs) const = default;
 
+        CurvilinearGridNodeIndices& operator+=(const CurvilinearGridNodeIndices& val)
+        {
+            if (!IsValid())
+            {
+                throw ConstraintError("Invalid node index");
+            }
+
+            if (!val.IsValid())
+            {
+                throw ConstraintError("Invalid node index increment");
+            }
+
+            m_n += val.m_n;
+            m_m += val.m_m;
+            return *this;
+        }
+
+        CurvilinearGridNodeIndices& operator-=(const CurvilinearGridNodeIndices& val)
+        {
+            if (!IsValid())
+            {
+                throw ConstraintError("Invalid node index");
+            }
+
+            if (!val.IsValid())
+            {
+                throw ConstraintError("Invalid node index increment");
+            }
+
+            m_n -= val.m_n;
+            m_m -= val.m_m;
+            return *this;
+        }
+
         /// @brief Inquires if another node is on the same grid line of the current node
         /// @param[in] rhs The node to inquire
         /// @return True if on the same grid line, false otherwise
         [[nodiscard]] bool IsOnTheSameGridLine(const CurvilinearGridNodeIndices& rhs) const
         {
-            return m_m == rhs.m_m || m_n == rhs.m_n;
+            return m_n == rhs.m_n || m_m == rhs.m_m;
         }
 
-        UInt m_m; ///< Columns
         UInt m_n; ///< Rows
+        UInt m_m; ///< Columns
     };
 } // namespace meshkernel

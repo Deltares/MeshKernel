@@ -1,6 +1,7 @@
 #include <array>
 #include <memory>
 #include <netcdf.h>
+#include <random>
 
 #include <TestUtils/MakeMeshes.hpp>
 
@@ -175,7 +176,9 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     double dim_x,
     double dim_y,
     meshkernel::Projection projection,
-    meshkernel::Point const& origin)
+    meshkernel::Point const& origin,
+    const bool ewIndexIncreasing,
+    const bool nsIndexIncreasing)
 {
     std::vector<std::vector<meshkernel::UInt>> node_indices(n, std::vector<meshkernel::UInt>(m));
     std::vector<meshkernel::Point> nodes(n * m);
@@ -190,6 +193,108 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
             {
                 node_indices[i][j] = i * m + j;
                 nodes[index] = {origin.x + i * delta_x, origin.y + j * delta_y};
+                index++;
+            }
+        }
+    }
+
+    std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
+
+    {
+        meshkernel::UInt index = 0;
+
+        for (meshkernel::UInt i = 0; i < n - 1; ++i)
+        {
+            for (meshkernel::UInt j = 0; j < m; ++j)
+            {
+                if (ewIndexIncreasing)
+                {
+                    edges[index] = {node_indices[i][j], node_indices[i + 1][j]};
+                }
+                else
+                {
+                    edges[index] = {node_indices[i + 1][j], node_indices[i][j]};
+                }
+
+                index++;
+            }
+        }
+
+        for (meshkernel::UInt i = 0; i < n; ++i)
+        {
+            for (meshkernel::UInt j = 0; j < m - 1; ++j)
+            {
+                if (nsIndexIncreasing)
+                {
+                    edges[index] = {node_indices[i][j], node_indices[i][j + 1]};
+                }
+                else
+                {
+                    edges[index] = {node_indices[i][j + 1], node_indices[i][j]};
+                }
+
+                index++;
+            }
+        }
+    }
+
+    return std::make_unique<meshkernel::Mesh2D>(edges, nodes, projection);
+}
+
+std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
+    meshkernel::UInt n,
+    meshkernel::UInt m,
+    double delta,
+    meshkernel::Projection projection,
+    meshkernel::Point const& origin,
+    const bool ewIndexIncreasing,
+    const bool nsIndexIncreasing)
+{
+    double const dim_x = delta * static_cast<double>(n - 1);
+    double const dim_y = delta * static_cast<double>(m - 1);
+    return MakeRectangularMeshForTesting(
+        n,
+        m,
+        dim_x,
+        dim_y,
+        projection,
+        origin,
+        ewIndexIncreasing,
+        nsIndexIncreasing);
+}
+
+std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTestingRand(
+    meshkernel::UInt n,
+    meshkernel::UInt m,
+    double dim_x,
+    double dim_y,
+    meshkernel::Projection projection,
+    meshkernel::Point const& origin)
+{
+    std::vector<std::vector<meshkernel::UInt>> node_indices(n, std::vector<meshkernel::UInt>(m));
+    std::vector<meshkernel::Point> nodes(n * m);
+
+    // Create a uniform distribution in 0 .. 1.
+    std::uniform_real_distribution<double> distribution(0.0, 1.0);
+    std::default_random_engine engine;
+    const double randomScaling = 0.25;
+
+    {
+        meshkernel::UInt index = 0;
+        double const delta_x = dim_x / static_cast<double>(n - 1);
+        double const delta_y = dim_y / static_cast<double>(m - 1);
+        for (meshkernel::UInt i = 0; i < n; ++i)
+        {
+            for (meshkernel::UInt j = 0; j < m; ++j)
+            {
+                node_indices[i][j] = i * m + j;
+
+                meshkernel::Vector displacement(distribution(engine) * randomScaling * delta_x,
+                                                distribution(engine) * randomScaling * delta_y);
+
+                meshkernel::Point p(origin.x + i * delta_x, origin.y + j * delta_y);
+                p += displacement;
+                nodes[index] = p;
                 index++;
             }
         }
@@ -222,7 +327,7 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     return std::make_unique<meshkernel::Mesh2D>(edges, nodes, projection);
 }
 
-std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
+std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTestingRand(
     meshkernel::UInt n,
     meshkernel::UInt m,
     double delta,
@@ -231,7 +336,7 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
 {
     double const dim_x = delta * static_cast<double>(n - 1);
     double const dim_y = delta * static_cast<double>(m - 1);
-    return MakeRectangularMeshForTesting(
+    return MakeRectangularMeshForTestingRand(
         n,
         m,
         dim_x,

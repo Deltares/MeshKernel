@@ -1,20 +1,20 @@
-#include "MeshKernelApi/Mesh2D.hpp"
-
-#include "MeshKernel/Mesh2DIntersections.hpp"
-
 #include <chrono>
 #include <gmock/gmock-matchers.h>
 #include <gtest/gtest.h>
 #include <random>
 
-#include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Mesh.hpp>
-#include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/RemoveDisconnectedRegions.hpp>
-#include <TestUtils/Definitions.hpp>
-#include <TestUtils/MakeMeshes.hpp>
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Mesh.hpp"
+#include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/Mesh2DIntersections.hpp"
+#include "MeshKernel/Mesh2DToCurvilinear.hpp"
+#include "MeshKernel/Operations.hpp"
+#include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/RemoveDisconnectedRegions.hpp"
+
+#include "TestUtils/Definitions.hpp"
+#include "TestUtils/MakeMeshes.hpp"
 
 TEST(Mesh2D, OneQuadTestConstructor)
 {
@@ -288,7 +288,7 @@ TEST(Mesh2D, NodeMerging)
             nodes[nodeIndex] = {i + x_distribution(generator), j + y_distribution(generator)};
 
             // add artificial edges
-            const auto& [firstNode, secondNode] = mesh->m_edges[mesh->m_nodesEdges[originalNodeIndex][0]];
+            const auto& [firstNode, secondNode] = mesh->GetEdge(mesh->m_nodesEdges[originalNodeIndex][0]);
             auto otherNode = firstNode + secondNode - originalNodeIndex;
 
             edges[edgeIndex] = {nodeIndex, otherNode};
@@ -309,11 +309,11 @@ TEST(Mesh2D, NodeMerging)
 
     // 2. Act
     meshkernel::Polygons polygon;
-    mesh->MergeNodesInPolygon(polygon, 0.001);
+    [[maybe_unused]] auto action = mesh->MergeNodesInPolygon(polygon, 0.001);
 
     // 3. Assert
-    ASSERT_EQ(mesh->GetNumNodes(), n * m);
-    ASSERT_EQ(mesh->GetNumEdges(), (n - 1) * m + (m - 1) * n);
+    ASSERT_EQ(mesh->GetNumValidNodes(), n * m);
+    ASSERT_EQ(mesh->GetNumValidEdges(), (n - 1) * m + (m - 1) * n);
 }
 
 TEST(Mesh2D, MillionQuads)
@@ -426,12 +426,21 @@ TEST(Mesh2D, DeleteSmallFlowEdge)
     // Setup a mesh with eight triangles
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/RemoveSmallFlowEdgesTests/remove_small_flow_edges_net.nc");
 
+    std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
     ASSERT_EQ(8, mesh->GetNumFaces());
 
     // After merging the number of faces is reduced
-    mesh->DeleteSmallFlowEdges(1.0);
+    auto undoAction = mesh->DeleteSmallFlowEdges(1.0);
 
     ASSERT_EQ(3, mesh->GetNumFaces());
+
+    // Restore original mesh
+    undoAction->Restore();
+    mesh->Administrate();
+
+    ASSERT_EQ(8, mesh->GetNumFaces());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumEdges());
 }
 
 TEST(Mesh2D, DeleteSmallTrianglesAtBoundaries)
@@ -442,20 +451,27 @@ TEST(Mesh2D, DeleteSmallTrianglesAtBoundaries)
     ASSERT_EQ(2, mesh->GetNumFaces());
 
     // After merging
-    mesh->DeleteSmallTrianglesAtBoundaries(0.6);
+    auto undoAction = mesh->DeleteSmallTrianglesAtBoundaries(0.6);
 
     ASSERT_EQ(1, mesh->GetNumFaces());
 
     const double tolerance = 1e-8;
-    ASSERT_NEAR(364.17013549804688, mesh->m_nodes[0].x, tolerance);
-    ASSERT_NEAR(295.21142578125000, mesh->m_nodes[1].x, tolerance);
-    ASSERT_NEAR(421.46209716796875, mesh->m_nodes[2].x, tolerance);
-    ASSERT_NEAR(359.79510498046875, mesh->m_nodes[3].x, tolerance);
+    ASSERT_NEAR(364.17013549804688, mesh->Node(0).x, tolerance);
+    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, mesh->Node(1).x, tolerance);
+    ASSERT_NEAR(295.21142578125000, mesh->Node(2).x, tolerance);
+    ASSERT_NEAR(421.46209716796875, mesh->Node(3).x, tolerance);
+    ASSERT_NEAR(359.79510498046875, mesh->Node(4).x, tolerance);
 
-    ASSERT_NEAR(374.00662231445313, mesh->m_nodes[0].y, tolerance);
-    ASSERT_NEAR(300.48181152343750, mesh->m_nodes[1].y, tolerance);
-    ASSERT_NEAR(295.33038330078125, mesh->m_nodes[2].y, tolerance);
-    ASSERT_NEAR(398.59295654296875, mesh->m_nodes[3].y, tolerance);
+    ASSERT_NEAR(374.00662231445313, mesh->Node(0).y, tolerance);
+    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, mesh->Node(1).y, tolerance);
+    ASSERT_NEAR(300.48181152343750, mesh->Node(2).y, tolerance);
+    ASSERT_NEAR(295.33038330078125, mesh->Node(3).y, tolerance);
+    ASSERT_NEAR(398.59295654296875, mesh->Node(4).y, tolerance);
+
+    // Restore original mesh
+    undoAction->Restore();
+    mesh->Administrate();
+    ASSERT_EQ(2, mesh->GetNumFaces());
 }
 
 TEST(Mesh2D, DeleteHangingEdge)
@@ -487,11 +503,31 @@ TEST(Mesh2D, DeleteHangingEdge)
     ASSERT_EQ(1, hangingEdges.size());
 
     // Execute
-    mesh->DeleteHangingEdges();
+    auto undoAction = mesh->DeleteHangingEdges();
     hangingEdges = mesh->GetHangingEdges();
 
     // Assert
     ASSERT_EQ(0, hangingEdges.size());
+
+    // Restore original mesh
+    undoAction->Restore();
+    // Called to reconstruct the faces
+    mesh->Administrate();
+
+    ASSERT_EQ(1, mesh->GetNumFaces());
+    ASSERT_EQ(4, mesh->GetNumValidEdges());
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(nodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(nodes[i].y, mesh->Node(i).y);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(edges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(edges[i].second, mesh->GetEdge(i).second);
+    }
 }
 
 TEST(Mesh2D, GetPolylineIntersectionsFromSimplePolylineShouldReturnCorrectIntersections)
@@ -938,9 +974,32 @@ TEST(Mesh2D, RemoveSingleIsland)
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/RemoveDomainIslands/single_disconnected_region.nc");
     meshkernel::RemoveDisconnectedRegions removeDisconnectedRegions;
 
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
     // Remove all smaller disconnected "island" regions.
-    removeDisconnectedRegions.Compute(*mesh);
+    auto undoAction = removeDisconnectedRegions.Compute(*mesh);
     EXPECT_EQ(mesh->GetNumFaces(), 100);
+
+    // Restore original mesh
+    undoAction->Restore();
+    mesh->Administrate();
+
+    EXPECT_EQ(mesh->GetNumFaces(), 104);
+    ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+    }
 }
 
 TEST(Mesh2D, RemoveMultipleIslands)
@@ -948,11 +1007,35 @@ TEST(Mesh2D, RemoveMultipleIslands)
     // Load mesh with 4 disconnected regions, the main domain is a 10x10, there are 3 other much small island regions,
     // each with a different shape and number of elements.
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/RemoveDomainIslands/multiple_disconnected_regions.nc");
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
     meshkernel::RemoveDisconnectedRegions removeDisconnectedRegions;
 
     // Remove all smaller disconnected "island" regions.
-    removeDisconnectedRegions.Compute(*mesh);
+    auto undoAction = removeDisconnectedRegions.Compute(*mesh);
     EXPECT_EQ(mesh->GetNumFaces(), 100);
+
+    // Restore original mesh
+    undoAction->Restore();
+    mesh->Administrate();
+
+    EXPECT_EQ(mesh->GetNumFaces(), 113);
+    ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+    }
 }
 
 TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersected_ShouldNotDeleteFaces)
@@ -972,19 +1055,44 @@ TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersected_ShouldNotDeleteFaces)
         {3.55081967213115, -0.358196721311476},
         {1.87622950819672, -0.299180327868853}};
 
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
     auto polygon = meshkernel::Polygons(polygonNodes, meshkernel::Projection::cartesian);
+    const auto deletion_option = meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected;
 
     // Execute
-    mesh->DeleteMesh(polygon, 0, false);
+    auto undoAction = mesh->DeleteMesh(polygon, deletion_option, false);
 
     // Assert
     EXPECT_EQ(mesh->GetNumFaces(), 9);
+
+    // Restore original mesh
+    undoAction->Restore();
+
+    ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+    }
 }
 
 TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersectedSpherical_ShouldNotDeleteFaces)
 {
     // Prepare
     const auto mesh = MakeRectangularMeshForTesting(4, 4, 3, 3, meshkernel::Projection::spherical, meshkernel::Point{0, 0});
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     // a polygon including all nodes of a face, but also intersecting one
     std::vector<meshkernel::Point> polygonNodes{
@@ -999,12 +1107,31 @@ TEST(Mesh2D, DeleteMesh_WhenFacesAreIntersectedSpherical_ShouldNotDeleteFaces)
         {1.87622950819672, -0.299180327868853}};
 
     auto polygon = meshkernel::Polygons(polygonNodes, meshkernel::Projection::spherical);
+    const auto deletion_option = meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected;
 
     // Execute
-    mesh->DeleteMesh(polygon, 0, false);
+    auto undoAction = mesh->DeleteMesh(polygon, deletion_option, false);
 
     // Assert
     EXPECT_EQ(mesh->GetNumFaces(), 9);
+
+    // Restore original mesh
+    undoAction->Restore();
+
+    ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+    }
 }
 
 TEST(Mesh2D, DeleteMesh_WithLargeSphericalPolygon_ShouldDeleteInnerMeshFaces)
@@ -1017,6 +1144,9 @@ TEST(Mesh2D, DeleteMesh_WithLargeSphericalPolygon_ShouldDeleteInnerMeshFaces)
                                                     meshkernel::Projection::spherical,
                                                     meshkernel::Point{-3.0, 48.5});
 
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
     // a large polygon
     std::vector<meshkernel::Point> polygonNodes{
         {-2.29490103397341, 50.0126381093058},
@@ -1026,10 +1156,289 @@ TEST(Mesh2D, DeleteMesh_WithLargeSphericalPolygon_ShouldDeleteInnerMeshFaces)
         {-2.29490103397341, 50.0126381093058}};
 
     auto polygon = meshkernel::Polygons(polygonNodes, meshkernel::Projection::spherical);
+    const auto deletion_option = meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected;
 
     // Execute
-    mesh->DeleteMesh(polygon, 0, false);
+    auto undoAction = mesh->DeleteMesh(polygon, deletion_option, false);
 
     // Assert
     EXPECT_EQ(mesh->GetNumFaces(), 7);
+
+    // Restore original mesh
+    undoAction->Restore();
+
+    ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+    }
+}
+
+TEST(Mesh2D, DeleteMesh_WithPolygonAndIncludedCircumcenters_ShouldDeleteInnerFaces)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(5,
+                                                    5,
+                                                    8.0,
+                                                    8.0,
+                                                    meshkernel::Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
+    // a large polygon
+    std::vector<meshkernel::Point> polygonNodes{
+        {2, 2},
+        {6, 2},
+        {6, 6},
+        {2, 6},
+        {2, 2}};
+
+    auto polygon = meshkernel::Polygons(polygonNodes, meshkernel::Projection::cartesian);
+    const auto deletion_option = meshkernel::Mesh2D::DeleteMeshOptions::FacesWithIncludedCircumcenters;
+
+    // Execute
+    auto undoAction = mesh->DeleteMesh(polygon, deletion_option, false);
+
+    // Assert
+    EXPECT_EQ(mesh->GetNumFaces(), 12);
+
+    // Restore original mesh
+    undoAction->Restore();
+
+    ASSERT_EQ(originalNodes.size(), mesh->Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh->Edges().size());
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        EXPECT_EQ(originalNodes[i].x, mesh->Node(i).x);
+        EXPECT_EQ(originalNodes[i].y, mesh->Node(i).y);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+    }
+}
+
+TEST(Mesh2D, Mesh2DToCurvilinear_WithRectangularMesh_ShouldCreateFullCurvilinearMesh)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(3,
+                                                    3,
+                                                    10.0,
+                                                    10.0,
+                                                    meshkernel::Projection::cartesian);
+    meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(*mesh);
+
+    // Execute
+    const meshkernel::Point point(5.0, 5.0);
+    const auto curvilinearGrid = mesh2DToCurvilinear.Compute(point);
+
+    // Assert
+    ASSERT_EQ(3, curvilinearGrid->NumM());
+    ASSERT_EQ(3, curvilinearGrid->NumN());
+    ASSERT_EQ(9, curvilinearGrid->GetNumNodes());
+
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).y);
+
+    ASSERT_EQ(5.0, curvilinearGrid->GetNode(0, 1).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 1).y);
+
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(0, 0).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 0).y);
+}
+
+TEST(Mesh2D, Mesh2DToCurvilinear_WithStartingPointOutsideMesh_ShouldThrowAnException)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(3,
+                                                    3,
+                                                    10.0,
+                                                    10.0,
+                                                    meshkernel::Projection::cartesian);
+    meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(*mesh);
+
+    // Execute
+    const meshkernel::Point point(-20.0, -20.0);
+
+    // Assert
+    EXPECT_THROW(mesh2DToCurvilinear.Compute(point), meshkernel::AlgorithmError);
+}
+
+TEST(Mesh2D, Mesh2DToCurvilinear_WithMixedMesh_ShouldCreatePartialCurvilinearMesh)
+{
+    // Prepare a mixed mesh with two triangles at the boundary
+    std::vector<meshkernel::Point> nodes;
+    nodes.push_back({-10.0, 0.0});
+    nodes.push_back({0.0, 0.0});
+    nodes.push_back({10.0, 0.0});
+    nodes.push_back({20.0, 0.0});
+    nodes.push_back({0.0, 10.0});
+    nodes.push_back({10.0, 10.0});
+    nodes.push_back({20.0, 10.0});
+    nodes.push_back({0.0, 20.0});
+    nodes.push_back({10.0, 20.0});
+
+    std::vector<meshkernel::Edge> edges;
+    edges.push_back({0, 4});
+    edges.push_back({0, 1});
+    edges.push_back({1, 4});
+    edges.push_back({1, 2});
+    edges.push_back({2, 5});
+    edges.push_back({2, 3});
+    edges.push_back({3, 6});
+    edges.push_back({4, 7});
+    edges.push_back({4, 5});
+    edges.push_back({5, 8});
+    edges.push_back({5, 6});
+    edges.push_back({7, 8});
+    edges.push_back({6, 8});
+
+    // 2 Execute
+    auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+    meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(mesh);
+    const meshkernel::Point point(5.0, 5.0);
+    const auto curvilinearGrid = mesh2DToCurvilinear.Compute(point);
+
+    // Assert
+    ASSERT_EQ(3, curvilinearGrid->NumM());
+    ASSERT_EQ(3, curvilinearGrid->NumN());
+    ASSERT_EQ(9, curvilinearGrid->GetNumNodes());
+
+    ASSERT_EQ(20.0, curvilinearGrid->GetNode(0, 0).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 0).y);
+    ASSERT_EQ(20.0, curvilinearGrid->GetNode(1, 0).x);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 0).y);
+    ASSERT_EQ(-999.0, curvilinearGrid->GetNode(2, 0).x);
+    ASSERT_EQ(-999.0, curvilinearGrid->GetNode(2, 0).y);
+
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(0, 1).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 1).y);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 1).x);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 1).y);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(2, 1).x);
+    ASSERT_EQ(20.0, curvilinearGrid->GetNode(2, 1).y);
+
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).y);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(1, 2).x);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 2).y);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(2, 2).x);
+    ASSERT_EQ(20.0, curvilinearGrid->GetNode(2, 2).y);
+}
+
+TEST(Mesh2D, GetBoundingBox_WithANonEmptyMesh_ShouldGetAValidBoundingBox)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(10,
+                                                    10,
+                                                    10.0,
+                                                    10.0,
+                                                    meshkernel::Projection::cartesian);
+    // Execute
+    const auto boundingBox = mesh->GetBoundingBox();
+
+    // Assert
+    ASSERT_EQ(boundingBox.lowerLeft().x, 0.0);
+    ASSERT_EQ(boundingBox.lowerLeft().y, 0.0);
+    ASSERT_EQ(boundingBox.upperRight().x, 10.0);
+    ASSERT_EQ(boundingBox.upperRight().y, 10.0);
+}
+
+TEST(Mesh2D, GetBoundingBox_WithAnEmptyMesh_ShouldGetAnEmptyBoundingBox)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(10,
+                                                    10,
+                                                    10.0,
+                                                    10.0,
+                                                    meshkernel::Projection::cartesian);
+
+    const auto polygon = meshkernel::Polygons({}, meshkernel::Projection::cartesian);
+    const auto deletionOption = meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected;
+
+    meshkernel::Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    meshkernel::Point upperRight(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
+
+    // Execute
+    auto undoAction = mesh->DeleteMesh(polygon, deletionOption, false);
+    auto boundingBox = mesh->GetBoundingBox();
+
+    // Assert
+    ASSERT_EQ(boundingBox.lowerLeft().x, lowerLeft.x);
+    ASSERT_EQ(boundingBox.lowerLeft().y, lowerLeft.y);
+    ASSERT_EQ(boundingBox.upperRight().x, upperRight.x);
+    ASSERT_EQ(boundingBox.upperRight().y, upperRight.y);
+}
+
+TEST(Mesh2D, GetEdgesBoundingBox_WithAnInvalidEdge_ShouldGetOneInvalidEdgeBoundingBox)
+{
+    // Prepare
+    const auto mesh = MakeRectangularMeshForTesting(10,
+                                                    10,
+                                                    10.0,
+                                                    10.0,
+                                                    meshkernel::Projection::cartesian);
+    // Execute
+    const auto undoAction = mesh->DeleteEdge(0);
+    const auto edgesBoundingBoxes = mesh->GetEdgesBoundingBoxes();
+
+    // Assert
+    meshkernel::Point lowerLeft(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    meshkernel::Point upperRight(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
+
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(edgesBoundingBoxes[0].lowerLeft().x, lowerLeft.x, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[0].lowerLeft().y, lowerLeft.y, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[0].upperRight().x, upperRight.x, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[0].upperRight().y, upperRight.y, tolerance);
+
+    ASSERT_NEAR(edgesBoundingBoxes[1].lowerLeft().x, 0.0, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[1].lowerLeft().y, 1.1111111111111112, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[1].upperRight().x, 1.1111111111111112, tolerance);
+    ASSERT_NEAR(edgesBoundingBoxes[1].upperRight().y, 1.1111111111111112, tolerance);
+}
+
+TEST(Mesh2D, GetSmoothness_OnTriangularMesh_ShouldgetSmoothnessValues)
+{
+    // Setup
+    const auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
+
+    // Execute
+    const auto smoothness = mesh->GetSmoothness();
+
+    // Assert
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(1.0000000000000047, smoothness[0], tolerance);
+    ASSERT_NEAR(1.5393847629344886, smoothness[10], tolerance);
+    ASSERT_NEAR(1.1609660187036754, smoothness[20], tolerance);
+    ASSERT_NEAR(1.4420158602682915, smoothness[30], tolerance);
+}
+
+TEST(Mesh2D, GetOrthogonality_OnTriangularMesh_ShouldGetOrthogonalityValues)
+{
+    // Setup
+    const auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
+
+    // Execute
+    const auto orthogonality = mesh->GetOrthogonality();
+
+    // Assert
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(1.0566340037701503e-15, orthogonality[0], tolerance);
+    ASSERT_NEAR(0.052159566591519289, orthogonality[10], tolerance);
+    ASSERT_NEAR(1.0342915752434056e-15, orthogonality[20], tolerance);
+    ASSERT_NEAR(0.045878303256790140, orthogonality[30], tolerance);
 }

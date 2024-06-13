@@ -27,8 +27,11 @@
 
 #pragma once
 
+#include <memory>
+
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/LandBoundary.hpp>
+#include <MeshKernel/UndoActions/UndoAction.hpp>
 
 #include <memory>
 
@@ -81,7 +84,7 @@ namespace meshkernel
         void FindNearestMeshBoundary(ProjectToLandBoundaryOption projectToLandBoundaryOption);
 
         /// @brief Snap the mesh nodes to land boundaries (snap_to_landboundary)
-        void SnapMeshToLandBoundaries() const;
+        [[nodiscard]] std::unique_ptr<UndoAction> SnapMeshToLandBoundaries() const;
 
         /// @brief Gets the number of land boundary nodes.
         /// @return The number of land boundary nodes.

@@ -38,7 +38,7 @@ namespace meshkernel
     /// @brief A class implementing the curvilinear grid line shift. Line is shifted on the new locations.
     /// and the displacement gets distributed on the influence zone, set with SetBlock
     ///
-    /// This option provides the possibility to fit the curvilinear grid’s edges to a land boundary.
+    /// This option provides the possibility to fit the curvilinear grid's edges to a land boundary.
     class CurvilinearGridLineAttractionRepulsion : public CurvilinearGridAlgorithm
     {
     public:
@@ -48,7 +48,7 @@ namespace meshkernel
         CurvilinearGridLineAttractionRepulsion(CurvilinearGrid& grid, double attractionFactor);
 
         /// @brief Computes a new curvilinear grid with line attracted towards \ref m_lines[0]
-        void Compute() override;
+        [[nodiscard]] UndoActionPtr Compute() override;
 
     private:
         CurvilinearGrid m_originalGrid; ///< A pointer to the original grid, used for computation of quantities

@@ -8,6 +8,7 @@ on:
 jobs:
   check:
     runs-on: ubuntu-20.04
+    name: Doxygen Check
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.9

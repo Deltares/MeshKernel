@@ -27,9 +27,9 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
         std::vector<Sample> samples;
         for (UInt i = 0; i < mesh->GetNumNodes(); i++)
         {
-            if (mesh->m_nodes[i].y > 7.0 && mesh->m_nodes[i].y < 8.0)
+            if (mesh->Node(i).y > 7.0 && mesh->Node(i).y < 8.0)
             {
-                samples.push_back({mesh->m_nodes[i].x, mesh->m_nodes[i].y, 20.0});
+                samples.push_back({mesh->Node(i).x, mesh->Node(i).y, 20.0});
             }
         }
 
@@ -58,7 +58,7 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
                                       std::move(interpolator),
                                       mesh_refinement_parameters);
 
-        meshRefinement.Compute();
+        [[maybe_unused]] auto dummyUndoAction = meshRefinement.Compute();
     }
 }
 
@@ -112,7 +112,7 @@ static void BM_MeshRefinementBasedOnPolygons(benchmark::State& state)
 
         MeshRefinement meshRefinement(*mesh, polygon, mesh_refinement_parameters);
 
-        meshRefinement.Compute();
+        [[maybe_unused]] auto dummyUndoAction = meshRefinement.Compute();
     }
 }
 BENCHMARK(BM_MeshRefinementBasedOnPolygons)

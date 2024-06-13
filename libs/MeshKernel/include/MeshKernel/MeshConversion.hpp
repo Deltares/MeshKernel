@@ -33,6 +33,7 @@
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh.hpp"
 #include "MeshKernel/Point.hpp"
+#include "MeshKernel/UndoActions/MeshConversionAction.hpp"
 
 namespace meshkernel
 {
@@ -56,7 +57,7 @@ namespace meshkernel
     public:
         /// @brief Apply a conversion to nodes of a mesh.
         template <ConversionFunctor Conversion>
-        static void Compute(const Mesh& sourceMesh, Mesh& targetMesh, const Conversion& conversion)
+        [[nodiscard]] static std::unique_ptr<UndoAction> Compute(const Mesh& sourceMesh, Mesh& targetMesh, const Conversion& conversion)
         {
             if (sourceMesh.m_projection != conversion.SourceProjection())
             {
@@ -76,25 +77,41 @@ namespace meshkernel
                                       sourceMesh.GetNumNodes(), targetMesh.GetNumNodes());
             }
 
+            std::vector<Point> targetNodes(targetMesh.Nodes());
+            std::unique_ptr<MeshConversionAction> undoAction = MeshConversionAction::Create(targetMesh);
+
 #pragma omp parallel for
             for (int i = 0; i < static_cast<int>(sourceMesh.GetNumNodes()); ++i)
             {
-                if (sourceMesh.m_nodes[i].IsValid())
+                if (sourceMesh.Node(i).IsValid())
                 {
-                    targetMesh.m_nodes[i] = conversion(sourceMesh.m_nodes[i]);
+                    targetNodes[i] = conversion(sourceMesh.Node(i));
                 }
                 else
                 {
-                    targetMesh.m_nodes[i] = sourceMesh.m_nodes[i];
+                    targetNodes[i] = sourceMesh.Node(i);
                 }
+
+#if 0
+                if (sourceMesh.Node(i).IsValid())
+                {
+                    targetMesh.SetNode(i, conversion(sourceMesh.Node(i)));
+                }
+                else
+                {
+                    targetMesh.SetNode(i, sourceMesh.Node(i));
+                }
+#endif
             }
 
+            targetMesh.SetNodes(targetNodes);
             targetMesh.Administrate();
+            return undoAction;
         }
 
         /// @brief Apply a conversion to nodes of a mesh.
         template <ConversionFunctor Conversion>
-        static void Compute(Mesh& mesh, const Conversion& conversion)
+        [[nodiscard]] static std::unique_ptr<UndoAction> Compute(Mesh& mesh, const Conversion& conversion)
         {
             if (mesh.m_projection != conversion.SourceProjection())
             {
@@ -102,17 +119,28 @@ namespace meshkernel
                                       ProjectionToString(conversion.SourceProjection()), ProjectionToString(mesh.m_projection));
             }
 
+            std::vector<Point> nodes(mesh.Nodes());
+            std::unique_ptr<MeshConversionAction> undoAction = MeshConversionAction::Create(mesh);
+
 #pragma omp parallel for
             for (int i = 0; i < static_cast<int>(mesh.GetNumNodes()); ++i)
             {
-                if (mesh.m_nodes[i].IsValid())
+                if (nodes[i].IsValid())
                 {
-                    mesh.m_nodes[i] = conversion(mesh.m_nodes[i]);
+                    nodes[i] = conversion(nodes[i]);
                 }
+#if 0
+                if (mesh.Node(i).IsValid())
+                {
+                    mesh.SetNode(i, conversion(mesh.Node(i)));
+                }
+#endif
             }
 
+            mesh.SetNodes(nodes);
             mesh.m_projection = conversion.TargetProjection();
             mesh.Administrate();
+            return undoAction;
         }
     };
 

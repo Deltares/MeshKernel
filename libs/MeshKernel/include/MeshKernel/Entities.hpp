@@ -31,6 +31,7 @@
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
+#include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Point.hpp"
 
 namespace meshkernel
@@ -55,6 +56,25 @@ namespace meshkernel
     UInt static OtherNodeOfEdge(const Edge& edge, UInt node)
     {
         return node == edge.first ? edge.second : edge.first;
+    }
+
+    /// @brief Get the node at the position
+    ///
+    /// Enables easier accessing of nodes of edge in loop.
+    static UInt EdgeNodeIndex(const Edge& edge, UInt position)
+    {
+        if (position == 0)
+        {
+            return edge.first;
+        }
+        else if (position == 1)
+        {
+            return edge.second;
+        }
+        else
+        {
+            throw ConstraintError("Position out of bounds: {} not in [0 .. 1]", position);
+        }
     }
 
     /// @brief A struct describing the three coordinates in a cartesian projection.

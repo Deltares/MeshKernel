@@ -10,6 +10,8 @@
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
+using namespace meshkernel::constants;
+
 TEST(Polygons, MeshBoundaryToPolygon)
 {
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
@@ -471,8 +473,6 @@ TEST(Polygons, RefinePolygonLongerSquare)
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
-    std::cout << std::endl;
-
     // Execute
     const auto refinedPolygon = polygons.RefineFirstPolygon(0, 0, 1.0);
 
@@ -916,3 +916,41 @@ TEST(Polygons, SnapMultiPolygonPartToSingleLandBoundary)
             << " Expected y-coordinate: " << expectedSnappedPointsSecond[i].y << ", actual: " << secondPolygon.Node(i).y << ", tolerance: " << tolerance;
     }
 }
+
+class IsPointInPolygonsTests : public ::testing::TestWithParam<std::tuple<meshkernel::Point, bool>>
+{
+public:
+    [[nodiscard]] static std::vector<std::tuple<meshkernel::Point, bool>> GetData()
+    {
+        return {std::make_tuple<meshkernel::Point, bool>(meshkernel::Point{0.0, 0.0}, true),
+                std::make_tuple<meshkernel::Point, bool>(meshkernel::Point{0.0, 3.0}, false),
+                std::make_tuple<meshkernel::Point, bool>(meshkernel::Point{1.5, 1.3}, false),
+                std::make_tuple<meshkernel::Point, bool>(meshkernel::Point{0.5, 0.5}, true)};
+    }
+};
+
+TEST_P(IsPointInPolygonsTests, parameters)
+{
+    // Get the test parameters
+    auto const& [point, expectedResult] = GetParam();
+
+    std::vector<meshkernel::Point> nodes;
+    nodes.emplace_back(0.0, 0.0);
+    nodes.emplace_back(3.0, 0.0);
+    nodes.emplace_back(3.0, 3.0);
+    nodes.emplace_back(1.0, 3.0);
+    nodes.emplace_back(0.0, 2.0);
+    nodes.emplace_back(0.0, 0.0);
+    nodes.emplace_back(missing::innerOuterSeparator, missing::innerOuterSeparator);
+    nodes.emplace_back(1.0, 1.0);
+    nodes.emplace_back(2.0, 1.0);
+    nodes.emplace_back(2.0, 2.0);
+    nodes.emplace_back(1.0, 1.0);
+
+    meshkernel::Polygons polygon(nodes, meshkernel::Projection::cartesian);
+
+    const auto [result, index] = polygon.IsPointInPolygons(point);
+
+    ASSERT_EQ(result, expectedResult);
+}
+INSTANTIATE_TEST_SUITE_P(IsPointInPolygonsParametrizedTests, IsPointInPolygonsTests, ::testing::ValuesIn(IsPointInPolygonsTests::GetData()));

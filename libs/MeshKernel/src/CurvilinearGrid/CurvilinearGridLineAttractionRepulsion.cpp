@@ -28,6 +28,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineAttractionRepulsion.hpp>
+#include <MeshKernel/CurvilinearGrid/UndoActions/CurvilinearGridBlockUndoAction.hpp>
 #include <MeshKernel/Entities.hpp>
 
 using meshkernel::CurvilinearGrid;
@@ -42,9 +43,9 @@ CurvilinearGridLineAttractionRepulsion::CurvilinearGridLineAttractionRepulsion(C
 {
 }
 
-void CurvilinearGridLineAttractionRepulsion::Compute()
+meshkernel::UndoActionPtr CurvilinearGridLineAttractionRepulsion::Compute()
 {
-    if (lin_alg::MatrixIsEmpty(m_grid.m_gridNodes))
+    if (m_grid.IsEmpty())
     {
         throw std::invalid_argument("CurvilinearGridLineAttractionRepulsion::Compute Empty grid");
     }
@@ -61,22 +62,24 @@ void CurvilinearGridLineAttractionRepulsion::Compute()
         throw std::invalid_argument("CurvilinearGridLineAttractionRepulsion::Compute The points defining the attraction area have the same direction of the attraction line.");
     }
 
-    auto const startM = m_lines[0].IsMGridLine() ? m_lines[0].m_startCoordinate : m_lowerLeft.m_m;
-    auto const endM = m_lines[0].IsMGridLine() ? m_lines[0].m_endCoordinate : m_upperRight.m_m;
     auto const startN = m_lines[0].IsNGridLine() ? m_lines[0].m_startCoordinate : m_lowerLeft.m_n;
     auto const endN = m_lines[0].IsNGridLine() ? m_lines[0].m_endCoordinate : m_upperRight.m_n;
+    auto const startM = m_lines[0].IsMGridLine() ? m_lines[0].m_startCoordinate : m_lowerLeft.m_m;
+    auto const endM = m_lines[0].IsMGridLine() ? m_lines[0].m_endCoordinate : m_upperRight.m_m;
 
-    for (auto m = startM; m <= endM; ++m)
+    std::unique_ptr<CurvilinearGridBlockUndoAction> undoAction = CurvilinearGridBlockUndoAction::Create(m_grid, {startN, startM}, {endN + 1, endM + 1});
+
+    for (auto n = startN; n <= endN; ++n)
     {
-        for (auto n = startN; n <= endN; ++n)
+        for (auto m = startM; m <= endM; ++m)
         {
             // Not a valid grid node
-            if (!m_originalGrid.m_gridNodes(m, n).IsValid())
+            if (!m_originalGrid.GetNode(n, m).IsValid())
             {
                 continue;
             }
 
-            CurvilinearGridNodeIndices const nodeIndex{m, n};
+            CurvilinearGridNodeIndices const nodeIndex{n, m};
 
             // Nodes on the line should not be moved
             if (m_lines[0].IsNodeOnLine(nodeIndex))
@@ -92,19 +95,21 @@ void CurvilinearGridLineAttractionRepulsion::Compute()
             if (m_lines[0].IsMGridLine())
             {
                 double const direction = n < m_lines[0].m_constantCoordinate ? 1.0 : -1.0;
-                displacement.y = distance * m_attractionFactor * nSmoothing * direction;
+                displacement.x = distance * m_attractionFactor * nSmoothing * direction;
             }
             if (m_lines[0].IsNGridLine())
             {
                 double const direction = m < m_lines[0].m_constantCoordinate ? 1.0 : -1.0;
-                displacement.x = distance * m_attractionFactor * mSmoothing * direction;
+                displacement.y = distance * m_attractionFactor * mSmoothing * direction;
             }
 
             // project transformation
             displacement = m_originalGrid.TransformDisplacement(displacement, nodeIndex, false);
 
             // adjust nodes
-            m_grid.m_gridNodes(m, n) += displacement;
+            m_grid.GetNode(n, m) += displacement;
         }
     }
+
+    return undoAction;
 }

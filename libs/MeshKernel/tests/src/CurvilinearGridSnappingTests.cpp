@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridSnapGridToLandBoundary.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridSnapGridToSpline.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSnapping.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
@@ -33,7 +35,7 @@ namespace snapping
 
 } // namespace snapping
 
-TEST(CurvilinearGridSnapping, SnappingThreeSides)
+TEST(SnapCurvilinearGridToLandBoundary, SnappingThreeSides)
 
 {
 
@@ -91,34 +93,34 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
 
     CurvilinearGrid grid(gridPoints, Projection::cartesian);
     snappingLine = std::vector{Point(100, 0), Point(100, 100)};
-    CurvilinearGridSnapping snappingEast(grid, eastLandBoundary, snappingLine);
+    CurvilinearGridSnapGridToLandBoundary snappingEast(grid, eastLandBoundary, snappingLine);
 
     // First snap the east boundary of the domain
-    snappingEast.Compute();
+    [[maybe_unused]] auto dummyUndoAction = snappingEast.Compute();
 
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).x, eastMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).x, eastMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
         }
     }
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).y, eastMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).y, eastMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
         }
     }
 
     //--------------------------------
 
-    CurvilinearGrid grid2(grid.m_gridNodes, Projection::cartesian);
+    CurvilinearGrid grid2(grid.GetNodes(), Projection::cartesian);
     snappingLine = std::vector{Point(0, 90.0), Point(0.0, 0.0)};
-    CurvilinearGridSnapping snappingWest(grid2, westLandBoundary, snappingLine);
+    CurvilinearGridSnapGridToLandBoundary snappingWest(grid2, westLandBoundary, snappingLine);
 
     // Next snap the west boundary of the domain
-    snappingWest.Compute();
+    dummyUndoAction = snappingWest.Compute();
 
     std::vector<std::vector<double>> westMappedPointsX{{-1.865916600000e+01, -1.865916600000e+01, -1.960069189347e+01, -2.370988900717e+01, -3.123906057660e+01, -3.191016458763e+01, -2.903003538732e+01, -1.992326360550e+01, -1.510684645043e+01, -1.465914200000e+01, 0.000000000000e+00},
                                                        {-4.588727360955e+00, -4.588727360955e+00, -5.324862328784e+00, -8.537650958466e+00, -1.442435732467e+01, -1.494906209700e+01, -1.269722406374e+01, -5.577066031841e+00, -1.811335198432e+00, -1.461296072050e+00, 1.000000000000e+01},
@@ -144,29 +146,29 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
                                                        {3.364448501894e+00, 9.980938934087e+00, 1.998060582596e+01, 2.998027271784e+01, 3.997993960972e+01, 4.997960650159e+01, 5.997927339347e+01, 6.997894028534e+01, 7.997860717722e+01, 8.997827406910e+01, 9.777374826707e+01},
                                                        {4.303172000000e+00, 9.975620656674e+00, 1.997519460719e+01, 2.997476855770e+01, 3.997434250822e+01, 4.997391645874e+01, 5.997349040925e+01, 6.997306435977e+01, 7.997263831028e+01, 8.997221226080e+01, 9.715259600000e+01}};
 
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid2.m_gridNodes(i, j).x, westMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid2.GetNode(i, j).x, westMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
         }
     }
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid2.m_gridNodes(i, j).y, westMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid2.GetNode(i, j).y, westMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
         }
     }
 
     //--------------------------------
 
-    CurvilinearGrid grid3(grid2.m_gridNodes, Projection::cartesian);
+    CurvilinearGrid grid3(grid2.GetNodes(), Projection::cartesian);
     snappingLine = std::vector{Point({0.0e+00, 1.0e+02}), Point({1.043040e+02, 9.715260e+01})};
-    CurvilinearGridSnapping snappingNorth(grid3, northLandBoundary, snappingLine);
+    CurvilinearGridSnapGridToLandBoundary snappingNorth(grid3, northLandBoundary, snappingLine);
 
     // Finally snap the north boundary of the domain
-    snappingNorth.Compute();
+    dummyUndoAction = snappingNorth.Compute();
 
     std::vector<std::vector<double>> northMappedPointsX{{-1.865916600000e+01, -1.865916600000e+01, -1.960069189347e+01, -2.370988900717e+01, -3.123906057660e+01, -3.191016458763e+01, -2.903003538732e+01, -1.984793400324e+01, -1.490230187035e+01, -1.444198867385e+01, 4.105750388196e-01},
                                                         {-4.588727360955e+00, -4.588727360955e+00, -5.324862328784e+00, -8.537650958466e+00, -1.442435732467e+01, -1.494906209700e+01, -1.269722406374e+01, -5.500065621084e+00, -1.615594343945e+00, -1.234667619608e+00, 1.035463931961e+01},
@@ -192,23 +194,23 @@ TEST(CurvilinearGridSnapping, SnappingThreeSides)
                                                         {3.364448501894e+00, 9.980938934087e+00, 1.998060582596e+01, 2.998027271784e+01, 3.997993960972e+01, 4.997960650159e+01, 5.997927339347e+01, 7.049505766060e+01, 8.263723768445e+01, 9.487399319961e+01, 1.033370952633e+02},
                                                         {4.303172000000e+00, 9.975620656674e+00, 1.997519460719e+01, 2.997476855770e+01, 3.997434250822e+01, 4.997391645874e+01, 5.997349040925e+01, 7.047785003180e+01, 8.230233592963e+01, 9.410634025831e+01, 1.017586980000e+02}};
 
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid3.m_gridNodes(i, j).x, northMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid3.GetNode(i, j).x, northMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
         }
     }
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid3.m_gridNodes(i, j).y, northMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid3.GetNode(i, j).y, northMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
         }
     }
 }
 
-TEST(CurvilinearGridSnapping, SnappingLineToLandBoundaryNorthTheWest)
+TEST(SnapCurvilinearGridToLandBoundary, SnappingLineToLandBoundaryNorthTheWest)
 {
 
     // Tests snapping of a non-square grid
@@ -249,22 +251,22 @@ TEST(CurvilinearGridSnapping, SnappingLineToLandBoundaryNorthTheWest)
     CurvilinearGrid grid(gridPoints, Projection::cartesian);
 
     std::vector<Point> snappingLine{Point(50.0, 100.0), Point(0.0, 100.0)};
-    CurvilinearGridSnapping snappingNorth(grid, northLandBoundary, snappingLine);
+    CurvilinearGridSnapGridToLandBoundary snappingNorth(grid, northLandBoundary, snappingLine);
 
-    snappingNorth.Compute();
+    [[maybe_unused]] auto dummyUndoAction = snappingNorth.Compute();
 
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).x, northMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping north: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).x, northMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping north: (" << i << ", " << j << ")";
         }
     }
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).y, northMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping north: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).y, northMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping north: (" << i << ", " << j << ")";
         }
     }
 
@@ -287,29 +289,29 @@ TEST(CurvilinearGridSnapping, SnappingLineToLandBoundaryNorthTheWest)
                                                        {0.000000000000e+00, 1.000000000000e+01, 2.000000000000e+01, 3.000000000000e+01, 4.000000000000e+01, 5.000000000000e+01, 6.000000000000e+01, 7.027745348015e+01, 8.243267902243e+01, 9.518460383235e+01, 1.064179136971e+02},
                                                        {0.000000000000e+00, 1.000000000000e+01, 2.000000000000e+01, 3.000000000000e+01, 4.000000000000e+01, 5.000000000000e+01, 6.000000000000e+01, 7.021158750721e+01, 8.185517402742e+01, 9.395380659904e+01, 1.048943352951e+02}};
 
-    CurvilinearGrid grid2(grid.m_gridNodes, Projection::cartesian);
+    CurvilinearGrid grid2(grid.GetNodes(), Projection::cartesian);
     snappingLine = std::vector{Point(0.0, 90.0), Point(0.0, 0.0)};
-    CurvilinearGridSnapping snappingWest(grid2, westLandBoundary, snappingLine);
-    snappingWest.Compute();
+    CurvilinearGridSnapGridToLandBoundary snappingWest(grid2, westLandBoundary, snappingLine);
+    dummyUndoAction = snappingWest.Compute();
 
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid2.m_gridNodes(i, j).x, westMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping west: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid2.GetNode(i, j).x, westMappedPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping west: (" << i << ", " << j << ")";
         }
     }
 
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid2.m_gridNodes(i, j).y, westMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping west: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid2.GetNode(i, j).y, westMappedPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping west: (" << i << ", " << j << ")";
         }
     }
 }
 
-TEST(CurvilinearGridSnapping, SnapBoundaryRegionToEastOnePoint)
+TEST(SnapCurvilinearGridToLandBoundary, SnapBoundaryRegionToEastOnePoint)
 {
 
     // Tests snapping of a partial grid line (from node (10,1) to (10,9))
@@ -346,27 +348,27 @@ TEST(CurvilinearGridSnapping, SnapBoundaryRegionToEastOnePoint)
                                                            {4.303172000000e+00, 9.975620656674e+00, 1.997519460719e+01, 2.997476855770e+01, 3.997434250822e+01, 4.997391645874e+01, 5.997349040925e+01, 6.997306435977e+01, 7.997263831028e+01, 8.997221226080e+01, 9.715259600000e+01}};
 
     CurvilinearGrid grid(gridPoints, Projection::cartesian);
-    CurvilinearGridSnapping snapping(grid, eastLandBoundary, snappingLine);
+    CurvilinearGridSnapGridToLandBoundary snapping(grid, eastLandBoundary, snappingLine);
 
-    snapping.Compute();
+    [[maybe_unused]] auto dummyUndoAction = snapping.Compute();
 
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).x, eastMappedGridPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).x, eastMappedGridPointsX[i][j], snapping::tolerance) << "Difference in x-points after snapping east: (" << i << ", " << j << ")";
         }
     }
-    for (Eigen::Index i = 0; i < gridPoints.rows(); ++i)
+    for (UInt i = 0; i < gridPoints.rows(); ++i)
     {
-        for (Eigen::Index j = 0; j < gridPoints.cols(); ++j)
+        for (UInt j = 0; j < gridPoints.cols(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).y, eastMappedGridPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).y, eastMappedGridPointsY[i][j], snapping::tolerance) << "Difference in y-points after snapping east: (" << i << ", " << j << ")";
         }
     }
 }
 
-TEST(CurvilinearGridSnapping, SnapBoundaryRegionToEastTwoPoints)
+TEST(SnapCurvilinearGridToLandBoundary, SnapBoundaryRegionToEastTwoPoints)
 {
     // Tests snapping of a partial grid line (from node (10,1) to (10,9))
     // Region is defined by points to the left of the grid line to be snapped (bounded by (3,0) (3,10))
@@ -407,30 +409,30 @@ TEST(CurvilinearGridSnapping, SnapBoundaryRegionToEastTwoPoints)
 
     CurvilinearGrid grid(gridPoints, Projection::cartesian);
 
-    CurvilinearGridSnapping snapping(grid, eastLandBoundary, snappingLine);
+    CurvilinearGridSnapGridToLandBoundary snapping(grid, eastLandBoundary, snappingLine);
 
     // Compute snapping to land boundary
-    snapping.Compute();
+    [[maybe_unused]] auto dummyUndoAction = snapping.Compute();
 
     // Check results
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.NumM(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.NumN(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.GetNode(i, j).x, mappedPointsX[i][j], snapping::tolerance);
         }
     }
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.NumM(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.NumN(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.GetNode(i, j).y, mappedPointsY[i][j], snapping::tolerance);
         }
     }
 }
 
-TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToWest)
+TEST(SnapCurvilinearGridToLandBoundary, SnapPartialBoundaryRegionToWest)
 {
 
     // Tests snapping of partial region to a land boundary.
@@ -475,29 +477,29 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToWest)
 
     CurvilinearGrid grid(gridPoints, Projection::cartesian);
 
-    CurvilinearGridSnapping snapping(grid, westLandBoundary, snappingLine);
+    CurvilinearGridSnapGridToLandBoundary snapping(grid, westLandBoundary, snappingLine);
 
     // Compute snapping to land boundary
-    snapping.Compute();
+    [[maybe_unused]] auto dummyUndoAction = snapping.Compute();
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.NumM(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.NumN(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.GetNode(i, j).x, mappedPointsX[i][j], snapping::tolerance);
         }
     }
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.NumM(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.NumN(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.GetNode(i, j).y, mappedPointsY[i][j], snapping::tolerance);
         }
     }
 }
 
-TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToNorthTwoPoints)
+TEST(SnapCurvilinearGridToLandBoundary, SnapPartialBoundaryRegionToNorthTwoPoints)
 {
     // Tests snapping of partial line section to a land boundary.
     // The line section is defined by first the grid line {(0,10), (9,10)}
@@ -542,29 +544,29 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToNorthTwoPoints)
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.000000000000e+01, 8.000000000000e+01, 9.000000000000e+01, 1.000000000000e+02}};
 
     CurvilinearGrid grid(gridPoints, Projection::cartesian);
-    CurvilinearGridSnapping snapping(grid, northLandBoundary, snappingLine);
+    CurvilinearGridSnapGridToLandBoundary snapping(grid, northLandBoundary, snappingLine);
 
     // Compute snapping to land boundary
-    snapping.Compute();
+    [[maybe_unused]] auto dummyUndoAction = snapping.Compute();
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.NumM(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.NumN(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.GetNode(i, j).x, mappedPointsX[i][j], snapping::tolerance);
         }
     }
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.NumM(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.NumN(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance);
+            EXPECT_NEAR(grid.GetNode(i, j).y, mappedPointsY[i][j], snapping::tolerance);
         }
     }
 }
 
-TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToNorthFourPoints)
+TEST(SnapCurvilinearGridToLandBoundary, SnapPartialBoundaryRegionToNorthFourPoints)
 {
     // Test smoothing with a 10x10 grid, and a boundary defined on the north of the grid
     // the snapping line is defined by a large section (2,10) to (10,10) along the north boundary
@@ -610,29 +612,29 @@ TEST(CurvilinearGridSnapping, SnapPartialBoundaryRegionToNorthFourPoints)
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.025755535907e+01, 8.087934900000e+01, 9.150114264093e+01, 1.017586980000e+02}};
 
     CurvilinearGrid grid(gridPoints, Projection::cartesian);
-    CurvilinearGridSnapping snapping(grid, northLandBoundary, snappingLine);
+    CurvilinearGridSnapGridToLandBoundary snapping(grid, northLandBoundary, snappingLine);
 
     // Compute snapping to land boundary
-    snapping.Compute();
+    [[maybe_unused]] auto dummyUndoAction = snapping.Compute();
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.NumM(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.NumN(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance) << "Difference in x-points: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).x, mappedPointsX[i][j], snapping::tolerance) << "Difference in x-points: (" << i << ", " << j << ")";
         }
     }
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.NumM(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.NumN(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance) << "Difference in y-points: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).y, mappedPointsY[i][j], snapping::tolerance) << "Difference in y-points: (" << i << ", " << j << ")";
         }
     }
 }
 
-TEST(CurvilinearGridSnapping, SnapPartialOffsetBoundaryRegionToNorthFourPoints)
+TEST(SnapCurvilinearGridToLandBoundary, SnapPartialOffsetBoundaryRegionToNorthFourPoints)
 {
     // Test smoothing with a 10x10 grid, and a boundary defined on the north of the grid
     // the snapping line is defined by a small section (0,10) to (4,10) along the north boundary
@@ -679,29 +681,29 @@ TEST(CurvilinearGridSnapping, SnapPartialOffsetBoundaryRegionToNorthFourPoints)
                                                    {0.0e+00, 1.0e+01, 2.0e+01, 3.0e+01, 4.0e+01, 5.0e+01, 6.0e+01, 7.0e+01, 8.0e+01, 9.000000000000e+01, 1.000000000000e+02}};
 
     CurvilinearGrid grid(gridPoints, Projection::cartesian);
-    CurvilinearGridSnapping snapping(grid, northLandBoundary, snappingLine);
+    CurvilinearGridSnapGridToLandBoundary snapping(grid, northLandBoundary, snappingLine);
 
     // Compute snapping to land boundary
-    snapping.Compute();
+    [[maybe_unused]] auto dummyUndoAction = snapping.Compute();
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.NumM(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.NumN(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).x, mappedPointsX[i][j], snapping::tolerance) << "Difference in x-points: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).x, mappedPointsX[i][j], snapping::tolerance) << "Difference in x-points: (" << i << ", " << j << ")";
         }
     }
 
-    for (Eigen::Index i = 0; i < grid.m_gridNodes.rows(); ++i)
+    for (UInt i = 0; i < grid.NumM(); ++i)
     {
-        for (Eigen::Index j = 0; j < grid.m_gridNodes.cols(); ++j)
+        for (UInt j = 0; j < grid.NumN(); ++j)
         {
-            EXPECT_NEAR(grid.m_gridNodes(i, j).y, mappedPointsY[i][j], snapping::tolerance) << "Difference in y-points: (" << i << ", " << j << ")";
+            EXPECT_NEAR(grid.GetNode(i, j).y, mappedPointsY[i][j], snapping::tolerance) << "Difference in y-points: (" << i << ", " << j << ")";
         }
     }
 }
 
-TEST(CurvilinearGridSnapping, ChecksForFailingTests)
+TEST(SnapCurvilinearGridToLandBoundary, ChecksForFailingTests)
 {
 
     // Tests the snapping throws exceptions when expected.
@@ -713,13 +715,169 @@ TEST(CurvilinearGridSnapping, ChecksForFailingTests)
     std::vector<Point> snappingLine{Point(0.0, 100.0)};
 
     // Test should throw as there is only a single point defined for the grid line
-    EXPECT_THROW([[maybe_unused]] CurvilinearGridSnapping snapping(grid, eastLandBoundary, snappingLine), ConstraintError);
+    EXPECT_THROW([[maybe_unused]] CurvilinearGridSnapGridToLandBoundary snapping(grid, eastLandBoundary, snappingLine), ConstraintError);
 
     // Test should throw as there are more than four points defined for the grid line and region
     snappingLine = std::vector<Point>{Point(100, 10), Point(100, 90), Point(30.0, 0.0), Point(30.0, 100.0), Point(50.0, 100.0)};
-    EXPECT_THROW([[maybe_unused]] CurvilinearGridSnapping snapping(grid, eastLandBoundary, snappingLine), ConstraintError);
+    EXPECT_THROW([[maybe_unused]] CurvilinearGridSnapGridToLandBoundary snapping(grid, eastLandBoundary, snappingLine), ConstraintError);
 
     // Test should throw as one of the points is not valid
     snappingLine = std::vector<Point>{Point(100, 10), Point(100, 90), Point(/*Invalid point*/), Point(30.0, 100.0)};
-    EXPECT_THROW([[maybe_unused]] CurvilinearGridSnapping snapping(grid, eastLandBoundary, snappingLine), ConstraintError);
+    EXPECT_THROW([[maybe_unused]] CurvilinearGridSnapGridToLandBoundary snapping(grid, eastLandBoundary, snappingLine), ConstraintError);
+}
+
+TEST(SnapCurvilinearGridToSpline, SnapToSplineWholeEdgeDefinedRegion)
+{
+    std::unique_ptr<meshkernel::CurvilinearGrid> mesh = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, 11, 11);
+    std::unique_ptr<meshkernel::CurvilinearGrid> meshCopy = std::make_unique<meshkernel::CurvilinearGrid>(*mesh);
+
+    // Expected snapped mesh points
+    // Column 9 in the curvilinear mesh
+    std::vector<double> xPointsCol09{9.5, 9.5859048039673, 9.8514002945278, 9.8514011843911, 9.5859025562022, 9.3636721537842, 9.1677280547126, 9.0235868677295, 9.0235869844053, 9.1677283319708, 9.3636780592923};
+    std::vector<double> yPointsCol09{0.0, 0.63750580759357, 1.620397677815, 3.3796003263282, 4.3624978254992, 5.2198726288676, 6.0785602721675, 7.004489322752, 7.9955112896497, 8.9214403197774, 9.7801371391123};
+
+    // Column 10 in the curvilinear mesh
+    std::vector<double> xPointsCol10{11.0, 11.171809607935, 11.702800589056, 11.702802368782, 11.171805112404, 10.727344307568, 10.335456109425, 10.047173735459, 10.047173968811, 10.335456663942, 10.727356118585};
+    std::vector<double> yPointsCol10{0.0, 0.27501161518713, 1.24079535563, 3.7592006526563, 4.7249956509984, 5.4397452577353, 6.1571205443351, 7.0089786455039, 7.9910225792993, 8.8428806395548, 9.5602742782246};
+
+    std::vector<meshkernel::Point> splinePoints({{11.0000, 0.0000},
+                                                 {11.5878, 1.0000},
+                                                 {11.9511, 2.0000},
+                                                 {11.9511, 3.0000},
+                                                 {11.5878, 4.0000},
+                                                 {11.0000, 5.0000},
+                                                 {10.4122, 6.0000},
+                                                 {10.0489, 7.0000},
+                                                 {10.0489, 8.0000},
+                                                 {10.4122, 9.0000},
+                                                 {11.0000, 10.0000}});
+
+    std::vector<meshkernel::Point> snappingPoints({{10.0, 10.0}, {10.0, 0.0}, {8.0, 8.0}});
+
+    meshkernel::Splines splines;
+    splines.AddSpline(splinePoints);
+
+    meshkernel::CurvilinearGridSnapGridToSpline snapping(*mesh, splines, snappingPoints);
+
+    auto undoAction = snapping.Compute();
+
+    constexpr double tolerance = 1.0e-12;
+
+    // Compare mesh points with original mesh upto column 8
+    for (meshkernel::UInt i = 0; i < mesh->NumN(); ++i)
+    {
+        for (meshkernel::UInt j = 0; j < 9; ++j)
+        {
+            EXPECT_NEAR(meshCopy->GetNode(i, j).x, mesh->GetNode(i, j).x, tolerance);
+            EXPECT_NEAR(meshCopy->GetNode(i, j).y, mesh->GetNode(i, j).y, tolerance);
+        }
+    }
+
+    // Compare mesh points with translated points for column 9
+    for (meshkernel::UInt i = 0; i < mesh->NumN(); ++i)
+    {
+        EXPECT_NEAR(xPointsCol09[i], mesh->GetNode(i, 9).x, tolerance);
+        EXPECT_NEAR(yPointsCol09[i], mesh->GetNode(i, 9).y, tolerance);
+    }
+
+    // Compare mesh points with translated points for column 10
+    for (meshkernel::UInt i = 0; i < mesh->NumN(); ++i)
+    {
+        EXPECT_NEAR(xPointsCol10[i], mesh->GetNode(i, 10).x, tolerance);
+        EXPECT_NEAR(yPointsCol10[i], mesh->GetNode(i, 10).y, tolerance);
+    }
+
+    //--------------------------------
+    // Now check the undo
+
+    undoAction->Restore();
+
+    for (meshkernel::UInt i = 0; i < mesh->NumN(); ++i)
+    {
+        for (meshkernel::UInt j = 0; j < mesh->NumM(); ++j)
+        {
+            EXPECT_EQ(mesh->GetNode(i, j).x, meshCopy->GetNode(i, j).x);
+            EXPECT_EQ(mesh->GetNode(i, j).y, meshCopy->GetNode(i, j).y);
+        }
+    }
+}
+
+TEST(SnapCurvilinearGridToSpline, SnapToSplinePartialEdgeDefaultRegion)
+{
+    std::unique_ptr<meshkernel::CurvilinearGrid> mesh = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, 11, 11);
+    std::unique_ptr<meshkernel::CurvilinearGrid> meshCopy = std::make_unique<meshkernel::CurvilinearGrid>(*mesh);
+
+    // The expected (x-) points, generated by interactor.
+    std::vector<std::vector<double>> xPoints{{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0},
+                                             {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.014873267871414519, 8.372359722435612994, 9.916182851714186341, 11.17180940417338775},
+                                             {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.021612916987076680, 8.541090219036453490, 10.33134050232082579, 11.70280126708063406},
+                                             {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.021612921838043420, 8.541090340482851317, 10.33134080113699937, 11.70280164927028110},
+                                             {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.014873257214348179, 8.372359455630595804, 9.916182195246349806, 11.17180856454275784},
+                                             {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.009231913341891662, 8.231125581765601495, 9.568679376010450710, 10.72734808288726427},
+                                             {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.004257781943209693, 8.106595706893173769, 9.262276376411159973, 10.33545478808742679},
+                                             {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.000598733449153954, 8.014989592258231710, 9.036881559829700095, 10.04717197944511220},
+                                             {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.000598734163229864, 8.014989610135470954, 9.036881603816251385, 10.04717203570446493},
+                                             {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0},
+                                             {0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0}};
+
+    // The expected (y-) points, generated by interactor.
+    std::vector<std::vector<double>> yPoints{{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+                                             {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.9907980331007956165, 0.7696241424499061790, 0.4331653038203038264, 0.2750112858449960118},
+                                             {2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 1.990363764459876617, 1.758752009170715835, 1.406414660633680480, 1.240796876357717071},
+                                             {3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.0, 3.009636224659985260, 3.241247718439566050, 3.593584669157450229, 3.759202266436699524},
+                                             {4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.009201984124368678, 4.230376288790720807, 4.566835757237710958, 4.724990071261565561},
+                                             {5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.005581416323523491, 5.139733557614412973, 5.343811324323562317, 5.439739013178277460},
+                                             {6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.0, 6.001994298641023740, 6.049928266931340559, 6.122847395199174869, 6.157123365388534886},
+                                             {7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.000114079035108183, 7.002856025872458368, 7.007027188416842911, 7.008987862473465391},
+                                             {8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 8.0, 7.999885924712966556, 7.997144067962484115, 7.992973042461954059, 7.991012432823422884},
+                                             {9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0},
+                                             {10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0}};
+
+    std::vector<meshkernel::Point> splinePoints({{11.0000, 0.0000},
+                                                 {11.5878, 1.0000},
+                                                 {11.9511, 2.0000},
+                                                 {11.9511, 3.0000},
+                                                 {11.5878, 4.0000},
+                                                 {11.0000, 5.0000},
+                                                 {10.4122, 6.0000},
+                                                 {10.0489, 7.0000},
+                                                 {10.0489, 8.0000},
+                                                 {10.4122, 9.0000},
+                                                 {11.0000, 10.0000}});
+
+    std::vector<meshkernel::Point> snappingPoints({{10.0, 8.0}, {10.0, 1.0}});
+
+    meshkernel::Splines splines;
+    splines.AddSpline(splinePoints);
+
+    meshkernel::CurvilinearGridSnapGridToSpline snapping(*mesh, splines, snappingPoints);
+
+    auto undoAction = snapping.Compute();
+
+    // The tolerance to which the expected and calculated mesh points should be compared.
+    // There are some differences in the optimised and non-optimised calculations, so a slightly weakened tolerance is used.
+    constexpr double tolerance = 2.0e-5;
+
+    for (meshkernel::UInt i = 0; i < mesh->NumN(); ++i)
+    {
+        for (meshkernel::UInt j = 0; j < mesh->NumM(); ++j)
+        {
+            EXPECT_NEAR(mesh->GetNode(i, j).x, xPoints[i][j], tolerance);
+            EXPECT_NEAR(mesh->GetNode(i, j).y, yPoints[i][j], tolerance);
+        }
+    }
+
+    //--------------------------------
+    // Now check the undo
+
+    undoAction->Restore();
+
+    for (meshkernel::UInt i = 0; i < mesh->NumN(); ++i)
+    {
+        for (meshkernel::UInt j = 0; j < mesh->NumM(); ++j)
+        {
+            EXPECT_EQ(mesh->GetNode(i, j).x, meshCopy->GetNode(i, j).x);
+            EXPECT_EQ(mesh->GetNode(i, j).y, meshCopy->GetNode(i, j).y);
+        }
+    }
 }
