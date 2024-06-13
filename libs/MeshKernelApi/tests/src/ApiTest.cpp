@@ -1382,6 +1382,27 @@ TEST_F(CartesianApiTestFixture, DeleteHangingEdgesMesh2D_WithOneHangingEdges_Sho
     ASSERT_EQ(mesh2d.num_valid_edges, 15);
 }
 
+TEST_F(CartesianApiTestFixture, DeleteEdgeByIndexThenDeleteHangingEdges)
+{
+    MakeMesh();
+    int const meshKernelId = GetMeshKernelId();
+    meshkernelapi::Mesh2D mesh2d{};
+    int errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    int const initial_num_valid_edges = mesh2d.num_valid_edges;
+
+    // delete horizontal edge of lower left corner
+    errorCode = meshkernelapi::mkernel_mesh2d_delete_edge_by_index(meshKernelId, 0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(initial_num_valid_edges - 1, mesh2d.num_valid_edges);
+
+    // Execute
+    errorCode = meshkernelapi::mkernel_mesh2d_delete_hanging_edges(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(initial_num_valid_edges - 2, mesh2d.num_valid_edges);
+}
+
 TEST_F(CartesianApiTestFixture, ComputeOrthogonalizationMesh2D_WithOrthogonalMesh2D_ShouldOrthogonalize)
 {
     // Prepare
