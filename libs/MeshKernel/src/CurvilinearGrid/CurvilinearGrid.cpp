@@ -50,12 +50,12 @@ CurvilinearGrid::CurvilinearGrid(const CurvilinearGrid& grid) : m_projection(Pro
     m_RTrees.emplace(Location::Faces, RTreeFactory::Create(m_projection));
 }
 
-CurvilinearGrid::CurvilinearGrid(CurvilinearGrid&& grid) : m_projection(Projection::cartesian),
-                                                           m_gridNodes(std::move(grid.m_gridNodes)),
-                                                           m_gridFacesMask(std::move(grid.m_gridFacesMask)),
-                                                           m_gridNodesTypes(std::move(grid.m_gridNodesTypes)),
-                                                           m_gridIndices(std::move(grid.m_gridIndices)),
-                                                           m_RTrees(std::move(grid.m_RTrees)) {}
+CurvilinearGrid::CurvilinearGrid(CurvilinearGrid&& grid) noexcept : m_projection(Projection::cartesian),
+                                                                    m_gridNodes(std::move(grid.m_gridNodes)),
+                                                                    m_gridFacesMask(std::move(grid.m_gridFacesMask)),
+                                                                    m_gridNodesTypes(std::move(grid.m_gridNodesTypes)),
+                                                                    m_gridIndices(std::move(grid.m_gridIndices)),
+                                                                    m_RTrees(std::move(grid.m_RTrees)) {}
 
 CurvilinearGrid::CurvilinearGrid(Projection projection) : m_projection(projection)
 {

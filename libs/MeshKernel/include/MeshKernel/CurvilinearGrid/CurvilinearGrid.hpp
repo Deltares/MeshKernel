@@ -68,11 +68,11 @@ namespace meshkernel
         /// @brief Default constructor
         CurvilinearGrid() = default;
 
-        /// @brief Copy constructor taking only a curvilinear grid
+        /// @brief Copy constructor
         CurvilinearGrid(const CurvilinearGrid& grid);
 
-        /// @brief Move constructor taking only a curvilinear grid
-        CurvilinearGrid(CurvilinearGrid&& grid);
+        /// @brief Move constructor
+        CurvilinearGrid(CurvilinearGrid&& grid) noexcept;
 
         /// @brief Constructor taking only a projection
         explicit CurvilinearGrid(Projection projection);
