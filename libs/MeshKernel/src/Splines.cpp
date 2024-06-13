@@ -498,9 +498,9 @@ meshkernel::UInt Splines::MaxSize() const
 
     for (UInt i = 0; i < GetNumSplines(); ++i)
     {
-        if (m_splineNodes[i].size() > splineSize)
+        if (static_cast<UInt>(m_splineNodes[i].size()) > splineSize)
         {
-            splineSize = m_splineNodes[i].size();
+            splineSize = static_cast<UInt>(m_splineNodes[i].size());
             splineIndex = i;
         }
     }
