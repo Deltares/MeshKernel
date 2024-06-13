@@ -29,6 +29,7 @@
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Point.hpp"
 #include "MeshKernel/PolygonalEnclosure.hpp"
 
@@ -83,6 +84,10 @@ namespace meshkernel
                      double averageTriangleArea,
                      UInt estimatedNumberOfTriangles)
         {
+            if (inputNodes.empty())
+            {
+                throw ConstraintError("The sample is empty.");
+            }
             std::vector<double> xLocalPolygon(inputNodes.size());
             std::vector<double> yLocalPolygon(inputNodes.size());
             for (UInt i = 0; i < inputNodes.size(); ++i)
