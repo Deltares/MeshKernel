@@ -43,7 +43,7 @@ meshkernel::UInt meshkernel::CurvilinearGridSplineToGrid::longestSplineLength(co
 
     for (UInt i = 0; i < splines.GetNumSplines(); ++i)
     {
-        result = std::max(result, static_cast<UInt>(splines.m_splineNodes[i].size()));
+        result = std::max(result, splines.Size(i));
     }
 
     return result;
@@ -159,7 +159,7 @@ bool meshkernel::CurvilinearGridSplineToGrid::ComputeInteractions(Splines& splin
                     {
                         splines.Reverse(splineJ);
                         // Reverse the normalised distance
-                        normalisedIntersectionSplineJ = static_cast<double>(splines.m_splineNodes[splineJ].size()) - 1.0 - normalisedIntersectionSplineJ;
+                        normalisedIntersectionSplineJ = static_cast<double>(splines.Size(splineJ)) - 1.0 - normalisedIntersectionSplineJ;
                     }
                 }
                 else if (splineType[splineI] == 0)
@@ -170,7 +170,7 @@ bool meshkernel::CurvilinearGridSplineToGrid::ComputeInteractions(Splines& splin
                     {
                         splines.Reverse(splineI);
                         // Reverse the normalised distance
-                        normalisedIntersectionSplineI = static_cast<double>(splines.m_splineNodes[splineI].size()) - 1.0 - normalisedIntersectionSplineI;
+                        normalisedIntersectionSplineI = static_cast<double>(splines.Size(splineI)) - 1.0 - normalisedIntersectionSplineI;
                     }
                 }
 
@@ -650,7 +650,7 @@ void meshkernel::CurvilinearGridSplineToGrid::getdis(const Splines& splines,
 
     // in getdis.f90 this is: tValue = std::min(tValue, static_cast<double>(splines.m_splineNodes[whichSpline].size()))
     // without the -1. I think the fortran is incorrect, there should be the -1
-    tValue = std::min(tValue, static_cast<double>(splines.m_splineNodes[whichSpline].size() - 1));
+    tValue = std::min(tValue, static_cast<double>(splines.Size(whichSpline) - 1));
     sValue = 0.0;
 
     do
@@ -786,7 +786,7 @@ void meshkernel::CurvilinearGridSplineToGrid::GenerateGridPoints(const Splines& 
         getdis(splines, whichSpline, intersectionPoints[i], s[i]);
     }
 
-    UInt kmax = (intersectionPoints.size() - 1) * mnFac + 1;
+    UInt kmax = (static_cast<UInt>(intersectionPoints.size()) - 1) * mnFac + 1;
 
     std::vector<double> ssq(kmax, -999.0);
 
