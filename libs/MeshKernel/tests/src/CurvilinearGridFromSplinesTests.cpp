@@ -1219,19 +1219,19 @@ TEST(CurvilinearGridFromSplines, GenerateSimpleGridFromSplines)
     }
 }
 
-TEST(CurvilinearGridFromSplines, DISABLED_GridFromSplines4)
+TEST(CurvilinearGridFromSplines, DISABLED_GridFromSplines4) //
 {
     namespace mk = meshkernel;
     // mk::CurvilinearGrid interactorGrid(LoadCurvilinearGrid("/home/senior/MeshKernel/MeshKernel01/build_debug/splgrid2.grd"));
     // auto splines = std::make_shared<Splines>(LoadSplines("/home/senior/MeshKernel/MeshKernel01/build_debug/044.txt"));
 
-    mk::CurvilinearGrid interactorGrid(LoadCurvilinearGrid("/home/wcs1/MeshKernel/MeshKernel/build_deb/splgrid2.grd"));
+    mk::CurvilinearGrid interactorGrid(LoadCurvilinearGrid("/home/wcs1/MeshKernel/MeshKernel/build_deb/splgrid3.grd"));
     auto splines = std::make_shared<Splines>(LoadSplines("/home/wcs1/MeshKernel/MeshKernel/build_deb/044.txt"));
 
     mk::CurvilinearParameters curvilinearParameters;
 
     curvilinearParameters.m_refinement = 5;
-    curvilinearParameters.n_refinement = 10;
+    curvilinearParameters.n_refinement = 5;
 
     mk::CurvilinearGridSplineToGrid splinesToGrid;
     mk::CurvilinearGrid grid(Projection::cartesian);
@@ -1244,11 +1244,27 @@ TEST(CurvilinearGridFromSplines, DISABLED_GridFromSplines4)
     auto computedPoints = grid.ComputeNodes();
     auto computedEdges = grid.ComputeEdges();
 
+    std::cout << "grid size: " << grid.NumN() << " x " << grid.NumM() << std::endl;
+    std::cout << "grid size: " << interactorGrid.NumN() << " x " << interactorGrid.NumM() << std::endl;
+
     std::cout << interactorPoints.size() << "  " << computedPoints.size() << std::endl;
     std::cout << interactorEdges.size() << "  " << computedEdges.size() << std::endl;
 
     // meshkernel::Print(interactorGrid.ComputeNodes(), interactorGrid.ComputeEdges());
     // meshkernel::Print(grid.ComputeNodes(), grid.ComputeEdges());
+
+    // ASSERT_EQ(grid.NumM(), interactorGrid.NumN());
+    // ASSERT_EQ(grid.NumN(), interactorGrid.NumM());
+
+    constexpr double tolerance = 1.0e-5;
+
+    for (UInt i = 0; i < interactorGrid.NumN(); ++i)
+    {
+        for (UInt j = 0; j < interactorGrid.NumM(); ++j)
+        {
+            EXPECT_NEAR(grid.GetNode(i, j).x, interactorGrid.GetNode(j, i).x, tolerance);
+        }
+    }
 
     // std::cout << "size: " << numNodes, numEdges <<
 }
