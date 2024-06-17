@@ -1350,3 +1350,61 @@ TEST(CurvilinearGridFromSplines, GenerateGridWithDisconectedSpline)
 
     EXPECT_THROW(splinesToGrid.Compute(*splines, curvilinearParameters, grid), mk::AlgorithmError);
 }
+
+TEST(CurvilinearGridFromSplines, GenerateGridWithThreeSplines)
+{
+    // Attempt to generate a grid with 3 splines
+    // Should raise a ConstraintError exception.
+    // At least four splines are required to generate a curvilinear grid
+
+    namespace mk = meshkernel;
+
+    std::vector<mk::Point> spline1{{-1.0, 0.0}, {11.0, 0.0}};
+    std::vector<mk::Point> spline2{{10.0, -1.0}, {10.0, 11.0}};
+    std::vector<mk::Point> spline3{{11.0, 10.0}, {-1.0, 10.0}};
+
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+    splines->AddSpline(spline1);
+    splines->AddSpline(spline2);
+    splines->AddSpline(spline3);
+
+    mk::CurvilinearParameters curvilinearParameters;
+
+    curvilinearParameters.m_refinement = 5;
+    curvilinearParameters.n_refinement = 5;
+
+    mk::CurvilinearGridSplineToGrid splinesToGrid;
+    mk::CurvilinearGrid grid(Projection::cartesian);
+
+    EXPECT_THROW(splinesToGrid.Compute(*splines, curvilinearParameters, grid), mk::ConstraintError);
+}
+
+TEST(CurvilinearGridFromSplines, GenerateGridWithSplinesTooShort)
+{
+    // Attempt to generate a grid with 4 splines, 1 of which has only a single point
+    // Should raise a ConstraintError exception.
+    // All splines are required to have at least 2 points in order to generate a curvilinear grid
+
+    namespace mk = meshkernel;
+
+    std::vector<mk::Point> spline1{{-1.0, 0.0}, {11.0, 0.0}};
+    std::vector<mk::Point> spline2{{10.0, -1.0}, {10.0, 11.0}};
+    std::vector<mk::Point> spline3{{11.0, 10.0}, {-1.0, 10.0}};
+    std::vector<mk::Point> spline4{{0.0, 11.0}};
+
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+    splines->AddSpline(spline1);
+    splines->AddSpline(spline2);
+    splines->AddSpline(spline3);
+    splines->AddSpline(spline4);
+
+    mk::CurvilinearParameters curvilinearParameters;
+
+    curvilinearParameters.m_refinement = 5;
+    curvilinearParameters.n_refinement = 5;
+
+    mk::CurvilinearGridSplineToGrid splinesToGrid;
+    mk::CurvilinearGrid grid(Projection::cartesian);
+
+    EXPECT_THROW(splinesToGrid.Compute(*splines, curvilinearParameters, grid), mk::ConstraintError);
+}
