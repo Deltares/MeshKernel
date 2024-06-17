@@ -418,9 +418,6 @@ void meshkernel::CurvilinearGridSplineToGrid::DetermineSplineOrientation(const S
         splineInteraction[i][0] = maxm;
     }
 
-    // splineInteraction.col(1).fill(0);
-    // splineInteraction.col(2).fill(0);
-
     for (UInt i = 0; i < splines.GetNumSplines(); ++i)
     {
         splineInteraction[i][1] = 0;
