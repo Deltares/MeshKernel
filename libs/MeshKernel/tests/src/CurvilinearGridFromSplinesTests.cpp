@@ -1191,9 +1191,8 @@ TEST(CurvilinearGridFromSplines, GenerateSimpleGridFromSplines)
     curvilinearParameters.n_refinement = 20;
 
     mk::CurvilinearGridSplineToGrid splinesToGrid;
-    mk::CurvilinearGrid grid(Projection::cartesian);
 
-    splinesToGrid.Compute(*splines, curvilinearParameters, grid);
+    mk::CurvilinearGrid grid(splinesToGrid.Compute(*splines, curvilinearParameters));
 
     lin_alg::Matrix<Point> gridNodes = grid.GetNodes();
 
@@ -1231,9 +1230,8 @@ TEST(CurvilinearGridFromSplines, GridFromSeventySplines)
     curvilinearParameters.n_refinement = 5;
 
     mk::CurvilinearGridSplineToGrid splinesToGrid;
-    mk::CurvilinearGrid grid(Projection::cartesian);
 
-    splinesToGrid.Compute(*splines, curvilinearParameters, grid);
+    mk::CurvilinearGrid grid(splinesToGrid.Compute(*splines, curvilinearParameters));
 
     auto computedPoints = grid.ComputeNodes();
     auto computedEdges = grid.ComputeEdges();
@@ -1289,9 +1287,8 @@ TEST(CurvilinearGridFromSplines, GenerateGridWithIllDefinedSplines)
     curvilinearParameters.n_refinement = 10;
 
     mk::CurvilinearGridSplineToGrid splinesToGrid;
-    mk::CurvilinearGrid grid(Projection::cartesian);
 
-    EXPECT_THROW(splinesToGrid.Compute(*splines, curvilinearParameters, grid), mk::AlgorithmError);
+    EXPECT_THROW([[maybe_unused]] auto grid = splinesToGrid.Compute(*splines, curvilinearParameters), mk::AlgorithmError);
 }
 
 TEST(CurvilinearGridFromSplines, GenerateGridWithDisconectedSpline)
@@ -1332,7 +1329,7 @@ TEST(CurvilinearGridFromSplines, GenerateGridWithDisconectedSpline)
     mk::CurvilinearGridSplineToGrid splinesToGrid;
     mk::CurvilinearGrid grid(Projection::cartesian);
 
-    EXPECT_THROW(splinesToGrid.Compute(*splines, curvilinearParameters, grid), mk::AlgorithmError);
+    EXPECT_THROW([[maybe_unused]] auto grid = splinesToGrid.Compute(*splines, curvilinearParameters), mk::AlgorithmError);
 }
 
 TEST(CurvilinearGridFromSplines, GenerateGridWithThreeSplines)
@@ -1358,9 +1355,8 @@ TEST(CurvilinearGridFromSplines, GenerateGridWithThreeSplines)
     curvilinearParameters.n_refinement = 5;
 
     mk::CurvilinearGridSplineToGrid splinesToGrid;
-    mk::CurvilinearGrid grid(Projection::cartesian);
 
-    EXPECT_THROW(splinesToGrid.Compute(*splines, curvilinearParameters, grid), mk::ConstraintError);
+    EXPECT_THROW([[maybe_unused]] auto grid = splinesToGrid.Compute(*splines, curvilinearParameters), mk::ConstraintError);
 }
 
 TEST(CurvilinearGridFromSplines, GenerateGridWithSplinesTooShort)
@@ -1388,7 +1384,42 @@ TEST(CurvilinearGridFromSplines, GenerateGridWithSplinesTooShort)
     curvilinearParameters.n_refinement = 5;
 
     mk::CurvilinearGridSplineToGrid splinesToGrid;
-    mk::CurvilinearGrid grid(Projection::cartesian);
 
-    EXPECT_THROW(splinesToGrid.Compute(*splines, curvilinearParameters, grid), mk::ConstraintError);
+    EXPECT_THROW([[maybe_unused]] auto grid = splinesToGrid.Compute(*splines, curvilinearParameters), mk::ConstraintError);
+}
+
+TEST(CurvilinearGridFromSplines, GenerateGridWithHighRefinementFactor)
+{
+    // Attempt to generate a grid with 4 splines forming a square
+    // with the refinement factor being too high
+    // Should raise a ConstraintError exception
+
+    namespace mk = meshkernel;
+
+    std::vector<mk::Point> spline1{{-1.0, 0.0}, {11.0, 0.0}};
+    std::vector<mk::Point> spline2{{10.0, -1.0}, {10.0, 11.0}};
+    std::vector<mk::Point> spline3{{11.0, 10.0}, {-1.0, 10.0}};
+    std::vector<mk::Point> spline4{{0.0, 11.0}, {0.0, -1.0}};
+
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+    splines->AddSpline(spline1);
+    splines->AddSpline(spline2);
+    splines->AddSpline(spline3);
+    splines->AddSpline(spline4);
+
+    mk::CurvilinearParameters curvilinearParameters;
+
+    mk::CurvilinearGridSplineToGrid splinesToGrid;
+
+    // First check the m-refinement
+    curvilinearParameters.m_refinement = 2000;
+    curvilinearParameters.n_refinement = 10;
+
+    EXPECT_THROW([[maybe_unused]] auto gridM = splinesToGrid.Compute(*splines, curvilinearParameters), mk::ConstraintError);
+
+    // Then check the n-refinement
+    curvilinearParameters.m_refinement = 10;
+    curvilinearParameters.n_refinement = 2000;
+
+    EXPECT_THROW([[maybe_unused]] auto gridN = splinesToGrid.Compute(*splines, curvilinearParameters), mk::ConstraintError);
 }

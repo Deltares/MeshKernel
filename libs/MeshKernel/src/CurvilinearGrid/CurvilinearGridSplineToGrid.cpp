@@ -5,11 +5,9 @@
 #include <algorithm>
 #include <iomanip>
 
-void meshkernel::CurvilinearGridSplineToGrid::Compute(const Splines& splines,
-                                                      const CurvilinearParameters& curvilinearParameters,
-                                                      CurvilinearGrid& grid) const
+meshkernel::CurvilinearGrid meshkernel::CurvilinearGridSplineToGrid::Compute(const Splines& splines,
+                                                                             const CurvilinearParameters& curvilinearParameters) const
 {
-
     if (splines.GetNumSplines() < 4)
     {
         throw ConstraintError("At least 4 splines are required to generate a grid, number of splines is {}", splines.GetNumSplines());
@@ -19,6 +17,14 @@ void meshkernel::CurvilinearGridSplineToGrid::Compute(const Splines& splines,
     {
         throw ConstraintError("One or more splines has one or fewer support points");
     }
+
+    if (std::max(curvilinearParameters.m_refinement, curvilinearParameters.n_refinement) > MaximumRefinementFactor)
+    {
+        throw ConstraintError("Reduce the refinement factor to about 50 or less, currently n- and m-fac are: {} and {} respectively",
+                              curvilinearParameters.n_refinement, curvilinearParameters.m_refinement);
+    }
+
+    CurvilinearGrid grid(splines.m_projection);
 
     // Make copy of spline because the may be changed
     // i.e. the order may change and the number of spline points may increase.
@@ -36,13 +42,7 @@ void meshkernel::CurvilinearGridSplineToGrid::Compute(const Splines& splines,
     OrderSplines(splinesCopy, numMSplines, splineIntersections);
     DetermineSplineOrientation(splinesCopy, numMSplines, splineIntersections, splineInteraction);
     GenerateGrid(splinesCopy, splineIntersections, splineInteraction, numMSplines, mRefinement, nRefinement, grid);
-}
 
-meshkernel::CurvilinearGrid meshkernel::CurvilinearGridSplineToGrid::Compute(const Splines& splines,
-                                                                             const CurvilinearParameters& curvilinearParameters) const
-{
-    CurvilinearGrid grid(splines.m_projection);
-    Compute(splines, curvilinearParameters, grid);
     return grid;
 }
 
@@ -69,7 +69,7 @@ void meshkernel::CurvilinearGridSplineToGrid::DetermineIntersection(Splines& spl
 {
     Point intersectionPoint;
 
-    // TODO Need way of getting the number of times the spline intersect.
+    // Need way of getting the number of times the spline intersect.
     if (splines.GetSplinesIntersection(splineI, splineJ, crossProductOfIntersection, intersectionPoint, firstNormalisedIntersectionLength, secondNormalisedIntersectionLength))
     {
         numberTimesCrossing = 1;
@@ -123,7 +123,6 @@ bool meshkernel::CurvilinearGridSplineToGrid::ComputeAndCheckIntersection(Spline
     double normalisedIntersectionSplineJ;
     UInt numberTimesCrossing = 0;
 
-    // TODO need to know if two splines cross more than 1 time
     DetermineIntersection(splines, splineI, splineJ, numberTimesCrossing, crossProduct, normalisedIntersectionSplineI, normalisedIntersectionSplineJ);
 
     if (numberTimesCrossing == 1)
@@ -901,6 +900,5 @@ void meshkernel::CurvilinearGridSplineToGrid::GenerateGrid(const Splines& spline
 
     GenerateGridPointsAlongSpline(splines, splineIntersections, splineInteraction, numMSplines, mRefinement, nRefinement, gridNodes);
     FillPatchesWithPoints(splines, numMSplines, mRefinement, nRefinement, gridNodes);
-
     grid.SetGridNodes(gridNodes);
 }
