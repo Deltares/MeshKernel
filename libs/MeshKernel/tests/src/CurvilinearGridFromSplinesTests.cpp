@@ -7,6 +7,7 @@
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Splines.hpp>
+#include <TestUtils/Definitions.hpp>
 
 #include <fstream>
 #include <iomanip>
@@ -1028,8 +1029,6 @@ meshkernel::Splines LoadSplines(const std::string& fileName)
         }
     }
 
-    std::cout << "number of splines: " << splines.GetNumSplines() << std::endl;
-
     splineFile.close();
     return splines;
 }
@@ -1219,14 +1218,12 @@ TEST(CurvilinearGridFromSplines, GenerateSimpleGridFromSplines)
     }
 }
 
-TEST(CurvilinearGridFromSplines, DISABLED_GridFromSplines4) //
+TEST(CurvilinearGridFromSplines, GridFromSeventySplines)
 {
+    // Test generating a more complicated grid from a set of much more complcated splines
+    // Only check the size of the grid is correct and the number of valid grid nodes.
     namespace mk = meshkernel;
-    // mk::CurvilinearGrid interactorGrid(LoadCurvilinearGrid("/home/senior/MeshKernel/MeshKernel01/build_debug/splgrid2.grd"));
-    // auto splines = std::make_shared<Splines>(LoadSplines("/home/senior/MeshKernel/MeshKernel01/build_debug/044.txt"));
-
-    mk::CurvilinearGrid interactorGrid(LoadCurvilinearGrid("/home/wcs1/MeshKernel/MeshKernel/build_deb/splgrid3.grd"));
-    auto splines = std::make_shared<Splines>(LoadSplines("/home/wcs1/MeshKernel/MeshKernel/build_deb/044.txt"));
+    auto splines = std::make_shared<Splines>(LoadSplines(TEST_FOLDER + "/data/CurvilinearGrids/seventy_splines.spl"));
 
     mk::CurvilinearParameters curvilinearParameters;
 
@@ -1238,35 +1235,22 @@ TEST(CurvilinearGridFromSplines, DISABLED_GridFromSplines4) //
 
     splinesToGrid.Compute(*splines, curvilinearParameters, grid);
 
-    auto interactorPoints = interactorGrid.ComputeNodes();
-    auto interactorEdges = interactorGrid.ComputeEdges();
-
     auto computedPoints = grid.ComputeNodes();
     auto computedEdges = grid.ComputeEdges();
 
-    std::cout << "grid size: " << grid.NumN() << " x " << grid.NumM() << std::endl;
-    std::cout << "grid size: " << interactorGrid.NumN() << " x " << interactorGrid.NumM() << std::endl;
+    mk::UInt validPointCount = 0;
 
-    std::cout << interactorPoints.size() << "  " << computedPoints.size() << std::endl;
-    std::cout << interactorEdges.size() << "  " << computedEdges.size() << std::endl;
-
-    // meshkernel::Print(interactorGrid.ComputeNodes(), interactorGrid.ComputeEdges());
-    // meshkernel::Print(grid.ComputeNodes(), grid.ComputeEdges());
-
-    // ASSERT_EQ(grid.NumM(), interactorGrid.NumN());
-    // ASSERT_EQ(grid.NumN(), interactorGrid.NumM());
-
-    constexpr double tolerance = 1.0e-5;
-
-    for (UInt i = 0; i < interactorGrid.NumN(); ++i)
+    for (size_t i = 0; i < computedPoints.size(); ++i)
     {
-        for (UInt j = 0; j < interactorGrid.NumM(); ++j)
+        if (computedPoints[i].IsValid())
         {
-            EXPECT_NEAR(grid.GetNode(i, j).x, interactorGrid.GetNode(j, i).x, tolerance);
+            ++validPointCount;
         }
     }
 
-    // std::cout << "size: " << numNodes, numEdges <<
+    EXPECT_EQ(grid.NumN(), 36);
+    EXPECT_EQ(grid.NumM(), 306);
+    EXPECT_EQ(validPointCount, 4941);
 }
 
 TEST(CurvilinearGridFromSplines, GenerateGridWithIllDefinedSplines)
