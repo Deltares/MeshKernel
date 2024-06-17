@@ -37,6 +37,7 @@
 #include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
 #include "MeshKernel/UndoActions/DeleteEdgeAction.hpp"
 #include "MeshKernel/UndoActions/DeleteNodeAction.hpp"
+#include "MeshKernel/UndoActions/FullUnstructuredGridUndo.hpp"
 #include "MeshKernel/UndoActions/MeshConversionAction.hpp"
 #include "MeshKernel/UndoActions/NodeTranslationAction.hpp"
 #include "MeshKernel/UndoActions/ResetEdgeAction.hpp"
@@ -189,11 +190,17 @@ namespace meshkernel
         /// @brief Set all nodes to a new set of values.
         void SetNodes(const std::vector<Point>& newValues);
 
+        /// @brief Set a node to a new value, bypassing the undo action.
+        void SetNode(const UInt index, const Point& newValue);
+
         /// @brief Set the node to a new value, this value may be the in-valid value.
         [[nodiscard]] std::unique_ptr<ResetNodeAction> ResetNode(const UInt index, const Point& newValue);
 
-        /// @brief Get the edge
+        /// @brief Get constant reference to an edge
         const Edge& GetEdge(const UInt index) const;
+
+        /// @brief Get a non-constant reference to an edge
+        Edge& GetEdge(const UInt index);
 
         /// @brief Get all edges
         // TODO get rid of this function
@@ -379,6 +386,9 @@ namespace meshkernel
         /// @brief Apply the delete edge action
         void CommitAction(const DeleteEdgeAction& undoAction);
 
+        /// @brief Set the node and edge values.
+        void CommitAction(FullUnstructuredGridUndo& undoAction);
+
         /// @brief Undo the reset node action
         ///
         /// Restore mesh to state before node was reset
@@ -418,6 +428,11 @@ namespace meshkernel
         ///
         /// Restore mesh to state before edge was deleted
         void RestoreAction(const DeleteEdgeAction& undoAction);
+
+        /// @brief Undo entire node and edge values
+        ///
+        /// Restore mesh to previous state.
+        void RestoreAction(FullUnstructuredGridUndo& undoAction);
 
         /// @brief Get a reference to the RTree for a specific location
         RTreeBase& GetRTree(Location location) const { return *m_RTrees.at(location); }
@@ -518,6 +533,16 @@ inline void meshkernel::Mesh::SetNodes(const std::vector<Point>& newValues)
 }
 
 inline const meshkernel::Edge& meshkernel::Mesh::GetEdge(const UInt index) const
+{
+    if (index >= GetNumEdges())
+    {
+        throw ConstraintError("The edge index, {}, is not in range.", index);
+    }
+
+    return m_edges[index];
+}
+
+inline meshkernel::Edge& meshkernel::Mesh::GetEdge(const UInt index)
 {
     if (index >= GetNumEdges())
     {

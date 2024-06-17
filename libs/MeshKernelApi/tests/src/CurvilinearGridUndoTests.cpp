@@ -72,7 +72,7 @@ TEST(CurvilinearGridUndoTests, DeleteNode)
 
     bool didUndoOfDeleteNode = false;
 
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfDeleteNode);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfDeleteNode);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfDeleteNode);
 
@@ -149,7 +149,7 @@ TEST(CurvilinearGridUndoTests, MoveNode)
 
     bool didUndoOfDeleteNode = false;
 
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfDeleteNode);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfDeleteNode);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfDeleteNode);
 
@@ -252,7 +252,7 @@ TEST(CurvilinearGridUndoTests, Smoothing)
     bool didUndoOfSmoothing = false;
 
     // Undo the smoothing
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfSmoothing);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfSmoothing);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfSmoothing);
 
@@ -335,7 +335,7 @@ TEST(CurvilinearGridUndoTests, SmoothingDirectional)
 
     bool didUndoOfSmoothing = false;
 
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfSmoothing);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfSmoothing);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfSmoothing);
 
@@ -432,7 +432,7 @@ TEST(CurvilinearGridUndoTests, DeleteInterior)
     bool didUndoOfDeleteInterior = false;
 
     // Undo the delete interior block
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfDeleteInterior);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfDeleteInterior);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfDeleteInterior);
 
@@ -531,7 +531,7 @@ TEST(CurvilinearGridUndoTests, DeleteExterior)
     bool didUndoOfDeleteExterior = false;
 
     // Undo the delete exterior
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfDeleteExterior);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfDeleteExterior);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfDeleteExterior);
 
@@ -610,7 +610,7 @@ TEST(CurvilinearGridUndoTests, Refine)
     bool didUndoOfRefinement = false;
 
     // Undo the refinement
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfRefinement);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfRefinement);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfRefinement);
 
@@ -696,7 +696,7 @@ TEST(CurvilinearGridUndoTests, Derefine)
     bool didUndoOfRefinement = false;
 
     // Undo the refinement
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfRefinement);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfRefinement);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfRefinement);
 
@@ -780,7 +780,7 @@ TEST(CurvilinearGridUndoTests, InsertFace)
     bool didUndoOfRefinement = false;
 
     // Undo the refinement
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfRefinement);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfRefinement);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfRefinement);
 
@@ -879,11 +879,11 @@ TEST(CurvilinearGridUndoTests, LineShift)
     bool didUndoOfLineShift = false;
     bool didUndoOfMoveNode = false;
 
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfLineShift);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfLineShift);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfLineShift);
 
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfMoveNode);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfMoveNode);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfMoveNode);
 
@@ -953,7 +953,7 @@ TEST(CurvilinearGridUndoTests, LineMirror)
 
     bool didUndoOfInsertLine = false;
 
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfInsertLine);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfInsertLine);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfInsertLine);
 
@@ -1027,7 +1027,7 @@ TEST(CurvilinearGridUndoTests, LineAttractionRepulsion)
 
     bool didUndoOfInsertLine = false;
 
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfInsertLine);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfInsertLine);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfInsertLine);
 
@@ -1143,7 +1143,7 @@ TEST(CurvilinearGridUndoTests, OrthogonaliseEntireGrid)
     bool didUndoOfSmoothing = false;
 
     // Undo the orthogonalisation
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndoOfSmoothing);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfSmoothing);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfSmoothing);
 
@@ -1253,14 +1253,14 @@ TEST(CurvilinearGridUndoTests, RefineAndOrthogonalise)
     bool didUndo = false;
 
     // Undo the orthogonalisation
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
 
     didUndo = false;
 
     // Undo the orthogonalisation
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
 
@@ -1351,7 +1351,7 @@ TEST(CurvilinearGridUndoTests, RefineUndoThenOrthogonalise)
     // Undo the refinement
     bool didUndo = false;
 
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
 
@@ -1384,7 +1384,7 @@ TEST(CurvilinearGridUndoTests, RefineUndoThenOrthogonalise)
 
     didUndo = false;
 
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
 
@@ -1472,7 +1472,7 @@ TEST(CurvilinearGridUndoTests, InsertFaceUndoThenMirrorLine)
     bool didUndo = false;
 
     // Undo the refinement
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
 
@@ -1497,7 +1497,7 @@ TEST(CurvilinearGridUndoTests, InsertFaceUndoThenMirrorLine)
     EXPECT_EQ(updatedGrid.num_m, curvilinearGrid.num_m + 1);
 
     // Undo the mirror line
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
 
@@ -1596,7 +1596,7 @@ TEST(CurvilinearGridUndoTests, MultiStepUndoTest)
     // Undo the refinement
     bool didUndo = false;
 
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
 
@@ -1622,7 +1622,7 @@ TEST(CurvilinearGridUndoTests, MultiStepUndoTest)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     didUndo = false;
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
 
@@ -1650,7 +1650,7 @@ TEST(CurvilinearGridUndoTests, MultiStepUndoTest)
     // Undo the refinement
     didUndo = false;
 
-    errorCode = meshkernelapi::mkernel_undo_state(meshKernelId, didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
 

@@ -824,7 +824,8 @@ void MeshRefinement::FindHangingNodes(UInt face)
     std::fill(m_isHangingNodeCache.begin(), m_isHangingNodeCache.end(), false);
     std::fill(m_isHangingEdgeCache.begin(), m_isHangingEdgeCache.end(), false);
 
-    auto kknod = numFaceNodes;
+    auto kknod = numFaceNodes - 1;
+
     for (UInt n = 0; n < numFaceNodes; n++)
     {
         const auto edgeIndex = m_mesh.m_facesEdges[face][n];

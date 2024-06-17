@@ -102,6 +102,11 @@ namespace meshkernel
         /// @return True if it is included, false otherwise
         [[nodiscard]] bool IsPointInPolygon(Point const& point, UInt polygonIndex) const;
 
+        /// @brief Checks if a point is included in any of the polygonal enclosures contained.
+        /// @param[in] point The point to check
+        /// @return True if it is included, false otherwise
+        [[nodiscard]] bool IsPointInAnyPolygon(const Point& point) const;
+
         // TODO can reduce the result of this function to only a UInt (valid value => found, invalid => not found)
         /// @brief Checks if a point is included in any of the polygons (dbpinpol_optinside_perpol)
         /// @param[in] point The point to check

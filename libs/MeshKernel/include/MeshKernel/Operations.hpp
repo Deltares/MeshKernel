@@ -241,13 +241,13 @@ namespace meshkernel
         return f1 < f2 ? x1 : x2;
     }
 
-    /// @brief Get the next forward index.
+    /// @brief Get the next forward index, for a range in 0 .. size-1.
     /// @param[in] currentIndex The current index.
     /// @param[in] size The size of the vector.
     /// @returns The next forward index.
     [[nodiscard]] UInt NextCircularForwardIndex(UInt currentIndex, UInt size);
 
-    /// @brief Get the next backward index.
+    /// @brief Get the next backward index, for a range in 0 .. size-1.
     /// @param[in] currentIndex The current index.
     /// @param[in] size The size of the vector.
     /// @returns The next backward index.

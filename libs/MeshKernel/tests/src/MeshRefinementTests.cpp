@@ -1,4 +1,32 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2024.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #include "MeshKernel/BilinearInterpolationOnGriddedSamples.hpp"
+#include "MeshKernel/CasulliDeRefinement.hpp"
 #include "MeshKernel/CasulliRefinement.hpp"
 #include "MeshKernel/SamplesHessianCalculator.hpp"
 
@@ -12,6 +40,7 @@
 #include "MeshKernel/Polygons.hpp"
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
+#include "TestUtils/MeshReaders.hpp"
 #include "TestUtils/SampleFileReader.hpp"
 #include "TestUtils/SampleGenerator.hpp"
 
@@ -20,6 +49,8 @@
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
 using namespace meshkernel;
+
+namespace mk = meshkernel;
 
 TEST(MeshRefinement, MeshRefinementRefinementLevels_OnFourByFourWithFourSamples_ShouldRefinemesh)
 {
@@ -1845,5 +1876,342 @@ TEST(MeshRefinement, CasulliPatchRefinement)
             EXPECT_EQ(originalEdges[count].second, mesh.GetEdge(i).second);
             ++count;
         }
+    }
+}
+
+void TestDerefinedMesh(const mk::UInt nx, const mk::UInt ny, const std::string& interactorFileName)
+{
+    constexpr double tolerance = 1.0e-12;
+
+    auto interactorMesh = ReadLegacyMesh2DFromFile(interactorFileName);
+
+    auto curviMesh = MakeRectangularMeshForTesting(nx, ny, 10.0, Projection::cartesian, {0.0, 0.0},
+                                                   true /*ewIndexIncreasing*/,
+                                                   true /*nsIndexIncreasing*/);
+    Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
+    mesh.Administrate();
+
+    const std::vector<mk::Point> originalNodes(mesh.Nodes());
+    const std::vector<mk::Edge> originalEdges(mesh.Edges());
+
+    meshkernel::CasulliDeRefinement casulliDerefinement;
+
+    auto undoAction = casulliDerefinement.Compute(mesh);
+
+    const std::vector<mk::Point> refinedNodes(mesh.Nodes());
+    const std::vector<mk::Edge> refinedEdges(mesh.Edges());
+
+    //--------------------------------
+    // Now compare de-refined mesh with one produced by interactor.
+
+    ASSERT_EQ(mesh.GetNumNodes(), interactorMesh->GetNumNodes());
+    ASSERT_EQ(mesh.GetNumEdges(), interactorMesh->GetNumEdges());
+
+    for (UInt i = 0u; i < mesh.GetNumNodes(); ++i)
+    {
+        EXPECT_NEAR(interactorMesh->Node(i).x, mesh.Node(i).x, tolerance);
+        EXPECT_NEAR(interactorMesh->Node(i).y, mesh.Node(i).y, tolerance);
+    }
+
+    for (UInt i = 0u; i < mesh.GetNumEdges(); ++i)
+    {
+        EXPECT_EQ(interactorMesh->GetEdge(i).first, mesh.GetEdge(i).first);
+        EXPECT_EQ(interactorMesh->GetEdge(i).second, mesh.GetEdge(i).second);
+    }
+
+    //--------------------------------
+    // Now test undo
+    undoAction->Restore();
+
+    ASSERT_EQ(originalNodes.size(), mesh.Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh.Edges().size());
+
+    for (mk::UInt i = 0; i < originalNodes.size(); ++i)
+    {
+        EXPECT_NEAR(originalNodes[i].x, mesh.Node(i).x, tolerance);
+        EXPECT_NEAR(originalNodes[i].y, mesh.Node(i).y, tolerance);
+    }
+
+    for (mk::UInt i = 0; i < originalEdges.size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh.GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh.GetEdge(i).second);
+    }
+
+    //--------------------------------
+    // Now test redo
+    undoAction->Commit();
+
+    ASSERT_EQ(refinedNodes.size(), mesh.Nodes().size());
+    ASSERT_EQ(refinedEdges.size(), mesh.Edges().size());
+
+    for (mk::UInt i = 0; i < refinedNodes.size(); ++i)
+    {
+        EXPECT_NEAR(refinedNodes[i].x, mesh.Node(i).x, tolerance);
+        EXPECT_NEAR(refinedNodes[i].y, mesh.Node(i).y, tolerance);
+    }
+
+    for (mk::UInt i = 0; i < refinedEdges.size(); ++i)
+    {
+        EXPECT_EQ(refinedEdges[i].first, mesh.GetEdge(i).first);
+        EXPECT_EQ(refinedEdges[i].second, mesh.GetEdge(i).second);
+    }
+}
+
+TEST(MeshRefinement, CasulliDeRefinement)
+{
+    // de-refine the entire mesh (of different sizes) then compare results with precomputed data.
+
+    const std::string prefix(TEST_FOLDER + "/data/CasulliRefinement/");
+    TestDerefinedMesh(21, 21, prefix + "casulli_deref_21_21.nc");
+    TestDerefinedMesh(21, 22, prefix + "casulli_deref_21_22.nc");
+    TestDerefinedMesh(22, 21, prefix + "casulli_deref_22_21.nc");
+    TestDerefinedMesh(22, 22, prefix + "casulli_deref_22_22.nc");
+}
+
+TEST(MeshRefinement, CasulliDeRefinementPolygon)
+{
+    // de-refine the mesh inside a polygon then compare results with precomputed data.
+
+    auto interactorMesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/CasulliRefinement/casulli_derefine_polygon.nc");
+
+    std::vector<Point> points{{55.0, 55.0}, {155.0, 105.0}, {175.0, 225.0}, {25.0, 274.0}, {55.0, 55.0}};
+    meshkernel::Polygons polygon(points, Projection::cartesian);
+
+    auto curviMesh = MakeRectangularMeshForTesting(20, 31, 10.0, Projection::cartesian, {0.0, 0.0},
+                                                   true /*ewIndexIncreasing*/,
+                                                   true /*nsIndexIncreasing*/);
+    Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
+    mesh.Administrate();
+
+    meshkernel::CasulliDeRefinement casulliDerefinement;
+
+    auto undoAction = casulliDerefinement.Compute(mesh, polygon);
+
+    //--------------------------------
+    // Now compare de-refined mesh with one produced by interactor.
+
+    ASSERT_EQ(mesh.GetNumNodes(), interactorMesh->GetNumNodes());
+    ASSERT_EQ(mesh.GetNumEdges(), interactorMesh->GetNumEdges());
+
+    constexpr double tolerance = 1.0e-10;
+
+    for (UInt i = 0u; i < mesh.GetNumNodes(); ++i)
+    {
+        EXPECT_NEAR(interactorMesh->Node(i).x, mesh.Node(i).x, tolerance);
+        EXPECT_NEAR(interactorMesh->Node(i).y, mesh.Node(i).y, tolerance);
+    }
+
+    for (UInt i = 0u; i < mesh.GetNumEdges(); ++i)
+    {
+        EXPECT_EQ(interactorMesh->GetEdge(i).first, mesh.GetEdge(i).first);
+        EXPECT_EQ(interactorMesh->GetEdge(i).second, mesh.GetEdge(i).second);
+    }
+}
+
+TEST(MeshRefinement, CasulliDeRefinementPolygonThenAll)
+{
+    // Step 1 de-refine the mesh inside a polygon
+    // Step 2 de-refine the entire mesh
+    // compare results with precomputed data.
+
+    auto interactorMesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/CasulliRefinement/casulli_polygon_then_all.nc");
+
+    std::vector<Point> points{{55.0, 55.0}, {155.0, 105.0}, {175.0, 225.0}, {25.0, 274.0}, {55.0, 55.0}};
+    meshkernel::Polygons polygon(points, Projection::cartesian);
+
+    auto curviMesh = MakeRectangularMeshForTesting(20, 31, 10.0, Projection::cartesian, {0.0, 0.0},
+                                                   true /*ewIndexIncreasing*/,
+                                                   true /*nsIndexIncreasing*/);
+
+    Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
+    mesh.Administrate();
+
+    meshkernel::CasulliDeRefinement casulliDerefinement;
+
+    // Derefine on polygon
+    auto undoAction = casulliDerefinement.Compute(mesh, polygon);
+
+    // Derefine on all
+    undoAction = casulliDerefinement.Compute(mesh);
+
+    //--------------------------------
+    // Now compare de-refined mesh with one produced by interactor.
+
+    ASSERT_EQ(mesh.GetNumNodes(), interactorMesh->GetNumNodes());
+    ASSERT_EQ(mesh.GetNumEdges(), interactorMesh->GetNumEdges());
+
+    constexpr double tolerance = 1.0e-10;
+
+    for (UInt i = 0u; i < mesh.GetNumNodes(); ++i)
+    {
+        EXPECT_NEAR(interactorMesh->Node(i).x, mesh.Node(i).x, tolerance);
+        EXPECT_NEAR(interactorMesh->Node(i).y, mesh.Node(i).y, tolerance);
+    }
+
+    for (UInt i = 0u; i < mesh.GetNumEdges(); ++i)
+    {
+        EXPECT_EQ(interactorMesh->GetEdge(i).first, mesh.GetEdge(i).first);
+        EXPECT_EQ(interactorMesh->GetEdge(i).second, mesh.GetEdge(i).second);
+    }
+}
+
+TEST(MeshRefinement, CasulliTwoPolygonDeRefinement)
+{
+    // Step 1 de-refine the mesh inside a polygon
+    // Step 2 de-refine the mesh inside an overlapping polygon
+    // compare results with precomputed data.
+
+    constexpr double tolerance = 1.0e-10;
+    auto interactorMesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/CasulliRefinement/casulli_dref_two_polygon.nc");
+
+    // Centre of element to be deleted
+    std::vector<double> elementCentreX{25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 45.0,
+                                       45.0, 45.0, 46.66666666666666, 65.0, 65.0, 66.6666666666666,
+                                       85.0, 103.3333333333333, 105.0, 125.0, 125.0};
+    std::vector<double> elementCentreY{15.0, 35.0, 55.0, 75.0, 95.0, 115.0, 35.0,
+                                       55.0, 75.0, 96.6666666666666, 35.0, 55.0, 76.6666666666666,
+                                       55.0, 76.6666666666666, 55.0, 98.3333333333333, 75.0};
+
+    std::vector<Point> centrePoints{{55.0, 55.0}, {155.0, 105.0}, {175.0, 225.0}, {25.0, 274.0}, {55.0, 55.0}};
+    meshkernel::Polygons centrePolygon(centrePoints, Projection::cartesian);
+
+    std::vector<Point> lowerPoints{{14.5, 125.0}, {15.5, 14.5}, {95.5, 53.5}, {165.5, 115.5}, {14.5, 125.0}};
+    meshkernel::Polygons lowerPolygon(lowerPoints, Projection::cartesian);
+
+    // Ensure that the edges are numbered in the correct order.
+    auto curviMesh = MakeRectangularMeshForTesting(20, 31, 10.0, Projection::cartesian, {0.0, 0.0},
+                                                   true /*ewIndexIncreasing*/,
+                                                   true /*nsIndexIncreasing*/);
+
+    Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
+    mesh.Administrate();
+
+    const std::vector<mk::Point> originalNodes(mesh.Nodes());
+    const std::vector<mk::Edge> originalEdges(mesh.Edges());
+
+    meshkernel::CasulliDeRefinement casulliDerefinement;
+
+    // Derefine on centre polygon
+    auto undoCentrePolygon = casulliDerefinement.Compute(mesh, centrePolygon);
+
+    const std::vector<mk::Point> centreRefinedNodes(mesh.Nodes());
+    const std::vector<mk::Edge> centreRefinedEdges(mesh.Edges());
+
+    mesh.ComputeCircumcentersMassCentersAndFaceAreas(true);
+
+    // Get the element centres of the elements to be deleted.
+    std::vector<meshkernel::Point> toDelete(casulliDerefinement.ElementsToDelete(mesh, lowerPolygon));
+
+    // Compare the elements to be deleted by the lowerPolygon with expected data.
+    ASSERT_EQ(toDelete.size(), elementCentreX.size());
+
+    for (size_t i = 0u; i < elementCentreX.size(); ++i)
+    {
+        EXPECT_NEAR(elementCentreX[i], toDelete[i].x, tolerance);
+        EXPECT_NEAR(elementCentreY[i], toDelete[i].y, tolerance);
+    }
+
+    // Derefine on lower polygon
+    auto undoLowerPolygon = casulliDerefinement.Compute(mesh, lowerPolygon);
+
+    const std::vector<mk::Point> lowerRefinedNodes(mesh.Nodes());
+    const std::vector<mk::Edge> lowerRefinedEdges(mesh.Edges());
+
+    //--------------------------------
+    // Now compare de-refined mesh with one produced earlier
+    // Originally compared with interactor results.
+
+    ASSERT_EQ(mesh.GetNumNodes(), interactorMesh->GetNumNodes());
+    ASSERT_EQ(mesh.GetNumEdges(), interactorMesh->GetNumEdges());
+
+    for (UInt i = 0u; i < mesh.GetNumNodes(); ++i)
+    {
+        EXPECT_NEAR(interactorMesh->Node(i).x, mesh.Node(i).x, tolerance);
+        EXPECT_NEAR(interactorMesh->Node(i).y, mesh.Node(i).y, tolerance);
+    }
+
+    for (UInt i = 0u; i < mesh.GetNumEdges(); ++i)
+    {
+        EXPECT_EQ(interactorMesh->GetEdge(i).first, mesh.GetEdge(i).first);
+        EXPECT_EQ(interactorMesh->GetEdge(i).second, mesh.GetEdge(i).second);
+    }
+
+    //--------------------------------
+    // Now test undo
+    // First undo the de-refinement inside the lower polygon
+    undoLowerPolygon->Restore();
+
+    ASSERT_EQ(centreRefinedNodes.size(), mesh.Nodes().size());
+    ASSERT_EQ(centreRefinedEdges.size(), mesh.Edges().size());
+
+    for (mk::UInt i = 0; i < centreRefinedNodes.size(); ++i)
+    {
+        EXPECT_NEAR(centreRefinedNodes[i].x, mesh.Node(i).x, tolerance);
+        EXPECT_NEAR(centreRefinedNodes[i].y, mesh.Node(i).y, tolerance);
+    }
+
+    for (mk::UInt i = 0; i < centreRefinedEdges.size(); ++i)
+    {
+        EXPECT_EQ(centreRefinedEdges[i].first, mesh.GetEdge(i).first);
+        EXPECT_EQ(centreRefinedEdges[i].second, mesh.GetEdge(i).second);
+    }
+
+    // Next undo the de-refinement inside the centre polygon
+    undoCentrePolygon->Restore();
+
+    ASSERT_EQ(originalNodes.size(), mesh.Nodes().size());
+    ASSERT_EQ(originalEdges.size(), mesh.Edges().size());
+
+    for (mk::UInt i = 0; i < originalNodes.size(); ++i)
+    {
+        EXPECT_NEAR(originalNodes[i].x, mesh.Node(i).x, tolerance);
+        EXPECT_NEAR(originalNodes[i].y, mesh.Node(i).y, tolerance);
+    }
+
+    for (mk::UInt i = 0; i < originalEdges.size(); ++i)
+    {
+        EXPECT_EQ(originalEdges[i].first, mesh.GetEdge(i).first);
+        EXPECT_EQ(originalEdges[i].second, mesh.GetEdge(i).second);
+    }
+
+    //--------------------------------
+    // Now test redo
+
+    // First redo the de-refinement inside the centre polygon
+    undoCentrePolygon->Commit();
+
+    ASSERT_EQ(centreRefinedNodes.size(), mesh.Nodes().size());
+    ASSERT_EQ(centreRefinedEdges.size(), mesh.Edges().size());
+
+    for (mk::UInt i = 0; i < centreRefinedNodes.size(); ++i)
+    {
+        EXPECT_NEAR(centreRefinedNodes[i].x, mesh.Node(i).x, tolerance);
+        EXPECT_NEAR(centreRefinedNodes[i].y, mesh.Node(i).y, tolerance);
+    }
+
+    for (mk::UInt i = 0; i < centreRefinedEdges.size(); ++i)
+    {
+        EXPECT_EQ(centreRefinedEdges[i].first, mesh.GetEdge(i).first);
+        EXPECT_EQ(centreRefinedEdges[i].second, mesh.GetEdge(i).second);
+    }
+
+    // Next redo the de-refinement inside the lower polygon
+
+    undoLowerPolygon->Commit();
+
+    ASSERT_EQ(lowerRefinedNodes.size(), mesh.Nodes().size());
+    ASSERT_EQ(lowerRefinedEdges.size(), mesh.Edges().size());
+
+    for (mk::UInt i = 0; i < lowerRefinedNodes.size(); ++i)
+    {
+        EXPECT_NEAR(lowerRefinedNodes[i].x, mesh.Node(i).x, tolerance);
+        EXPECT_NEAR(lowerRefinedNodes[i].y, mesh.Node(i).y, tolerance);
+    }
+
+    for (mk::UInt i = 0; i < lowerRefinedEdges.size(); ++i)
+    {
+        EXPECT_EQ(lowerRefinedEdges[i].first, mesh.GetEdge(i).first);
+        EXPECT_EQ(lowerRefinedEdges[i].second, mesh.GetEdge(i).second);
     }
 }

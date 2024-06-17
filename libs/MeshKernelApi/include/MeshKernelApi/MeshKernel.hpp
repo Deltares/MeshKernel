@@ -69,21 +69,18 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_allocate_state(int projectionType, int& meshKernelId);
 
         /// @brief Attempt to undo by one undo-action.
-        /// @param[in] meshKernelId The id of the mesh state.
         /// @param[out] undone Indicates if the undo action was actually undone
         /// @returns Error code
-        MKERNEL_API int mkernel_undo_state(int meshKernelId, bool& undone);
+        MKERNEL_API int mkernel_undo_state(bool& undone);
 
         /// @brief Attempt to redo by one undo-action.
-        /// @param[in] meshKernelId The id of the mesh state.
         /// @param[out] redone Indicates if the redo action was actually redone
         /// @returns Error code
-        MKERNEL_API int mkernel_redo_state(int meshKernelId, bool& redone);
+        MKERNEL_API int mkernel_redo_state(bool& redone);
 
         /// @brief Clear the undo state.
-        /// @param[in] meshKernelId The id of the mesh state.
         /// @returns Error code
-        MKERNEL_API int mkernel_clear_undo_state(int meshKernelId);
+        MKERNEL_API int mkernel_clear_undo_state();
 
         /// @brief Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
         ///
@@ -876,10 +873,40 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_translate(int meshKernelId, double translationX, double translationY);
 
+        /// @brief Get list of elements that will be removed after the Casulli de-refinement algorithm
+        /// @param[in]     meshKernelId  The id of the mesh state
+        /// @param[in,out] elements      List of elements to be removed.
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_casulli_derefinement_elements(int meshKernelId, GeometryList& elements);
+
+        /// @brief Get list of elements that will be removed after the Casulli de-refinement algorithm
+        /// @param[in]     meshKernelId    The id of the mesh state
+        /// @param[in]     polygonGeometry The input polygon geometry
+        /// @param[in,out] elements        List of elements to be removed.
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_casulli_derefinement_elements_on_polygon(int meshKernelId, const GeometryList& polygonGeometry, GeometryList& elements);
+
+        /// @brief De-refine mesh using the Casulli de-refinement algorithm
+        /// @param[in]  meshKernelId  The id of the mesh state
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_casulli_derefinement(int meshKernelId);
+
+        /// @brief De-refine mesh using the Casulli de-refinement algorithm
+        /// @param[in]  meshKernelId  The id of the mesh state
+        /// @param[in]  polygons  The input polygons
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_casulli_derefinement_on_polygon(int meshKernelId, const GeometryList& polygons);
+
         /// @brief Refine mesh using the Casulli refinement algorithm
         /// @param[in]  meshKernelId  The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_casulli_refinement(int meshKernelId);
+
+        /// @brief Refine mesh using the Casulli refinement algorithm
+        /// @param[in]  meshKernelId  The id of the mesh state
+        /// @param[in]  polygons  The input polygons
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_casulli_refinement_on_polygon(int meshKernelId, const GeometryList& polygons);
 
         /// The function modifies the mesh for achieving orthogonality between the edges and the segments connecting the face circumcenters.
         /// The amount of orthogonality is traded against the mesh smoothing (in this case the equality of face areas).
@@ -1564,18 +1591,6 @@ namespace meshkernelapi
                                                              GeometryList& polygon,
                                                              int startIndex,
                                                              int endIndex);
-
-        /// @brief Attempt to redo by one undo-action.
-        /// @param[in] meshKernelId The id of the mesh state.
-        /// @param[out] redone Indicates if the redo action was actually redone
-        /// @returns Error code
-        MKERNEL_API int mkernel_redo_state(int meshKernelId, bool& redone);
-
-        /// @brief Attempt to undo by one undo-action.
-        /// @param[in] meshKernelId The id of the mesh state.
-        /// @param[out] undone Indicates if the undo action was actually undone
-        /// @returns Error code
-        MKERNEL_API int mkernel_undo_state(int meshKernelId, bool& undone);
 
 #ifdef __cplusplus
     }
