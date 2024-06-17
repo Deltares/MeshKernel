@@ -39,12 +39,14 @@ namespace meshkernel
     class CurvilinearGridSplineToGrid
     {
     public:
+        /// @brief Generate the curvilinear grid from the set of splines
         void Compute(const Splines& splines,
                      const CurvilinearParameters& curvilinearParameters,
                      CurvilinearGrid& grid) const;
 
-        // CurvilinearGrid Compute(const Splines& splines,
-        //                         const CurvilinearParameters& curvilinearParameters) const;
+        /// @brief Generate the curvilinear grid from the set of splines
+        CurvilinearGrid Compute(const Splines& splines,
+                                const CurvilinearParameters& curvilinearParameters) const;
 
     private:
         /// @brief Maximum number of spline points allowed when doubling of the spline points.

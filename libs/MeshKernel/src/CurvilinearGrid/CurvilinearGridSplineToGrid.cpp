@@ -38,6 +38,14 @@ void meshkernel::CurvilinearGridSplineToGrid::Compute(const Splines& splines,
     GenerateGrid(splinesCopy, splineIntersections, splineInteraction, numMSplines, mRefinement, nRefinement, grid);
 }
 
+meshkernel::CurvilinearGrid meshkernel::CurvilinearGridSplineToGrid::Compute(const Splines& splines,
+                                                                             const CurvilinearParameters& curvilinearParameters) const
+{
+    CurvilinearGrid grid(splines.m_projection);
+    Compute(splines, curvilinearParameters, grid);
+    return grid;
+}
+
 bool meshkernel::CurvilinearGridSplineToGrid::CheckSplines(const Splines& splines) const
 {
     for (UInt splineIndex = 0; splineIndex < splines.GetNumSplines(); ++splineIndex)
