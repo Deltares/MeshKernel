@@ -190,7 +190,7 @@ bool meshkernel::CurvilinearGridSplineToGrid::ComputeInteractions(Splines& splin
                                                                   VectorOfDoubleVectors& splineIntersections) const
 {
 
-    std::fill(splineIntersections.begin(), splineIntersections.end(), DoubleVector(splines.GetNumSplines(), 0.0));
+    std::ranges::fill(splineIntersections, DoubleVector(splines.GetNumSplines(), 0.0));
 
     for (UInt splineI = 0; splineI < splines.GetNumSplines(); ++splineI)
     {
@@ -259,7 +259,7 @@ bool meshkernel::CurvilinearGridSplineToGrid::SortSplines(Splines& splines,
                                                           const UInt innerStartIndex,
                                                           const UInt innerEndIndex,
                                                           VectorOfDoubleVectors& splineIntersections,
-                                                          bool& jaChange) const
+                                                          bool& splinesSwapped) const
 {
     UInt count = 0;
 
@@ -267,32 +267,34 @@ bool meshkernel::CurvilinearGridSplineToGrid::SortSplines(Splines& splines,
     {
         for (UInt j = innerStartIndex; j < innerEndIndex; ++j)
         {
-
-            if (splineIntersections[i][j] != 0.0)
+            if (splineIntersections[i][j] == 0.0)
             {
-                for (UInt k = j + 1; k < innerEndIndex; ++k)
+                continue;
+            }
+
+            for (UInt k = j + 1; k < innerEndIndex; ++k)
+            {
+                if (splineIntersections[i][k] == 0.0)
                 {
-                    if (splineIntersections[i][k] != 0.0)
+                    continue;
+                }
+
+                if (splineIntersections[i][j] > splineIntersections[i][k])
+                {
+                    splines.SwapSplines(j, k);
+
+                    splineIntersections[j].swap(splineIntersections[k]);
+                    SwapColumns(splineIntersections, j, k);
+
+                    splinesSwapped = true;
+                    ++count;
+
+                    if (count > splines.GetNumSplines())
                     {
-
-                        if (splineIntersections[i][j] > splineIntersections[i][k])
-                        {
-                            splines.SwapSplines(j, k);
-
-                            splineIntersections[j].swap(splineIntersections[k]);
-                            SwapColumns(splineIntersections, j, k);
-
-                            jaChange = true;
-                            ++count;
-
-                            if (count > splines.GetNumSplines())
-                            {
-                                throw AlgorithmError("Problem in spline ordering, modify splines");
-                            }
-
-                            return false;
-                        }
+                        throw AlgorithmError("Problem in spline ordering, modify splines");
                     }
+
+                    return false;
                 }
             }
         }
@@ -791,18 +793,28 @@ void meshkernel::CurvilinearGridSplineToGrid::GenerateGridPointsAlongSpline(cons
 
         if (splineIndex < numMSplines)
         {
-            for (UInt i = startIndex; i < endIndex && index < gridPoints.size(); ++i)
+            for (UInt i = startIndex; i < endIndex; ++i)
             {
                 gridNodes(position, i) = gridPoints[index];
                 ++index;
+
+                if (index == gridPoints.size())
+                {
+                    break;
+                }
             }
         }
         else
         {
-            for (UInt i = startIndex; i < endIndex && index < gridPoints.size(); ++i)
+            for (UInt i = startIndex; i < endIndex; ++i)
             {
                 gridNodes(i, position) = gridPoints[index];
                 ++index;
+
+                if (index == gridPoints.size())
+                {
+                    break;
+                }
             }
         }
     }

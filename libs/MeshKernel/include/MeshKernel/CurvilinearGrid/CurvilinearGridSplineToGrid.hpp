@@ -166,7 +166,7 @@ namespace meshkernel
                          const UInt innerStartIndex,
                          const UInt innerEndIndex,
                          VectorOfDoubleVectors& splineIntersections,
-                         bool& jaChange) const;
+                         bool& splinesSwapped) const;
 
         /// @brief Compute a point at a distance along the spline
         Point ComputePoint(const Splines& splines,
