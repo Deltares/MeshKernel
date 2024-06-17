@@ -491,7 +491,7 @@ meshkernel::UInt Splines::Size(const UInt whichSpline) const
     return static_cast<UInt>(m_splineNodes[whichSpline].size());
 }
 
-meshkernel::UInt Splines::MaxSize() const
+meshkernel::UInt Splines::MaxSizeIndex() const
 {
     UInt splineIndex = constants::missing::uintValue;
     UInt splineSize = 0;

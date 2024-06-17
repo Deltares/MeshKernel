@@ -163,8 +163,8 @@ namespace meshkernel
         /// @return the size of the desired spline
         UInt Size(const UInt whichSpline) const;
 
-        /// @brief Get the spline with the largest number of spline points.
-        UInt MaxSize() const;
+        /// @brief Get the index of the spline with the largest number of spline points.
+        UInt MaxSizeIndex() const;
 
         std::vector<std::vector<Point>> m_splineNodes;       ///< The spline corner points
         std::vector<std::vector<Point>> m_splineDerivatives; ///< The spline derivatives at the corner points
