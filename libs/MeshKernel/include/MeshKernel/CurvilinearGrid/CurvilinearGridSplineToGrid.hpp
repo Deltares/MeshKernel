@@ -40,11 +40,6 @@ namespace meshkernel
     {
     public:
         /// @brief Generate the curvilinear grid from the set of splines
-        void Compute(const Splines& splines,
-                     const CurvilinearParameters& curvilinearParameters,
-                     CurvilinearGrid& grid) const;
-
-        /// @brief Generate the curvilinear grid from the set of splines
         CurvilinearGrid Compute(const Splines& splines,
                                 const CurvilinearParameters& curvilinearParameters) const;
 
@@ -54,6 +49,9 @@ namespace meshkernel
 
         /// @brief The maximum number of checks for unlabeled splines
         static const UInt MaximumCumulativeUnlabeledSplineCount = 1000;
+
+        /// @brief The maximum refinement factor.
+        static const int MaximumRefinementFactor = 1000;
 
         /// @brief Array of doubles
         using DoubleVector = std::vector<double>;
