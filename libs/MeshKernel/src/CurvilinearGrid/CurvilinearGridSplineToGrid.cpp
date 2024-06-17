@@ -78,7 +78,9 @@ void meshkernel::CurvilinearGridSplineToGrid::DetermineIntersection(Splines& spl
 void meshkernel::CurvilinearGridSplineToGrid::DoubleSplinePoints(Splines& splines) const
 {
     std::vector<Point> doubledSplinePoints;
-    doubledSplinePoints.reserve(2 * splines.MaxSize() - 1);
+    doubledSplinePoints.reserve(2 * splines.MaxSizeIndex() - 1);
+
+    std::cout << "maximum size: " << splines.Size(splines.MaxSizeIndex()) << std::endl;
 
     for (UInt splineIndex = 0; splineIndex < splines.GetNumSplines(); ++splineIndex)
     {
@@ -108,7 +110,7 @@ bool meshkernel::CurvilinearGridSplineToGrid::ComputeAndCheckIntersection(Spline
                                                                           std::vector<int>& splineType,
                                                                           VectorOfDoubleVectors& splineIntersections) const
 {
-    UInt maxSplineSize = splines.Size(splines.MaxSize());
+    UInt maxSplineSize = splines.Size(splines.MaxSizeIndex());
 
     double crossProduct;
     double normalisedIntersectionSplineI;
