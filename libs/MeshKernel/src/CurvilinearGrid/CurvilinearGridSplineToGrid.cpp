@@ -78,9 +78,7 @@ void meshkernel::CurvilinearGridSplineToGrid::DetermineIntersection(Splines& spl
 void meshkernel::CurvilinearGridSplineToGrid::DoubleSplinePoints(Splines& splines) const
 {
     std::vector<Point> doubledSplinePoints;
-    doubledSplinePoints.reserve(2 * splines.MaxSizeIndex() - 1);
-
-    std::cout << "maximum size: " << splines.Size(splines.MaxSizeIndex()) << std::endl;
+    doubledSplinePoints.reserve(2 * splines.Size(splines.MaxSizeIndex()) - 1);
 
     for (UInt splineIndex = 0; splineIndex < splines.GetNumSplines(); ++splineIndex)
     {
@@ -224,7 +222,7 @@ void meshkernel::CurvilinearGridSplineToGrid::SortInteractionsOnSplineType(Splin
                                                                            std::vector<int>& splineType,
                                                                            VectorOfDoubleVectors& splineIntersections) const
 {
-    // sorteren op type, eerst de horizontalen (N = CONSTANT)
+    // Sort splines on type, first in list are the horizontal spines (n = constant)
     for (UInt i = 0; i < splines.GetNumSplines(); ++i)
     {
         if (splineType[i] == -1)
@@ -284,7 +282,7 @@ bool meshkernel::CurvilinearGridSplineToGrid::SortSplines(Splines& splines,
                                 throw AlgorithmError("Problem in spline ordering, modify splines");
                             }
 
-                            return true;
+                            return false;
                         }
                     }
                 }
@@ -292,7 +290,7 @@ bool meshkernel::CurvilinearGridSplineToGrid::SortSplines(Splines& splines,
         }
     }
 
-    return false;
+    return true;
 }
 
 void meshkernel::CurvilinearGridSplineToGrid::OrderSplines(Splines& splines,
@@ -307,24 +305,24 @@ void meshkernel::CurvilinearGridSplineToGrid::OrderSplines(Splines& splines,
     {
         ++iterations;
         repeatBoth = false;
-        bool repeatM = true;
+        bool splinesSorted = false;
         UInt sortingIterations = 0;
         const UInt maxSortingIterations = 100 * splines.GetNumSplines();
 
-        while (repeatM && sortingIterations <= maxSortingIterations)
+        while (!splinesSorted && sortingIterations <= maxSortingIterations)
         {
             ++sortingIterations;
             repeatBoth = false;
-            repeatM = SortSplines(splines, 0, numMSplines, numMSplines, splines.GetNumSplines(), splineIntersections, repeatBoth);
+            splinesSorted = SortSplines(splines, 0, numMSplines, numMSplines, splines.GetNumSplines(), splineIntersections, repeatBoth);
         }
 
-        bool repeatN = true;
         sortingIterations = 0;
+        splinesSorted = false;
 
-        while (repeatN && sortingIterations <= maxSortingIterations)
+        while (!splinesSorted && sortingIterations <= maxSortingIterations)
         {
             ++sortingIterations;
-            repeatN = SortSplines(splines, numMSplines, splines.GetNumSplines(), 0, numMSplines, splineIntersections, repeatBoth);
+            splinesSorted = SortSplines(splines, numMSplines, splines.GetNumSplines(), 0, numMSplines, splineIntersections, repeatBoth);
         }
     }
 
