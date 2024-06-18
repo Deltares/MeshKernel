@@ -1007,6 +1007,13 @@ namespace meshkernelapi
                                                    double xUpperRightBoundingBox,
                                                    double yUpperRightBoundingBox);
 
+        /// @brief Deletes a mesh2d edge given the index of the edge.
+        /// The coordinates of the edge middle points are used for calculating the distances to the point.
+        /// @param[in] meshKernelId   The id of the mesh state
+        /// @param[in] edgeIndex      The index of the edge to delete
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_delete_edge_by_index(int meshKernelId, int edgeIndex);
+
         /// @brief Deletes all hanging edges. An hanging edge is an edge where one of the two nodes is not connected.
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
