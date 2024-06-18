@@ -62,7 +62,6 @@ TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApi)
     ASSERT_NEAR(92.626556, geometryListOut.coordinates_y[0], tolerance);
 }
 
-
 TEST_F(CartesianApiTestFixture, LinearRefineAPolygonThroughApi)
 {
     // Prepare
@@ -103,9 +102,7 @@ TEST_F(CartesianApiTestFixture, LinearRefineAPolygonThroughApi)
 
     ASSERT_NEAR(11.0, geometryListOut.coordinates_x[4], tolerance);
     ASSERT_NEAR(8.281492376, geometryListOut.coordinates_y[4], tolerance);
-
 }
-
 
 TEST_F(CartesianApiTestFixture, RefineBasedOnSamplesWaveCourant_OnAUniformMesh_shouldRefineMesh)
 {
