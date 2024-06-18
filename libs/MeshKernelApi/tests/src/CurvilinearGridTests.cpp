@@ -593,6 +593,101 @@ TEST_F(CartesianApiTestFixture, CurvilinearComputeOrthogonalGridFromSplines_Shou
     ASSERT_GT(curvilinearGrid.num_n, 0);
 }
 
+TEST_F(CartesianApiTestFixture, CurvilinearGridFromSplines_ShouldMakeCurvilinearGrid)
+{
+    // Setup
+    meshkernelapi::GeometryList splines{};
+    double geometrySeparator = meshkernelapi::mkernel_get_separator();
+
+    std::vector<double> coordinatesX{
+        -1.0, 11.0,
+        geometrySeparator,
+        10.0, 10.0,
+        geometrySeparator,
+        11.0, -1.0,
+        geometrySeparator,
+        0.0, 0.0};
+
+    std::vector<double> coordinatesY{
+        0.0, 0.0,
+        geometrySeparator,
+        11.0, -1.0,
+        geometrySeparator,
+        10.0, 10.0,
+        geometrySeparator,
+        11.0, -1.0};
+
+    splines.coordinates_x = coordinatesX.data();
+    splines.coordinates_y = coordinatesY.data();
+    splines.num_coordinates = static_cast<int>(coordinatesX.size());
+
+    CurvilinearParameters curvilinearParameters{};
+
+    curvilinearParameters.m_refinement = 5;
+    curvilinearParameters.n_refinement = 10;
+
+    // Execute, with large length threshold
+    auto const meshKernelId = GetMeshKernelId();
+    auto errorCode = mkernel_curvilinear_compute_grid_from_splines(meshKernelId,
+                                                                   splines,
+                                                                   curvilinearParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert
+    meshkernelapi::CurvilinearGrid curvilinearGrid{};
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Expected size of the generated grid
+    EXPECT_EQ(curvilinearGrid.num_n, 11);
+    EXPECT_EQ(curvilinearGrid.num_m, 6);
+}
+
+TEST_F(CartesianApiTestFixture, CurvilinearGridFromSplines_ShouldThrowAlgorithmError)
+{
+    // Setup
+    meshkernelapi::GeometryList splines{};
+    double geometrySeparator = meshkernelapi::mkernel_get_separator();
+
+    std::vector<double> coordinatesX{
+        -1.0, 11.0,
+        geometrySeparator,
+        10.0, 10.0,
+        geometrySeparator,
+        11.0, -1.0,
+        geometrySeparator,
+        0.0, 0.0,
+        geometrySeparator,
+        15.0, 15.0};
+
+    std::vector<double> coordinatesY{
+        0.0, 0.0,
+        geometrySeparator,
+        11.0, -1.0,
+        geometrySeparator,
+        10.0, 10.0,
+        geometrySeparator,
+        11.0, -1.0,
+        geometrySeparator,
+        15.0, -1.0};
+
+    splines.coordinates_x = coordinatesX.data();
+    splines.coordinates_y = coordinatesY.data();
+    splines.num_coordinates = static_cast<int>(coordinatesX.size());
+
+    CurvilinearParameters curvilinearParameters{};
+
+    curvilinearParameters.m_refinement = 5;
+    curvilinearParameters.n_refinement = 5;
+
+    // Execute, with large length threshold
+    auto const meshKernelId = GetMeshKernelId();
+    auto errorCode = mkernel_curvilinear_compute_grid_from_splines(meshKernelId,
+                                                                   splines,
+                                                                   curvilinearParameters);
+    ASSERT_EQ(meshkernel::ExitCode::AlgorithmErrorCode, errorCode);
+}
+
 TEST_F(CartesianApiTestFixture, CurvilinearInsertFace_ShouldInsertAFace)
 {
     // Setup

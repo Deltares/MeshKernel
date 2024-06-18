@@ -183,3 +183,30 @@ TEST(Splines, SplineSnappingIndexOutOfRangeTest)
     // Spline 2 is out of range, so should throw an exception.
     EXPECT_THROW(splines.SnapSpline(2, landBoundary), meshkernel::ConstraintError);
 }
+
+TEST(Splines, SplineMultiIntersection)
+{
+    std::vector<meshkernel::Point> firstSpline;
+    firstSpline.push_back(meshkernel::Point{0.0, 0.0});
+    firstSpline.push_back(meshkernel::Point{1.0, 2.0});
+    firstSpline.push_back(meshkernel::Point{3.0, 3.0});
+
+    meshkernel::Splines splines(meshkernel::Projection::cartesian);
+
+    splines.AddSpline(firstSpline, 0, static_cast<meshkernel::UInt>(firstSpline.size()));
+
+    std::vector<meshkernel::Point> secondSpline;
+    secondSpline.push_back(meshkernel::Point{0.25, 1.0});
+    secondSpline.push_back(meshkernel::Point{1.5, 1.5});
+    secondSpline.push_back(meshkernel::Point{2.5, 3.0});
+    splines.AddSpline(secondSpline, 0, static_cast<meshkernel::UInt>(secondSpline.size()));
+
+    double crossProductIntersection;
+    meshkernel::Point dimensionalIntersection;
+    double firstSplineRatio;
+    double secondSplineRatio;
+
+    bool crossing = splines.GetSplinesIntersection(0, 1, crossProductIntersection, dimensionalIntersection, firstSplineRatio, secondSplineRatio);
+
+    ASSERT_TRUE(crossing);
+}

@@ -55,6 +55,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothness.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSnapGridToLandBoundary.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSnapGridToSpline.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridSplineToGrid.hpp>
 #include <MeshKernel/Definitions.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
@@ -3376,6 +3377,33 @@ namespace meshkernelapi
 
             // set the curvilinear state
             meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridFromSplines.Compute();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_compute_grid_from_splines(int meshKernelId,
+                                                                  const GeometryList& geometryListIn,
+                                                                  const meshkernel::CurvilinearParameters& curvilinearParameters)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            meshkernel::Splines splines(meshKernelState[meshKernelId].m_projection);
+            SetSplines(geometryListIn, splines);
+
+            meshkernel::CurvilinearGridSplineToGrid splineToGrid;
+
+            //  the curvilinear grid
+            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_unique<meshkernel::CurvilinearGrid>(splineToGrid.Compute(splines, curvilinearParameters));
         }
         catch (...)
         {
