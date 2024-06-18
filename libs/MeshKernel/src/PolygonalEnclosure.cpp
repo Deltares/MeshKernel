@@ -164,6 +164,18 @@ std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::Refine(size_t sta
     return m_outer.Refine(startIndex, endIndex, refinementDistance);
 }
 
+std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::LinearRefine(size_t startIndex, size_t endIndex)
+{
+    if (endIndex >= m_outer.Size())
+    {
+        throw ConstraintError("The end index is greater than the number of points in the outer polygon: {} >= {}.",
+                              endIndex,
+                              m_outer.Size());
+    }
+
+    return m_outer.LinearRefine(startIndex, endIndex);
+}
+
 void meshkernel::PolygonalEnclosure::CopyPoints(const std::vector<Point>& source,
                                                 const size_t start,
                                                 const size_t end,

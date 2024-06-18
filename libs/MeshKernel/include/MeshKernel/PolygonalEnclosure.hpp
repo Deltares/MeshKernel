@@ -91,6 +91,12 @@ namespace meshkernel
         /// @returns Points making the polygon with the sections indicated refined.
         std::vector<Point> Refine(size_t startIndex, size_t endIndex, double refinementDistance);
 
+        /// @brief Linear refine the outer polygon.
+        /// @param [in] startIndex The start index of the sections to be refined
+        /// @param [in] endIndex The end index of the sections to be refined
+        /// @returns Points making the polygon with the sections indicated refined.
+        std::vector<Point> LinearRefine(size_t startIndex, size_t endIndex);
+
         /// @brief Makes a new polygonal enclosure from an existing one, by offsetting it by a distance (copypol)
         /// @param[in] distance The offset distance
         /// @param[in] outwardsAndInwards Offset outwards only or both outwards and inwards
