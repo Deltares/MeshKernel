@@ -975,7 +975,7 @@ TEST(Polygons, BasicLinearRefinePolygon)
     expected.push_back({1.0, 10.0});
     expected.push_back({3.476743906, 10.0});
     expected.push_back({7.180339887, 10.0});
-    expected.push_back({11, 8.281492376});
+    expected.push_back({11.0, 8.281492376});
     expected.push_back({11.0, 0.0});
     expected.push_back({0.0, 0.0});
     expected.push_back({0.0, 10.0});
