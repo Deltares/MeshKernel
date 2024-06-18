@@ -209,6 +209,4 @@ TEST(Splines, SplineMultiIntersection)
     bool crossing = splines.GetSplinesIntersection(0, 1, crossProductIntersection, dimensionalIntersection, firstSplineRatio, secondSplineRatio);
 
     ASSERT_TRUE(crossing);
-
-    // const double tolerance = 1e-6;
 }
