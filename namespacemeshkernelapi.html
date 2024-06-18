@@ -451,6 +451,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a0ce1ba846742ee85f26b34c71336ef9b"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0ce1ba846742ee85f26b34c71336ef9b">mkernel_mesh2d_delete_edge</a> (int meshKernelId, double xCoordinate, double yCoordinate, double xLowerLeftBoundingBox, double yLowerLeftBoundingBox, double xUpperRightBoundingBox, double yUpperRightBoundingBox)</td></tr>
 <tr class="memdesc:a0ce1ba846742ee85f26b34c71336ef9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the closest mesh2d edge to a point. The coordinates of the edge middle points are used for calculating the distances to the point.  <a href="namespacemeshkernelapi.html#a0ce1ba846742ee85f26b34c71336ef9b">More...</a><br /></td></tr>
 <tr class="separator:a0ce1ba846742ee85f26b34c71336ef9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0892a7890e27cd70521af0b86d90407f"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0892a7890e27cd70521af0b86d90407f">mkernel_mesh2d_delete_edge_by_index</a> (int meshKernelId, int edgeIndex)</td></tr>
+<tr class="memdesc:a0892a7890e27cd70521af0b86d90407f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a mesh2d edge given the index of the edge. The coordinates of the edge middle points are used for calculating the distances to the point.  <a href="namespacemeshkernelapi.html#a0892a7890e27cd70521af0b86d90407f">More...</a><br /></td></tr>
+<tr class="separator:a0892a7890e27cd70521af0b86d90407f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a847e53287a42b4e00385755ba1162e70"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a847e53287a42b4e00385755ba1162e70">mkernel_mesh2d_delete_hanging_edges</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:a847e53287a42b4e00385755ba1162e70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes all hanging edges. An hanging edge is an edge where one of the two nodes is not connected.  <a href="namespacemeshkernelapi.html#a847e53287a42b4e00385755ba1162e70">More...</a><br /></td></tr>
 <tr class="separator:a847e53287a42b4e00385755ba1162e70"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -5095,6 +5098,44 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">yLowerLeftBoundingBox</td><td>The y coordinate of the lower left corner of the bounding box </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">xUpperRightBoundingBox</td><td>The x coordinate of the upper right corner of the bounding box </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">yUpperRightBoundingBox</td><td>The y coordinate of the upper right corner of the bounding box </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a0892a7890e27cd70521af0b86d90407f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0892a7890e27cd70521af0b86d90407f">&#9670;&nbsp;</a></span>mkernel_mesh2d_delete_edge_by_index()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_delete_edge_by_index </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>edgeIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deletes a mesh2d edge given the index of the edge. The coordinates of the edge middle points are used for calculating the distances to the point. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeIndex</td><td>The index of the edge to delete </td></tr>
   </table>
   </dd>
 </dl>
