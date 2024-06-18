@@ -955,7 +955,6 @@ TEST_P(IsPointInPolygonsTests, parameters)
 }
 INSTANTIATE_TEST_SUITE_P(IsPointInPolygonsParametrizedTests, IsPointInPolygonsTests, ::testing::ValuesIn(IsPointInPolygonsTests::GetData()));
 
-
 TEST(Polygons, BasicLinearRefinePolygon)
 {
     // Prepare
@@ -985,13 +984,13 @@ TEST(Polygons, BasicLinearRefinePolygon)
     // Execute
     const auto refinedPolygon = polygons.LinearRefinePolygon(0, 1, 4);
 
-    ASSERT_EQ (expected.size (), refinedPolygon.size ());
+    ASSERT_EQ(expected.size(), refinedPolygon.size());
     constexpr double tolerance = 1.0e-8;
 
-    for (size_t i = 0; i < refinedPolygon.size (); ++i)
+    for (size_t i = 0; i < refinedPolygon.size(); ++i)
     {
-        EXPECT_NEAR (expected[i].x, refinedPolygon[i].x, tolerance);
-        EXPECT_NEAR (expected[i].y, refinedPolygon[i].y, tolerance);
+        EXPECT_NEAR(expected[i].x, refinedPolygon[i].x, tolerance);
+        EXPECT_NEAR(expected[i].y, refinedPolygon[i].y, tolerance);
     }
 }
 
@@ -1015,11 +1014,11 @@ TEST(Polygons, LinearRefinePolygonSameNodes)
     // Execute
     const auto refinedPolygon = polygons.LinearRefinePolygon(0, 1, 1);
 
-    ASSERT_EQ (expected.size (), refinedPolygon.size ());
+    ASSERT_EQ(expected.size(), refinedPolygon.size());
 
-    for (size_t i = 0; i < refinedPolygon.size (); ++i)
+    for (size_t i = 0; i < refinedPolygon.size(); ++i)
     {
-        EXPECT_EQ (expected[i].x, refinedPolygon[i].x);
-        EXPECT_EQ (expected[i].y, refinedPolygon[i].y);
+        EXPECT_EQ(expected[i].x, refinedPolygon[i].x);
+        EXPECT_EQ(expected[i].y, refinedPolygon[i].y);
     }
 }
