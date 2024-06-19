@@ -457,14 +457,34 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t st
     std::vector<double> actualAverageLengths(numPolygonNodes, 0.0);
     std::vector<Point> result(numPolygonNodes);
 
-    for (UInt i = 0; i < polygonNodes.size(); ++i)
+    if (startIndex < endIndex)
     {
-        auto polygonNodeIndex = i + startIndex;
-        if (polygonNodeIndex >= m_nodes.size())
+        for (UInt i = 0; i < polygonNodes.size(); ++i)
         {
-            polygonNodeIndex = polygonNodeIndex - m_nodes.size();
+            auto polygonNodeIndex = i + startIndex;
+            if (polygonNodeIndex >= m_nodes.size())
+            {
+                polygonNodeIndex = polygonNodeIndex - m_nodes.size();
+            }
+            polygonNodes[i] = m_nodes[polygonNodeIndex];
         }
-        polygonNodes[i] = m_nodes[polygonNodeIndex];
+    }
+    else
+    {
+        UInt count = 0;
+
+        for (UInt i = startIndex; i < m_nodes.size(); ++i)
+        {
+            polygonNodes[count] = m_nodes[i];
+            ++count;
+        }
+
+        // Do not include the start/end point twice.
+        for (UInt i = 1; i <= endIndex; ++i)
+        {
+            polygonNodes[count] = m_nodes[i];
+            ++count;
+        }
     }
 
     std::vector<double> cumulativeDistances(numPolygonNodes, 0.0);
@@ -473,6 +493,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t st
     {
         cumulativeDistances[i] = cumulativeDistances[i - 1] + ComputeDistance(polygonNodes[i], polygonNodes[i - 1], m_projection);
     }
+
     std::vector<double> initialCumulativeDistances(cumulativeDistances);
 
     computeAverageLengths(cumulativeDistances, averageLengths);
