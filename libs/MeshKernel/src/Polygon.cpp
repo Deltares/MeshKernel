@@ -443,7 +443,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t st
     if (endIndex >= m_nodes.size())
     {
         throw ConstraintError("The end index is greater than the number of points in the polygon: {} >= {}.",
-                              startIndex,
+                              endIndex,
                               m_nodes.size());
     }
 
