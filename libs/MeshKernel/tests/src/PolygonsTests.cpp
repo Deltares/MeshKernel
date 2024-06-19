@@ -1022,3 +1022,42 @@ TEST(Polygons, LinearRefinePolygonSameNodes)
         EXPECT_EQ(expected[i].y, refinedPolygon[i].y);
     }
 }
+
+TEST(Polygons, LinearRefinePolygonStartGtEnd)
+{
+    // Prepare
+    std::vector<meshkernel::Point> nodes;
+
+    nodes.push_back({0.0, 10.0});
+    nodes.push_back({1.0, 10.0});
+    nodes.push_back({3.0, 10.0});
+    nodes.push_back({11.0, 10.0});
+    nodes.push_back({11.0, 0.0});
+    nodes.push_back({0.0, 0.0});
+    nodes.push_back({0.0, 10.0});
+
+    std::vector<meshkernel::Point> expected;
+    expected.push_back({1.0, 10.0});
+    expected.push_back({3.0, 10.0});
+    expected.push_back({11.0, 10.0});
+    expected.push_back({11.0, 0.0});
+    expected.push_back({1.78086288128158, 0.0});
+    expected.push_back({0.0, 3.92618790663383});
+    expected.push_back({0.0, 7.45910300227577});
+    expected.push_back({0.0, 9.64613261442025});
+    expected.push_back({1.0, 10.0});
+
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+
+    // Execute
+    const auto refinedPolygon = polygons.LinearRefinePolygon(0, 4, 1);
+
+    ASSERT_EQ(expected.size(), refinedPolygon.size());
+    constexpr double tolerance = 1.0e-8;
+
+    for (size_t i = 0; i < refinedPolygon.size(); ++i)
+    {
+        EXPECT_NEAR(expected[i].x, refinedPolygon[i].x, tolerance);
+        EXPECT_NEAR(expected[i].y, refinedPolygon[i].y, tolerance);
+    }
+}
