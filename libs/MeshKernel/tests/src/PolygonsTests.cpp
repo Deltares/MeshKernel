@@ -994,6 +994,36 @@ TEST(Polygons, BasicLinearRefinePolygon)
     }
 }
 
+TEST(Polygons, LinearRefinePolygonSameStartEnd)
+{
+    // Prepare
+    std::vector<meshkernel::Point> nodes;
+
+    nodes.push_back({0.0, 10.0});
+    nodes.push_back({1.0, 10.0});
+    nodes.push_back({3.0, 10.0});
+    nodes.push_back({11.0, 10.0});
+    nodes.push_back({11.0, 0.0});
+    nodes.push_back({0.0, 0.0});
+    nodes.push_back({0.0, 10.0});
+
+    std::vector<meshkernel::Point> expected(nodes);
+
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+
+    // Execute
+    const auto refinedPolygon = polygons.LinearRefinePolygon(0, 1, 1);
+
+    ASSERT_EQ(expected.size(), refinedPolygon.size());
+    constexpr double tolerance = 1.0e-8;
+
+    for (size_t i = 0; i < refinedPolygon.size(); ++i)
+    {
+        EXPECT_NEAR(expected[i].x, refinedPolygon[i].x, tolerance);
+        EXPECT_NEAR(expected[i].y, refinedPolygon[i].y, tolerance);
+    }
+}
+
 TEST(Polygons, LinearRefinePolygonSameNodes)
 {
     // Prepare
@@ -1060,4 +1090,27 @@ TEST(Polygons, LinearRefinePolygonStartGtEnd)
         EXPECT_NEAR(expected[i].x, refinedPolygon[i].x, tolerance);
         EXPECT_NEAR(expected[i].y, refinedPolygon[i].y, tolerance);
     }
+}
+
+TEST(Polygons, LinearRefinePolygonOutOfBoundsCheck)
+{
+    // Prepare
+    std::vector<meshkernel::Point> nodes;
+
+    nodes.push_back({0.0, 10.0});
+    nodes.push_back({1.0, 10.0});
+    nodes.push_back({3.0, 10.0});
+    nodes.push_back({11.0, 10.0});
+    nodes.push_back({11.0, 0.0});
+    nodes.push_back({0.0, 0.0});
+    nodes.push_back({0.0, 10.0});
+
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+
+    // polygon index incorrect
+    EXPECT_THROW(auto refinedPolygon = polygons.LinearRefinePolygon(1, 1, 4), meshkernel::ConstraintError);
+    // polygon start node index incorrect
+    EXPECT_THROW(auto refinedPolygon = polygons.LinearRefinePolygon(0, 8, 1), meshkernel::ConstraintError);
+    // polygon end node index incorrect
+    EXPECT_THROW(auto refinedPolygon = polygons.LinearRefinePolygon(0, 1, 9), meshkernel::ConstraintError);
 }

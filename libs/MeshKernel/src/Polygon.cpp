@@ -432,6 +432,21 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
 
 std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t startIndex, const size_t endIndex) const
 {
+
+    if (startIndex >= m_nodes.size())
+    {
+        throw ConstraintError("The start index is greater than the number of points in the outer polygon: {} >= {}.",
+                              startIndex,
+                              m_nodes.size());
+    }
+
+    if (endIndex >= m_nodes.size())
+    {
+        throw ConstraintError("The end index is greater than the number of points in the outer polygon: {} >= {}.",
+                              startIndex,
+                              m_nodes.size());
+    }
+
     if (startIndex == endIndex)
     {
         return m_nodes;
