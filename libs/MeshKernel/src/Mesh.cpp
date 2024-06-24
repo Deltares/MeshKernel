@@ -1032,6 +1032,72 @@ meshkernel::UInt Mesh::GetNumValidEdges() const
     return count;
 }
 
+meshkernel::UInt Mesh::GetEdgeIndex(const UInt elementId, const UInt edgeId) const
+{
+    if (elementId == constants::missing::uintValue || edgeId == constants::missing::uintValue)
+    {
+        return constants::missing::uintValue;
+    }
+
+    if (elementId >= GetNumFaces())
+    {
+        throw ConstraintError("Element id is greater than the number of elements: {} >= {}", elementId, GetNumFaces());
+    }
+
+    if (edgeId >= GetNumValidEdges())
+    {
+        throw ConstraintError("edge id is greater than the number of edges: {} >= {}", edgeId, GetNumValidEdges());
+    }
+
+    const std::vector<UInt>& edgeIds = m_facesEdges[elementId];
+
+    // TODO use Operations::FindIndex when curvilinear grid from splines has been added to master
+    // return FindIndex (m_facesEdges[elementId], edgeId);
+
+    for (UInt e = 0; e < edgeIds.size(); ++e)
+    {
+        if (edgeIds[e] == edgeId)
+        {
+            return e;
+        }
+    }
+
+    return constants::missing::uintValue;
+}
+
+meshkernel::UInt Mesh::GetNodeIndex(const UInt elementId, const UInt nodeId) const
+{
+    if (elementId == constants::missing::uintValue || nodeId == constants::missing::uintValue)
+    {
+        return constants::missing::uintValue;
+    }
+
+    if (elementId >= GetNumFaces())
+    {
+        throw ConstraintError("Element id is greater than the number of elements: {} >= {}", elementId, GetNumFaces());
+    }
+
+    if (nodeId >= GetNumValidNodes())
+    {
+        throw ConstraintError("node id is greater than the number of nodes: {} >= {}", nodeId, GetNumValidNodes());
+    }
+
+    const std::vector<UInt>& nodeIds = m_facesNodes[elementId];
+
+    // TODO use Operations::FindIndex when curvilinear grid from splines has been added to master
+    // return FindIndex (m_facesNodes[elementId], nodeId);
+
+    for (UInt n = 0; n < nodeIds.size(); ++n)
+    {
+        if (nodeIds[n] == nodeId)
+        {
+            return n;
+        }
+    }
+
+    return constants::missing::uintValue;
+}
+
 std::vector<meshkernel::UInt> Mesh::GetValidNodeMapping() const
 {
     std::vector<meshkernel::UInt> nodeMap(GetNumNodes());

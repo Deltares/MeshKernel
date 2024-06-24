@@ -140,6 +140,30 @@ namespace meshkernel
         return 0;
     }
 
+    /// @brief Find the next index in the vector, wraps around when current is the last index
+    template <typename T>
+    UInt FindNextIndex(const std::vector<T>& vec, UInt current)
+    {
+        if (vec.size() == 0) [[unlikely]]
+        {
+            return constants::missing::uintValue;
+        }
+
+        return current == vec.size() - 1 ? 0 : current + 1;
+    }
+
+    /// @brief Find the previous index in the vector, wraps around when current is the first index
+    template <typename T>
+    UInt FindPreviousIndex(const std::vector<T>& vec, UInt current)
+    {
+        if (vec.size() == 0) [[unlikely]]
+        {
+            return constants::missing::uintValue;
+        }
+
+        return current == 0 ? vec.size() - 1 : current - 1;
+    }
+
     /// @brief Find all start-end positions in a vector separated by a separator
     /// @param[in] vec The vector with separator
     /// @param[in] start The start of the range to search for
