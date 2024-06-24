@@ -49,6 +49,11 @@ namespace meshkernel
     /// @brief Describes an edge with two indices
     using Edge = std::pair<UInt, UInt>;
 
+    static bool IsValidEdge(const Edge& edge)
+    {
+        return edge.first != constants::missing::uintValue && edge.second != constants::missing::uintValue;
+    }
+
     /// @brief Get the index of the node on the other node of the edge
     /// @param[in] edge The given edge
     /// @param[in] node The node where we want the other one
