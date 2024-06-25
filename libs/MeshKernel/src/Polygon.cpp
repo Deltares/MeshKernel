@@ -430,7 +430,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
     return refinedPolygon;
 }
 
-std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t startIndex, const size_t endIndex) const
+std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const UInt startIndex, const UInt endIndex) const
 {
 
     if (startIndex >= m_nodes.size())
