@@ -105,7 +105,7 @@ namespace meshkernel
 
         /// @brief Refine the polygon
         /// @return The points for the refined polygon
-        std::vector<Point> LinearRefine(size_t startIndex, size_t endIndex) const;
+        std::vector<Point> LinearRefine(UInt startIndex, UInt endIndex) const;
 
         /// @brief Compute the area of the polygon, its centre of mass and the direction
         std::tuple<double, Point, TraversalDirection> FaceAreaAndCenterOfMass() const;
