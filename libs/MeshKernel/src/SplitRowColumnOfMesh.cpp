@@ -145,6 +145,7 @@ void meshkernel::SplitRowColumnOfMesh::SplitEdge(Mesh2D& mesh, [[maybe_unused]] 
     const std::array<UInt, 2>& edgeFaces = mesh.m_edgesFaces[edgeId];
     const UInt startNode = edge.first;
     const UInt endNode = edge.second;
+    const UInt nextElement = edgeFaces[0] + edgeFaces[1] - elementId;
 
     // if (startNode == constants::missing::uintValue || endNode == constants::missing::uintValue || !mesh.Node(startNode).IsValid() || !mesh.Node(endNode).IsValid())
     // {
@@ -177,7 +178,6 @@ void meshkernel::SplitRowColumnOfMesh::SplitEdge(Mesh2D& mesh, [[maybe_unused]] 
         undoActions.Add(std::move(undoAction));
     }
 
-    UInt nextElement = edgeFaces[0] + edgeFaces[1] - elementId;
 
     if (nextElement != constants::missing::uintValue)
     {
@@ -373,6 +373,111 @@ void meshkernel::SplitRowColumnOfMesh::SplitEdge(Mesh2D& mesh, [[maybe_unused]] 
     previousNewNode = newNodeId;
 }
 
+
+void meshkernel::SplitRowColumnOfMesh::SplitEdge2(Mesh2D& mesh, [[maybe_unused]] UInt elementId, UInt edgeId, UInt& previousNewNode, CompoundUndoAction& undoActions) const
+{
+    std::cout << "SplitRowColumnOfMesh::SplitEdge2 "<< edgeId << std::endl;
+
+
+    const Edge& edge = mesh.GetEdge(edgeId);
+
+    // if (!meshkernel::IsValidEdge (edge))
+    // {
+    //     previousNewNode = constants::missing::uintValue;
+    //     return;
+    // }
+
+    const std::array<UInt, 2>& edgeFaces = mesh.m_edgesFaces[edgeId];
+    const UInt startNode = edge.first;
+    const UInt endNode = edge.second;
+    const UInt nextElement = edgeFaces[0] + edgeFaces[1] - elementId;
+
+    std::cout << "nextElement " << nextElement << std::endl;
+    std::cout << "node ids: " << startNode << "  " << endNode << std::endl;
+
+    Point point = 0.5 * (mesh.Node(startNode) + mesh.Node(endNode));
+    std::cout << "new node coords: " << point.x << ", " << point.y << std::endl;
+
+    if (nextElement != constants::missing::uintValue && mesh.m_numFacesNodes[nextElement] == 3)
+    {
+        auto [newEdgeId1, undoAction1] = mesh.ConnectNodes(startNode, previousNewNode);
+        undoActions.Add(std::move(undoAction1));
+
+        auto [newEdgeId2, undoAction2] = mesh.ConnectNodes(endNode, previousNewNode);
+        undoActions.Add(std::move(undoAction2));
+
+        previousNewNode = constants::missing::uintValue;
+    }
+    else
+    {
+        auto [newNodeId, undo] = mesh.InsertNode(point);
+        undoActions.Add(std::move(undo));
+
+        std::cout << "new node: " << newNodeId << std::endl;
+
+        std::cout << "deleting edge: " << edgeId << "  "
+                  << mesh.Node (edge.first).x <<", " << mesh.Node (edge.first).y << " -- "
+                  << mesh.Node (edge.second).x <<", " << mesh.Node (edge.second).y
+                  << std::endl;
+
+        undoActions.Add(mesh.DeleteEdge(edgeId));
+        auto [newEdgeId1, newEdgeUndo1] = mesh.ConnectNodes(startNode, newNodeId);
+        undoActions.Add(std::move(newEdgeUndo1));
+
+        auto [newEdgeId2, newEdgeUndo2] = mesh.ConnectNodes(newNodeId, endNode);
+        undoActions.Add(std::move(newEdgeUndo2));
+
+        if (previousNewNode != constants::missing::uintValue)
+        {
+            // undoActions.Add(mesh.DeleteEdge(edgeId));
+            auto [newEdgeId1, newEdgeUndo1] = mesh.ConnectNodes(previousNewNode, newNodeId);
+            undoActions.Add(std::move(newEdgeUndo1));
+        }
+
+        // TODO Set the previous new node to null id if: 1. no next element, 2. merged triangles
+        previousNewNode = newNodeId;
+    }
+
+    // if (nextElement != constants::missing::uintValue)
+    // {
+    //     if (mesh.m_numFacesNodes[nextElement] == 3)
+    //     {
+    //         auto [newEdgeId1, undoAction1] = mesh.ConnectNodes(startNode, previousNewNode);
+    //         undoActions.Add(std::move(undoAction1));
+
+    //         auto [newEdgeId2, undoAction2] = mesh.ConnectNodes(endNode, previousNewNode);
+    //         undoActions.Add(std::move(undoAction2));
+
+    //         previousNewNode = constants::missing::uintValue;
+    //     }
+    //     else
+    //     {
+    //         auto [newNodeId, undo] = mesh.InsertNode(point);
+    //         undoActions.Add(std::move(undo));
+
+    //         undoActions.Add(mesh.DeleteEdge(edgeId));
+    //         auto [newEdgeId1, newEdgeUndo1] = mesh.ConnectNodes(startNode, newNodeId);
+    //         undoActions.Add(std::move(newEdgeUndo1));
+
+    //         auto [newEdgeId2, newEdgeUndo2] = mesh.ConnectNodes(newNodeId, endNode);
+    //         undoActions.Add(std::move(newEdgeUndo2));
+
+    //         if (previousNewNode != constants::missing::uintValue)
+    //         {
+    //             undoActions.Add(mesh.DeleteEdge(edgeId));
+    //             auto [newEdgeId1, newEdgeUndo1] = mesh.ConnectNodes(previousNewNode, newNodeId);
+    //             undoActions.Add(std::move(newEdgeUndo1));
+    //         }
+
+    //         // TODO Set the previous new node to null id if: 1. no next element, 2. merged triangles
+    //         previousNewNode = newNodeId;
+    //     }
+    // }
+
+
+}
+
+
 void meshkernel::SplitRowColumnOfMesh::SplitEdges(Mesh2D& mesh, std::vector<UInt>& elementIds, std::vector<UInt>& edgeIds, CompoundUndoAction& undoActions) const
 {
     UInt previousNewNode = constants::missing::uintValue;
@@ -381,7 +486,7 @@ void meshkernel::SplitRowColumnOfMesh::SplitEdges(Mesh2D& mesh, std::vector<UInt
 
     for (UInt currentEdge : edgeIds)
     {
-        SplitEdge(mesh, currentElement, currentEdge, previousNewNode, undoActions);
+        SplitEdge2(mesh, currentElement, currentEdge, previousNewNode, undoActions);
         currentElement = elementIds[elementPosition];
         ++elementPosition;
     }
