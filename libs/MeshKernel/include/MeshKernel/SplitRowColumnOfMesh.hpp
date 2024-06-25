@@ -56,6 +56,8 @@ namespace meshkernel
 
         void SplitEdge(Mesh2D& mesh, UInt elementId, UInt edgeId, UInt& previousNewNode, CompoundUndoAction& undoActions) const;
 
+        void SplitEdge2(Mesh2D& mesh, UInt elementId, UInt edgeId, UInt& previousNewNode, CompoundUndoAction& undoActions) const;
+
         bool IsValidEdge(const Mesh2D& mesh, const UInt edgeId) const;
 
         void CollectElementIdsToSplit(const Mesh2D& mesh, const UInt edgeId, std::vector<UInt>& elementIds, std::vector<UInt>& edgeIds) const;
