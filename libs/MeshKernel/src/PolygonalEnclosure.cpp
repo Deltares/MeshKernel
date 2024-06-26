@@ -152,7 +152,7 @@ void meshkernel::PolygonalEnclosure::SnapToLandBoundary(size_t startIndex, size_
     m_outer.SnapToLandBoundary(startIndex, endIndex, landBoundary);
 }
 
-std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::Refine(size_t startIndex, size_t endIndex, double refinementDistance) const
+std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::Refine(UInt startIndex, UInt endIndex, double refinementDistance) const
 {
     if (endIndex >= m_outer.Size())
     {
@@ -164,7 +164,7 @@ std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::Refine(size_t sta
     return m_outer.Refine(startIndex, endIndex, refinementDistance);
 }
 
-std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::LinearRefine(size_t startIndex, size_t endIndex) const
+std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::LinearRefine(UInt startIndex, UInt endIndex) const
 {
     if (endIndex >= m_outer.Size())
     {

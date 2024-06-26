@@ -362,7 +362,7 @@ meshkernel::Point meshkernel::Polygon::interpolatePointOnPolyline(const std::vec
     return (1.0 - ti) * points[intervalIndex - 1] + ti * points[intervalIndex];
 }
 
-std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startIndex, const size_t endIndex, const double refinementDistance) const
+std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const UInt startIndex, const UInt endIndex, const double refinementDistance) const
 {
     if (startIndex == endIndex)
     {
