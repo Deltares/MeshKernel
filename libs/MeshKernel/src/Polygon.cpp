@@ -479,7 +479,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const UInt star
             auto polygonNodeIndex = i + startIndex;
             if (polygonNodeIndex >= m_nodes.size())
             {
-                polygonNodeIndex = polygonNodeIndex - m_nodes.size();
+                polygonNodeIndex = polygonNodeIndex - static_cast<UInt>(m_nodes.size());
             }
             polygonNodes[i] = m_nodes[polygonNodeIndex];
         }
