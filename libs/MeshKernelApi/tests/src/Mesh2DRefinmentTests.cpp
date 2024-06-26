@@ -62,6 +62,48 @@ TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApi)
     ASSERT_NEAR(92.626556, geometryListOut.coordinates_y[0], tolerance);
 }
 
+TEST_F(CartesianApiTestFixture, LinearRefineAPolygonThroughApi)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
+
+    std::vector xCoordinatesIn{0.0, 1.0, 3.0, 11.0, 11.0, 0.0, 0.0};
+    std::vector yCoordinatesIn{10.0, 10.0, 10.0, 10.0, 0.0, 0.0, 10.0};
+
+    geometryListIn.coordinates_x = xCoordinatesIn.data();
+    geometryListIn.coordinates_y = yCoordinatesIn.data();
+    geometryListIn.num_coordinates = static_cast<int>(xCoordinatesIn.size());
+
+    // Execute
+    int expectedNumberOfpolygonNodes = 8;
+
+    meshkernelapi::GeometryList geometryListOut;
+    geometryListOut.num_coordinates = expectedNumberOfpolygonNodes;
+    geometryListOut.geometry_separator = meshkernel::constants::missing::doubleValue;
+    std::vector<double> xCoordinatesOut(expectedNumberOfpolygonNodes);
+    std::vector<double> yCoordinatesOut(expectedNumberOfpolygonNodes);
+    geometryListOut.coordinates_x = xCoordinatesOut.data();
+    geometryListOut.coordinates_y = yCoordinatesOut.data();
+
+    auto errorCode = mkernel_polygon_linear_refine(meshKernelId, geometryListIn, 1, 4, geometryListOut);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert
+    const double tolerance = 1e-8;
+    ASSERT_NEAR(3.476743906, geometryListOut.coordinates_x[2], tolerance);
+    ASSERT_NEAR(10.0, geometryListOut.coordinates_y[2], tolerance);
+
+    ASSERT_NEAR(7.180339887, geometryListOut.coordinates_x[3], tolerance);
+    ASSERT_NEAR(10.0, geometryListOut.coordinates_y[3], tolerance);
+
+    ASSERT_NEAR(11.0, geometryListOut.coordinates_x[4], tolerance);
+    ASSERT_NEAR(8.281492376, geometryListOut.coordinates_y[4], tolerance);
+}
+
 TEST_F(CartesianApiTestFixture, RefineBasedOnSamplesWaveCourant_OnAUniformMesh_shouldRefineMesh)
 {
     // Prepare

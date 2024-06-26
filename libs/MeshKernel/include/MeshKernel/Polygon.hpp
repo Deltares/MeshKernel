@@ -101,11 +101,11 @@ namespace meshkernel
         /// The refined nodes are placed at equally spaced intervals for each polygon segment.
         /// The spacing of the refined nodes may differ between polygon segments.
         /// @return The points for the refined polygon
-        std::vector<Point> Refine(size_t startIndex, size_t endIndex, double refinementDistance) const;
+        std::vector<Point> Refine(UInt startIndex, UInt endIndex, double refinementDistance) const;
 
         /// @brief Refine the polygon
         /// @return The points for the refined polygon
-        std::vector<Point> LinearRefine(size_t startIndex, size_t endIndex) const;
+        std::vector<Point> LinearRefine(UInt startIndex, UInt endIndex) const;
 
         /// @brief Compute the area of the polygon, its centre of mass and the direction
         std::tuple<double, Point, TraversalDirection> FaceAreaAndCenterOfMass() const;
