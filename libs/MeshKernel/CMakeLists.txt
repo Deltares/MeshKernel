@@ -63,6 +63,7 @@ set(
   ${SRC_DIR}/SplineAlgorithms.cpp
   ${SRC_DIR}/Splines.cpp
   ${SRC_DIR}/SplitRowColumnOfMesh.cpp
+  ${SRC_DIR}/SplitRowColumnOfMesh2.cpp
   ${SRC_DIR}/TriangulationInterpolation.cpp
   ${SRC_DIR}/TriangulationWrapper.cpp
 )
@@ -178,6 +179,7 @@ set(
   ${DOMAIN_INC_DIR}/SplineAlgorithms.hpp
   ${DOMAIN_INC_DIR}/Splines.hpp
   ${DOMAIN_INC_DIR}/SplitRowColumnOfMesh.hpp
+  ${DOMAIN_INC_DIR}/SplitRowColumnOfMesh2.hpp
   ${DOMAIN_INC_DIR}/TriangulationInterpolation.hpp
   ${DOMAIN_INC_DIR}/TriangulationWrapper.hpp
   ${DOMAIN_INC_DIR}/Vector.hpp
