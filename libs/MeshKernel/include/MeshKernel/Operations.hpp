@@ -161,7 +161,7 @@ namespace meshkernel
             return constants::missing::uintValue;
         }
 
-        return current == 0 ? vec.size() - 1 : current - 1;
+        return current == 0 ? static_cast<UInt>(vec.size()) - 1 : current - 1;
     }
 
     /// @brief Find all start-end positions in a vector separated by a separator

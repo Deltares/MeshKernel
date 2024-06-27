@@ -617,7 +617,7 @@ meshkernel::UInt Mesh::FindEdge(UInt firstNodeIndex, UInt secondNodeIndex) const
 {
     if (firstNodeIndex == constants::missing::uintValue || secondNodeIndex == constants::missing::uintValue)
     {
-        throw std::invalid_argument("Mesh::FindEdge: Invalid node index.");
+        throw ConstraintError("Mesh::FindEdge: Invalid node index: first {}, second {}", firstNodeIndex, secondNodeIndex);
     }
 
     for (UInt n = 0; n < m_nodesNumEdges[firstNodeIndex]; n++)
@@ -1044,9 +1044,11 @@ meshkernel::UInt Mesh::GetEdgeIndex(const UInt elementId, const UInt edgeId) con
         throw ConstraintError("Element id is greater than the number of elements: {} >= {}", elementId, GetNumFaces());
     }
 
-    if (edgeId >= GetNumValidEdges())
+    if (edgeId >= GetNumEdges())
+    // if (edgeId >= GetNumValidEdges())
     {
-        throw ConstraintError("edge id is greater than the number of edges: {} >= {}", edgeId, GetNumValidEdges());
+        throw ConstraintError("edge id is greater than the number of edges: {} >= {}", edgeId, GetNumEdges());
+        // throw ConstraintError("edge id is greater than the number of edges: {} >= {}", edgeId, GetNumValidEdges());
     }
 
     const std::vector<UInt>& edgeIds = m_facesEdges[elementId];
