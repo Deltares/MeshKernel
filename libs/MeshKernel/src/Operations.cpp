@@ -163,7 +163,7 @@ namespace meshkernel
         Point sphericalPoint;
         const double angle = atan2(cartesianPoint.y, cartesianPoint.x) * constants::conversion::radToDeg;
         sphericalPoint.y = atan2(cartesianPoint.z, sqrt(cartesianPoint.x * cartesianPoint.x + cartesianPoint.y * cartesianPoint.y)) * constants::conversion::radToDeg;
-        sphericalPoint.x = angle + std::lround((referenceLongitude - angle) / 360.0) * 360.0;
+        sphericalPoint.x = angle + static_cast<double>(std::lround((referenceLongitude - angle) / 360.0)) * 360.0;
         return sphericalPoint;
     }
 
