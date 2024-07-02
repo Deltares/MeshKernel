@@ -39,6 +39,7 @@
 #include "MeshKernel/SamplesHessianCalculator.hpp"
 #include "MeshKernel/SplitRowColumnOfMesh.hpp"
 #include "MeshKernel/SplitRowColumnOfMesh2.hpp"
+#include "MeshKernel/SplitRowColumnOfMesh3.hpp"
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 #include "TestUtils/MeshReaders.hpp"
@@ -2227,23 +2228,7 @@ TEST(MeshRefinement, Split)
         Mesh2D mesh(curviMesh->ComputeEdges(), curviMesh->ComputeNodes(), Projection::cartesian);
         mesh.Administrate();
 
-        UInt edgeId = 0;
-
-        [[maybe_unused]] SplitRowColumnOfMesh2 splitMesh;
-        // splitMesh.Compute(mesh, edgeId);
-
-        UInt elementId = mesh.m_edgesFaces[edgeId][0] == constants::missing::uintValue ? mesh.m_edgesFaces[edgeId][1] : mesh.m_edgesFaces[edgeId][0];
-
-        [[maybe_unused]] UInt edgeIndex = constants::missing::uintValue;
-
-        for (UInt i = 0; i < 4; ++i)
-        {
-            if (mesh.m_facesEdges[elementId][i] == edgeId)
-            {
-                edgeIndex = i;
-                break;
-            }
-        }
+        [[maybe_unused]] SplitRowColumnOfMesh3 splitMesh;
 
         // [[maybe_unused]] UInt triangleStartNode1 = mesh.FindNodeCloseToAPoint({60.0, 10.0}, 1.0e-4);
         // [[maybe_unused]] UInt triangleEndNode1 = mesh.FindNodeCloseToAPoint({70.0, 0.0}, 1.0e-4);
@@ -2275,11 +2260,6 @@ TEST(MeshRefinement, Split)
         // [[maybe_unused]] auto undoSplit1 = splitMesh.Compute(mesh, edge1);
         // std::cout << "--------------------------------" << std::endl;
 
-        // // [[maybe_unused]] UInt startNode3 = mesh.FindNodeCloseToAPoint({50.0, 100.0}, 1.0e-4);
-        // // [[maybe_unused]] UInt endNode3 = mesh.FindNodeCloseToAPoint({60.0, 100.0}, 1.0e-4);
-        // // [[maybe_unused]] UInt edge3 = mesh.FindEdge(startNode3, endNode3);
-        // // [[maybe_unused]] auto undoSplit3 = splitMesh.Compute(mesh, edge3);
-
         // std::cout << "--------------------------------" << std::endl;
 
         // {
@@ -2288,41 +2268,49 @@ TEST(MeshRefinement, Split)
         //     [[maybe_unused]] UInt edge4 = mesh.FindEdge(startNode4, endNode4);
         //     [[maybe_unused]] auto undoSplit4 = splitMesh.Compute(mesh, edge4);
         // }
+        std::cout << "--------------------------------" << std::endl;
 
-        // std::cout << "--------------------------------" << std::endl;
+        {
+            [[maybe_unused]] UInt startNode4 = mesh.FindNodeCloseToAPoint({0.0, 30.0}, 1.0e-4);
+            [[maybe_unused]] UInt endNode4 = mesh.FindNodeCloseToAPoint({10.0, 30.0}, 1.0e-4);
+            [[maybe_unused]] UInt edge4 = mesh.FindEdge(startNode4, endNode4);
+            [[maybe_unused]] auto undoSplit4 = splitMesh.Compute(mesh, edge4);
+        }
+
+        std::cout << "--------------------------------" << std::endl;
+
+        {
+            [[maybe_unused]] UInt startNode2 = mesh.FindNodeCloseToAPoint({20.0, 0.0}, 1.0e-4);
+            [[maybe_unused]] UInt endNode2 = mesh.FindNodeCloseToAPoint({20.0, 10.0}, 1.0e-4);
+            [[maybe_unused]] UInt edge2 = mesh.FindEdge(startNode2, endNode2);
+            [[maybe_unused]] auto undoSplit2 = splitMesh.Compute(mesh, edge2);
+        }
+
+        std::cout << "--------------------------------" << std::endl;
 
         // {
-        //     [[maybe_unused]] UInt startNode2 = mesh.FindNodeCloseToAPoint({20.0, 0.0}, 1.0e-4);
-        //     [[maybe_unused]] UInt endNode2 = mesh.FindNodeCloseToAPoint({20.0, 10.0}, 1.0e-4);
-        //     [[maybe_unused]] UInt edge2 = mesh.FindEdge(startNode2, endNode2);
-        //     [[maybe_unused]] auto undoSplit2 = splitMesh.Compute(mesh, edge2);
-        // }
-
-        // std::cout << "--------------------------------" << std::endl;
-
-        // {
-        //     [[maybe_unused]] UInt startNode2 = mesh.FindNodeCloseToAPoint({60.0, 10.0}, 1.0e-4);
-        //     [[maybe_unused]] UInt endNode2 = mesh.FindNodeCloseToAPoint({70.0, 10.0}, 1.0e-4);
+        //     [[maybe_unused]] UInt startNode2 = mesh.FindNodeCloseToAPoint({60.0, 0.0}, 1.0e-4);
+        //     [[maybe_unused]] UInt endNode2 = mesh.FindNodeCloseToAPoint({60.0, 10.0}, 1.0e-4);
         //     [[maybe_unused]] UInt edge2 = mesh.FindEdge(startNode2, endNode2);
         //     [[maybe_unused]] auto undoSplit2 = splitMesh.Compute(mesh, edge2);
         // }
 
         std::cout << "--------------------------------" << std::endl;
 
-        {
-            [[maybe_unused]] UInt startNode = mesh.FindNodeCloseToAPoint({60.0, 10.0}, 1.0e-4);
-            [[maybe_unused]] UInt endNode = mesh.FindNodeCloseToAPoint({60.0, 20.0}, 1.0e-4);
-            [[maybe_unused]] UInt edge = mesh.FindEdge(startNode, endNode);
-            [[maybe_unused]] auto undoSplit = splitMesh.Compute(mesh, edge);
-        }
-        std::cout << "--------------------------------" << std::endl;
+        // {
+        //     [[maybe_unused]] UInt startNode = mesh.FindNodeCloseToAPoint({50.0, 10.0}, 1.0e-4);
+        //     [[maybe_unused]] UInt endNode = mesh.FindNodeCloseToAPoint({50.0, 20.0}, 1.0e-4);
+        //     [[maybe_unused]] UInt edge = mesh.FindEdge(startNode, endNode);
+        //     [[maybe_unused]] auto undoSplit = splitMesh.Compute(mesh, edge);
+        // }
+        // std::cout << "--------------------------------" << std::endl;
 
-        {
-            [[maybe_unused]] UInt startNode = mesh.FindNodeCloseToAPoint({60.0, 30.0}, 1.0e-4);
-            [[maybe_unused]] UInt endNode = mesh.FindNodeCloseToAPoint({70.0, 30.0}, 1.0e-4);
-            [[maybe_unused]] UInt edge = mesh.FindEdge(startNode, endNode);
-            [[maybe_unused]] auto undoSplit = splitMesh.Compute(mesh, edge);
-        }
+        // {
+        //     [[maybe_unused]] UInt startNode = mesh.FindNodeCloseToAPoint({60.0, 30.0}, 1.0e-4);
+        //     [[maybe_unused]] UInt endNode = mesh.FindNodeCloseToAPoint({70.0, 30.0}, 1.0e-4);
+        //     [[maybe_unused]] UInt edge = mesh.FindEdge(startNode, endNode);
+        //     [[maybe_unused]] auto undoSplit = splitMesh.Compute(mesh, edge);
+        // }
 
         // std::cout << "--------------------------------" << std::endl;
 
@@ -2333,43 +2321,34 @@ TEST(MeshRefinement, Split)
         //     [[maybe_unused]] auto undoSplit = splitMesh.Compute(mesh, edge);
         // }
 
+        {
+            [[maybe_unused]] UInt startNode = mesh.FindNodeCloseToAPoint({60.0, 20.0}, 1.0e-4);
+            [[maybe_unused]] UInt endNode = mesh.FindNodeCloseToAPoint({70.0, 20.0}, 1.0e-4);
+            // [[maybe_unused]] UInt startNode = mesh.FindNodeCloseToAPoint({50.0, 20.0}, 1.0e-4);
+            // [[maybe_unused]] UInt endNode = mesh.FindNodeCloseToAPoint({60.0, 20.0}, 1.0e-4);
+            [[maybe_unused]] UInt edge = mesh.FindEdge(startNode, endNode);
+
+            std::cout << "node count: " << edge << "  "
+                      << mesh.m_edgesFaces[edge][0] << "  " << mesh.m_edgesFaces[edge][1]
+                      // << mesh.m_numFacesNodes[mesh.m_edgesFaces[edge3][0]] << "  " << mesh.m_numFacesNodes[mesh.m_edgesFaces[edge3][1]]
+                      << std::endl;
+        }
+
+        {
+            [[maybe_unused]] UInt startNode3 = mesh.FindNodeCloseToAPoint({60.0, 50.0}, 1.0e-4);
+            [[maybe_unused]] UInt endNode3 = mesh.FindNodeCloseToAPoint({70.0, 50.0}, 1.0e-4);
+            // [[maybe_unused]] UInt startNode3 = mesh.FindNodeCloseToAPoint({60.0, 20.0}, 1.0e-4);
+            // [[maybe_unused]] UInt endNode3 = mesh.FindNodeCloseToAPoint({70.0, 20.0}, 1.0e-4);
+            // [[maybe_unused]] UInt startNode3 = mesh.FindNodeCloseToAPoint({60.0, 100.0}, 1.0e-4);
+            // [[maybe_unused]] UInt endNode3 = mesh.FindNodeCloseToAPoint({70.0, 100.0}, 1.0e-4);
+            [[maybe_unused]] UInt edge3 = mesh.FindEdge(startNode3, endNode3);
+            [[maybe_unused]] auto undoSplit3 = splitMesh.Compute(mesh, edge3);
+        }
+
         std::cout << "--------------------------------" << std::endl;
 
-        // undoSplit2->Restore();
         mesh.Administrate();
 
-        // UInt neighbourEdgeIndex = edgeIndex == 0 ? 3 : edgeIndex - 1;
-
-        // std::cout << "nodes: " << mesh.GetEdge(edgeId).first << " -- " << mesh.GetEdge(edgeId).second << " ++++ "
-        //           << mesh.GetEdge(mesh.m_facesEdges[elementId][neighbourEdgeIndex]).first << " -- "
-        //           << mesh.GetEdge(mesh.m_facesEdges[elementId][neighbourEdgeIndex]).second
-        //           << std::endl;
-
-        // splitMesh.Compute(mesh, mesh.m_facesEdges[elementId][neighbourEdgeIndex]);
-        // // splitMesh.Compute(mesh, 170);
-
-        // edgeId = 170;
-        // elementId = mesh.m_edgesFaces[edgeId][0] == constants::missing::uintValue ? mesh.m_edgesFaces[edgeId][1] : mesh.m_edgesFaces[edgeId][0];
-
-        // edgeIndex = constants::missing::uintValue;
-
-        // for (UInt i = 0; i < 4; ++i)
-        // {
-        //     if (mesh.m_facesEdges[elementId][i] == edgeId)
-        //     {
-        //         edgeIndex = i;
-        //         break;
-        //     }
-        // }
-
-        // neighbourEdgeIndex = edgeIndex == 0 ? 3 : edgeIndex - 1;
-
-        // std::cout << "nodes: " << mesh.GetEdge(edgeId).first << " -- " << mesh.GetEdge(edgeId).second << " ++++ "
-        //           << mesh.GetEdge(mesh.m_facesEdges[elementId][neighbourEdgeIndex]).first << " -- "
-        //           << mesh.GetEdge(mesh.m_facesEdges[elementId][neighbourEdgeIndex]).second
-        //           << std::endl;
-
-        // splitMesh.Compute(mesh, mesh.m_facesEdges[elementId][neighbourEdgeIndex]);
         Print(mesh.Nodes(), mesh.Edges());
     }
     // catch (std::exception& e)
