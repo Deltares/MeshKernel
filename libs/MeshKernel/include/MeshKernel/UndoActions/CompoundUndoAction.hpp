@@ -39,6 +39,21 @@ namespace meshkernel
     class CompoundUndoAction : public UndoAction
     {
     public:
+
+        class StoreExpression
+        {
+        public :
+            StoreExpression (CompoundUndoAction& action) : m_undoAction(action) {}
+
+            void operator=(UndoActionPtr&& action)
+            {
+                m_undoAction.Add (std::move(action));
+            }
+
+        private :
+            CompoundUndoAction& m_undoAction;
+        };
+
         /// @brief Iterator over composite undo actions.
         using const_iterator = std::vector<std::unique_ptr<UndoAction>>::const_iterator;
 
@@ -47,6 +62,11 @@ namespace meshkernel
 
         /// @brief Add an undo action to the compound action
         void Add(UndoActionPtr&& action);
+
+        StoreExpression Add();
+
+        /// @brief Assign an undo action to the compound action
+        void operator=(UndoActionPtr&& action);
 
         /// @brief Iterator to start of composite undo actions
         const_iterator begin() const;
@@ -69,3 +89,8 @@ namespace meshkernel
     };
 
 } // namespace meshkernel
+
+inline meshkernel::CompoundUndoAction::StoreExpression meshkernel::CompoundUndoAction::Add()
+{
+    return StoreExpression(*this);
+}

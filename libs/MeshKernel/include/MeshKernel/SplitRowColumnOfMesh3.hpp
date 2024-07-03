@@ -58,6 +58,8 @@ namespace meshkernel
 
         void SplitEdges(Mesh2D& mesh, std::vector<UInt>& elementIds, std::vector<UInt>& edgeIds, CompoundUndoAction& undoActions) const;
 
+        void SplitEdge (Mesh2D& mesh, const UInt edgeId, UInt& newNode, std::vector<UInt>& edgesToDelete, CompoundUndoAction& undoActions) const;
+
         void SplitEdge(Mesh2D& mesh, UInt elementId, UInt edgeId, UInt& previousNewNode, CompoundUndoAction& undoActions) const;
 
         void SplitEdge2(Mesh2D& mesh, UInt elementId, UInt edgeId, UInt& previousNewNode, CompoundUndoAction& undoActions) const;
@@ -65,6 +67,12 @@ namespace meshkernel
         void SplitEdge3(Mesh2D& mesh, UInt elementId, UInt edgeId, UInt& previousNewNode, CompoundUndoAction& undoActions, std::vector<UInt>& edgesToDelete) const;
 
         void SplitEdge4(Mesh2D& mesh, UInt elementId, UInt edgeId, UInt& newNode, CompoundUndoAction& undoActions, std::vector<UInt>& edgesToDelete) const;
+
+        void SplitEdge5(Mesh2D& mesh, UInt elementId, UInt edgeId, UInt& newNode, CompoundUndoAction& undoActions, std::vector<UInt>& edgesToDelete) const;
+
+        UInt GetNextElementId (const Mesh2D& mesh, const UInt elementId, const UInt edgeId) const;
+
+        UInt OppositeEdgeId (const Mesh2D& mesh, const UInt elementId, const UInt edgeId) const;
 
         bool IsValidEdge(const Mesh2D& mesh, const UInt edgeId) const;
 

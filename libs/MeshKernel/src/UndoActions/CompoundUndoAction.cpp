@@ -23,6 +23,19 @@ void meshkernel::CompoundUndoAction::Add(UndoActionPtr&& action)
     }
 }
 
+void meshkernel::CompoundUndoAction::operator=(UndoActionPtr&& action)
+{
+    if (action != nullptr)
+    {
+        if (action->GetState() == UndoAction::State::Restored)
+        {
+            throw ConstraintError("Cannot add an action in the {} state.", UndoAction::to_string(action->GetState()));
+        }
+
+        m_undoActions.emplace_back(std::move(action));
+    }
+}
+
 void meshkernel::CompoundUndoAction::DoCommit()
 {
     for (const UndoActionPtr& action : m_undoActions)

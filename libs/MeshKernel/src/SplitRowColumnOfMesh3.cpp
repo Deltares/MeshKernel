@@ -116,10 +116,10 @@ void meshkernel::SplitRowColumnOfMesh3::SplitAlongRow(Mesh2D& mesh, const std::v
     auto elementIter = elementIds.begin();
     UInt newNode = constants::missing::uintValue;
 
-    for (UInt i = 0; i < edgeIds.size(); ++i)
+    for (UInt i = 0; i < edgeIds.size() - 1; ++i)
     {
         UInt elementId = elementIter == elementIds.end() ? constants::missing::uintValue : *elementIter;
-        SplitEdge4(mesh, elementId, edgeIds[i], newNode, undoActions, edgesToDelete);
+        SplitEdge5(mesh, elementId, edgeIds[i], newNode, undoActions, edgesToDelete);
         ++elementIter;
     }
 
@@ -131,6 +131,239 @@ void meshkernel::SplitRowColumnOfMesh3::SplitAlongRow(Mesh2D& mesh, const std::v
     // }
 }
 
+meshkernel::UInt meshkernel::SplitRowColumnOfMesh3::GetNextElementId (const Mesh2D& mesh, const UInt elementId, const UInt edgeId) const
+{
+
+    if (elementId == constants::missing::uintValue || edgeId == constants::missing::uintValue)
+    {
+        return constants::missing::uintValue;
+    }
+
+    if (elementId != constants::missing::uintValue && mesh.m_numFacesNodes [elementId] != 4)
+    {
+        return constants::missing::uintValue;
+    }
+
+    UInt edgeIndex = mesh.GetEdgeIndex(elementId, edgeId);
+    UInt oppositeEdgeIndex = (edgeIndex + 2) % 4;
+    UInt oppositeEdgeId = mesh.m_facesEdges[elementId][oppositeEdgeIndex];
+    const std::array<UInt, 2>& oppositeEdgeFace = mesh.m_edgesFaces[oppositeEdgeId];
+    UInt nextElement = oppositeEdgeFace[0] + oppositeEdgeFace[1] - elementId;
+
+    return nextElement;
+}
+
+meshkernel::UInt meshkernel::SplitRowColumnOfMesh3::OppositeEdgeId (const Mesh2D& mesh, const UInt elementId, const UInt edgeId) const
+{
+    if (elementId == constants::missing::uintValue || edgeId == constants::missing::uintValue)
+    {
+        return constants::missing::uintValue;
+    }
+
+    UInt edgeIndex = mesh.GetEdgeIndex(elementId, edgeId);
+    UInt oppositeEdgeIndex = (edgeIndex + 2) % 4;
+    UInt oppositeEdgeId = mesh.m_facesEdges[elementId][oppositeEdgeIndex];
+
+    return oppositeEdgeId;
+}
+
+void meshkernel::SplitRowColumnOfMesh3::SplitEdge (Mesh2D& mesh, const UInt edgeId, UInt& newNode, std::vector<UInt>& edgesToDelete, CompoundUndoAction& undoActions) const
+{
+    const Edge& edgeNode = mesh.GetEdge(edgeId);
+
+    Point point = 0.5 * (mesh.Node(edgeNode.first) + mesh.Node(edgeNode.second));
+    std::cout << "new node coords: " << point.x << ", " << point.y << std::endl;
+    auto [newNodeId, undo] = mesh.InsertNode(point);
+    newNode = newNodeId;
+    undoActions.Add(std::move(undo));
+
+    auto [newEdgeId1, newEdgeUndo1] = mesh.ConnectNodes(edgeNode.first, newNodeId);
+    undoActions.Add(std::move(newEdgeUndo1));
+
+    auto [newEdgeId2, newEdgeUndo2] = mesh.ConnectNodes(newNodeId, edgeNode.second);
+    undoActions.Add(std::move(newEdgeUndo2));
+
+    edgesToDelete.push_back (edgeId);
+}
+
+void meshkernel::SplitRowColumnOfMesh3::SplitEdge5(Mesh2D& mesh, const UInt elementId, const UInt edgeId, UInt& newNode, CompoundUndoAction& undoActions [[maybe_unused]], std::vector<UInt>& edgesToDelete [[maybe_unused]] ) const
+{
+    std::cout << " SplitRowColumnOfMesh3::SplitEdge4 " << elementId << "  " << edgeId << "  " << std::endl;
+
+    [[maybe_unused]] const Edge& edgeNode = mesh.GetEdge(edgeId);
+    [[maybe_unused]] const std::array<UInt, 2>& edgeFace = mesh.m_edgesFaces[edgeId];
+    [[maybe_unused]] UInt previousElementId = edgeFace[0] + edgeFace[1] - elementId;
+    [[maybe_unused]] UInt nextElementId = GetNextElementId (mesh, elementId, edgeId);
+
+    std::cout << "edge info: "  << elementId << "  " << edgeId << "  " << edgeFace[0] << "  " << edgeFace[1] << "  " << newNode << "  "  << previousElementId << "  " << nextElementId << std::endl;
+
+    if (previousElementId == constants::missing::uintValue && nextElementId == constants::missing::uintValue)
+    {
+        std::cout << "case 1" << std::endl;
+
+        UInt oppositeEdgeId = OppositeEdgeId (mesh, elementId, edgeId);
+
+        UInt firstNewNodeId;
+        UInt secondNewNodeId;
+
+        SplitEdge (mesh, edgeId, firstNewNodeId, edgesToDelete, undoActions);
+        SplitEdge (mesh, oppositeEdgeId, secondNewNodeId, edgesToDelete, undoActions);
+
+        UInt newEdgeId;
+        std::tie (newEdgeId, undoActions) = mesh.ConnectNodes(firstNewNodeId, secondNewNodeId);
+        // auto [newEdgeId, newEdgeUndo] = mesh.ConnectNodes(firstNewNodeId, secondNewNodeId);
+        // undoActions.Add(std::move(newEdgeUndo));
+
+        return;
+    }
+
+    if (previousElementId == constants::missing::uintValue && mesh.m_numFacesNodes[nextElementId] == 4)
+    {
+        UInt oppositeEdgeId = OppositeEdgeId (mesh, elementId, edgeId);
+
+        UInt firstNewNodeId;
+        UInt secondNewNodeId;
+
+        SplitEdge (mesh, edgeId, firstNewNodeId, edgesToDelete, undoActions);
+        SplitEdge (mesh, oppositeEdgeId, secondNewNodeId, edgesToDelete, undoActions);
+
+        auto [newEdgeId5, newEdgeUndo5] = mesh.ConnectNodes(firstNewNodeId, secondNewNodeId);
+        undoActions.Add(std::move(newEdgeUndo5));
+
+        // Overwrite newNode with the latest new node id.
+        newNode = secondNewNodeId;
+
+        std::cout << "case 2" << std::endl;
+        // Simple case
+        return;
+    }
+
+    if (previousElementId == constants::missing::uintValue && mesh.m_numFacesNodes[nextElementId] != 4)
+    {
+        std::cout << "case 3 CHECK the connections are correct" << std::endl;
+
+        UInt oppositeEdgeId = OppositeEdgeId (mesh, elementId, edgeId);
+        const Edge& oppositeEdgeNode = mesh.GetEdge(oppositeEdgeId);
+
+        UInt firstNewNodeId;
+        SplitEdge (mesh, edgeId, firstNewNodeId, edgesToDelete, undoActions);
+
+        auto [newEdgeId3, newEdgeUndo3] = mesh.ConnectNodes(oppositeEdgeNode.first, firstNewNodeId);
+        undoActions.Add(std::move(newEdgeUndo3));
+
+        auto [newEdgeId4, newEdgeUndo4] = mesh.ConnectNodes(firstNewNodeId, oppositeEdgeNode.second);
+        undoActions.Add(std::move(newEdgeUndo4));
+
+        // Simple case
+        return;
+    }
+
+    if (nextElementId == constants::missing::uintValue && mesh.m_numFacesNodes[previousElementId] == 4)
+    {
+        std::cout << "case 4" << std::endl;
+
+        UInt oppositeEdgeId = OppositeEdgeId (mesh, elementId, edgeId);
+
+        UInt secondNewNodeId;
+
+        SplitEdge (mesh, oppositeEdgeId, secondNewNodeId, edgesToDelete, undoActions);
+
+        auto [newEdgeId5, newEdgeUndo5] = mesh.ConnectNodes(newNode, secondNewNodeId);
+        undoActions.Add(std::move(newEdgeUndo5));
+
+        // Overwrite newNode with the latest new node id.
+        newNode = secondNewNodeId;
+
+        // Simple case
+        return;
+    }
+
+    if (nextElementId == constants::missing::uintValue && mesh.m_numFacesNodes[previousElementId] != 4)
+    {
+        std::cout << "case 5" << std::endl;
+        // Should be like case 3
+        throw ConstraintError ("case 5");
+        // Simple case
+        return;
+    }
+
+    if (mesh.m_numFacesNodes[previousElementId] != 4 && mesh.m_numFacesNodes[nextElementId] != 4)
+    {
+        std::cout << "case 6" << std::endl;
+        // Simple case, nothing to do
+        return;
+    }
+
+    if (mesh.m_numFacesNodes[previousElementId] == 4 && mesh.m_numFacesNodes[nextElementId] != 4)
+    {
+        std::cout << "case 7" << std::endl;
+
+        UInt oppositeEdgeId = OppositeEdgeId (mesh, elementId, edgeId);
+        const Edge& oppositeEdgeNode = mesh.GetEdge(oppositeEdgeId);
+
+        std::cout << "connecting nodes: " << mesh.Node (oppositeEdgeNode.first).x << ", " << mesh.Node (oppositeEdgeNode.first).y << " to "
+                  << mesh.Node (newNode).x << ", " << mesh.Node (newNode).y << std::endl;
+
+        std::cout << "connecting nodes: " << mesh.Node (oppositeEdgeNode.second).x << ", " << mesh.Node (oppositeEdgeNode.second).y << " to "
+                  << mesh.Node (newNode).x << ", " << mesh.Node (newNode).y << std::endl;
+
+        auto [newEdgeId1, newEdgeUndo1] = mesh.ConnectNodes(oppositeEdgeNode.first, newNode);
+        undoActions.Add(std::move(newEdgeUndo1));
+
+        auto [newEdgeId2, newEdgeUndo2] = mesh.ConnectNodes(newNode, oppositeEdgeNode.second);
+        undoActions.Add(std::move(newEdgeUndo2));
+
+
+        // Simple case
+        return;
+    }
+
+    if (mesh.m_numFacesNodes[previousElementId] != 4 && mesh.m_numFacesNodes[nextElementId] == 4)
+    {
+        std::cout << "case 8" << std::endl;
+
+        UInt oppositeEdgeId = OppositeEdgeId (mesh, elementId, edgeId);
+
+        UInt secondNewNodeId;
+
+        SplitEdge (mesh, oppositeEdgeId, secondNewNodeId, edgesToDelete, undoActions);
+
+        auto [newEdgeId1, newEdgeUndo1] = mesh.ConnectNodes(edgeNode.first, secondNewNodeId);
+        undoActions.Add(std::move(newEdgeUndo1));
+
+        auto [newEdgeId2, newEdgeUndo2] = mesh.ConnectNodes(secondNewNodeId, edgeNode.second);
+        undoActions.Add(std::move(newEdgeUndo2));
+
+        // Overwrite newNode with the latest new node id.
+        newNode = secondNewNodeId;
+
+        // Simple case
+        return;
+    }
+
+    if (mesh.m_numFacesNodes[previousElementId] == 4 && mesh.m_numFacesNodes[nextElementId] == 4)
+    {
+        std::cout << "case 9" << std::endl;
+
+        UInt oppositeEdgeId = OppositeEdgeId (mesh, elementId, edgeId);
+        UInt secondNewNodeId;
+
+        SplitEdge (mesh, oppositeEdgeId, secondNewNodeId, edgesToDelete, undoActions);
+
+        auto [newEdgeId5, newEdgeUndo5] = mesh.ConnectNodes(newNode, secondNewNodeId);
+        undoActions.Add(std::move(newEdgeUndo5));
+
+        // Overwrite newNode with the latest new node id.
+        newNode = secondNewNodeId;
+
+        // Simple case
+        return;
+    }
+
+    std::cout << "no defined case " << std::endl;
+    throw ConstraintError ("no defined case");
+}
+
 void meshkernel::SplitRowColumnOfMesh3::SplitEdge4(Mesh2D& mesh, const UInt elementId, const UInt edgeId, UInt& newNode, CompoundUndoAction& undoActions, std::vector<UInt>& edgesToDelete) const
 {
     std::cout << " SplitRowColumnOfMesh3::SplitEdge4 " << elementId << "  " << edgeId << "  " << std::endl;
@@ -139,7 +372,7 @@ void meshkernel::SplitRowColumnOfMesh3::SplitEdge4(Mesh2D& mesh, const UInt elem
     const std::array<UInt, 2>& edgeFace = mesh.m_edgesFaces[edgeId];
     UInt previousElementId = edgeFace[0] + edgeFace[1] - elementId;
 
-    std::cout << "edge info: " << edgeId << "  " << edgeFace[0] << "  " << edgeFace[1] << "  " << elementId
+    std::cout << "edge info: "  << elementId << "  " << edgeId << "  " << edgeFace[0] << "  " << edgeFace[1]
               << "  " << newNode << std::endl;
 
     // previousNode
@@ -415,10 +648,10 @@ void meshkernel::SplitRowColumnOfMesh3::CollectElementIdsToSplit(const Mesh2D& m
 
         std::cout << " mesh.m_numFacesNodes[mesh.m_edgesFaces[edgeId][i]] " << mesh.m_numFacesNodes[mesh.m_edgesFaces[edgeId][i]] << std::endl;
 
-        if (mesh.m_numFacesNodes[mesh.m_edgesFaces[edgeId][i]] != 4)
-        {
-            continue;
-        }
+        // if (mesh.m_numFacesNodes[mesh.m_edgesFaces[edgeId][i]] != 4)
+        // {
+        //     continue;
+        // }
 
         [[maybe_unused]] UInt firstElementId = mesh.m_edgesFaces[edgeId][i];
         UInt elementId = mesh.m_edgesFaces[edgeId][i];
@@ -476,6 +709,7 @@ void meshkernel::SplitRowColumnOfMesh3::CollectElementIdsToSplit(const Mesh2D& m
             elementIds.insert(elementIds.begin(), partialElementIds.rbegin(), partialElementIds.rend());
             edgeIds.insert(edgeIds.begin(), partialEdgeIds.rbegin(), partialEdgeIds.rend());
         }
+
     }
 
     std::cout << "list size: " << elementIds.size() << "  " << edgeIds.size() << std::endl;
