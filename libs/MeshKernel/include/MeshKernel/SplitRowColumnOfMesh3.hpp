@@ -40,51 +40,66 @@ namespace meshkernel
     class SplitRowColumnOfMesh3 final
     {
     public:
+        /// @brief Split the row or column connected to the given edge.
+        ///
+        /// The splitting will occur upto either the boundary (next elememnt is null value)
+        /// or when the next element is not a quadrilateral.
         [[nodiscard]] std::unique_ptr<UndoAction> Compute(Mesh2D& mesh, const UInt edgeId) const;
 
     private:
-        struct SplittingInfo
-        {
-            UInt elementId;
-            UInt localStartEdgeId;
-            UInt localEndEdgeId;
-            UInt startEdgeId;
-            UInt endEdgeId;
-        };
+        /// @brief Split an edge in the middle, into two edges half the size returning the ID of the new node.
+        ///
+        /// The two half size edges are each connected to the new (mid point) node and the
+        /// node on the respective end of the original edge.
+        UInt SplitEdge(Mesh2D& mesh, const UInt edgeId, std::vector<UInt>& edgesToDelete, CompoundUndoAction& undoActions) const;
 
-        void SplitAlongRow(Mesh2D& mesh, const UInt edgeId, CompoundUndoAction& undoActions) const;
+        /// @brief Split the element
+        void SplitElement(Mesh2D& mesh,
+                          const UInt elementId,
+                          const UInt edgeId,
+                          UInt& newNode,
+                          CompoundUndoAction& undoActions,
+                          std::vector<UInt>& edgesToDelete) const;
 
-        void SplitAlongRow(Mesh2D& mesh, const std::vector<UInt>& elementIds, const std::vector<UInt>& edgeIds, CompoundUndoAction& undoActions, std::vector<UInt>& edgesToDelete) const;
+        /// @brief Split the first element of a loop of elements
+        void SplitFirstLoopElement(Mesh2D& mesh,
+                                   const UInt elementId,
+                                   const UInt edgeId,
+                                   UInt& firstNode,
+                                   UInt& secondNode,
+                                   CompoundUndoAction& undoActions,
+                                   std::vector<UInt>& edgesToDelete) const;
 
-        void SplitEdges(Mesh2D& mesh, std::vector<UInt>& elementIds, std::vector<UInt>& edgeIds, CompoundUndoAction& undoActions) const;
+        //// @brief Split the elements and edges along the row or column
+        void SplitAlongRow(Mesh2D& mesh,
+                           const std::vector<UInt>& elementIds,
+                           const std::vector<UInt>& edgeIds,
+                           CompoundUndoAction& undoActions,
+                           std::vector<UInt>& edgesToDelete) const;
 
-        void SplitEdge (Mesh2D& mesh, const UInt edgeId, UInt& newNode, std::vector<UInt>& edgesToDelete, CompoundUndoAction& undoActions) const;
+        /// @brief
+        UInt GetNextElement(const Mesh2D& mesh, const UInt elementId, const UInt edgeId) const;
 
-        void SplitEdge(Mesh2D& mesh, UInt elementId, UInt edgeId, UInt& previousNewNode, CompoundUndoAction& undoActions) const;
+        /// @brief Get the ID of the next edge
+        UInt OppositeEdgeId(const Mesh2D& mesh, const UInt elementId, const UInt edgeId) const;
 
-        void SplitEdge2(Mesh2D& mesh, UInt elementId, UInt edgeId, UInt& previousNewNode, CompoundUndoAction& undoActions) const;
-
-        void SplitEdge3(Mesh2D& mesh, UInt elementId, UInt edgeId, UInt& previousNewNode, CompoundUndoAction& undoActions, std::vector<UInt>& edgesToDelete) const;
-
-        void SplitEdge4(Mesh2D& mesh, UInt elementId, UInt edgeId, UInt& newNode, CompoundUndoAction& undoActions, std::vector<UInt>& edgesToDelete) const;
-
-        void SplitEdge5(Mesh2D& mesh, UInt elementId, UInt edgeId, UInt& newNode, CompoundUndoAction& undoActions, std::vector<UInt>& edgesToDelete) const;
-
-        UInt GetNextElementId (const Mesh2D& mesh, const UInt elementId, const UInt edgeId) const;
-
-        UInt OppositeEdgeId (const Mesh2D& mesh, const UInt elementId, const UInt edgeId) const;
-
+        /// @brief Determine is the edge is a valid edge or not.
         bool IsValidEdge(const Mesh2D& mesh, const UInt edgeId) const;
+
+        /// @brief Determine is the element is a quadrilateral or not
+        bool IsQuadrilateral(const Mesh2D& mesh, const UInt elementId) const;
 
         /// @brief Determine if it may be possible to split the edge
         ///
-        /// If two element attached to edge then both must be quadrilaterals,
-        /// otherwise the sole attached elememt must be quadrilateral
+        /// If two elements are attached to edge then either must be a quadrilateral,
+        /// otherwise the single attached elememt must be quadrilateral.
         bool MayBeSplit(const Mesh2D& mesh, const UInt edgeId) const;
 
-        void CollectElementIdsToSplit(const Mesh2D& mesh, const UInt edgeId, std::vector<UInt>& elementIds, std::vector<UInt>& edgeIds) const;
+        /// @brief Collect the ID's of the edges and elements to be split.
+        void CollectElementsToSplit(const Mesh2D& mesh, const UInt edgeId, std::vector<UInt>& elementIds, std::vector<UInt>& edgeIds) const;
 
-        void GetNextElement(const Mesh2D& mesh, UInt& edgeId, UInt& elementId) const;
+        /// @brief Get the next edge.
+        void GetNextEdge(const Mesh2D& mesh, UInt& elementId, UInt& edgeId) const;
     };
 
 } // namespace meshkernel

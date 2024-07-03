@@ -49,9 +49,24 @@ namespace meshkernel
     /// @brief Describes an edge with two indices
     using Edge = std::pair<UInt, UInt>;
 
+    //// @brief Determine if the value is a valid value (true) or is the undefined value (false)
+    static bool IsValid(const UInt value)
+    {
+        return value != constants::missing::uintValue;
+    }
+
     static bool IsValidEdge(const Edge& edge)
     {
-        return edge.first != constants::missing::uintValue && edge.second != constants::missing::uintValue;
+        return IsValid(edge.first) && IsValid(edge.second);
+    }
+
+    /// @brief Contains the ID's of elements either side of an edge.
+    using EdgeFaces = std::array<UInt, 2>;
+
+    /// @brief Get the neighbour element, this may be the null value for boundary edges
+    static UInt Neighbour(const EdgeFaces& edge, const UInt elementId)
+    {
+        return edge[0] == elementId ? edge[1] : edge[0];
     }
 
     /// @brief Get the index of the node on the other node of the edge
