@@ -38,8 +38,6 @@
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/SamplesHessianCalculator.hpp"
 #include "MeshKernel/SplitRowColumnOfMesh.hpp"
-#include "MeshKernel/SplitRowColumnOfMesh2.hpp"
-#include "MeshKernel/SplitRowColumnOfMesh3.hpp"
 #include "MeshKernel/UndoActions/UndoActionStack.hpp"
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
@@ -2229,7 +2227,7 @@ TEST(MeshRefinement, Split)
         Mesh2D mesh(curviMesh->ComputeEdges(), curviMesh->ComputeNodes(), Projection::cartesian);
         mesh.Administrate();
 
-        [[maybe_unused]] SplitRowColumnOfMesh3 splitMesh;
+        [[maybe_unused]] SplitRowColumnOfMesh splitMesh;
 
         // [[maybe_unused]] UInt triangleStartNode1 = mesh.FindNodeCloseToAPoint({60.0, 10.0}, 1.0e-4);
         // [[maybe_unused]] UInt triangleEndNode1 = mesh.FindNodeCloseToAPoint({70.0, 0.0}, 1.0e-4);
@@ -2470,7 +2468,7 @@ TEST(MeshRefinement, Split2)
     Mesh2D mesh(edges, nodes, Projection::cartesian);
     UndoActionStack undoStack;
     mesh.Administrate();
-    [[maybe_unused]] SplitRowColumnOfMesh3 splitMesh;
+    [[maybe_unused]] SplitRowColumnOfMesh splitMesh;
 
     [[maybe_unused]] UInt node1 = mesh.FindNodeCloseToAPoint({10.0, 10.0}, 1.0e-4);
     [[maybe_unused]] UInt node2 = mesh.FindNodeCloseToAPoint({20.0, 20.0}, 1.0e-4);
@@ -2635,7 +2633,7 @@ TEST(MeshRefinement, SplitElementLoop)
     // AddMesh(mesh);
     mesh.Administrate();
 
-    SplitRowColumnOfMesh3 splitMesh;
+    SplitRowColumnOfMesh splitMesh;
     [[maybe_unused]] auto undoSplit3 = splitMesh.Compute(mesh, 14);
     mesh.Administrate();
 

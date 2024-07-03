@@ -27,6 +27,7 @@
 
 #pragma once
 #include <array>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -37,13 +38,15 @@
 
 namespace meshkernel
 {
-    class SplitRowColumnOfMesh3 final
+    /// @brief Split the row or column connected to the given edge.
+    class SplitRowColumnOfMesh final
     {
     public:
         /// @brief Split the row or column connected to the given edge.
         ///
-        /// The splitting will occur upto either the boundary (next elememnt is null value)
-        /// or when the next element is not a quadrilateral.
+        /// The splitting will occur upto either the boundary (next elememnt is null value),
+        /// when the next element is not a quadrilateral, or
+        /// when the next element is the same as the first element, i.e. a loop has been detected
         [[nodiscard]] std::unique_ptr<UndoAction> Compute(Mesh2D& mesh, const UInt edgeId) const;
 
     private:
@@ -77,7 +80,7 @@ namespace meshkernel
                            CompoundUndoAction& undoActions,
                            std::vector<UInt>& edgesToDelete) const;
 
-        /// @brief
+        /// @brief Get the element along the opposite edge
         UInt GetNextElement(const Mesh2D& mesh, const UInt elementId, const UInt edgeId) const;
 
         /// @brief Get the ID of the next edge
