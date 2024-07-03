@@ -108,6 +108,7 @@ void meshkernel::SplitRowColumnOfMesh2::SplitEdge(Mesh2D& mesh, const UInt start
         {
             GetNextElement(mesh, edgeId, nextElementId);
 
+
             if (nextElementId == firstElementId)
             {
                 std::cout << "Element loop found" << std::endl;
@@ -226,7 +227,12 @@ void meshkernel::SplitRowColumnOfMesh2::GetNextElement(const Mesh2D& mesh, UInt&
 
     const std::array<UInt, 2>& edgesFaces = mesh.m_edgesFaces[edgeId];
 
+    std::cout << "number of nodes: before: " << mesh.m_numFacesNodes[elementId] ;
+
     elementId = edgesFaces[0] == elementId ? edgesFaces[1] : edgesFaces[0];
+
+    std::cout << ": after: " << ( elementId == constants::missing::uintValue ? constants::missing::uintValue : mesh.m_numFacesNodes[elementId]) << std::endl;
+
     // std::cout << "edge info :" << edgeId << "  " << edgeIndex << "  " << oppositeEdgeIndex << "  " << elementId << std::endl;
 }
 
