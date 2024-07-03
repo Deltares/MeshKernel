@@ -40,6 +40,7 @@
 #include "MeshKernel/SplitRowColumnOfMesh.hpp"
 #include "MeshKernel/SplitRowColumnOfMesh2.hpp"
 #include "MeshKernel/SplitRowColumnOfMesh3.hpp"
+#include "MeshKernel/UndoActions/UndoActionStack.hpp"
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 #include "TestUtils/MeshReaders.hpp"
@@ -2416,36 +2417,143 @@ TEST(MeshRefinement, Split)
     // }
 }
 
+void GenerateReverseGrid(const size_t numNodes, const double origin, const double delta, std::vector<Point>& nodes, std::vector<Edge>& edges)
+{
+
+    double x = static_cast<double>(numNodes - 1) * delta + origin;
+
+    for (size_t i = 0; i < numNodes; ++i)
+    {
+        double y = static_cast<double>(numNodes - 1) * delta + origin;
+
+        for (size_t j = 0; j < numNodes; ++j)
+        {
+            nodes.push_back({x, y});
+            y -= delta;
+        }
+
+        x -= delta;
+    }
+
+    for (size_t i = numNodes - 1; i >= 1; --i)
+    // for (size_t i = 0; i < numNodes - 1; ++i)
+    {
+
+        for (size_t j = numNodes; j >= 1; --j)
+        {
+            meshkernel::UInt node1 = (i - 1) * numNodes + j - 1;
+            meshkernel::UInt node2 = i * numNodes + j - 1;
+            edges.push_back({node1, node2});
+        }
+    }
+
+    for (size_t i = numNodes; i >= 1; --i)
+    {
+
+        for (size_t j = numNodes - 1; j >= 1; --j)
+        // for (size_t j = 0; j < numNodes - 1; ++j)
+        {
+            meshkernel::UInt node1 = (i - 1) * numNodes + j;
+            meshkernel::UInt node2 = (i - 1) * numNodes + j - 1;
+            edges.push_back({node2, node1});
+        }
+    }
+}
+
 TEST(MeshRefinement, Split2)
 {
     // constexpr double tolerance = 1.0e-12;
 
-    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 11, 11);
-    Mesh2D mesh(curviMesh->ComputeEdges(), curviMesh->ComputeNodes(), Projection::cartesian);
+    std::vector<meshkernel::Edge> edges;
+    std::vector<meshkernel::Point> nodes;
+    GenerateReverseGrid(11, 0.0, 10.0, nodes, edges);
+    Mesh2D mesh(edges, nodes, Projection::cartesian);
+    UndoActionStack undoStack;
+    mesh.Administrate();
+    [[maybe_unused]] SplitRowColumnOfMesh3 splitMesh;
+
+    [[maybe_unused]] UInt node1 = mesh.FindNodeCloseToAPoint({10.0, 10.0}, 1.0e-4);
+    [[maybe_unused]] UInt node2 = mesh.FindNodeCloseToAPoint({20.0, 20.0}, 1.0e-4);
+
+    [[maybe_unused]] UInt node3 = mesh.FindNodeCloseToAPoint({90.0, 10.0}, 1.0e-4);
+    [[maybe_unused]] UInt node4 = mesh.FindNodeCloseToAPoint({80.0, 20.0}, 1.0e-4);
+
+    [[maybe_unused]] UInt node5 = mesh.FindNodeCloseToAPoint({90.0, 90.0}, 1.0e-4);
+    [[maybe_unused]] UInt node6 = mesh.FindNodeCloseToAPoint({80.0, 80.0}, 1.0e-4);
+
+    [[maybe_unused]] UInt node7 = mesh.FindNodeCloseToAPoint({10.0, 90.0}, 1.0e-4);
+    [[maybe_unused]] UInt node8 = mesh.FindNodeCloseToAPoint({20.0, 80.0}, 1.0e-4);
+
+    [[maybe_unused]] auto undo1 = mesh.ConnectNodes(node1, node2);
+    [[maybe_unused]] auto undo2 = mesh.ConnectNodes(node3, node4);
+    [[maybe_unused]] auto undo3 = mesh.ConnectNodes(node5, node6);
+    [[maybe_unused]] auto undo4 = mesh.ConnectNodes(node5, node6);
+    [[maybe_unused]] auto undo5 = mesh.ConnectNodes(node7, node8);
+
     mesh.Administrate();
 
-    UInt edgeId = 0;
-
-    SplitRowColumnOfMesh splitMesh;
-    [[maybe_unused]] auto undoSplit1 = splitMesh.Compute(mesh, edgeId);
-
-    UInt elementId = mesh.m_edgesFaces[edgeId][0] == constants::missing::uintValue ? mesh.m_edgesFaces[edgeId][1] : mesh.m_edgesFaces[edgeId][0];
-
-    UInt edgeIndex = constants::missing::uintValue;
-
-    for (UInt i = 0; i < 4; ++i)
     {
-        if (mesh.m_facesEdges[elementId][i] == edgeId)
-        {
-            edgeIndex = i;
-            break;
-        }
+        [[maybe_unused]] UInt startNode = mesh.FindNodeCloseToAPoint({10.0, 0.0}, 1.0e-4);
+        [[maybe_unused]] UInt endNode = mesh.FindNodeCloseToAPoint({20.0, 0.0}, 1.0e-4);
+        [[maybe_unused]] UInt edge = mesh.FindEdge(startNode, endNode);
+        undoStack.Add(splitMesh.Compute(mesh, edge));
     }
 
-    UInt neighbourEdgeIndex = edgeIndex == 0 ? 3 : edgeIndex - 1;
+    {
+        [[maybe_unused]] UInt startNode = mesh.FindNodeCloseToAPoint({90.0, 10.0}, 1.0e-4);
+        [[maybe_unused]] UInt endNode = mesh.FindNodeCloseToAPoint({80.0, 10.0}, 1.0e-4);
+        [[maybe_unused]] UInt edge = mesh.FindEdge(startNode, endNode);
+        undoStack.Add(splitMesh.Compute(mesh, edge));
+    }
 
-    [[maybe_unused]] auto undoSplit2 = splitMesh.Compute(mesh, mesh.m_facesEdges[elementId][neighbourEdgeIndex]);
-    [[maybe_unused]] auto undoSplit3 = splitMesh.Compute(mesh, 170);
+    {
+        [[maybe_unused]] UInt startNode = mesh.FindNodeCloseToAPoint({100.0, 10.0}, 1.0e-4);
+        [[maybe_unused]] UInt endNode = mesh.FindNodeCloseToAPoint({100.0, 20.0}, 1.0e-4);
+        [[maybe_unused]] UInt edge = mesh.FindEdge(startNode, endNode);
+        undoStack.Add(splitMesh.Compute(mesh, edge));
+    }
+
+    {
+        [[maybe_unused]] UInt startNode = mesh.FindNodeCloseToAPoint({90.0, 90.0}, 1.0e-4);
+        [[maybe_unused]] UInt endNode = mesh.FindNodeCloseToAPoint({90.0, 80.0}, 1.0e-4);
+        [[maybe_unused]] UInt edge = mesh.FindEdge(startNode, endNode);
+        undoStack.Add(splitMesh.Compute(mesh, edge));
+    }
+
+    {
+        [[maybe_unused]] UInt startNode = mesh.FindNodeCloseToAPoint({90.0, 100.0}, 1.0e-4);
+        [[maybe_unused]] UInt endNode = mesh.FindNodeCloseToAPoint({80.0, 100.0}, 1.0e-4);
+        [[maybe_unused]] UInt edge = mesh.FindEdge(startNode, endNode);
+        undoStack.Add(splitMesh.Compute(mesh, edge));
+    }
+
+    {
+        [[maybe_unused]] UInt startNode = mesh.FindNodeCloseToAPoint({20.0, 90.0}, 1.0e-4);
+        [[maybe_unused]] UInt endNode = mesh.FindNodeCloseToAPoint({10.0, 90.0}, 1.0e-4);
+        [[maybe_unused]] UInt edge = mesh.FindEdge(startNode, endNode);
+        undoStack.Add(splitMesh.Compute(mesh, edge));
+    }
+
+    {
+        [[maybe_unused]] UInt startNode = mesh.FindNodeCloseToAPoint({0.0, 90.0}, 1.0e-4);
+        [[maybe_unused]] UInt endNode = mesh.FindNodeCloseToAPoint({0.0, 80.0}, 1.0e-4);
+        [[maybe_unused]] UInt edge = mesh.FindEdge(startNode, endNode);
+        undoStack.Add(splitMesh.Compute(mesh, edge));
+    }
+
+    {
+        [[maybe_unused]] UInt startNode = mesh.FindNodeCloseToAPoint({0.0, 10.0}, 1.0e-4);
+        [[maybe_unused]] UInt endNode = mesh.FindNodeCloseToAPoint({0.0, 20.0}, 1.0e-4);
+        [[maybe_unused]] UInt edge = mesh.FindEdge(startNode, endNode);
+        undoStack.Add(splitMesh.Compute(mesh, edge));
+    }
+
+    // for (size_t i = 0; i < undoStack.Size(); ++i)
+    // {
+    //     undoStack.Undo();
+    // }
+
+    Print(mesh.Nodes(), mesh.Edges());
 }
 
 void GenerateGrid(std::vector<Point>& nodes, std::vector<Edge>& edges)
@@ -2527,7 +2635,7 @@ TEST(MeshRefinement, SplitElementLoop)
     // AddMesh(mesh);
     mesh.Administrate();
 
-    SplitRowColumnOfMesh splitMesh;
+    SplitRowColumnOfMesh3 splitMesh;
     [[maybe_unused]] auto undoSplit3 = splitMesh.Compute(mesh, 14);
     mesh.Administrate();
 
