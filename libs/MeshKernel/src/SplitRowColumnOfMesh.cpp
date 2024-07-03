@@ -1,12 +1,12 @@
-#include "MeshKernel/SplitRowColumnOfMesh3.hpp"
+#include "MeshKernel/SplitRowColumnOfMesh.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Operations.hpp"
 
 #include <tuple>
 
-std::unique_ptr<meshkernel::UndoAction> meshkernel::SplitRowColumnOfMesh3::Compute(Mesh2D& mesh, const UInt edgeId) const
+std::unique_ptr<meshkernel::UndoAction> meshkernel::SplitRowColumnOfMesh::Compute(Mesh2D& mesh, const UInt edgeId) const
 {
-    std::cout << " SplitRowColumnOfMesh3::Compute " << std::endl;
+    std::cout << " SplitRowColumnOfMesh::Compute " << std::endl;
 
     if (!IsValid(edgeId))
     {
@@ -53,7 +53,7 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::SplitRowColumnOfMesh3::Compu
     return undoActions;
 }
 
-bool meshkernel::SplitRowColumnOfMesh3::IsValidEdge(const Mesh2D& mesh, const UInt edgeId) const
+bool meshkernel::SplitRowColumnOfMesh::IsValidEdge(const Mesh2D& mesh, const UInt edgeId) const
 {
     const Edge& edge = mesh.GetEdge(edgeId);
 
@@ -62,7 +62,7 @@ bool meshkernel::SplitRowColumnOfMesh3::IsValidEdge(const Mesh2D& mesh, const UI
            mesh.Node(edge.second).IsValid();
 }
 
-bool meshkernel::SplitRowColumnOfMesh3::MayBeSplit(const Mesh2D& mesh, const UInt edgeId) const
+bool meshkernel::SplitRowColumnOfMesh::MayBeSplit(const Mesh2D& mesh, const UInt edgeId) const
 {
     return IsValid(edgeId) && (IsQuadrilateral(mesh, mesh.m_edgesFaces[edgeId][0]) || IsQuadrilateral(mesh, mesh.m_edgesFaces[edgeId][1]));
 
@@ -92,11 +92,11 @@ bool meshkernel::SplitRowColumnOfMesh3::MayBeSplit(const Mesh2D& mesh, const UIn
     }
 }
 
-void meshkernel::SplitRowColumnOfMesh3::SplitAlongRow(Mesh2D& mesh,
-                                                      const std::vector<UInt>& elementIds,
-                                                      const std::vector<UInt>& edgeIds,
-                                                      CompoundUndoAction& undoActions,
-                                                      std::vector<UInt>& edgesToDelete) const
+void meshkernel::SplitRowColumnOfMesh::SplitAlongRow(Mesh2D& mesh,
+                                                     const std::vector<UInt>& elementIds,
+                                                     const std::vector<UInt>& edgeIds,
+                                                     CompoundUndoAction& undoActions,
+                                                     std::vector<UInt>& edgesToDelete) const
 {
 
     UInt newNode = constants::missing::uintValue;
@@ -111,7 +111,7 @@ void meshkernel::SplitRowColumnOfMesh3::SplitAlongRow(Mesh2D& mesh,
         }
         else if (loopDetected && i == elementIds.size() - 1)
         {
-            // The last part of the loop is just connecting the two nodes from the neighbouring edges
+            // The last part of the loop is just connecting the two nodes from the neighbouring edges that close the loop
             std::tie(std::ignore, undoActions.Insert()) = mesh.ConnectNodes(newNode, firstNode);
         }
         else
@@ -121,7 +121,7 @@ void meshkernel::SplitRowColumnOfMesh3::SplitAlongRow(Mesh2D& mesh,
     }
 }
 
-meshkernel::UInt meshkernel::SplitRowColumnOfMesh3::GetNextElement(const Mesh2D& mesh, const UInt elementId, const UInt edgeId) const
+meshkernel::UInt meshkernel::SplitRowColumnOfMesh::GetNextElement(const Mesh2D& mesh, const UInt elementId, const UInt edgeId) const
 {
 
     if (!IsValid(elementId) || !IsValid(edgeId))
@@ -140,7 +140,7 @@ meshkernel::UInt meshkernel::SplitRowColumnOfMesh3::GetNextElement(const Mesh2D&
     return nextElementId;
 }
 
-meshkernel::UInt meshkernel::SplitRowColumnOfMesh3::OppositeEdgeId(const Mesh2D& mesh, const UInt elementId, const UInt edgeId) const
+meshkernel::UInt meshkernel::SplitRowColumnOfMesh::OppositeEdgeId(const Mesh2D& mesh, const UInt elementId, const UInt edgeId) const
 {
     if (!IsValid(elementId) || !IsValid(edgeId))
     {
@@ -160,7 +160,7 @@ meshkernel::UInt meshkernel::SplitRowColumnOfMesh3::OppositeEdgeId(const Mesh2D&
     return oppositeEdgeId;
 }
 
-meshkernel::UInt meshkernel::SplitRowColumnOfMesh3::SplitEdge(Mesh2D& mesh, const UInt edgeId, std::vector<UInt>& edgesToDelete, CompoundUndoAction& undoActions) const
+meshkernel::UInt meshkernel::SplitRowColumnOfMesh::SplitEdge(Mesh2D& mesh, const UInt edgeId, std::vector<UInt>& edgesToDelete, CompoundUndoAction& undoActions) const
 {
     const Edge& edgeNode = mesh.GetEdge(edgeId);
 
@@ -175,13 +175,13 @@ meshkernel::UInt meshkernel::SplitRowColumnOfMesh3::SplitEdge(Mesh2D& mesh, cons
     return newNodeId;
 }
 
-void meshkernel::SplitRowColumnOfMesh3::SplitFirstLoopElement(Mesh2D& mesh,
-                                                              const UInt elementId,
-                                                              const UInt edgeId,
-                                                              UInt& firstNode,
-                                                              UInt& secondNode,
-                                                              CompoundUndoAction& undoActions,
-                                                              std::vector<UInt>& edgesToDelete) const
+void meshkernel::SplitRowColumnOfMesh::SplitFirstLoopElement(Mesh2D& mesh,
+                                                             const UInt elementId,
+                                                             const UInt edgeId,
+                                                             UInt& firstNode,
+                                                             UInt& secondNode,
+                                                             CompoundUndoAction& undoActions,
+                                                             std::vector<UInt>& edgesToDelete) const
 {
     UInt oppositeEdgeId = OppositeEdgeId(mesh, elementId, edgeId);
     firstNode = SplitEdge(mesh, edgeId, edgesToDelete, undoActions);
@@ -190,12 +190,12 @@ void meshkernel::SplitRowColumnOfMesh3::SplitFirstLoopElement(Mesh2D& mesh,
     std::tie(std::ignore, undoActions.Insert()) = mesh.ConnectNodes(firstNode, secondNode);
 }
 
-void meshkernel::SplitRowColumnOfMesh3::SplitElement(Mesh2D& mesh,
-                                                     const UInt elementId,
-                                                     const UInt edgeId,
-                                                     UInt& newNode,
-                                                     CompoundUndoAction& undoActions,
-                                                     std::vector<UInt>& edgesToDelete) const
+void meshkernel::SplitRowColumnOfMesh::SplitElement(Mesh2D& mesh,
+                                                    const UInt elementId,
+                                                    const UInt edgeId,
+                                                    UInt& newNode,
+                                                    CompoundUndoAction& undoActions,
+                                                    std::vector<UInt>& edgesToDelete) const
 {
     const Edge& edgeNode = mesh.GetEdge(edgeId);
     const std::array<UInt, 2>& edgeFace = mesh.m_edgesFaces[edgeId];
@@ -268,17 +268,13 @@ void meshkernel::SplitRowColumnOfMesh3::SplitElement(Mesh2D& mesh,
     }
 }
 
-bool meshkernel::SplitRowColumnOfMesh3::IsQuadrilateral(const Mesh2D& mesh, const UInt elementId) const
+bool meshkernel::SplitRowColumnOfMesh::IsQuadrilateral(const Mesh2D& mesh, const UInt elementId) const
 {
     return IsValid(elementId) && mesh.m_numFacesNodes[elementId] == constants::geometric::numNodesInQuadrilateral;
 }
 
-void meshkernel::SplitRowColumnOfMesh3::CollectElementsToSplit(const Mesh2D& mesh, const UInt edgeId, std::vector<UInt>& elementIds, std::vector<UInt>& edgeIds) const
+void meshkernel::SplitRowColumnOfMesh::CollectElementsToSplit(const Mesh2D& mesh, const UInt edgeId, std::vector<UInt>& elementIds, std::vector<UInt>& edgeIds) const
 {
-
-    // TODO need to check for circular connected element loops
-    // Also should not do the reverse loop for circular connected element loops
-
     const UInt firstElementId = mesh.m_edgesFaces[edgeId][0] != constants::missing::uintValue ? mesh.m_edgesFaces[edgeId][0] : mesh.m_edgesFaces[edgeId][1];
 
     // Loop over each side of the edge
@@ -299,7 +295,7 @@ void meshkernel::SplitRowColumnOfMesh3::CollectElementsToSplit(const Mesh2D& mes
         std::vector<UInt> partialElementIds;
         std::vector<UInt> partialEdgeIds;
 
-        while (IsValid(elementId) && IsQuadrilateral(mesh, elementId) && !loopDetected)
+        while (!IsValid(elementId) && IsQuadrilateral(mesh, elementId) && !loopDetected)
         {
             partialElementIds.push_back(elementId);
 
@@ -343,7 +339,7 @@ void meshkernel::SplitRowColumnOfMesh3::CollectElementsToSplit(const Mesh2D& mes
     }
 }
 
-void meshkernel::SplitRowColumnOfMesh3::GetNextEdge(const Mesh2D& mesh, UInt& elementId, UInt& edgeId) const
+void meshkernel::SplitRowColumnOfMesh::GetNextEdge(const Mesh2D& mesh, UInt& elementId, UInt& edgeId) const
 {
     if (!IsValid(edgeId))
     {
