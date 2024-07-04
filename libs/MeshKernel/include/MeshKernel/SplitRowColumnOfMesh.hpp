@@ -47,6 +47,10 @@ namespace meshkernel
         /// The splitting will occur upto either the boundary (next elememnt is null value),
         /// when the next element is not a quadrilateral, or
         /// when the next element is the same as the first element, i.e. a loop has been detected
+        /// @param mesh Mesh for which a row or column is to be split
+        /// @param edgeId The starting edges for the splitting
+        /// @return The undo action, enabling undoing of the splitting, may be null if no splitting can occur,
+        /// e.g. invalid edgeId, neither element connected to the edge is a quadrilateral.
         [[nodiscard]] std::unique_ptr<UndoAction> Compute(Mesh2D& mesh, const UInt edgeId) const;
 
     private:
@@ -57,6 +61,8 @@ namespace meshkernel
         UInt SplitEdge(Mesh2D& mesh, const UInt edgeId, std::vector<UInt>& edgesToDelete, CompoundUndoAction& undoActions) const;
 
         /// @brief Split the element
+        ///
+        /// How the element is refined will be determined by the elements that come before and after in the sequence.
         void SplitElement(Mesh2D& mesh,
                           const UInt elementId,
                           const UInt edgeId,
@@ -80,17 +86,8 @@ namespace meshkernel
                            CompoundUndoAction& undoActions,
                            std::vector<UInt>& edgesToDelete) const;
 
-        /// @brief Get the element along the opposite edge
-        UInt GetNextElement(const Mesh2D& mesh, const UInt elementId, const UInt edgeId) const;
-
-        /// @brief Get the ID of the next edge
-        UInt OppositeEdgeId(const Mesh2D& mesh, const UInt elementId, const UInt edgeId) const;
-
-        /// @brief Determine is the edge is a valid edge or not.
-        bool IsValidEdge(const Mesh2D& mesh, const UInt edgeId) const;
-
-        /// @brief Determine is the element is a quadrilateral or not
-        bool IsQuadrilateral(const Mesh2D& mesh, const UInt elementId) const;
+        /// @brief Collect the ID's of the edges and elements to be split.
+        void CollectElementsToSplit(const Mesh2D& mesh, const UInt edgeId, std::vector<UInt>& elementIds, std::vector<UInt>& edgeIds) const;
 
         /// @brief Determine if it may be possible to split the edge
         ///
@@ -98,8 +95,17 @@ namespace meshkernel
         /// otherwise the single attached elememt must be quadrilateral.
         bool MayBeSplit(const Mesh2D& mesh, const UInt edgeId) const;
 
-        /// @brief Collect the ID's of the edges and elements to be split.
-        void CollectElementsToSplit(const Mesh2D& mesh, const UInt edgeId, std::vector<UInt>& elementIds, std::vector<UInt>& edgeIds) const;
+        /// @brief Determine is the edge is a valid edge or not.
+        bool IsValidEdge(const Mesh2D& mesh, const UInt edgeId) const;
+
+        /// @brief Get the ID of the next edge
+        UInt OppositeEdgeId(const Mesh2D& mesh, const UInt elementId, const UInt edgeId) const;
+
+        /// @brief Determine is the element is a quadrilateral or not
+        bool IsQuadrilateral(const Mesh2D& mesh, const UInt elementId) const;
+
+        /// @brief Get the element along the opposite edge
+        UInt GetNextElement(const Mesh2D& mesh, const UInt elementId, const UInt edgeId) const;
 
         /// @brief Get the next edge.
         void GetNextEdge(const Mesh2D& mesh, UInt& elementId, UInt& edgeId) const;
