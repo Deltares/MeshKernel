@@ -2415,16 +2415,16 @@ TEST(MeshRefinement, Split)
     // }
 }
 
-void GenerateReverseGrid(const size_t numNodes, const double origin, const double delta, std::vector<Point>& nodes, std::vector<Edge>& edges)
+void GenerateReverseGrid(const meshkernel::UInt numNodes, const double origin, const double delta, std::vector<Point>& nodes, std::vector<Edge>& edges)
 {
 
     double x = static_cast<double>(numNodes - 1) * delta + origin;
 
-    for (size_t i = 0; i < numNodes; ++i)
+    for (meshkernel::UInt i = 0; i < numNodes; ++i)
     {
         double y = static_cast<double>(numNodes - 1) * delta + origin;
 
-        for (size_t j = 0; j < numNodes; ++j)
+        for (meshkernel::UInt j = 0; j < numNodes; ++j)
         {
             nodes.push_back({x, y});
             y -= delta;
