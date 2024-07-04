@@ -913,3 +913,150 @@ TEST(MeshRefinement, RefineAGridBasedOnSamplesThroughApi_OnSpericalCoordinateWit
     ASSERT_EQ(252, mesh2d.num_nodes);
     ASSERT_EQ(472, mesh2d.num_edges);
 }
+
+TEST(MeshRefinement, SplitAlongRow_AlongSouthBoundary_ShouldSplitMesh2d)
+{
+    // Prepare
+    int meshKernelId;
+    constexpr int isSpherical = 0;
+    meshkernelapi::mkernel_allocate_state(isSpherical, meshKernelId);
+
+    meshkernel::MakeGridParameters gridParameters;
+    gridParameters.num_columns = 4;
+    gridParameters.num_rows = 4;
+    gridParameters.block_size_x = 10.0;
+    gridParameters.block_size_y = 10.0;
+    gridParameters.origin_x = 0.0;
+    gridParameters.origin_y = 0.0;
+    gridParameters.angle = 0.0;
+
+    auto errorCode = meshkernelapi::mkernel_mesh2d_make_rectangular_mesh(meshKernelId, gridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Get the mesh dimensions
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = meshkernelapi::mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    int node1;
+    int node2;
+
+    errorCode = meshkernelapi::mkernel_mesh2d_get_node_index(meshKernelId, 0.0, 0.0, 1.0e-4, -1.0, -1.0, 50.0, 50.0, node1);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_node_index(meshKernelId, 0.0, 10.0, 1.0e-4, -1.0, -1.0, 50.0, 50.0, node2);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_split_row(meshKernelId, node1, node2);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    std::vector<double> expectedX{0.0, 10.0, 20.0, 30.0, 40.0,
+                                  0.0, 10.0, 20.0, 30.0, 40.0,
+                                  0.0, 10.0, 20.0, 30.0, 40.0,
+                                  0.0, 10.0, 20.0, 30.0, 40.0,
+                                  0.0, 10.0, 20.0, 30.0, 40.0,
+                                  0.0, 10.0, 20.0, 30.0, 40.0};
+
+    std::vector<double> expectedY{0.0, 0.0, 0.0, 0.0, 0.0,
+                                  10.0, 10.0, 10.0, 10.0, 10.0,
+                                  20.0, 20.0, 20.0, 20.0, 20.0,
+                                  30.0, 30.0, 30.0, 30.0, 30.0,
+                                  40.0, 40.0, 40.0, 40.0, 40.0,
+                                  5.0, 5.0, 5.0, 5.0, 5.0};
+
+    std::vector<int> expectedEdgesNodes{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                                        5, 10, 6, 11, 7, 12, 8, 13, 9, 14, 10,
+                                        15, 11, 16, 12, 17, 13, 18, 14, 19, 15,
+                                        20, 16, 21, 17, 22, 18, 23, 19, 24, 0,
+                                        1, 1, 2, 2, 3, 3, 4, 5, 6, 6, 7, 7, 8,
+                                        8, 9, 10, 11, 11, 12, 12, 13, 13, 14,
+                                        15, 16, 16, 17, 17, 18, 18, 19, 20, 21,
+                                        21, 22, 22, 23, 23, 24, 0, 25, 25, 5, 1,
+                                        26, 26, 6, 25, 26, 2, 27, 27, 7, 26, 27,
+                                        3, 28, 28, 8, 27, 28, 4, 29, 29, 9, 28, 29};
+
+    ASSERT_EQ(mesh2d.num_nodes, static_cast<int>(expectedX.size()));
+    ASSERT_EQ(2 * mesh2d.num_edges, static_cast<int>(expectedEdgesNodes.size()));
+
+    std::vector<int> edge_faces(mesh2d.num_edges * 2);
+    std::vector<int> edge_nodes(mesh2d.num_edges * 2);
+    std::vector<int> face_nodes(mesh2d.num_face_nodes);
+    std::vector<int> face_edges(mesh2d.num_face_nodes);
+    std::vector<int> nodes_per_face(mesh2d.num_faces);
+    std::vector<double> node_x(mesh2d.num_nodes);
+    std::vector<double> node_y(mesh2d.num_nodes);
+    std::vector<double> edge_x(mesh2d.num_edges);
+    std::vector<double> edge_y(mesh2d.num_edges);
+    std::vector<double> face_x(mesh2d.num_faces);
+    std::vector<double> face_y(mesh2d.num_faces);
+
+    mesh2d.edge_faces = edge_faces.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+    mesh2d.face_nodes = face_nodes.data();
+    mesh2d.face_edges = face_edges.data();
+    mesh2d.nodes_per_face = nodes_per_face.data();
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_x = edge_x.data();
+    mesh2d.edge_y = edge_y.data();
+    mesh2d.face_x = face_x.data();
+    mesh2d.face_y = face_y.data();
+    errorCode = mkernel_mesh2d_get_data(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    const double tolerance = 1e-12;
+
+    for (int i = 0; i < mesh2d.num_nodes; ++i)
+    {
+        EXPECT_NEAR(expectedX[i], node_x[i], tolerance);
+        EXPECT_NEAR(expectedY[i], node_y[i], tolerance);
+    }
+
+    for (int i = 0; i < 2 * mesh2d.num_edges; ++i)
+    {
+        EXPECT_EQ(expectedEdgesNodes[i], edge_nodes[i]);
+    }
+}
+
+TEST(MeshRefinement, SplitAlongRow_FailureTests)
+{
+    int meshKernelId = -1;
+    int node1 = -1;
+    int node2 = -1;
+
+    constexpr int isSpherical = 0;
+
+    //--------------------------------
+    // Incorrect mesh kernel id
+    auto errorCode = meshkernelapi::mkernel_mesh2d_split_row(meshKernelId, node1, node2);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    meshkernelapi::mkernel_allocate_state(isSpherical, meshKernelId);
+
+    meshkernel::MakeGridParameters gridParameters;
+    gridParameters.num_columns = 4;
+    gridParameters.num_rows = 4;
+    gridParameters.block_size_x = 10.0;
+    gridParameters.block_size_y = 10.0;
+    gridParameters.origin_x = 0.0;
+    gridParameters.origin_y = 0.0;
+    gridParameters.angle = 0.0;
+
+    errorCode = meshkernelapi::mkernel_mesh2d_make_rectangular_mesh(meshKernelId, gridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    //--------------------------------
+    // null node id's
+    errorCode = meshkernelapi::mkernel_mesh2d_split_row(meshKernelId, node1, node2);
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+
+    //--------------------------------
+    // Incorrect node id's
+    node1 = 1000;
+    node2 = 1000;
+
+    errorCode = meshkernelapi::mkernel_mesh2d_split_row(meshKernelId, node1, node2);
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+}
