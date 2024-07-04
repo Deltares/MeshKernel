@@ -91,7 +91,7 @@ namespace meshkernel
         /// @brief A sequence of all the undo actions
         std::vector<UndoActionPtr> m_undoActions;
 
-        /// @brief A store expresion, enables simple insertion of undo actions in functions returning tuples.
+        /// @brief A store expression, enables simple insertion of undo actions in functions returning tuples.
         StoreExpression m_storeExpression;
     };
 

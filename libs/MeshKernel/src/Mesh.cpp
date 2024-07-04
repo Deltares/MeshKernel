@@ -1045,10 +1045,8 @@ meshkernel::UInt Mesh::GetEdgeIndex(const UInt elementId, const UInt edgeId) con
     }
 
     if (edgeId >= GetNumEdges())
-    // if (edgeId >= GetNumValidEdges())
     {
         throw ConstraintError("edge id is greater than the number of edges: {} >= {}", edgeId, GetNumEdges());
-        // throw ConstraintError("edge id is greater than the number of edges: {} >= {}", edgeId, GetNumValidEdges());
     }
 
     const std::vector<UInt>& edgeIds = m_facesEdges[elementId];

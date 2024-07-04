@@ -457,9 +457,6 @@ namespace meshkernel
         /// @param[in] value The value of the flag
         void SetFacesRTreeRequiresUpdate(bool value) { m_facesRTreeRequiresUpdate = value; }
 
-        // Dont know if these function should be kept or not
-        UInt NeighbourElement(const UInt elementId, const UInt edgeId) const;
-
         // nodes
         std::vector<std::vector<UInt>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
         std::vector<UInt> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
@@ -574,9 +571,4 @@ inline void meshkernel::Mesh::SetEdges(const std::vector<Edge>& newValues)
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
     m_facesRTreeRequiresUpdate = true;
-}
-
-inline meshkernel::UInt meshkernel::Mesh::NeighbourElement(const UInt elementId, const UInt edgeId) const
-{
-    return m_edgesFaces[edgeId][0] == elementId ? m_edgesFaces[edgeId][1] : m_edgesFaces[edgeId][0];
 }

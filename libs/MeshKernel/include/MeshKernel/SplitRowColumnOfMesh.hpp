@@ -79,7 +79,7 @@ namespace meshkernel
                                    CompoundUndoAction& undoActions,
                                    std::vector<UInt>& edgesToDelete) const;
 
-        //// @brief Split the elements and edges along the row or column
+        /// @brief Split the elements and edges along the row or column
         void SplitAlongRow(Mesh2D& mesh,
                            const std::vector<UInt>& elementIds,
                            const std::vector<UInt>& edgeIds,
@@ -92,7 +92,7 @@ namespace meshkernel
         /// @brief Determine if it may be possible to split the edge
         ///
         /// If two elements are attached to edge then either must be a quadrilateral,
-        /// otherwise the single attached elememt must be quadrilateral.
+        /// otherwise the single attached element must be quadrilateral.
         bool MayBeSplit(const Mesh2D& mesh, const UInt edgeId) const;
 
         /// @brief Determine is the edge is a valid edge or not.
