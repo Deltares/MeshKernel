@@ -2433,11 +2433,10 @@ void GenerateReverseGrid(const size_t numNodes, const double origin, const doubl
         x -= delta;
     }
 
-    for (size_t i = numNodes - 1; i >= 1; --i)
-    // for (size_t i = 0; i < numNodes - 1; ++i)
+    for (meshkernel::UInt i = numNodes - 1; i >= 1; --i)
     {
 
-        for (size_t j = numNodes; j >= 1; --j)
+        for (meshkernel::UInt j = numNodes; j >= 1; --j)
         {
             meshkernel::UInt node1 = (i - 1) * numNodes + j - 1;
             meshkernel::UInt node2 = i * numNodes + j - 1;
@@ -2445,11 +2444,10 @@ void GenerateReverseGrid(const size_t numNodes, const double origin, const doubl
         }
     }
 
-    for (size_t i = numNodes; i >= 1; --i)
+    for (meshkernel::UInt i = numNodes; i >= 1; --i)
     {
 
-        for (size_t j = numNodes - 1; j >= 1; --j)
-        // for (size_t j = 0; j < numNodes - 1; ++j)
+        for (meshkernel::UInt j = numNodes - 1; j >= 1; --j)
         {
             meshkernel::UInt node1 = (i - 1) * numNodes + j;
             meshkernel::UInt node2 = (i - 1) * numNodes + j - 1;
