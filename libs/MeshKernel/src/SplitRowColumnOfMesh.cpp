@@ -6,8 +6,6 @@
 
 std::unique_ptr<meshkernel::UndoAction> meshkernel::SplitRowColumnOfMesh::Compute(Mesh2D& mesh, const UInt edgeId) const
 {
-    std::cout << " SplitRowColumnOfMesh::Compute " << std::endl;
-
     if (!IsValid(edgeId))
     {
         throw ConstraintError("Invalid edge-id");
@@ -137,9 +135,10 @@ meshkernel::UInt meshkernel::SplitRowColumnOfMesh::OppositeEdgeId(const Mesh2D& 
 
 meshkernel::UInt meshkernel::SplitRowColumnOfMesh::SplitEdge(Mesh2D& mesh, const UInt edgeId, std::vector<UInt>& edgesToDelete, CompoundUndoAction& undoActions) const
 {
-    const Edge& edgeNode = mesh.GetEdge(edgeId);
+    const Edge edgeNode = mesh.GetEdge(edgeId);
 
     Point point = 0.5 * (mesh.Node(edgeNode.first) + mesh.Node(edgeNode.second));
+
     auto [newNodeId, undo] = mesh.InsertNode(point);
     undoActions.Add(std::move(undo));
 
@@ -172,7 +171,7 @@ void meshkernel::SplitRowColumnOfMesh::SplitElement(Mesh2D& mesh,
                                                     CompoundUndoAction& undoActions,
                                                     std::vector<UInt>& edgesToDelete) const
 {
-    const Edge& edgeNode = mesh.GetEdge(edgeId);
+    const Edge edgeNode = mesh.GetEdge(edgeId);
     const std::array<UInt, 2>& edgeFace = mesh.m_edgesFaces[edgeId];
     UInt previousElementId = edgeFace[0] + edgeFace[1] - elementId;
     UInt nextElementId = GetNextElement(mesh, elementId, edgeId);
@@ -193,7 +192,7 @@ void meshkernel::SplitRowColumnOfMesh::SplitElement(Mesh2D& mesh,
         else if (!IsQuadrilateral(mesh, nextElementId))
         {
             UInt oppositeEdgeId = OppositeEdgeId(mesh, elementId, edgeId);
-            const Edge& oppositeEdgeNode = mesh.GetEdge(oppositeEdgeId);
+            const Edge oppositeEdgeNode = mesh.GetEdge(oppositeEdgeId);
             UInt firstNewNodeId = SplitEdge(mesh, edgeId, edgesToDelete, undoActions);
 
             std::tie(std::ignore, undoActions.Insert()) = mesh.ConnectNodes(oppositeEdgeNode.first, firstNewNodeId);
@@ -219,7 +218,7 @@ void meshkernel::SplitRowColumnOfMesh::SplitElement(Mesh2D& mesh,
         else if (!IsQuadrilateral(mesh, nextElementId))
         {
             UInt oppositeEdgeId = OppositeEdgeId(mesh, elementId, edgeId);
-            const Edge& oppositeEdgeNode = mesh.GetEdge(oppositeEdgeId);
+            const Edge oppositeEdgeNode = mesh.GetEdge(oppositeEdgeId);
 
             std::tie(std::ignore, undoActions.Insert()) = mesh.ConnectNodes(oppositeEdgeNode.first, newNode);
             std::tie(std::ignore, undoActions.Insert()) = mesh.ConnectNodes(newNode, oppositeEdgeNode.second);
