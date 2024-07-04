@@ -1450,6 +1450,15 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_set(int meshKernelId, const Mesh2D& mesh2d);
 
+        /// @brief Sets the meshkernel::Mesh2D state
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] firstNode    The first node of the edge
+        /// @param[in] secondNode   The second node of the edge
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_split_row(int meshKernelId,
+                                                 int firstNode,
+                                                 int secondNode);
+
         /// @brief Adds a mesh to the meshkernel::Mesh2D state
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] mesh2d       The Mesh2D data

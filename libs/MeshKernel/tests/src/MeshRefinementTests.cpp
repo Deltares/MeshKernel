@@ -2662,3 +2662,28 @@ TEST(MeshRefinement, SplitElementLoop)
     ASSERT_EQ(mesh.GetNumValidEdges(), 28);
     ASSERT_EQ(mesh.GetNumFaces(), 12);
 }
+
+TEST(MeshRefinement, RowSplittingFailureTests)
+{
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 11, 11);
+    Mesh2D mesh(curviMesh->ComputeEdges(), curviMesh->ComputeNodes(), Projection::cartesian);
+    mesh.Administrate();
+
+    mesh.Administrate();
+    SplitRowColumnOfMesh splitMeshRow;
+
+    // Edge id is the null value
+    EXPECT_THROW([[maybe_unused]] auto undo1 = splitMeshRow.Compute(mesh, constants::missing::uintValue), ConstraintError);
+    // Out of bounds edge id
+    EXPECT_THROW([[maybe_unused]] auto undo2 = splitMeshRow.Compute(mesh, mesh.GetNumEdges() + 10), ConstraintError);
+
+    auto [newNodeId, undo3] = mesh.InsertNode({110.0, 0.0});
+    UInt endNode = mesh.FindNodeCloseToAPoint({100.0, 0.0}, 1.0e-4);
+
+    auto [edgeId, undoInsertEdge] = mesh.ConnectNodes(newNodeId, endNode);
+    // Undo  edge insertion, so the edgeId should now be invalid
+    undoInsertEdge->Restore();
+
+    // Invalid edge id
+    EXPECT_THROW([[maybe_unused]] auto undo4 = splitMeshRow.Compute(mesh, edgeId), ConstraintError);
+}

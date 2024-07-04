@@ -78,6 +78,7 @@
 #include <MeshKernel/Smoother.hpp>
 #include <MeshKernel/SplineAlgorithms.hpp>
 #include <MeshKernel/Splines.hpp>
+#include <MeshKernel/SplitRowColumnOfMesh.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
 #include <MeshKernel/UndoActions/UndoActionStack.hpp>
@@ -300,6 +301,36 @@ namespace meshkernelapi
 
             // No changes to the original mesh can be undone, so clear the undo-stack
             meshKernelUndoStack.Clear();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_split_row(int meshKernelId,
+                                             int firstNode,
+                                             int secondNode)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_mesh2d == nullptr)
+            {
+                throw meshkernel::MeshKernelError("The selected mesh not exist.");
+            }
+
+            meshkernel::UInt edgeId = meshKernelState[meshKernelId].m_mesh2d->FindEdge(static_cast<meshkernel::UInt>(firstNode),
+                                                                                       static_cast<meshkernel::UInt>(secondNode));
+
+            meshkernel::SplitRowColumnOfMesh splitAlongRow;
+            meshKernelUndoStack.Add(splitAlongRow.Compute(*meshKernelState[meshKernelId].m_mesh2d, edgeId));
         }
         catch (...)
         {
