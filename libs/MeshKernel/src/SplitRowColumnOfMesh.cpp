@@ -42,9 +42,9 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::SplitRowColumnOfMesh::Comput
         CollectElementsToSplit(mesh, edgeId, elementIds, edgeIds);
         SplitAlongRow(mesh, elementIds, edgeIds, *undoActions, edgesToDelete);
 
-        for (UInt i = 0; i < edgesToDelete.size(); ++i)
+        for (UInt edgeId : edgesToDelete)
         {
-            undoActions->Add(mesh.DeleteEdge(edgesToDelete[i]));
+            undoActions->Add(mesh.DeleteEdge(edgeId));
         }
 
         mesh.Administrate();
@@ -65,31 +65,6 @@ bool meshkernel::SplitRowColumnOfMesh::IsValidEdge(const Mesh2D& mesh, const UIn
 bool meshkernel::SplitRowColumnOfMesh::MayBeSplit(const Mesh2D& mesh, const UInt edgeId) const
 {
     return IsValid(edgeId) && (IsQuadrilateral(mesh, mesh.m_edgesFaces[edgeId][0]) || IsQuadrilateral(mesh, mesh.m_edgesFaces[edgeId][1]));
-
-    if (!IsValid(edgeId))
-    {
-        // Should this be an error condition
-        return false;
-    }
-
-    const std::array<UInt, 2>& edge = mesh.m_edgesFaces[edgeId];
-
-    if (!IsValid(edge[0]) && !IsValid(edge[1]))
-    {
-        return false;
-    }
-    else if (IsValid(edge[0]) && !IsValid(edge[1]))
-    {
-        return IsQuadrilateral(mesh, edge[0]);
-    }
-    else if (!IsValid(edge[0]) && IsValid(edge[1]))
-    {
-        return IsQuadrilateral(mesh, edge[1]);
-    }
-    else
-    {
-        return IsQuadrilateral(mesh, edge[0]) || IsQuadrilateral(mesh, edge[1]);
-    }
 }
 
 void meshkernel::SplitRowColumnOfMesh::SplitAlongRow(Mesh2D& mesh,
@@ -99,9 +74,9 @@ void meshkernel::SplitRowColumnOfMesh::SplitAlongRow(Mesh2D& mesh,
                                                      std::vector<UInt>& edgesToDelete) const
 {
 
+    const bool loopDetected = edgeIds.front() == edgeIds.back();
     UInt newNode = constants::missing::uintValue;
     UInt firstNode = constants::missing::uintValue;
-    bool loopDetected = edgeIds.front() == edgeIds.back();
 
     for (UInt i = 0; i < elementIds.size(); ++i)
     {
@@ -111,7 +86,7 @@ void meshkernel::SplitRowColumnOfMesh::SplitAlongRow(Mesh2D& mesh,
         }
         else if (loopDetected && i == elementIds.size() - 1)
         {
-            // The last part of the loop is just connecting the two nodes from the neighbouring edges that close the loop
+            // The last action in the loop is just connecting the two nodes from the neighbouring edges that close the loop of elements
             std::tie(std::ignore, undoActions.Insert()) = mesh.ConnectNodes(newNode, firstNode);
         }
         else
@@ -211,6 +186,7 @@ void meshkernel::SplitRowColumnOfMesh::SplitElement(Mesh2D& mesh,
             UInt secondNewNodeId = SplitEdge(mesh, oppositeEdgeId, edgesToDelete, undoActions);
 
             std::tie(std::ignore, undoActions.Insert()) = mesh.ConnectNodes(firstNewNodeId, secondNewNodeId);
+
             // Overwrite newNode with the latest new node id.
             newNode = secondNewNodeId;
         }
@@ -222,6 +198,7 @@ void meshkernel::SplitRowColumnOfMesh::SplitElement(Mesh2D& mesh,
 
             std::tie(std::ignore, undoActions.Insert()) = mesh.ConnectNodes(oppositeEdgeNode.first, firstNewNodeId);
             std::tie(std::ignore, undoActions.Insert()) = mesh.ConnectNodes(firstNewNodeId, oppositeEdgeNode.second);
+
             // Set the newNode with the null id, indicating no new node was created
             newNode = constants::missing::uintValue;
         }
@@ -233,6 +210,7 @@ void meshkernel::SplitRowColumnOfMesh::SplitElement(Mesh2D& mesh,
             // This is probably the most common case in a sequence of quadrilateral elements
             UInt oppositeEdgeId = OppositeEdgeId(mesh, elementId, edgeId);
             UInt secondNewNodeId = SplitEdge(mesh, oppositeEdgeId, edgesToDelete, undoActions);
+
             std::tie(std::ignore, undoActions.Insert()) = mesh.ConnectNodes(newNode, secondNewNodeId);
 
             // Overwrite newNode with the latest new node id.
@@ -252,8 +230,6 @@ void meshkernel::SplitRowColumnOfMesh::SplitElement(Mesh2D& mesh,
     }
     else if (!IsQuadrilateral(mesh, previousElementId))
     {
-
-        // If neither the previous nor the next elements are quadrilaterals then there is nothing to do.
         if (!IsValid(nextElementId) || IsQuadrilateral(mesh, nextElementId))
         {
             UInt oppositeEdgeId = OppositeEdgeId(mesh, elementId, edgeId);
@@ -265,6 +241,8 @@ void meshkernel::SplitRowColumnOfMesh::SplitElement(Mesh2D& mesh,
             // Overwrite newNode with the latest new node id.
             newNode = secondNewNodeId;
         }
+
+        // If neither the previous nor the next elements are quadrilaterals then there is nothing to do.
     }
 }
 
@@ -276,6 +254,13 @@ bool meshkernel::SplitRowColumnOfMesh::IsQuadrilateral(const Mesh2D& mesh, const
 void meshkernel::SplitRowColumnOfMesh::CollectElementsToSplit(const Mesh2D& mesh, const UInt edgeId, std::vector<UInt>& elementIds, std::vector<UInt>& edgeIds) const
 {
     const UInt firstElementId = mesh.m_edgesFaces[edgeId][0] != constants::missing::uintValue ? mesh.m_edgesFaces[edgeId][0] : mesh.m_edgesFaces[edgeId][1];
+    const UInt initialNumberOfElements = static_cast<UInt>(std::sqrt(static_cast<double>(mesh.GetNumNodes())));
+
+    std::vector<UInt> partialElementIds;
+    std::vector<UInt> partialEdgeIds;
+
+    partialElementIds.reserve(initialNumberOfElements);
+    partialEdgeIds.reserve(initialNumberOfElements);
 
     // Loop over each side of the edge
     for (UInt i = 0; i < 2; ++i)
@@ -286,19 +271,20 @@ void meshkernel::SplitRowColumnOfMesh::CollectElementsToSplit(const Mesh2D& mesh
             continue;
         }
 
+        partialElementIds.clear();
+        partialEdgeIds.clear();
+
         UInt elementId = mesh.m_edgesFaces[edgeId][i];
         UInt currentEdgeId = edgeId;
         bool firstIteration = true;
         // Indicate if a circular loop of elements has been detected
         bool loopDetected = false;
 
-        std::vector<UInt> partialElementIds;
-        std::vector<UInt> partialEdgeIds;
-
-        while (!IsValid(elementId) && IsQuadrilateral(mesh, elementId) && !loopDetected)
+        while (IsQuadrilateral(mesh, elementId) && !loopDetected)
         {
             partialElementIds.push_back(elementId);
 
+            // Ensure the seed edge is added only once to the sequence of edges
             if (i == 0 || !firstIteration)
             {
                 partialEdgeIds.push_back(currentEdgeId);

@@ -44,7 +44,7 @@ namespace meshkernel
         {
         public:
             /// @brief Constructor
-            StoreExpression(CompoundUndoAction& action) : m_undoAction(action) {}
+            explicit StoreExpression(CompoundUndoAction& action) : m_undoAction(action) {}
 
             /// @brief Insert undo action into compound undo action sequence
             void operator=(UndoActionPtr&& action)
@@ -53,7 +53,7 @@ namespace meshkernel
             }
 
         private:
-            /// @brief Reference to the compoind undo action object.
+            /// @brief Reference to the compound undo action object.
             CompoundUndoAction& m_undoAction;
         };
 
@@ -69,7 +69,7 @@ namespace meshkernel
         /// @brief Add an undo action to the compound action
         void Add(UndoActionPtr&& action);
 
-        /// @brief Allows for insertion of an undo action into the compund undo action.
+        /// @brief Allows for insertion of an undo action into the compound undo action.
         StoreExpression& Insert();
 
         /// @brief Iterator to start of composite undo actions
