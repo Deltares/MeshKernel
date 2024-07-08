@@ -2489,11 +2489,6 @@ TEST(MeshRefinement, SplitBoundariesOfMesh)
     UInt edge = mesh.FindEdge(node1, node2);
     undoStack.Add(splitMesh.Compute(mesh, edge));
 
-    node1 = mesh.FindNodeCloseToAPoint({10.0, 0.0}, 1.0e-4);
-    node2 = mesh.FindNodeCloseToAPoint({5.0, 0.0}, 1.0e-4);
-
-    // Print(mesh.Nodes(), mesh.Edges());
-
     ASSERT_EQ(mesh.GetNumValidNodes(), 132);
     ASSERT_EQ(mesh.GetNumValidEdges(), 241);
     ASSERT_EQ(mesh.GetNumFaces(), 110);

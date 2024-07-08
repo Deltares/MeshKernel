@@ -40,10 +40,8 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::SplitRowColumnOfMesh::Comput
         CollectElementsToSplit(mesh, edgeId, elementIds, edgeIds);
         SplitAlongRow(mesh, elementIds, edgeIds, *undoActions, edgesToDelete);
 
-        for (UInt edgeId : edgesToDelete)
-        {
-            undoActions->Add(mesh.DeleteEdge(edgeId));
-        }
+        std::ranges::for_each(edgesToDelete, [&](UInt edgeId)
+                              { undoActions->Add(mesh.DeleteEdge(edgeId)); });
 
         mesh.Administrate();
     }
