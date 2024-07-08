@@ -3443,8 +3443,11 @@ TEST(Mesh2D, CasulliRefinementErrorCases)
     errorCode = meshkernelapi::mkernel_mesh2d_casulli_refinement(meshKernelId + 1);
     ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
 
-    errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement(meshKernelId + 1);
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_refinement_on_polygon(meshKernelId + 1,
+                                                                            meshkernelapi::GeometryList{});
     ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    meshkernelapi::mkernel_deallocate_state(meshKernelId);
 }
 
 TEST(Mesh2D, CasulliRefinementWholeMesh)
@@ -3483,6 +3486,69 @@ TEST(Mesh2D, CasulliRefinementWholeMesh)
 
     EXPECT_GT(refinedMesh2d.num_nodes, mesh2d.num_nodes);
     EXPECT_GT(refinedMesh2d.num_edges, mesh2d.num_edges);
+}
+
+TEST(Mesh2D, CasulliRefinementMeshRegion)
+{
+    // Prepare
+    int meshKernelId;
+    const int isGeographic = 0;
+    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+
+    // Set-up new mesh
+    auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(10, 10, 1.0);
+
+    std::vector<double> originalNodesX(node_x);
+    std::vector<double> originalNodesY(node_y);
+    std::vector<int> originalEdges(edge_nodes);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+    std::vector<double> polygonPointsX({2.5, 7.5, 5.5, 2.5});
+    std::vector<double> polygonPointsY({2.5, 4.5, 8.5, 2.5});
+    meshkernelapi::GeometryList polygon;
+    polygon.num_coordinates = 4;
+    polygon.coordinates_x = polygonPointsX.data();
+    polygon.coordinates_y = polygonPointsY.data();
+
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_refinement_on_polygon(meshKernelId, polygon);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D refinedMesh2d{};
+
+    // Just do a rudimentary check that the number of noeds and edges is greater in the refined mesh.
+
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, refinedMesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    EXPECT_GT(refinedMesh2d.num_nodes, mesh2d.num_nodes);
+    EXPECT_GT(refinedMesh2d.num_edges, mesh2d.num_edges);
+}
+
+TEST(Mesh2D, CasulliDeRefinementErrorCases)
+{
+    // Prepare
+    int meshKernelId;
+    const int isGeographic = 0;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement(meshKernelId + 1);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement_on_polygon(meshKernelId + 1,
+                                                                              meshkernelapi::GeometryList{});
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    meshkernelapi::mkernel_deallocate_state(meshKernelId);
 }
 
 TEST(Mesh2D, CasulliDeRefinementWholeMesh)
@@ -3568,6 +3634,51 @@ TEST(Mesh2D, CasulliDeRefinementWholeMesh)
     {
         EXPECT_EQ(originalEdges[i], mesh2d.edge_nodes[i]);
     }
+}
+
+TEST(Mesh2D, CasullDeRefinementMeshRegion)
+{
+    // Prepare
+    int meshKernelId;
+    const int isGeographic = 0;
+    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+
+    // Set-up new mesh
+    auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(10, 10, 1.0);
+
+    std::vector<double> originalNodesX(node_x);
+    std::vector<double> originalNodesY(node_y);
+    std::vector<int> originalEdges(edge_nodes);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+    std::vector<double> polygonPointsX({2.5, 7.5, 5.5, 2.5});
+    std::vector<double> polygonPointsY({2.5, 4.5, 8.5, 2.5});
+    meshkernelapi::GeometryList polygon;
+    polygon.num_coordinates = 4;
+    polygon.coordinates_x = polygonPointsX.data();
+    polygon.coordinates_y = polygonPointsY.data();
+
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement_on_polygon(meshKernelId, polygon);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D refinedMesh2d{};
+
+    // Just do a rudimentary check that the number of noeds and edges is greater in the refined mesh.
+
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, refinedMesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    EXPECT_LT(refinedMesh2d.num_nodes, mesh2d.num_nodes);
+    EXPECT_LT(refinedMesh2d.num_edges, mesh2d.num_edges);
 }
 
 TEST(Mesh2D, CasulliDeRefinementElementsWholeMesh)

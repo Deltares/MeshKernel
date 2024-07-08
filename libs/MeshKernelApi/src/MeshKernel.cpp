@@ -2466,10 +2466,9 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("element coordinate list is null.");
             }
 
-            meshkernel::CasulliDeRefinement casulliDerefinement;
             meshkernel::Polygons polygons; // empty polygonal region, i.e. the entire mesh
 
-            std::vector<meshkernel::Point> elementCentres(casulliDerefinement.ElementsToDelete(*meshKernelState[meshKernelId].m_mesh2d, polygons));
+            std::vector<meshkernel::Point> elementCentres(meshkernel::CasulliDeRefinement::ElementsToDelete(*meshKernelState[meshKernelId].m_mesh2d, polygons));
 
             elements.num_coordinates = static_cast<int>(elementCentres.size());
 
@@ -2507,8 +2506,7 @@ namespace meshkernelapi
             const meshkernel::Polygons polygons(polygonPoints,
                                                 meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            meshkernel::CasulliDeRefinement casulliDerefinement;
-            std::vector<meshkernel::Point> elementCentres(casulliDerefinement.ElementsToDelete(*meshKernelState[meshKernelId].m_mesh2d, polygons));
+            std::vector<meshkernel::Point> elementCentres(meshkernel::CasulliDeRefinement::ElementsToDelete(*meshKernelState[meshKernelId].m_mesh2d, polygons));
 
             elements.num_coordinates = static_cast<int>(elementCentres.size());
 
@@ -2536,9 +2534,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshkernel::CasulliDeRefinement casulliDerefinement;
-
-            meshKernelUndoStack.Add(casulliDerefinement.Compute(*meshKernelState[meshKernelId].m_mesh2d));
+            meshKernelUndoStack.Add(meshkernel::CasulliDeRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d));
         }
         catch (...)
         {
@@ -2562,11 +2558,8 @@ namespace meshkernelapi
             auto polygonPoints = ConvertGeometryListToPointVector(polygons);
             const meshkernel::Polygons meshKernelPolygons(polygonPoints,
                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
-
-            meshkernel::CasulliDeRefinement casulliDerefinement;
-
-            meshKernelUndoStack.Add(casulliDerefinement.Compute(*meshKernelState[meshKernelId].m_mesh2d,
-                                                                meshKernelPolygons));
+            meshKernelUndoStack.Add(meshkernel::CasulliDeRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d,
+                                                                             meshKernelPolygons));
         }
         catch (...)
         {
