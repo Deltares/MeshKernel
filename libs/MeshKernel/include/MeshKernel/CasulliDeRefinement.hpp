@@ -127,7 +127,7 @@ namespace meshkernel
                                                const UInt nodeId);
 
         /// @brief Update the mesh members for the mesh description and connectivity.
-        static [[nodiscard]] bool UpdateDirectlyConnectedElements(Mesh2D& mesh,
+        [[nodiscard]] static bool UpdateDirectlyConnectedElements(Mesh2D& mesh,
                                                                   const UInt elementId,
                                                                   const std::vector<UInt>& directlyConnected,
                                                                   const std::vector<std::array<int, 2>>& kne);
