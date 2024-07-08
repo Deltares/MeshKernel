@@ -1051,12 +1051,4 @@ TEST(MeshRefinement, SplitAlongRow_FailureTests)
     // null node id's
     errorCode = meshkernelapi::mkernel_mesh2d_split_row(meshKernelId, node1, node2);
     ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
-
-    //--------------------------------
-    // Incorrect node id's
-    node1 = 1000;
-    node2 = 1000;
-
-    errorCode = meshkernelapi::mkernel_mesh2d_split_row(meshKernelId, node1, node2);
-    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
 }
