@@ -2,6 +2,7 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridEntireRefinement.hpp>
 #include <MeshKernel/Entities.hpp>
 
 using namespace meshkernel;
@@ -118,4 +119,56 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGridWithMissingFaces_Should
     ASSERT_NEAR(constants::missing::doubleValue, curvilinearGrid.GetNode(11, 1).y, tolerance);
     ASSERT_NEAR(20.0, curvilinearGrid.GetNode(11, 2).y, tolerance);
     ASSERT_NEAR(30.0, curvilinearGrid.GetNode(11, 3).y, tolerance);
+}
+
+TEST(CurvilinearGridRefinement, Simple)
+{
+    // lin_alg::Matrix<Point> grid(6, 4);
+
+    // grid << Point{0, 0},  Point{0, 10},  Point{0, 20},  Point{0, 30},
+    //         Point{10, 0}, Point{10, 10}, Point{10, 20}, Point{10, 30},
+    //         Point{20, 0}, Point{20, 10}, Point{20, 20}, Point{20, 30},
+    //         Point{30, 0}, Point{30, 10}, Point{30, 20}, Point{30, 30},
+    //         Point{40, 0}, Point{40, 10}, Point{40, 20}, Point{40, 30},
+    //         Point{50, 0}, Point{50, 10}, Point{50, 20}, Point{50, 30};
+
+    // // Set-up
+    // lin_alg::Matrix<Point> grid(5, 4);
+
+
+    // int count = 1;
+
+    // for (int i = 0; i < grid.rows (); ++i)
+    // {
+    //     for (int j = 0; j < grid.cols (); ++j)
+    //     {
+    //         grid (i, j) = Point (static_cast<double>(i) * 10.0, static_cast<double>(j) * 10.0);
+    //         std::cout << " node " << count << "  "<< grid (i, j).x << ", " << grid (i, j).y << std::endl;
+    //     }
+    // }
+
+    // Set-up
+    lin_alg::Matrix<Point> grid(4, 5);
+
+    grid << Point{0, 0 + 100},  Point{0, 10 + 100},  Point{0, 20 + 100},  Point{0, 30 + 100},  Point{0, 40 + 100},
+            Point{10, 0 + 100}, Point{10, 10 + 100}, Point{10, 20 + 100}, Point{10, 30 + 100},  Point{10, 40 + 100},
+            Point{20, 0 + 100}, Point{20, 10 + 100}, Point{20, 20 + 100}, Point{20, 30 + 100},  Point{20, 40 + 100},
+            Point{30, 0 + 100}, Point{30, 10 + 100}, Point{30, 20 + 100}, Point{30, 30 + 100},  Point{30, 40 + 100};
+
+    // grid << Point{0, 0},  Point{0, 10},  Point{0, 20},  Point{0, 30},
+    //         Point{10, 0}, Point{10, 10}, Point{10, 20}, Point{10, 30},
+    //         Point{20, 0}, Point{20, 10}, Point{20, 20}, Point{20, 30},
+    //         Point{30, 0}, Point{30, 10}, Point{30, 20}, Point{30, 30},
+    //         Point{40, 0}, Point{40, 10}, Point{40, 20}, Point{40, 30};
+
+    CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
+    CurvilinearGridEntireRefinement curvilinearGridRefinement;
+
+
+    // Execute
+    // [[maybe_unused]] auto dummyUndoAction =
+    curvilinearGridRefinement.Compute(curvilinearGrid, 4, 2);
+
+    Print (curvilinearGrid.ComputeNodes (), curvilinearGrid.ComputeEdges ());
+
 }
