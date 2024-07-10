@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridEntireRefinement.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridFullRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
 #include <MeshKernel/Entities.hpp>
 
@@ -137,7 +137,7 @@ TEST(CurvilinearGridRefinement, FullRefinementNonUniform)
     std::vector<double> expectedY{100.0, 101.8, 105.0, 110.6, 118.0, 126.3, 135.0};
 
     CurvilinearGrid curvilinearGrid(gridPoints, Projection::cartesian);
-    CurvilinearGridEntireRefinement curvilinearGridRefinement;
+    CurvilinearGridFullRefinement curvilinearGridRefinement;
 
     // Refine mesh four times in m-direction and twoce in n-direction
     auto undoRefinement = curvilinearGridRefinement.Compute(curvilinearGrid, 4, 2);
@@ -186,7 +186,7 @@ TEST(CurvilinearGridRefinement, FullRefinementWithFactor1)
     }
 
     CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
-    CurvilinearGridEntireRefinement curvilinearGridRefinement;
+    CurvilinearGridFullRefinement curvilinearGridRefinement;
 
     const lin_alg::Matrix<Point> originalPoints = curvilinearGrid.GetNodes();
 
@@ -238,7 +238,7 @@ TEST(CurvilinearGridRefinement, FullRefinementWithMissingRegion)
     }
 
     CurvilinearGrid curvilinearGrid(gridNodes, Projection::cartesian);
-    CurvilinearGridEntireRefinement curvilinearGridRefinement;
+    CurvilinearGridFullRefinement curvilinearGridRefinement;
 
     const UInt mRefinement = 2;
     const UInt nRefinement = 3;
@@ -281,7 +281,7 @@ TEST(CurvilinearGridRefinement, IncorrectFullRefinementParameters)
         Point{0, 30}, Point{10, 30}, Point{20, 30}, Point{30, 30}, Point{40, 30};
 
     CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
-    CurvilinearGridEntireRefinement curvilinearGridRefinement;
+    CurvilinearGridFullRefinement curvilinearGridRefinement;
 
     // Should raise expcetion due to incorrect m- and/or n-refinement factors
     EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, 0, 2), meshkernel::ConstraintError);

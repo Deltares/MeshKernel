@@ -1,10 +1,10 @@
-#include "MeshKernel/CurvilinearGrid/CurvilinearGridEntireRefinement.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridFullRefinement.hpp"
 #include "MeshKernel/CurvilinearGrid/UndoActions/CurvilinearGridRefinementUndoAction.hpp"
 #include "MeshKernel/Exceptions.hpp"
 
-meshkernel::UndoActionPtr meshkernel::CurvilinearGridEntireRefinement::Compute(CurvilinearGrid& grid,
-                                                                               const UInt mRefinement,
-                                                                               const UInt nRefinement) const
+meshkernel::UndoActionPtr meshkernel::CurvilinearGridFullRefinement::Compute(CurvilinearGrid& grid,
+                                                                             const UInt mRefinement,
+                                                                             const UInt nRefinement) const
 {
 
     if (mRefinement == 0 || nRefinement == 0)
@@ -75,9 +75,9 @@ meshkernel::UndoActionPtr meshkernel::CurvilinearGridEntireRefinement::Compute(C
     return undoAction;
 }
 
-bool meshkernel::CurvilinearGridEntireRefinement::ValidFace(const CurvilinearGrid& grid,
-                                                            const UInt m,
-                                                            const UInt n) const
+bool meshkernel::CurvilinearGridFullRefinement::ValidFace(const CurvilinearGrid& grid,
+                                                          const UInt m,
+                                                          const UInt n) const
 {
     return grid.GetNode(n, m).IsValid() &&
            grid.GetNode(n + 1, m).IsValid() &&
@@ -85,12 +85,12 @@ bool meshkernel::CurvilinearGridEntireRefinement::ValidFace(const CurvilinearGri
            grid.GetNode(n + 1, m + 1).IsValid();
 }
 
-void meshkernel::CurvilinearGridEntireRefinement::ComputeRefinedElementEdges(const Splines& splines,
-                                                                             const UInt splineIndex,
-                                                                             const UInt currentIndex,
-                                                                             const UInt refinement,
-                                                                             std::vector<Point>& elementSide1,
-                                                                             std::vector<Point>& elementSide2) const
+void meshkernel::CurvilinearGridFullRefinement::ComputeRefinedElementEdges(const Splines& splines,
+                                                                           const UInt splineIndex,
+                                                                           const UInt currentIndex,
+                                                                           const UInt refinement,
+                                                                           std::vector<Point>& elementSide1,
+                                                                           std::vector<Point>& elementSide2) const
 {
     elementSide1.resize(refinement + 1);
     elementSide2.resize(refinement + 1);

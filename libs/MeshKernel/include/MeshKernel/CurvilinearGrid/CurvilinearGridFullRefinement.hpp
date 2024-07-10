@@ -37,10 +37,15 @@ namespace meshkernel
     /// @brief Refines the entire curvilinear grid.
     ///
     /// This refinement can be different in each m- and n-direction.
-    class CurvilinearGridEntireRefinement final
+    class CurvilinearGridFullRefinement final
     {
     public:
         /// @brief Refine the entire grid by the refinement factors.
+        ///
+        /// @param grid [in out] The grid to be refined
+        /// @param mRefinement [in] How much refinement required in the m-direction
+        /// @param nRefinement [in] How much refinement required in the n-direction
+        /// @returns the unto action, should the mesh want to be reverted to the original state.
         [[nodiscard]] UndoActionPtr Compute(CurvilinearGrid& grid,
                                             const UInt mRefinement,
                                             const UInt nRefinement) const;
