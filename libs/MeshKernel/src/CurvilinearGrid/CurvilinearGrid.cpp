@@ -1177,7 +1177,6 @@ std::vector<meshkernel::Point> CurvilinearGrid::ComputeNodes() const
         {
 
             result[ind] = GetNode(n, m);
-            std::cout << "node " << ind << " -- " << n << "  "  << m << "  == " << result[ind].x << ", " << result[ind].y << std::endl;
             ind++;
         }
     }

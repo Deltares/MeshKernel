@@ -27,17 +27,38 @@
 
 #pragma once
 
-#include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
+#include "MeshKernel/Definitions.hpp"
+#include "MeshKernel/Splines.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 namespace meshkernel
 {
-    // change name
+    /// @brief Refines the entire curvilinear grid.
+    ///
+    /// This refinement can be different in each m- and n-direction.
     class CurvilinearGridEntireRefinement final
     {
-    public :
+    public:
         /// @brief Refine the entire grid by the refinement factors.
-        void Compute(CurvilinearGrid& grid, UInt nRefinement, UInt mRefinement) const;
+        [[nodiscard]] UndoActionPtr Compute(CurvilinearGrid& grid,
+                                            const UInt mRefinement,
+                                            const UInt nRefinement) const;
+
+    private:
+        /// @brief Compute the discretisation of two opposite edges of a face
+        ///
+        /// This can be for either top and bottom or left and right edges.
+        void ComputeRefinedElementEdges(const Splines& splines,
+                                        const UInt splineIndex,
+                                        const UInt currentIndex,
+                                        const UInt refinement,
+                                        std::vector<Point>& elementSide1,
+                                        std::vector<Point>& elementSide2) const;
+
+        /// @brief Determine if the all nodes of a face are valid
+        bool ValidFace(const CurvilinearGrid& grid,
+                       const UInt m, const UInt n) const;
     };
 
 } // namespace meshkernel
