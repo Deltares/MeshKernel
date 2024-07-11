@@ -22,18 +22,18 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::SplitRowColumnOfMesh::Comput
     }
 
     // Just an estimate on the maximum number number of elements that may be split.
-    const UInt initialNumberOfElements = static_cast<UInt>(std::sqrt(static_cast<double>(mesh.GetNumNodes())));
+    const UInt initialNumberOfFaces = static_cast<UInt>(std::sqrt(static_cast<double>(mesh.GetNumFaces())));
 
     std::vector<UInt> elementIds;
     std::vector<UInt> edgeIds;
     std::vector<UInt> edgesToDelete;
-    elementIds.reserve(initialNumberOfElements);
-    edgeIds.reserve(initialNumberOfElements);
-    edgesToDelete.reserve(initialNumberOfElements);
+    elementIds.reserve(initialNumberOfFaces);
+    edgeIds.reserve(initialNumberOfFaces);
+    edgesToDelete.reserve(initialNumberOfFaces);
 
     std::unique_ptr<CompoundUndoAction> undoActions;
 
-    if (MayBeSplit(mesh, edgeId))
+    if (CanBeSplit(mesh, edgeId))
     {
         undoActions = CompoundUndoAction::Create();
 
@@ -58,7 +58,7 @@ bool meshkernel::SplitRowColumnOfMesh::IsValidEdge(const Mesh2D& mesh, const UIn
            mesh.Node(edge.second).IsValid();
 }
 
-bool meshkernel::SplitRowColumnOfMesh::MayBeSplit(const Mesh2D& mesh, const UInt edgeId) const
+bool meshkernel::SplitRowColumnOfMesh::CanBeSplit(const Mesh2D& mesh, const UInt edgeId) const
 {
     return IsValid(edgeId) && (IsQuadrilateral(mesh, mesh.m_edgesFaces[edgeId][0]) || IsQuadrilateral(mesh, mesh.m_edgesFaces[edgeId][1]));
 }
@@ -171,8 +171,8 @@ void meshkernel::SplitRowColumnOfMesh::SplitElement(Mesh2D& mesh,
 {
     const Edge edgeNode = mesh.GetEdge(edgeId);
     const std::array<UInt, 2>& edgeFace = mesh.m_edgesFaces[edgeId];
-    UInt previousElementId = edgeFace[0] + edgeFace[1] - elementId;
-    UInt nextElementId = GetNextElement(mesh, elementId, edgeId);
+    const UInt previousElementId = edgeFace[0] + edgeFace[1] - elementId;
+    const UInt nextElementId = GetNextElement(mesh, elementId, edgeId);
 
     if (!IsValid(previousElementId))
     {
@@ -248,59 +248,72 @@ bool meshkernel::SplitRowColumnOfMesh::IsQuadrilateral(const Mesh2D& mesh, const
     return IsValid(elementId) && mesh.m_numFacesNodes[elementId] == constants::geometric::numNodesInQuadrilateral;
 }
 
-void meshkernel::SplitRowColumnOfMesh::CollectElementsToSplit(const Mesh2D& mesh, const UInt edgeId, std::vector<UInt>& elementIds, std::vector<UInt>& edgeIds) const
+void meshkernel::SplitRowColumnOfMesh::CollectElementsOneSideOfEdge(const Mesh2D& mesh,
+                                                                    const UInt edgeId,
+                                                                    const UInt whichSide,
+                                                                    std::vector<UInt>& partialElementIds,
+                                                                    std::vector<UInt>& partialEdgeIds,
+                                                                    bool& loopDetected) const
 {
     const UInt firstElementId = mesh.m_edgesFaces[edgeId][0] != constants::missing::uintValue ? mesh.m_edgesFaces[edgeId][0] : mesh.m_edgesFaces[edgeId][1];
-    const UInt initialNumberOfElements = static_cast<UInt>(std::sqrt(static_cast<double>(mesh.GetNumNodes())));
+
+    partialElementIds.clear();
+    partialEdgeIds.clear();
+
+    UInt elementId = mesh.m_edgesFaces[edgeId][whichSide];
+    UInt currentEdgeId = edgeId;
+    bool firstIteration = true;
+    loopDetected = false;
+
+    while (IsQuadrilateral(mesh, elementId) && !loopDetected)
+    {
+        partialElementIds.push_back(elementId);
+
+        // Ensure the seed edge is added only once to the sequence of edges
+        if (whichSide == 0 || !firstIteration)
+        {
+            partialEdgeIds.push_back(currentEdgeId);
+        }
+
+        GetNextEdge(mesh, elementId, currentEdgeId);
+
+        if (elementId == firstElementId)
+        {
+            loopDetected = true;
+        }
+
+        firstIteration = false;
+    }
+
+    if (IsValid(currentEdgeId))
+    {
+        partialEdgeIds.push_back(currentEdgeId);
+    }
+}
+
+void meshkernel::SplitRowColumnOfMesh::CollectElementsToSplit(const Mesh2D& mesh, const UInt edgeId, std::vector<UInt>& elementIds, std::vector<UInt>& edgeIds) const
+{
+    // Estimate on the number of faces that will be refined.
+    const UInt initialNumberOfFaces = static_cast<UInt>(std::sqrt(static_cast<double>(mesh.GetNumFaces())));
 
     std::vector<UInt> partialElementIds;
     std::vector<UInt> partialEdgeIds;
 
-    partialElementIds.reserve(initialNumberOfElements);
-    partialEdgeIds.reserve(initialNumberOfElements);
+    partialElementIds.reserve(initialNumberOfFaces);
+    partialEdgeIds.reserve(initialNumberOfFaces);
 
     // Loop over each side of the edge
     for (UInt i = 0; i < 2; ++i)
     {
         if (!IsValid(mesh.m_edgesFaces[edgeId][i]))
         {
-            // There is no elememnt on the other side of the edge.
+            // There is no element on the other side of the edge.
             continue;
         }
 
-        partialElementIds.clear();
-        partialEdgeIds.clear();
-
-        UInt elementId = mesh.m_edgesFaces[edgeId][i];
-        UInt currentEdgeId = edgeId;
-        bool firstIteration = true;
         // Indicate if a circular loop of elements has been detected
         bool loopDetected = false;
-
-        while (IsQuadrilateral(mesh, elementId) && !loopDetected)
-        {
-            partialElementIds.push_back(elementId);
-
-            // Ensure the seed edge is added only once to the sequence of edges
-            if (i == 0 || !firstIteration)
-            {
-                partialEdgeIds.push_back(currentEdgeId);
-            }
-
-            GetNextEdge(mesh, elementId, currentEdgeId);
-
-            if (elementId == firstElementId)
-            {
-                loopDetected = true;
-            }
-
-            firstIteration = false;
-        }
-
-        if (IsValid(currentEdgeId))
-        {
-            partialEdgeIds.push_back(currentEdgeId);
-        }
+        CollectElementsOneSideOfEdge(mesh, edgeId, i, partialElementIds, partialEdgeIds, loopDetected);
 
         if (i == 0)
         {

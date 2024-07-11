@@ -1051,9 +1051,6 @@ meshkernel::UInt Mesh::GetEdgeIndex(const UInt elementId, const UInt edgeId) con
 
     const std::vector<UInt>& edgeIds = m_facesEdges[elementId];
 
-    // TODO use Operations::FindIndex when curvilinear grid from splines has been added to master
-    // return FindIndex (m_facesEdges[elementId], edgeId);
-
     for (UInt e = 0; e < edgeIds.size(); ++e)
     {
         if (edgeIds[e] == edgeId)

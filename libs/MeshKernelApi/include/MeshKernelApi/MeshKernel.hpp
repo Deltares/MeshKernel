@@ -1450,7 +1450,10 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_set(int meshKernelId, const Mesh2D& mesh2d);
 
-        /// @brief Sets the meshkernel::Mesh2D state
+        /// @brief An-isotropically refines the elements along a row or column, given a starting edge
+        ///
+        /// Only quadrilateral elements wil be refined.
+        /// Refinement will continue upto the boundary of the domain or when a non-quadrilateral element is encountered.
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] firstNode    The first node of the edge
         /// @param[in] secondNode   The second node of the edge

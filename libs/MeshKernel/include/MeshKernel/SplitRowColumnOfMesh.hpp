@@ -86,14 +86,22 @@ namespace meshkernel
                            CompoundUndoAction& undoActions,
                            std::vector<UInt>& edgesToDelete) const;
 
-        /// @brief Collect the ID's of the edges and elements to be split.
+        /// @brief Collect the ID's of elements and edges for the partial row/column starting at the edgeId in the direction of the "whichSide" index.
+        void CollectElementsOneSideOfEdge(const Mesh2D& mesh,
+                                          const UInt edgeId,
+                                          const UInt whichSide,
+                                          std::vector<UInt>& partialElementIds,
+                                          std::vector<UInt>& partialEdgeIds,
+                                          bool& loopDetected) const;
+
+        /// @brief Collect the ID's of the elements and edges to be split.
         void CollectElementsToSplit(const Mesh2D& mesh, const UInt edgeId, std::vector<UInt>& elementIds, std::vector<UInt>& edgeIds) const;
 
         /// @brief Determine if it may be possible to split the edge
         ///
         /// If two elements are attached to edge then either must be a quadrilateral,
         /// otherwise the single attached element must be quadrilateral.
-        bool MayBeSplit(const Mesh2D& mesh, const UInt edgeId) const;
+        bool CanBeSplit(const Mesh2D& mesh, const UInt edgeId) const;
 
         /// @brief Determine is the edge is a valid edge or not.
         bool IsValidEdge(const Mesh2D& mesh, const UInt edgeId) const;
