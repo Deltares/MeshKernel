@@ -105,7 +105,7 @@ namespace meshkernel
                                     double& crossProductIntersection,
                                     Point& intersectionPoint,
                                     double& firstSplineRatio,
-                                    double& secondSplineRatio);
+                                    double& secondSplineRatio) const;
 
         /// @brief Computes the spline length in s coordinates (GETDIS)
         /// @param[in] index The spline index

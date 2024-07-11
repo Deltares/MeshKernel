@@ -173,7 +173,7 @@ bool Splines::GetSplinesIntersection(UInt first,
                                      double& crossProductIntersection,
                                      Point& intersectionPoint,
                                      double& firstSplineRatio,
-                                     double& secondSplineRatio)
+                                     double& secondSplineRatio) const
 {
     double minimumCrossingDistance = std::numeric_limits<double>::max();
     double crossingDistance;

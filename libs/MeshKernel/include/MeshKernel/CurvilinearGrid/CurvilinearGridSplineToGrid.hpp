@@ -53,6 +53,12 @@ namespace meshkernel
         /// @brief The maximum refinement factor.
         static const int MaximumRefinementFactor = 1000;
 
+        /// @brief Increase factor when adding mode spling support points.
+        ///
+        /// If value other than 2 is used, then the function IncreaseSplinePoints
+        /// needs to be updated to reflect this change
+        static const UInt SplineIncreaseFactor = 2;
+
         /// @brief Array of doubles
         using DoubleVector = std::vector<double>;
 
@@ -78,8 +84,8 @@ namespace meshkernel
         /// @brief Vector of ArrayOfThree.
         using VectorOfThreeInts = std::vector<ArrayOfThree>;
 
-        /// @brief Double the number of spline support points for all splines.
-        void DoubleSplinePoints(Splines& splines) const;
+        /// @brief Increase the number of spline support points for all splines.
+        void IncreaseSplinePoints(Splines& splines) const;
 
         /// @brief Compute the intersection of all splines and order into splines along m- and n-grid-lines
         void ComputeSplineIntersections(Splines& splines,
@@ -147,10 +153,10 @@ namespace meshkernel
                                          double& normalisedDistance,
                                          double& intervalLength) const;
 
-        /// @brief Check the splines.
+        /// @brief Check all spline are valid.
         ///
         /// Ensure that there are no splines with only a single point
-        bool CheckSplines(const Splines& splines) const;
+        bool AreSplinesValid(const Splines& splines) const;
 
         /// @brief Order the splines and spline-intersections into m- and n-grid-lines
         void OrderSplines(Splines& splines,
@@ -177,7 +183,7 @@ namespace meshkernel
                                  const UInt whichRow) const;
 
         /// @brief Determine the intersection point or points of two splines
-        void DetermineIntersection(Splines& splines,
+        void DetermineIntersection(const Splines& splines,
                                    const UInt splineI,
                                    const UInt splineJ,
                                    UInt& numberTimesCrossing,
