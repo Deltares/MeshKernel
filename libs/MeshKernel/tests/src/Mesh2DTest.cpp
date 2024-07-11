@@ -1250,11 +1250,11 @@ TEST(Mesh2D, Mesh2DToCurvilinear_WithRectangularMesh_ShouldCreateFullCurvilinear
     ASSERT_EQ(3, curvilinearGrid->NumN());
     ASSERT_EQ(9, curvilinearGrid->GetNumNodes());
 
-    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).x);
-    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).y);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(0, 2).x);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(0, 2).y);
 
-    ASSERT_EQ(5.0, curvilinearGrid->GetNode(0, 1).x);
-    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 1).y);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(0, 1).x);
+    ASSERT_EQ(5.0, curvilinearGrid->GetNode(0, 1).y);
 
     ASSERT_EQ(10.0, curvilinearGrid->GetNode(0, 0).x);
     ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 0).y);
@@ -1319,22 +1319,22 @@ TEST(Mesh2D, Mesh2DToCurvilinear_WithMixedMesh_ShouldCreatePartialCurvilinearMes
 
     ASSERT_EQ(20.0, curvilinearGrid->GetNode(0, 0).x);
     ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 0).y);
-    ASSERT_EQ(20.0, curvilinearGrid->GetNode(1, 0).x);
-    ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 0).y);
-    ASSERT_EQ(-999.0, curvilinearGrid->GetNode(2, 0).x);
-    ASSERT_EQ(-999.0, curvilinearGrid->GetNode(2, 0).y);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 0).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(1, 0).y);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(2, 0).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(2, 0).y);
 
-    ASSERT_EQ(10.0, curvilinearGrid->GetNode(0, 1).x);
-    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 1).y);
+    ASSERT_EQ(20.0, curvilinearGrid->GetNode(0, 1).x);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(0, 1).y);
     ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 1).x);
     ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 1).y);
-    ASSERT_EQ(10.0, curvilinearGrid->GetNode(2, 1).x);
-    ASSERT_EQ(20.0, curvilinearGrid->GetNode(2, 1).y);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(2, 1).x);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(2, 1).y);
 
-    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).x);
-    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).y);
-    ASSERT_EQ(0.0, curvilinearGrid->GetNode(1, 2).x);
-    ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 2).y);
+    ASSERT_EQ(-999.0, curvilinearGrid->GetNode(0, 2).x);
+    ASSERT_EQ(-999.0, curvilinearGrid->GetNode(0, 2).y);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 2).x);
+    ASSERT_EQ(20.0, curvilinearGrid->GetNode(1, 2).y);
     ASSERT_EQ(0.0, curvilinearGrid->GetNode(2, 2).x);
     ASSERT_EQ(20.0, curvilinearGrid->GetNode(2, 2).y);
 }

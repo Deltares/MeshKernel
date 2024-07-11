@@ -302,7 +302,7 @@ bool Mesh2DToCurvilinear::IsConnectionValid(const UInt candidateNode, const int 
 bool Mesh2DToCurvilinear::CheckGridLine(const UInt validNode, const UInt candidateNode) const
 {
     bool valid = false;
-    for (auto e = 0; e < m_mesh.m_nodesEdges[candidateNode].size(); ++e)
+    for (auto e = 0u; e < m_mesh.m_nodesEdges[candidateNode].size(); ++e)
     {
         const auto edgeIndex = m_mesh.m_nodesEdges[candidateNode][e];
         const auto otherNode = OtherNodeOfEdge(m_mesh.GetEdge(edgeIndex), candidateNode);
