@@ -1452,7 +1452,7 @@ namespace meshkernelapi
 
         /// @brief An-isotropically refines the elements along a row or column, given a starting edge
         ///
-        /// Only quadrilateral elements wil be refined.
+        /// Only quadrilateral elements will be refined.
         /// Refinement will continue upto the boundary of the domain or when a non-quadrilateral element is encountered.
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] firstNode    The first node of the edge
