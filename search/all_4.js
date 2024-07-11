@@ -19,7 +19,7 @@ var searchData=
   ['enclosure_149',['Enclosure',['../classmeshkernel_1_1_polygons.html#a2f293d0b696bb94b495dce5ffc4a8ddb',1,'meshkernel::Polygons']]],
   ['epsgprojection_150',['EpsgProjection',['../classmeshkernel_1_1_convert_spherical_to_cartesian_e_p_s_g.html#aaf3ca50189775ab2e4259fddecce6c4c',1,'meshkernel::ConvertSphericalToCartesianEPSG::EpsgProjection()'],['../classmeshkernel_1_1_convert_cartesian_to_spherical_e_p_s_g.html#a062d234d811cc114a737c1bf309cd5ef',1,'meshkernel::ConvertCartesianToSphericalEPSG::EpsgProjection()']]],
   ['errorcategory_151',['ErrorCategory',['../classmeshkernel_1_1_error_category.html',1,'meshkernel::ErrorCategory'],['../classmeshkernel_1_1_error_category.html#a465cba7e20b9b3406a00b462885b9f62',1,'meshkernel::ErrorCategory::ErrorCategory()']]],
-  ['evaluate_152',['Evaluate',['../classmeshkernel_1_1_spline_algorithms.html#a9e2d0c56773fa22fd53ddb651443f032',1,'meshkernel::SplineAlgorithms']]],
+  ['evaluate_152',['Evaluate',['../classmeshkernel_1_1_spline_algorithms.html#a9e2d0c56773fa22fd53ddb651443f032',1,'meshkernel::SplineAlgorithms::Evaluate()'],['../classmeshkernel_1_1_splines.html#aaf545bfc9e52d10134b9230f083727af',1,'meshkernel::Splines::Evaluate()']]],
   ['exitcode_153',['ExitCode',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbb',1,'meshkernel']]],
   ['extend_154',['Extend',['../classmeshkernel_1_1_bounding_box.html#a83cbb729691f3a3bdf4328f3eb1ad481',1,'meshkernel::BoundingBox']]],
   ['exterior_155',['Exterior',['../classmeshkernel_1_1_polygonal_enclosure.html#a5294cab21134ae4359209f24398fdbe3ad9b3dceaf520ba1fa45c371c498c6baf',1,'meshkernel::PolygonalEnclosure']]]

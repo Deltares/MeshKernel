@@ -55,7 +55,7 @@ var searchData=
   ['getrighthandside_243',['GetRightHandSide',['../classmeshkernel_1_1_orthogonalizer.html#a3e160b0c42e3eba7126b6d83b0cb976e',1,'meshkernel::Orthogonalizer']]],
   ['getrtree_244',['GetRTree',['../classmeshkernel_1_1_mesh.html#a5ca1edafa531ecc3454cf2c76d8f3615',1,'meshkernel::Mesh']]],
   ['getsmoothness_245',['GetSmoothness',['../classmeshkernel_1_1_mesh2_d.html#aee516031de33d12a21a5d0aae1007162',1,'meshkernel::Mesh2D']]],
-  ['getsplinesintersection_246',['GetSplinesIntersection',['../classmeshkernel_1_1_splines.html#a82d896101f08ad12837ba4cecc9fed57',1,'meshkernel::Splines']]],
+  ['getsplinesintersection_246',['GetSplinesIntersection',['../classmeshkernel_1_1_splines.html#a7962f1770ee65b272c69b0524e27a920',1,'meshkernel::Splines']]],
   ['getvaliddeletionoptions_247',['GetValidDeletionOptions',['../namespacemeshkernel.html#aafe87ce80ede15c8d4f35675e88e4a53',1,'meshkernel']]],
   ['getvalidedgemapping_248',['GetValidEdgeMapping',['../classmeshkernel_1_1_mesh.html#abb88655e1e53dfb30be4a710a23ddc39',1,'meshkernel::Mesh']]],
   ['getvalidnodemapping_249',['GetValidNodeMapping',['../classmeshkernel_1_1_mesh.html#a3ced87b590b72a13a98645223271cf1b',1,'meshkernel::Mesh']]],

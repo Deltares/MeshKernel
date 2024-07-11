@@ -46,7 +46,7 @@ var searchData=
   ['computeoffset_71',['ComputeOffset',['../classmeshkernel_1_1_polygon.html#a087ea865abf75cceb58352bec3ba5916',1,'meshkernel::Polygon']]],
   ['computeoffsettedchainages_72',['ComputeOffsettedChainages',['../classmeshkernel_1_1_network1_d.html#ab00e5e168bbf56e765b6ee6707b9955a',1,'meshkernel::Network1D']]],
   ['computepointonsplineatadimensionaldistance_73',['ComputePointOnSplineAtAdimensionalDistance',['../namespacemeshkernel.html#a8d3640a26ce227c47cc0dc382e1174c3',1,'meshkernel']]],
-  ['computepointonsplinefromadimensionaldistance_74',['ComputePointOnSplineFromAdimensionalDistance',['../classmeshkernel_1_1_splines.html#a436bc658044b83e6c2450cada279f569',1,'meshkernel::Splines']]],
+  ['computepointonsplinefromadimensionaldistance_74',['ComputePointOnSplineFromAdimensionalDistance',['../classmeshkernel_1_1_splines.html#a6920d9f005c5425b75f72da0f7f6728d',1,'meshkernel::Splines']]],
   ['computepointsinpolygons_75',['ComputePointsInPolygons',['../classmeshkernel_1_1_polygons.html#a23395a761a480653a2023903922acc21',1,'meshkernel::Polygons']]],
   ['computepolylinediscretization_76',['ComputePolyLineDiscretization',['../namespacemeshkernel.html#a094e1e91216ac9cc48d5f609f0e56916',1,'meshkernel']]],
   ['computepolylineedgeslengths_77',['ComputePolyLineEdgesLengths',['../namespacemeshkernel.html#a80463bb8f0938498c2efba8b7c46a40d',1,'meshkernel']]],
