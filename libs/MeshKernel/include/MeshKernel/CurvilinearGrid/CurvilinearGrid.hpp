@@ -68,22 +68,36 @@ namespace meshkernel
         /// @brief Default constructor
         CurvilinearGrid() = default;
 
-        /// @brief Copy constructor taking only a curvilinear grid
+        /// @brief Copy constructor
         CurvilinearGrid(const CurvilinearGrid& grid);
+
+        /// @brief Move constructor
+        CurvilinearGrid(CurvilinearGrid&& grid) noexcept;
 
         /// @brief Constructor taking only a projection
         explicit CurvilinearGrid(Projection projection);
 
         /// @brief Lvalue constructor. Creates a new curvilinear grid from a given set of points
-        /// @details The matrix row index corresponds to the CurvilinearGrid m index, the matrix column index corresponds to the CurvilinearGrid n index
+        /// @details The matrix row index corresponds to the CurvilinearGrid n index, the matrix column index corresponds to the CurvilinearGrid m index
         /// @param[in] grid       The input grid points
         /// @param[in] projection The projection to use
         CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection projection);
 
+        /// @brief Creates a new curvilinear grid from a given set of points
+        /// @details The matrix row index corresponds to the CurvilinearGrid n index, the matrix column index corresponds to the CurvilinearGrid m index
+        /// @param[in] grid       The input grid points
+        /// @param[in] projection The projection to use
+        CurvilinearGrid(lin_alg::Matrix<Point>&& grid, Projection projection);
+
         /// @brief Set the grid nodes of a curvilinear grid instance
-        /// @details The matrix row index corresponds to the CurvilinearGrid m index, the matrix column index corresponds to the CurvilinearGrid n index
+        /// @details The matrix row index corresponds to the CurvilinearGrid n index, the matrix column index corresponds to the CurvilinearGrid m index
         /// @param[in] gridNodes The input grid points
         void SetGridNodes(const lin_alg::Matrix<Point>& gridNodes);
+
+        /// @brief Set the grid nodes of a curvilinear grid instance
+        /// @details The matrix row index corresponds to the CurvilinearGrid n index, the matrix column index corresponds to the CurvilinearGrid m index
+        /// @param[in] gridNodes The input grid points
+        void SetGridNodes(lin_alg::Matrix<Point>&& gridNodes);
 
         /// @brief Deletes a curvilinear grid inside a polygon
         /// @param[in] polygons The polygons

@@ -324,7 +324,7 @@ void meshkernel::ConnectMeshes::GetOrderedDistanceFromPoint(const Mesh2D& mesh,
                                                             BoundedIntegerArray& nearestNeighbours)
 {
     std::array<double, m_maximumNumberOfIrregularElementsAlongEdge> distance;
-    BoundedIntegerArray distanceIndex;
+    std::vector<UInt> distanceIndex(numberOfNodes);
 
     distance.fill(0.0);
 
@@ -334,9 +334,10 @@ void meshkernel::ConnectMeshes::GetOrderedDistanceFromPoint(const Mesh2D& mesh,
         distance[j] = ComputeDistance(point, mesh.Node(nodeIndices[j]), mesh.m_projection);
     }
 
-    std::iota(distanceIndex.begin(), distanceIndex.begin() + numberOfNodes, 0);
-    std::sort(distanceIndex.begin(), distanceIndex.begin() + numberOfNodes, [&distance = std::as_const(distance)](UInt i, UInt j)
+    std::iota(distanceIndex.begin(), distanceIndex.end(), 0);
+    std::sort(distanceIndex.begin(), distanceIndex.end(), [&distance = std::as_const(distance)](UInt i, UInt j)
               { return distance[i] < distance[j]; });
+
     nearestNeighbours.fill(constants::missing::uintValue);
 
     // Get node indices in order of distance from point, closest first.

@@ -175,6 +175,15 @@ namespace meshkernelapi
                                                                                  const meshkernel::CurvilinearParameters& curvilinearParameters,
                                                                                  const meshkernel::SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
 
+        /// @brief Generates curvilinear grid from splines.
+        /// @param[in] meshKernelId                   The id of the mesh state
+        /// @param[in] geometryList                   The input splines corners
+        /// @param[in] curvilinearParameters          The input parameters to generate the curvilinear grid
+        /// @returns Error code
+        MKERNEL_API int mkernel_curvilinear_compute_grid_from_splines(int meshKernelId,
+                                                                      const GeometryList& geometryList,
+                                                                      const meshkernel::CurvilinearParameters& curvilinearParameters);
+
         /// @brief Computes the smoothness of a curvilinear grid.
         /// @param[in] meshKernelId  The id of the mesh state
         /// @param[in] direction  The direction in which to compute the smoothness
