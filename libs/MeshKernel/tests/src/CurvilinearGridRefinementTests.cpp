@@ -177,9 +177,9 @@ TEST(CurvilinearGridRefinement, FullRefinementWithFactor1)
 {
     lin_alg::Matrix<Point> grid(8, 10);
 
-    for (int i = 0; i < grid.rows(); ++i)
+    for (Eigen::Index i = 0; i < grid.rows(); ++i)
     {
-        for (int j = 0; j < grid.cols(); ++j)
+        for (Eigen::Index j = 0; j < grid.cols(); ++j)
         {
             grid(i, j) = Point(static_cast<double>(j) * 10.0, static_cast<double>(i) * 10.0);
         }
@@ -243,8 +243,8 @@ TEST(CurvilinearGridRefinement, FullRefinementWithMissingRegion)
     const UInt mRefinement = 2;
     const UInt nRefinement = 3;
 
-    const UInt expectedSizeM = mRefinement * (gridNodes.cols() - 1) + 1;
-    const UInt expectedSizeN = nRefinement * (gridNodes.rows() - 1) + 1;
+    const UInt expectedSizeM = mRefinement * (static_cast<meshkernel::UInt>(gridNodes.cols()) - 1) + 1;
+    const UInt expectedSizeN = nRefinement * (static_cast<meshkernel::UInt>(gridNodes.rows()) - 1) + 1;
 
     // Refine mesh four times in m-direction and twice in n-direction
     [[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, mRefinement, nRefinement);
