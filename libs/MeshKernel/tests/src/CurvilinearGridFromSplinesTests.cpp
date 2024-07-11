@@ -2,10 +2,15 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridSplineToGrid.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Splines.hpp>
+#include <TestUtils/Definitions.hpp>
+
+#include <fstream>
+#include <iomanip>
 
 using namespace meshkernel;
 
@@ -980,4 +985,441 @@ TEST(CurvilinearGridFromSplines, Compute_ThreeLongitudinalSplinesTwoCrossingSpli
     ASSERT_NEAR(370675.06421111501, curviGrid->GetNode(2, 6).y, tolerance);
     ASSERT_NEAR(370676.02282016393, curviGrid->GetNode(2, 7).y, tolerance);
     ASSERT_NEAR(370675.67515379097, curviGrid->GetNode(2, 8).y, tolerance);
+}
+
+meshkernel::Splines LoadSplines(const std::string& fileName)
+{
+
+    std::ifstream splineFile;
+    splineFile.open(fileName.c_str());
+
+    meshkernel::Splines splines(Projection::cartesian);
+    std::string line;
+
+    std::vector<meshkernel::Point> splinePoints;
+
+    while (std::getline(splineFile, line))
+    {
+        if (size_t found = line.find("L00"); found != std::string::npos)
+        {
+            std::getline(splineFile, line);
+            std::istringstream sizes(line);
+
+            meshkernel::UInt numPoints = 0;
+            meshkernel::UInt numDim = 0;
+
+            sizes >> numPoints;
+            sizes >> numDim;
+
+            splinePoints.clear();
+            splinePoints.reserve(numPoints);
+
+            for (meshkernel::UInt i = 0; i < numPoints; ++i)
+            {
+                std::getline(splineFile, line);
+                std::istringstream values(line);
+                double x;
+                double y;
+                values >> x;
+                values >> y;
+                splinePoints.emplace_back(meshkernel::Point(x, y));
+            }
+
+            splines.AddSpline(splinePoints);
+        }
+    }
+
+    splineFile.close();
+    return splines;
+}
+
+meshkernel::CurvilinearGrid LoadCurvilinearGrid(const std::string& fileName)
+{
+    std::ifstream splineFile;
+    splineFile.open(fileName.c_str());
+
+    meshkernel::Splines splines(Projection::cartesian);
+    std::string line;
+
+    std::vector<meshkernel::Point> splinePoints;
+
+    // read header
+    while (std::getline(splineFile, line))
+    {
+        if (line[0] != '*')
+        {
+            break;
+        }
+    }
+
+    if (size_t found = line.find("Missing Value="); found != std::string::npos)
+    {
+        found = line.find("= ");
+        std::istringstream missingValueLine(line.substr(found + 2));
+        double missingValue;
+        missingValueLine >> missingValue;
+        std::cout << "found = " << found << "  " << missingValue << std::endl;
+    }
+
+    UInt rows = 0;
+    UInt cols = 0;
+
+    if (std::getline(splineFile, line))
+    {
+        std::istringstream sizeLine(line);
+        sizeLine >> rows;
+        sizeLine >> cols;
+        std::cout << " sizes: " << rows << "  " << cols << std::endl;
+    }
+
+    if (std::getline(splineFile, line))
+    {
+        std::istringstream sizeLine(line);
+        UInt z1, z2, z3;
+        sizeLine >> z1;
+        sizeLine >> z2;
+        sizeLine >> z3;
+        std::cout << " zeros: " << z1 << "  " << z2 << "  " << z3 << std::endl;
+    }
+
+    lin_alg::Matrix<Point> gridNodes(rows, cols);
+    UInt currentRow = 0;
+    UInt currentCol = 0;
+
+    for (UInt c = 0; c < cols; ++c)
+    {
+        std::getline(splineFile, line);
+
+        if (size_t found = line.find("ETA="); found != std::string::npos)
+        {
+            // Ignore ETA=
+            found += 4;
+            std::stringstream values(line.substr(found));
+            values >> currentCol;
+            --currentCol;
+            currentRow = 0;
+            double coord;
+
+            while (values >> coord)
+            {
+                gridNodes(currentRow, currentCol).x = coord;
+                ++currentRow;
+            }
+
+            while (currentRow < rows)
+            {
+                std::getline(splineFile, line);
+                std::stringstream values(line);
+                double coord;
+
+                while (values >> coord)
+                {
+                    gridNodes(currentRow, currentCol).x = coord;
+                    ++currentRow;
+                }
+            }
+        }
+    }
+
+    for (UInt c = 0; c < cols; ++c)
+    {
+        std::getline(splineFile, line);
+
+        if (size_t found = line.find("ETA="); found != std::string::npos)
+        {
+
+            // Ignore ETA=
+            found += 4;
+            std::stringstream values(line.substr(found));
+            values >> currentCol;
+            --currentCol;
+            currentRow = 0;
+            double coord;
+
+            while (values >> coord)
+            {
+                gridNodes(currentRow, currentCol).y = coord;
+                ++currentRow;
+            }
+
+            while (currentRow < rows)
+            {
+                std::getline(splineFile, line);
+                std::stringstream values(line);
+                double coord;
+
+                while (values >> coord)
+                {
+                    gridNodes(currentRow, currentCol).y = coord;
+                    ++currentRow;
+                }
+            }
+        }
+    }
+
+    meshkernel::CurvilinearGrid grid(gridNodes, meshkernel::Projection::cartesian);
+
+    return grid;
+}
+
+TEST(CurvilinearGridFromSplines, GenerateSimpleGridFromSplines)
+{
+    // Generate a grid from four splines forming a square
+    namespace mk = meshkernel;
+
+    // Bottom boundary
+    std::vector<mk::Point> spline1{{-1.0, 0.0}, {11.0, 0.0}};
+
+    // right boundary
+    std::vector<mk::Point> spline2{{10.0, 11.0}, {10.0, -1.0}};
+
+    // top boundary
+    std::vector<mk::Point> spline3{{11.0, 10.0}, {-1.0, 10.0}};
+
+    // left boundary
+    std::vector<mk::Point> spline4{{0.0, 11.0}, {0.0, -1.0}};
+
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+    splines->AddSpline(spline1);
+    splines->AddSpline(spline2);
+    splines->AddSpline(spline3);
+    splines->AddSpline(spline4);
+
+    mk::CurvilinearParameters curvilinearParameters;
+
+    curvilinearParameters.m_refinement = 5;
+    curvilinearParameters.n_refinement = 20;
+
+    mk::CurvilinearGridSplineToGrid splinesToGrid;
+
+    mk::CurvilinearGrid grid(splinesToGrid.Compute(*splines, curvilinearParameters));
+
+    lin_alg::Matrix<Point> gridNodes = grid.GetNodes();
+
+    constexpr double tolerance = 1.0e-4;
+
+    double meshDeltaX = 10.0 / static_cast<double>(curvilinearParameters.m_refinement);
+    double meshDeltaY = 10.0 / static_cast<double>(curvilinearParameters.n_refinement);
+    double yCoord = 0.0;
+
+    for (UInt i = 0; i < gridNodes.rows(); ++i)
+    {
+        double xCoord = 0.0;
+
+        for (UInt j = 0; j < gridNodes.cols(); ++j)
+        {
+            EXPECT_NEAR(xCoord, gridNodes(i, j).x, tolerance);
+            EXPECT_NEAR(yCoord, gridNodes(i, j).y, tolerance);
+            xCoord += meshDeltaX;
+        }
+
+        yCoord += meshDeltaY;
+    }
+}
+
+TEST(CurvilinearGridFromSplines, GridFromSeventySplines)
+{
+    // Test generating a more complicated grid from a set of much more complcated splines
+    // Only check the size of the grid is correct and the number of valid grid nodes.
+    namespace mk = meshkernel;
+    auto splines = std::make_shared<Splines>(LoadSplines(TEST_FOLDER + "/data/CurvilinearGrids/seventy_splines.spl"));
+
+    mk::CurvilinearParameters curvilinearParameters;
+
+    curvilinearParameters.m_refinement = 5;
+    curvilinearParameters.n_refinement = 5;
+
+    mk::CurvilinearGridSplineToGrid splinesToGrid;
+
+    mk::CurvilinearGrid grid(splinesToGrid.Compute(*splines, curvilinearParameters));
+
+    auto computedPoints = grid.ComputeNodes();
+    auto computedEdges = grid.ComputeEdges();
+
+    mk::UInt validPointCount = 0;
+
+    for (size_t i = 0; i < computedPoints.size(); ++i)
+    {
+        if (computedPoints[i].IsValid())
+        {
+            ++validPointCount;
+        }
+    }
+
+    EXPECT_EQ(grid.NumN(), 36);
+    EXPECT_EQ(grid.NumM(), 306);
+    EXPECT_EQ(validPointCount, 4941);
+}
+
+TEST(CurvilinearGridFromSplines, GenerateGridWithIllDefinedSplines)
+{
+    // Attempt to generate a grid with 5 splines, 2 of which form a single
+    // boundary along the top of the domain.
+    // Should raise a AlgorithmError exception
+
+    namespace mk = meshkernel;
+
+    // Bottom boundary
+    std::vector<mk::Point> spline1{{-1.0, 0.0}, {11.0, 0.0}};
+
+    // right boundary
+    std::vector<mk::Point> spline2{{10.0, 11.0}, {10.0, -1.0}};
+
+    // top boundary 1
+    std::vector<mk::Point> spline3{{11.0, 9.0}, {4.0, 11.5}};
+
+    // top boundary 2
+    std::vector<mk::Point> spline4{{6.0, 11.5}, {-1.0, 9.0}};
+
+    // left boundary
+    std::vector<mk::Point> spline5{{0.0, 11.0}, {0.0, -1.0}};
+
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+    splines->AddSpline(spline1);
+    splines->AddSpline(spline2);
+    splines->AddSpline(spline3);
+    splines->AddSpline(spline4);
+    splines->AddSpline(spline5);
+
+    mk::CurvilinearParameters curvilinearParameters;
+
+    curvilinearParameters.m_refinement = 5;
+    curvilinearParameters.n_refinement = 10;
+
+    mk::CurvilinearGridSplineToGrid splinesToGrid;
+
+    EXPECT_THROW([[maybe_unused]] auto grid = splinesToGrid.Compute(*splines, curvilinearParameters), mk::AlgorithmError);
+}
+
+TEST(CurvilinearGridFromSplines, GenerateGridWithDisconectedSpline)
+{
+    // Attempt to generate a grid with 4 splines forming a square and
+    // a fifth disconnected spline.
+    // Should raise a AlgorithmError exception
+
+    namespace mk = meshkernel;
+
+    // Bottom boundary
+    std::vector<mk::Point> spline1{{-1.0, 0.0}, {11.0, 0.0}};
+
+    // right boundary
+    std::vector<mk::Point> spline2{{10.0, -1.0}, {10.0, 11.0}};
+
+    // top boundary
+    std::vector<mk::Point> spline3{{11.0, 10.0}, {-1.0, 10.0}};
+
+    // left boundary
+    std::vector<mk::Point> spline4{{0.0, 11.0}, {0.0, -1.0}};
+
+    // unattached spline
+    std::vector<mk::Point> spline5{{15.0, 15.0}, {15.0, -1.0}};
+
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+    splines->AddSpline(spline1);
+    splines->AddSpline(spline2);
+    splines->AddSpline(spline3);
+    splines->AddSpline(spline4);
+    splines->AddSpline(spline5);
+
+    mk::CurvilinearParameters curvilinearParameters;
+
+    curvilinearParameters.m_refinement = 5;
+    curvilinearParameters.n_refinement = 10;
+
+    mk::CurvilinearGridSplineToGrid splinesToGrid;
+    mk::CurvilinearGrid grid(Projection::cartesian);
+
+    EXPECT_THROW([[maybe_unused]] auto grid = splinesToGrid.Compute(*splines, curvilinearParameters), mk::AlgorithmError);
+}
+
+TEST(CurvilinearGridFromSplines, GenerateGridWithThreeSplines)
+{
+    // Attempt to generate a grid with 3 splines
+    // Should raise a ConstraintError exception.
+    // At least four splines are required to generate a curvilinear grid
+
+    namespace mk = meshkernel;
+
+    std::vector<mk::Point> spline1{{-1.0, 0.0}, {11.0, 0.0}};
+    std::vector<mk::Point> spline2{{10.0, -1.0}, {10.0, 11.0}};
+    std::vector<mk::Point> spline3{{11.0, 10.0}, {-1.0, 10.0}};
+
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+    splines->AddSpline(spline1);
+    splines->AddSpline(spline2);
+    splines->AddSpline(spline3);
+
+    mk::CurvilinearParameters curvilinearParameters;
+
+    curvilinearParameters.m_refinement = 5;
+    curvilinearParameters.n_refinement = 5;
+
+    mk::CurvilinearGridSplineToGrid splinesToGrid;
+
+    EXPECT_THROW([[maybe_unused]] auto grid = splinesToGrid.Compute(*splines, curvilinearParameters), mk::ConstraintError);
+}
+
+TEST(CurvilinearGridFromSplines, GenerateGridWithSplinesTooShort)
+{
+    // Attempt to generate a grid with 4 splines, 1 of which has only a single point
+    // Should raise a ConstraintError exception.
+    // All splines are required to have at least 2 points in order to generate a curvilinear grid
+
+    namespace mk = meshkernel;
+
+    std::vector<mk::Point> spline1{{-1.0, 0.0}, {11.0, 0.0}};
+    std::vector<mk::Point> spline2{{10.0, -1.0}, {10.0, 11.0}};
+    std::vector<mk::Point> spline3{{11.0, 10.0}, {-1.0, 10.0}};
+    std::vector<mk::Point> spline4{{0.0, 11.0}};
+
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+    splines->AddSpline(spline1);
+    splines->AddSpline(spline2);
+    splines->AddSpline(spline3);
+    splines->AddSpline(spline4);
+
+    mk::CurvilinearParameters curvilinearParameters;
+
+    curvilinearParameters.m_refinement = 5;
+    curvilinearParameters.n_refinement = 5;
+
+    mk::CurvilinearGridSplineToGrid splinesToGrid;
+
+    EXPECT_THROW([[maybe_unused]] auto grid = splinesToGrid.Compute(*splines, curvilinearParameters), mk::ConstraintError);
+}
+
+TEST(CurvilinearGridFromSplines, GenerateGridWithHighRefinementFactor)
+{
+    // Attempt to generate a grid with 4 splines forming a square
+    // with the refinement factor being too high
+    // Should raise a ConstraintError exception
+
+    namespace mk = meshkernel;
+
+    std::vector<mk::Point> spline1{{-1.0, 0.0}, {11.0, 0.0}};
+    std::vector<mk::Point> spline2{{10.0, -1.0}, {10.0, 11.0}};
+    std::vector<mk::Point> spline3{{11.0, 10.0}, {-1.0, 10.0}};
+    std::vector<mk::Point> spline4{{0.0, 11.0}, {0.0, -1.0}};
+
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+    splines->AddSpline(spline1);
+    splines->AddSpline(spline2);
+    splines->AddSpline(spline3);
+    splines->AddSpline(spline4);
+
+    mk::CurvilinearParameters curvilinearParameters;
+
+    mk::CurvilinearGridSplineToGrid splinesToGrid;
+
+    // First check the m-refinement
+    curvilinearParameters.m_refinement = 2000;
+    curvilinearParameters.n_refinement = 10;
+
+    EXPECT_THROW([[maybe_unused]] auto gridM = splinesToGrid.Compute(*splines, curvilinearParameters), mk::ConstraintError);
+
+    // Then check the n-refinement
+    curvilinearParameters.m_refinement = 10;
+    curvilinearParameters.n_refinement = 2000;
+
+    EXPECT_THROW([[maybe_unused]] auto gridN = splinesToGrid.Compute(*splines, curvilinearParameters), mk::ConstraintError);
 }

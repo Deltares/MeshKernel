@@ -78,25 +78,39 @@ void Splines::AddSpline(const std::vector<Point>& splines, UInt start, UInt size
     m_splineNodes.emplace_back(splinesNodes);
 
     // compute second order derivatives
+    m_splineDerivatives.emplace_back(ComputeSplineDerivative(splinesNodes));
+    m_splinesLength.emplace_back(ComputeSplineLength(GetNumSplines() - 1, 0.0, static_cast<double>(size - 1)));
+}
+
+std::vector<meshkernel::Point> Splines::ComputeSplineDerivative(const std::vector<Point>& splinesNodes)
+{
     std::vector<Point> splineDerivatives(splinesNodes.size());
     const auto indices = FindIndices(splinesNodes, 0, static_cast<UInt>(splinesNodes.size()), constants::missing::doubleValue);
+
     for (auto index : indices)
     {
         const auto& [startIndex, endIndex] = index;
         const auto derivatives = SplineAlgorithms::SecondOrderDerivative(splinesNodes, startIndex, endIndex);
+
         for (auto j = startIndex; j <= endIndex; ++j)
         {
             splineDerivatives[j] = derivatives[j - startIndex];
         }
     }
-    m_splineDerivatives.emplace_back(splineDerivatives);
 
-    m_splinesLength.emplace_back(ComputeSplineLength(GetNumSplines() - 1, 0.0, static_cast<double>(size - 1)));
+    return splineDerivatives;
 }
 
 void Splines::AddSpline(const std::vector<Point>& splines)
 {
     AddSpline(splines, 0, static_cast<UInt>(splines.size()));
+}
+
+void Splines::Replace(const UInt splineIndex, const std::vector<Point>& splinePoints)
+{
+    m_splineNodes[splineIndex] = splinePoints;
+    m_splineDerivatives[splineIndex] = ComputeSplineDerivative(splinePoints);
+    m_splinesLength[splineIndex] = ComputeSplineLength(splineIndex, 0.0, static_cast<double>(splinePoints.size() - 1));
 }
 
 void Splines::DeleteSpline(UInt splineIndex)
@@ -130,7 +144,19 @@ void Splines::SwapSplines(const UInt firstSpline, const UInt secondSpline)
 
     m_splineNodes[firstSpline].swap(m_splineNodes[secondSpline]);
     m_splineDerivatives[firstSpline].swap(m_splineDerivatives[secondSpline]);
+
     std::swap(m_splinesLength[firstSpline], m_splinesLength[secondSpline]);
+}
+
+void Splines::Reverse(const UInt splineIndex)
+{
+    if (splineIndex >= GetNumSplines())
+    {
+        throw ConstraintError("Invalid spline index: {} not in 0 .. {}", splineIndex, GetNumSplines() - 1);
+    }
+
+    std::ranges::reverse(m_splineNodes[splineIndex]);
+    std::ranges::reverse(m_splineDerivatives[splineIndex]);
 }
 
 void Splines::AddPointInExistingSpline(UInt splineIndex, const Point& point)
@@ -147,7 +173,7 @@ bool Splines::GetSplinesIntersection(UInt first,
                                      double& crossProductIntersection,
                                      Point& intersectionPoint,
                                      double& firstSplineRatio,
-                                     double& secondSplineRatio)
+                                     double& secondSplineRatio) const
 {
     double minimumCrossingDistance = std::numeric_limits<double>::max();
     double crossingDistance;
@@ -175,6 +201,7 @@ bool Splines::GetSplinesIntersection(UInt first,
                                                            m_splineNodes[second][nn + 1],
                                                            false,
                                                            m_projection);
+
             if (areCrossing)
             {
                 if (numNodesFirstSpline == 2)
@@ -395,13 +422,13 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<double>>
 Splines::ComputePointOnSplineFromAdimensionalDistance(UInt index,
                                                       double maximumGridHeight,
                                                       bool isSpacingCurvatureAdapted,
-                                                      const std::vector<double>& distances)
+                                                      const std::vector<double>& distances) const
 {
 
     std::vector<Point> points(distances.size());
     std::vector<double> adimensionalDistances(distances.size());
 
-    FuncAdimensionalToDimensionalDistanceOnSpline func(this, index, isSpacingCurvatureAdapted, maximumGridHeight);
+    FuncAdimensionalToDimensionalDistanceOnSpline func(*this, index, isSpacingCurvatureAdapted, maximumGridHeight);
     const auto numNodes = static_cast<UInt>(m_splineNodes[index].size());
     for (UInt i = 0, size = static_cast<UInt>(distances.size()); i < size; ++i)
     {
@@ -418,7 +445,7 @@ Splines::ComputePointOnSplineFromAdimensionalDistance(UInt index,
 
 meshkernel::Point Splines::ComputeClosestPointOnSplineSegment(UInt index, double startSplineSegment, double endSplineSegment, Point point) const
 {
-    FuncDistanceFromAPoint func(this, index, point);
+    FuncDistanceFromAPoint func(*this, index, point);
     const auto adimensionalDistance = FindFunctionRootWithGoldenSectionSearch(func, startSplineSegment, endSplineSegment);
     return ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistance);
 }
@@ -426,6 +453,18 @@ meshkernel::Point Splines::ComputeClosestPointOnSplineSegment(UInt index, double
 meshkernel::Point Splines::ComputeClosestPoint(UInt index, Point point) const
 {
     return ComputeClosestPointOnSplineSegment(index, 0.0, static_cast<double>(m_splineNodes[index].size() - 1), point);
+}
+
+meshkernel::Point Splines::Evaluate(UInt whichSpline, const double parameter) const
+{
+    if (whichSpline >= m_splineNodes.size())
+    {
+        throw meshkernel::ConstraintError("Invalid spline index: {}, not in range 0 .. {}",
+                                          whichSpline,
+                                          GetNumSplines() - 1);
+    }
+
+    return ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[whichSpline], m_splineDerivatives[whichSpline], parameter);
 }
 
 meshkernel::BoundingBox Splines::GetBoundingBox(const UInt splineIndex) const
@@ -438,6 +477,35 @@ meshkernel::BoundingBox Splines::GetBoundingBox(const UInt splineIndex) const
     }
 
     return BoundingBox(m_splineNodes[splineIndex]);
+}
+
+meshkernel::UInt Splines::Size(const UInt whichSpline) const
+{
+    if (whichSpline >= m_splineNodes.size())
+    {
+        throw meshkernel::ConstraintError("Invalid spline index: {}, not in range 0 .. {}",
+                                          whichSpline,
+                                          GetNumSplines() - 1);
+    }
+
+    return static_cast<UInt>(m_splineNodes[whichSpline].size());
+}
+
+meshkernel::UInt Splines::MaxSizeIndex() const
+{
+    UInt splineIndex = constants::missing::uintValue;
+    UInt splineSize = 0;
+
+    for (UInt i = 0; i < GetNumSplines(); ++i)
+    {
+        if (static_cast<UInt>(m_splineNodes[i].size()) > splineSize)
+        {
+            splineSize = static_cast<UInt>(m_splineNodes[i].size());
+            splineIndex = i;
+        }
+    }
+
+    return splineIndex;
 }
 
 void Splines::SnapSpline(const size_t splineIndex,

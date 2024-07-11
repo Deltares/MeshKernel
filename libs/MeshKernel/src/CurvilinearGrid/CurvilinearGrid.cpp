@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include <utility>
+
 #include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridLine.hpp"
 #include "MeshKernel/CurvilinearGrid/UndoActions/ResetCurvilinearNodeAction.hpp"
@@ -48,6 +50,13 @@ CurvilinearGrid::CurvilinearGrid(const CurvilinearGrid& grid) : m_projection(Pro
     m_RTrees.emplace(Location::Faces, RTreeFactory::Create(m_projection));
 }
 
+CurvilinearGrid::CurvilinearGrid(CurvilinearGrid&& grid) noexcept : m_projection(Projection::cartesian),
+                                                                    m_gridNodes(std::move(grid.m_gridNodes)),
+                                                                    m_gridFacesMask(std::move(grid.m_gridFacesMask)),
+                                                                    m_gridNodesTypes(std::move(grid.m_gridNodesTypes)),
+                                                                    m_gridIndices(std::move(grid.m_gridIndices)),
+                                                                    m_RTrees(std::move(grid.m_RTrees)) {}
+
 CurvilinearGrid::CurvilinearGrid(Projection projection) : m_projection(projection)
 {
     m_RTrees.emplace(Location::Nodes, RTreeFactory::Create(m_projection));
@@ -63,14 +72,38 @@ CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point> const& grid, Projection 
     SetGridNodes(grid);
 }
 
+CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point>&& grid, Projection projection) : m_projection(projection)
+{
+    m_RTrees.emplace(Location::Nodes, RTreeFactory::Create(m_projection));
+    m_RTrees.emplace(Location::Edges, RTreeFactory::Create(m_projection));
+    m_RTrees.emplace(Location::Faces, RTreeFactory::Create(m_projection));
+    SetGridNodes(std::move(grid));
+}
+
 void CurvilinearGrid::SetGridNodes(const lin_alg::Matrix<Point>& gridNodes)
 {
+    if (gridNodes.rows() <= 1 || gridNodes.cols() <= 1)
+    {
+        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: Invalid curvilinear grid nodes");
+    }
+
     m_gridNodes = gridNodes;
 
-    if (!IsValid())
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+    m_facesRTreeRequiresUpdate = true;
+
+    m_gridIndices = ComputeNodeIndices();
+}
+
+void CurvilinearGrid::SetGridNodes(lin_alg::Matrix<Point>&& gridNodes)
+{
+    if (gridNodes.rows() <= 1 || gridNodes.cols() <= 1)
     {
-        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: Invalid curvilinear grid");
+        throw std::invalid_argument("CurvilinearGrid::CurvilinearGrid: Invalid curvilinear grid nodes");
     }
+
+    m_gridNodes = std::move(gridNodes);
 
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;

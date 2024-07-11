@@ -1648,18 +1648,24 @@ namespace meshkernel
     {
         out << "nullId = " << constants::missing::uintValue << ";" << std::endl;
         out << "nullValue = " << constants::missing::doubleValue << ";" << std::endl;
-        out << "nodex = zeros ( " << nodes.size() << ", 1);" << std::endl;
-        out << "nodey = zeros ( " << nodes.size() << ", 1);" << std::endl;
+        out << "nodex = nullValue * ones ( " << nodes.size() << ", 1);" << std::endl;
+        out << "nodey = nullValue * ones ( " << nodes.size() << ", 1);" << std::endl;
         out << "edges = " << constants::missing::uintValue << " * ones ( " << edges.size() << ", 2);" << std::endl;
 
         for (UInt i = 0; i < nodes.size(); ++i)
         {
-            out << "nodex (" << i + 1 << " ) = " << nodes[i].x << ";" << std::endl;
+            if (nodes[i].x != constants::missing::doubleValue)
+            {
+                out << "nodex (" << i + 1 << " ) = " << nodes[i].x << ";" << std::endl;
+            }
         }
 
         for (UInt i = 0; i < nodes.size(); ++i)
         {
-            out << "nodey (" << i + 1 << " ) = " << nodes[i].y << ";" << std::endl;
+            if (nodes[i].y != constants::missing::doubleValue)
+            {
+                out << "nodey (" << i + 1 << " ) = " << nodes[i].y << ";" << std::endl;
+            }
         }
 
         for (UInt i = 0; i < edges.size(); ++i)
