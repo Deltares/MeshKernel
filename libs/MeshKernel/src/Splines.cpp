@@ -461,7 +461,7 @@ meshkernel::Point Splines::Evaluate(UInt whichSpline, const double lambda) const
     {
         throw meshkernel::ConstraintError("Invalid spline index: {}, not in range 0 .. {}",
                                           whichSpline,
-                                          GetNumSplines() - 1);
+                                          static_cast<int>(GetNumSplines()) - 1);
     }
 
     return ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[whichSpline], m_splineDerivatives[whichSpline], lambda);
