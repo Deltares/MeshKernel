@@ -1442,3 +1442,18 @@ TEST(Mesh2D, GetOrthogonality_OnTriangularMesh_ShouldGetOrthogonalityValues)
     ASSERT_NEAR(1.0342915752434056e-15, orthogonality[20], tolerance);
     ASSERT_NEAR(0.045878303256790140, orthogonality[30], tolerance);
 }
+
+TEST(Mesh2D, MeshToCurvilinear_OnRealMesh_ShouldConvertCurvilinearPart)
+{
+    // Prepare
+    const auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/MeshToCurvilinear.nc");
+
+    meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(*mesh);
+
+    // Execute
+    const auto result = mesh2DToCurvilinear.Compute({10155.18, 391781.98});
+
+    // Assert
+    EXPECT_EQ(result->NumM(), 40);
+    EXPECT_EQ(result->NumN(), 47);
+}
