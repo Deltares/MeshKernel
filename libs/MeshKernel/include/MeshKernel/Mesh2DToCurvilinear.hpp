@@ -184,6 +184,7 @@ namespace meshkernel
                                                         const UInt d,
                                                         const std::vector<bool>& visitedFace);
 
+        /// @brief Checks the valid node and the candidate node are connected and are part of a quadrangular face
         [[nodiscard]] bool CheckGridLine(const UInt validNode, const UInt candidateNode) const;
 
         /// @brief Computes the final curvilinear matrix
