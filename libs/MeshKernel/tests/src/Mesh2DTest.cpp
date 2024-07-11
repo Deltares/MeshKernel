@@ -1454,6 +1454,6 @@ TEST(Mesh2D, MeshToCurvilinear_OnRealMesh_ShouldConvertCurvilinearPart)
     const auto result = mesh2DToCurvilinear.Compute({10155.18, 391781.98});
 
     // Assert
-    EXPECT_EQ(result->NumM(), 40);
-    EXPECT_EQ(result->NumN(), 47);
+    EXPECT_EQ(result->NumM(), 38);
+    EXPECT_EQ(result->NumN(), 45);
 }

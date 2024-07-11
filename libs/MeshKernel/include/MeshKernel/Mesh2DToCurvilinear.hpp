@@ -52,76 +52,114 @@ namespace meshkernel
         std::unique_ptr<CurvilinearGrid> Compute(const Point& point);
 
     private:
-        class CurviMask
+        /// @brief Matrix class supporting negative indices, mimicking behavior similar to Fortran.
+        /// This class allows matrix access with negative indices, which is not possible in C++ by default.
+        class MatrixWithNegativeIndices
         {
         public:
-            int getValue(int i, int j) const
+            /// @brief Retrieves the value at the given position (j, i) in the matrix.
+            /// @param j Row index, can be negative.
+            /// @param i Column index, can be negative.
+            /// @return Value at the specified position.
+            int getValue(int j, int i) const
             {
                 const auto jIndex = j - m_minJ;
                 const auto iIndex = i - m_minI;
                 const auto value = m_matrix(jIndex, iIndex);
                 return value;
             }
-
-            void setValue(int i, int j, int value)
+            /// @brief Sets the value at the given position (j, i) in the matrix.
+            /// @param j Row index, can be negative.
+            /// @param i Column index, can be negative.
+            /// @param value Value to be set at the specified position.
+            void setValue(int j, int i, int value)
             {
                 const auto jIndex = j - m_minJ;
                 const auto iIndex = i - m_minI;
                 m_matrix(jIndex, iIndex) = value;
             }
 
+            /// @brief Checks if the position (j, i) in the matrix is valid (not equal to missing value).
+            /// @param j Row index, can be negative.
+            /// @param i Column index, can be negative.
+            /// @return True if the value at the position is not missing, otherwise false.
+            bool IsValid(int j, int i) const
+            {
+                const auto jIndex = j - m_minJ;
+                const auto iIndex = i - m_minI;
+                return m_matrix(jIndex, iIndex) != missing::intValue;
+            }
+
+            /// @brief Gets the number of rows in the matrix.
+            /// @return Number of rows.
             [[nodiscard]] int rows() const
             {
                 return static_cast<int>(m_matrix.rows());
             }
 
+            /// @brief Gets the number of columns in the matrix.
+            /// @return Number of columns.
             [[nodiscard]] int cols() const
             {
                 return static_cast<int>(m_matrix.cols());
             }
 
+            /// @brief Gets the minimum column index (i) allowed in the matrix.
+            /// @return Minimum column index.
             [[nodiscard]] int minI() const
             {
                 return m_minI;
             }
 
+            /// @brief Gets the maximum column index (i) allowed in the matrix.
+            /// @return Maximum column index.
             [[nodiscard]] int maxI() const
             {
                 return m_maxI;
             }
+
+            /// @brief Gets the minimum row index (j) allowed in the matrix.
+            /// @return Minimum row index.
             [[nodiscard]] int minJ() const
             {
                 return m_minJ;
             }
 
+            /// @brief Gets the maximum row index (j) allowed in the matrix.
+            /// @return Maximum row index.
             [[nodiscard]] int maxJ() const
             {
                 return m_maxJ;
             }
 
-            void resize(int minI, int minJ, int maxI, int maxJ)
+            /// @brief Resizes the matrix to accommodate the new bounds.
+            /// @param minJ New minimum row index.
+            /// @param minI New minimum column index.
+            /// @param maxJ New maximum row index.
+            /// @param maxI New maximum column index.
+            void resize(int minJ, int minI, int maxJ, int maxI)
             {
-                const int numLeftColumnsToAdd = std::max(m_minI - minI, 0);
-                const int numRightColumnsToAdd = std::max(maxI - m_maxI, 0);
-                const int numBottomRowsToAdd = std::max(m_minJ - minJ, 0);
-                const int numUpperRowsToAdd = std::max(maxJ - m_maxJ, 0);
+                // Determine the size change needed
+                const int extraRowsTop = std::max(m_minJ - minJ, 0);
+                const int extraRowsBottom = std::max(maxJ - m_maxJ, 0);
+                const int extraColsLeft = std::max(m_minI - minI, 0);
+                const int extraColsRight = std::max(maxI - m_maxI, 0);
 
-                const int newRows = numBottomRowsToAdd + numUpperRowsToAdd;
-                const int newCols = numLeftColumnsToAdd + numRightColumnsToAdd;
-
-                if (newRows == 0 && newCols == 0)
+                if (extraRowsTop == 0 && extraRowsBottom == 0 && extraColsLeft == 0 && extraColsRight == 0)
                 {
                     return;
                 }
 
-                // Create a new matrix with the new size and initialize it to uintValue
-                lin_alg::Matrix<int> newMatrix(m_matrix.rows() + newRows, m_matrix.cols() + newCols);
+                // Create new matrix with the new size and initialize to missing value
+                const auto newRows = static_cast<int>(m_matrix.rows()) + extraRowsTop + extraRowsBottom;
+                const auto newCols = static_cast<int>(m_matrix.cols()) + extraColsLeft + extraColsRight;
+                lin_alg::Matrix<int> newMatrix(newRows, newCols);
                 newMatrix.setConstant(missing::intValue);
 
-                // Copy the existing matrix to the appropriate position in the new matrix
-                newMatrix.block(numBottomRowsToAdd, numLeftColumnsToAdd, m_matrix.rows(), m_matrix.cols()) = m_matrix;
+                // Copy the existing matrix into the new one
+                newMatrix.block(extraRowsTop, extraColsLeft, m_matrix.rows(), m_matrix.cols()) = m_matrix;
 
-                // Update the matrix and the bounds
+                // Update matrix and bounds
                 m_matrix.swap(newMatrix);
                 m_minI = std::min(m_minI, minI);
                 m_minJ = std::min(m_minJ, minJ);
@@ -130,11 +168,11 @@ namespace meshkernel
             }
 
         private:
-            lin_alg::Matrix<int> m_matrix = lin_alg::Matrix<int>(1, 1);
-            int m_minI = 0;
-            int m_minJ = 0;
-            int m_maxI = 0;
-            int m_maxJ = 0;
+            lin_alg::Matrix<int> m_matrix = lin_alg::Matrix<int>(1, 1); ///< Underlying matrix storage.
+            int m_minI = 0;                                             ///< Minimum column index.
+            int m_minJ = 0;                                             ///< Minimum row index.
+            int m_maxI = 0;                                             ///< Maximum column index.
+            int m_maxJ = 0;                                             ///< Maximum row index.
         };
 
         /// @brief Computes the local mapping of the nodes composing the face
@@ -175,7 +213,7 @@ namespace meshkernel
 
         const int n_maxNumRowsColumns = 1000000; ///< The maximum number of allowed rows or columns
 
-        CurviMask m_mapping;
+        MatrixWithNegativeIndices m_mapping;
     };
 
 } // namespace meshkernel

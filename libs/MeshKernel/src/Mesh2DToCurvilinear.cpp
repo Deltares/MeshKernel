@@ -86,14 +86,15 @@ std::unique_ptr<CurvilinearGrid> Mesh2DToCurvilinear::Compute(const Point& point
     m_mapping.resize(-3, -3, 3, 3);
 
     const auto firstNodeIndex = m_mesh.FindCommonNode(firstEdge, secondEdge);
-    m_i[firstNodeIndex] = 0;
     m_j[firstNodeIndex] = 0;
+    m_i[firstNodeIndex] = 0;
+
     m_mapping.setValue(0, 0, firstNodeIndex);
 
     const auto secondNodeIndex = m_mesh.FindCommonNode(secondEdge, thirdEdge);
-    m_i[secondNodeIndex] = 1;
     m_j[secondNodeIndex] = 0;
-    m_mapping.setValue(1, 0, secondNodeIndex);
+    m_i[secondNodeIndex] = 1;
+    m_mapping.setValue(0, 1, secondNodeIndex);
 
     const auto thirdNodeIndex = m_mesh.FindCommonNode(thirdEdge, fourthEdge);
     m_i[thirdNodeIndex] = 1;
@@ -101,9 +102,10 @@ std::unique_ptr<CurvilinearGrid> Mesh2DToCurvilinear::Compute(const Point& point
     m_mapping.setValue(1, 1, thirdNodeIndex);
 
     const auto fourthNodeIndex = m_mesh.FindCommonNode(fourthEdge, firstEdge);
-    m_i[fourthNodeIndex] = 0;
     m_j[fourthNodeIndex] = 1;
-    m_mapping.setValue(0, 1, fourthNodeIndex);
+    m_i[fourthNodeIndex] = 0;
+
+    m_mapping.setValue(1, 0, fourthNodeIndex);
 
     // 4. Grow the front using the breath first search algorithm
     const auto numFaces = m_mesh.GetNumFaces();
@@ -261,8 +263,8 @@ UInt Mesh2DToCurvilinear::ComputeNeighbouringFaceNodes(const UInt face,
     m_j[firstOtherNode] = jFirstOtherNode;
     m_i[secondOtherNode] = iSecondCommonNode;
     m_j[secondOtherNode] = jSecondCommonNode;
-    m_mapping.setValue(iFirstOtherNode, jFirstOtherNode, firstOtherNode);
-    m_mapping.setValue(iSecondCommonNode, jSecondCommonNode, secondOtherNode);
+    m_mapping.setValue(jFirstOtherNode, iFirstOtherNode, firstOtherNode);
+    m_mapping.setValue(jSecondCommonNode, iSecondCommonNode, secondOtherNode);
     return newFace;
 }
 
@@ -272,24 +274,24 @@ bool Mesh2DToCurvilinear::IsConnectionValid(const UInt candidateNode, const int 
     const int iRight = iCandidate + 1;
     const int jBottom = jCandidate - 1;
     const int jUp = jCandidate + 1;
-    m_mapping.resize(iLeft, jBottom, iRight, jUp);
+    m_mapping.resize(jBottom, iLeft, jUp, iRight);
 
-    if (m_mapping.getValue(iLeft, jCandidate) != missing::intValue && !CheckGridLine(m_mapping.getValue(iLeft, jCandidate), candidateNode))
+    if (m_mapping.IsValid(jCandidate, iLeft) && !CheckGridLine(m_mapping.getValue(jCandidate, iLeft), candidateNode))
     {
         return false;
     }
 
-    if (m_mapping.getValue(iRight, jCandidate) != missing::intValue && !CheckGridLine(m_mapping.getValue(iRight, jCandidate), candidateNode))
+    if (m_mapping.IsValid(jCandidate, iRight) && !CheckGridLine(m_mapping.getValue(jCandidate, iRight), candidateNode))
     {
         return false;
     }
 
-    if (m_mapping.getValue(iCandidate, jBottom) != missing::intValue && !CheckGridLine(m_mapping.getValue(iCandidate, jBottom), candidateNode))
+    if (m_mapping.IsValid(jBottom, iCandidate) && !CheckGridLine(m_mapping.getValue(jBottom, iCandidate), candidateNode))
     {
         return false;
     }
 
-    if (m_mapping.getValue(iCandidate, jUp) != missing::intValue && !CheckGridLine(m_mapping.getValue(iCandidate, jUp), candidateNode))
+    if (m_mapping.IsValid(jUp, iCandidate) && !CheckGridLine(m_mapping.getValue(jUp, iCandidate), candidateNode))
     {
         return false;
     }
