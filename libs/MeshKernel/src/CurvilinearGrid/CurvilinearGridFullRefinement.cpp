@@ -13,6 +13,12 @@ meshkernel::UndoActionPtr meshkernel::CurvilinearGridFullRefinement::Compute(Cur
                               mRefinement, nRefinement);
     }
 
+    if (mRefinement == constants::missing::uintValue || nRefinement == constants::missing::uintValue)
+    {
+        throw ConstraintError("Incorrect refinement value. Value should not be the invalid value: m-refinement = {}, n-refinement = {}",
+                              mRefinement, nRefinement);
+    }
+
     if (mRefinement == 1 && nRefinement == 1)
     {
         // nothing to do
@@ -31,7 +37,7 @@ meshkernel::UndoActionPtr meshkernel::CurvilinearGridFullRefinement::Compute(Cur
     std::vector<Point> leftRefinement(nRefinement + 1);
     std::vector<Point> rightRefinement(nRefinement + 1);
 
-    // The refined grid
+    // The nodes of the refined grid
     lin_alg::Matrix<Point> refinedGrid(maxN, maxM);
 
     UInt refinedN = 0;

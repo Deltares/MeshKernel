@@ -37,6 +37,9 @@ namespace meshkernel
     /// @brief Refines the entire curvilinear grid.
     ///
     /// This refinement can be different in each m- and n-direction.
+    /// Refinement factor of 2 indicates split the element into two halves
+    /// Refinement factor of 4 indicates split the element into four quarters
+    /// Refinement factor of 1 indicates do not split the element.
     class CurvilinearGridFullRefinement final
     {
     public:

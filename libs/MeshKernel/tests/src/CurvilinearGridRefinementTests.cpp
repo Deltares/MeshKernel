@@ -288,4 +288,7 @@ TEST(CurvilinearGridRefinement, IncorrectFullRefinementParameters)
     EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, 0, 2), meshkernel::ConstraintError);
     EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, 3, 0), meshkernel::ConstraintError);
     EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, 0, 0), meshkernel::ConstraintError);
+    EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, constants::missing::uintValue, 0), meshkernel::ConstraintError);
+    EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, 0, constants::missing::uintValue), meshkernel::ConstraintError);
+    EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, constants::missing::uintValue, constants::missing::uintValue), meshkernel::ConstraintError);
 }
