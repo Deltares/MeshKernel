@@ -139,7 +139,7 @@ TEST(CurvilinearGridRefinement, FullRefinementNonUniform)
     CurvilinearGrid curvilinearGrid(gridPoints, Projection::cartesian);
     CurvilinearGridFullRefinement curvilinearGridRefinement;
 
-    // Refine mesh four times in m-direction and twoce in n-direction
+    // Refine mesh four times in m-direction and twice in n-direction
     auto undoRefinement = curvilinearGridRefinement.Compute(curvilinearGrid, 4, 2);
 
     ASSERT_EQ(static_cast<meshkernel::UInt>(expectedX.size()), curvilinearGrid.NumM());
@@ -175,6 +175,8 @@ TEST(CurvilinearGridRefinement, FullRefinementNonUniform)
 
 TEST(CurvilinearGridRefinement, FullRefinementWithFactor1)
 {
+    // No refinement should occur in this test
+
     lin_alg::Matrix<Point> grid(8, 10);
 
     for (Eigen::Index i = 0; i < grid.rows(); ++i)
@@ -190,7 +192,6 @@ TEST(CurvilinearGridRefinement, FullRefinementWithFactor1)
 
     const lin_alg::Matrix<Point> originalPoints = curvilinearGrid.GetNodes();
 
-    // Refine mesh four times in m-direction and twoce in n-direction
     auto undoRefinement = curvilinearGridRefinement.Compute(curvilinearGrid, 1, 1);
 
     // No refinement should take place, and so no undo necessary
@@ -211,12 +212,12 @@ TEST(CurvilinearGridRefinement, FullRefinementWithFactor1)
 
 TEST(CurvilinearGridRefinement, FullRefinementWithMissingRegion)
 {
-
     constexpr double deltaX = 10.0;
     constexpr double deltaY = 12.0;
 
-    // Set-up
     lin_alg::Matrix<Point> gridNodes(6, 10);
+
+    // Defined regions of invalid nodes
     auto region1 = [](const UInt i, const UInt j)
     { return (i == 0 || i == 1) && (3 <= j && j <= 6); };
     auto region2 = [](const UInt i, const UInt j)
@@ -246,7 +247,7 @@ TEST(CurvilinearGridRefinement, FullRefinementWithMissingRegion)
     const UInt expectedSizeM = mRefinement * (static_cast<meshkernel::UInt>(gridNodes.cols()) - 1) + 1;
     const UInt expectedSizeN = nRefinement * (static_cast<meshkernel::UInt>(gridNodes.rows()) - 1) + 1;
 
-    // Refine mesh four times in m-direction and twice in n-direction
+    // Refine mesh
     [[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, mRefinement, nRefinement);
 
     ASSERT_EQ(expectedSizeM, curvilinearGrid.NumM());
