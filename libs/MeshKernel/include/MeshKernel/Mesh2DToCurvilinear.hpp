@@ -106,28 +106,28 @@ namespace meshkernel
 
             /// @brief Gets the minimum column index (i) allowed in the matrix.
             /// @return Minimum column index.
-            [[nodiscard]] int minI() const
+            [[nodiscard]] int minCol() const
             {
                 return m_minI;
             }
 
             /// @brief Gets the maximum column index (i) allowed in the matrix.
             /// @return Maximum column index.
-            [[nodiscard]] int maxI() const
+            [[nodiscard]] int maxCol() const
             {
                 return m_maxI;
             }
 
             /// @brief Gets the minimum row index (j) allowed in the matrix.
             /// @return Minimum row index.
-            [[nodiscard]] int minJ() const
+            [[nodiscard]] int minRow() const
             {
                 return m_minJ;
             }
 
             /// @brief Gets the maximum row index (j) allowed in the matrix.
             /// @return Maximum row index.
-            [[nodiscard]] int maxJ() const
+            [[nodiscard]] int maxRow() const
             {
                 return m_maxJ;
             }
