@@ -214,7 +214,7 @@ namespace meshkernel
 
         const int n_maxNumRowsColumns = 1000000; ///< The maximum number of allowed rows or columns
 
-        MatrixWithNegativeIndices m_mapping;
+        MatrixWithNegativeIndices m_mapping; ///< Unstructured node indices in the curvilinear grid
     };
 
 } // namespace meshkernel
