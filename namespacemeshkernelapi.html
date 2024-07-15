@@ -586,6 +586,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:aa8871161744c899f45413808e2ebbbfb"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa8871161744c899f45413808e2ebbbfb">mkernel_mesh2d_set</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
 <tr class="memdesc:aa8871161744c899f45413808e2ebbbfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">meshkernel::Mesh2D</a> state.  <a href="namespacemeshkernelapi.html#aa8871161744c899f45413808e2ebbbfb">More...</a><br /></td></tr>
 <tr class="separator:aa8871161744c899f45413808e2ebbbfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4998517f14650d76335174d52c40d7b"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#af4998517f14650d76335174d52c40d7b">mkernel_mesh2d_split_row</a> (int meshKernelId, int firstNode, int secondNode)</td></tr>
+<tr class="memdesc:af4998517f14650d76335174d52c40d7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">An-isotropically refines the elements along a row or column, given a starting edge.  <a href="namespacemeshkernelapi.html#af4998517f14650d76335174d52c40d7b">More...</a><br /></td></tr>
+<tr class="separator:af4998517f14650d76335174d52c40d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec33ed1cc636956cc68a7c1886447107"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aec33ed1cc636956cc68a7c1886447107">mkernel_mesh2d_add</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
 <tr class="memdesc:aec33ed1cc636956cc68a7c1886447107"><td class="mdescLeft">&#160;</td><td class="mdescRight">Adds a mesh to the <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">meshkernel::Mesh2D</a> state.  <a href="namespacemeshkernelapi.html#aec33ed1cc636956cc68a7c1886447107">More...</a><br /></td></tr>
 <tr class="separator:aec33ed1cc636956cc68a7c1886447107"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -7311,6 +7314,51 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh2d</td><td>The <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="af4998517f14650d76335174d52c40d7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4998517f14650d76335174d52c40d7b">&#9670;&nbsp;</a></span>mkernel_mesh2d_split_row()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_split_row </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>firstNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>secondNode</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>An-isotropically refines the elements along a row or column, given a starting edge. </p>
+<p>Only quadrilateral elements will be refined. Refinement will continue upto the boundary of the domain or when a non-quadrilateral element is encountered. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">firstNode</td><td>The first node of the edge </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">secondNode</td><td>The second node of the edge </td></tr>
   </table>
   </dd>
 </dl>
