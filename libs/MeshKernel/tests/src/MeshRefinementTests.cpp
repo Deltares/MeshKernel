@@ -25,19 +25,20 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernel/BilinearInterpolationOnGriddedSamples.hpp"
-#include "MeshKernel/CasulliDeRefinement.hpp"
-#include "MeshKernel/CasulliRefinement.hpp"
-#include "MeshKernel/SamplesHessianCalculator.hpp"
-
 #include <fstream>
 
 #include <gtest/gtest.h>
 
+#include "MeshKernel/BilinearInterpolationOnGriddedSamples.hpp"
+#include "MeshKernel/CasulliDeRefinement.hpp"
+#include "MeshKernel/CasulliRefinement.hpp"
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/MeshRefinement.hpp"
 #include "MeshKernel/Parameters.hpp"
 #include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/SamplesHessianCalculator.hpp"
+#include "MeshKernel/SplitRowColumnOfMesh.hpp"
+#include "MeshKernel/UndoActions/UndoActionStack.hpp"
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 #include "TestUtils/MeshReaders.hpp"
@@ -2214,4 +2215,470 @@ TEST(MeshRefinement, CasulliTwoPolygonDeRefinement)
         EXPECT_EQ(lowerRefinedEdges[i].first, mesh.GetEdge(i).first);
         EXPECT_EQ(lowerRefinedEdges[i].second, mesh.GetEdge(i).second);
     }
+}
+
+TEST(MeshRefinement, SplitBoundariesOfSmallMesh)
+{
+    constexpr double tolerance = 1.0e-12;
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 4, 4);
+    Mesh2D mesh(curviMesh->ComputeEdges(), curviMesh->ComputeNodes(), Projection::cartesian);
+    mesh.Administrate();
+
+    SplitRowColumnOfMesh splitMesh;
+    UndoActionStack undoStack;
+
+    //--------------------------------
+    // Split along south boundary of the domain
+    UInt node1 = mesh.FindNodeCloseToAPoint({0.0, 0.0}, 1.0e-4);
+    UInt node2 = mesh.FindNodeCloseToAPoint({0.0, 10.0}, 1.0e-4);
+
+    UInt edge = mesh.FindEdge(node1, node2);
+    undoStack.Add(splitMesh.Compute(mesh, edge));
+
+    //--------------------------------
+    // Split along east boundary of the domain
+    node1 = mesh.FindNodeCloseToAPoint({20.0, 0.0}, 1.0e-4);
+    node2 = mesh.FindNodeCloseToAPoint({30.0, 0.0}, 1.0e-4);
+
+    edge = mesh.FindEdge(node1, node2);
+    undoStack.Add(splitMesh.Compute(mesh, edge));
+
+    //--------------------------------
+    // Split along north boundary of the domain
+    node1 = mesh.FindNodeCloseToAPoint({30.0, 20.0}, 1.0e-4);
+    node2 = mesh.FindNodeCloseToAPoint({30.0, 30.0}, 1.0e-4);
+
+    edge = mesh.FindEdge(node1, node2);
+    undoStack.Add(splitMesh.Compute(mesh, edge));
+
+    //--------------------------------
+    // Split along west boundary of the domain
+    node1 = mesh.FindNodeCloseToAPoint({0.0, 30.0}, 1.0e-4);
+    node2 = mesh.FindNodeCloseToAPoint({10.0, 30.0}, 1.0e-4);
+
+    edge = mesh.FindEdge(node1, node2);
+    undoStack.Add(splitMesh.Compute(mesh, edge));
+
+    //--------------------------------
+
+    std::vector<double> expectedX{0.0, 10.0, 20.0, 30.0, 0.0, 10.0, 20.0, 30.0, 0.0, 10.0,
+                                  20.0, 30.0, 0.0, 10.0, 20.0, 30.0, 0.0, 10.0, 20.0, 30.0,
+                                  25.0, 25.0, 25.0, 25.0, 25.0, 30.0, 25.0, 20.0, 10.0, 0.0,
+                                  5.0, 5.0, 5.0, 5.0, 5.0, 5.0};
+
+    std::vector<double> expectedY{0.0, 0.0, 0.0, 0.0, 10.0, 10.0, 10.0, 10.0, 20.0, 20.0,
+                                  20.0, 20.0, 30.0, 30.0, 30.0, 30.0, 5.0, 5.0, 5.0, 5.0,
+                                  0.0, 5.0, 10.0, 20.0, 30.0, 25.0, 25.0, 25.0, 25.0, 25.0,
+                                  30.0, 25.0, 20.0, 10.0, 5.0, 0.0};
+
+    ASSERT_EQ(static_cast<UInt>(expectedX.size()), mesh.GetNumNodes());
+
+    for (UInt i = 0; i < mesh.GetNumNodes(); ++i)
+    {
+        EXPECT_NEAR(expectedX[i], mesh.Node(i).x, tolerance);
+        EXPECT_NEAR(expectedY[i], mesh.Node(i).y, tolerance);
+    }
+}
+
+TEST(MeshRefinement, PartialSplittingOfRow)
+{
+    constexpr double tolerance = 1.0e-12;
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 5, 5);
+    Mesh2D mesh(curviMesh->ComputeEdges(), curviMesh->ComputeNodes(), Projection::cartesian);
+    mesh.Administrate();
+
+    SplitRowColumnOfMesh splitMesh;
+    UndoActionStack undoStack;
+
+    // Add triangle into mesh at south-east corner
+
+    UInt node1 = mesh.FindNodeCloseToAPoint({30.0, 10.0}, 1.0e-4);
+    UInt node2 = mesh.FindNodeCloseToAPoint({40.0, 0.0}, 1.0e-4);
+
+    [[maybe_unused]] auto undo = mesh.ConnectNodes(node1, node2);
+
+    mesh.Administrate();
+
+    //--------------------------------
+    // Split along south boundary of the domain from west side
+    node1 = mesh.FindNodeCloseToAPoint({0.0, 0.0}, 1.0e-4);
+    node2 = mesh.FindNodeCloseToAPoint({0.0, 10.0}, 1.0e-4);
+
+    UInt edge = mesh.FindEdge(node1, node2);
+    undoStack.Add(splitMesh.Compute(mesh, edge));
+
+    //--------------------------------
+    // Split along east boundary of the domain from north side
+    node1 = mesh.FindNodeCloseToAPoint({30.0, 30.0}, 1.0e-4);
+    node2 = mesh.FindNodeCloseToAPoint({40.0, 30.0}, 1.0e-4);
+
+    edge = mesh.FindEdge(node1, node2);
+    undoStack.Add(splitMesh.Compute(mesh, edge));
+
+    std::vector<double> expectedX{0.0, 10.0, 20.0, 30.0, 40.0, 0.0, 10.0, 20.0, 30.0,
+                                  40.0, 0.0, 10.0, 20.0, 30.0, 40.0, 0.0, 10.0, 20.0,
+                                  30.0, 40.0, 0.0, 10.0, 20.0, 30.0, 40.0, 0.0, 10.0,
+                                  20.0, 35.0, 35.0, 35.0};
+
+    std::vector<double> expectedY{0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0, 10.0, 10.0, 10.0,
+                                  20.0, 20.0, 20.0, 20.0, 20.0, 30.0, 30.0, 30.0, 30.0,
+                                  30.0, 40.0, 40.0, 40.0, 40.0, 40.0, 5.0, 5.0, 5.0, 40.0,
+                                  30.0, 20.0};
+
+    ASSERT_EQ(static_cast<UInt>(expectedX.size()), mesh.GetNumNodes());
+
+    for (UInt i = 0; i < mesh.GetNumNodes(); ++i)
+    {
+        EXPECT_NEAR(expectedX[i], mesh.Node(i).x, tolerance);
+        EXPECT_NEAR(expectedY[i], mesh.Node(i).y, tolerance);
+    }
+}
+
+TEST(MeshRefinement, PartialSplittingOfRowTriangleMidWay)
+{
+    constexpr double tolerance = 1.0e-12;
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 5, 5);
+    Mesh2D mesh(curviMesh->ComputeEdges(), curviMesh->ComputeNodes(), Projection::cartesian);
+    mesh.Administrate();
+
+    SplitRowColumnOfMesh splitMesh;
+    UndoActionStack undoStack;
+
+    // Add triangle into mesh at south-east corner
+
+    UInt node1 = mesh.FindNodeCloseToAPoint({20.0, 30.0}, 1.0e-4);
+    UInt node2 = mesh.FindNodeCloseToAPoint({30.0, 20.0}, 1.0e-4);
+
+    [[maybe_unused]] auto undo = mesh.ConnectNodes(node1, node2);
+
+    mesh.Administrate();
+
+    //--------------------------------
+    // Split along south boundary of the domain from west side
+    node1 = mesh.FindNodeCloseToAPoint({0.0, 30.0}, 1.0e-4);
+    node2 = mesh.FindNodeCloseToAPoint({0.0, 20.0}, 1.0e-4);
+
+    UInt edge = mesh.FindEdge(node1, node2);
+    undoStack.Add(splitMesh.Compute(mesh, edge));
+
+    //--------------------------------
+    // Split along east boundary of the domain from south side
+    node1 = mesh.FindNodeCloseToAPoint({20.0, 0.0}, 1.0e-4);
+    node2 = mesh.FindNodeCloseToAPoint({30.0, 0.0}, 1.0e-4);
+
+    edge = mesh.FindEdge(node1, node2);
+    undoStack.Add(splitMesh.Compute(mesh, edge));
+
+    //--------------------------------
+    // Split along east boundary of the domain from north side
+    node1 = mesh.FindNodeCloseToAPoint({20.0, 40.0}, 1.0e-4);
+    node2 = mesh.FindNodeCloseToAPoint({30.0, 40.0}, 1.0e-4);
+
+    edge = mesh.FindEdge(node1, node2);
+    undoStack.Add(splitMesh.Compute(mesh, edge));
+
+    //--------------------------------
+    // Split along east boundary of the domain from east side
+    node1 = mesh.FindNodeCloseToAPoint({40.0, 30.0}, 1.0e-4);
+    node2 = mesh.FindNodeCloseToAPoint({40.0, 20.0}, 1.0e-4);
+
+    edge = mesh.FindEdge(node1, node2);
+    undoStack.Add(splitMesh.Compute(mesh, edge));
+
+    //--------------------------------
+
+    std::vector<double> expectedX{0.0, 10.0, 20.0, 30.0, 40.0, 0.0, 10.0,
+                                  20.0, 30.0, 40.0, 0.0, 10.0, 20.0, 30.0,
+                                  40.0, 0.0, 10.0, 20.0, 30.0, 40.0, 0.0,
+                                  10.0, 20.0, 30.0, 40.0, 0.0, 10.0, 25.0,
+                                  25.0, 25.0, 40.0};
+
+    std::vector<double> expectedY{0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0, 10.0,
+                                  10.0, 10.0, 20.0, 20.0, 20.0, 20.0, 20.0,
+                                  30.0, 30.0, 30.0, 30.0, 30.0, 40.0, 40.0,
+                                  40.0, 40.0, 40.0, 25.0, 25.0, 0.0, 10.0,
+                                  40.0, 25.0};
+
+    ASSERT_EQ(static_cast<UInt>(expectedX.size()), mesh.GetNumNodes());
+
+    for (UInt i = 0; i < mesh.GetNumNodes(); ++i)
+    {
+        EXPECT_NEAR(expectedX[i], mesh.Node(i).x, tolerance);
+        EXPECT_NEAR(expectedY[i], mesh.Node(i).y, tolerance);
+    }
+}
+
+TEST(MeshRefinement, PartialSplittingOfRowBoundedByTriangles)
+{
+    constexpr double tolerance = 1.0e-12;
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 7, 4);
+    Mesh2D mesh(curviMesh->ComputeEdges(), curviMesh->ComputeNodes(), Projection::cartesian);
+    mesh.Administrate();
+
+    SplitRowColumnOfMesh splitMesh;
+    UndoActionStack undoStack;
+
+    // Add triangle into mesh at south-east corner
+
+    UInt node1 = mesh.FindNodeCloseToAPoint({0.0, 10.0}, 1.0e-4);
+    UInt node2 = mesh.FindNodeCloseToAPoint({10.0, 20.0}, 1.0e-4);
+
+    [[maybe_unused]] auto undo = mesh.ConnectNodes(node1, node2);
+
+    node1 = mesh.FindNodeCloseToAPoint({50.0, 10.0}, 1.0e-4);
+    node2 = mesh.FindNodeCloseToAPoint({60.0, 20.0}, 1.0e-4);
+
+    undo = mesh.ConnectNodes(node1, node2);
+
+    mesh.Administrate();
+
+    //--------------------------------
+    // Split along south boundary of the domain from middle of the domain
+    node1 = mesh.FindNodeCloseToAPoint({30.0, 10.0}, 1.0e-4);
+    node2 = mesh.FindNodeCloseToAPoint({30.0, 20.0}, 1.0e-4);
+
+    UInt edge = mesh.FindEdge(node1, node2);
+    undoStack.Add(splitMesh.Compute(mesh, edge));
+
+    std::vector<double> expectedX{0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0,
+                                  0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0,
+                                  0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0,
+                                  0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0,
+                                  40.0, 30.0, 20.0};
+
+    std::vector<double> expectedY{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0,
+                                  10.0, 10.0, 10.0, 10.0, 10.0, 10.0, 20.0,
+                                  20.0, 20.0, 20.0, 20.0, 20.0, 20.0, 30.0,
+                                  30.0, 30.0, 30.0, 30.0, 30.0, 30.0, 15.0,
+                                  15.0, 15.0};
+
+    ASSERT_EQ(static_cast<UInt>(expectedX.size()), mesh.GetNumNodes());
+
+    for (UInt i = 0; i < mesh.GetNumNodes(); ++i)
+    {
+        EXPECT_NEAR(expectedX[i], mesh.Node(i).x, tolerance);
+        EXPECT_NEAR(expectedY[i], mesh.Node(i).y, tolerance);
+    }
+}
+
+TEST(MeshRefinement, SplitBoundariesOfMesh)
+{
+    // Refine along all four boundary edges of this mesh
+    // Only test for the number of nodes, edges and elements.
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 11, 11);
+    Mesh2D mesh(curviMesh->ComputeEdges(), curviMesh->ComputeNodes(), Projection::cartesian);
+    mesh.Administrate();
+
+    ASSERT_EQ(mesh.GetNumNodes(), 121);
+    ASSERT_EQ(mesh.GetNumEdges(), 220);
+    ASSERT_EQ(mesh.GetNumFaces(), 100);
+
+    SplitRowColumnOfMesh splitMesh;
+    UndoActionStack undoStack;
+
+    //--------------------------------
+    // Split along south boundary of the domain
+    UInt node1 = mesh.FindNodeCloseToAPoint({0.0, 0.0}, 1.0e-4);
+    UInt node2 = mesh.FindNodeCloseToAPoint({0.0, 10.0}, 1.0e-4);
+
+    UInt edge = mesh.FindEdge(node1, node2);
+    undoStack.Add(splitMesh.Compute(mesh, edge));
+
+    ASSERT_EQ(mesh.GetNumValidNodes(), 132);
+    ASSERT_EQ(mesh.GetNumValidEdges(), 241);
+    ASSERT_EQ(mesh.GetNumFaces(), 110);
+
+    //--------------------------------
+    // Split along east boundary of the domain
+    node1 = mesh.FindNodeCloseToAPoint({90.0, 0.0}, 1.0e-4);
+    node2 = mesh.FindNodeCloseToAPoint({100.0, 0.0}, 1.0e-4);
+
+    edge = mesh.FindEdge(node1, node2);
+    undoStack.Add(splitMesh.Compute(mesh, edge));
+
+    ASSERT_EQ(mesh.GetNumValidNodes(), 144);
+    ASSERT_EQ(mesh.GetNumValidEdges(), 264);
+    ASSERT_EQ(mesh.GetNumFaces(), 121);
+
+    //--------------------------------
+    // Split along north boundary of the domain
+    node1 = mesh.FindNodeCloseToAPoint({100.0, 90.0}, 1.0e-4);
+    node2 = mesh.FindNodeCloseToAPoint({100.0, 100.0}, 1.0e-4);
+
+    edge = mesh.FindEdge(node1, node2);
+    undoStack.Add(splitMesh.Compute(mesh, edge));
+
+    ASSERT_EQ(mesh.GetNumValidNodes(), 156);
+    ASSERT_EQ(mesh.GetNumValidEdges(), 287);
+    ASSERT_EQ(mesh.GetNumFaces(), 132);
+
+    //--------------------------------
+    // Split along west boundary of the domain
+    node1 = mesh.FindNodeCloseToAPoint({0.0, 100.0}, 1.0e-4);
+    node2 = mesh.FindNodeCloseToAPoint({10.0, 100.0}, 1.0e-4);
+
+    edge = mesh.FindEdge(node1, node2);
+    undoStack.Add(splitMesh.Compute(mesh, edge));
+
+    ASSERT_EQ(mesh.GetNumValidNodes(), 169);
+    ASSERT_EQ(mesh.GetNumValidEdges(), 312);
+    ASSERT_EQ(mesh.GetNumFaces(), 144);
+}
+
+void GenerateGridWithLoop(std::vector<Point>& nodes, std::vector<Edge>& edges)
+{
+
+    nodes.push_back({-10.0, -10.0});
+    nodes.push_back({0.0, -10.0});
+    nodes.push_back({10.0, -10.0});
+
+    nodes.push_back({-10.0, 0.0});
+    nodes.push_back({0.0, 0.0});
+    nodes.push_back({10.0, 0.0});
+
+    nodes.push_back({-10.0, 10.0});
+    nodes.push_back({0.0, 10.0});
+    nodes.push_back({10.0, 10.0});
+
+    nodes.push_back({-20.0, -20.0});
+    nodes.push_back({0.0, -20.0});
+    nodes.push_back({20.0, -20.0});
+
+    nodes.push_back({-20.0, 0.0});
+    nodes.push_back({20.0, 0.0});
+
+    nodes.push_back({-20.0, 20.0});
+    nodes.push_back({0.0, 20.0});
+    nodes.push_back({20.0, 20.0});
+
+    edges.push_back({0, 1});
+    edges.push_back({1, 2});
+    edges.push_back({3, 4});
+    edges.push_back({4, 5});
+    edges.push_back({6, 7});
+    edges.push_back({7, 8});
+
+    edges.push_back({0, 3});
+    edges.push_back({1, 4});
+    edges.push_back({2, 5});
+    edges.push_back({3, 6});
+    edges.push_back({4, 7});
+    edges.push_back({5, 8});
+
+    edges.push_back({9, 10});
+    edges.push_back({10, 11});
+
+    edges.push_back({9, 0});
+    edges.push_back({10, 1});
+    edges.push_back({11, 2});
+
+    edges.push_back({9, 12});
+    edges.push_back({12, 3});
+    edges.push_back({11, 13});
+    edges.push_back({5, 13});
+
+    edges.push_back({12, 14});
+    edges.push_back({14, 6});
+    edges.push_back({14, 15});
+    edges.push_back({7, 15});
+    edges.push_back({15, 16});
+    edges.push_back({13, 16});
+    edges.push_back({8, 16});
+}
+
+TEST(MeshRefinement, SplitElementLoop)
+{
+    constexpr double tolerance = 1.0e-12;
+
+    std::vector<Point> nodes;
+    std::vector<Edge> edges;
+    GenerateGridWithLoop(nodes, edges);
+    Mesh2D mesh(edges, nodes, Projection::cartesian);
+
+    mesh.Administrate();
+
+    ASSERT_EQ(mesh.GetNumValidNodes(), 17);
+    ASSERT_EQ(mesh.GetNumValidEdges(), 28);
+    ASSERT_EQ(mesh.GetNumFaces(), 12);
+
+    SplitRowColumnOfMesh splitMesh;
+    auto undoSplit = splitMesh.Compute(mesh, 14);
+
+    ASSERT_EQ(mesh.GetNumNodes(), 25);
+    ASSERT_EQ(mesh.GetNumEdges(), 52);
+    ASSERT_EQ(mesh.GetNumFaces(), 20);
+
+    std::vector<double> expectedX{-10.0, 0.0, 10.0, -10.0, 0.0, 10.0, -10.0, 0.0, 10.0,
+                                  -20.0, 0.0, 20.0, -20.0, 20.0, -20.0, 0.0, 20.0, -15.0,
+                                  -15.0, -15.0, 0.0, 15.0, 15.0, 15.0, 0.0};
+
+    std::vector<double> expectedY{-10.0, -10.0, -10.0, 0.0, 0.0, 0.0, 10.0, 10.0, 10.0,
+                                  -20.0, -20.0, -20.0, 0.0, 0.0, 20.0, 20.0, 20.0, -15.0,
+                                  0.0, 15.0, 15.0, 15.0, 0.0, -15.0, -15.0};
+
+    const std::vector<Point>& meshNodes = mesh.Nodes();
+
+    for (UInt i = 0; i < nodes.size(); ++i)
+    {
+        EXPECT_NEAR(expectedX[i], meshNodes[i].x, tolerance);
+        EXPECT_NEAR(expectedY[i], meshNodes[i].y, tolerance);
+    }
+
+    const UInt nullValue = constants::missing::uintValue;
+
+    std::vector<UInt> expectedEdgesFirst{0, 1, 3, 4, 6, 7, 0, 1, 2, 3, 4, 5,
+                                         9, 10, nullValue, nullValue, nullValue, 9, nullValue, 11, nullValue, 12, nullValue, 14,
+                                         nullValue, 15, 13, nullValue, 9, 17, 12, 18, 17, 14, 19, 18,
+                                         7, 20, 19, 8, 21, 20, 5, 22};
+
+    std::vector<UInt> expectedEdgesSecond{1, 2, 4, 5, 7, 8, 3, 4, 5, 6, 7, 8, 10,
+                                          11, nullValue, nullValue, nullValue, 12, nullValue, 13, nullValue, 14, nullValue, 15, nullValue, 16,
+                                          16, nullValue, 17, 0, 18, 3, 18, 19, 6, 19, 20, 15, 20,
+                                          21, 16, 21, 22, 13};
+
+    for (UInt i = 0; i < mesh.GetNumValidEdges(); ++i)
+    {
+        EXPECT_EQ(expectedEdgesFirst[i], mesh.GetEdge(i).first);
+        EXPECT_EQ(expectedEdgesSecond[i], mesh.GetEdge(i).second);
+    }
+
+    //--------------------------------
+    // Undo split
+
+    undoSplit->Restore();
+    mesh.Administrate();
+
+    ASSERT_EQ(mesh.GetNumValidNodes(), 17);
+    ASSERT_EQ(mesh.GetNumValidEdges(), 28);
+    ASSERT_EQ(mesh.GetNumFaces(), 12);
+}
+
+TEST(MeshRefinement, RowSplittingFailureTests)
+{
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 11, 11);
+    Mesh2D mesh(curviMesh->ComputeEdges(), curviMesh->ComputeNodes(), Projection::cartesian);
+    mesh.Administrate();
+
+    mesh.Administrate();
+    SplitRowColumnOfMesh splitMeshRow;
+
+    // Edge id is the null value
+    EXPECT_THROW([[maybe_unused]] auto undo1 = splitMeshRow.Compute(mesh, constants::missing::uintValue), ConstraintError);
+    // Out of bounds edge id
+    EXPECT_THROW([[maybe_unused]] auto undo2 = splitMeshRow.Compute(mesh, mesh.GetNumEdges() + 10), ConstraintError);
+
+    auto [newNodeId, undo3] = mesh.InsertNode({110.0, 0.0});
+    UInt endNode = mesh.FindNodeCloseToAPoint({100.0, 0.0}, 1.0e-4);
+
+    auto [edgeId, undoInsertEdge] = mesh.ConnectNodes(newNodeId, endNode);
+    // Undo  edge insertion, so the edgeId should now be invalid
+    undoInsertEdge->Restore();
+
+    // Invalid edge id
+    EXPECT_THROW([[maybe_unused]] auto undo4 = splitMeshRow.Compute(mesh, edgeId), ConstraintError);
 }

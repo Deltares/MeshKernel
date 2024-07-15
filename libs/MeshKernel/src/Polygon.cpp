@@ -276,9 +276,9 @@ void meshkernel::Polygon::RefineSegment(std::vector<meshkernel::Point>& refinedP
     refinedPolygon.push_back(n0);
 
     const double segmentLength = ComputeDistance(n0, n1, projection);
-    int n = std::lround(segmentLength / refinementDistance);
+    long int n = std::lround(segmentLength / refinementDistance);
 
-    for (int i = 1; i < n; ++i)
+    for (long int i = 1; i < n; ++i)
     {
         double lambda = static_cast<double>(i) / static_cast<double>(n);
         refinedPolygon.push_back((1.0 - lambda) * n0 + lambda * n1);
