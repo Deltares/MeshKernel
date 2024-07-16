@@ -111,6 +111,9 @@ std::tuple&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c
 <tr class="memitem:a921f06aabd9e3f46b3a2ea7cb6f3c8e5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a921f06aabd9e3f46b3a2ea7cb6f3c8e5">RefinePolygon</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> polygonIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endIndex, double refinementDistance) const</td></tr>
 <tr class="memdesc:a921f06aabd9e3f46b3a2ea7cb6f3c8e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines the polygon edges with additional nodes, from the start to the end index (refinepolygonpart)  <a href="classmeshkernel_1_1_polygons.html#a921f06aabd9e3f46b3a2ea7cb6f3c8e5">More...</a><br /></td></tr>
 <tr class="separator:a921f06aabd9e3f46b3a2ea7cb6f3c8e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a930396390944d453e63adce81ea19bb0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a930396390944d453e63adce81ea19bb0">LinearRefinePolygon</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> polygonIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endIndex) const</td></tr>
+<tr class="memdesc:a930396390944d453e63adce81ea19bb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linear refines the polygon edges with additional nodes, from the start to the end index.  <a href="classmeshkernel_1_1_polygons.html#a930396390944d453e63adce81ea19bb0">More...</a><br /></td></tr>
+<tr class="separator:a930396390944d453e63adce81ea19bb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a18b31cd6a49f8212bba9184547e36369"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygons.html#a18b31cd6a49f8212bba9184547e36369">OffsetCopy</a> (double distance, bool innerAndOuter) const</td></tr>
 <tr class="memdesc:a18b31cd6a49f8212bba9184547e36369"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a new polygon from an existing one, by offsetting it by a distance (copypol)  <a href="classmeshkernel_1_1_polygons.html#a18b31cd6a49f8212bba9184547e36369">More...</a><br /></td></tr>
 <tr class="separator:a18b31cd6a49f8212bba9184547e36369"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -459,6 +462,51 @@ std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &g
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The index of a polygon where the point is included or if none has been found, constants::missing::sizetValue </dd></dl>
+
+</div>
+</div>
+<a id="a930396390944d453e63adce81ea19bb0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a930396390944d453e63adce81ea19bb0">&#9670;&nbsp;</a></span>LinearRefinePolygon()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classmeshkernel_1_1_point.html">Point</a>&gt; meshkernel::Polygons::LinearRefinePolygon </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>polygonIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>startIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>endIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Linear refines the polygon edges with additional nodes, from the start to the end index. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygonIndex</td><td>The polygon index </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">startIndex</td><td>The start index for the node array for the polygon </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">endIndex</td><td>The end index for the node array for the polygon </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>refinedPolygon The computed polygon </dd></dl>
 
 </div>
 </div>

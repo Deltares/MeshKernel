@@ -7,8 +7,9 @@ var searchData=
   ['linearalgebraerror_305',['LinearAlgebraError',['../classmeshkernel_1_1_linear_algebra_error.html',1,'meshkernel']]],
   ['linearalgebraerrorcode_306',['LinearAlgebraErrorCode',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbac294e24213b70aed92e2c5fd4d99fa44',1,'meshkernel']]],
   ['linearinterpolationintriangle_307',['LinearInterpolationInTriangle',['../namespacemeshkernel.html#a60b5f4d4e7bf35bb934de88f52537e8a',1,'meshkernel']]],
-  ['linearrefine_308',['LinearRefine',['../classmeshkernel_1_1_polygon.html#a3b260501fc7270797ae9afa76a38d984',1,'meshkernel::Polygon']]],
-  ['location_309',['Location',['../namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9',1,'meshkernel']]],
-  ['longlat_310',['LongLat',['../classmeshkernel_1_1_convert_spherical_to_cartesian_base.html#a38c01b16de732b8916bf8cc0ce079c54',1,'meshkernel::ConvertSphericalToCartesianBase::LongLat()'],['../classmeshkernel_1_1_convert_cartesian_to_spherical_base.html#a45de01c8d7a639cbc93943c4f63fd1ff',1,'meshkernel::ConvertCartesianToSphericalBase::LongLat()']]],
-  ['lowerleft_311',['lowerLeft',['../classmeshkernel_1_1_bounding_box.html#a4406fad61746c7fa34e8beb8acb85f75',1,'meshkernel::BoundingBox']]]
+  ['linearrefine_308',['LinearRefine',['../classmeshkernel_1_1_polygon.html#a0fb221f6645d4fd3efaaa4f208147f3a',1,'meshkernel::Polygon::LinearRefine()'],['../classmeshkernel_1_1_polygonal_enclosure.html#a2bb4224c32b29efd8d60cc9d50c1547e',1,'meshkernel::PolygonalEnclosure::LinearRefine()']]],
+  ['linearrefinepolygon_309',['LinearRefinePolygon',['../classmeshkernel_1_1_polygons.html#a930396390944d453e63adce81ea19bb0',1,'meshkernel::Polygons']]],
+  ['location_310',['Location',['../namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9',1,'meshkernel']]],
+  ['longlat_311',['LongLat',['../classmeshkernel_1_1_convert_spherical_to_cartesian_base.html#a38c01b16de732b8916bf8cc0ce079c54',1,'meshkernel::ConvertSphericalToCartesianBase::LongLat()'],['../classmeshkernel_1_1_convert_cartesian_to_spherical_base.html#a45de01c8d7a639cbc93943c4f63fd1ff',1,'meshkernel::ConvertCartesianToSphericalBase::LongLat()']]],
+  ['lowerleft_312',['lowerLeft',['../classmeshkernel_1_1_bounding_box.html#a4406fad61746c7fa34e8beb8acb85f75',1,'meshkernel::BoundingBox']]]
 ];

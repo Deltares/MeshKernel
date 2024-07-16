@@ -622,6 +622,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:aeab0dd1a911d90ab8ec462d2eec86e14"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aeab0dd1a911d90ab8ec462d2eec86e14">mkernel_polygon_refine</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygonToRefine, int firstNodeIndex, int secondNodeIndex, double targetEdgeLength, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;refinedPolygon)</td></tr>
 <tr class="memdesc:aeab0dd1a911d90ab8ec462d2eec86e14"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines the polygon perimeter between two nodes. This interval is refined to achieve a target edge length.  <a href="namespacemeshkernelapi.html#aeab0dd1a911d90ab8ec462d2eec86e14">More...</a><br /></td></tr>
 <tr class="separator:aeab0dd1a911d90ab8ec462d2eec86e14"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5b2005ba0b8863486bb12e374d20d26"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ad5b2005ba0b8863486bb12e374d20d26">mkernel_polygon_linear_refine</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygonToRefine, int firstNodeIndex, int secondNodeIndex, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;refinedPolygon)</td></tr>
+<tr class="memdesc:ad5b2005ba0b8863486bb12e374d20d26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linear refines the polygon perimeter between two nodes.  <a href="namespacemeshkernelapi.html#ad5b2005ba0b8863486bb12e374d20d26">More...</a><br /></td></tr>
+<tr class="separator:ad5b2005ba0b8863486bb12e374d20d26"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab09fcdfed55040bf17cadff45647d1a6"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ab09fcdfed55040bf17cadff45647d1a6">mkernel_polygon_snap_to_landboundary</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;land, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygon, int startIndex, int endIndex)</td></tr>
 <tr class="memdesc:ab09fcdfed55040bf17cadff45647d1a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snaps the polygon to the land boundary.  <a href="namespacemeshkernelapi.html#ab09fcdfed55040bf17cadff45647d1a6">More...</a><br /></td></tr>
 <tr class="separator:ab09fcdfed55040bf17cadff45647d1a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -7866,6 +7869,65 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">inWard</td><td>Compute the inner offset (1) or outer offset offset (0) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">distance</td><td>The offset distance </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">geometryListOut</td><td>The resulting offset polygon </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="ad5b2005ba0b8863486bb12e374d20d26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5b2005ba0b8863486bb12e374d20d26">&#9670;&nbsp;</a></span>mkernel_polygon_linear_refine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_polygon_linear_refine </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygonToRefine</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>firstNodeIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>secondNodeIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>refinedPolygon</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Linear refines the polygon perimeter between two nodes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygonToRefine</td><td>The input polygon to refine </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">firstNodeIndex</td><td>The first index of the refinement interval </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">secondNodeIndex</td><td>The second index of the refinement interval </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">refinedPolygon</td><td>The refined polygon </td></tr>
   </table>
   </dd>
 </dl>

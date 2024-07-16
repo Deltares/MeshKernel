@@ -132,9 +132,12 @@ const <a class="el" href="classmeshkernel_1_1_polygon.html">Polygon</a> &amp;&#1
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygonal_enclosure.html#a01f61fcd08cfb9037366c545a19a20d9">SnapToLandBoundary</a> (size_t startIndex, size_t endIndex, const <a class="el" href="classmeshkernel_1_1_land_boundary.html">LandBoundary</a> &amp;landBoundary)</td></tr>
 <tr class="memdesc:a01f61fcd08cfb9037366c545a19a20d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snap all or part of the outer perimeter polygon to the land boundary. <br /></td></tr>
 <tr class="separator:a01f61fcd08cfb9037366c545a19a20d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5fe77a2a2bf918408c47237a043f1679"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygonal_enclosure.html#a5fe77a2a2bf918408c47237a043f1679">Refine</a> (size_t startIndex, size_t endIndex, double refinementDistance)</td></tr>
-<tr class="memdesc:a5fe77a2a2bf918408c47237a043f1679"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine the polygon.  <a href="classmeshkernel_1_1_polygonal_enclosure.html#a5fe77a2a2bf918408c47237a043f1679">More...</a><br /></td></tr>
-<tr class="separator:a5fe77a2a2bf918408c47237a043f1679"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b11bd75f92e5fed0ca14a0a01d152b0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygonal_enclosure.html#a7b11bd75f92e5fed0ca14a0a01d152b0">Refine</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endIndex, double refinementDistance) const</td></tr>
+<tr class="memdesc:a7b11bd75f92e5fed0ca14a0a01d152b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine the polygon.  <a href="classmeshkernel_1_1_polygonal_enclosure.html#a7b11bd75f92e5fed0ca14a0a01d152b0">More...</a><br /></td></tr>
+<tr class="separator:a7b11bd75f92e5fed0ca14a0a01d152b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2bb4224c32b29efd8d60cc9d50c1547e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygonal_enclosure.html#a2bb4224c32b29efd8d60cc9d50c1547e">LinearRefine</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endIndex) const</td></tr>
+<tr class="memdesc:a2bb4224c32b29efd8d60cc9d50c1547e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Linear refine the outer polygon.  <a href="classmeshkernel_1_1_polygonal_enclosure.html#a2bb4224c32b29efd8d60cc9d50c1547e">More...</a><br /></td></tr>
+<tr class="separator:a2bb4224c32b29efd8d60cc9d50c1547e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1b8c9ac8369c677c176392ee0674a66"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; std::unique_ptr&lt; <a class="el" href="classmeshkernel_1_1_polygonal_enclosure.html">PolygonalEnclosure</a> &gt;, std::unique_ptr&lt; <a class="el" href="classmeshkernel_1_1_polygonal_enclosure.html">PolygonalEnclosure</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygonal_enclosure.html#ab1b8c9ac8369c677c176392ee0674a66">OffsetCopy</a> (double distance, bool outwardsAndInwards) const</td></tr>
 <tr class="memdesc:ab1b8c9ac8369c677c176392ee0674a66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a new polygonal enclosure from an existing one, by offsetting it by a distance (copypol)  <a href="classmeshkernel_1_1_polygonal_enclosure.html#ab1b8c9ac8369c677c176392ee0674a66">More...</a><br /></td></tr>
 <tr class="separator:ab1b8c9ac8369c677c176392ee0674a66"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -217,6 +220,44 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
+<a id="a2bb4224c32b29efd8d60cc9d50c1547e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2bb4224c32b29efd8d60cc9d50c1547e">&#9670;&nbsp;</a></span>LinearRefine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classmeshkernel_1_1_point.html">Point</a>&gt; meshkernel::PolygonalEnclosure::LinearRefine </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>startIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>endIndex</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Linear refine the outer polygon. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">startIndex</td><td>The start index of the sections to be refined </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">endIndex</td><td>The end index of the sections to be refined </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Points making the polygon with the sections indicated refined. </dd></dl>
+
+</div>
+</div>
 <a id="ab1b8c9ac8369c677c176392ee0674a66"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab1b8c9ac8369c677c176392ee0674a66">&#9670;&nbsp;</a></span>OffsetCopy()</h2>
 
@@ -256,8 +297,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 
 </div>
 </div>
-<a id="a5fe77a2a2bf918408c47237a043f1679"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5fe77a2a2bf918408c47237a043f1679">&#9670;&nbsp;</a></span>Refine()</h2>
+<a id="a7b11bd75f92e5fed0ca14a0a01d152b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b11bd75f92e5fed0ca14a0a01d152b0">&#9670;&nbsp;</a></span>Refine()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -265,13 +306,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td class="memname">std::vector&lt;<a class="el" href="classmeshkernel_1_1_point.html">Point</a>&gt; meshkernel::PolygonalEnclosure::Refine </td>
           <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
           <td class="paramname"><em>startIndex</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
           <td class="paramname"><em>endIndex</em>, </td>
         </tr>
         <tr>
@@ -283,7 +324,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td></td>
+          <td></td><td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
