@@ -3672,7 +3672,7 @@ TEST(Mesh2D, CasullDeRefinementMeshRegion)
 
     meshkernelapi::Mesh2D refinedMesh2d{};
 
-    // Just do a rudimentary check that the number of noeds and edges is lesser in the de-refined mesh.
+    // Just do a rudimentary check that the number of noeds and edges is lesser in the refined mesh.
 
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, refinedMesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
