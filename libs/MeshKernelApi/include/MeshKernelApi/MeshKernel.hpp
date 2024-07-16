@@ -1597,6 +1597,20 @@ namespace meshkernelapi
                                                double targetEdgeLength,
                                                GeometryList& refinedPolygon);
 
+        /// @brief Linear refines the polygon perimeter between two nodes.
+        ///
+        /// @param[in]  meshKernelId       The id of the mesh state
+        /// @param[in]  polygonToRefine    The input polygon to refine
+        /// @param[in]  firstNodeIndex     The first index of the refinement interval
+        /// @param[in]  secondNodeIndex    The second index of the refinement interval
+        /// @param[out] refinedPolygon     The refined polygon
+        /// @returns Error code
+        MKERNEL_API int mkernel_polygon_linear_refine(int meshKernelId,
+                                                      const GeometryList& polygonToRefine,
+                                                      int firstNodeIndex,
+                                                      int secondNodeIndex,
+                                                      GeometryList& refinedPolygon);
+
         /// @brief Snaps the polygon to the land boundary
         ///
         /// @param[in] meshKernelId  The id of the mesh state

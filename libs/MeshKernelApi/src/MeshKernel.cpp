@@ -1551,6 +1551,30 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_polygon_linear_refine(int meshKernelId, const GeometryList& polygonToRefine, int firstNodeIndex, int secondNodeIndex, GeometryList& refinedPolygon)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
+
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            auto const refinementResult = polygon.LinearRefinePolygon(0, firstNodeIndex, secondNodeIndex);
+
+            ConvertPointVectorToGeometryList(refinementResult, refinedPolygon);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_polygon_count_refine(int meshKernelId,
                                                  const GeometryList& polygonToRefine,
                                                  int firstIndex,

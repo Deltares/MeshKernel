@@ -81,6 +81,13 @@ namespace meshkernel
         /// @return refinedPolygon The computed polygon
         [[nodiscard]] std::vector<Point> RefinePolygon(UInt polygonIndex, UInt startIndex, UInt endIndex, double refinementDistance) const;
 
+        /// @brief Linear refines the polygon edges with additional nodes, from the start to the end index
+        /// @param[in] polygonIndex The polygon index
+        /// @param[in] startIndex The start index for the node array for the polygon
+        /// @param[in] endIndex The end index for the node array for the polygon
+        /// @return refinedPolygon The computed polygon
+        [[nodiscard]] std::vector<Point> LinearRefinePolygon(UInt polygonIndex, UInt startIndex, UInt endIndex) const;
+
         /// @brief Makes a new polygon from an existing one, by offsetting it by a distance (copypol)
         /// @param[in] distance The offset distance
         /// @param[in] innerAndOuter Offset inwards or outward

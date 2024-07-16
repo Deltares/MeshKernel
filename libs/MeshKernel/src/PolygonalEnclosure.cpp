@@ -152,7 +152,7 @@ void meshkernel::PolygonalEnclosure::SnapToLandBoundary(size_t startIndex, size_
     m_outer.SnapToLandBoundary(startIndex, endIndex, landBoundary);
 }
 
-std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::Refine(size_t startIndex, size_t endIndex, double refinementDistance)
+std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::Refine(UInt startIndex, UInt endIndex, double refinementDistance) const
 {
     if (endIndex >= m_outer.Size())
     {
@@ -162,6 +162,18 @@ std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::Refine(size_t sta
     }
 
     return m_outer.Refine(startIndex, endIndex, refinementDistance);
+}
+
+std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::LinearRefine(UInt startIndex, UInt endIndex) const
+{
+    if (endIndex >= m_outer.Size())
+    {
+        throw ConstraintError("The end index is greater than the number of points in the outer polygon: {} >= {}.",
+                              endIndex,
+                              m_outer.Size());
+    }
+
+    return m_outer.LinearRefine(startIndex, endIndex);
 }
 
 void meshkernel::PolygonalEnclosure::CopyPoints(const std::vector<Point>& source,
