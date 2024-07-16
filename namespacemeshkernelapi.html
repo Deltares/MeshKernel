@@ -254,6 +254,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:ac5018cc5b18f40820c127929506cdfab"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac5018cc5b18f40820c127929506cdfab">mkernel_curvilinear_refresh_orthogonal_grid_from_splines</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:ac5018cc5b18f40820c127929506cdfab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts curvilinear grid to mesh and refreshes the state (interactive)  <a href="namespacemeshkernelapi.html#ac5018cc5b18f40820c127929506cdfab">More...</a><br /></td></tr>
 <tr class="separator:ac5018cc5b18f40820c127929506cdfab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff8d08c9fd622e708b148018b333a084"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aff8d08c9fd622e708b148018b333a084">mkernel_curvilinear_full_refine</a> (int meshKernelId, int mRefinement, int nRefinement)</td></tr>
+<tr class="memdesc:aff8d08c9fd622e708b148018b333a084"><td class="mdescLeft">&#160;</td><td class="mdescRight">Curvilinear grid refinement. Additional gridlines are added in both directions, over the entire grid.  <a href="namespacemeshkernelapi.html#aff8d08c9fd622e708b148018b333a084">More...</a><br /></td></tr>
+<tr class="separator:aff8d08c9fd622e708b148018b333a084"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf2242c66cb341c465f9f9a38e9379d9"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#acf2242c66cb341c465f9f9a38e9379d9">mkernel_curvilinear_set</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_curvilinear_grid.html">CurvilinearGrid</a> &amp;grid)</td></tr>
 <tr class="memdesc:acf2242c66cb341c465f9f9a38e9379d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the curvilinear grid.  <a href="namespacemeshkernelapi.html#acf2242c66cb341c465f9f9a38e9379d9">More...</a><br /></td></tr>
 <tr class="separator:acf2242c66cb341c465f9f9a38e9379d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1815,6 +1818,51 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="aff8d08c9fd622e708b148018b333a084"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aff8d08c9fd622e708b148018b333a084">&#9670;&nbsp;</a></span>mkernel_curvilinear_full_refine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_curvilinear_full_refine </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mRefinement</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>nRefinement</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Curvilinear grid refinement. Additional gridlines are added in both directions, over the entire grid. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mRefinement</td><td>The amount of refinement to compute in m-direction </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nRefinement</td><td>The amount of refinement to compute in n-direction </td></tr>
   </table>
   </dd>
 </dl>
