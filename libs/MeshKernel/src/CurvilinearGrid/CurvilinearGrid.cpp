@@ -1197,11 +1197,11 @@ std::vector<meshkernel::Edge> CurvilinearGrid::ComputeEdges() const
                              (numM - 1) * numN);
 
     UInt ind = 0;
+
     for (UInt n = 0; n < numN - 1; n++)
     {
         for (UInt m = 0; m < numM; m++)
         {
-
             result[ind].first = numM * n + m;
             result[ind].second = numM * (n + 1) + m;
             ind++;

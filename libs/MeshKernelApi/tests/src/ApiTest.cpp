@@ -3823,3 +3823,127 @@ TEST(Mesh2D, CasulliDeRefinementElementsMeshRegion)
         EXPECT_NEAR(removedElementCentres[i].y, elementsToRemove.coordinates_y[i], tolerance);
     }
 }
+
+TEST(Mesh2D, CurvilinearFullMeshRefinement)
+{
+    int meshKernelId = -1;
+    int errorCode = meshkernel::ExitCode::Success;
+
+    const int mRefinement = 2;
+    const int nRefinement = 3;
+
+    const double tolerance = 1.0e-10;
+    const double deltaX = 2.0;
+    const double deltaY = 3.0;
+    const double origin = 0.0;
+
+    const double refinedDeltaX = deltaX / static_cast<double>(mRefinement);
+    const double refinedDeltaY = deltaY / static_cast<double>(nRefinement);
+
+    const int isGeographic = 0;
+    errorCode = meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernel::MakeGridParameters makeMeshParameters;
+    makeMeshParameters.num_columns = 3;
+    makeMeshParameters.num_rows = 3;
+    makeMeshParameters.block_size_x = deltaX;
+    makeMeshParameters.block_size_y = deltaY;
+    makeMeshParameters.origin_x = origin;
+    makeMeshParameters.origin_y = origin;
+    makeMeshParameters.angle = 0.0;
+
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeMeshParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    //--------------------------------
+    // Compute refinement
+
+    // Should succeed
+    errorCode = meshkernelapi::mkernel_curvilinear_full_refine(meshKernelId, mRefinement, nRefinement);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGridOut{};
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGridOut);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    ASSERT_EQ(7, curvilinearGridOut.num_m);
+    ASSERT_EQ(10, curvilinearGridOut.num_n);
+
+    std::vector<double> xNodes(curvilinearGridOut.num_m * curvilinearGridOut.num_n);
+    std::vector<double> yNodes(curvilinearGridOut.num_m * curvilinearGridOut.num_n);
+
+    curvilinearGridOut.node_x = xNodes.data();
+    curvilinearGridOut.node_y = yNodes.data();
+
+    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGridOut);
+
+    size_t count = 0;
+
+    double expectedY = origin;
+
+    for (int n = 0; n < curvilinearGridOut.num_n; ++n)
+    {
+        double expectedX = origin;
+
+        for (int m = 0; m < curvilinearGridOut.num_m; ++m)
+        {
+            EXPECT_NEAR(expectedX, xNodes[count], tolerance);
+            EXPECT_NEAR(expectedY, yNodes[count], tolerance);
+            ++count;
+            expectedX += refinedDeltaX;
+        }
+
+        expectedY += refinedDeltaY;
+    }
+
+    errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+}
+
+TEST(Mesh2D, CurvilinearFullMeshRefinementFailureTests)
+{
+    int meshKernelId = -1;
+    int errorCode = meshkernel::ExitCode::Success;
+
+    const double deltaX = 2.0;
+    const double deltaY = 3.0;
+    const double origin = 0.0;
+
+    // Should fail, meshkernelId not defined
+    errorCode = meshkernelapi::mkernel_curvilinear_full_refine(meshKernelId, 1, 2);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    const int isGeographic = 0;
+    errorCode = meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Should fail, curvilinear grid not valid (i.e. not grid.IsValid)
+    errorCode = meshkernelapi::mkernel_curvilinear_full_refine(meshKernelId, 2, 3);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    meshkernel::MakeGridParameters makeMeshParameters;
+    makeMeshParameters.num_columns = 3;
+    makeMeshParameters.num_rows = 3;
+    makeMeshParameters.block_size_x = deltaX;
+    makeMeshParameters.block_size_y = deltaY;
+    makeMeshParameters.origin_x = origin;
+    makeMeshParameters.origin_y = origin;
+    makeMeshParameters.angle = 0.0;
+
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeMeshParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    //--------------------------------
+
+    // Should fail, invalid refinement factor
+    errorCode = meshkernelapi::mkernel_curvilinear_full_refine(meshKernelId, -1, 0);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+    errorCode = meshkernelapi::mkernel_curvilinear_full_refine(meshKernelId, 0, -2);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+    errorCode = meshkernelapi::mkernel_curvilinear_full_refine(meshKernelId, -3, -4);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+}

@@ -485,6 +485,16 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_refresh_orthogonal_grid_from_splines(int meshKernelId);
 
+        /// @brief Curvilinear grid refinement. Additional gridlines are added in both directions, over the entire grid.
+        ///
+        /// @param[in] meshKernelId      The id of the mesh state.
+        /// @param[in] mRefinement       The amount of refinement to compute in m-direction
+        /// @param[in] nRefinement       The amount of refinement to compute in n-direction
+        /// @return                            Error code
+        MKERNEL_API int mkernel_curvilinear_full_refine(int meshKernelId,
+                                                        int mRefinement,
+                                                        int nRefinement);
+
         /// @brief Sets the curvilinear grid
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] grid         The curvilinear grid

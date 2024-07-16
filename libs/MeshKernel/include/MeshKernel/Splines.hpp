@@ -149,8 +149,11 @@ namespace meshkernel
         /// @returns The point on a spline segment which is the closest to the input point
         Point ComputeClosestPoint(UInt index, Point point) const;
 
-        /// @brief Evaluate the spline.
-        Point Evaluate(UInt index, const double parameter) const;
+        /// @brief Computes the coordinate of a point on a spline, given the dimensionless distance from the first corner point (splint)
+        /// @param[in] whichSpline Spline index
+        /// @param[in] lambda The adimensinal coordinate where to perform the interpolation
+        /// @returns The interpolated point
+        Point Evaluate(const UInt whichSpline, const double lambda) const;
 
         /// @brief Compute the boundary box for the spline indicated by splineIndex.
         BoundingBox GetBoundingBox(const UInt splineIndex) const;
