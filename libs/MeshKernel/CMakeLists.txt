@@ -114,6 +114,7 @@ set(
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridOrthogonalization.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridRectangular.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridRefinement.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridFullRefinement.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothing.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothness.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapping.cpp
@@ -235,6 +236,7 @@ set(
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridOrthogonalization.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridRectangular.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridRefinement.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridFullRefinement.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothing.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothness.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapping.hpp

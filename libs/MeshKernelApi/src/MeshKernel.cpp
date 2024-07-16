@@ -47,6 +47,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromPolygon.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplinesTransfinite.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridFullRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineAttractionRepulsion.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineMirror.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
@@ -3286,6 +3287,43 @@ namespace meshkernelapi
         {
             lastExitCode = HandleException();
         }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_full_refine(int meshKernelId,
+                                                    int mRefinement,
+                                                    int nRefinement)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id is valid, but the expected curvilinear grid is not a valid grid");
+            }
+
+            if (mRefinement <= 0 || nRefinement <= 0)
+            {
+                throw meshkernel::MeshKernelError("Invalid mesh refinement factors: m-refinement {}, n-refinement {} ",
+                                                  mRefinement, nRefinement);
+            }
+
+            meshkernel::CurvilinearGridFullRefinement gridRefinement;
+            meshKernelUndoStack.Add(gridRefinement.Compute(*meshKernelState[meshKernelId].m_curvilinearGrid,
+                                                           static_cast<meshkernel::UInt>(mRefinement),
+                                                           static_cast<meshkernel::UInt>(nRefinement)));
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+
         return lastExitCode;
     }
 

@@ -455,16 +455,16 @@ meshkernel::Point Splines::ComputeClosestPoint(UInt index, Point point) const
     return ComputeClosestPointOnSplineSegment(index, 0.0, static_cast<double>(m_splineNodes[index].size() - 1), point);
 }
 
-meshkernel::Point Splines::Evaluate(UInt whichSpline, const double parameter) const
+meshkernel::Point Splines::Evaluate(UInt whichSpline, const double lambda) const
 {
     if (whichSpline >= m_splineNodes.size())
     {
         throw meshkernel::ConstraintError("Invalid spline index: {}, not in range 0 .. {}",
                                           whichSpline,
-                                          GetNumSplines() - 1);
+                                          static_cast<int>(GetNumSplines()) - 1);
     }
 
-    return ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[whichSpline], m_splineDerivatives[whichSpline], parameter);
+    return ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[whichSpline], m_splineDerivatives[whichSpline], lambda);
 }
 
 meshkernel::BoundingBox Splines::GetBoundingBox(const UInt splineIndex) const
