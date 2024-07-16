@@ -127,17 +127,41 @@ namespace meshkernel
     /// @param[in] el The element to search for
     /// @returns The index of element
     template <typename T>
-    [[nodiscard]] T FindIndex(const std::vector<T>& vec, T el)
+    [[nodiscard]] UInt FindIndex(const std::vector<T>& vec, T el)
     {
         for (UInt n = 0; n < vec.size(); n++)
         {
             if (vec[n] == el)
             {
-                return static_cast<T>(n);
+                return n;
             }
         }
 
-        return 0;
+        return constants::missing::uintValue;
+    }
+
+    /// @brief Find the next index in the vector, wraps around when current is the last index
+    template <typename T>
+    UInt FindNextIndex(const std::vector<T>& vec, UInt current)
+    {
+        if (vec.size() == 0) [[unlikely]]
+        {
+            return constants::missing::uintValue;
+        }
+
+        return current == vec.size() - 1 ? 0 : current + 1;
+    }
+
+    /// @brief Find the previous index in the vector, wraps around when current is the first index
+    template <typename T>
+    UInt FindPreviousIndex(const std::vector<T>& vec, UInt current)
+    {
+        if (vec.size() == 0) [[unlikely]]
+        {
+            return constants::missing::uintValue;
+        }
+
+        return current == 0 ? static_cast<UInt>(vec.size()) - 1 : current - 1;
     }
 
     /// @brief Find all start-end positions in a vector separated by a separator
@@ -483,6 +507,7 @@ namespace meshkernel
         const double eps = 1e-5;
         const double splFac = 1.0;
         const auto coordinate = std::floor(pointAdimensionalCoordinate);
+
         if (pointAdimensionalCoordinate - coordinate < eps)
         {
             return pointCoordinate = coordinates[static_cast<UInt>(coordinate)];

@@ -55,6 +55,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothness.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSnapGridToLandBoundary.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSnapGridToSpline.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridSplineToGrid.hpp>
 #include <MeshKernel/Definitions.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
@@ -78,6 +79,7 @@
 #include <MeshKernel/Smoother.hpp>
 #include <MeshKernel/SplineAlgorithms.hpp>
 #include <MeshKernel/Splines.hpp>
+#include <MeshKernel/SplitRowColumnOfMesh.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
 #include <MeshKernel/UndoActions/UndoActionStack.hpp>
@@ -300,6 +302,36 @@ namespace meshkernelapi
 
             // No changes to the original mesh can be undone, so clear the undo-stack
             meshKernelUndoStack.Clear();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_split_row(int meshKernelId,
+                                             int firstNode,
+                                             int secondNode)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_mesh2d == nullptr)
+            {
+                throw meshkernel::MeshKernelError("The selected mesh not exist.");
+            }
+
+            meshkernel::UInt edgeId = meshKernelState[meshKernelId].m_mesh2d->FindEdge(static_cast<meshkernel::UInt>(firstNode),
+                                                                                       static_cast<meshkernel::UInt>(secondNode));
+
+            meshkernel::SplitRowColumnOfMesh splitAlongRow;
+            meshKernelUndoStack.Add(splitAlongRow.Compute(*meshKernelState[meshKernelId].m_mesh2d, edgeId));
         }
         catch (...)
         {
@@ -1509,6 +1541,30 @@ namespace meshkernelapi
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             auto const refinementResult = polygon.RefineFirstPolygon(firstNodeIndex, secondNodeIndex, targetEdgeLength);
+
+            ConvertPointVectorToGeometryList(refinementResult, refinedPolygon);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_polygon_linear_refine(int meshKernelId, const GeometryList& polygonToRefine, int firstNodeIndex, int secondNodeIndex, GeometryList& refinedPolygon)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
+
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            auto const refinementResult = polygon.LinearRefinePolygon(0, firstNodeIndex, secondNodeIndex);
 
             ConvertPointVectorToGeometryList(refinementResult, refinedPolygon);
         }
@@ -3369,6 +3425,33 @@ namespace meshkernelapi
 
             // set the curvilinear state
             meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridFromSplines.Compute();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_compute_grid_from_splines(int meshKernelId,
+                                                                  const GeometryList& geometryListIn,
+                                                                  const meshkernel::CurvilinearParameters& curvilinearParameters)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            meshkernel::Splines splines(meshKernelState[meshKernelId].m_projection);
+            SetSplines(geometryListIn, splines);
+
+            meshkernel::CurvilinearGridSplineToGrid splineToGrid;
+
+            //  the curvilinear grid
+            meshKernelState[meshKernelId].m_curvilinearGrid = std::make_unique<meshkernel::CurvilinearGrid>(splineToGrid.Compute(splines, curvilinearParameters));
         }
         catch (...)
         {

@@ -62,6 +62,7 @@ set(
   ${SRC_DIR}/Smoother.cpp
   ${SRC_DIR}/SplineAlgorithms.cpp
   ${SRC_DIR}/Splines.cpp
+  ${SRC_DIR}/SplitRowColumnOfMesh.cpp
   ${SRC_DIR}/TriangulationInterpolation.cpp
   ${SRC_DIR}/TriangulationWrapper.cpp
 )
@@ -116,6 +117,7 @@ set(
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothing.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothness.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapping.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSplineToGrid.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridUtilities.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridMeshExpansionCalculator.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapGridToLandBoundary.cpp
@@ -176,6 +178,7 @@ set(
   ${DOMAIN_INC_DIR}/Smoother.hpp
   ${DOMAIN_INC_DIR}/SplineAlgorithms.hpp
   ${DOMAIN_INC_DIR}/Splines.hpp
+  ${DOMAIN_INC_DIR}/SplitRowColumnOfMesh.hpp
   ${DOMAIN_INC_DIR}/TriangulationInterpolation.hpp
   ${DOMAIN_INC_DIR}/TriangulationWrapper.hpp
   ${DOMAIN_INC_DIR}/Vector.hpp
@@ -235,6 +238,7 @@ set(
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothing.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothness.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapping.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSplineToGrid.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridUtilities.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridMeshExpansionCalculator.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapGridToLandBoundary.hpp

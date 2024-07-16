@@ -175,6 +175,15 @@ namespace meshkernelapi
                                                                                  const meshkernel::CurvilinearParameters& curvilinearParameters,
                                                                                  const meshkernel::SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
 
+        /// @brief Generates curvilinear grid from splines.
+        /// @param[in] meshKernelId                   The id of the mesh state
+        /// @param[in] geometryList                   The input splines corners
+        /// @param[in] curvilinearParameters          The input parameters to generate the curvilinear grid
+        /// @returns Error code
+        MKERNEL_API int mkernel_curvilinear_compute_grid_from_splines(int meshKernelId,
+                                                                      const GeometryList& geometryList,
+                                                                      const meshkernel::CurvilinearParameters& curvilinearParameters);
+
         /// @brief Computes the smoothness of a curvilinear grid.
         /// @param[in] meshKernelId  The id of the mesh state
         /// @param[in] direction  The direction in which to compute the smoothness
@@ -1450,6 +1459,18 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_set(int meshKernelId, const Mesh2D& mesh2d);
 
+        /// @brief An-isotropically refines the elements along a row or column, given a starting edge
+        ///
+        /// Only quadrilateral elements will be refined.
+        /// Refinement will continue upto the boundary of the domain or when a non-quadrilateral element is encountered.
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] firstNode    The first node of the edge
+        /// @param[in] secondNode   The second node of the edge
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_split_row(int meshKernelId,
+                                                 int firstNode,
+                                                 int secondNode);
+
         /// @brief Adds a mesh to the meshkernel::Mesh2D state
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] mesh2d       The Mesh2D data
@@ -1575,6 +1596,20 @@ namespace meshkernelapi
                                                int secondNodeIndex,
                                                double targetEdgeLength,
                                                GeometryList& refinedPolygon);
+
+        /// @brief Linear refines the polygon perimeter between two nodes.
+        ///
+        /// @param[in]  meshKernelId       The id of the mesh state
+        /// @param[in]  polygonToRefine    The input polygon to refine
+        /// @param[in]  firstNodeIndex     The first index of the refinement interval
+        /// @param[in]  secondNodeIndex    The second index of the refinement interval
+        /// @param[out] refinedPolygon     The refined polygon
+        /// @returns Error code
+        MKERNEL_API int mkernel_polygon_linear_refine(int meshKernelId,
+                                                      const GeometryList& polygonToRefine,
+                                                      int firstNodeIndex,
+                                                      int secondNodeIndex,
+                                                      GeometryList& refinedPolygon);
 
         /// @brief Snaps the polygon to the land boundary
         ///

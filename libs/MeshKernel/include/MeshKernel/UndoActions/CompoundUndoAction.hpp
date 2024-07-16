@@ -39,14 +39,38 @@ namespace meshkernel
     class CompoundUndoAction : public UndoAction
     {
     public:
+        /// @brief Allows for a simplified insertion of an undo action in std::tie
+        class StoreExpression
+        {
+        public:
+            /// @brief Constructor
+            explicit StoreExpression(CompoundUndoAction& action) : m_undoAction(action) {}
+
+            /// @brief Insert undo action into compound undo action sequence
+            void operator=(UndoActionPtr&& action)
+            {
+                m_undoAction.Add(std::move(action));
+            }
+
+        private:
+            /// @brief Reference to the compound undo action object.
+            CompoundUndoAction& m_undoAction;
+        };
+
         /// @brief Iterator over composite undo actions.
         using const_iterator = std::vector<std::unique_ptr<UndoAction>>::const_iterator;
 
         /// @brief Allocate a CompoundUndoAction and return a unique_ptr to the newly create object.
         static std::unique_ptr<CompoundUndoAction> Create();
 
+        /// @brief Constructor
+        CompoundUndoAction() : m_storeExpression(*this) {}
+
         /// @brief Add an undo action to the compound action
         void Add(UndoActionPtr&& action);
+
+        /// @brief Allows for insertion of an undo action into the compound undo action.
+        StoreExpression& Insert();
 
         /// @brief Iterator to start of composite undo actions
         const_iterator begin() const;
@@ -66,6 +90,14 @@ namespace meshkernel
 
         /// @brief A sequence of all the undo actions
         std::vector<UndoActionPtr> m_undoActions;
+
+        /// @brief A store expression, enables simple insertion of undo actions in functions returning tuples.
+        StoreExpression m_storeExpression;
     };
 
 } // namespace meshkernel
+
+inline meshkernel::CompoundUndoAction::StoreExpression& meshkernel::CompoundUndoAction::Insert()
+{
+    return m_storeExpression;
+}

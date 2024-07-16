@@ -89,7 +89,13 @@ namespace meshkernel
         /// @param [in] endIndex The end index of the sections to be refined
         /// @param [in] refinementDistance The maximum distance between points.
         /// @returns Points making the polygon with the sections indicated refined.
-        std::vector<Point> Refine(size_t startIndex, size_t endIndex, double refinementDistance);
+        std::vector<Point> Refine(UInt startIndex, UInt endIndex, double refinementDistance) const;
+
+        /// @brief Linear refine the outer polygon.
+        /// @param [in] startIndex The start index of the sections to be refined
+        /// @param [in] endIndex The end index of the sections to be refined
+        /// @returns Points making the polygon with the sections indicated refined.
+        std::vector<Point> LinearRefine(UInt startIndex, UInt endIndex) const;
 
         /// @brief Makes a new polygonal enclosure from an existing one, by offsetting it by a distance (copypol)
         /// @param[in] distance The offset distance
