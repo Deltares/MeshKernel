@@ -16,7 +16,7 @@ var searchData=
   ['edgenodes_146',['edgeNodes',['../structmeshkernel_1_1_face_mesh_poly_line_intersection.html#aea85374e72f3e668979323a5788e60e3',1,'meshkernel::FaceMeshPolyLineIntersection']]],
   ['edges_147',['Edges',['../classmeshkernel_1_1_mesh.html#a022bc47ffb98b18a28c7e4b56ae085f4',1,'meshkernel::Mesh::Edges()'],['../namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9a484afb8d54ec549700b1fe96417519a9',1,'meshkernel::Edges()']]],
   ['edgesecondnode_148',['edgeSecondNode',['../structmeshkernel_1_1_edge_mesh_poly_line_intersection.html#ae510c4bfb261f5cb5860d07dd0a46ff3',1,'meshkernel::EdgeMeshPolyLineIntersection']]],
-  ['elementstodelete_149',['ElementsToDelete',['../classmeshkernel_1_1_casulli_de_refinement.html#aa32315c9def4d1c59bfb78e55dc93cf0',1,'meshkernel::CasulliDeRefinement']]],
+  ['elementstodelete_149',['ElementsToDelete',['../classmeshkernel_1_1_casulli_de_refinement.html#a70d9501064a155a5a4b282140f3287c3',1,'meshkernel::CasulliDeRefinement']]],
   ['enclosure_150',['Enclosure',['../classmeshkernel_1_1_polygons.html#a2f293d0b696bb94b495dce5ffc4a8ddb',1,'meshkernel::Polygons']]],
   ['epsgprojection_151',['EpsgProjection',['../classmeshkernel_1_1_convert_spherical_to_cartesian_e_p_s_g.html#aaf3ca50189775ab2e4259fddecce6c4c',1,'meshkernel::ConvertSphericalToCartesianEPSG::EpsgProjection()'],['../classmeshkernel_1_1_convert_cartesian_to_spherical_e_p_s_g.html#a062d234d811cc114a737c1bf309cd5ef',1,'meshkernel::ConvertCartesianToSphericalEPSG::EpsgProjection()']]],
   ['errorcategory_152',['ErrorCategory',['../classmeshkernel_1_1_error_category.html',1,'meshkernel::ErrorCategory'],['../classmeshkernel_1_1_error_category.html#a465cba7e20b9b3406a00b462885b9f62',1,'meshkernel::ErrorCategory::ErrorCategory()']]],

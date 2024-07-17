@@ -74,7 +74,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classmeshkernel_1_1_casulli_de_refinement-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">meshkernel::CasulliDeRefinement Class Reference</div>  </div>
@@ -86,35 +86,43 @@ $(function() {
 
 <p><code>#include &lt;<a class="el" href="_casulli_de_refinement_8hpp_source.html">CasulliDeRefinement.hpp</a>&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
-Public Member Functions</h2></td></tr>
-<tr class="memitem:ab7eb0e66273406a745fe44880c6f749d"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_casulli_de_refinement.html#ab7eb0e66273406a745fe44880c6f749d">Compute</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh) const</td></tr>
-<tr class="memdesc:ab7eb0e66273406a745fe44880c6f749d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the Casulli de-refinement for the entire mesh.  <a href="classmeshkernel_1_1_casulli_de_refinement.html#ab7eb0e66273406a745fe44880c6f749d">More...</a><br /></td></tr>
-<tr class="separator:ab7eb0e66273406a745fe44880c6f749d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae83c84b44eda31d46dd3dd5cb0701c33"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_casulli_de_refinement.html#ae83c84b44eda31d46dd3dd5cb0701c33">Compute</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon) const</td></tr>
-<tr class="memdesc:ae83c84b44eda31d46dd3dd5cb0701c33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the Casulli de-refinement for the part of the mesh inside the polygon.  <a href="classmeshkernel_1_1_casulli_de_refinement.html#ae83c84b44eda31d46dd3dd5cb0701c33">More...</a><br /></td></tr>
-<tr class="separator:ae83c84b44eda31d46dd3dd5cb0701c33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa32315c9def4d1c59bfb78e55dc93cf0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_casulli_de_refinement.html#aa32315c9def4d1c59bfb78e55dc93cf0">ElementsToDelete</a> (const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon) const</td></tr>
-<tr class="memdesc:aa32315c9def4d1c59bfb78e55dc93cf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute centres of elements to be deleted.  <a href="classmeshkernel_1_1_casulli_de_refinement.html#aa32315c9def4d1c59bfb78e55dc93cf0">More...</a><br /></td></tr>
-<tr class="separator:aa32315c9def4d1c59bfb78e55dc93cf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ac520822207ca9d89ff69935f5fe2e9b5"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_casulli_de_refinement.html#ac520822207ca9d89ff69935f5fe2e9b5">Compute</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh)</td></tr>
+<tr class="memdesc:ac520822207ca9d89ff69935f5fe2e9b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the Casulli de-refinement for the entire mesh.  <a href="classmeshkernel_1_1_casulli_de_refinement.html#ac520822207ca9d89ff69935f5fe2e9b5">More...</a><br /></td></tr>
+<tr class="separator:ac520822207ca9d89ff69935f5fe2e9b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f08b6f7e87dddf6c53e2500ac0afbc7"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_casulli_de_refinement.html#a7f08b6f7e87dddf6c53e2500ac0afbc7">Compute</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon)</td></tr>
+<tr class="memdesc:a7f08b6f7e87dddf6c53e2500ac0afbc7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the Casulli de-refinement for the part of the mesh inside the polygon.  <a href="classmeshkernel_1_1_casulli_de_refinement.html#a7f08b6f7e87dddf6c53e2500ac0afbc7">More...</a><br /></td></tr>
+<tr class="separator:a7f08b6f7e87dddf6c53e2500ac0afbc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70d9501064a155a5a4b282140f3287c3"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_casulli_de_refinement.html#a70d9501064a155a5a4b282140f3287c3">ElementsToDelete</a> (const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon)</td></tr>
+<tr class="memdesc:a70d9501064a155a5a4b282140f3287c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute centres of elements to be deleted.  <a href="classmeshkernel_1_1_casulli_de_refinement.html#a70d9501064a155a5a4b282140f3287c3">More...</a><br /></td></tr>
+<tr class="separator:a70d9501064a155a5a4b282140f3287c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Compute the Casulli de-refinement for a mesh. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="ab7eb0e66273406a745fe44880c6f749d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab7eb0e66273406a745fe44880c6f749d">&#9670;&nbsp;</a></span>Compute() <span class="overload">[1/2]</span></h2>
+<a id="ac520822207ca9d89ff69935f5fe2e9b5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac520822207ca9d89ff69935f5fe2e9b5">&#9670;&nbsp;</a></span>Compute() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::unique_ptr&lt;UndoAction&gt; meshkernel::CasulliDeRefinement::Compute </td>
+          <td class="memname">static std::unique_ptr&lt;UndoAction&gt; meshkernel::CasulliDeRefinement::Compute </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
           <td class="paramname"><em>mesh</em></td><td>)</td>
-          <td> const</td>
+          <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Compute the Casulli de-refinement for the entire mesh. </p>
@@ -127,14 +135,17 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ae83c84b44eda31d46dd3dd5cb0701c33"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae83c84b44eda31d46dd3dd5cb0701c33">&#9670;&nbsp;</a></span>Compute() <span class="overload">[2/2]</span></h2>
+<a id="a7f08b6f7e87dddf6c53e2500ac0afbc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f08b6f7e87dddf6c53e2500ac0afbc7">&#9670;&nbsp;</a></span>Compute() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::unique_ptr&lt;UndoAction&gt; meshkernel::CasulliDeRefinement::Compute </td>
+          <td class="memname">static std::unique_ptr&lt;UndoAction&gt; meshkernel::CasulliDeRefinement::Compute </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
           <td class="paramname"><em>mesh</em>, </td>
@@ -148,9 +159,14 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td> const</td>
+          <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Compute the Casulli de-refinement for the part of the mesh inside the polygon. </p>
@@ -164,14 +180,17 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="aa32315c9def4d1c59bfb78e55dc93cf0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa32315c9def4d1c59bfb78e55dc93cf0">&#9670;&nbsp;</a></span>ElementsToDelete()</h2>
+<a id="a70d9501064a155a5a4b282140f3287c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70d9501064a155a5a4b282140f3287c3">&#9670;&nbsp;</a></span>ElementsToDelete()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="classmeshkernel_1_1_point.html">Point</a>&gt; meshkernel::CasulliDeRefinement::ElementsToDelete </td>
+          <td class="memname">static std::vector&lt;<a class="el" href="classmeshkernel_1_1_point.html">Point</a>&gt; meshkernel::CasulliDeRefinement::ElementsToDelete </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
           <td class="paramname"><em>mesh</em>, </td>
@@ -185,9 +204,14 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td> const</td>
+          <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Compute centres of elements to be deleted. </p>
