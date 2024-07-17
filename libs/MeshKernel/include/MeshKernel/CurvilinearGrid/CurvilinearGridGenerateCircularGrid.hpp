@@ -42,18 +42,18 @@ namespace meshkernel
     {
     public:
         /// @brief Generate the circular grid
-        CurvilinearGrid Compute(const double innerRadius, const double outerRadius, const MakeGridParameters& parameters) const;
+        CurvilinearGrid Compute(const MakeGridParameters& parameters) const;
 
     private:
-        std::vector<double> GenerateRadiusValues(const double innerRadius, const double outerRadius, const UInt nRefinement) const;
+        std::vector<double> ComputeRadiusValues(const MakeGridParameters& parameters) const;
 
-        lin_alg::Matrix<Point> GenerateGridPoints2(const double innerRadius, const double outerRadius, const MakeGridParameters& parameters, const Projection projection) const;
+        std::vector<double> ComputeThetaValues(const MakeGridParameters& parameters) const;
 
-        void GenerateUniformGrid(const MakeGridParameters& parameters, const Projection projection, lin_alg::Matrix<meshkernel::Point>& gridPoints) const;
+        lin_alg::Matrix<Point> GenerateGradedGrid(const MakeGridParameters& parameters) const;
 
-        void GenerateGradedGrid(const MakeGridParameters& parameters, const Projection projection, lin_alg::Matrix<meshkernel::Point>& gridPoints) const;
+        lin_alg::Matrix<Point> GenerateRadialGrid(const MakeGridParameters& parameters) const;
 
-        lin_alg::Matrix<Point> GenerateGridPoints(const double innerRadius, const double outerRadius, const MakeGridParameters& parameters, const Projection projection) const;
+        lin_alg::Matrix<Point> GenerateGridPoints(const MakeGridParameters& parameters) const;
     };
 
 } // namespace meshkernel

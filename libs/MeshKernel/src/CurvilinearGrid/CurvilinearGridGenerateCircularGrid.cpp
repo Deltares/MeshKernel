@@ -2,140 +2,241 @@
 #include "MeshKernel/Utilities/LinearAlgebra.hpp"
 
 #include <cmath>
+#include <numbers>
 
-meshkernel::CurvilinearGrid meshkernel::CurvilinearGridGenerateCircularGrid::Compute(const double innerRadius, const double outerRadius, const MakeGridParameters& parameters) const
+meshkernel::CurvilinearGrid meshkernel::CurvilinearGridGenerateCircularGrid::Compute(const MakeGridParameters& parameters) const
 {
     // Check validity of
-    // 1 radius
-    // 2 parameters
+    // 1 parameters
 
     Projection projection = Projection::cartesian;
 
-    return CurvilinearGrid(GenerateGridPoints(innerRadius, outerRadius, parameters, projection), projection);
+    return CurvilinearGrid(GenerateGridPoints(parameters), projection);
 }
 
-std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::GenerateRadiusValues(const double innerRadius, const double outerRadius, const UInt nRefinement) const
+lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGrid::GenerateGradedGrid(const MakeGridParameters& parameters) const
 {
-    std::vector<double> radValues(nRefinement);
 
-    double radius = innerRadius;
-    double radiusDelta = 2.0 * std::numbers::pi_v<double> * (outerRadius - innerRadius) / static_cast<double>(nRefinement - 1);
-    // double radiusDelta = 2.0 * std::numbers::pi_v<double> * outerRadius / static_cast<double>(nRefinement);
+    lin_alg::Matrix<Point> gridPoints(parameters.num_rows + 1, parameters.num_columns + 1);
 
+    double x0 = parameters.origin_x;
+    double y0 = parameters.origin_y;
 
-    for (UInt i = 0; i < static_cast<UInt>(nRefinement); ++i)
+    double phi = parameters.left_rotation;
+    double cs = std::cos(phi * constants::conversion::degToRad);
+    double sn = std::sin(phi * constants::conversion::degToRad);
+    int mc = parameters.num_rows + 1;
+    int nc = parameters.num_columns + 1;
+
+    double fnuni = std::max(0.0, parameters.fraction_rows);
+    double fmuni = std::max(0.0, parameters.fraction_columns);
+    double fninc = std::max(0.0, parameters.maximum_uniform_rows_size);
+    double fminc = std::max(0.0, parameters.maximum_uniform_columns_size);
+    double dx = parameters.block_size_x;
+    double dy = parameters.block_size_y;
+    double dxc;
+    double dyc;
+    double alfm;
+    double alfn;
+
+    int nuni = 1000000000;
+    int muni = 1000000000;
+    int ninc = 1000000000;
+    int minc = 1000000000;
+
+    if (parameters.fraction_columns != 1.0 && parameters.maximum_uniform_columns_size != 1.0)
     {
-        radValues[i] = radius;
-        radius += radiusDelta;
-        radiusDelta *= 2.0;
-        // radiusDelta += 2.0 * std::numbers::pi_v<double> * innerRadius / static_cast<double>(nRefinement);
+        muni = static_cast<UInt>(static_cast<double>(mc) * fmuni);
+        muni += (mc - 1 - muni) % 2;
+        minc = (mc - muni) / 2 + 1;
+        alfm = std::pow(fminc, 1.0 / static_cast<double>(minc));
     }
 
-    double min = radValues[0];
-    double max = radValues[radValues.size () - 1];
-    double length = max - min;
-
-    for (UInt i = 0; i < static_cast<UInt>(nRefinement); ++i)
+    if (parameters.fraction_rows != 1.0 && parameters.maximum_uniform_rows_size != 1.0)
     {
-        radValues[i] = (radValues[i] - innerRadius) / length * (outerRadius - innerRadius) + innerRadius;
-        std::cout << "radius value: " << radValues[i] << std::endl;
+        nuni = static_cast<UInt>(static_cast<double>(nc) * fnuni);
+        nuni += (nc - 1 - nuni) % 2;
+        ninc = (nc - nuni) / 2 + 1;
+        alfn = std::pow(fninc, 1.0 / static_cast<double>(ninc));
     }
 
+    double yy = 0.0;
 
-    return radValues;
-}
-
-lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGrid::GenerateGridPoints2(const double innerRadius, const double outerRadius, const MakeGridParameters& parameters, const Projection projection [[maybe_unused]]) const
-{
-    lin_alg::Matrix<Point> gridPoints(parameters.num_rows, parameters.num_columns);
-
-    double deltaTheta = 2.0 * std::numbers::pi_v<double> / static_cast<double>(parameters.num_columns - 0);
-    double deltaRadius = (outerRadius - innerRadius) / static_cast<double>(parameters.num_rows - 1);
-
-    std::cout << "radius: " << outerRadius << "  " << innerRadius << "  " << deltaRadius << std::endl;
-
-    std::vector<double> sinValues(parameters.num_columns);
-    std::vector<double> cosValues(parameters.num_columns);
-    std::vector<double> radValues(GenerateRadiusValues(innerRadius, outerRadius, static_cast<UInt>(parameters.num_rows)));
-
-    double theta = 0.0;
-
-    for (UInt i = 0; i < static_cast<UInt>(parameters.num_columns); ++i)
+    for (int n = 0; n < nc; ++n)
     {
-        sinValues[i] = std::sin(theta);
-        cosValues[i] = std::cos(theta);
-        theta += deltaTheta;
-    }
+        double xx = 0.0;
 
-    double radius = innerRadius;
-
-    // TODO I think the y-direction goes in the wrong direction (need size - n)
-
-    for (UInt n = 0; n < static_cast<UInt>(parameters.num_rows); ++n)
-    {
-
-        for (UInt m = 0; m < static_cast<UInt>(parameters.num_columns); ++m)
+        if (fnuni == 1.0 || fninc == 1.0)
         {
-            gridPoints(n, m) = Point(radValues[n] * cosValues[m], radValues[n] * sinValues[m]);
-            // gridPoints(n, m) = Point(radius * cosValues[m], radius * sinValues[m]);
-
-            if (m == 1 && n > 0)
+            yy = dy * static_cast<double>(n);
+        }
+        else
+        {
+            if (n < nuni)
             {
-                double xl = std::abs((gridPoints(n - 1, m).x - gridPoints(n, m).x));
-                double yl = std::abs((gridPoints(n, m).y - gridPoints(n, m - 1).y));
-                std::cout << "lengths: " << xl << "  " << yl << "  " << yl * yl << std::endl;
+                dyc = dy;
             }
+            else
+            {
+                dyc = dy * std::pow(alfn, static_cast<double>(n + 1 - nuni));
+            }
+
+            if (n == 0)
+            {
+                yy = -dy * std::pow(alfn, static_cast<double>(1 - nuni));
+            }
+
+            yy += dyc;
         }
 
-        radius += deltaRadius;
+        for (int m = 0; m < mc; ++m)
+        {
+
+            if (fmuni == 1.0 || fminc == 1.0)
+            {
+                xx = dx * static_cast<double>(m);
+            }
+            else
+            {
+                if (m < minc)
+                {
+                    dxc = dx * std::pow(alfm, static_cast<double>(minc - m));
+                }
+                else if (m < minc + muni)
+                {
+                    dxc = dx;
+                }
+                else
+                {
+                    dxc = dx * std::pow(alfm, static_cast<double>(m + 1 - minc - muni));
+                }
+
+                if (m == 0)
+                {
+                    xx = -dx * std::pow(alfm, static_cast<double>(minc));
+                }
+
+                xx += dxc;
+            }
+
+            gridPoints(n, m) = Point(x0 + xx * cs - yy * sn, y0 + xx * sn + yy * cs);
+        }
     }
 
     return gridPoints;
 }
 
-void meshkernel::CurvilinearGridGenerateCircularGrid::GenerateUniformGrid(const MakeGridParameters& parameters, const Projection projection, lin_alg::Matrix<meshkernel::Point>& gridPoints) const
+std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeRadiusValues(const MakeGridParameters& parameters) const
 {
+    const UInt size = static_cast<UInt>(parameters.num_rows + 1);
+    const double deltaY = parameters.block_size_y;
+    const double r0 = parameters.column_curvature_radius;
 
-    double dxa = 0.5 * parameters.block_size_x;
-    double cs = std::cos(fi * constants::conversion::degToRad);
-    double sn = std::sin(fi * constants::conversion::degToRad);
-    UInt mc = static_cast<UInt>(parameters.num_rows + 1);
-    UInt nc = static_cast<UInt>(parameters.num_columns + 1);
+    std::vector<double> radiusValues(size);
 
-
-        if (parameter.fraction_rows != 1.0 && parameter.maximum_uniform_rows_size != 1.0)
-        {
-            muni = nint(mc*fmuni);
-
-            if (mod((mc-1)-muni,2)==1)
-            {
-                muni = muni + 1;// ! at least muni cells, remainder is even
-            }
-
-            minc = (mc - muni)/2 + 1;
-            dxm = fminc*dx;
-            alfm = (dxm/dx)**(1.0_double/dble(minc));
-        }
-
-
-}
-
-void meshkernel::CurvilinearGridGenerateCircularGrid::GenerateGradedGrid(const MakeGridParameters& parameters, const Projection projection, lin_alg::Matrix<meshkernel::Point>& gridPoints) const
-{
-}
-
-lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGrid::GenerateGridPoints(const double innerRadius, const double outerRadius, const MakeGridParameters& parameters, const Projection projection) const
-{
-    lin_alg::Matrix<Point> gridPoints(parameters.num_rows, parameters.num_columns);
-
-    if (innerRadius == 0.0)
+    if (parameters.fraction_rows == 1.0 || parameters.maximum_uniform_rows_size == 1.0)
     {
-        GenerateUniformGrid (parameters, projection, gridPoints);
+        double yy = r0;
+
+        for (UInt n = 0; n < size; ++n)
+        {
+            radiusValues[n] = yy;
+            yy += deltaY;
+        }
     }
     else
     {
-        GenerateGradedGrid (parameters, projection, gridPoints);
+        double yy = r0;
+        double dyc = 0.0;
+
+        UInt nuni = static_cast<UInt>(static_cast<double>(size) * parameters.fraction_rows);
+        nuni += (size - 1 - nuni) % 2;
+        UInt ninc = (size - nuni) / 2 + 1;
+
+        double alfn = std::pow(parameters.maximum_uniform_rows_size, 1.0 / static_cast<double>(ninc));
+
+        for (UInt n = 0; n < size; ++n)
+        {
+            if (n < nuni)
+            {
+                dyc = deltaY;
+            }
+            else
+            {
+                dyc = deltaY * std::pow(alfn, static_cast<double>(n - nuni));
+            }
+
+            yy += dyc;
+            radiusValues[n] = yy;
+        }
+    }
+
+    return radiusValues;
+}
+
+std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeThetaValues(const MakeGridParameters& parameters) const
+{
+    const UInt size = static_cast<UInt>(parameters.num_columns + 1);
+    std::vector<double> thetaValues(size);
+
+    double deltaTheta = parameters.block_size_x / parameters.column_curvature_radius;
+
+    if (deltaTheta * static_cast<double>(size - 1) > 2.0 * std::numbers::pi_v<double>)
+    {
+        // call qnmessage('Increase radius of curvature or' // ' decrease M-dimension or delta X')
+        deltaTheta = 2.0 * std::numbers::pi_v<double> / static_cast<double>(size - 1);
+    }
+
+    double offset = parameters.left_rotation * constants::conversion::degToRad + 0.5 * std::numbers::pi_v<double>;
+
+    for (UInt m = 0; m < size; ++m)
+    {
+        double theta = offset - static_cast<double>(m) * deltaTheta;
+        thetaValues[m] = theta;
+    }
+    return thetaValues;
+}
+
+lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGrid::GenerateRadialGrid(const MakeGridParameters& parameters) const
+{
+    lin_alg::Matrix<Point> gridPoints(parameters.num_rows + 1, parameters.num_columns + 1);
+
+    double x0 = parameters.origin_x;
+    double y0 = parameters.origin_y;
+
+    std::vector<double> radiusValues(ComputeRadiusValues(parameters));
+    std::vector<double> thetaValues(ComputeThetaValues(parameters));
+    std::vector<double> cosValues(radiusValues.size());
+    std::vector<double> sinValues(radiusValues.size());
+
+    for (UInt i = 0; i < radiusValues.size(); ++i)
+    {
+        cosValues[i] = std::cos(thetaValues[i]);
+        sinValues[i] = std::sin(thetaValues[i]);
+    }
+
+    for (UInt n = 0; n < static_cast<UInt>(parameters.num_columns + 1); ++n)
+    {
+        double r = radiusValues[n];
+
+        for (UInt m = 0; m < static_cast<UInt>(parameters.num_rows + 1); ++m)
+        {
+            gridPoints(n, m) = Point(x0 + r * cosValues[m], y0 + r * sinValues[m]);
+        }
     }
 
     return gridPoints;
+}
+
+lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGrid::GenerateGridPoints(const MakeGridParameters& parameters) const
+{
+
+    if (parameters.column_curvature_radius == 0.0)
+    {
+        return GenerateGradedGrid(parameters);
+    }
+    else
+    {
+        return GenerateRadialGrid(parameters);
+    }
 }
