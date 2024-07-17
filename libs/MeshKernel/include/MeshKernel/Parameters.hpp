@@ -62,6 +62,27 @@ namespace meshkernel
 
         /// @brief The y coordinate of the upper right corner
         double upper_right_y = 0.0;
+
+        /// @brief Angle of rotation anti-clockwise, in degrees.
+        double left_rotation = 0.0;
+
+        /// @brief Radius of curvature
+        double column_curvature_radius = 0.0;
+
+        /// @brief Fraction of cells containing the default grid row size
+        ///
+        /// E.g. num_rows = 50, 0.25 * 50 + 1 = 13 + 1
+        double fraction_rows = 0.25;
+
+        /// @brief Fraction of cells containing the default grid column size
+        double fraction_columns = 0.25;
+
+        /// @brief Maximum element row size
+        double maximum_uniform_rows_size = 5.0;
+
+        /// @brief Maximum element column size
+        double maximum_uniform_columns_size = 5.0;
+
     };
 
     inline static void CheckMakeGridParameters(MakeGridParameters const& parameters)
