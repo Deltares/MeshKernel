@@ -687,6 +687,41 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_curvilinear_get_boundaries_as_polygons(int meshKernelId, GeometryList& boundaryPolygons)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+            meshKernelState[meshKernelId].m_curvilinearGrid;
+
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
+            {
+                throw meshkernel::MeshKernelError("Invalid curvilinear grid");
+            }
+
+            // meshKernelState[meshKernelId].m_curvilinearGrid->ComputeB
+
+            // const auto edges = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeEdges();
+            // const auto nodes = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeNodes();
+
+            // const auto mesh2d = meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->projection());
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_contacts_get_dimensions(int meshKernelId, Contacts& contacts)
     {
         lastExitCode = meshkernel::ExitCode::Success;
@@ -1425,7 +1460,7 @@ namespace meshkernelapi
             }
 
             const std::vector<meshkernel::Point> polygonNodes;
-            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->MeshBoundaryToPolygon(polygonNodes);
+            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->BoundaryToPolygon(polygonNodes);
 
             ConvertPointVectorToGeometryList(meshBoundaryPolygon, boundaryPolygons);
         }
@@ -1447,7 +1482,7 @@ namespace meshkernelapi
             }
 
             const std::vector<meshkernel::Point> polygonNodes;
-            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->MeshBoundaryToPolygon(polygonNodes);
+            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->BoundaryToPolygon(polygonNodes);
             numberOfPolygonNodes = static_cast<int>(meshBoundaryPolygon.size()); // last value is a separator
         }
         catch (...)

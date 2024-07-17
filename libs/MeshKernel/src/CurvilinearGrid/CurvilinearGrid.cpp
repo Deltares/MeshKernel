@@ -1304,6 +1304,66 @@ std::vector<CurvilinearGrid::CurvilinearFaceNodeIndices> CurvilinearGrid::Comput
     return result;
 }
 
+std::set<CurvilinearGrid::CurvilinearEdge> CurvilinearGrid::ComputeBoundaryEdges() const
+{
+    std::vector<Point> result;
+    const auto facesIndices = ComputeFaceIndices();
+    std::set<CurvilinearEdge> boundaryEdges;
+
+    for (const auto& faceIndices : facesIndices)
+    {
+        const auto numFaceNodes = static_cast<UInt>(faceIndices.size());
+        for (UInt i = 0u; i < faceIndices.size(); ++i)
+        {
+            const auto firstCurvilinearNodeIndex = faceIndices[i];
+            const auto nextIndex = NextCircularForwardIndex(i, numFaceNodes);
+            const auto secondCurvilinearNodeIndex = faceIndices[nextIndex];
+
+            const auto edge = std::make_pair(std::min(firstCurvilinearNodeIndex, secondCurvilinearNodeIndex),
+                                             std::max(firstCurvilinearNodeIndex, secondCurvilinearNodeIndex));
+
+            const auto it = boundaryEdges.find(edge);
+            if (it != boundaryEdges.end())
+            {
+                boundaryEdges.erase(it);
+            }
+            else
+            {
+                boundaryEdges.insert(edge);
+            }
+        }
+    }
+    return boundaryEdges;
+}
+
+std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryToPolygon() const
+{
+    std::vector<Point> result;
+
+    auto boundaryEdges = ComputeBoundaryEdges();
+    if (boundaryEdges.empty())
+    {
+        return result;
+    }
+    auto currentEdge = boundaryEdges.begin();
+    auto startNode = currentEdge->first;
+    auto sharedNode = currentEdge->second;
+    result.push_back(m_gridNodes(startNode.m_n, startNode.m_n));
+    while (sharedNode != startNode)
+    {
+        result.push_back(m_gridNodes(sharedNode.m_n, sharedNode.m_n));
+        boundaryEdges.erase(currentEdge);
+
+        currentEdge = std::ranges::find_if(boundaryEdges, [&](const CurvilinearEdge& edge)
+                                           { return edge.first == sharedNode ||
+                                                    edge.second == sharedNode; });
+
+        sharedNode = currentEdge->first == sharedNode ? currentEdge->second : currentEdge->first;
+    }
+
+    return result;
+}
+
 std::vector<meshkernel::Point> CurvilinearGrid::ComputeFaceCenters() const
 {
     const auto faceIndices = ComputeFaceIndices();

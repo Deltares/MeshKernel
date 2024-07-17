@@ -305,6 +305,8 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_get_data(int meshKernelId, CurvilinearGrid& curvilinearGrid);
 
+        MKERNEL_API int mkernel_curvilinear_get_boundaries_as_polygons(int meshKernelId, GeometryList& boundaryPolygons);
+
         /// @brief Gets the curvilinear grid dimensions as a CurvilinearGrid struct (converted as set of edges and nodes).
         ///
         /// The integer parameters of the CurvilinearGrid struct are set to the corresponding dimensions

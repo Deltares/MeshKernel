@@ -51,9 +51,6 @@ namespace meshkernel
             return m_m != missingValue && m_n != missingValue;
         }
 
-        /// @brief Overloads equality with another CurvilinearGridNodeIndices
-        bool operator==(const CurvilinearGridNodeIndices& rhs) const = default;
-
         CurvilinearGridNodeIndices& operator+=(const CurvilinearGridNodeIndices& val)
         {
             if (!IsValid())
@@ -69,6 +66,22 @@ namespace meshkernel
             m_n += val.m_n;
             m_m += val.m_m;
             return *this;
+        }
+
+        /// @brief Overloads equality with another CurvilinearGridNodeIndices
+        auto operator<=>(const CurvilinearGridNodeIndices& rhs) const
+        {
+            if (const auto cmp = m_m <=> rhs.m_m; cmp == 0)
+            {
+                return cmp; // Return result of m_m comparison if not equal
+            }
+            return m_n <=> rhs.m_n; // Compare m_n if m_m values are equal
+        }
+
+        /// @brief Overloads equality with another CurvilinearGridNodeIndices
+        bool operator==(const CurvilinearGridNodeIndices& rhs) const
+        {
+            return m_m == rhs.m_m && m_n == rhs.m_n;
         }
 
         CurvilinearGridNodeIndices& operator-=(const CurvilinearGridNodeIndices& val)
