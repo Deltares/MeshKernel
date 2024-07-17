@@ -42,10 +42,18 @@ namespace meshkernel
     {
     public:
         /// @brief Generate the circular grid
-        CurvilinearGrid Compute(const double innerRadius, const double outerRadius, const CurvilinearParameters& parameters) const;
+        CurvilinearGrid Compute(const double innerRadius, const double outerRadius, const MakeGridParameters& parameters) const;
 
     private:
-        lin_alg::Matrix<Point> GenerateGridPoints(const double innerRadius, const double outerRadius, const CurvilinearParameters& parameters) const;
+        std::vector<double> GenerateRadiusValues(const double innerRadius, const double outerRadius, const UInt nRefinement) const;
+
+        lin_alg::Matrix<Point> GenerateGridPoints2(const double innerRadius, const double outerRadius, const MakeGridParameters& parameters, const Projection projection) const;
+
+        void GenerateUniformGrid(const MakeGridParameters& parameters, const Projection projection, lin_alg::Matrix<meshkernel::Point>& gridPoints) const;
+
+        void GenerateGradedGrid(const MakeGridParameters& parameters, const Projection projection, lin_alg::Matrix<meshkernel::Point>& gridPoints) const;
+
+        lin_alg::Matrix<Point> GenerateGridPoints(const double innerRadius, const double outerRadius, const MakeGridParameters& parameters, const Projection projection) const;
     };
 
 } // namespace meshkernel
