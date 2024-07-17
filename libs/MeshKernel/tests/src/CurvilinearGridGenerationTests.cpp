@@ -46,12 +46,18 @@ TEST(CurvilinearGridGenerationTests, Basic)
 {
 
     mk::CurvilinearGridGenerateCircularGrid generate;
-    mk::CurvilinearParameters parameters;
 
-    parameters.m_refinement = 10;
-    parameters.n_refinement = 10;
+    mk::MakeGridParameters parameters = {
+        .num_columns = 10,
+        .num_rows = 10,
+        .left_rotation = 0.0,
+        .column_curvature_radius = 10.0,
+        .fraction_columns = 0.5,
+        .fraction_rows = 0.5,
+        .maximum_uniform_columns_size = 10.0,
+        .maximum_uniform_rows_size = 10.0};
 
-    auto grid = generate.Compute(10.0, 110.0, parameters);
+    auto grid = generate.Compute(parameters);
 
     mk::Print(grid.ComputeNodes(), grid.ComputeEdges());
 }

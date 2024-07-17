@@ -69,20 +69,23 @@ namespace meshkernel
         /// @brief Radius of curvature
         double column_curvature_radius = 0.0;
 
-        /// @brief Fraction of cells containing the default grid row size
-        ///
-        /// E.g. num_rows = 50, 0.25 * 50 + 1 = 13 + 1
-        double fraction_rows = 0.25;
-
         /// @brief Fraction of cells containing the default grid column size
+        ///
+        /// E.g. if num_columns = 50 then: 0.25 * 50 + 1 = 13 + 1
+        /// (fmuni)
         double fraction_columns = 0.25;
 
-        /// @brief Maximum element row size
-        double maximum_uniform_rows_size = 5.0;
+        /// @brief Fraction of cells containing the default grid row size
+        /// (fnuni)
+        double fraction_rows = 0.25;
 
         /// @brief Maximum element column size
+        /// (fminc)
         double maximum_uniform_columns_size = 5.0;
 
+        /// @brief Maximum element row size
+        /// (fninc)
+        double maximum_uniform_rows_size = 5.0;
     };
 
     inline static void CheckMakeGridParameters(MakeGridParameters const& parameters)
