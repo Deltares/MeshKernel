@@ -1351,7 +1351,7 @@ std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryToPolygon() const
     result.push_back(m_gridNodes(startNode.m_n, startNode.m_n));
     while (sharedNode != startNode)
     {
-        result.push_back(m_gridNodes(sharedNode.m_n, sharedNode.m_n));
+        result.push_back(GetNode(sharedNode.m_n, sharedNode.m_m));
         boundaryEdges.erase(currentEdge);
 
         currentEdge = std::ranges::find_if(boundaryEdges, [&](const CurvilinearEdge& edge)
@@ -1360,6 +1360,9 @@ std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryToPolygon() const
 
         sharedNode = currentEdge->first == sharedNode ? currentEdge->second : currentEdge->first;
     }
+
+    // close the loop
+    result.push_back(m_gridNodes(startNode.m_n, startNode.m_n));
 
     return result;
 }

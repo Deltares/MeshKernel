@@ -42,7 +42,6 @@
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp"
-#include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/UndoActions/UndoActionStack.hpp"
 #include "MeshKernel/Utilities/LinearAlgebra.hpp"

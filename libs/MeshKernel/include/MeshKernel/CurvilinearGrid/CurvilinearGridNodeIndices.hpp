@@ -68,21 +68,18 @@ namespace meshkernel
             return *this;
         }
 
-        /// @brief Overloads equality with another CurvilinearGridNodeIndices
-        auto operator<=>(const CurvilinearGridNodeIndices& rhs) const
+        /// @brief Overloads < operator
+        auto operator<(const CurvilinearGridNodeIndices& rhs) const
         {
-            if (const auto cmp = m_m <=> rhs.m_m; cmp == 0)
+            if (m_n == rhs.m_n)
             {
-                return cmp; // Return result of m_m comparison if not equal
+                return m_m < rhs.m_m; // Return result of m_m comparison if not equal
             }
-            return m_n <=> rhs.m_n; // Compare m_n if m_m values are equal
+            return m_n < rhs.m_n; // Compare m_n if m_m values are equal
         }
 
         /// @brief Overloads equality with another CurvilinearGridNodeIndices
-        bool operator==(const CurvilinearGridNodeIndices& rhs) const
-        {
-            return m_m == rhs.m_m && m_n == rhs.m_n;
-        }
+        bool operator==(const CurvilinearGridNodeIndices& rhs) const = default;
 
         CurvilinearGridNodeIndices& operator-=(const CurvilinearGridNodeIndices& val)
         {

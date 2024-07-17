@@ -708,12 +708,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Invalid curvilinear grid");
             }
 
-            // meshKernelState[meshKernelId].m_curvilinearGrid->ComputeB
-
-            // const auto edges = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeEdges();
-            // const auto nodes = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeNodes();
-
-            // const auto mesh2d = meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->projection());
+            const auto boundaryPolygon = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeBoundaryToPolygon();
+            ConvertPointVectorToGeometryList(boundaryPolygon, boundaryPolygons);
         }
         catch (...)
         {
