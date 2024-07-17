@@ -1313,7 +1313,24 @@ std::set<CurvilinearGrid::CurvilinearEdge> CurvilinearGrid::ComputeBoundaryEdges
     for (const auto& faceIndices : facesIndices)
     {
         const auto numFaceNodes = static_cast<UInt>(faceIndices.size());
-        for (UInt i = 0u; i < faceIndices.size(); ++i)
+        bool isFaceValid = true;
+        for (UInt i = 0u; i < numFaceNodes; ++i)
+        {
+            const auto curviNode = faceIndices[i];
+
+            if (!GetNode(curviNode.m_n, curviNode.m_m).IsValid())
+            {
+                isFaceValid = false;
+                break;
+            }
+        }
+
+        if (!isFaceValid)
+        {
+            continue;
+        }
+
+        for (UInt i = 0u; i < numFaceNodes; ++i)
         {
             const auto firstCurvilinearNodeIndex = faceIndices[i];
             const auto nextIndex = NextCircularForwardIndex(i, numFaceNodes);
@@ -1361,7 +1378,7 @@ std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryToPolygon() const
         sharedNode = currentEdge->first == sharedNode ? currentEdge->second : currentEdge->first;
     }
 
-    // close the loop
+    // close the polygon
     result.push_back(m_gridNodes(startNode.m_n, startNode.m_n));
 
     return result;
