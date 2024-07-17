@@ -1895,9 +1895,7 @@ void TestDerefinedMesh(const mk::UInt nx, const mk::UInt ny, const std::string& 
     const std::vector<mk::Point> originalNodes(mesh.Nodes());
     const std::vector<mk::Edge> originalEdges(mesh.Edges());
 
-    meshkernel::CasulliDeRefinement casulliDerefinement;
-
-    auto undoAction = casulliDerefinement.Compute(mesh);
+    auto undoAction = meshkernel::CasulliDeRefinement::Compute(mesh);
 
     const std::vector<mk::Point> refinedNodes(mesh.Nodes());
     const std::vector<mk::Edge> refinedEdges(mesh.Edges());
@@ -1985,9 +1983,7 @@ TEST(MeshRefinement, CasulliDeRefinementPolygon)
     Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
     mesh.Administrate();
 
-    meshkernel::CasulliDeRefinement casulliDerefinement;
-
-    auto undoAction = casulliDerefinement.Compute(mesh, polygon);
+    auto undoAction = meshkernel::CasulliDeRefinement::Compute(mesh, polygon);
 
     //--------------------------------
     // Now compare de-refined mesh with one produced by interactor.
@@ -2028,13 +2024,11 @@ TEST(MeshRefinement, CasulliDeRefinementPolygonThenAll)
     Mesh2D mesh(curviMesh->Edges(), curviMesh->Nodes(), Projection::cartesian);
     mesh.Administrate();
 
-    meshkernel::CasulliDeRefinement casulliDerefinement;
-
     // Derefine on polygon
-    auto undoAction = casulliDerefinement.Compute(mesh, polygon);
+    auto undoAction = meshkernel::CasulliDeRefinement::Compute(mesh, polygon);
 
     // Derefine on all
-    undoAction = casulliDerefinement.Compute(mesh);
+    undoAction = meshkernel::CasulliDeRefinement::Compute(mesh);
 
     //--------------------------------
     // Now compare de-refined mesh with one produced by interactor.
@@ -2091,10 +2085,8 @@ TEST(MeshRefinement, CasulliTwoPolygonDeRefinement)
     const std::vector<mk::Point> originalNodes(mesh.Nodes());
     const std::vector<mk::Edge> originalEdges(mesh.Edges());
 
-    meshkernel::CasulliDeRefinement casulliDerefinement;
-
     // Derefine on centre polygon
-    auto undoCentrePolygon = casulliDerefinement.Compute(mesh, centrePolygon);
+    auto undoCentrePolygon = meshkernel::CasulliDeRefinement::Compute(mesh, centrePolygon);
 
     const std::vector<mk::Point> centreRefinedNodes(mesh.Nodes());
     const std::vector<mk::Edge> centreRefinedEdges(mesh.Edges());
@@ -2102,7 +2094,7 @@ TEST(MeshRefinement, CasulliTwoPolygonDeRefinement)
     mesh.ComputeCircumcentersMassCentersAndFaceAreas(true);
 
     // Get the element centres of the elements to be deleted.
-    std::vector<meshkernel::Point> toDelete(casulliDerefinement.ElementsToDelete(mesh, lowerPolygon));
+    std::vector<meshkernel::Point> toDelete(meshkernel::CasulliDeRefinement::ElementsToDelete(mesh, lowerPolygon));
 
     // Compare the elements to be deleted by the lowerPolygon with expected data.
     ASSERT_EQ(toDelete.size(), elementCentreX.size());
@@ -2114,7 +2106,7 @@ TEST(MeshRefinement, CasulliTwoPolygonDeRefinement)
     }
 
     // Derefine on lower polygon
-    auto undoLowerPolygon = casulliDerefinement.Compute(mesh, lowerPolygon);
+    auto undoLowerPolygon = meshkernel::CasulliDeRefinement::Compute(mesh, lowerPolygon);
 
     const std::vector<mk::Point> lowerRefinedNodes(mesh.Nodes());
     const std::vector<mk::Edge> lowerRefinedEdges(mesh.Edges());
