@@ -1491,4 +1491,73 @@ TEST_P(CurvilineartBoundariesAsPolygonsTests, GetLocationIndex_OnACurvilinearGri
 
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
+
 INSTANTIATE_TEST_SUITE_P(CurvilineartBoundariesAsPolygonsTests, CurvilineartBoundariesAsPolygonsTests, ::testing::ValuesIn(CurvilineartBoundariesAsPolygonsTests::GetData()));
+
+TEST(CurvilinearGrid, MakeCircularGrid_CartesianCoordinate_ShouldMakeCurvilinearGrid)
+{
+
+    meshkernel::MakeGridParameters parameters = {.num_columns = 14,
+                                                 .num_rows = 10,
+                                                 .angle = 32.0,
+                                                 .origin_x = 17.0,
+                                                 .origin_y = -23.0,
+                                                 .radius_curvature_columns = 10.0,
+                                                 .uniform_columns_fraction = 1.0,
+                                                 .uniform_rows_fraction = 0.0};
+
+    int meshKernelId = 0;
+    int projectionType = 0;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_circular_grid(meshKernelId, parameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGridResults;
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGridResults);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(parameters.num_columns + 1, curvilinearGridResults.num_m);
+    ASSERT_EQ(parameters.num_rows + 1, curvilinearGridResults.num_n);
+
+    std::vector<double> radiusValues{20.0, 33.0766048601183, 50.1763643268853,
+                                     72.5370441018832, 101.777221484012, 140.013446050598,
+                                     190.013446050598, 255.39647035119, 340.895267685025,
+                                     452.698666560014, 598.899553470658};
+
+    std::vector<double> thetaValues{2.12930168743308, 1.68050273692025, 1.23170378640743, 0.782904835894599,
+                                    0.334105885381772, -0.114693065131056, -0.563492015643884, -1.01229096615671,
+                                    -1.46108991666954, -1.90988886718237, -2.35868781769519, -2.80748676820802,
+                                    -3.25628571872085, -3.70508466923368, -4.1538836197465};
+
+    std::vector<double> xValues(curvilinearGridResults.num_m * curvilinearGridResults.num_n);
+    std::vector<double> yValues(curvilinearGridResults.num_m * curvilinearGridResults.num_n);
+
+    meshkernelapi::CurvilinearGrid gridData{};
+    gridData.node_x = xValues.data();
+    gridData.node_y = yValues.data();
+    gridData.num_m = parameters.num_columns + 1;
+    gridData.num_n = parameters.num_rows + 1;
+
+    errorCode = mkernel_curvilinear_get_data(meshKernelId, gridData);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    const double tolerance = 1.0e-10;
+
+    size_t count = 0;
+
+    for (meshkernel::UInt i = 0; i < static_cast<meshkernel::UInt>(parameters.num_rows + 1); ++i)
+    {
+        for (meshkernel::UInt j = 0; j < static_cast<meshkernel::UInt>(parameters.num_columns + 1); ++j)
+        {
+            double expectedX = parameters.origin_x + radiusValues[i] * std::cos(thetaValues[j]);
+            double expectedY = parameters.origin_y + radiusValues[i] * std::sin(thetaValues[j]);
+            EXPECT_NEAR(expectedX, xValues[count], tolerance);
+            EXPECT_NEAR(expectedY, yValues[count], tolerance);
+            ++count;
+        }
+    }
+}
