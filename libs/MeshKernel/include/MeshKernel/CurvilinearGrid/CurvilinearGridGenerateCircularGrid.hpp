@@ -48,10 +48,10 @@ namespace meshkernel
         ///@{
         /// @name Generation of graded rectangular grid
 
-        /// @brief Compute the x-values
+        /// @brief Compute the x/m-values
         std::vector<double> ComputeXValues(const MakeGridParameters& parameters) const;
 
-        /// @brief Compute the y-values
+        /// @brief Compute the y/n-values
         std::vector<double> ComputeYValues(const MakeGridParameters& parameters) const;
 
         /// @brief Generate the graded rectangular grid

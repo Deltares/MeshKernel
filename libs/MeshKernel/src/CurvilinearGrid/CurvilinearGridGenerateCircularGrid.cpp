@@ -1,4 +1,5 @@
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridGenerateCircularGrid.hpp"
+#include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Utilities/LinearAlgebra.hpp"
 
 #include <cmath>
@@ -231,8 +232,8 @@ lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGr
 
     std::vector<double> radiusValues(ComputeRadiusValues(parameters));
     std::vector<double> thetaValues(ComputeThetaValues(parameters));
-    std::vector<double> cosValues(radiusValues.size());
-    std::vector<double> sinValues(radiusValues.size());
+    std::vector<double> cosValues(thetaValues.size());
+    std::vector<double> sinValues(thetaValues.size());
 
     for (UInt i = 0; i < thetaValues.size(); ++i)
     {
