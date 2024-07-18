@@ -63,29 +63,22 @@ namespace meshkernel
         /// @brief The y coordinate of the upper right corner
         double upper_right_y = 0.0;
 
-        /// @brief Angle of rotation anti-clockwise, in degrees.
-        double left_rotation = 0.0;
-
         /// @brief Radius of curvature
-        double column_curvature_radius = 0.0;
+        double radius_curvature_columns = 0.0;
 
         /// @brief Fraction of cells containing the default grid column size
         ///
         /// E.g. if num_columns = 50 then: 0.25 * 50 + 1 = 13 + 1
-        /// (fmuni)
-        double fraction_columns = 0.25;
+        double uniform_columns_fraction = 0.25;
 
         /// @brief Fraction of cells containing the default grid row size
-        /// (fnuni)
-        double fraction_rows = 0.25;
+        double uniform_rows_fraction = 0.25;
 
         /// @brief Maximum element column size
-        /// (fminc)
-        double maximum_uniform_columns_size = 5.0;
+        double maximum_uniform_size_columns = 5.0;
 
         /// @brief Maximum element row size
-        /// (fninc)
-        double maximum_uniform_rows_size = 5.0;
+        double maximum_uniform_size_rows = 5.0;
     };
 
     inline static void CheckMakeGridParameters(MakeGridParameters const& parameters)
@@ -95,6 +88,11 @@ namespace meshkernel
         range_check::CheckInClosedInterval(parameters.angle, {-90.0, 90.0}, "Grid angle");
         range_check::CheckGreater(parameters.block_size_x, 0.0, "X block size");
         range_check::CheckGreater(parameters.block_size_y, 0.0, "Y block size");
+        range_check::CheckGreaterEqual(parameters.radius_curvature_columns, 0.0, "Radius of curvature");
+        range_check::CheckGreaterEqual(parameters.uniform_columns_fraction, 0.0, "Uniform m-fraction");
+        range_check::CheckGreaterEqual(parameters.uniform_rows_fraction, 0.0, "Uniform n-fraction");
+        range_check::CheckGreaterEqual(parameters.maximum_uniform_size_columns, 0.0, "Maximum size / delta-x");
+        range_check::CheckGreaterEqual(parameters.maximum_uniform_size_rows, 0.0, "Maximum size / delta-y");
     }
 
     /// @brief A struct used to describe parameters for generating a curvilinear grid in a C-compatible manner
