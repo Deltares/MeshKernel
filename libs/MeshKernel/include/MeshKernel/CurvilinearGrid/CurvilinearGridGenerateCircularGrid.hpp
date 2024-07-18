@@ -42,17 +42,36 @@ namespace meshkernel
     {
     public:
         /// @brief Generate the circular grid
-        CurvilinearGrid Compute(const MakeGridParameters& parameters) const;
+        CurvilinearGrid Compute(const MakeGridParameters& parameters, const Projection projection) const;
 
     private:
+        ///@{
+        /// @name Generation of graded rectangular grid
+
+        /// @brief Compute the x-values
+        std::vector<double> ComputeXValues(const MakeGridParameters& parameters) const;
+
+        /// @brief Compute the y-values
+        std::vector<double> ComputeYValues(const MakeGridParameters& parameters) const;
+
+        /// @brief Generate the graded rectangular grid
+        lin_alg::Matrix<Point> GenerateRectangularGrid(const MakeGridParameters& parameters) const;
+        ///@}
+
+        ///@{
+        /// @name Generation of radial grid
+
+        /// @brief Compute the radius-values
         std::vector<double> ComputeRadiusValues(const MakeGridParameters& parameters) const;
 
+        /// @brief Compute the theta-values (angle values)
         std::vector<double> ComputeThetaValues(const MakeGridParameters& parameters) const;
 
-        lin_alg::Matrix<Point> GenerateGradedGrid(const MakeGridParameters& parameters) const;
+        /// @brief Generate the circular grid
+        lin_alg::Matrix<Point> GenerateCircularGrid(const MakeGridParameters& parameters) const;
+        ///@}
 
-        lin_alg::Matrix<Point> GenerateRadialGrid(const MakeGridParameters& parameters) const;
-
+        /// @brief Generate the grid points for the curvilinear grid.
         lin_alg::Matrix<Point> GenerateGridPoints(const MakeGridParameters& parameters) const;
     };
 
