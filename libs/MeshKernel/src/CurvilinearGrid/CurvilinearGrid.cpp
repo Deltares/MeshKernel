@@ -1365,11 +1365,34 @@ std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryToPolygon() const
     auto currentEdge = boundaryEdges.begin();
     auto startNode = currentEdge->first;
     auto sharedNode = currentEdge->second;
-    result.push_back(m_gridNodes(startNode.m_n, startNode.m_n));
-    while (sharedNode != startNode)
+    result.push_back(GetNode(startNode.m_n, startNode.m_m));
+    while (!boundaryEdges.empty())
     {
+        // handle disconnected boundaries
+        if (sharedNode == startNode)
+        {
+            result.push_back(GetNode(startNode.m_n, startNode.m_m));
+            boundaryEdges.erase(currentEdge);
+            if (boundaryEdges.empty())
+            {
+                break;
+            }
+            result.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
+            currentEdge = boundaryEdges.begin();
+            startNode = currentEdge->first;
+            sharedNode = currentEdge->second;
+            result.push_back(GetNode(startNode.m_n, startNode.m_m));
+            continue;
+        }
+
         result.push_back(GetNode(sharedNode.m_n, sharedNode.m_m));
+
         boundaryEdges.erase(currentEdge);
+
+        if (boundaryEdges.empty())
+        {
+            break;
+        }
 
         currentEdge = std::ranges::find_if(boundaryEdges, [&](const CurvilinearEdge& edge)
                                            { return edge.first == sharedNode ||
@@ -1377,9 +1400,6 @@ std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryToPolygon() const
 
         sharedNode = currentEdge->first == sharedNode ? currentEdge->second : currentEdge->first;
     }
-
-    // close the polygon
-    result.push_back(m_gridNodes(startNode.m_n, startNode.m_n));
 
     return result;
 }
