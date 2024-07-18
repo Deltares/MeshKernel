@@ -45,7 +45,7 @@ namespace meshkernel
 
     private:
         /// @brief Maximum number of spline points allowed when doubling of the spline points.
-        static const UInt MaximumNumberOfSplinePoints = 10000;
+        static const UInt MaximumNumberOfSplinePoints = 1000;
 
         /// @brief The maximum number of checks for unlabeled splines
         static const UInt MaximumCumulativeUnlabeledSplineCount = 1000;

@@ -50,14 +50,14 @@ TEST(CurvilinearGridGenerationTests, Basic)
     mk::MakeGridParameters parameters = {
         .num_columns = 10,
         .num_rows = 10,
-        .left_rotation = 0.0,
-        .column_curvature_radius = 10.0,
-        .fraction_columns = 0.5,
-        .fraction_rows = 0.5,
-        .maximum_uniform_columns_size = 10.0,
-        .maximum_uniform_rows_size = 10.0};
+        .angle = 0.0,
+        .radius_curvature_columns = 0.0,
+        .uniform_columns_fraction = 0.125,
+        .uniform_rows_fraction = 0.125,
+        .maximum_uniform_size_columns = 10.0,
+        .maximum_uniform_size_rows = 10.0};
 
-    auto grid = generate.Compute(parameters);
+    auto grid = generate.Compute(parameters, mk::Projection::cartesian);
 
     mk::Print(grid.ComputeNodes(), grid.ComputeEdges());
 }
