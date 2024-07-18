@@ -406,7 +406,7 @@ namespace meshkernel
 
         /// @brief Compute the boundary polygon.
         /// @returns The vector containing the boundary polygon points
-        [[nodiscard]] std::vector<Point> ComputeBoundaryToPolygon() const;
+        [[nodiscard]] std::vector<Point> ComputeBoundaryToPolygon(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const;
 
         /// @brief The number of nodes M in the m dimension
         /// @return A number >= 2 for a valid curvilinear grid
@@ -475,11 +475,11 @@ namespace meshkernel
 
         /// @brief Compute the face indices.
         /// @returns The  mapping (m and n indices for each node of the face)
-        [[nodiscard]] std::vector<CurvilinearFaceNodeIndices> ComputeFaceIndices() const;
+        [[nodiscard]] std::vector<CurvilinearFaceNodeIndices> ComputeFaceIndices(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const;
 
         /// @brief Compute the boundary edges.
         /// @returns The set of boundary edges
-        [[nodiscard]] std::set<CurvilinearEdge> ComputeBoundaryEdges() const;
+        [[nodiscard]] std::set<CurvilinearEdge> ComputeBoundaryEdges(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const;
 
         /// @brief Set the m_nodesRTreeRequiresUpdate flag
         /// @param[in] value The value of the flag

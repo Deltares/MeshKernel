@@ -687,7 +687,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_get_boundaries_as_polygons(int meshKernelId, GeometryList& boundaryPolygons)
+    MKERNEL_API int mkernel_curvilinear_get_boundaries_as_polygons(int meshKernelId, int lowerLeftN, int lowerLeftM, int upperRightN, int upperRightM, GeometryList& boundaryPolygons)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -707,8 +707,12 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("Invalid curvilinear grid");
             }
-
-            const auto boundaryPolygon = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeBoundaryToPolygon();
+            const auto lowerLeftNUnsigned = meshkernel::UInt(lowerLeftN);
+            const auto lowerLeftMUnsigned = meshkernel::UInt(lowerLeftM);
+            const auto upperRightNUnsigned = meshkernel::UInt(upperRightN);
+            const auto upperRightMUnsigned = meshkernel::UInt(upperRightM);
+            const auto boundaryPolygon = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeBoundaryToPolygon({lowerLeftNUnsigned, lowerLeftMUnsigned},
+                                                                                                                   {upperRightNUnsigned, upperRightMUnsigned});
             ConvertPointVectorToGeometryList(boundaryPolygon, boundaryPolygons);
         }
         catch (...)
@@ -718,7 +722,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_count_boundaries_as_polygons(int meshKernelId, int& numberOfPolygonNodes)
+    MKERNEL_API int mkernel_curvilinear_count_boundaries_as_polygons(int meshKernelId, int lowerLeftN, int lowerLeftM, int upperRightN, int upperRightM, int& numberOfPolygonNodes)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -732,8 +736,12 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("Invalid curvilinear grid");
             }
-
-            const auto boundaryPolygon = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeBoundaryToPolygon();
+            const auto lowerLeftNUnsigned = meshkernel::UInt(lowerLeftN);
+            const auto lowerLeftMUnsigned = meshkernel::UInt(lowerLeftM);
+            const auto upperRightNUnsigned = meshkernel::UInt(upperRightN);
+            const auto upperRightMUnsigned = meshkernel::UInt(upperRightM);
+            const auto boundaryPolygon = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeBoundaryToPolygon({lowerLeftNUnsigned, lowerLeftMUnsigned},
+                                                                                                                   {upperRightNUnsigned, upperRightMUnsigned});
             numberOfPolygonNodes = static_cast<int>(boundaryPolygon.size());
         }
         catch (...)

@@ -16,13 +16,16 @@ TEST(CurvilinearGridBoundaryPolygon, ComputeBoundaryToPolygon_OnValidCurvilinear
     constexpr double deltaX = 1.0;
     constexpr double deltaY = 1.0;
 
-    constexpr size_t nx = 3;
-    constexpr size_t ny = 3;
+    constexpr UInt nx = 3;
+    constexpr UInt ny = 3;
 
     std::unique_ptr<CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    CurvilinearGridNodeIndices lowerLeft(0, 0);
+    CurvilinearGridNodeIndices upperRight(nx - 1, ny - 1);
 
     // Execute
-    const auto boundaryPolygon = grid->ComputeBoundaryToPolygon();
+
+    const auto boundaryPolygon = grid->ComputeBoundaryToPolygon(lowerLeft, upperRight);
 
     // Assert
     std::vector<Point> expectedBoundaryPolygon{{0.0, 0.0},
@@ -47,15 +50,17 @@ TEST(CurvilinearGridBoundaryPolygon, ComputeBoundaryToPolygon_OnValidCurvilinear
     constexpr double deltaX = 1.0;
     constexpr double deltaY = 1.0;
 
-    constexpr size_t nx = 4;
-    constexpr size_t ny = 4;
+    constexpr UInt nx = 4;
+    constexpr UInt ny = 4;
 
     std::unique_ptr<CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
     auto undoAction = grid->DeleteNode({3.0, 0.0});
     undoAction = grid->DeleteNode({3.0, 3.0});
+    CurvilinearGridNodeIndices lowerLeft(0, 0);
+    CurvilinearGridNodeIndices upperRight(nx - 1, ny - 1);
 
     // Execute
-    const auto boundaryPolygon = grid->ComputeBoundaryToPolygon();
+    const auto boundaryPolygon = grid->ComputeBoundaryToPolygon(lowerLeft, upperRight);
 
     // Assert
     std::vector<Point> expectedBoundaryPolygon{{0.0, 0.0},
@@ -85,15 +90,17 @@ TEST(CurvilinearGridBoundaryPolygon, ComputeBoundaryToPolygon_OnValidCurvilinear
     constexpr double deltaX = 1.0;
     constexpr double deltaY = 1.0;
 
-    constexpr size_t nx = 9;
-    constexpr size_t ny = 3;
+    constexpr UInt nx = 9;
+    constexpr UInt ny = 3;
 
     std::unique_ptr<CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
     auto undoAction = grid->DeleteNode({3.0, 1.0});
     undoAction = grid->DeleteNode({4.0, 1.0});
+    CurvilinearGridNodeIndices lowerLeft(0, 0);
+    CurvilinearGridNodeIndices upperRight(nx - 1, ny - 1);
 
     // Execute
-    const auto boundaryPolygon = grid->ComputeBoundaryToPolygon();
+    const auto boundaryPolygon = grid->ComputeBoundaryToPolygon(lowerLeft, upperRight);
 
     // Assert
     std::vector<Point> expectedBoundaryPolygon{{0.0, 0.0},

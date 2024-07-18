@@ -1283,16 +1283,22 @@ std::vector<CurvilinearGrid::CurvilinearEdgeNodeIndices> CurvilinearGrid::Comput
     return result;
 }
 
-std::vector<CurvilinearGrid::CurvilinearFaceNodeIndices> CurvilinearGrid::ComputeFaceIndices() const
+std::vector<CurvilinearGrid::CurvilinearFaceNodeIndices> CurvilinearGrid::ComputeFaceIndices(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const
 {
-    const auto numFaces = (NumM() - 1) * (NumN() - 1);
 
-    std::vector<CurvilinearFaceNodeIndices> result(numFaces);
+    const auto minN = std::min(lowerLeft.m_n, upperRight.m_n);
+    const auto maxN = std::max(lowerLeft.m_n, upperRight.m_n);
+    const auto minM = std::min(lowerLeft.m_m, upperRight.m_m);
+    const auto maxM = std::max(lowerLeft.m_m, upperRight.m_m);
+    const auto numNFaces = maxN - minN;
+    const auto numMFaces = maxM - minM;
+
+    std::vector<CurvilinearFaceNodeIndices> result(numNFaces * numMFaces);
 
     UInt index = 0;
-    for (UInt n = 0; n < NumN() - 1; n++)
+    for (UInt n = minN; n <= maxN; n++)
     {
-        for (UInt m = 0; m < NumM() - 1; m++)
+        for (UInt m = minM; m <= maxM; m++)
         {
             result[index][0] = {n, m};
             result[index][1] = {n, m + 1};
@@ -1304,10 +1310,10 @@ std::vector<CurvilinearGrid::CurvilinearFaceNodeIndices> CurvilinearGrid::Comput
     return result;
 }
 
-std::set<CurvilinearGrid::CurvilinearEdge> CurvilinearGrid::ComputeBoundaryEdges() const
+std::set<CurvilinearGrid::CurvilinearEdge> CurvilinearGrid::ComputeBoundaryEdges(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const
 {
     std::vector<Point> result;
-    const auto facesIndices = ComputeFaceIndices();
+    const auto facesIndices = ComputeFaceIndices(lowerLeft, upperRight);
     std::set<CurvilinearEdge> boundaryEdges;
 
     for (const auto& faceIndices : facesIndices)
@@ -1353,11 +1359,11 @@ std::set<CurvilinearGrid::CurvilinearEdge> CurvilinearGrid::ComputeBoundaryEdges
     return boundaryEdges;
 }
 
-std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryToPolygon() const
+std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryToPolygon(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const
 {
     std::vector<Point> result;
 
-    auto boundaryEdges = ComputeBoundaryEdges();
+    auto boundaryEdges = ComputeBoundaryEdges(lowerLeft, upperRight);
     if (boundaryEdges.empty())
     {
         return result;
@@ -1406,7 +1412,7 @@ std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryToPolygon() const
 
 std::vector<meshkernel::Point> CurvilinearGrid::ComputeFaceCenters() const
 {
-    const auto faceIndices = ComputeFaceIndices();
+    const auto faceIndices = ComputeFaceIndices({0, 0}, {NumN() - 1, NumM() - 1});
 
     std::vector<Point> result(faceIndices.size());
 

@@ -310,14 +310,14 @@ namespace meshkernelapi
         /// @param[in]  meshKernelId    The id of the mesh state
         /// @param[out] boundaryPolygons The geometry list containing the boundary polygons.
         /// @returns Error code
-        MKERNEL_API int mkernel_curvilinear_get_boundaries_as_polygons(int meshKernelId, GeometryList& boundaryPolygons);
+        MKERNEL_API int mkernel_curvilinear_get_boundaries_as_polygons(int meshKernelId, int lowerLeftN, int LowerLeftM, int upperRightN, int upperRightM, GeometryList& boundaryPolygons);
 
         /// @brief Count the number of nodes of curvilinear grid boundary polygons.
         ///
         /// @param[in]  meshKernelId    The id of the mesh state
         /// @param[out] numberOfPolygonNodes The number of polygon nodes.
         /// @returns Error code
-        MKERNEL_API int mkernel_curvilinear_count_boundaries_as_polygons(int meshKernelId, int& numberOfPolygonNodes);
+        MKERNEL_API int mkernel_curvilinear_count_boundaries_as_polygons(int meshKernelId, int lowerLeftN, int LowerLeftM, int upperRightN, int upperRightM, int& numberOfPolygonNodes);
 
         /// @brief Gets the curvilinear grid dimensions as a CurvilinearGrid struct (converted as set of edges and nodes).
         ///
