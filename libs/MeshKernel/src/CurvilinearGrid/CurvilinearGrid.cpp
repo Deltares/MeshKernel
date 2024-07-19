@@ -1318,9 +1318,8 @@ std::set<CurvilinearGrid::CurvilinearEdge> CurvilinearGrid::ComputeBoundaryEdges
 
     for (const auto& faceIndices : facesIndices)
     {
-        const bool isFaceValid = std::all_of(faceIndices.begin(), faceIndices.end(), [this](const CurvilinearGridNodeIndices& curviNode)
-                                             { return GetNode(curviNode.m_n, curviNode.m_m).IsValid(); });
-        if (!isFaceValid)
+        if (!std::ranges::all_of(faceIndices, [this](const CurvilinearGridNodeIndices& curviNode)
+                                 { return GetNode(curviNode.m_n, curviNode.m_m).IsValid(); }))
         {
             continue;
         }
@@ -1358,44 +1357,36 @@ std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryToPolygon(const C
     {
         return result;
     }
+
     auto currentEdge = boundaryEdges.begin();
     auto startNode = currentEdge->first;
     auto sharedNode = currentEdge->second;
-    result.push_back(GetNode(startNode.m_n, startNode.m_m));
+
     while (!boundaryEdges.empty())
     {
-        if (sharedNode == startNode)
+        result.push_back(GetNode(startNode.m_n, startNode.m_m));
+        while (sharedNode != startNode)
         {
-            result.push_back(GetNode(startNode.m_n, startNode.m_m));
+            result.push_back(GetNode(sharedNode.m_n, sharedNode.m_m));
 
             boundaryEdges.erase(currentEdge);
-            if (boundaryEdges.empty())
-            {
-                break;
-            }
+            currentEdge = std::ranges::find_if(boundaryEdges, [&](const CurvilinearEdge& edge)
+                                               { return edge.first == sharedNode ||
+                                                        edge.second == sharedNode; });
 
-            result.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
-            currentEdge = boundaryEdges.begin();
-            startNode = currentEdge->first;
-            sharedNode = currentEdge->second;
-            result.push_back(GetNode(startNode.m_n, startNode.m_m));
-            continue;
+            sharedNode = currentEdge->first == sharedNode ? currentEdge->second : currentEdge->first;
         }
-
-        result.push_back(GetNode(sharedNode.m_n, sharedNode.m_m));
-
+        result.push_back(GetNode(startNode.m_n, startNode.m_m));
         boundaryEdges.erase(currentEdge);
-
         if (boundaryEdges.empty())
         {
-            break;
+            return result;
         }
 
-        currentEdge = std::ranges::find_if(boundaryEdges, [&](const CurvilinearEdge& edge)
-                                           { return edge.first == sharedNode ||
-                                                    edge.second == sharedNode; });
-
-        sharedNode = currentEdge->first == sharedNode ? currentEdge->second : currentEdge->first;
+        result.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
+        currentEdge = boundaryEdges.begin();
+        startNode = currentEdge->first;
+        sharedNode = currentEdge->second;
     }
 
     return result;
