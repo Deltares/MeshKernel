@@ -1318,24 +1318,14 @@ std::set<CurvilinearGrid::CurvilinearEdge> CurvilinearGrid::ComputeBoundaryEdges
 
     for (const auto& faceIndices : facesIndices)
     {
-        const auto numFaceNodes = static_cast<UInt>(faceIndices.size());
-        bool isFaceValid = true;
-
-        for (UInt i = 0u; i < numFaceNodes; ++i)
-        {
-            const auto curviNode = faceIndices[i];
-            if (!GetNode(curviNode.m_n, curviNode.m_m).IsValid())
-            {
-                isFaceValid = false;
-                break;
-            }
-        }
-
+        const bool isFaceValid = std::all_of(faceIndices.begin(), faceIndices.end(), [this](const CurvilinearGridNodeIndices& curviNode)
+                                             { return GetNode(curviNode.m_n, curviNode.m_m).IsValid(); });
         if (!isFaceValid)
         {
             continue;
         }
 
+        const auto numFaceNodes = static_cast<UInt>(faceIndices.size());
         for (UInt i = 0u; i < numFaceNodes; ++i)
         {
             const auto firstCurvilinearNodeIndex = faceIndices[i];
@@ -1377,11 +1367,13 @@ std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryToPolygon(const C
         if (sharedNode == startNode)
         {
             result.push_back(GetNode(startNode.m_n, startNode.m_m));
+
             boundaryEdges.erase(currentEdge);
             if (boundaryEdges.empty())
             {
                 break;
             }
+
             result.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
             currentEdge = boundaryEdges.begin();
             startNode = currentEdge->first;
