@@ -1316,14 +1316,14 @@ std::set<CurvilinearGrid::CurvilinearEdge> CurvilinearGrid::ComputeBoundaryEdges
     const auto facesIndices = ComputeFaceIndices(lowerLeft, upperRight);
     std::set<CurvilinearEdge> boundaryEdges;
 
-    for (const auto& faceIndex : facesIndices)
+    for (const auto& faceIndices : facesIndices)
     {
-        const auto numFaceNodes = static_cast<UInt>(faceIndex.size());
+        const auto numFaceNodes = static_cast<UInt>(faceIndices.size());
         bool isFaceValid = true;
 
         for (UInt i = 0u; i < numFaceNodes; ++i)
         {
-            const auto curviNode = faceIndex[i];
+            const auto curviNode = faceIndices[i];
             if (!GetNode(curviNode.m_n, curviNode.m_m).IsValid())
             {
                 isFaceValid = false;
@@ -1338,9 +1338,9 @@ std::set<CurvilinearGrid::CurvilinearEdge> CurvilinearGrid::ComputeBoundaryEdges
 
         for (UInt i = 0u; i < numFaceNodes; ++i)
         {
-            const auto firstCurvilinearNodeIndex = facesIndices[f][i];
+            const auto firstCurvilinearNodeIndex = faceIndices[i];
             const auto nextIndex = NextCircularForwardIndex(i, numFaceNodes);
-            const auto secondCurvilinearNodeIndex = facesIndices[f][nextIndex];
+            const auto secondCurvilinearNodeIndex = faceIndices[nextIndex];
 
             const auto edge = std::make_pair(std::min(firstCurvilinearNodeIndex, secondCurvilinearNodeIndex),
                                              std::max(firstCurvilinearNodeIndex, secondCurvilinearNodeIndex));
