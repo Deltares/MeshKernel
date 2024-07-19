@@ -405,6 +405,8 @@ namespace meshkernel
         std::vector<Point> GetNodeVectorAtN(UInt n) const { return lin_alg::MatrixColToSTLVector(m_gridNodes, n + m_startOffset.m_n); }
 
         /// @brief Compute the boundary polygon.
+        /// @param[in]  lowerLeft   The node index of the lower left corner
+        /// @param[in]  upperRight  The node index of the upper right corner
         /// @returns The vector containing the boundary polygon points
         [[nodiscard]] std::vector<Point> ComputeBoundaryToPolygon(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const;
 
@@ -474,10 +476,14 @@ namespace meshkernel
         [[nodiscard]] std::vector<CurvilinearEdgeNodeIndices> ComputeEdgeIndices() const;
 
         /// @brief Compute the face indices.
+        /// @param[in]  lowerLeft   The node index of the lower left corner
+        /// @param[in]  upperRight  The node index of the upper right corner
         /// @returns The  mapping (m and n indices for each node of the face)
         [[nodiscard]] std::vector<CurvilinearFaceNodeIndices> ComputeFaceIndices(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const;
 
         /// @brief Compute the boundary edges.
+        /// @param[in]  lowerLeft   The node index of the lower left corner
+        /// @param[in]  upperRight  The node index of the upper right corner
         /// @returns The set of boundary edges
         [[nodiscard]] std::set<CurvilinearEdge> ComputeBoundaryEdges(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const;
 

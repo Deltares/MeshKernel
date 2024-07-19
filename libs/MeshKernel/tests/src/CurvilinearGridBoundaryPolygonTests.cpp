@@ -21,7 +21,7 @@ TEST(CurvilinearGridBoundaryPolygon, ComputeBoundaryToPolygon_OnValidCurvilinear
 
     std::unique_ptr<CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
     CurvilinearGridNodeIndices lowerLeft(0, 0);
-    CurvilinearGridNodeIndices upperRight(nx - 1, ny - 1);
+    CurvilinearGridNodeIndices upperRight(ny - 1, nx - 1);
 
     // Execute
 
@@ -57,7 +57,7 @@ TEST(CurvilinearGridBoundaryPolygon, ComputeBoundaryToPolygon_OnValidCurvilinear
     auto undoAction = grid->DeleteNode({3.0, 0.0});
     undoAction = grid->DeleteNode({3.0, 3.0});
     CurvilinearGridNodeIndices lowerLeft(0, 0);
-    CurvilinearGridNodeIndices upperRight(nx - 1, ny - 1);
+    CurvilinearGridNodeIndices upperRight(ny - 1, nx - 1);
 
     // Execute
     const auto boundaryPolygon = grid->ComputeBoundaryToPolygon(lowerLeft, upperRight);
@@ -97,7 +97,7 @@ TEST(CurvilinearGridBoundaryPolygon, ComputeBoundaryToPolygon_OnValidCurvilinear
     auto undoAction = grid->DeleteNode({3.0, 1.0});
     undoAction = grid->DeleteNode({4.0, 1.0});
     CurvilinearGridNodeIndices lowerLeft(0, 0);
-    CurvilinearGridNodeIndices upperRight(nx - 1, ny - 1);
+    CurvilinearGridNodeIndices upperRight(ny - 1, nx - 1);
 
     // Execute
     const auto boundaryPolygon = grid->ComputeBoundaryToPolygon(lowerLeft, upperRight);

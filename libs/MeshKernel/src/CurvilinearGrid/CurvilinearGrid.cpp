@@ -1296,9 +1296,9 @@ std::vector<CurvilinearGrid::CurvilinearFaceNodeIndices> CurvilinearGrid::Comput
     std::vector<CurvilinearFaceNodeIndices> result(numNFaces * numMFaces);
 
     UInt index = 0;
-    for (UInt n = minN; n <= maxN; n++)
+    for (UInt n = minN; n < maxN; n++)
     {
-        for (UInt m = minM; m <= maxM; m++)
+        for (UInt m = minM; m < maxM; m++)
         {
             result[index][0] = {n, m};
             result[index][1] = {n, m + 1};
@@ -1316,14 +1316,14 @@ std::set<CurvilinearGrid::CurvilinearEdge> CurvilinearGrid::ComputeBoundaryEdges
     const auto facesIndices = ComputeFaceIndices(lowerLeft, upperRight);
     std::set<CurvilinearEdge> boundaryEdges;
 
-    for (const auto& faceIndices : facesIndices)
+    for (const auto& faceIndex : facesIndices)
     {
-        const auto numFaceNodes = static_cast<UInt>(faceIndices.size());
+        const auto numFaceNodes = static_cast<UInt>(faceIndex.size());
         bool isFaceValid = true;
+
         for (UInt i = 0u; i < numFaceNodes; ++i)
         {
-            const auto curviNode = faceIndices[i];
-
+            const auto curviNode = faceIndex[i];
             if (!GetNode(curviNode.m_n, curviNode.m_m).IsValid())
             {
                 isFaceValid = false;
@@ -1338,9 +1338,9 @@ std::set<CurvilinearGrid::CurvilinearEdge> CurvilinearGrid::ComputeBoundaryEdges
 
         for (UInt i = 0u; i < numFaceNodes; ++i)
         {
-            const auto firstCurvilinearNodeIndex = faceIndices[i];
+            const auto firstCurvilinearNodeIndex = facesIndices[f][i];
             const auto nextIndex = NextCircularForwardIndex(i, numFaceNodes);
-            const auto secondCurvilinearNodeIndex = faceIndices[nextIndex];
+            const auto secondCurvilinearNodeIndex = facesIndices[f][nextIndex];
 
             const auto edge = std::make_pair(std::min(firstCurvilinearNodeIndex, secondCurvilinearNodeIndex),
                                              std::max(firstCurvilinearNodeIndex, secondCurvilinearNodeIndex));
@@ -1374,7 +1374,6 @@ std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryToPolygon(const C
     result.push_back(GetNode(startNode.m_n, startNode.m_m));
     while (!boundaryEdges.empty())
     {
-        // handle disconnected boundaries
         if (sharedNode == startNode)
         {
             result.push_back(GetNode(startNode.m_n, startNode.m_m));

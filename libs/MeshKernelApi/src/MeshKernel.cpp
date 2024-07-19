@@ -707,10 +707,28 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("Invalid curvilinear grid");
             }
-            const auto lowerLeftNUnsigned = meshkernel::UInt(lowerLeftN);
-            const auto lowerLeftMUnsigned = meshkernel::UInt(lowerLeftM);
-            const auto upperRightNUnsigned = meshkernel::UInt(upperRightN);
-            const auto upperRightMUnsigned = meshkernel::UInt(upperRightM);
+
+            if (lowerLeftN < 0)
+            {
+                throw meshkernel::MeshKernelError("The lower left n index cannot be smaller than 0");
+            }
+            if (lowerLeftM < 0)
+            {
+                throw meshkernel::MeshKernelError("The lower left m index cannot be smaller than 0");
+            }
+            if (upperRightN < 0)
+            {
+                throw meshkernel::MeshKernelError("The upper right n index cannot be smaller than 0");
+            }
+            if (upperRightM < 0)
+            {
+                throw meshkernel::MeshKernelError("The upper right m index cannot be smaller than 0");
+            }
+
+            const auto lowerLeftNUnsigned = static_cast<meshkernel::UInt>(lowerLeftN);
+            const auto lowerLeftMUnsigned = static_cast<meshkernel::UInt>(lowerLeftM);
+            const auto upperRightNUnsigned = static_cast<meshkernel::UInt>(upperRightN);
+            const auto upperRightMUnsigned = static_cast<meshkernel::UInt>(upperRightM);
             const auto boundaryPolygon = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeBoundaryToPolygon({lowerLeftNUnsigned, lowerLeftMUnsigned},
                                                                                                                    {upperRightNUnsigned, upperRightMUnsigned});
             ConvertPointVectorToGeometryList(boundaryPolygon, boundaryPolygons);
@@ -736,10 +754,28 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("Invalid curvilinear grid");
             }
-            const auto lowerLeftNUnsigned = meshkernel::UInt(lowerLeftN);
-            const auto lowerLeftMUnsigned = meshkernel::UInt(lowerLeftM);
-            const auto upperRightNUnsigned = meshkernel::UInt(upperRightN);
-            const auto upperRightMUnsigned = meshkernel::UInt(upperRightM);
+
+            if (lowerLeftN < 0)
+            {
+                throw meshkernel::MeshKernelError("The lower left n index cannot be smaller than 0");
+            }
+            if (lowerLeftM < 0)
+            {
+                throw meshkernel::MeshKernelError("The lower left m index cannot be smaller than 0");
+            }
+            if (upperRightN < 0)
+            {
+                throw meshkernel::MeshKernelError("The upper right n index cannot be smaller than 0");
+            }
+            if (upperRightM < 0)
+            {
+                throw meshkernel::MeshKernelError("The upper right m index cannot be smaller than 0");
+            }
+
+            const auto lowerLeftNUnsigned = static_cast<meshkernel::UInt>(lowerLeftN);
+            const auto lowerLeftMUnsigned = static_cast<meshkernel::UInt>(lowerLeftM);
+            const auto upperRightNUnsigned = static_cast<meshkernel::UInt>(upperRightN);
+            const auto upperRightMUnsigned = static_cast<meshkernel::UInt>(upperRightM);
             const auto boundaryPolygon = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeBoundaryToPolygon({lowerLeftNUnsigned, lowerLeftMUnsigned},
                                                                                                                    {upperRightNUnsigned, upperRightMUnsigned});
             numberOfPolygonNodes = static_cast<int>(boundaryPolygon.size());
