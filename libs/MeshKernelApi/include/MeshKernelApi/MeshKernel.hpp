@@ -312,18 +312,18 @@ namespace meshkernelapi
         /// @param[in]  lowerLeftM   The m index of the lower left corner
         /// @param[in]  upperRightN  The n index of the upper right corner
         /// @param[in]  upperRightM  The m index of the upper right corner
-        /// @param[out] boundaryPolygons The geometry list containing the boundary polygons.
+        /// @param[out] boundaryPolygons The geometry list containing the boundary polygons
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_get_boundaries_as_polygons(int meshKernelId, int lowerLeftN, int lowerLeftM, int upperRightN, int upperRightM, GeometryList& boundaryPolygons);
 
-        /// @brief Count the number of nodes of curvilinear grid boundary polygons.
+        /// @brief Count the number of nodes in curvilinear grid boundary polygons.
         ///
         /// @param[in]  meshKernelId The id of the mesh state
         /// @param[in]  lowerLeftN   The n index of the lower left corner
         /// @param[in]  lowerLeftM   The m index of the lower left corner
         /// @param[in]  upperRightN  The n index of the upper right corner
         /// @param[in]  upperRightM  The m index of the upper right corner
-        /// @param[out] numberOfPolygonNodes The number of polygon nodes.
+        /// @param[out] numberOfPolygonNodes The number of polygon nodes
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_count_boundaries_as_polygons(int meshKernelId, int lowerLeftN, int lowerLeftM, int upperRightN, int upperRightM, int& numberOfPolygonNodes);
 

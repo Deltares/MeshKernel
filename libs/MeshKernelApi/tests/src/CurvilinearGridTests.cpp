@@ -1452,9 +1452,11 @@ TEST(CurvilinearGrid, CurvilinearGetBoundariesAsPolygons_ShouldGetBoundariesAsPo
     makeGridParameters.block_size_y = 10.0;
 
     errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     int numberOfPolygonNodes;
     errorCode = meshkernelapi::mkernel_curvilinear_count_boundaries_as_polygons(meshKernelId, 0, 0, 9, 9, numberOfPolygonNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::GeometryList boundaryPolygon;
     std::vector<double> coordinates_x(numberOfPolygonNodes);
@@ -1466,6 +1468,5 @@ TEST(CurvilinearGrid, CurvilinearGetBoundariesAsPolygons_ShouldGetBoundariesAsPo
     boundaryPolygon.geometry_separator = constants::missing::doubleValue;
 
     errorCode = mkernel_curvilinear_get_boundaries_as_polygons(meshKernelId, 0, 0, 9, 9, boundaryPolygon);
-
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }

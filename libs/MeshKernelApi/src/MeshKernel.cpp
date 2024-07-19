@@ -696,7 +696,6 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
-            meshKernelState[meshKernelId].m_curvilinearGrid;
 
             if (!meshKernelState.contains(meshKernelId))
             {
