@@ -79,7 +79,9 @@ TEST_F(CartesianApiTestFixture, LinearRefineAPolygonThroughApi)
     geometryListIn.num_coordinates = static_cast<int>(xCoordinatesIn.size());
 
     // Execute
-    int expectedNumberOfpolygonNodes = 8;
+    int expectedNumberOfpolygonNodes;
+    auto errorCode = mkernel_polygon_count_linear_refine(meshKernelId, geometryListIn, 1, 4, expectedNumberOfpolygonNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::GeometryList geometryListOut;
     geometryListOut.num_coordinates = expectedNumberOfpolygonNodes;
@@ -89,7 +91,7 @@ TEST_F(CartesianApiTestFixture, LinearRefineAPolygonThroughApi)
     geometryListOut.coordinates_x = xCoordinatesOut.data();
     geometryListOut.coordinates_y = yCoordinatesOut.data();
 
-    auto errorCode = mkernel_polygon_linear_refine(meshKernelId, geometryListIn, 1, 4, geometryListOut);
+    errorCode = mkernel_polygon_linear_refine(meshKernelId, geometryListIn, 1, 4, geometryListOut);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert

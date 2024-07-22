@@ -1563,6 +1563,21 @@ namespace meshkernelapi
                                                      double distance,
                                                      int& numberOfPolygonNodes);
 
+        /// @brief Counts the number of polygon nodes resulting from polygon refinement with `mkernel_polygon_linear_refine`.
+        ///
+        /// This function should be used by clients before `mkernel_polygon_linear_refine` for allocating \ref GeometryList containing the refinement result.
+        /// @param[in] meshKernelId          The id of the mesh state
+        /// @param[in] polygonToRefine       The input polygon to refine
+        /// @param[in] firstIndex            The first index of the refinement interval
+        /// @param[in] secondIndex           The second index of the refinement interval
+        /// @param[out] numberOfPolygonNodes The number of nodes after refinement
+        /// @returns Error code
+        MKERNEL_API int mkernel_polygon_count_linear_refine(int meshKernelId,
+                                                            const GeometryList& polygonToRefine,
+                                                            int firstIndex,
+                                                            int secondIndex,
+                                                            int& numberOfPolygonNodes);
+
         /// @brief Selects the polygon nodes within another polygon.
         /// @param[in]  meshKernelId   The id of the mesh state
         /// @param[in]  selectingPolygon   The selecting polygon (num_coordinates = 0 for an empty polygon)
