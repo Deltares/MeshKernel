@@ -1564,3 +1564,58 @@ TEST(CurvilinearGrid, MakeCircularGrid_CartesianCoordinate_ShouldMakeCurvilinear
     errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
+
+TEST(CurvilinearGrid, MakeCircularGrid_CartesianCoordinate_ShouldFail)
+{
+    int meshKernelId = 0;
+    int projectionType = 0;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernel::MakeGridParameters parameters = {.num_columns = 14,
+                                                 .num_rows = 10,
+                                                 .angle = 32.0,
+                                                 .origin_x = 17.0,
+                                                 .origin_y = -23.0,
+                                                 .radius_curvature = 10.0,
+                                                 .uniform_columns_fraction = -1.0,
+                                                 .uniform_rows_fraction = 0.0};
+
+    //--------------------------------
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_circular_grid(meshKernelId, parameters);
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+    parameters.uniform_columns_fraction = 1.0;
+
+    //--------------------------------
+    parameters.uniform_rows_fraction = -1.0;
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_circular_grid(meshKernelId, parameters);
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+    parameters.uniform_rows_fraction = 1.0;
+
+    //--------------------------------
+    parameters.maximum_uniform_size_columns = -1.0;
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_circular_grid(meshKernelId, parameters);
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+    parameters.maximum_uniform_size_columns = 1.0;
+
+    //--------------------------------
+    parameters.maximum_uniform_size_rows = -1.0;
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_circular_grid(meshKernelId, parameters);
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+    parameters.maximum_uniform_size_rows = 1.0;
+
+    //--------------------------------
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_circular_grid(meshKernelId + 100, parameters);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    //--------------------------------
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_circular_grid(meshKernelId, parameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Now try to generate another grid with the same mesh kernel id
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_circular_grid(meshKernelId, parameters);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+}
