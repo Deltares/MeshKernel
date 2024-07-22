@@ -38,10 +38,14 @@
 namespace meshkernel
 {
 
+    /// @brief Generate a graded rectangular mesh or a circular mesh.
     class CurvilinearGridGenerateCircularGrid final
     {
     public:
-        /// @brief Generate the circular grid
+        /// @brief Generate the grid.
+        ///
+        /// if parameters.radius_curvature = 0.0 then a graded rectangular grid will be generated
+        /// otherwise a circular grid will be generated
         CurvilinearGrid Compute(const MakeGridParameters& parameters, const Projection projection) const;
 
     private:

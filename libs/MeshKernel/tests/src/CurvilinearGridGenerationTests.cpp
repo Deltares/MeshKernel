@@ -91,7 +91,7 @@ TEST(CurvilinearGridGenerationTests, FullyUniformGridRotated)
         .angle = 23.0, // degrees
         .block_size_x = 7.0,
         .block_size_y = 15.0,
-        .radius_curvature_columns = 0.0,
+        .radius_curvature = 0.0,
         .uniform_columns_fraction = 1.0,
         .uniform_rows_fraction = 1.0};
 
@@ -228,7 +228,7 @@ TEST(CurvilinearGridGenerationTests, UniformCircularGrid)
         .num_columns = 10,
         .num_rows = 10,
         .angle = 0.0,
-        .radius_curvature_columns = 10.0,
+        .radius_curvature = 10.0,
         .uniform_columns_fraction = 1.0,
         .uniform_rows_fraction = 1.0,
         .maximum_uniform_size_columns = 10.0,
@@ -275,7 +275,7 @@ TEST(CurvilinearGridGenerationTests, HalfUniformCircularGrid)
         .num_columns = 10,
         .num_rows = 10,
         .angle = 0.0,
-        .radius_curvature_columns = 10.0,
+        .radius_curvature = 10.0,
         .uniform_columns_fraction = 1.0,
         .uniform_rows_fraction = 0.5,
         .maximum_uniform_size_columns = 10.0,
@@ -324,7 +324,7 @@ TEST(CurvilinearGridGenerationTests, ShiftedRotatedCircularGrid)
         .angle = 32.0,
         .origin_x = 17.0,
         .origin_y = -23.0,
-        .radius_curvature_columns = 10.0,
+        .radius_curvature = 10.0,
         .uniform_columns_fraction = 1.0,
         .uniform_rows_fraction = 0.0};
 

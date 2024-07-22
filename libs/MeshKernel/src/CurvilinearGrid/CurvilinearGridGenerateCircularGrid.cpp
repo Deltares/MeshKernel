@@ -154,7 +154,7 @@ std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeRadi
 {
     const UInt size = static_cast<UInt>(parameters.num_rows + 1);
     const double blockSize = parameters.block_size_y;
-    const double r0 = parameters.radius_curvature_columns;
+    const double r0 = parameters.radius_curvature;
 
     std::vector<double> radiusValues(size);
 
@@ -204,7 +204,7 @@ std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeThet
     const UInt size = static_cast<UInt>(parameters.num_columns + 1);
     std::vector<double> thetaValues(size);
 
-    double deltaTheta = parameters.block_size_x / parameters.radius_curvature_columns;
+    double deltaTheta = parameters.block_size_x / parameters.radius_curvature;
 
     if (deltaTheta * static_cast<double>(size - 1) > 2.0 * std::numbers::pi_v<double>)
     {
@@ -256,7 +256,7 @@ lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGr
 
 lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGrid::GenerateGridPoints(const MakeGridParameters& parameters) const
 {
-    if (parameters.radius_curvature_columns == 0.0)
+    if (parameters.radius_curvature == 0.0)
     {
         return GenerateRectangularGrid(parameters);
     }
