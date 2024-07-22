@@ -64,7 +64,7 @@ namespace meshkernel
         double upper_right_y = 0.0;
 
         /// @brief Radius of curvature
-        double radius_curvature_columns = 0.0;
+        double radius_curvature = 0.0;
 
         /// @brief Fraction of cells containing the default grid column size
         ///
@@ -88,7 +88,7 @@ namespace meshkernel
         range_check::CheckInClosedInterval(parameters.angle, {-90.0, 90.0}, "Grid angle");
         range_check::CheckGreater(parameters.block_size_x, 0.0, "X block size");
         range_check::CheckGreater(parameters.block_size_y, 0.0, "Y block size");
-        range_check::CheckGreaterEqual(parameters.radius_curvature_columns, 0.0, "Radius of curvature");
+        range_check::CheckGreaterEqual(parameters.radius_curvature, 0.0, "Radius of curvature");
         range_check::CheckGreaterEqual(parameters.uniform_columns_fraction, 0.0, "Uniform m-fraction");
         range_check::CheckGreaterEqual(parameters.uniform_rows_fraction, 0.0, "Uniform n-fraction");
         range_check::CheckGreaterEqual(parameters.maximum_uniform_size_columns, 0.0, "Maximum size / delta-x");
