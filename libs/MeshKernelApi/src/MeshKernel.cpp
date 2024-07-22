@@ -1593,7 +1593,7 @@ namespace meshkernelapi
 
             auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
 
-            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_projection);
 
             const auto refinedPolygon = polygon.RefineFirstPolygon(firstIndex, secondIndex, distance);
 
@@ -1621,7 +1621,7 @@ namespace meshkernelapi
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             auto const refinementResult = polygon.LinearRefinePolygon(0, firstNodeIndex, secondNodeIndex);
 
-            numberOfPolygonNodes = int(refinementResult.size());
+            numberOfPolygonNodes = static_cast<int>(refinementResult.size());
         }
         catch (...)
         {
