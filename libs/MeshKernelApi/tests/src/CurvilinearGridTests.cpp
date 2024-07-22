@@ -1442,7 +1442,7 @@ TEST(CurvilinearGrid, MakeCircularGrid_CartesianCoordinate_ShouldMakeCurvilinear
                                                  .angle = 32.0,
                                                  .origin_x = 17.0,
                                                  .origin_y = -23.0,
-                                                 .radius_curvature_columns = 10.0,
+                                                 .radius_curvature = 10.0,
                                                  .uniform_columns_fraction = 1.0,
                                                  .uniform_rows_fraction = 0.0};
 
@@ -1500,4 +1500,7 @@ TEST(CurvilinearGrid, MakeCircularGrid_CartesianCoordinate_ShouldMakeCurvilinear
             ++count;
         }
     }
+
+    errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
