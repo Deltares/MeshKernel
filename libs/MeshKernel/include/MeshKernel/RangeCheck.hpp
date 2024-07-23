@@ -45,13 +45,13 @@ namespace meshkernel
         /// @brief Defines the checkable types: floating point types and inetgral types except for bool and char.
         template <typename T>
         concept RangeCheckableType = std::floating_point<T> ||
-                                     (std::integral<T> &&
-                                      !std::same_as<T, bool> &&
-                                      !std::same_as<T, char> &&
-                                      !std::same_as<T, char8_t> &&
-                                      !std::same_as<T, char16_t> &&
-                                      !std::same_as<T, char32_t> &&
-                                      !std::same_as<T, wchar_t>);
+            (std::integral<T> &&
+             !std::same_as<T, bool> &&
+             !std::same_as<T, char> &&
+             !std::same_as<T, char8_t> &&
+             !std::same_as<T, char16_t> &&
+             !std::same_as<T, char32_t> &&
+             !std::same_as<T, wchar_t>);
 
         /// @brief  Keys of performed comparison
         enum class Comparison
@@ -69,8 +69,7 @@ namespace meshkernel
             OutsideClosedInterval,   ///< Outside closed interval
             OutsideOpenInterval,     ///< Outside open interval
             OneOf,                   ///< One of
-            NoneOf,                  ///< None of
-            Precondition             ///< Satisfies a user defined precondition
+            NoneOf                   ///< None of
         };
 
         /// @brief Maps the comparison keys to valid range format string (used for the generation of error messages)
@@ -88,8 +87,7 @@ namespace meshkernel
             {Comparison::OutsideClosedInterval, "value < {} and value > {}"},
             {Comparison::OutsideOpenInterval, "value <= {} and value >= {}"},
             {Comparison::OneOf, "value is one of {}"},
-            {Comparison::NoneOf, "value is none of {}"},
-            {Comparison::Precondition, "value should satisfy: {}"} //
+            {Comparison::NoneOf, "value is none of {}"}
         };
 
         /// @brief Checks the validity of a value given a bound, supports the predicates ==, !=, >, >=, <, and <=
@@ -587,6 +585,13 @@ namespace meshkernel
                           variable_name);
         }
 
+        /// @brief Checks if a value satisfies a user defined precondition
+        /// @tparam T The type of the value to check (RangeCheckableType)
+        /// @param value The value to check
+        /// @param variable_name The name or description of the variable whose value is checked
+        ///                      (It is recommended to use a concise string)
+        /// @param precondition_name The name or description of the precondition
+        /// @param precondition The precondition required to be satisfied
         template <RangeCheckableType T, class Precondition>
         inline static void CheckPrecondition(T const& value,
                                              std::string_view const variable_name,
@@ -595,12 +600,10 @@ namespace meshkernel
         {
             if (!precondition(value))
             {
-                throw RangeError(
-                    fmt_ns::format("{{}} = {{}} precondition not satisfied: {}",
-                                   ValidRangeFormat.at(Comparison::Precondition)),
-                    variable_name,
-                    value,
-                    precondition_name);
+                throw RangeError("{{}} = {{}} precondition not satisfied: value should satisfy: {}",
+                                 variable_name,
+                                 value,
+                                 precondition_name);
             }
         }
 
