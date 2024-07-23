@@ -18,10 +18,10 @@ set(
   ${SRC_DIR}/CurvilinearGridBasicTests.cpp
   ${SRC_DIR}/CurvilinearGridCurvatureTests.cpp
   ${SRC_DIR}/CurvilinearGridDeRefinementTests.cpp
-  ${SRC_DIR}/CurvilinearGridGenerationTests.cpp
   ${SRC_DIR}/CurvilinearGridFromPolygonTests.cpp
   ${SRC_DIR}/CurvilinearGridFromSplinesTests.cpp
   ${SRC_DIR}/CurvilinearGridFromSplinesTransfiniteTests.cpp
+  ${SRC_DIR}/CurvilinearGridGenerationTests.cpp
   ${SRC_DIR}/CurvilinearGridLineAttractionRepulsionTest.cpp
   ${SRC_DIR}/CurvilinearGridLineMirrorTests.cpp
   ${SRC_DIR}/CurvilinearGridLineShiftTests.cpp

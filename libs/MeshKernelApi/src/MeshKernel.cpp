@@ -3745,8 +3745,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh already contains a valid grid.");
             }
 
-            meshkernel::CurvilinearGridGenerateCircularGrid generateGrid;
-            auto generatedGrid = std::make_unique<meshkernel::CurvilinearGrid>(generateGrid.Compute(parameters, meshKernelState[meshKernelId].m_projection));
+            auto generatedGrid = std::make_unique<meshkernel::CurvilinearGrid>(meshkernel::CurvilinearGridGenerateCircularGrid::Compute(parameters, meshKernelState[meshKernelId].m_projection));
             meshKernelState[meshKernelId].m_curvilinearGrid = std::move(generatedGrid);
         }
         catch (...)

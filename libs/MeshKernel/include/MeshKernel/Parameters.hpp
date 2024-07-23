@@ -93,6 +93,18 @@ namespace meshkernel
         range_check::CheckGreaterEqual(parameters.uniform_rows_fraction, 0.0, "Uniform n-fraction");
         range_check::CheckGreaterEqual(parameters.maximum_uniform_size_columns, 0.0, "Maximum size / delta-x");
         range_check::CheckGreaterEqual(parameters.maximum_uniform_size_rows, 0.0, "Maximum size / delta-y");
+
+        auto isFinite = [](const double value){return std::isfinite (value);};
+
+        range_check::CheckPrecondition(parameters.block_size_x, "X block size", "value is finite", isFinite);
+        range_check::CheckPrecondition(parameters.block_size_y, "Y block size", "value is finite", isFinite);
+        range_check::CheckPrecondition(parameters.radius_curvature, "Radius of curvature", "value is finite", isFinite);
+        range_check::CheckPrecondition(parameters.maximum_uniform_size_columns, "Maximum size / delta-x", "value is finite", isFinite);
+        range_check::CheckPrecondition(parameters.maximum_uniform_size_rows, "Maximum size / delta-y", "value is finite", isFinite);
+        range_check::CheckPrecondition(parameters.uniform_columns_fraction, "Uniform m-fraction", "value is finite", isFinite);
+        range_check::CheckPrecondition(parameters.uniform_rows_fraction, "Uniform n-fraction", "value is finite", isFinite);
+
+
     }
 
     /// @brief A struct used to describe parameters for generating a curvilinear grid in a C-compatible manner

@@ -46,9 +46,7 @@ namespace mk = meshkernel;
 TEST(CurvilinearGridGenerationTests, FullyUniformGrid)
 {
 
-    mk::CurvilinearGridGenerateCircularGrid generate;
-
-    mk::MakeGridParameters parameters = {
+    const mk::MakeGridParameters parameters = {
         .num_columns = 10,
         .num_rows = 12,
         .angle = 0.0,
@@ -57,12 +55,12 @@ TEST(CurvilinearGridGenerationTests, FullyUniformGrid)
         .uniform_columns_fraction = 1.0,
         .uniform_rows_fraction = 1.0};
 
-    auto grid = generate.Compute(parameters, mk::Projection::cartesian);
+    auto grid = mk::CurvilinearGridGenerateCircularGrid::Compute(parameters, mk::Projection::cartesian);
 
     ASSERT_EQ(grid.NumM(), static_cast<mk::UInt>(parameters.num_columns + 1));
     ASSERT_EQ(grid.NumN(), static_cast<mk::UInt>(parameters.num_rows + 1));
 
-    const double tolerance = 1.0e-10;
+    constexpr double tolerance = 1.0e-10;
     double y = 0.0;
 
     for (mk::UInt i = 0; i < grid.NumN(); ++i)
@@ -83,9 +81,7 @@ TEST(CurvilinearGridGenerationTests, FullyUniformGrid)
 TEST(CurvilinearGridGenerationTests, FullyUniformGridRotated)
 {
 
-    mk::CurvilinearGridGenerateCircularGrid generate;
-
-    mk::MakeGridParameters parameters = {
+    const mk::MakeGridParameters parameters = {
         .num_columns = 19,
         .num_rows = 7,
         .angle = 23.0, // degrees
@@ -95,9 +91,9 @@ TEST(CurvilinearGridGenerationTests, FullyUniformGridRotated)
         .uniform_columns_fraction = 1.0,
         .uniform_rows_fraction = 1.0};
 
-    auto grid = generate.Compute(parameters, mk::Projection::cartesian);
+    auto grid = mk::CurvilinearGridGenerateCircularGrid::Compute(parameters, mk::Projection::cartesian);
 
-    const double tolerance = 1.0e-10;
+    constexpr double tolerance = 1.0e-10;
 
     double cs = std::cos(parameters.angle * mk::constants::conversion::degToRad);
     double sn = std::sin(parameters.angle * mk::constants::conversion::degToRad);
@@ -127,9 +123,7 @@ TEST(CurvilinearGridGenerationTests, FullyUniformGridRotated)
 TEST(CurvilinearGridGenerationTests, UniformXGradedYGrid)
 {
 
-    mk::CurvilinearGridGenerateCircularGrid generate;
-
-    mk::MakeGridParameters parameters = {
+    const mk::MakeGridParameters parameters = {
         .num_columns = 10,
         .num_rows = 12,
         .angle = 0.0,
@@ -138,7 +132,7 @@ TEST(CurvilinearGridGenerationTests, UniformXGradedYGrid)
         .uniform_columns_fraction = 1.0,
         .uniform_rows_fraction = 0.0};
 
-    auto grid = generate.Compute(parameters, mk::Projection::cartesian);
+    auto grid = mk::CurvilinearGridGenerateCircularGrid::Compute(parameters, mk::Projection::cartesian);
 
     std::vector<double> gradedYValues{0.0,
                                       31.6763921753316,
@@ -157,7 +151,7 @@ TEST(CurvilinearGridGenerationTests, UniformXGradedYGrid)
     ASSERT_EQ(grid.NumM(), static_cast<mk::UInt>(parameters.num_columns + 1));
     ASSERT_EQ(grid.NumN(), static_cast<mk::UInt>(parameters.num_rows + 1));
 
-    const double tolerance = 1.0e-10;
+    constexpr double tolerance = 1.0e-10;
 
     for (mk::UInt i = 0; i < grid.NumN(); ++i)
     {
@@ -175,9 +169,7 @@ TEST(CurvilinearGridGenerationTests, UniformXGradedYGrid)
 TEST(CurvilinearGridGenerationTests, GradedXUniformYGrid)
 {
 
-    mk::CurvilinearGridGenerateCircularGrid generate;
-
-    mk::MakeGridParameters parameters = {
+    const mk::MakeGridParameters parameters = {
         .num_columns = 10,
         .num_rows = 12,
         .angle = 0.0,
@@ -186,7 +178,7 @@ TEST(CurvilinearGridGenerationTests, GradedXUniformYGrid)
         .uniform_columns_fraction = 0.0,
         .uniform_rows_fraction = 1.0};
 
-    auto grid = generate.Compute(parameters, mk::Projection::cartesian);
+    auto grid = mk::CurvilinearGridGenerateCircularGrid::Compute(parameters, mk::Projection::cartesian);
 
     std::vector<double> gradedXValues{0.0,
                                       38.2362245665865,
@@ -203,7 +195,7 @@ TEST(CurvilinearGridGenerationTests, GradedXUniformYGrid)
     ASSERT_EQ(grid.NumM(), static_cast<mk::UInt>(parameters.num_columns + 1));
     ASSERT_EQ(grid.NumN(), static_cast<mk::UInt>(parameters.num_rows + 1));
 
-    const double tolerance = 1.0e-10;
+    constexpr double tolerance = 1.0e-10;
     double y = 0.0;
 
     for (mk::UInt i = 0; i < grid.NumN(); ++i)
@@ -222,9 +214,7 @@ TEST(CurvilinearGridGenerationTests, GradedXUniformYGrid)
 TEST(CurvilinearGridGenerationTests, UniformCircularGrid)
 {
 
-    mk::CurvilinearGridGenerateCircularGrid generate;
-
-    mk::MakeGridParameters parameters = {
+    const mk::MakeGridParameters parameters = {
         .num_columns = 10,
         .num_rows = 10,
         .angle = 0.0,
@@ -234,7 +224,7 @@ TEST(CurvilinearGridGenerationTests, UniformCircularGrid)
         .maximum_uniform_size_columns = 10.0,
         .maximum_uniform_size_rows = 10.0};
 
-    auto grid = generate.Compute(parameters, mk::Projection::cartesian);
+    auto grid = mk::CurvilinearGridGenerateCircularGrid::Compute(parameters, mk::Projection::cartesian);
 
     std::vector<double> radiusValues{10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0, 100.0, 110.0};
     std::vector<double> thetaValues{1.5707963267949,
@@ -252,7 +242,7 @@ TEST(CurvilinearGridGenerationTests, UniformCircularGrid)
     ASSERT_EQ(grid.NumM(), static_cast<mk::UInt>(parameters.num_columns + 1));
     ASSERT_EQ(grid.NumN(), static_cast<mk::UInt>(parameters.num_rows + 1));
 
-    const double tolerance = 1.0e-10;
+    constexpr double tolerance = 1.0e-10;
 
     for (mk::UInt i = 0; i < grid.NumN(); ++i)
     {
@@ -269,9 +259,7 @@ TEST(CurvilinearGridGenerationTests, UniformCircularGrid)
 TEST(CurvilinearGridGenerationTests, HalfUniformCircularGrid)
 {
 
-    mk::CurvilinearGridGenerateCircularGrid generate;
-
-    mk::MakeGridParameters parameters = {
+    const mk::MakeGridParameters parameters = {
         .num_columns = 10,
         .num_rows = 10,
         .angle = 0.0,
@@ -281,7 +269,7 @@ TEST(CurvilinearGridGenerationTests, HalfUniformCircularGrid)
         .maximum_uniform_size_columns = 10.0,
         .maximum_uniform_size_rows = 10.0};
 
-    auto grid = generate.Compute(parameters, mk::Projection::cartesian);
+    auto grid = mk::CurvilinearGridGenerateCircularGrid::Compute(parameters, mk::Projection::cartesian);
 
     std::vector<double> radiusValues{20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 101.544346900319, 147.960235236447, 247.960235236447, 463.403704239635};
     std::vector<double> thetaValues{1.5707963267949,
@@ -299,7 +287,7 @@ TEST(CurvilinearGridGenerationTests, HalfUniformCircularGrid)
     ASSERT_EQ(grid.NumM(), static_cast<mk::UInt>(parameters.num_columns + 1));
     ASSERT_EQ(grid.NumN(), static_cast<mk::UInt>(parameters.num_rows + 1));
 
-    const double tolerance = 1.0e-10;
+    constexpr double tolerance = 1.0e-10;
 
     for (mk::UInt i = 0; i < grid.NumN(); ++i)
     {
@@ -316,9 +304,7 @@ TEST(CurvilinearGridGenerationTests, HalfUniformCircularGrid)
 TEST(CurvilinearGridGenerationTests, ShiftedRotatedCircularGrid)
 {
 
-    mk::CurvilinearGridGenerateCircularGrid generate;
-
-    mk::MakeGridParameters parameters = {
+    const mk::MakeGridParameters parameters = {
         .num_columns = 14,
         .num_rows = 10,
         .angle = 32.0,
@@ -328,7 +314,7 @@ TEST(CurvilinearGridGenerationTests, ShiftedRotatedCircularGrid)
         .uniform_columns_fraction = 1.0,
         .uniform_rows_fraction = 0.0};
 
-    auto grid = generate.Compute(parameters, mk::Projection::cartesian);
+    auto grid = mk::CurvilinearGridGenerateCircularGrid::Compute(parameters, mk::Projection::cartesian);
 
     std::vector<double> radiusValues{20.0, 33.0766048601183, 50.1763643268853,
                                      72.5370441018832, 101.777221484012, 140.013446050598,
@@ -343,7 +329,7 @@ TEST(CurvilinearGridGenerationTests, ShiftedRotatedCircularGrid)
     ASSERT_EQ(grid.NumM(), static_cast<mk::UInt>(parameters.num_columns + 1));
     ASSERT_EQ(grid.NumN(), static_cast<mk::UInt>(parameters.num_rows + 1));
 
-    const double tolerance = 1.0e-10;
+    constexpr double tolerance = 1.0e-10;
 
     for (mk::UInt i = 0; i < grid.NumN(); ++i)
     {

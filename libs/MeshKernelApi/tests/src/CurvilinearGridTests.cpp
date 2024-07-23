@@ -1273,7 +1273,6 @@ TEST(CurvilinearGrid, SnapToLandBoundary)
     land.coordinates_x = landXCoordinates.data();
     land.coordinates_y = landYCoordinates.data();
 
-    //--------------------------------
 
     double sectionControlPoint1x = 0.0;
     double sectionControlPoint1y = 100.0;
@@ -1296,7 +1295,6 @@ TEST(CurvilinearGrid, SnapToLandBoundary)
         EXPECT_NEAR(curvilinearGrid.node_y[i], expectedPointsY[i], tolerance);
     }
 
-    //--------------------------------
     // Now undo snapping.
 
     bool didUndoOfDeleteNode = false;
@@ -1392,7 +1390,6 @@ TEST(CurvilinearGrid, SnapToSpline)
     spline.coordinates_x = splineXCoordinates.data();
     spline.coordinates_y = splineYCoordinates.data();
 
-    //--------------------------------
 
     double sectionControlPoint1x = 10.0;
     double sectionControlPoint1y = 8.0;
@@ -1415,7 +1412,6 @@ TEST(CurvilinearGrid, SnapToSpline)
         EXPECT_NEAR(curvilinearGrid.node_y[i], expectedPointsY[i], tolerance);
     }
 
-    //--------------------------------
     // Now undo snapping.
 
     bool didUndoOfDeleteNode = false;
@@ -1521,34 +1517,28 @@ TEST(CurvilinearGrid, MakeCircularGrid_CartesianCoordinate_ShouldFail)
                                                  .uniform_columns_fraction = -1.0,
                                                  .uniform_rows_fraction = 0.0};
 
-    //--------------------------------
     errorCode = meshkernelapi::mkernel_curvilinear_compute_circular_grid(meshKernelId, parameters);
-    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::RangeErrorCode, errorCode);
     parameters.uniform_columns_fraction = 1.0;
 
-    //--------------------------------
     parameters.uniform_rows_fraction = -1.0;
     errorCode = meshkernelapi::mkernel_curvilinear_compute_circular_grid(meshKernelId, parameters);
-    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::RangeErrorCode, errorCode);
     parameters.uniform_rows_fraction = 1.0;
 
-    //--------------------------------
     parameters.maximum_uniform_size_columns = -1.0;
     errorCode = meshkernelapi::mkernel_curvilinear_compute_circular_grid(meshKernelId, parameters);
-    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::RangeErrorCode, errorCode);
     parameters.maximum_uniform_size_columns = 1.0;
 
-    //--------------------------------
     parameters.maximum_uniform_size_rows = -1.0;
     errorCode = meshkernelapi::mkernel_curvilinear_compute_circular_grid(meshKernelId, parameters);
-    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::RangeErrorCode, errorCode);
     parameters.maximum_uniform_size_rows = 1.0;
 
-    //--------------------------------
     errorCode = meshkernelapi::mkernel_curvilinear_compute_circular_grid(meshKernelId + 100, parameters);
     ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
 
-    //--------------------------------
     errorCode = meshkernelapi::mkernel_curvilinear_compute_circular_grid(meshKernelId, parameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
