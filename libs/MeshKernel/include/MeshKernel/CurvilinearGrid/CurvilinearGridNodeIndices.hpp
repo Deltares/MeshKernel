@@ -40,7 +40,7 @@ namespace meshkernel
         /// @brief Default constructor sets the indices to invalid
         CurvilinearGridNodeIndices() : m_n(constants::missing::uintValue), m_m(constants::missing::uintValue) {}
 
-        /// @brief Constructor sets indices from values using unsigned integers
+        /// @brief Constructor setting n and m indices
         /// @param[in] m The m index
         /// @param[in] n The n index
         CurvilinearGridNodeIndices(UInt n, UInt m) : m_n(n), m_m(m) {}

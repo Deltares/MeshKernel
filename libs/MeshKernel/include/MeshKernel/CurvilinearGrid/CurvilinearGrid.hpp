@@ -311,13 +311,13 @@ namespace meshkernel
         /// @brief Computes the node from an index
         [[nodiscard]] const Point& Node(const UInt index) const
         {
-            const auto nodeIndex = GetGridNodeIndex(index);
+            const auto nodeIndex = GetCurvilinearGridNodeIndices(index);
             return GetNode(nodeIndex);
         }
 
         /// @brief Get the node CurvilinearGridNodeIndices from a position
-        /// @return The CurvilinearGridNodeIndices
-        CurvilinearGridNodeIndices GetGridNodeIndex(const UInt index) const
+        /// @return The CurvilinearGridNodeIndices for the position
+        CurvilinearGridNodeIndices GetCurvilinearGridNodeIndices(const UInt index) const
         {
             if (index >= NumM() * NumN())
             {
@@ -404,11 +404,11 @@ namespace meshkernel
         /// @return a vector of M nodes
         std::vector<Point> GetNodeVectorAtN(UInt n) const { return lin_alg::MatrixColToSTLVector(m_gridNodes, n + m_startOffset.m_n); }
 
-        /// @brief Compute the boundary polygon.
+        /// @brief Compute a sequence of one or more outer boundary polygons separated by geometry separators
         /// @param[in]  lowerLeft   The node index of the lower left corner
         /// @param[in]  upperRight  The node index of the upper right corner
         /// @returns The vector containing the boundary polygon points
-        [[nodiscard]] std::vector<Point> ComputeBoundaryToPolygon(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const;
+        [[nodiscard]] std::vector<Point> ComputeBoundaryPolygons(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const;
 
         /// @brief The number of nodes M in the m dimension
         /// @return A number >= 2 for a valid curvilinear grid
@@ -475,13 +475,7 @@ namespace meshkernel
         /// @returns The  mapping (m and n indices for each node of the edge)
         [[nodiscard]] std::vector<CurvilinearEdgeNodeIndices> ComputeEdgeIndices() const;
 
-        /// @brief Compute the face indices.
-        /// @param[in]  lowerLeft   The node index of the lower left corner
-        /// @param[in]  upperRight  The node index of the upper right corner
-        /// @returns The  mapping (m and n indices for each node of the face)
-        [[nodiscard]] std::vector<CurvilinearFaceNodeIndices> ComputeFaceIndices(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const;
-
-        /// @brief Compute the boundary edges.
+        /// @brief Compute the boundary edges. While iterating over edges of valid faces, boundary edges are seen once, all internal edges are seen by two faces.
         /// @param[in]  lowerLeft   The node index of the lower left corner
         /// @param[in]  upperRight  The node index of the upper right corner
         /// @returns The set of boundary edges

@@ -1505,7 +1505,7 @@ std::vector<meshkernel::UInt> Mesh2D::SortedFacesAroundNode(UInt node) const
     return result;
 }
 
-std::vector<meshkernel::Point> Mesh2D::BoundaryToPolygon(const std::vector<Point>& polygonNodes)
+std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector<Point>& polygonNodes)
 {
     Polygon polygon(polygonNodes, m_projection);
 

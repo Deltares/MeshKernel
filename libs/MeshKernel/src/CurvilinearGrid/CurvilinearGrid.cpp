@@ -1283,72 +1283,58 @@ std::vector<CurvilinearGrid::CurvilinearEdgeNodeIndices> CurvilinearGrid::Comput
     return result;
 }
 
-std::vector<CurvilinearGrid::CurvilinearFaceNodeIndices> CurvilinearGrid::ComputeFaceIndices(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const
+std::set<CurvilinearGrid::CurvilinearEdge> CurvilinearGrid::ComputeBoundaryEdges(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const
 {
-
+    std::vector<Point> result;
+    std::set<CurvilinearEdge> boundaryEdges;
     const auto minN = std::min(lowerLeft.m_n, upperRight.m_n);
     const auto maxN = std::max(lowerLeft.m_n, upperRight.m_n);
     const auto minM = std::min(lowerLeft.m_m, upperRight.m_m);
     const auto maxM = std::max(lowerLeft.m_m, upperRight.m_m);
-    const auto numNFaces = maxN - minN;
-    const auto numMFaces = maxM - minM;
 
-    std::vector<CurvilinearFaceNodeIndices> result(numNFaces * numMFaces);
-
-    UInt index = 0;
     for (UInt n = minN; n < maxN; n++)
     {
         for (UInt m = minM; m < maxM; m++)
         {
-            result[index][0] = {n, m};
-            result[index][1] = {n, m + 1};
-            result[index][2] = {n + 1, m + 1};
-            result[index][3] = {n + 1, m};
-            index++;
-        }
-    }
-    return result;
-}
+            CurvilinearFaceNodeIndices faceIndices;
 
-std::set<CurvilinearGrid::CurvilinearEdge> CurvilinearGrid::ComputeBoundaryEdges(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const
-{
-    std::vector<Point> result;
-    const auto facesIndices = ComputeFaceIndices(lowerLeft, upperRight);
-    std::set<CurvilinearEdge> boundaryEdges;
+            faceIndices[0] = {n, m};
+            faceIndices[1] = {n, m + 1};
+            faceIndices[2] = {n + 1, m + 1};
+            faceIndices[3] = {n + 1, m};
 
-    for (const auto& faceIndices : facesIndices)
-    {
-        if (!std::ranges::all_of(faceIndices, [this](const CurvilinearGridNodeIndices& curviNode)
-                                 { return GetNode(curviNode.m_n, curviNode.m_m).IsValid(); }))
-        {
-            continue;
-        }
-
-        const auto numFaceNodes = static_cast<UInt>(faceIndices.size());
-        for (UInt i = 0u; i < numFaceNodes; ++i)
-        {
-            const auto firstCurvilinearNodeIndex = faceIndices[i];
-            const auto nextIndex = NextCircularForwardIndex(i, numFaceNodes);
-            const auto secondCurvilinearNodeIndex = faceIndices[nextIndex];
-
-            const auto edge = std::make_pair(std::min(firstCurvilinearNodeIndex, secondCurvilinearNodeIndex),
-                                             std::max(firstCurvilinearNodeIndex, secondCurvilinearNodeIndex));
-
-            const auto it = boundaryEdges.find(edge);
-            if (it != boundaryEdges.end())
+            if (!std::ranges::all_of(faceIndices, [this](const CurvilinearGridNodeIndices& curviNode)
+                                     { return GetNode(curviNode.m_n, curviNode.m_m).IsValid(); }))
             {
-                boundaryEdges.erase(it);
+                continue;
             }
-            else
+
+            for (UInt i = 0u; i < constants::geometric::numNodesInQuadrilateral; ++i)
             {
-                boundaryEdges.insert(edge);
+                const auto firstCurvilinearNodeIndex = faceIndices[i];
+                const auto nextIndex = NextCircularForwardIndex(i, constants::geometric::numNodesInQuadrilateral);
+                const auto secondCurvilinearNodeIndex = faceIndices[nextIndex];
+
+                const auto edge = std::make_pair(std::min(firstCurvilinearNodeIndex, secondCurvilinearNodeIndex),
+                                                 std::max(firstCurvilinearNodeIndex, secondCurvilinearNodeIndex));
+
+                const auto it = boundaryEdges.find(edge);
+                if (it != boundaryEdges.end())
+                {
+                    boundaryEdges.erase(it);
+                }
+                else
+                {
+                    boundaryEdges.insert(edge);
+                }
             }
         }
     }
+
     return boundaryEdges;
 }
 
-std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryToPolygon(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const
+std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryPolygons(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const
 {
     std::vector<Point> result;
 
@@ -1362,9 +1348,11 @@ std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryToPolygon(const C
     auto startNode = currentEdge->first;
     auto sharedNode = currentEdge->second;
 
+    // iterate over all boundary edges, until all boundary polygons are found
     while (!boundaryEdges.empty())
     {
         result.push_back(GetNode(startNode.m_n, startNode.m_m));
+        // iterate over connected edges, until the start node is found and the current boundary polygon is closed
         while (sharedNode != startNode)
         {
             result.push_back(GetNode(sharedNode.m_n, sharedNode.m_m));
@@ -1384,6 +1372,8 @@ std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryToPolygon(const C
         }
 
         result.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
+
+        // startNode node for the next boundary polygon
         currentEdge = boundaryEdges.begin();
         startNode = currentEdge->first;
         sharedNode = currentEdge->second;
@@ -1394,18 +1384,22 @@ std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryToPolygon(const C
 
 std::vector<meshkernel::Point> CurvilinearGrid::ComputeFaceCenters() const
 {
-    const auto faceIndices = ComputeFaceIndices({0, 0}, {NumN() - 1, NumM() - 1});
+    std::vector<Point> result;
+    result.reserve((NumN() - 1) * (NumM() - 1));
 
-    std::vector<Point> result(faceIndices.size());
-
-    for (UInt i = 0; i < faceIndices.size(); ++i)
+    for (UInt n = 0; n < NumN() - 1; n++)
     {
-        Point massCenter{0.0, 0.0};
-        for (const auto& index : faceIndices[i])
+        for (UInt m = 0; m < NumM() - 1; m++)
         {
-            massCenter += GetNode(index.m_n, index.m_m);
+            Point massCenter{0.0, 0.0};
+
+            massCenter += GetNode(n, m);
+            massCenter += GetNode(n, m + 1);
+            massCenter += GetNode(n + 1, m + 1);
+            massCenter += GetNode(n + 1, m);
+
+            result.push_back(massCenter * 0.25);
         }
-        result[i] = massCenter * 0.25;
     }
     return result;
 }

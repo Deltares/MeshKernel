@@ -25,7 +25,7 @@ TEST(CurvilinearGridBoundaryPolygon, ComputeBoundaryToPolygon_OnValidCurvilinear
 
     // Execute
 
-    const auto boundaryPolygon = grid->ComputeBoundaryToPolygon(lowerLeft, upperRight);
+    const auto boundaryPolygon = grid->ComputeBoundaryPolygons(lowerLeft, upperRight);
 
     // Assert
     std::vector<Point> expectedBoundaryPolygon{{0.0, 0.0},
@@ -60,7 +60,7 @@ TEST(CurvilinearGridBoundaryPolygon, ComputeBoundaryToPolygon_OnValidCurvilinear
     CurvilinearGridNodeIndices upperRight(ny - 1, nx - 1);
 
     // Execute
-    const auto boundaryPolygon = grid->ComputeBoundaryToPolygon(lowerLeft, upperRight);
+    const auto boundaryPolygon = grid->ComputeBoundaryPolygons(lowerLeft, upperRight);
 
     // Assert
     std::vector<Point> expectedBoundaryPolygon{{0.0, 0.0},
@@ -100,7 +100,7 @@ TEST(CurvilinearGridBoundaryPolygon, ComputeBoundaryToPolygon_OnValidCurvilinear
     CurvilinearGridNodeIndices upperRight(ny - 1, nx - 1);
 
     // Execute
-    const auto boundaryPolygon = grid->ComputeBoundaryToPolygon(lowerLeft, upperRight);
+    const auto boundaryPolygon = grid->ComputeBoundaryPolygons(lowerLeft, upperRight);
 
     // Assert
     std::vector<Point> expectedBoundaryPolygon{{0.0, 0.0},
@@ -148,7 +148,7 @@ TEST(CurvilinearGridBoundaryPolygon, ComputeBoundaryToPolygon_OnValidCurvilinear
     CurvilinearGridNodeIndices upperRight(1, nx - 1); // not the entire clg
 
     // Execute
-    const auto boundaryPolygon = grid->ComputeBoundaryToPolygon(lowerLeft, upperRight);
+    const auto boundaryPolygon = grid->ComputeBoundaryPolygons(lowerLeft, upperRight);
 
     // Assert
     std::vector<Point> expectedBoundaryPolygon{{0.0, 0.0},

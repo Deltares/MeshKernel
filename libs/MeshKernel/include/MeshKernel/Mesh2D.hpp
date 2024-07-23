@@ -257,7 +257,7 @@ namespace meshkernel
         /// @brief Convert all mesh boundaries to a vector of polygon nodes, including holes (copynetboundstopol)
         /// @param[in] polygon The polygon where the operation is performed
         /// @return The resulting polygon mesh boundary
-        [[nodiscard]] std::vector<Point> BoundaryToPolygon(const std::vector<Point>& polygon);
+        [[nodiscard]] std::vector<Point> ComputeBoundaryPolygons(const std::vector<Point>& polygon);
 
         /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
         /// @param[in] polygon The input polygon

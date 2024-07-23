@@ -707,29 +707,18 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Invalid curvilinear grid");
             }
 
-            if (lowerLeftN < 0)
-            {
-                throw meshkernel::MeshKernelError("The lower left n index cannot be smaller than 0");
-            }
-            if (lowerLeftM < 0)
-            {
-                throw meshkernel::MeshKernelError("The lower left m index cannot be smaller than 0");
-            }
-            if (upperRightN < 0)
-            {
-                throw meshkernel::MeshKernelError("The upper right n index cannot be smaller than 0");
-            }
-            if (upperRightM < 0)
-            {
-                throw meshkernel::MeshKernelError("The upper right m index cannot be smaller than 0");
-            }
+            auto lowerLeftNUnsigned = static_cast<meshkernel::UInt>(lowerLeftN);
+            auto lowerLeftMUnsigned = static_cast<meshkernel::UInt>(lowerLeftM);
+            auto upperRightNUnsigned = static_cast<meshkernel::UInt>(upperRightN);
+            auto upperRightMUnsigned = static_cast<meshkernel::UInt>(upperRightM);
 
-            const auto lowerLeftNUnsigned = static_cast<meshkernel::UInt>(lowerLeftN);
-            const auto lowerLeftMUnsigned = static_cast<meshkernel::UInt>(lowerLeftM);
-            const auto upperRightNUnsigned = static_cast<meshkernel::UInt>(upperRightN);
-            const auto upperRightMUnsigned = static_cast<meshkernel::UInt>(upperRightM);
-            const auto boundaryPolygon = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeBoundaryToPolygon({lowerLeftNUnsigned, lowerLeftMUnsigned},
-                                                                                                                   {upperRightNUnsigned, upperRightMUnsigned});
+            const auto minN = std::min(lowerLeftNUnsigned, upperRightNUnsigned);
+            const auto maxN = std::max(lowerLeftNUnsigned, upperRightNUnsigned);
+            const auto minM = std::min(lowerLeftMUnsigned, upperRightMUnsigned);
+            const auto maxM = std::max(lowerLeftMUnsigned, upperRightMUnsigned);
+
+            const auto boundaryPolygon = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeBoundaryPolygons({minN, minM},
+                                                                                                                  {maxN, maxM});
             ConvertPointVectorToGeometryList(boundaryPolygon, boundaryPolygons);
         }
         catch (...)
@@ -754,29 +743,18 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Invalid curvilinear grid");
             }
 
-            if (lowerLeftN < 0)
-            {
-                throw meshkernel::MeshKernelError("The lower left n index cannot be smaller than 0");
-            }
-            if (lowerLeftM < 0)
-            {
-                throw meshkernel::MeshKernelError("The lower left m index cannot be smaller than 0");
-            }
-            if (upperRightN < 0)
-            {
-                throw meshkernel::MeshKernelError("The upper right n index cannot be smaller than 0");
-            }
-            if (upperRightM < 0)
-            {
-                throw meshkernel::MeshKernelError("The upper right m index cannot be smaller than 0");
-            }
-
             const auto lowerLeftNUnsigned = static_cast<meshkernel::UInt>(lowerLeftN);
             const auto lowerLeftMUnsigned = static_cast<meshkernel::UInt>(lowerLeftM);
             const auto upperRightNUnsigned = static_cast<meshkernel::UInt>(upperRightN);
             const auto upperRightMUnsigned = static_cast<meshkernel::UInt>(upperRightM);
-            const auto boundaryPolygon = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeBoundaryToPolygon({lowerLeftNUnsigned, lowerLeftMUnsigned},
-                                                                                                                   {upperRightNUnsigned, upperRightMUnsigned});
+
+            const auto minN = std::min(lowerLeftNUnsigned, upperRightNUnsigned);
+            const auto maxN = std::max(lowerLeftNUnsigned, upperRightNUnsigned);
+            const auto minM = std::min(lowerLeftMUnsigned, upperRightMUnsigned);
+            const auto maxM = std::max(lowerLeftMUnsigned, upperRightMUnsigned);
+
+            const auto boundaryPolygon = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeBoundaryPolygons({minN, minM},
+                                                                                                                  {maxN, maxM});
             numberOfPolygonNodes = static_cast<int>(boundaryPolygon.size());
         }
         catch (...)
@@ -1524,7 +1502,7 @@ namespace meshkernelapi
             }
 
             const std::vector<meshkernel::Point> polygonNodes;
-            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->BoundaryToPolygon(polygonNodes);
+            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->ComputeBoundaryPolygons(polygonNodes);
 
             ConvertPointVectorToGeometryList(meshBoundaryPolygon, boundaryPolygons);
         }
@@ -1546,7 +1524,7 @@ namespace meshkernelapi
             }
 
             const std::vector<meshkernel::Point> polygonNodes;
-            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->BoundaryToPolygon(polygonNodes);
+            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->ComputeBoundaryPolygons(polygonNodes);
             numberOfPolygonNodes = static_cast<int>(meshBoundaryPolygon.size()); // last value is a separator
         }
         catch (...)
