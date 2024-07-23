@@ -1434,8 +1434,22 @@ TEST(CurvilinearGrid, SnapToSpline)
     }
 }
 
-TEST(CurvilinearGrid, CurvilinearGetBoundariesAsPolygons_ShouldGetBoundariesAsPolygons)
+class CurvilineartBoundariesAsPolygonsTests : public testing::TestWithParam<std::tuple<int, int, int, int, std::vector<double>, std::vector<double>>>
 {
+public:
+    [[nodiscard]] static std::vector<std::tuple<int, int, int, int, std::vector<double>, std::vector<double>>> GetData()
+    {
+        return {
+            std::make_tuple<int, int, int, int, std::vector<double>, std::vector<double>>(0, 0, 9, 9, std::vector<double>{0, 10, 20, 30}, std::vector<double>{0, 0, 0, 0}),
+            std::make_tuple<int, int, int, int, std::vector<double>, std::vector<double>>(1, 1, 8, 8, std::vector<double>{10, 20, 30, 40}, std::vector<double>{10, 10, 10, 10})};
+    }
+};
+
+TEST_P(CurvilineartBoundariesAsPolygonsTests, GetLocationIndex_OnACurvilinearGrid_ShouldGetTheLocationIndex)
+{
+    // Prepare
+    auto const& [lowerLeftN, lowerLeftM, upperRightN, upperRightM, ValidCoordinatesX, ValidCoordinatesY] = GetParam();
+
     // Prepare
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
@@ -1455,7 +1469,7 @@ TEST(CurvilinearGrid, CurvilinearGetBoundariesAsPolygons_ShouldGetBoundariesAsPo
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     int numberOfPolygonNodes;
-    errorCode = meshkernelapi::mkernel_curvilinear_count_boundaries_as_polygons(meshKernelId, 0, 0, 9, 9, numberOfPolygonNodes);
+    errorCode = meshkernelapi::mkernel_curvilinear_count_boundaries_as_polygons(meshKernelId, lowerLeftN, lowerLeftM, upperRightN, upperRightM, numberOfPolygonNodes);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::GeometryList boundaryPolygon;
@@ -1467,87 +1481,14 @@ TEST(CurvilinearGrid, CurvilinearGetBoundariesAsPolygons_ShouldGetBoundariesAsPo
     boundaryPolygon.num_coordinates = numberOfPolygonNodes;
     boundaryPolygon.geometry_separator = constants::missing::doubleValue;
 
-    errorCode = mkernel_curvilinear_get_boundaries_as_polygons(meshKernelId, 0, 0, 9, 9, boundaryPolygon);
+    errorCode = mkernel_curvilinear_get_boundaries_as_polygons(meshKernelId, lowerLeftN, lowerLeftM, upperRightN, upperRightM, boundaryPolygon);
 
-    std::vector ValidCoordinatesX{0.00,
-                                  10.0,
-                                  20.0,
-                                  30.0,
-                                  40.0,
-                                  50.0,
-                                  60.0,
-                                  70.0,
-                                  80.0,
-                                  90.0,
-                                  90.0,
-                                  90.0,
-                                  90.0,
-                                  90.0,
-                                  90.0,
-                                  90.0,
-                                  90.0,
-                                  90.0,
-                                  90.0,
-                                  80.0,
-                                  70.0,
-                                  60.0,
-                                  50.0,
-                                  40.0,
-                                  30.0,
-                                  20.0,
-                                  10.0,
-                                  0.00,
-                                  0.00,
-                                  0.00,
-                                  0.00,
-                                  0.00,
-                                  0.00,
-                                  0.00,
-                                  0.00,
-                                  0.00,
-                                  0.00};
+    std::vector firstFourCoordinatesX(coordinates_x.begin(), coordinates_x.begin() + 4);
+    ASSERT_THAT(firstFourCoordinatesX, ::testing::ContainerEq(ValidCoordinatesX));
 
-    ASSERT_THAT(coordinates_x, ::testing::ContainerEq(ValidCoordinatesX));
-
-    std::vector ValidCoordinatesY{0.0,
-                                  0.0,
-                                  0.0,
-                                  0.0,
-                                  0.0,
-                                  0.0,
-                                  0.0,
-                                  0.0,
-                                  0.0,
-                                  0.0,
-                                  10.0,
-                                  20.0,
-                                  30.0,
-                                  40.0,
-                                  50.0,
-                                  60.0,
-                                  70.0,
-                                  80.0,
-                                  90.0,
-                                  90.0,
-                                  90.0,
-                                  90.0,
-                                  90.0,
-                                  90.0,
-                                  90.0,
-                                  90.0,
-                                  90.0,
-                                  90.0,
-                                  80.0,
-                                  70.0,
-                                  60.0,
-                                  50.0,
-                                  40.0,
-                                  30.0,
-                                  20.0,
-                                  10.0,
-                                  0.00};
-
-    ASSERT_THAT(coordinates_y, ::testing::ContainerEq(ValidCoordinatesY));
+    std::vector firstFourCoordinatesY(coordinates_y.begin(), coordinates_y.begin() + 4);
+    ASSERT_THAT(firstFourCoordinatesY, ::testing::ContainerEq(ValidCoordinatesY));
 
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
+INSTANTIATE_TEST_SUITE_P(CurvilineartBoundariesAsPolygonsTests, CurvilineartBoundariesAsPolygonsTests, ::testing::ValuesIn(CurvilineartBoundariesAsPolygonsTests::GetData()));
