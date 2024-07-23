@@ -44,14 +44,13 @@ namespace meshkernel
     {
         /// @brief Defines the checkable types: floating point types and inetgral types except for bool and char.
         template <typename T>
-        concept RangeCheckableType = std::floating_point<T> ||
-            (std::integral<T> &&
-             !std::same_as<T, bool> &&
-             !std::same_as<T, char> &&
-             !std::same_as<T, char8_t> &&
-             !std::same_as<T, char16_t> &&
-             !std::same_as<T, char32_t> &&
-             !std::same_as<T, wchar_t>);
+        concept RangeCheckableType = std::floating_point<T> ||(std::integral<T> &&
+                                                               !std::same_as<T, bool> &&
+                                                               !std::same_as<T, char> &&
+                                                               !std::same_as<T, char8_t> &&
+                                                               !std::same_as<T, char16_t> &&
+                                                               !std::same_as<T, char32_t> &&
+                                                               !std::same_as<T, wchar_t>);
 
         /// @brief  Keys of performed comparison
         enum class Comparison
