@@ -5,26 +5,13 @@
 #include <cmath>
 #include <numbers>
 
-meshkernel::CurvilinearGrid meshkernel::CurvilinearGridGenerateCircularGrid::Compute(const MakeGridParameters& parameters, const Projection projection) const
+meshkernel::CurvilinearGrid meshkernel::CurvilinearGridGenerateCircularGrid::Compute(const MakeGridParameters& parameters, const Projection projection)
 {
-    if (parameters.uniform_columns_fraction < 0.0 || parameters.uniform_rows_fraction < 0.0)
-    {
-        throw ConstraintError("Invalid uniform fraction parameters. n-fraction: {}, m-fraction: {} ",
-                              parameters.uniform_rows_fraction,
-                              parameters.uniform_columns_fraction);
-    }
-
-    if (parameters.maximum_uniform_size_columns < 0.0 || parameters.maximum_uniform_size_rows < 0.0)
-    {
-        throw ConstraintError("Invalid uniform size parameters. n-size: {}, m-size: {} ",
-                              parameters.maximum_uniform_size_rows,
-                              parameters.maximum_uniform_size_columns);
-    }
-
+    CheckMakeGridParameters (parameters);
     return CurvilinearGrid(GenerateGridPoints(parameters), projection);
 }
 
-std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeXValues(const MakeGridParameters& parameters) const
+std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeXValues(const MakeGridParameters& parameters)
 {
     std::vector<double> xValues(static_cast<UInt>(parameters.num_columns + 1));
     const double blockSize = parameters.block_size_x;
@@ -76,7 +63,7 @@ std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeXVal
     return xValues;
 }
 
-std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeYValues(const MakeGridParameters& parameters) const
+std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeYValues(const MakeGridParameters& parameters)
 {
     std::vector<double> yValues(static_cast<UInt>(parameters.num_rows + 1));
     double blockSize = parameters.block_size_y;
@@ -99,24 +86,11 @@ std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeYVal
         nuni += (size - 1 - nuni) % 2;
         int ninc = (size - nuni) / 2 + 1;
         double alfn = std::pow(parameters.maximum_uniform_size_rows, 1.0 / static_cast<double>(ninc));
-
         double yValue = -blockSize * std::pow(alfn, static_cast<double>(1 - nuni));
 
         for (int n = 0; n < static_cast<int>(yValues.size()); ++n)
         {
-            double deltaY;
-
-            if (n < nuni)
-            {
-                deltaY = blockSize;
-            }
-            else
-            {
-                deltaY = blockSize * std::pow(alfn, static_cast<double>(n + 1 - nuni));
-            }
-
-            yValue += deltaY;
-
+            yValue += (n < nuni ? blockSize : blockSize * std::pow(alfn, static_cast<double>(n + 1 - nuni)));
             yValues[static_cast<UInt>(n)] = yValue;
         }
     }
@@ -124,17 +98,16 @@ std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeYVal
     return yValues;
 }
 
-lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGrid::GenerateRectangularGrid(const MakeGridParameters& parameters) const
+lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGrid::GenerateRectangularGrid(const MakeGridParameters& parameters)
 {
-
     lin_alg::Matrix<Point> gridPoints(parameters.num_rows + 1, parameters.num_columns + 1);
 
-    double x0 = parameters.origin_x;
-    double y0 = parameters.origin_y;
+    const double x0 = parameters.origin_x;
+    const double y0 = parameters.origin_y;
 
-    double phi = parameters.angle;
-    double cs = std::cos(phi * constants::conversion::degToRad);
-    double sn = std::sin(phi * constants::conversion::degToRad);
+    const double phi = parameters.angle;
+    const double cs = std::cos(phi * constants::conversion::degToRad);
+    const double sn = std::sin(phi * constants::conversion::degToRad);
 
     std::vector<double> xValues(ComputeXValues(parameters));
     std::vector<double> yValues(ComputeYValues(parameters));
@@ -150,7 +123,7 @@ lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGr
     return gridPoints;
 }
 
-std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeRadiusValues(const MakeGridParameters& parameters) const
+std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeRadiusValues(const MakeGridParameters& parameters)
 {
     const UInt size = static_cast<UInt>(parameters.num_rows + 1);
     const double blockSize = parameters.block_size_y;
@@ -160,17 +133,17 @@ std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeRadi
 
     if (parameters.uniform_rows_fraction == 1.0 || parameters.maximum_uniform_size_rows == 1.0)
     {
-        double rValue = r0;
+        double radius = r0;
 
         for (UInt n = 0; n < size; ++n)
         {
-            radiusValues[n] = rValue;
-            rValue += blockSize;
+            radiusValues[n] = radius;
+            radius += blockSize;
         }
     }
     else
     {
-        double rValue = r0;
+        double radius = r0;
 
         UInt nuni = static_cast<UInt>(static_cast<double>(size) * parameters.uniform_rows_fraction);
         nuni += (size - 1 - nuni) % 2;
@@ -180,26 +153,15 @@ std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeRadi
 
         for (UInt n = 0; n < size; ++n)
         {
-            double deltaR;
-
-            if (n < nuni)
-            {
-                deltaR = blockSize;
-            }
-            else
-            {
-                deltaR = blockSize * std::pow(alfn, static_cast<double>(n - nuni));
-            }
-
-            rValue += deltaR;
-            radiusValues[n] = rValue;
+            radius += (n < nuni ? blockSize : blockSize * std::pow(alfn, static_cast<double>(n - nuni)));
+            radiusValues[n] = radius;
         }
     }
 
     return radiusValues;
 }
 
-std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeThetaValues(const MakeGridParameters& parameters) const
+std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeThetaValues(const MakeGridParameters& parameters)
 {
     const UInt size = static_cast<UInt>(parameters.num_columns + 1);
     std::vector<double> thetaValues(size);
@@ -223,7 +185,7 @@ std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeThet
     return thetaValues;
 }
 
-lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGrid::GenerateCircularGrid(const MakeGridParameters& parameters) const
+lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGrid::GenerateCircularGrid(const MakeGridParameters& parameters)
 {
     lin_alg::Matrix<Point> gridPoints(parameters.num_rows + 1, parameters.num_columns + 1);
 
@@ -254,7 +216,7 @@ lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGr
     return gridPoints;
 }
 
-lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGrid::GenerateGridPoints(const MakeGridParameters& parameters) const
+lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGrid::GenerateGridPoints(const MakeGridParameters& parameters)
 {
     if (parameters.radius_curvature == 0.0)
     {
