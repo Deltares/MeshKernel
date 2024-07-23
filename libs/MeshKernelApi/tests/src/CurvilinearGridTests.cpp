@@ -1273,7 +1273,6 @@ TEST(CurvilinearGrid, SnapToLandBoundary)
     land.coordinates_x = landXCoordinates.data();
     land.coordinates_y = landYCoordinates.data();
 
-
     double sectionControlPoint1x = 0.0;
     double sectionControlPoint1y = 100.0;
     double sectionControlPoint2x = 90.0;
@@ -1389,7 +1388,6 @@ TEST(CurvilinearGrid, SnapToSpline)
     spline.num_coordinates = static_cast<int>(splineXCoordinates.size());
     spline.coordinates_x = splineXCoordinates.data();
     spline.coordinates_y = splineYCoordinates.data();
-
 
     double sectionControlPoint1x = 10.0;
     double sectionControlPoint1y = 8.0;
