@@ -157,7 +157,7 @@ public:
             auto isFinite = [](const T value)
             { return std::isfinite(value); };
 
-            EXPECT_NO_THROW(range_check::CheckPrecondition(1.0, name, preconditionName, isFinite));
+            EXPECT_NO_THROW(range_check::CheckPrecondition(static_cast<T>(1.0), name, preconditionName, isFinite));
             EXPECT_NO_THROW(range_check::CheckPrecondition(std::numeric_limits<T>::max(), name, preconditionName, isFinite));
             EXPECT_NO_THROW(range_check::CheckPrecondition(std::numeric_limits<T>::epsilon(), name, preconditionName, isFinite));
             EXPECT_NO_THROW(range_check::CheckPrecondition(std::numeric_limits<T>::denorm_min(), name, preconditionName, isFinite));
