@@ -45,13 +45,13 @@ namespace meshkernel
         /// @brief Defines the checkable types: floating point types and inetgral types except for bool and char.
         template <typename T>
         concept RangeCheckableType = std::floating_point<T> ||
-            (std::integral<T> &&
-             !std::same_as<T, bool> &&
-             !std::same_as<T, char> &&
-             !std::same_as<T, char8_t> &&
-             !std::same_as<T, char16_t> &&
-             !std::same_as<T, char32_t> &&
-             !std::same_as<T, wchar_t>);
+                                    (std::integral<T> &&
+                                     !std::same_as<T, bool> &&
+                                     !std::same_as<T, char> &&
+                                     !std::same_as<T, char8_t> &&
+                                     !std::same_as<T, char16_t> &&
+                                     !std::same_as<T, char32_t> &&
+                                     !std::same_as<T, wchar_t>);
 
         /// @brief  Keys of performed comparison
         enum class Comparison
@@ -89,7 +89,7 @@ namespace meshkernel
             {Comparison::OutsideOpenInterval, "value <= {} and value >= {}"},
             {Comparison::OneOf, "value is one of {}"},
             {Comparison::NoneOf, "value is none of {}"},
-            {Comparison::Precondition, "value should satsify: {}"} //
+            {Comparison::Precondition, "value should satisfy: {}"} //
         };
 
         /// @brief Checks the validity of a value given a bound, supports the predicates ==, !=, >, >=, <, and <=
