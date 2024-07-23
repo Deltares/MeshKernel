@@ -87,8 +87,7 @@ namespace meshkernel
             {Comparison::OutsideClosedInterval, "value < {} and value > {}"},
             {Comparison::OutsideOpenInterval, "value <= {} and value >= {}"},
             {Comparison::OneOf, "value is one of {}"},
-            {Comparison::NoneOf, "value is none of {}"}
-        };
+            {Comparison::NoneOf, "value is none of {}"}};
 
         /// @brief Checks the validity of a value given a bound, supports the predicates ==, !=, >, >=, <, and <=
         /// @tparam T The type of the value to check (RangeCheckableType)
