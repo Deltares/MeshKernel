@@ -1287,14 +1287,9 @@ std::set<CurvilinearGrid::CurvilinearEdge> CurvilinearGrid::ComputeBoundaryEdges
 {
     std::vector<Point> result;
     std::set<CurvilinearEdge> boundaryEdges;
-    const auto minN = std::min(lowerLeft.m_n, upperRight.m_n);
-    const auto maxN = std::max(lowerLeft.m_n, upperRight.m_n);
-    const auto minM = std::min(lowerLeft.m_m, upperRight.m_m);
-    const auto maxM = std::max(lowerLeft.m_m, upperRight.m_m);
-
-    for (UInt n = minN; n < maxN; n++)
+    for (UInt n = lowerLeft.m_n; n < upperRight.m_n; n++)
     {
-        for (UInt m = minM; m < maxM; m++)
+        for (UInt m = lowerLeft.m_m; m < upperRight.m_m; m++)
         {
             CurvilinearFaceNodeIndices faceIndices;
 
