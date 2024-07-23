@@ -7,7 +7,7 @@
 
 meshkernel::CurvilinearGrid meshkernel::CurvilinearGridGenerateCircularGrid::Compute(const MakeGridParameters& parameters, const Projection projection)
 {
-    CheckMakeGridParameters (parameters);
+    CheckMakeGridParameters(parameters);
     return CurvilinearGrid(GenerateGridPoints(parameters), projection);
 }
 

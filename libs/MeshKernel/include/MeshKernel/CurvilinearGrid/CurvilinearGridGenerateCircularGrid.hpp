@@ -44,7 +44,7 @@ namespace meshkernel
     {
     public:
         /// @brief Delete the default constructor
-        CurvilinearGridGenerateCircularGrid () = delete;
+        CurvilinearGridGenerateCircularGrid() = delete;
 
         /// @brief Generate the grid.
         ///
