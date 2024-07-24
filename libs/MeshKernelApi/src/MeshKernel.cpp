@@ -1617,7 +1617,7 @@ namespace meshkernelapi
             }
             auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
 
-            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_projection);
             auto const refinementResult = polygon.RefineFirstPolygon(firstNodeIndex, secondNodeIndex, targetEdgeLength);
 
             ConvertPointVectorToGeometryList(refinementResult, refinedPolygon);
@@ -1641,7 +1641,7 @@ namespace meshkernelapi
 
             auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
 
-            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_projection);
             const auto firstNodeIndexUnsigned = static_cast<meshkernel::UInt>(firstNodeIndex);
             const auto secondNodeUnsigned = static_cast<meshkernel::UInt>(secondNodeIndex);
             const auto refinementResult = polygon.LinearRefinePolygon(0, firstNodeIndexUnsigned, secondNodeUnsigned);
@@ -1697,7 +1697,7 @@ namespace meshkernelapi
 
             auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
 
-            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_projection);
             const auto firstNodeIndexUnsigned = static_cast<meshkernel::UInt>(firstNodeIndex);
             const auto secondNodeUnsigned = static_cast<meshkernel::UInt>(secondNodeIndex);
             const auto refinementResult = polygon.LinearRefinePolygon(0, firstNodeIndexUnsigned, secondNodeUnsigned);
