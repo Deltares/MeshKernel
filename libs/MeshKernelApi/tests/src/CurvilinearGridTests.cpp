@@ -1203,7 +1203,7 @@ TEST(CurvilinearGrid, SnapToLandBoundary)
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    meshkernel::MakeGridParameters makeGridParameters;
+    MakeGridParameters makeGridParameters;
 
     makeGridParameters.num_columns = 10;
     makeGridParameters.num_rows = 10;
@@ -1217,14 +1217,14 @@ TEST(CurvilinearGrid, SnapToLandBoundary)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
-    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     std::vector<double> node_x(curvilinearGrid.num_m * curvilinearGrid.num_n);
     std::vector<double> node_y(curvilinearGrid.num_m * curvilinearGrid.num_n);
     curvilinearGrid.node_x = node_x.data();
     curvilinearGrid.node_y = node_y.data();
-    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Make copy of node values.
@@ -1280,14 +1280,14 @@ TEST(CurvilinearGrid, SnapToLandBoundary)
     double sectionControlPoint2x = 90.0;
     double sectionControlPoint2y = 100.0;
 
-    errorCode = meshkernelapi::mkernel_curvilinear_snap_to_landboundary(meshKernelId, land,
-                                                                        sectionControlPoint1x,
-                                                                        sectionControlPoint1y,
-                                                                        sectionControlPoint2x,
-                                                                        sectionControlPoint2y);
+    errorCode = mkernel_curvilinear_snap_to_landboundary(meshKernelId, land,
+                                                         sectionControlPoint1x,
+                                                         sectionControlPoint1y,
+                                                         sectionControlPoint2x,
+                                                         sectionControlPoint2y);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     for (int i = 0; i < curvilinearGrid.num_m * curvilinearGrid.num_n; ++i)
@@ -1305,7 +1305,7 @@ TEST(CurvilinearGrid, SnapToLandBoundary)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfDeleteNode);
 
-    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     for (int i = 0; i < curvilinearGrid.num_m * curvilinearGrid.num_n; ++i)
@@ -1324,7 +1324,7 @@ TEST(CurvilinearGrid, SnapToSpline)
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    meshkernel::MakeGridParameters makeGridParameters;
+    MakeGridParameters makeGridParameters;
 
     makeGridParameters.num_columns = 10;
     makeGridParameters.num_rows = 10;
@@ -1338,14 +1338,14 @@ TEST(CurvilinearGrid, SnapToSpline)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
-    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     std::vector<double> node_x(curvilinearGrid.num_m * curvilinearGrid.num_n);
     std::vector<double> node_y(curvilinearGrid.num_m * curvilinearGrid.num_n);
     curvilinearGrid.node_x = node_x.data();
     curvilinearGrid.node_y = node_y.data();
-    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Make copy of node values.
@@ -1399,14 +1399,14 @@ TEST(CurvilinearGrid, SnapToSpline)
     double sectionControlPoint2x = 10.0;
     double sectionControlPoint2y = 1.0;
 
-    errorCode = meshkernelapi::mkernel_curvilinear_snap_to_spline(meshKernelId, spline,
-                                                                  sectionControlPoint1x,
-                                                                  sectionControlPoint1y,
-                                                                  sectionControlPoint2x,
-                                                                  sectionControlPoint2y);
+    errorCode = mkernel_curvilinear_snap_to_spline(meshKernelId, spline,
+                                                   sectionControlPoint1x,
+                                                   sectionControlPoint1y,
+                                                   sectionControlPoint2x,
+                                                   sectionControlPoint2y);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     for (int i = 0; i < curvilinearGrid.num_m * curvilinearGrid.num_n; ++i)
@@ -1424,7 +1424,7 @@ TEST(CurvilinearGrid, SnapToSpline)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfDeleteNode);
 
-    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
+    errorCode = mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     for (int i = 0; i < curvilinearGrid.num_m * curvilinearGrid.num_n; ++i)
@@ -1433,3 +1433,62 @@ TEST(CurvilinearGrid, SnapToSpline)
         EXPECT_NEAR(curvilinearGrid.node_y[i], originalNodeY[i], tolerance);
     }
 }
+
+class CurvilineartBoundariesAsPolygonsTests : public testing::TestWithParam<std::tuple<int, int, int, int, std::vector<double>, std::vector<double>>>
+{
+public:
+    [[nodiscard]] static std::vector<std::tuple<int, int, int, int, std::vector<double>, std::vector<double>>> GetData()
+    {
+        return {
+            std::make_tuple<int, int, int, int, std::vector<double>, std::vector<double>>(0, 0, 9, 9, std::vector<double>{0, 10, 20, 30}, std::vector<double>{0, 0, 0, 0}),
+            std::make_tuple<int, int, int, int, std::vector<double>, std::vector<double>>(1, 1, 8, 8, std::vector<double>{10, 20, 30, 40}, std::vector<double>{10, 10, 10, 10})};
+    }
+};
+
+TEST_P(CurvilineartBoundariesAsPolygonsTests, GetLocationIndex_OnACurvilinearGrid_ShouldGetTheLocationIndex)
+{
+    // Prepare
+    auto const& [lowerLeftN, lowerLeftM, upperRightN, upperRightM, ValidCoordinatesX, ValidCoordinatesY] = GetParam();
+
+    // Prepare
+    int meshKernelId;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    MakeGridParameters makeGridParameters;
+
+    makeGridParameters.num_columns = 10;
+    makeGridParameters.num_rows = 10;
+    makeGridParameters.angle = 0.0;
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = 10.0;
+    makeGridParameters.block_size_y = 10.0;
+
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    int numberOfPolygonNodes;
+    errorCode = meshkernelapi::mkernel_curvilinear_count_boundaries_as_polygons(meshKernelId, lowerLeftN, lowerLeftM, upperRightN, upperRightM, numberOfPolygonNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::GeometryList boundaryPolygon;
+    std::vector<double> coordinates_x(numberOfPolygonNodes);
+    std::vector<double> coordinates_y(numberOfPolygonNodes);
+
+    boundaryPolygon.coordinates_x = coordinates_x.data();
+    boundaryPolygon.coordinates_y = coordinates_y.data();
+    boundaryPolygon.num_coordinates = numberOfPolygonNodes;
+    boundaryPolygon.geometry_separator = constants::missing::doubleValue;
+
+    errorCode = mkernel_curvilinear_get_boundaries_as_polygons(meshKernelId, lowerLeftN, lowerLeftM, upperRightN, upperRightM, boundaryPolygon);
+
+    std::vector firstFourCoordinatesX(coordinates_x.begin(), coordinates_x.begin() + 4);
+    ASSERT_THAT(firstFourCoordinatesX, ::testing::ContainerEq(ValidCoordinatesX));
+
+    std::vector firstFourCoordinatesY(coordinates_y.begin(), coordinates_y.begin() + 4);
+    ASSERT_THAT(firstFourCoordinatesY, ::testing::ContainerEq(ValidCoordinatesY));
+
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+}
+INSTANTIATE_TEST_SUITE_P(CurvilineartBoundariesAsPolygonsTests, CurvilineartBoundariesAsPolygonsTests, ::testing::ValuesIn(CurvilineartBoundariesAsPolygonsTests::GetData()));

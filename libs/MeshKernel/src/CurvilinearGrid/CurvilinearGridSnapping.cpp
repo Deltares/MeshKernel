@@ -42,7 +42,7 @@ void meshkernel::CurvilinearGridSnapping::Initialise()
         {
 
             auto const extentIndexPosition = m_grid.FindLocationIndex(m_controlPoints[2], Location::Nodes);
-            CurvilinearGridNodeIndices extentIndex = m_grid.GetNodeIndex(extentIndexPosition);
+            CurvilinearGridNodeIndices extentIndex = m_grid.GetCurvilinearGridNodeIndices(extentIndexPosition);
 
             m_indexBoxLowerLeft = CurvilinearGridNodeIndices(std::min({m_lineStartIndex.m_n, m_lineEndIndex.m_n, extentIndex.m_n}),
                                                              std::min({m_lineStartIndex.m_m, m_lineEndIndex.m_m, extentIndex.m_m}));

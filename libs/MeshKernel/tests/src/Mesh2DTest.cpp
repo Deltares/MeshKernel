@@ -194,7 +194,7 @@ TEST(Mesh2D, MeshBoundaryToPolygon)
     auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     std::vector<meshkernel::Point> polygonNodes;
-    const auto meshBoundaryPolygon = mesh.MeshBoundaryToPolygon(polygonNodes);
+    const auto meshBoundaryPolygon = mesh.ComputeBoundaryPolygons(polygonNodes);
 
     const double tolerance = 1e-5;
     ASSERT_NEAR(0.0, meshBoundaryPolygon[0].x, tolerance);

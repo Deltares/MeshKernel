@@ -687,6 +687,83 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_curvilinear_get_boundaries_as_polygons(int meshKernelId, int lowerLeftN, int lowerLeftM, int upperRightN, int upperRightM, GeometryList& boundaryPolygons)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
+            {
+                throw meshkernel::MeshKernelError("Invalid curvilinear grid");
+            }
+
+            auto lowerLeftNUnsigned = static_cast<meshkernel::UInt>(lowerLeftN);
+            auto lowerLeftMUnsigned = static_cast<meshkernel::UInt>(lowerLeftM);
+            auto upperRightNUnsigned = static_cast<meshkernel::UInt>(upperRightN);
+            auto upperRightMUnsigned = static_cast<meshkernel::UInt>(upperRightM);
+
+            const auto minN = std::min(lowerLeftNUnsigned, upperRightNUnsigned);
+            const auto maxN = std::max(lowerLeftNUnsigned, upperRightNUnsigned);
+            const auto minM = std::min(lowerLeftMUnsigned, upperRightMUnsigned);
+            const auto maxM = std::max(lowerLeftMUnsigned, upperRightMUnsigned);
+
+            const auto boundaryPolygon = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeBoundaryPolygons({minN, minM},
+                                                                                                                  {maxN, maxM});
+            ConvertPointVectorToGeometryList(boundaryPolygon, boundaryPolygons);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_count_boundaries_as_polygons(int meshKernelId, int lowerLeftN, int lowerLeftM, int upperRightN, int upperRightM, int& numberOfPolygonNodes)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
+            {
+                throw meshkernel::MeshKernelError("Invalid curvilinear grid");
+            }
+
+            const auto lowerLeftNUnsigned = static_cast<meshkernel::UInt>(lowerLeftN);
+            const auto lowerLeftMUnsigned = static_cast<meshkernel::UInt>(lowerLeftM);
+            const auto upperRightNUnsigned = static_cast<meshkernel::UInt>(upperRightN);
+            const auto upperRightMUnsigned = static_cast<meshkernel::UInt>(upperRightM);
+
+            const auto minN = std::min(lowerLeftNUnsigned, upperRightNUnsigned);
+            const auto maxN = std::max(lowerLeftNUnsigned, upperRightNUnsigned);
+            const auto minM = std::min(lowerLeftMUnsigned, upperRightMUnsigned);
+            const auto maxM = std::max(lowerLeftMUnsigned, upperRightMUnsigned);
+
+            const auto boundaryPolygon = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeBoundaryPolygons({minN, minM},
+                                                                                                                  {maxN, maxM});
+            numberOfPolygonNodes = static_cast<int>(boundaryPolygon.size());
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_contacts_get_dimensions(int meshKernelId, Contacts& contacts)
     {
         lastExitCode = meshkernel::ExitCode::Success;
@@ -1425,7 +1502,7 @@ namespace meshkernelapi
             }
 
             const std::vector<meshkernel::Point> polygonNodes;
-            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->MeshBoundaryToPolygon(polygonNodes);
+            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->ComputeBoundaryPolygons(polygonNodes);
 
             ConvertPointVectorToGeometryList(meshBoundaryPolygon, boundaryPolygons);
         }
@@ -1447,7 +1524,7 @@ namespace meshkernelapi
             }
 
             const std::vector<meshkernel::Point> polygonNodes;
-            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->MeshBoundaryToPolygon(polygonNodes);
+            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->ComputeBoundaryPolygons(polygonNodes);
             numberOfPolygonNodes = static_cast<int>(meshBoundaryPolygon.size()); // last value is a separator
         }
         catch (...)

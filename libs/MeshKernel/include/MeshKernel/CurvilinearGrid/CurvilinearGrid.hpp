@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <set>
 #include <vector>
 
 #include <MeshKernel/BoundingBox.hpp>
@@ -37,7 +38,6 @@
 #include <MeshKernel/CurvilinearGrid/UndoActions/CurvilinearGridBlockUndoAction.hpp>
 #include <MeshKernel/CurvilinearGrid/UndoActions/CurvilinearGridRefinementUndoAction.hpp>
 #include <MeshKernel/CurvilinearGrid/UndoActions/ResetCurvilinearNodeAction.hpp>
-#include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/UndoActions/UndoAction.hpp>
@@ -55,6 +55,9 @@ namespace meshkernel
 
         /// @brief Typedef for face indices
         using CurvilinearFaceNodeIndices = std::array<CurvilinearGridNodeIndices, 4>;
+
+        /// @brief Typedef for defining a curvilinear edge
+        using CurvilinearEdge = std::pair<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices>;
 
         /// @brief An enum for boundary grid line types
         enum class BoundaryGridLineType
@@ -308,13 +311,13 @@ namespace meshkernel
         /// @brief Computes the node from an index
         [[nodiscard]] const Point& Node(const UInt index) const
         {
-            const auto nodeIndex = GetNodeIndex(index);
+            const auto nodeIndex = GetCurvilinearGridNodeIndices(index);
             return GetNode(nodeIndex);
         }
 
         /// @brief Get the node CurvilinearGridNodeIndices from a position
-        /// @return The CurvilinearGridNodeIndices
-        CurvilinearGridNodeIndices GetNodeIndex(const UInt index) const
+        /// @return The CurvilinearGridNodeIndices for the position
+        CurvilinearGridNodeIndices GetCurvilinearGridNodeIndices(const UInt index) const
         {
             if (index >= NumM() * NumN())
             {
@@ -324,6 +327,18 @@ namespace meshkernel
             const UInt n = index / NumM();
             const UInt m = index % NumM();
             return {n, m};
+        }
+
+        /// @brief Get the node index from a CurvilinearGridNodeIndices
+        /// @return The CurvilinearGridNodeIndices
+        UInt GetNodeIndex(const CurvilinearGridNodeIndices& nodeIndex) const
+        {
+            if (!nodeIndex.IsValid())
+            {
+                throw AlgorithmError("CurvilinearGridNodeIndices ");
+            }
+
+            return nodeIndex.m_m + nodeIndex.m_n * NumM();
         }
 
         /// @brief Finds the index of the closest location
@@ -388,6 +403,12 @@ namespace meshkernel
         /// @param [in] n the n-dimension index
         /// @return a vector of M nodes
         std::vector<Point> GetNodeVectorAtN(UInt n) const { return lin_alg::MatrixColToSTLVector(m_gridNodes, n + m_startOffset.m_n); }
+
+        /// @brief Compute a sequence of one or more outer boundary polygons separated by geometry separators
+        /// @param[in]  lowerLeft   The node index of the lower left corner
+        /// @param[in]  upperRight  The node index of the upper right corner
+        /// @returns The vector containing the boundary polygon points
+        [[nodiscard]] std::vector<Point> ComputeBoundaryPolygons(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const;
 
         /// @brief The number of nodes M in the m dimension
         /// @return A number >= 2 for a valid curvilinear grid
@@ -454,9 +475,11 @@ namespace meshkernel
         /// @returns The  mapping (m and n indices for each node of the edge)
         [[nodiscard]] std::vector<CurvilinearEdgeNodeIndices> ComputeEdgeIndices() const;
 
-        /// @brief Compute the face indices.
-        /// @returns The  mapping (m and n indices for each node of the face)
-        [[nodiscard]] std::vector<CurvilinearFaceNodeIndices> ComputeFaceIndices() const;
+        /// @brief Compute the boundary edges. While iterating over edges of valid faces, boundary edges are seen once, all internal edges are seen by two faces.
+        /// @param[in]  lowerLeft   The node index of the lower left corner
+        /// @param[in]  upperRight  The node index of the upper right corner
+        /// @returns The set of boundary edges
+        [[nodiscard]] std::set<CurvilinearEdge> ComputeBoundaryEdges(const CurvilinearGridNodeIndices& lowerLeft, const CurvilinearGridNodeIndices& upperRight) const;
 
         /// @brief Set the m_nodesRTreeRequiresUpdate flag
         /// @param[in] value The value of the flag
@@ -536,11 +559,11 @@ meshkernel::Point const& meshkernel::CurvilinearGrid::GetNode(const UInt n, cons
     return m_gridNodes(n + m_startOffset.m_n, m + m_startOffset.m_m);
 }
 
-meshkernel::Point& meshkernel::CurvilinearGrid::GetNode(const meshkernel::CurvilinearGridNodeIndices& index)
+meshkernel::Point& meshkernel::CurvilinearGrid::GetNode(const CurvilinearGridNodeIndices& index)
 {
     if (!index.IsValid()) [[unlikely]]
     {
-        throw meshkernel::ConstraintError("Invalid node index");
+        throw ConstraintError("Invalid node index");
     }
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
@@ -549,11 +572,11 @@ meshkernel::Point& meshkernel::CurvilinearGrid::GetNode(const meshkernel::Curvil
     return GetNode(index.m_n, index.m_m);
 }
 
-meshkernel::Point const& meshkernel::CurvilinearGrid::GetNode(const meshkernel::CurvilinearGridNodeIndices& index) const
+meshkernel::Point const& meshkernel::CurvilinearGrid::GetNode(const CurvilinearGridNodeIndices& index) const
 {
     if (!index.IsValid()) [[unlikely]]
     {
-        throw meshkernel::ConstraintError("Invalid node index");
+        throw ConstraintError("Invalid node index");
     }
 
     return GetNode(index.m_n, index.m_m);
