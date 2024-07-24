@@ -1617,7 +1617,7 @@ namespace meshkernelapi
             }
             auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
 
-            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_projection);
             auto const refinementResult = polygon.RefineFirstPolygon(firstNodeIndex, secondNodeIndex, targetEdgeLength);
 
             ConvertPointVectorToGeometryList(refinementResult, refinedPolygon);
@@ -1641,8 +1641,10 @@ namespace meshkernelapi
 
             auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
 
-            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            auto const refinementResult = polygon.LinearRefinePolygon(0, firstNodeIndex, secondNodeIndex);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_projection);
+            const auto firstNodeIndexUnsigned = static_cast<meshkernel::UInt>(firstNodeIndex);
+            const auto secondNodeUnsigned = static_cast<meshkernel::UInt>(secondNodeIndex);
+            const auto refinementResult = polygon.LinearRefinePolygon(0, firstNodeIndexUnsigned, secondNodeUnsigned);
 
             ConvertPointVectorToGeometryList(refinementResult, refinedPolygon);
         }
@@ -1670,11 +1672,37 @@ namespace meshkernelapi
 
             auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
 
-            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_projection);
 
             const auto refinedPolygon = polygon.RefineFirstPolygon(firstIndex, secondIndex, distance);
 
-            numberOfPolygonNodes = int(refinedPolygon.size());
+            numberOfPolygonNodes = static_cast<int>(refinedPolygon.size());
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_polygon_count_linear_refine(int meshKernelId, const GeometryList& polygonToRefine, int firstNodeIndex, int secondNodeIndex, int& numberOfPolygonNodes)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
+
+            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_projection);
+            const auto firstNodeIndexUnsigned = static_cast<meshkernel::UInt>(firstNodeIndex);
+            const auto secondNodeUnsigned = static_cast<meshkernel::UInt>(secondNodeIndex);
+            const auto refinementResult = polygon.LinearRefinePolygon(0, firstNodeIndexUnsigned, secondNodeUnsigned);
+
+            numberOfPolygonNodes = static_cast<int>(refinementResult.size());
         }
         catch (...)
         {
