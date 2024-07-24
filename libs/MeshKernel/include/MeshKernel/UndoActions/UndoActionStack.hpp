@@ -30,6 +30,7 @@
 #include <cstdint>
 #include <list>
 
+#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/UndoActions/UndoAction.hpp"
 
@@ -49,14 +50,14 @@ namespace meshkernel
         // Perhaps Short for for menu items, long form for tooltips?
         // long form for any exceptions?
 
-        /// @brief Add an UndoAction.
+        /// @brief Add an UndoAction with an associated action-id.
         ///
         /// All added undo-actions must be in the committed state, if not then a ConstraintError
         /// will be raised.
         /// No null undo-actions will be added to the stack.
         /// All restored items will be removed, since after adding a new undo-action they are no
         /// longer restore-able.
-        void Add(UndoActionPtr&& transaction);
+        void Add(UndoActionPtr&& transaction, const int actionId = constants::missing::intValue);
 
         /// @brief Undo the action at the top of the committed stack
         ///
@@ -73,6 +74,9 @@ namespace meshkernel
 
         /// @brief Clear all undo actions.
         void Clear();
+
+        /// @brief Remove all undo actions with the action-id
+        UInt Remove(const int actionId);
 
         /// @brief Get the number of undo action items
         ///
@@ -93,11 +97,21 @@ namespace meshkernel
         std::uint64_t MemorySize() const;
 
     private:
+        /// @brief Undo actions relating to a specific entity, e.g. mesh
+        struct UndoActionForMesh
+        {
+            /// @brief Undo action.
+            UndoActionPtr m_undoAction;
+
+            /// @brief Identifier for entity associated with the action, most cases this will be a meshKernelId.
+            int m_actionId = constants::missing::intValue;
+        };
+
         /// @brief Stack of committed undo actions
-        std::list<UndoActionPtr> m_committed;
+        std::list<UndoActionForMesh> m_committed;
 
         /// @brief Stack of restored undo actions
-        std::list<UndoActionPtr> m_restored;
+        std::list<UndoActionForMesh> m_restored;
     };
 
 } // namespace meshkernel

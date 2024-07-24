@@ -68,19 +68,35 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_allocate_state(int projectionType, int& meshKernelId);
 
+        /// @brief Determine if the meshKernelId is valid
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[out] isValid Indicates if the mesh id is valid, true is its valid, false otherwise
+        /// @returns Error code
+        MKERNEL_API int mkernel_is_valid_state(int meshKernelId, bool& isValid);
+
         /// @brief Attempt to undo by one undo-action.
         /// @param[out] undone Indicates if the undo action was actually undone
         /// @returns Error code
         MKERNEL_API int mkernel_undo_state(bool& undone);
+
+        /// @brief Count the number of undo actions.
+        /// @param[out] committedCount The number of undo actions.
+        /// @param[out] restoredCount The number of restored undo actions.
+        /// @returns Error code
+        MKERNEL_API int mkernel_undo_state_count(int& committedCount, int& restoredCount);
 
         /// @brief Attempt to redo by one undo-action.
         /// @param[out] redone Indicates if the redo action was actually redone
         /// @returns Error code
         MKERNEL_API int mkernel_redo_state(bool& redone);
 
-        /// @brief Clear the undo state.
+        /// @brief Clear the undo state for all mesh kernel ids
         /// @returns Error code
         MKERNEL_API int mkernel_clear_undo_state();
+
+        /// @brief Clear the undo state for particular mesh kernel id
+        /// @returns Error code
+        MKERNEL_API int mkernel_clear_undo_state_for_mesh(int& meshKernelId);
 
         /// @brief Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
         ///
