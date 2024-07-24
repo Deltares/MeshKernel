@@ -622,6 +622,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a3a8116b16cb7763092d273cf184b626e"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a3a8116b16cb7763092d273cf184b626e">mkernel_polygon_count_refine</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygonToRefine, int firstIndex, int secondIndex, double distance, int &amp;numberOfPolygonNodes)</td></tr>
 <tr class="memdesc:a3a8116b16cb7763092d273cf184b626e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the number of polygon nodes resulting from polygon refinement with <code>mkernel_polygon_refine</code>.  <a href="namespacemeshkernelapi.html#a3a8116b16cb7763092d273cf184b626e">More...</a><br /></td></tr>
 <tr class="separator:a3a8116b16cb7763092d273cf184b626e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dc137eac3dfb82f608df3a1395f1f98"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a1dc137eac3dfb82f608df3a1395f1f98">mkernel_polygon_count_linear_refine</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygonToRefine, int firstIndex, int secondIndex, int &amp;numberOfPolygonNodes)</td></tr>
+<tr class="memdesc:a1dc137eac3dfb82f608df3a1395f1f98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts the number of polygon nodes resulting from polygon refinement with <code>mkernel_polygon_linear_refine</code>.  <a href="namespacemeshkernelapi.html#a1dc137eac3dfb82f608df3a1395f1f98">More...</a><br /></td></tr>
+<tr class="separator:a1dc137eac3dfb82f608df3a1395f1f98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affe136285361f89d9d13b87f7a7f5a84"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#affe136285361f89d9d13b87f7a7f5a84">mkernel_polygon_get_included_points</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;selectingPolygon, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygonToSelect, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;selectionResults)</td></tr>
 <tr class="memdesc:affe136285361f89d9d13b87f7a7f5a84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects the polygon nodes within another polygon.  <a href="namespacemeshkernelapi.html#affe136285361f89d9d13b87f7a7f5a84">More...</a><br /></td></tr>
 <tr class="separator:affe136285361f89d9d13b87f7a7f5a84"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -7819,6 +7822,65 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">minFaceSize</td><td>The minimum face size below which two nodes will be merged </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a1dc137eac3dfb82f608df3a1395f1f98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dc137eac3dfb82f608df3a1395f1f98">&#9670;&nbsp;</a></span>mkernel_polygon_count_linear_refine()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_polygon_count_linear_refine </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygonToRefine</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>firstIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>secondIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>numberOfPolygonNodes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Counts the number of polygon nodes resulting from polygon refinement with <code>mkernel_polygon_linear_refine</code>. </p>
+<p>This function should be used by clients before <code>mkernel_polygon_linear_refine</code> for allocating <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> containing the refinement result. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygonToRefine</td><td>The input polygon to refine </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">firstIndex</td><td>The first index of the refinement interval </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">secondIndex</td><td>The second index of the refinement interval </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">numberOfPolygonNodes</td><td>The number of nodes after refinement </td></tr>
   </table>
   </dd>
 </dl>
