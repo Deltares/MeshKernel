@@ -37,7 +37,7 @@ std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeXVal
 
         double xValue = -blockSize * std::pow(alfm, static_cast<double>(minc));
 
-        for (int m = 0; m < static_cast<int>(xValues.size()); ++m)
+        auto computeDeltaX = [blockSize, alfm, muni, minc](const int m) -> double
         {
             double deltaX;
 
@@ -54,8 +54,12 @@ std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeXVal
                 deltaX = blockSize * std::pow(alfm, static_cast<double>(m + 1 - minc - muni));
             }
 
-            xValue += deltaX;
+            return deltaX;
+        };
 
+        for (int m = 0; m < static_cast<int>(xValues.size()); ++m)
+        {
+            xValue += computeDeltaX(m);
             xValues[static_cast<UInt>(m)] = xValue;
         }
     }
@@ -170,7 +174,7 @@ std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeThet
 
     if (deltaTheta * static_cast<double>(size - 1) > 2.0 * std::numbers::pi_v<double>)
     {
-        // call qnmessage('Increase radius of curvature or' // ' decrease M-dimension or delta X')
+        // Log message here: "Increase radius of curvature or decrease M-dimension or delta X"
         deltaTheta = 2.0 * std::numbers::pi_v<double> / static_cast<double>(size - 1);
     }
 
