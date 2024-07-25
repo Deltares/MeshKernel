@@ -245,6 +245,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a2caa5ca4316f35e6fe4c5757f8a75589"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a2caa5ca4316f35e6fe4c5757f8a75589">mkernel_curvilinear_compute_rectangular_grid_on_extension</a> (int meshKernelId, const <a class="el" href="structmeshkernel_1_1_make_grid_parameters.html">meshkernel::MakeGridParameters</a> &amp;makeGridParameters)</td></tr>
 <tr class="memdesc:a2caa5ca4316f35e6fe4c5757f8a75589"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes a rectangular curvilinear grid on a defined extension.  <a href="namespacemeshkernelapi.html#a2caa5ca4316f35e6fe4c5757f8a75589">More...</a><br /></td></tr>
 <tr class="separator:a2caa5ca4316f35e6fe4c5757f8a75589"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1489f182a98483291e002a463576f108"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a1489f182a98483291e002a463576f108">mkernel_curvilinear_compute_circular_grid</a> (int meshKernelId, const <a class="el" href="structmeshkernel_1_1_make_grid_parameters.html">meshkernel::MakeGridParameters</a> &amp;parameters)</td></tr>
+<tr class="memdesc:a1489f182a98483291e002a463576f108"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute a rectangular or circular curvilinear grid.  <a href="namespacemeshkernelapi.html#a1489f182a98483291e002a463576f108">More...</a><br /></td></tr>
+<tr class="separator:a1489f182a98483291e002a463576f108"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab538a45d6469d77c2c1dc925a9fcb446"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ab538a45d6469d77c2c1dc925a9fcb446">mkernel_curvilinear_move_node</a> (int meshKernelId, double xFromPoint, double yFromPoint, double xToPoint, double yToPoint)</td></tr>
 <tr class="memdesc:ab538a45d6469d77c2c1dc925a9fcb446"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves a point of a curvilinear grid from one location to another.  <a href="namespacemeshkernelapi.html#ab538a45d6469d77c2c1dc925a9fcb446">More...</a><br /></td></tr>
 <tr class="separator:ab538a45d6469d77c2c1dc925a9fcb446"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1046,6 +1049,44 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">contacts</td><td><a class="el" href="structmeshkernelapi_1_1_contacts.html" title="A struct used to describe contacts between a 1d and a 2d mesh.">Contacts</a> data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a1489f182a98483291e002a463576f108"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1489f182a98483291e002a463576f108">&#9670;&nbsp;</a></span>mkernel_curvilinear_compute_circular_grid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_curvilinear_compute_circular_grid </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_make_grid_parameters.html">meshkernel::MakeGridParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>parameters</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute a rectangular or circular curvilinear grid. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">parameters</td><td>The structure containing the make grid parameters </td></tr>
   </table>
   </dd>
 </dl>

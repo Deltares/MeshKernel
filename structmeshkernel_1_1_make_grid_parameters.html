@@ -124,11 +124,48 @@ double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="st
 double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_make_grid_parameters.html#ada89a8003178c7cd3db3ffbb1434880f">upper_right_y</a> = 0.0</td></tr>
 <tr class="memdesc:ada89a8003178c7cd3db3ffbb1434880f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The y coordinate of the upper right corner. <br /></td></tr>
 <tr class="separator:ada89a8003178c7cd3db3ffbb1434880f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71f6d8104ed846596366f59e338b09ff"><td class="memItemLeft" align="right" valign="top"><a id="a71f6d8104ed846596366f59e338b09ff"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_make_grid_parameters.html#a71f6d8104ed846596366f59e338b09ff">radius_curvature</a> = 0.0</td></tr>
+<tr class="memdesc:a71f6d8104ed846596366f59e338b09ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Radius of curvature. <br /></td></tr>
+<tr class="separator:a71f6d8104ed846596366f59e338b09ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b59868fd0fc50f7437aa2b5ecbb94b4"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_make_grid_parameters.html#a0b59868fd0fc50f7437aa2b5ecbb94b4">uniform_columns_fraction</a> = 0.25</td></tr>
+<tr class="memdesc:a0b59868fd0fc50f7437aa2b5ecbb94b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fraction of cells containing the default grid column size.  <a href="structmeshkernel_1_1_make_grid_parameters.html#a0b59868fd0fc50f7437aa2b5ecbb94b4">More...</a><br /></td></tr>
+<tr class="separator:a0b59868fd0fc50f7437aa2b5ecbb94b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a986ab081ccbb94bbba7ea3f674a20120"><td class="memItemLeft" align="right" valign="top"><a id="a986ab081ccbb94bbba7ea3f674a20120"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_make_grid_parameters.html#a986ab081ccbb94bbba7ea3f674a20120">uniform_rows_fraction</a> = 0.25</td></tr>
+<tr class="memdesc:a986ab081ccbb94bbba7ea3f674a20120"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fraction of cells containing the default grid row size. <br /></td></tr>
+<tr class="separator:a986ab081ccbb94bbba7ea3f674a20120"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3ec219c92c8d8b4cc4e49b7bf792f1f"><td class="memItemLeft" align="right" valign="top"><a id="ad3ec219c92c8d8b4cc4e49b7bf792f1f"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_make_grid_parameters.html#ad3ec219c92c8d8b4cc4e49b7bf792f1f">maximum_uniform_size_columns</a> = 5.0</td></tr>
+<tr class="memdesc:ad3ec219c92c8d8b4cc4e49b7bf792f1f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum element column size. <br /></td></tr>
+<tr class="separator:ad3ec219c92c8d8b4cc4e49b7bf792f1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad377cdb826edebc970fb19ad7015745c"><td class="memItemLeft" align="right" valign="top"><a id="ad377cdb826edebc970fb19ad7015745c"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_make_grid_parameters.html#ad377cdb826edebc970fb19ad7015745c">maximum_uniform_size_rows</a> = 5.0</td></tr>
+<tr class="memdesc:ad377cdb826edebc970fb19ad7015745c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum element row size. <br /></td></tr>
+<tr class="separator:ad377cdb826edebc970fb19ad7015745c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This struct describes the necessary parameters to create a new curvilinear grid in a C-compatible manner. </p>
 <dl class="section see"><dt>See also</dt><dd>mkernel_make_mesh </dd></dl>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="a0b59868fd0fc50f7437aa2b5ecbb94b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b59868fd0fc50f7437aa2b5ecbb94b4">&#9670;&nbsp;</a></span>uniform_columns_fraction</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double meshkernel::MakeGridParameters::uniform_columns_fraction = 0.25</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fraction of cells containing the default grid column size. </p>
+<p>E.g. if num_columns = 50 then: 0.25 * 50 + 1 = 13 + 1 </p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
 <li>/home/runner/work/MeshKernel/MeshKernel/libs/MeshKernel/include/MeshKernel/<a class="el" href="_parameters_8hpp_source.html">Parameters.hpp</a></li>
 </ul>
 </div><!-- contents -->
