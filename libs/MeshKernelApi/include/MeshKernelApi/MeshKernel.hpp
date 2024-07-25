@@ -454,6 +454,13 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_curvilinear_compute_rectangular_grid_on_extension(int meshKernelId,
                                                                                   const meshkernel::MakeGridParameters& makeGridParameters);
 
+        /// @brief Compute a rectangular or circular curvilinear grid
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] parameters   The structure containing the make grid parameters
+        /// @returns Error code
+        MKERNEL_API int mkernel_curvilinear_compute_circular_grid(int meshKernelId,
+                                                                  const meshkernel::MakeGridParameters& parameters);
+
         /// @brief Moves a point of a curvilinear grid from one location to another
         /// @param meshKernelId The id of the mesh state
         /// @param[in] xFromPoint The x coordinate of point to move

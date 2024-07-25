@@ -107,22 +107,23 @@ set(
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridFromPolygon.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridFromSplines.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridFromSplinesTransfinite.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridGenerateCircularGrid.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridLine.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridLineAttractionRepulsion.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridLineMirror.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridLineShift.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridMeshExpansionCalculator.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridOrthogonalization.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridRectangular.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridRefinement.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridFullRefinement.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothing.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSmoothness.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapGridToLandBoundary.cpp
+  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapGridToSpline.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapping.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSplineToGrid.cpp
   ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridUtilities.cpp
-  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridMeshExpansionCalculator.cpp
-  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapGridToLandBoundary.cpp
-  ${CURVILINEAR_GRID_SRC_DIR}/CurvilinearGridSnapGridToSpline.cpp
 )
 
 
@@ -228,10 +229,12 @@ set(
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridFromPolygon.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridFromSplines.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridFromSplinesTransfinite.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridGenerateCircularGrid.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridLine.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridLineAttractionRepulsion.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridLineMirror.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridLineShift.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridMeshExpansionCalculator.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridNodeIndices.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridOrthogonalization.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridRectangular.hpp
@@ -239,12 +242,11 @@ set(
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridFullRefinement.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothing.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSmoothness.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapGridToLandBoundary.hpp
+  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapGridToSpline.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapping.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSplineToGrid.hpp
   ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridUtilities.hpp
-  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridMeshExpansionCalculator.hpp
-  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapGridToLandBoundary.hpp
-  ${CURVILINEAR_GRID_INC_DIR}/CurvilinearGridSnapGridToSpline.hpp
 )
 
 

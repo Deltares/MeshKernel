@@ -45,19 +45,19 @@ namespace meshkernel
 
     private:
         /// @brief Maximum number of spline points allowed when doubling of the spline points.
-        static const UInt MaximumNumberOfSplinePoints = 10000;
+        static constexpr UInt MaximumNumberOfSplinePoints = 1000;
 
         /// @brief The maximum number of checks for unlabeled splines
-        static const UInt MaximumCumulativeUnlabeledSplineCount = 1000;
+        static constexpr UInt MaximumCumulativeUnlabeledSplineCount = 1000;
 
         /// @brief The maximum refinement factor.
-        static const int MaximumRefinementFactor = 1000;
+        static constexpr int MaximumRefinementFactor = 1000;
 
         /// @brief Increase factor when adding mode spling support points.
         ///
         /// If value other than 2 is used, then the function IncreaseSplinePoints
         /// needs to be updated to reflect this change
-        static const UInt SplineIncreaseFactor = 2;
+        static constexpr UInt SplineIncreaseFactor = 2;
 
         /// @brief Array of doubles
         using DoubleVector = std::vector<double>;
