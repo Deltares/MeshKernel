@@ -48,6 +48,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplinesTransfinite.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFullRefinement.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridGenerateCircularGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineAttractionRepulsion.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridLineMirror.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
@@ -3825,6 +3826,33 @@ namespace meshkernelapi
 
             meshKernelState[meshKernelId].m_curvilinearGrid = CreateRectangularCurvilinearGridOnExtension(makeGridParameters,
                                                                                                           meshKernelState[meshKernelId].m_projection);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_compute_circular_grid(int meshKernelId,
+                                                              const meshkernel::MakeGridParameters& parameters)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
+            {
+                throw meshkernel::MeshKernelError("The selected mesh already contains a valid grid.");
+            }
+
+            meshkernel::CurvilinearGridGenerateCircularGrid generateGrid;
+            auto generatedGrid = std::make_unique<meshkernel::CurvilinearGrid>(generateGrid.Compute(parameters, meshKernelState[meshKernelId].m_projection));
+            meshKernelState[meshKernelId].m_curvilinearGrid = std::move(generatedGrid);
         }
         catch (...)
         {
