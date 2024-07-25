@@ -90,7 +90,7 @@ meshkernel::UInt meshkernel::UndoActionStack::Remove(const int actionId)
 {
     UInt removedCount = 0;
 
-    auto hasMatchingActionId = [actionId](const UndoActionForMesh& action) -> bool
+    auto hasMatchingActionId = [actionId](const UndoActionForMesh& action)
     { return action.m_actionId == actionId; };
 
     removedCount = static_cast<UInt>(m_committed.remove_if(hasMatchingActionId));

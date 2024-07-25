@@ -1,8 +1,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <cstdlib>
 #include <iterator>
+#include <random>
 
 #include "MeshKernel/UndoActions/AddEdgeAction.hpp"
 #include "MeshKernel/UndoActions/AddNodeAction.hpp"
@@ -546,10 +546,13 @@ TEST(UndoStackTests, RemovingUndoActionsRandomised)
 
     EXPECT_EQ(undoActionStack.Size(), 0);
 
+    std::mt19937 generator;
+
     // Fill undo actions
     for (mk::UInt i = 0; i < totalActionCount; ++i)
     {
-        int randomNum = rand() % NumberOfUndoActions;
+        mk::UInt randomNum = static_cast<mk::UInt>(generator()) % NumberOfUndoActions;
+        // int randomNum = rand() % NumberOfUndoActions;
         undoActionStack.Add(std::make_unique<MockUndoAction>(), actionIds[randomNum]);
         ++actionCounts[randomNum];
     }
