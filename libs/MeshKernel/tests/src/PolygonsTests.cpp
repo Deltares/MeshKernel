@@ -17,7 +17,7 @@ TEST(Polygons, MeshBoundaryToPolygon)
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
 
     std::vector<meshkernel::Point> polygonNodes;
-    const auto meshBoundaryPolygon = mesh->MeshBoundaryToPolygon(polygonNodes);
+    const auto meshBoundaryPolygon = mesh->ComputeBoundaryPolygons(polygonNodes);
 
     ASSERT_EQ(8, meshBoundaryPolygon.size());
 

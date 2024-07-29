@@ -40,7 +40,7 @@ namespace meshkernel
         /// @brief Default constructor sets the indices to invalid
         CurvilinearGridNodeIndices() : m_n(constants::missing::uintValue), m_m(constants::missing::uintValue) {}
 
-        /// @brief Constructor sets indices from values
+        /// @brief Constructor setting n and m indices
         /// @param[in] m The m index
         /// @param[in] n The n index
         CurvilinearGridNodeIndices(UInt n, UInt m) : m_n(n), m_m(m) {}
@@ -50,9 +50,6 @@ namespace meshkernel
         {
             return m_m != missingValue && m_n != missingValue;
         }
-
-        /// @brief Overloads equality with another CurvilinearGridNodeIndices
-        bool operator==(const CurvilinearGridNodeIndices& rhs) const = default;
 
         CurvilinearGridNodeIndices& operator+=(const CurvilinearGridNodeIndices& val)
         {
@@ -70,6 +67,19 @@ namespace meshkernel
             m_m += val.m_m;
             return *this;
         }
+
+        /// @brief Overloads <=> operator
+        auto operator<=>(const CurvilinearGridNodeIndices& rhs) const
+        {
+            if (m_n == rhs.m_n)
+            {
+                return m_m <=> rhs.m_m; // Return result of m_m comparison if not equal
+            }
+            return m_n <=> rhs.m_n; // Compare m_n if m_m values are equal
+        }
+
+        /// @brief Overloads equality with another CurvilinearGridNodeIndices
+        bool operator==(const CurvilinearGridNodeIndices& rhs) const = default;
 
         CurvilinearGridNodeIndices& operator-=(const CurvilinearGridNodeIndices& val)
         {
