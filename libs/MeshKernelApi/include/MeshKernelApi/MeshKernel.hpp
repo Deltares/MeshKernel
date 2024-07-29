@@ -85,6 +85,13 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_undo_state_count(int& committedCount, int& restoredCount);
 
+        /// @brief Count the number of undo actions for a particular meshKernelId
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[out] committedCount The number of undo actions.
+        /// @param[out] restoredCount The number of restored undo actions.
+        /// @returns Error code
+        MKERNEL_API int mkernel_undo_state_count_for_id(int meshKernelId, int& committedCount, int& restoredCount);
+
         /// @brief Attempt to redo by one undo-action.
         /// @param[out] redone Indicates if the redo action was actually redone
         /// @returns Error code

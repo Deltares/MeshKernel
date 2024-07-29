@@ -84,6 +84,7 @@
 #include <MeshKernel/SplitRowColumnOfMesh.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
+#include <MeshKernel/UndoActions/UndoAction.hpp>
 #include <MeshKernel/UndoActions/UndoActionStack.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
@@ -96,6 +97,62 @@
 #include <cstring>
 #include <unordered_map>
 #include <vector>
+
+namespace meshkernelapi
+{
+
+    class MKStateUndoAction : public meshkernel::UndoAction
+    {
+    public:
+        /// @brief Allocate a CompoundUndoAction and return a unique_ptr to the newly create object.
+        static std::unique_ptr<MKStateUndoAction> Create(MeshKernelState& mkState)
+        {
+            return std::make_unique<MKStateUndoAction>(mkState);
+        }
+
+        MKStateUndoAction(MeshKernelState& mkState) : m_mkStateCopy(mkState)
+        {
+            m_mkState.m_mesh1d = mkState.m_mesh1d;
+            m_mkState.m_network1d = mkState.m_network1d;
+            m_mkState.m_mesh2d = mkState.m_mesh2d;
+            m_mkState.m_contacts = mkState.m_contacts;
+            m_mkState.m_curvilinearGrid = mkState.m_curvilinearGrid;
+            m_mkState.m_meshOrthogonalization = mkState.m_meshOrthogonalization;
+            m_mkState.m_curvilinearGridFromSplines = mkState.m_curvilinearGridFromSplines;
+            m_mkState.m_curvilinearGridOrthogonalization = mkState.m_curvilinearGridOrthogonalization;
+            m_mkState.m_curvilinearGridLineShift = mkState.m_curvilinearGridLineShift;
+            m_mkState.m_projection = mkState.m_projection;
+            m_mkState.m_state = mkState.m_state;
+        }
+
+    private:
+        void SwapContents()
+        {
+            std::swap(m_mkState.m_mesh1d, m_mkStateCopy.m_mesh1d);
+            std::swap(m_mkState.m_mesh2d, m_mkStateCopy.m_mesh2d);
+            std::swap(m_mkState.m_network1d, m_mkStateCopy.m_network1d);
+            std::swap(m_mkState.m_contacts, m_mkStateCopy.m_contacts);
+            std::swap(m_mkState.m_curvilinearGrid, m_mkStateCopy.m_curvilinearGrid);
+            std::swap(m_mkState.m_state, m_mkStateCopy.m_state);
+        }
+
+        /// @brief Commit undo action.
+        void DoCommit() override
+        {
+            SwapContents();
+        }
+
+        /// @brief Restore undo action
+        void DoRestore() override
+        {
+            SwapContents();
+        }
+
+        MeshKernelState m_mkState;
+        MeshKernelState& m_mkStateCopy;
+    };
+
+} // namespace meshkernelapi
 
 namespace meshkernelapi
 {
@@ -144,6 +201,13 @@ namespace meshkernelapi
         }
     }
 
+    bool IsValidMeshKernelId(int meshKernelId)
+    {
+        return meshKernelState.contains(meshKernelId) &&
+               (meshKernelState.at(meshKernelId).m_state == CurrentState::Uninitialised ||
+                IsValidMeshState(meshKernelState.at(meshKernelId).m_state));
+    }
+
     MKERNEL_API int mkernel_allocate_state(int projectionType, int& meshKernelId)
     {
         lastExitCode = meshkernel::ExitCode::Success;
@@ -168,7 +232,7 @@ namespace meshkernelapi
 
         try
         {
-            isValid = meshKernelState.contains(meshKernelId);
+            isValid = IsValidMeshKernelId(meshKernelId);
         }
         catch (...)
         {
@@ -182,13 +246,37 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshKernelUndoStack.Remove(meshKernelId);
-            meshKernelState.erase(meshKernelId);
+            // if (!IsValidMeshState(meshKernelState.at(meshKernelId).m_state))
+            // {
+            //     throw meshkernel::MeshKernelError("The selected mesh kernel is not in a valid state to be deleted {}.",
+            //                                       toString(meshKernelState.at(meshKernelId).m_state));
+            // }
+
+            meshKernelUndoStack.Add(MKStateUndoAction::Create(meshKernelState[meshKernelId]),
+                                    meshKernelId);
+
+            MeshKernelState& mkState = meshKernelState[meshKernelId];
+
+            mkState.m_mesh1d = std::make_shared<meshkernel::Mesh1D>(mkState.m_projection);
+            mkState.m_mesh2d = std::make_shared<meshkernel::Mesh2D>(mkState.m_projection);
+            mkState.m_network1d = std::make_shared<meshkernel::Network1D>(mkState.m_projection);
+            mkState.m_contacts = std::make_shared<meshkernel::Contacts>(*mkState.m_mesh1d, *mkState.m_mesh2d);
+            mkState.m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(mkState.m_projection);
+
+            mkState.m_meshOrthogonalization.reset();
+            mkState.m_curvilinearGridFromSplines.reset();
+            mkState.m_curvilinearGridOrthogonalization.reset();
+            mkState.m_curvilinearGridLineShift.reset();
+
+            mkState.m_state = DeleteMeshState(meshKernelState.at(meshKernelId).m_state);
+
+            // meshKernelUndoStack.Remove(meshKernelId);
+            // meshKernelState.erase(meshKernelId);
         }
         catch (...)
         {
@@ -224,6 +312,32 @@ namespace meshkernelapi
         {
             committedCount = static_cast<int>(meshKernelUndoStack.CommittedSize());
             restoredCount = static_cast<int>(meshKernelUndoStack.RestoredSize());
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_undo_state_count_for_id(int meshKernelId, int& committedCount, int& restoredCount)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        committedCount = 0;
+        restoredCount = 0;
+
+        try
+        {
+            if (IsValidMeshKernelId(meshKernelId))
+            {
+                committedCount = static_cast<int>(meshKernelUndoStack.CommittedSize(meshKernelId));
+                restoredCount = static_cast<int>(meshKernelUndoStack.RestoredSize(meshKernelId));
+            }
+            else
+            {
+                committedCount = 0;
+                restoredCount = 0;
+            }
         }
         catch (...)
         {
@@ -284,7 +398,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -294,9 +408,11 @@ namespace meshkernelapi
             }
             meshkernel::range_check::CheckOneOf<int>(deletionOption, meshkernel::GetValidDeletionOptions(), "Deletion");
 
-            const auto polygonPoints = ConvertGeometryListToPointVector(polygon);
+            const std::vector<meshkernel::Point> polygonPoints = ConvertGeometryListToPointVector(polygon);
 
-            const bool invertDeletionBool = invertDeletion == 1 ? true : false;
+            // if (polygonPoints.size () > 0)
+            // {
+            const bool invertDeletionBool = invertDeletion == 1;
             const meshkernel::Polygons meshKernelPolygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             const auto deletionOptionEnum = static_cast<meshkernel::Mesh2D::DeleteMeshOptions>(deletionOption);
 
@@ -314,7 +430,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -414,7 +530,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -442,7 +558,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -513,7 +629,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -550,7 +666,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -580,7 +696,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -602,7 +718,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -628,7 +744,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -647,7 +763,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -670,7 +786,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -689,7 +805,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -708,7 +824,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -728,7 +844,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -747,7 +863,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -771,7 +887,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -801,7 +917,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -819,12 +935,12 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -860,7 +976,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -896,7 +1012,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -915,7 +1031,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -940,7 +1056,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -968,7 +1084,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1011,7 +1127,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1036,7 +1152,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1056,7 +1172,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1078,7 +1194,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1101,7 +1217,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1148,7 +1264,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1191,7 +1307,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1215,7 +1331,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1244,7 +1360,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1273,7 +1389,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1297,7 +1413,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1321,7 +1437,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1355,7 +1471,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1457,7 +1573,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1485,7 +1601,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1513,7 +1629,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1537,7 +1653,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1568,7 +1684,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1599,7 +1715,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1630,7 +1746,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1652,7 +1768,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1682,7 +1798,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1745,7 +1861,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1768,7 +1884,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1799,7 +1915,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1824,7 +1940,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1850,7 +1966,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1876,7 +1992,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1899,7 +2015,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1921,7 +2037,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1958,7 +2074,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -1990,7 +2106,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2019,7 +2135,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2083,7 +2199,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2107,7 +2223,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2126,7 +2242,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2153,7 +2269,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2177,7 +2293,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2203,7 +2319,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2226,7 +2342,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2273,7 +2389,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2306,7 +2422,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2332,7 +2448,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2360,7 +2476,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2421,7 +2537,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2471,7 +2587,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2502,7 +2618,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2530,7 +2646,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2562,7 +2678,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2627,7 +2743,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2655,7 +2771,7 @@ namespace meshkernelapi
 
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2685,7 +2801,7 @@ namespace meshkernelapi
 
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2706,7 +2822,7 @@ namespace meshkernelapi
 
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2726,7 +2842,7 @@ namespace meshkernelapi
 
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2753,7 +2869,7 @@ namespace meshkernelapi
 
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2788,7 +2904,7 @@ namespace meshkernelapi
 
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2826,7 +2942,7 @@ namespace meshkernelapi
 
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2846,7 +2962,7 @@ namespace meshkernelapi
 
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2876,7 +2992,7 @@ namespace meshkernelapi
 
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -2970,7 +3086,7 @@ namespace meshkernelapi
 
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3052,7 +3168,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3085,7 +3201,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3106,7 +3222,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3220,7 +3336,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3241,7 +3357,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3262,7 +3378,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3287,7 +3403,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3319,7 +3435,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3347,7 +3463,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3380,7 +3496,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3408,7 +3524,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3473,7 +3589,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3507,7 +3623,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3534,7 +3650,7 @@ namespace meshkernelapi
 
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3573,7 +3689,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3601,7 +3717,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3633,7 +3749,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3665,7 +3781,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3694,7 +3810,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3722,7 +3838,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3752,7 +3868,7 @@ namespace meshkernelapi
                 throw meshkernel::ConstraintError("The curvautre array is null");
             }
 
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id, {}, does not exist.", meshKernelId);
             }
@@ -3786,7 +3902,7 @@ namespace meshkernelapi
                 throw meshkernel::ConstraintError("The smoothness array is null");
             }
 
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id, {}, does not exist.", meshKernelId);
             }
@@ -3818,7 +3934,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3842,7 +3958,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3865,7 +3981,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3889,7 +4005,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3914,7 +4030,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3935,7 +4051,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3957,7 +4073,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -3978,7 +4094,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -4004,7 +4120,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -4028,7 +4144,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
@@ -4061,7 +4177,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
@@ -4089,7 +4205,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
@@ -4114,7 +4230,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
@@ -4144,7 +4260,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
@@ -4190,7 +4306,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
@@ -4231,7 +4347,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
@@ -4264,7 +4380,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
@@ -4286,7 +4402,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
@@ -4325,7 +4441,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
@@ -4351,7 +4467,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
@@ -4371,7 +4487,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
@@ -4395,7 +4511,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
@@ -4414,7 +4530,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
@@ -4445,7 +4561,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -4491,7 +4607,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -4528,7 +4644,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -4570,7 +4686,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
@@ -4604,7 +4720,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -4639,7 +4755,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -4672,7 +4788,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -4707,7 +4823,7 @@ namespace meshkernelapi
 
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -4760,7 +4876,7 @@ namespace meshkernelapi
 
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -4824,7 +4940,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
@@ -4882,7 +4998,7 @@ namespace meshkernelapi
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
-            if (!meshKernelState.contains(meshKernelId))
+            if (!IsValidMeshKernelId(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
