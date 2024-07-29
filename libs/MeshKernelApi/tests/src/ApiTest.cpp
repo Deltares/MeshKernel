@@ -3240,7 +3240,7 @@ TEST(Mesh2D, SimpleMultiMeshUndoTest)
     errorCode = mkernel_deallocate_state(mkid1);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    errorCode = mkernel_undo_state_count(committedCount, restoredCount);
+    errorCode = mkernel_undo_state_count_for_id(mkid2, committedCount, restoredCount);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     EXPECT_EQ(committedCount, 3);
@@ -3259,7 +3259,7 @@ TEST(Mesh2D, SimpleMultiMeshUndoTest)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_FALSE(isValid);
 
-    errorCode = mkernel_undo_state_count(committedCount, restoredCount);
+    errorCode = mkernel_undo_state_count_for_id(mkid2, committedCount, restoredCount);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     EXPECT_EQ(committedCount, 0);
