@@ -950,7 +950,7 @@ std::tuple<double, meshkernel::Point, meshkernel::UInt, double> LandBoundaries::
     }
 
     const auto startLandBoundaryIndex = segmentIndex == constants::missing::uintValue ? 0 : m_validLandBoundaries[segmentIndex].first;
-    const auto endLandBoundaryIndex = segmentIndex == constants::missing::uintValue ? static_cast<UInt>(m_landBoundary.GetNumNodes()) : m_validLandBoundaries[segmentIndex].second;
+    const auto endLandBoundaryIndex = segmentIndex == constants::missing::uintValue ? static_cast<UInt>(m_landBoundary.GetNumNodes() - 1) : m_validLandBoundaries[segmentIndex].second;
 
     for (auto n = startLandBoundaryIndex; n < endLandBoundaryIndex; n++)
     {
