@@ -77,7 +77,7 @@ namespace meshkernelapi
         /// @brief Attempt to undo by one undo-action.
         /// @param[out] undone Indicates if the undo action was actually undone
         /// @returns Error code
-        MKERNEL_API int mkernel_undo_state(bool& undone);
+        MKERNEL_API int mkernel_undo_state(bool& undone, int& meshKernelId);
 
         /// @brief Count the number of undo actions.
         /// @param[out] committedCount The number of undo actions.
@@ -88,7 +88,7 @@ namespace meshkernelapi
         /// @brief Attempt to redo by one undo-action.
         /// @param[out] redone Indicates if the redo action was actually redone
         /// @returns Error code
-        MKERNEL_API int mkernel_redo_state(bool& redone);
+        MKERNEL_API int mkernel_redo_state(bool& redone, int& meshKernelId);
 
         /// @brief Clear the undo state for all mesh kernel ids
         /// @returns Error code

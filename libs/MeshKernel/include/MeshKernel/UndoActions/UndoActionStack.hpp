@@ -29,6 +29,7 @@
 
 #include <cstdint>
 #include <list>
+#include <tuple>
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
@@ -62,15 +63,17 @@ namespace meshkernel
         /// @brief Undo the action at the top of the committed stack
         ///
         /// The undo-action will be moved to the restored stack in case it should be re-done.
-        /// \returns true if an undo-action was performed, false otherwise
-        bool Undo();
+        /// \returns true if an undo-action was performed, false otherwise, and the associated action identifier.
+        /// If undo-action was false then the associated action identifier will be the value missing::intValue.
+        std::tuple<bool, int> Undo();
 
         // Another name
         /// @brief Redo the action at the top of the restored stack.
         ///
         /// The undo-action will be moved to the committed stack in case it needs to be undone.
-        /// \returns true if an redo-action was performed, false otherwise
-        bool Commit();
+        /// \returns true if an redo-action was performed, false otherwise, and the associated action identifier.
+        /// If redo-action was false then the associated action identifier will be the value missing::intValue.
+        std::tuple<bool, int> Commit();
 
         /// @brief Clear all undo actions.
         void Clear();

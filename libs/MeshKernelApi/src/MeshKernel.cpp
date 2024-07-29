@@ -197,14 +197,15 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_undo_state(bool& undone)
+    MKERNEL_API int mkernel_undo_state(bool& undone, int& meshKernelId)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         undone = false;
+        meshKernelId = meshkernel::constants::missing::intValue;
 
         try
         {
-            undone = meshKernelUndoStack.Undo();
+            std::tie(undone, meshKernelId) = meshKernelUndoStack.Undo();
         }
         catch (...)
         {
@@ -231,14 +232,15 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_redo_state(bool& redone)
+    MKERNEL_API int mkernel_redo_state(bool& redone, int& meshKernelId)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         redone = false;
+        meshKernelId = meshkernel::constants::missing::intValue;
 
         try
         {
-            redone = meshKernelUndoStack.Commit();
+            std::tie(redone, meshKernelId) = meshKernelUndoStack.Commit();
         }
         catch (...)
         {
@@ -317,6 +319,13 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
+            if (meshKernelState[meshKernelId].m_state != CurrentState::Uninitialised &&
+                meshKernelState[meshKernelId].m_state != CurrentState::Valid2d)
+            {
+                throw meshkernel::MeshKernelError("Mesh is not in the correct state: {}",
+                                                  meshkernelapi::toString(meshKernelState[meshKernelId].m_state));
+            }
+
             // convert raw arrays to containers
             const auto edges2d = meshkernel::ConvertToEdgeNodesVector(mesh2d.num_edges,
                                                                       mesh2d.edge_nodes);
@@ -352,6 +361,8 @@ namespace meshkernelapi
                                                                                               nodes2d,
                                                                                               meshKernelState[meshKernelId].m_projection);
             }
+
+            meshKernelState[meshKernelId].m_state = CurrentState::Valid2d;
 
             // No changes to the original mesh can be undone, so clear the undo-stack of actions associated with the mesh kernel id
             meshKernelUndoStack.Remove(meshKernelId);
@@ -403,6 +414,13 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
+            if (meshKernelState[meshKernelId].m_state != CurrentState::Uninitialised &&
+                meshKernelState[meshKernelId].m_state != CurrentState::Valid2d)
+            {
+                throw meshkernel::MeshKernelError("Mesh is not in the correct state: {}",
+                                                  meshkernelapi::toString(meshKernelState[meshKernelId].m_state));
+            }
+
             // convert raw arrays to containers
             const auto edges2d = meshkernel::ConvertToEdgeNodesVector(mesh2d.num_edges,
                                                                       mesh2d.edge_nodes);
@@ -425,17 +443,28 @@ namespace meshkernelapi
                 // Do not change the pointer, just the object it is pointing to
 
                 // Do not change the pointer, just the object it is pointing to
-                *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges2d,
-                                                                              nodes2d,
-                                                                              face_nodes,
-                                                                              num_face_nodes,
-                                                                              meshKernelState[meshKernelId].m_projection);
+                // *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges2d,
+                //                                                               nodes2d,
+                //                                                               face_nodes,
+                //                                                               num_face_nodes,
+                //                                                               meshKernelState[meshKernelId].m_projection);
+
+                meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges2d, nodes2d, face_nodes, num_face_nodes,
+                                                                                                        meshKernelState[meshKernelId].m_projection)),
+                                        meshKernelId);
             }
             else
             {
                 // Do not change the pointer, just the object it is pointing to
                 // Compute the faces
-                *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection);
+                // *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection);
+                meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection)),
+                                        meshKernelId);
+            }
+
+            if (meshKernelState[meshKernelId].m_state == CurrentState::Uninitialised)
+            {
+                meshKernelState[meshKernelId].m_state = CurrentState::Valid2d;
             }
         }
         catch (...)
@@ -455,6 +484,13 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
+
+            // if (meshKernelState[meshKernelId].m_state != CurrentState::Uninitialised)
+            // {
+            //     throw meshkernel::MeshKernelError("Mesh is not in the correct state: {}",
+            //                                       meshkernelapi::toString(meshKernelState[meshKernelId].m_state));
+            // }
+
             // convert raw arrays to containers
             const auto edges1d = meshkernel::ConvertToEdgeNodesVector(mesh1d.num_edges,
                                                                       mesh1d.edge_nodes);
@@ -492,9 +528,12 @@ namespace meshkernelapi
                                                                   mesh1d.node_x,
                                                                   mesh1d.node_y);
             // Do not change the pointer, just the object it is pointing to
-            *meshKernelState[meshKernelId].m_mesh1d += meshkernel::Mesh1D(edges1d,
-                                                                          nodes1d,
-                                                                          meshKernelState[meshKernelId].m_projection);
+            // *meshKernelState[meshKernelId].m_mesh1d += meshkernel::Mesh1D(edges1d,
+            //                                                               nodes1d,
+            //                                                               meshKernelState[meshKernelId].m_projection);
+
+            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh1d->Join(meshkernel::Mesh1D(edges1d, nodes1d, meshKernelState[meshKernelId].m_projection)),
+                                    meshKernelId);
         }
         catch (...)
         {
@@ -581,7 +620,10 @@ namespace meshkernelapi
             }
 
             // Do not change the pointer, just the object it is pointing to (add to the existing mesh1d stored in the instance)
-            *meshKernelState[meshKernelId].m_mesh1d += meshkernel::Mesh1D(*meshKernelState[meshKernelId].m_network1d, minFaceSize);
+            // *meshKernelState[meshKernelId].m_mesh1d += meshkernel::Mesh1D(*meshKernelState[meshKernelId].m_network1d, minFaceSize);
+
+            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh1d->Join(meshkernel::Mesh1D(*meshKernelState[meshKernelId].m_network1d, minFaceSize)),
+                                    meshKernelId);
         }
         catch (...)
         {
@@ -1395,7 +1437,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The number of latitude nodes cannot be 0");
             }
             const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshKernelState[meshKernelId].m_projection);
-            *meshKernelState[meshKernelId].m_mesh2d += *mesh;
+            // *meshKernelState[meshKernelId].m_mesh2d += *mesh;
+            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(*mesh), meshKernelId);
         }
         catch (...)
         {
@@ -1422,7 +1465,8 @@ namespace meshkernelapi
             auto const generatedPoints = polygon.ComputePointsInPolygons();
 
             const meshkernel::Mesh2D mesh(generatedPoints[0], polygon, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            *meshKernelState[meshKernelId].m_mesh2d += mesh;
+            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(mesh), meshKernelId);
+            // *meshKernelState[meshKernelId].m_mesh2d += mesh;
         }
         catch (...)
         {
@@ -1444,7 +1488,8 @@ namespace meshkernelapi
 
             meshkernel::Polygons polygon;
             const meshkernel::Mesh2D mesh(sampleVector, polygon, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            *meshKernelState[meshKernelId].m_mesh2d += mesh;
+            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(mesh), meshKernelId);
+            // *meshKernelState[meshKernelId].m_mesh2d += mesh;
         }
         catch (...)
         {
@@ -1469,11 +1514,12 @@ namespace meshkernelapi
 
             auto const nodes = curvilinearGrid->ComputeNodes();
             auto const edges = curvilinearGrid->ComputeEdges();
-            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, projection);
+            // *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, projection);
+            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges, nodes, projection)), meshKernelId);
             // No changes to the original mesh can be undone, so clear the undo-stack of actions associated with the mesh kernel id
-            meshKernelUndoStack.Remove(meshKernelId);
+            // meshKernelUndoStack.Remove(meshKernelId);
             // Clean up the mesh, by removing any invalid node and edges create for undo state
-            meshKernelState[meshKernelId].m_mesh2d->DeleteInvalidNodesAndEdges();
+            // meshKernelState[meshKernelId].m_mesh2d->DeleteInvalidNodesAndEdges();
         }
         catch (...)
         {
@@ -1500,11 +1546,12 @@ namespace meshkernelapi
             const auto edges = curvilinearGrid->ComputeEdges();
             const auto nodes = curvilinearGrid->ComputeNodes();
 
-            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, projection);
+            // *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, projection);
+            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges, nodes, projection)), meshKernelId);
             // No changes to the original mesh can be undone, so clear the undo-stack of actions associated with the mesh kernel id
-            meshKernelUndoStack.Remove(meshKernelId);
-            // Clean up the mesh, by removing any invalid node and edges create for undo state
-            meshKernelState[meshKernelId].m_mesh2d->DeleteInvalidNodesAndEdges();
+            // meshKernelUndoStack.Remove(meshKernelId);
+            // // Clean up the mesh, by removing any invalid node and edges create for undo state
+            // meshKernelState[meshKernelId].m_mesh2d->DeleteInvalidNodesAndEdges();
         }
         catch (...)
         {
@@ -1530,11 +1577,13 @@ namespace meshkernelapi
             const auto edges = curvilinearGrid->ComputeEdges();
             const auto nodes = curvilinearGrid->ComputeNodes();
 
-            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->projection());
+            // *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->projection());
+            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->projection())),
+                                    meshKernelId);
             // No changes to the original mesh can be undone, so clear the undo-stack of actions associated with the mesh kernel id
-            meshKernelUndoStack.Remove(meshKernelId);
-            // Clean up the mesh, by removing any invalid node and edges create for undo state
-            meshKernelState[meshKernelId].m_mesh2d->DeleteInvalidNodesAndEdges();
+            // meshKernelUndoStack.Remove(meshKernelId);
+            // // Clean up the mesh, by removing any invalid node and edges create for undo state
+            // meshKernelState[meshKernelId].m_mesh2d->DeleteInvalidNodesAndEdges();
         }
         catch (...)
         {
@@ -4380,14 +4429,16 @@ namespace meshkernelapi
             const auto edges = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeEdges();
             const auto nodes = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeNodes();
 
-            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->projection());
+            // *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->projection());
+            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->projection())),
+                                    meshKernelId);
 
             // curvilinear grid must be reset to an empty curvilinear grid
             meshKernelState[meshKernelId].m_curvilinearGrid = std::make_unique<meshkernel::CurvilinearGrid>();
             // No changes to the original mesh can be undone, so clear the undo-stack of actions associated with the mesh kernel id
-            meshKernelUndoStack.Remove(meshKernelId);
-            // Clean up the mesh, by removing any invalid node and edges create for undo state
-            meshKernelState[meshKernelId].m_mesh2d->DeleteInvalidNodesAndEdges();
+            // meshKernelUndoStack.Remove(meshKernelId);
+            // // Clean up the mesh, by removing any invalid node and edges create for undo state
+            // meshKernelState[meshKernelId].m_mesh2d->DeleteInvalidNodesAndEdges();
         }
         catch (...)
         {

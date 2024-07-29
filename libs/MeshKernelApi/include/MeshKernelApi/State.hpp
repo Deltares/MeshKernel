@@ -28,6 +28,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 #include <MeshKernel/Contacts.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
@@ -38,9 +39,23 @@
 
 namespace meshkernelapi
 {
+    enum class CurrentState
+    {
+        Uninitialised,
+        Valid1d,
+        Valid2d,
+        ValidCLG,
+        Deleted1d,
+        Deleted2d,
+        DeletedCLG
+    };
+
+    static const std::string& toString(const CurrentState state);
+
     /// @brief The class holding the state of the C API library
     struct MeshKernelState
     {
+
         /// @brief Default constructor
         MeshKernelState() = default;
 
@@ -70,6 +85,42 @@ namespace meshkernelapi
 
         // Exclusively owned state
         meshkernel::Projection m_projection{meshkernel::Projection::cartesian}; ///< Projection used by the meshes
+
+        CurrentState m_state = CurrentState::Uninitialised;
     };
 
 } // namespace meshkernelapi
+
+inline const std::string& meshkernelapi::toString(const CurrentState state)
+{
+    static std::string uninitialisedStr = "Uninitialised";
+    static std::string valid1dStr = "Valid1d";
+    static std::string valid2dStr = "Valid2d";
+    static std::string validCLGStr = "ValidCLG";
+    static std::string deleted1dStr = "Deleted1d";
+    static std::string deleted2dStr = "Deleted2d";
+    static std::string deletedCLGStr = "DeletedCLG";
+    static std::string unknown = "UNKNOWN";
+
+    using enum CurrentState;
+
+    switch (state)
+    {
+    case Uninitialised:
+        return uninitialisedStr;
+    case Valid1d:
+        return valid1dStr;
+    case Valid2d:
+        return valid2dStr;
+    case ValidCLG:
+        return validCLGStr;
+    case Deleted1d:
+        return deleted1dStr;
+    case Deleted2d:
+        return deleted2dStr;
+    case DeletedCLG:
+        return deletedCLGStr;
+    default:
+        return unknown;
+    };
+}

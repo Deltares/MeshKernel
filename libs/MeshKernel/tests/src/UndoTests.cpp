@@ -465,7 +465,7 @@ TEST(UndoTests, AddAndResetEdgeInMeshTestUsingStack)
 
     ////////////////////////////////
     // Restore the resetting of the edge
-    EXPECT_TRUE(undoActionStack.Undo());
+    EXPECT_TRUE(std::get<0>(undoActionStack.Undo()));
 
     EXPECT_EQ(mesh->GetNumEdges(), 5);
     EXPECT_EQ(mesh->GetNumValidEdges(), 5);
@@ -474,7 +474,7 @@ TEST(UndoTests, AddAndResetEdgeInMeshTestUsingStack)
 
     ////////////////////////////////
     // Remove the added edge
-    EXPECT_TRUE(undoActionStack.Undo());
+    EXPECT_TRUE(std::get<0>(undoActionStack.Undo()));
 
     EXPECT_EQ(mesh->GetNumEdges(), 5);
     EXPECT_EQ(mesh->GetNumValidEdges(), 4);
@@ -483,5 +483,5 @@ TEST(UndoTests, AddAndResetEdgeInMeshTestUsingStack)
 
     ////////////////////////////////
     // Nothing else to undo
-    EXPECT_FALSE(undoActionStack.Undo());
+    EXPECT_FALSE(std::get<0>(undoActionStack.Undo()));
 }
