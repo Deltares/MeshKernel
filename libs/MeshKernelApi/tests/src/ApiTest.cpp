@@ -3093,15 +3093,18 @@ TEST(Mesh2D, Mesh2DAddEdge)
 
     // Should be only a single item on the undo action stack
     bool undoInsertEdge = false;
-    errorCode = mkernel_undo_state(undoInsertEdge);
+    int undoId = meshkernel::constants::missing::intValue;
+    errorCode = mkernel_undo_state(undoInsertEdge, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_TRUE(undoInsertEdge);
+    ASSERT_EQ(mk_id, undoId);
 
     // Should be no items on the undo action stack
     undoInsertEdge = false;
-    errorCode = mkernel_undo_state(undoInsertEdge);
+    errorCode = mkernel_undo_state(undoInsertEdge, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_FALSE(undoInsertEdge);
+    ASSERT_EQ(undoId, meshkernel::constants::missing::intValue);
 }
 
 TEST(Mesh2D, SimpleMultiMeshUndoTest)
@@ -3214,16 +3217,19 @@ TEST(Mesh2D, SimpleMultiMeshUndoTest)
     EXPECT_EQ(restoredCount, 0);
 
     bool didUndo = false;
+    int undoId = meshkernel::constants::missing::intValue;
     // Undo deletion of node from mkid1
-    errorCode = mkernel_undo_state(didUndo);
+    errorCode = mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
+    ASSERT_EQ(mkid1, undoId);
 
     didUndo = false;
     // Undo node insertion from mkid2
-    errorCode = mkernel_undo_state(didUndo);
+    errorCode = mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
+    ASSERT_EQ(mkid2, undoId);
 
     errorCode = mkernel_undo_state_count(committedCount, restoredCount);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -3303,15 +3309,18 @@ TEST(Mesh2D, Mesh2DInsertNode)
 
     // Should be only a single item on the undo action stack
     bool undoInsertNode = false;
-    errorCode = mkernel_undo_state(undoInsertNode);
+    int undoId = meshkernel::constants::missing::intValue;
+    errorCode = mkernel_undo_state(undoInsertNode, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_TRUE(undoInsertNode);
+    ASSERT_EQ(mk_id, undoId);
 
     // Should be zero items on the undo action stack.
     undoInsertNode = false;
-    errorCode = mkernel_undo_state(undoInsertNode);
+    errorCode = mkernel_undo_state(undoInsertNode, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_FALSE(undoInsertNode);
+    ASSERT_EQ(undoId, meshkernel::constants::missing::intValue);
 }
 
 TEST(Mesh2D, InsertEdgeFromCoordinates_OnEmptyMesh_ShouldInsertNewEdge)
@@ -3765,9 +3774,11 @@ TEST(Mesh2D, CasulliDeRefinementWholeMesh)
     // Now check undo
 
     bool didUndo = false;
-    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
+    int undoId = meshkernel::constants::missing::intValue;
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
+    ASSERT_EQ(meshKernelId, undoId);
 
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);

@@ -968,7 +968,8 @@ std::vector<bool> Mesh::IsLocationInPolygon(const Polygons& polygon, Location lo
     return result;
 }
 
-Mesh& Mesh::operator+=(Mesh const& rhs)
+std::unique_ptr<meshkernel::UndoAction> Mesh::Join(const Mesh& rhs)
+// Mesh& Mesh::operator+=(Mesh const& rhs)
 {
     if (m_projection != rhs.m_projection)
     {
@@ -977,8 +978,10 @@ Mesh& Mesh::operator+=(Mesh const& rhs)
 
     if (rhs.GetNumNodes() == 0 || rhs.GetNumEdges() == 0)
     {
-        return *this;
+        return nullptr;
     }
+
+    std::unique_ptr<FullUnstructuredGridUndo> joinAction = FullUnstructuredGridUndo::Create(*this);
 
     const auto rhsNumNodes = rhs.GetNumNodes();
     const auto rhsNumEdges = rhs.GetNumEdges();
@@ -1008,7 +1011,7 @@ Mesh& Mesh::operator+=(Mesh const& rhs)
 
     Administrate();
 
-    return *this;
+    return joinAction;
 }
 
 meshkernel::UInt Mesh::GetNumValidNodes() const

@@ -835,10 +835,18 @@ TEST(CurvilinearBasicTests, CompoundTest)
     // Nodes in the grid after all actions
     const std::vector<mk::Point> refinedPoints = grid->ComputeNodes();
 
-    while (undoActions.Undo())
+    bool didUndo;
+    [[maybe_unused]] int actionId;
+
+    do
     {
-        // Nothing else to do
-    }
+        std::tie(didUndo, actionId) = undoActions.Undo();
+    } while (didUndo);
+
+    // while (auto [didUndo, actionId] = undoActions.Undo(); didUndo)
+    // {
+    //     // Nothing else to do
+    // }
 
     constexpr double tolerance = 1.0e-12;
 
@@ -855,10 +863,17 @@ TEST(CurvilinearBasicTests, CompoundTest)
         }
     }
 
-    while (undoActions.Commit())
+    bool didRedo;
+
+    do
     {
-        // Nothing else to do
-    }
+        std::tie(didRedo, actionId) = undoActions.Commit();
+    } while (didRedo);
+
+    // while (auto [didRedo, actionId] = undoActions.Commit(); didRedo)
+    // {
+    //     // Nothing else to do
+    // }
 
     // Points should be same as in the refined mesh after all actions have bene redone
     for (mk::UInt i = 0; i < grid->GetNumNodes(); ++i)
