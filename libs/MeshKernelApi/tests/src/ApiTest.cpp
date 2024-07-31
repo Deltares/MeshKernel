@@ -3951,11 +3951,11 @@ TEST(Mesh2D, CurvilinearFullMeshRefinementFailureTests)
 TEST_F(CartesianApiTestFixture, Mesh2DSnapToLandboundary_ShouldSnapToLandBoundary)
 {
     // Prepare
-    MakeMesh(10, 10, 1); // meshkernel::UInt numRows = 2, meshkernel::UInt numColumns = 3, double delta = 1.0
+    MakeMesh(10, 10, 1);
     auto const meshKernelId = GetMeshKernelId();
     meshkernelapi::GeometryList landBoundaries{};
     std::vector landBoundariesX{-1.0, 11.0};
-    std::vector landBoundariesY{11.0, 11.0};
+    std::vector landBoundariesY{-1.0, 11.0};
     landBoundaries.coordinates_x = landBoundariesX.data();
     landBoundaries.coordinates_y = landBoundariesY.data();
     landBoundaries.num_coordinates = static_cast<int>(landBoundariesX.size());
@@ -3966,7 +3966,6 @@ TEST_F(CartesianApiTestFixture, Mesh2DSnapToLandboundary_ShouldSnapToLandBoundar
     selectingPolygon.coordinates_x = selectingPolygonX.data();
     selectingPolygon.coordinates_y = selectingPolygonY.data();
     selectingPolygon.num_coordinates = static_cast<int>(selectingPolygonX.size());
-
 
     auto errorCode = meshkernelapi::mkernel_mesh2d_snap_to_landboundary(meshKernelId, selectingPolygon, landBoundaries);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);

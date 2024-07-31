@@ -327,8 +327,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh not exist.");
             }
 
-            auto const polygonNodes = ConvertGeometryListToPointVector(selectingPolygon);
             auto const landBoundariesPoints = ConvertGeometryListToPointVector(landBoundaries);
+            auto const polygonNodes = ConvertGeometryListToPointVector(selectingPolygon);
 
             // Construct all dependencies
             const auto polygon = meshkernel::Polygons(polygonNodes, meshKernelState[meshKernelId].m_projection);
