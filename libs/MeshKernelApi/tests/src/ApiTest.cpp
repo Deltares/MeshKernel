@@ -4009,6 +4009,7 @@ TEST(Mesh2D, UndoConnectMeshes)
     // allocate state
     int mk_id = 0;
     int errorCode = meshkernelapi::mkernel_allocate_state(0, mk_id);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // first initialise using the first mesh, mesh2d_1
     errorCode = meshkernelapi::mkernel_mesh2d_set(mk_id, mesh2d_1);
