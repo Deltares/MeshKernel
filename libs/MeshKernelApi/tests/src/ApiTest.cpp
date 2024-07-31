@@ -107,8 +107,8 @@ TEST_F(CartesianApiTestFixture, Mesh2DDeleteNode_ShouldDeleteNode)
             |   |   |
             3---6---9
 
-      Node 0 is invalid
-      Edges 0 and 9 are invalid
+        Node 0 is invalid
+        Edges 0 and 9 are invalid
 
     */
 
