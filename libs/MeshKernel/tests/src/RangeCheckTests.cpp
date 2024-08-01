@@ -149,7 +149,7 @@ public:
         EXPECT_THROW(range_check::CheckNoneOf<T>(5, values, name), RangeError);
         EXPECT_NO_THROW(range_check::CheckNoneOf<T>(6, values, name));
     }
-    
+
     void CheckPreconditionTest()
     {
         auto isZero = [](const T value)
