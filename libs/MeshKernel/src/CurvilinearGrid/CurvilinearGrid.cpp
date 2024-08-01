@@ -80,6 +80,31 @@ CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point>&& grid, Projection proje
     SetGridNodes(std::move(grid));
 }
 
+CurvilinearGrid& CurvilinearGrid::operator=(CurvilinearGrid&& copy) noexcept
+{
+    if (this != &copy)
+    {
+        m_projection = copy.m_projection;
+        m_gridNodes = std::move(copy.m_gridNodes);
+        m_gridFacesMask = std::move(copy.m_gridFacesMask);
+        m_gridNodesTypes = std::move(copy.m_gridNodesTypes);
+        m_gridIndices = std::move(copy.m_gridIndices);
+
+        m_nodesRTreeRequiresUpdate = copy.m_nodesRTreeRequiresUpdate;
+        m_edgesRTreeRequiresUpdate = copy.m_edgesRTreeRequiresUpdate;
+        m_facesRTreeRequiresUpdate = copy.m_facesRTreeRequiresUpdate;
+        m_RTrees = std::move(copy.m_RTrees);
+        m_boundingBoxCache = copy.m_boundingBoxCache;
+
+        m_edges = std::move(copy.m_edges);
+
+        m_startOffset = copy.m_startOffset;
+        m_endOffset = copy.m_endOffset;
+    }
+
+    return *this;
+}
+
 void CurvilinearGrid::SetGridNodes(const lin_alg::Matrix<Point>& gridNodes)
 {
     if (gridNodes.rows() <= 1 || gridNodes.cols() <= 1)

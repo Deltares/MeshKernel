@@ -62,6 +62,10 @@ namespace meshkernelapi
         /// @return The double missing value used in mesh kernel
         MKERNEL_API double mkernel_get_inner_outer_separator();
 
+        /// @brief Gets the integer (int) value used in the back-end library missing value and null identifier
+        /// @return The int missing value used in mesh kernel
+        MKERNEL_API int mkernel_get_null_identifier();
+
         /// @brief Creates a new mesh state and returns the generated \p meshKernelId
         /// @param[in] projectionType  Cartesian (0), spherical (1) or spherical accurate(2) state
         /// @param[out] meshKernelId The id of the mesh state
@@ -686,6 +690,11 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_deallocate_state(int meshKernelId);
 
+        /// @brief Deallocate mesh state and remove it completely, no undo for this meshKernelId will be possible after expunging
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @returns Error code
+        MKERNEL_API int mkernel_expunge_state(int meshKernelId);
+
         /// @brief Gets an int indicating the closest point averaging method type
         /// @param[out] method The int indicating the closest point averaging method type
         /// @returns Error code
@@ -1162,6 +1171,15 @@ namespace meshkernelapi
         /// @param[in,out] mesh2d       The Mesh2D data
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_data(int meshKernelId, Mesh2D& mesh2d);
+
+        /// @brief Gets only the node and edge Mesh2D data
+        ///
+        /// This function ought to be called after `mkernel_mesh2d_get_dimensions` has been called
+        /// and the node_x, node_y and edge_nodes pointers have been set to correctly sized memory.
+        /// @param[in]     meshKernelId The id of the mesh state
+        /// @param[in,out] mesh2d       The Mesh2D data
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_node_edge_data(int meshKernelId, Mesh2D& mesh2d);
 
         /// @brief Gets the Mesh2D dimensions
         ///
