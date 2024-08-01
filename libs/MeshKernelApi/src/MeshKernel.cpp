@@ -312,6 +312,39 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_mesh2d_snap_to_landboundary(int meshKernelId, const GeometryList& selectingPolygon, const GeometryList& landBoundaries)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_mesh2d == nullptr)
+            {
+                throw meshkernel::MeshKernelError("The selected mesh not exist.");
+            }
+
+            auto const landBoundariesPoints = ConvertGeometryListToPointVector(landBoundaries);
+            auto const polygonNodes = ConvertGeometryListToPointVector(selectingPolygon);
+
+            // Construct all dependencies
+            const auto polygon = meshkernel::Polygons(polygonNodes, meshKernelState[meshKernelId].m_projection);
+            auto landBoundary = meshkernel::LandBoundaries(landBoundariesPoints, *meshKernelState[meshKernelId].m_mesh2d, polygon);
+            landBoundary.FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption::InnerAndOuterMeshBoundaryToLandBoundary);
+
+            // Execute algorithm
+            meshKernelUndoStack.Add(landBoundary.SnapMeshToLandBoundaries());
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_mesh2d_split_row(int meshKernelId,
                                              int firstNode,
                                              int secondNode)

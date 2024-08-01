@@ -3947,3 +3947,29 @@ TEST(Mesh2D, CurvilinearFullMeshRefinementFailureTests)
     errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
+
+TEST_F(CartesianApiTestFixture, Mesh2DSnapToLandboundary_ShouldSnapToLandBoundary)
+{
+    // Prepare
+    MakeMesh(30, 30, 1);
+    auto const meshKernelId = GetMeshKernelId();
+    meshkernelapi::GeometryList landBoundaries{};
+    std::vector landBoundariesX{-1.47, 9.57, 26.50, 36.86};
+    std::vector landBoundariesY{31.64, 32.71, 32.13, 31.83};
+    landBoundaries.coordinates_x = landBoundariesX.data();
+    landBoundaries.coordinates_y = landBoundariesY.data();
+    landBoundaries.num_coordinates = static_cast<int>(landBoundariesX.size());
+
+    meshkernelapi::GeometryList selectingPolygon{};
+    std::vector selectingPolygonX{16.7, -8.48, -7.07, 61.60, 42.23, 16.7};
+    std::vector selectingPolygonY{41.59, 38.24, -8.06, -9.82, 43.53, 41.59};
+    selectingPolygon.coordinates_x = selectingPolygonX.data();
+    selectingPolygon.coordinates_y = selectingPolygonY.data();
+    selectingPolygon.num_coordinates = static_cast<int>(selectingPolygonX.size());
+
+    auto errorCode = meshkernelapi::mkernel_mesh2d_snap_to_landboundary(meshKernelId, selectingPolygon, landBoundaries);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+}
