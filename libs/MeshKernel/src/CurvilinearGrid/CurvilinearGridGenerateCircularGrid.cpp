@@ -30,28 +30,28 @@ std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeXVal
         // Graded in x-direction
 
         const int size = parameters.num_columns + 1;
-        int muni = static_cast<int>(static_cast<double>(size) * parameters.uniform_columns_fraction);
-        muni += (size - 1 - muni) % 2;
-        const int minc = (size - muni) / 2 + 1;
-        const double alfm = std::pow(parameters.maximum_uniform_size_columns, 1.0 / static_cast<double>(minc));
+        int uniformElementCount = static_cast<int>(static_cast<double>(size) * parameters.uniform_columns_fraction);
+        uniformElementCount += (size - 1 - uniformElementCount) % 2;
+        const int uniformCutoffIndex = (size - uniformElementCount) / 2 + 1;
+        const double gradingParameter = std::pow(parameters.maximum_uniform_size_columns, 1.0 / static_cast<double>(uniformCutoffIndex));
 
-        double xValue = -blockSize * std::pow(alfm, static_cast<double>(minc));
+        double xValue = -blockSize * std::pow(gradingParameter, static_cast<double>(uniformCutoffIndex));
 
-        auto computeDeltaX = [blockSize, alfm, muni, minc](const int m) -> double
+        auto computeDeltaX = [blockSize, gradingParameter, uniformElementCount, uniformCutoffIndex](const int m) -> double
         {
             double deltaX;
 
-            if (m < minc)
+            if (m < uniformCutoffIndex)
             {
-                deltaX = blockSize * std::pow(alfm, static_cast<double>(minc - m));
+                deltaX = blockSize * std::pow(gradingParameter, static_cast<double>(uniformCutoffIndex - m));
             }
-            else if (m < minc + muni)
+            else if (m < uniformCutoffIndex + uniformElementCount)
             {
                 deltaX = blockSize;
             }
             else
             {
-                deltaX = blockSize * std::pow(alfm, static_cast<double>(m + 1 - minc - muni));
+                deltaX = blockSize * std::pow(gradingParameter, static_cast<double>(m + 1 - uniformCutoffIndex - uniformElementCount));
             }
 
             return deltaX;
@@ -60,7 +60,7 @@ std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeXVal
         for (int m = 0; m < static_cast<int>(xValues.size()); ++m)
         {
             xValue += computeDeltaX(m);
-            xValues[static_cast<UInt>(m)] = xValue;
+            xValues[m] = xValue;
         }
     }
 
@@ -86,15 +86,15 @@ std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeYVal
         // Graded in y-direction
 
         int size = parameters.num_rows + 1;
-        int nuni = static_cast<int>(static_cast<double>(size) * parameters.uniform_rows_fraction);
-        nuni += (size - 1 - nuni) % 2;
-        int ninc = (size - nuni) / 2 + 1;
-        double alfn = std::pow(parameters.maximum_uniform_size_rows, 1.0 / static_cast<double>(ninc));
-        double yValue = -blockSize * std::pow(alfn, static_cast<double>(1 - nuni));
+        int uniformElementCount = static_cast<int>(static_cast<double>(size) * parameters.uniform_rows_fraction);
+        uniformElementCount += (size - 1 - uniformElementCount) % 2;
+        int uniformCutoffIndex = (size - uniformElementCount) / 2 + 1;
+        double gradingParameter = std::pow(parameters.maximum_uniform_size_rows, 1.0 / static_cast<double>(uniformCutoffIndex));
+        double yValue = -blockSize * std::pow(gradingParameter, static_cast<double>(1 - uniformElementCount));
 
         for (int n = 0; n < static_cast<int>(yValues.size()); ++n)
         {
-            yValue += (n < nuni ? blockSize : blockSize * std::pow(alfn, static_cast<double>(n + 1 - nuni)));
+            yValue += (n < uniformElementCount ? blockSize : blockSize * std::pow(gradingParameter, static_cast<double>(n + 1 - uniformElementCount)));
             yValues[static_cast<UInt>(n)] = yValue;
         }
     }
@@ -102,7 +102,7 @@ std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeYVal
     return yValues;
 }
 
-lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGrid::GenerateRectangularGrid(const MakeGridParameters& parameters)
+lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGrid::GenerateGradedRectangularGrid(const MakeGridParameters& parameters)
 {
     lin_alg::Matrix<Point> gridPoints(parameters.num_rows + 1, parameters.num_columns + 1);
 
@@ -110,17 +110,18 @@ lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGr
     const double y0 = parameters.origin_y;
 
     const double phi = parameters.angle;
-    const double cs = std::cos(phi * constants::conversion::degToRad);
-    const double sn = std::sin(phi * constants::conversion::degToRad);
+    const double cosTheta = std::cos(phi * constants::conversion::degToRad);
+    const double sinTheta = std::sin(phi * constants::conversion::degToRad);
 
-    std::vector<double> xValues(ComputeXValues(parameters));
-    std::vector<double> yValues(ComputeYValues(parameters));
+    const std::vector<double> xValues(ComputeXValues(parameters));
+    const std::vector<double> yValues(ComputeYValues(parameters));
 
     for (int n = 0; n < parameters.num_rows + 1; ++n)
     {
         for (int m = 0; m < parameters.num_columns + 1; ++m)
         {
-            gridPoints(n, m) = Point(x0 + xValues[m] * cs - yValues[n] * sn, y0 + xValues[m] * sn + yValues[n] * cs);
+            gridPoints(n, m) = Point(x0 + xValues[m] * cosTheta - yValues[n] * sinTheta,
+                                     y0 + xValues[m] * sinTheta + yValues[n] * cosTheta);
         }
     }
 
@@ -149,15 +150,15 @@ std::vector<double> meshkernel::CurvilinearGridGenerateCircularGrid::ComputeRadi
     {
         double radius = r0;
 
-        UInt nuni = static_cast<UInt>(static_cast<double>(size) * parameters.uniform_rows_fraction);
-        nuni += (size - 1 - nuni) % 2;
-        UInt ninc = (size - nuni) / 2 + 1;
+        UInt uniformElementCount = static_cast<UInt>(static_cast<double>(size) * parameters.uniform_rows_fraction);
+        uniformElementCount += (size - 1 - uniformElementCount) % 2;
+        UInt uniformCutoffIndex = (size - uniformElementCount) / 2 + 1;
 
-        double alfn = std::pow(parameters.maximum_uniform_size_rows, 1.0 / static_cast<double>(ninc));
+        double gradingParameter = std::pow(parameters.maximum_uniform_size_rows, 1.0 / static_cast<double>(uniformCutoffIndex));
 
         for (UInt n = 0; n < size; ++n)
         {
-            radius += (n < nuni ? blockSize : blockSize * std::pow(alfn, static_cast<double>(n - nuni)));
+            radius += (n < uniformElementCount ? blockSize : blockSize * std::pow(gradingParameter, static_cast<double>(n - uniformElementCount)));
             radiusValues[n] = radius;
         }
     }
@@ -193,11 +194,11 @@ lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGr
 {
     lin_alg::Matrix<Point> gridPoints(parameters.num_rows + 1, parameters.num_columns + 1);
 
-    double x0 = parameters.origin_x;
-    double y0 = parameters.origin_y;
+    const double x0 = parameters.origin_x;
+    const double y0 = parameters.origin_y;
 
-    std::vector<double> radiusValues(ComputeRadiusValues(parameters));
-    std::vector<double> thetaValues(ComputeThetaValues(parameters));
+    const std::vector<double> radiusValues(ComputeRadiusValues(parameters));
+    const std::vector<double> thetaValues(ComputeThetaValues(parameters));
     std::vector<double> cosValues(thetaValues.size());
     std::vector<double> sinValues(thetaValues.size());
 
@@ -224,7 +225,7 @@ lin_alg::Matrix<meshkernel::Point> meshkernel::CurvilinearGridGenerateCircularGr
 {
     if (parameters.radius_curvature == 0.0)
     {
-        return GenerateRectangularGrid(parameters);
+        return GenerateGradedRectangularGrid(parameters);
     }
     else
     {
