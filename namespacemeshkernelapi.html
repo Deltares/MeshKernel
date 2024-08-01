@@ -598,6 +598,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:aa8871161744c899f45413808e2ebbbfb"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa8871161744c899f45413808e2ebbbfb">mkernel_mesh2d_set</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
 <tr class="memdesc:aa8871161744c899f45413808e2ebbbfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">meshkernel::Mesh2D</a> state.  <a href="namespacemeshkernelapi.html#aa8871161744c899f45413808e2ebbbfb">More...</a><br /></td></tr>
 <tr class="separator:aa8871161744c899f45413808e2ebbbfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac3189a745b36940d51c81b607cf85ee4"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac3189a745b36940d51c81b607cf85ee4">mkernel_mesh2d_snap_to_landboundary</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;selectingPolygon, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;landBoundaries)</td></tr>
+<tr class="memdesc:ac3189a745b36940d51c81b607cf85ee4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snaps a mesh to a land boundary.  <a href="namespacemeshkernelapi.html#ac3189a745b36940d51c81b607cf85ee4">More...</a><br /></td></tr>
+<tr class="separator:ac3189a745b36940d51c81b607cf85ee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af4998517f14650d76335174d52c40d7b"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#af4998517f14650d76335174d52c40d7b">mkernel_mesh2d_split_row</a> (int meshKernelId, int firstNode, int secondNode)</td></tr>
 <tr class="memdesc:af4998517f14650d76335174d52c40d7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">An-isotropically refines the elements along a row or column, given a starting edge.  <a href="namespacemeshkernelapi.html#af4998517f14650d76335174d52c40d7b">More...</a><br /></td></tr>
 <tr class="separator:af4998517f14650d76335174d52c40d7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -7547,6 +7550,51 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh2d</td><td>The <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="ac3189a745b36940d51c81b607cf85ee4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac3189a745b36940d51c81b607cf85ee4">&#9670;&nbsp;</a></span>mkernel_mesh2d_snap_to_landboundary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_snap_to_landboundary </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>selectingPolygon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>landBoundaries</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Snaps a mesh to a land boundary. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">selectingPolygon</td><td>The polygon where to perform the snapping </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">landBoundaries</td><td>The input land boundaries </td></tr>
   </table>
   </dd>
 </dl>
