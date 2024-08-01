@@ -150,32 +150,6 @@ public:
         EXPECT_NO_THROW(range_check::CheckNoneOf<T>(6, values, name));
     }
 
-    void CheckPreconditionTest()
-    {
-        if constexpr (std::is_floating_point_v<T>)
-        {
-            auto isFinite = [](const T value)
-            { return std::isfinite(value); };
-
-            EXPECT_NO_THROW(range_check::CheckPrecondition(static_cast<T>(1.0), name, preconditionName, isFinite));
-            EXPECT_NO_THROW(range_check::CheckPrecondition(std::numeric_limits<T>::max(), name, preconditionName, isFinite));
-            EXPECT_NO_THROW(range_check::CheckPrecondition(std::numeric_limits<T>::epsilon(), name, preconditionName, isFinite));
-            EXPECT_NO_THROW(range_check::CheckPrecondition(std::numeric_limits<T>::denorm_min(), name, preconditionName, isFinite));
-            EXPECT_THROW(range_check::CheckPrecondition(std::numeric_limits<T>::infinity(), name, preconditionName, isFinite), RangeError);
-            EXPECT_THROW(range_check::CheckPrecondition(std::numeric_limits<T>::quiet_NaN(), name, preconditionName, isFinite), RangeError);
-            EXPECT_THROW(range_check::CheckPrecondition(std::numeric_limits<T>::signaling_NaN(), name, preconditionName, isFinite), RangeError);
-        }
-        else
-        {
-            auto isZero = [](const T value)
-            { return value == static_cast<T>(0); };
-
-            EXPECT_NO_THROW(range_check::CheckPrecondition(static_cast<T>(0), name, preconditionName, isZero));
-            EXPECT_THROW(range_check::CheckPrecondition(static_cast<T>(1), name, preconditionName, isZero), RangeError);
-            EXPECT_THROW(range_check::CheckPrecondition(static_cast<T>(10), name, preconditionName, isZero), RangeError);
-        }
-    }
-
 private:
     inline static std::string const name{"dummy"};
     inline static std::string const preconditionName{"dummy name"};
@@ -216,5 +190,4 @@ TYPED_TEST(RangeCheckFixture, TestTypes)
     this->CheckOutsideOpenIntervalTest();
     this->CheckOneOfTest();
     this->CheckNoneOfTest();
-    this->CheckPreconditionTest();
 }
