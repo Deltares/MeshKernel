@@ -340,6 +340,24 @@ namespace meshkernelapi
         mesh2dApi.num_valid_edges = static_cast<int>(mesh2d.GetNumValidEdges());
     }
 
+    /// @brief Sets only the node and edge data for meshkernelapi::Mesh2D
+    /// @param[in]  mesh2d    The meshkernel::Mesh2D instance
+    /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
+    static void SetMesh2dApiNodeEdgeData(meshkernel::Mesh2D& mesh2d, Mesh2D& mesh2dApi)
+    {
+        for (meshkernel::UInt n = 0; n < mesh2d.GetNumNodes(); ++n)
+        {
+            mesh2dApi.node_x[n] = mesh2d.Node(n).x;
+            mesh2dApi.node_y[n] = mesh2d.Node(n).y;
+        }
+
+        for (meshkernel::UInt edgeIndex = 0; edgeIndex < mesh2d.GetNumEdges(); ++edgeIndex)
+        {
+            mesh2dApi.edge_nodes[edgeIndex * 2] = static_cast<int>(mesh2d.GetEdge(edgeIndex).first);
+            mesh2dApi.edge_nodes[edgeIndex * 2 + 1] = static_cast<int>(mesh2d.GetEdge(edgeIndex).second);
+        }
+    }
+
     /// @brief Sets the meshkernelapi::Mesh2D data
     /// @param[in]  mesh2d    The meshkernel::Mesh2D instance
     /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance

@@ -29,6 +29,8 @@
 
 #include <cstdint>
 #include <list>
+#include <source_location>
+#include <string>
 #include <tuple>
 
 #include "MeshKernel/Constants.hpp"
@@ -58,7 +60,8 @@ namespace meshkernel
         /// No null undo-actions will be added to the stack.
         /// All restored items will be removed, since after adding a new undo-action they are no
         /// longer restore-able.
-        void Add(UndoActionPtr&& transaction, const int actionId = constants::missing::intValue);
+        void Add(UndoActionPtr&& transaction, const int actionId = constants::missing::intValue,
+                 const std::string& info = std::source_location::current().function_name());
 
         /// @brief Undo the action at the top of the committed stack
         ///
@@ -99,6 +102,8 @@ namespace meshkernel
         /// \brief Compute the approximate amount of memory being used, in bytes, for all undo actions.
         std::uint64_t MemorySize() const;
 
+        void print() const;
+
     private:
         /// @brief Undo actions relating to a specific entity, e.g. mesh
         struct UndoActionForMesh
@@ -108,6 +113,8 @@ namespace meshkernel
 
             /// @brief Identifier for entity associated with the action, most cases this will be a meshKernelId.
             int m_actionId = constants::missing::intValue;
+
+            std::string m_info;
         };
 
         /// @brief Stack of committed undo actions

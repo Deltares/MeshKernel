@@ -92,6 +92,12 @@ namespace meshkernel
         /// @param[in] projection The projection to use
         CurvilinearGrid(lin_alg::Matrix<Point>&& grid, Projection projection);
 
+        /// @brief Move assignment operator for CurvilinearGrid
+        CurvilinearGrid& operator=(CurvilinearGrid&& copy) noexcept;
+
+        /// @brief Delete copy assignment operator for CurvilinearGrid
+        CurvilinearGrid& operator=(const CurvilinearGrid& copy) = delete;
+
         /// @brief Set the grid nodes of a curvilinear grid instance
         /// @details The matrix row index corresponds to the CurvilinearGrid n index, the matrix column index corresponds to the CurvilinearGrid m index
         /// @param[in] gridNodes The input grid points

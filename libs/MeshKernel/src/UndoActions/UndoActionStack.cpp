@@ -6,7 +6,7 @@
 
 const meshkernel::UInt meshkernel::UndoActionStack::MaxUndoSize = 50;
 
-void meshkernel::UndoActionStack::Add(UndoActionPtr&& action, const int actionId)
+void meshkernel::UndoActionStack::Add(UndoActionPtr&& action, const int actionId, const std::string& info)
 {
     if (action != nullptr)
     {
@@ -15,12 +15,12 @@ void meshkernel::UndoActionStack::Add(UndoActionPtr&& action, const int actionId
             throw ConstraintError("Cannot add an action in the {} state.", UndoAction::to_string(action->GetState()));
         }
 
-        m_committed.emplace_back(std::move(action), actionId);
+        m_committed.emplace_back(std::move(action), actionId, info);
 
         // Clear the restored actions for this actionId.
         // Adding a new undo action means that they cannot be re-done
-        m_restored.remove_if([actionId](const UndoActionForMesh& action)
-                             { return action.m_actionId == actionId; });
+        m_restored.remove_if([actionId](const UndoActionForMesh& undoAction)
+                             { return undoAction.m_actionId == actionId; });
 
         if (m_committed.size() > MaxUndoSize)
         {
@@ -31,6 +31,31 @@ void meshkernel::UndoActionStack::Add(UndoActionPtr&& action, const int actionId
     else
     {
         // Logging message
+    }
+}
+
+void meshkernel::UndoActionStack::print() const
+{
+
+    std::cout << "stack info:" << std::endl;
+    std::cout << "committed: " << m_committed.size() << std::endl;
+
+    size_t count = 0;
+
+    for (auto iter = m_committed.begin(); iter != m_committed.end(); ++iter)
+    {
+        std::cout << "undo " << count << "  " << iter->m_actionId << "  " << iter->m_info << std::endl;
+        ++count;
+    }
+
+    std::cout << "restored: " << m_restored.size() << std::endl;
+
+    count = 0;
+
+    for (auto iter = m_restored.begin(); iter != m_restored.end(); ++iter)
+    {
+        std::cout << "redo " << count << "  " << iter->m_actionId << "  " << iter->m_info << std::endl;
+        ++count;
     }
 }
 
@@ -47,8 +72,8 @@ meshkernel::UInt meshkernel::UndoActionStack::CommittedSize(const int actionId) 
     }
     else
     {
-        return std::ranges::count_if(m_committed, [actionId](const UndoActionForMesh& undoAction)
-                                     { return undoAction.m_actionId == actionId; });
+        return static_cast<UInt>(std::ranges::count_if(m_committed, [actionId](const UndoActionForMesh& undoAction)
+                                                       { return undoAction.m_actionId == actionId; }));
     }
 }
 
@@ -60,8 +85,8 @@ meshkernel::UInt meshkernel::UndoActionStack::RestoredSize(const int actionId) c
     }
     else
     {
-        return std::ranges::count_if(m_restored, [actionId](const UndoActionForMesh& undoAction)
-                                     { return undoAction.m_actionId == actionId; });
+        return static_cast<UInt>(std::ranges::count_if(m_restored, [actionId](const UndoActionForMesh& undoAction)
+                                                       { return undoAction.m_actionId == actionId; }));
     }
 }
 

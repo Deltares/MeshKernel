@@ -39,22 +39,12 @@
 
 namespace meshkernelapi
 {
-    enum class MeshKernelType
-    {
-        Grid1d,
-        Grid2d,
-        CurvilinearGrid
-    };
 
     enum class CurrentState
     {
         Uninitialised,
-        Valid1d,
-        Valid2d,
-        ValidCLG,
-        Deleted1d,
-        Deleted2d,
-        DeletedCLG
+        ValidMesh,
+        DeletedMesh
     };
 
     static bool IsValidMeshState(const CurrentState state);
@@ -162,31 +152,23 @@ namespace meshkernelapi
 
 inline bool meshkernelapi::IsValidMeshState(const CurrentState state)
 {
-    using enum CurrentState;
-    return state == Valid1d || state == Valid2d || state == ValidCLG;
+    // TODO remove this function
+    return state == CurrentState::ValidMesh;
 }
 
 inline bool meshkernelapi::IsDeletedMeshState(const CurrentState state)
 {
-    using enum CurrentState;
-    return state == Deleted1d || state == Deleted2d || state == DeletedCLG;
+    // TODO remove this function
+    return state == CurrentState::DeletedMesh;
 }
 
 inline meshkernelapi::CurrentState meshkernelapi::DeleteMeshState(const CurrentState state)
 {
-    using enum CurrentState;
+    // TODO this about removing this function
 
-    if (state == Valid1d)
+    if (state == CurrentState::ValidMesh)
     {
-        return Deleted1d;
-    }
-    else if (state == Valid2d)
-    {
-        return Deleted2d;
-    }
-    else if (state == ValidCLG)
-    {
-        return DeletedCLG;
+        return CurrentState::DeletedMesh;
     }
 
     return state;
@@ -194,19 +176,11 @@ inline meshkernelapi::CurrentState meshkernelapi::DeleteMeshState(const CurrentS
 
 inline meshkernelapi::CurrentState meshkernelapi::RestoreMeshState(const CurrentState state)
 {
-    using enum CurrentState;
+    // TODO this about removing this function
 
-    if (state == Deleted1d)
+    if (state == CurrentState::DeletedMesh)
     {
-        return Valid1d;
-    }
-    else if (state == Deleted2d)
-    {
-        return Valid2d;
-    }
-    else if (state == DeletedCLG)
-    {
-        return ValidCLG;
+        return CurrentState::ValidMesh;
     }
 
     return state;
@@ -215,12 +189,9 @@ inline meshkernelapi::CurrentState meshkernelapi::RestoreMeshState(const Current
 inline const std::string& meshkernelapi::toString(const CurrentState state)
 {
     static std::string uninitialisedStr = "Uninitialised";
-    static std::string valid1dStr = "Valid1d";
-    static std::string valid2dStr = "Valid2d";
-    static std::string validCLGStr = "ValidCLG";
-    static std::string deleted1dStr = "Deleted1d";
-    static std::string deleted2dStr = "Deleted2d";
-    static std::string deletedCLGStr = "DeletedCLG";
+    static std::string validMeshStr = "ValidMesh";
+    static std::string deletedMeshStr = "DeletedMesh";
+
     static std::string unknown = "UNKNOWN";
 
     using enum CurrentState;
@@ -229,18 +200,10 @@ inline const std::string& meshkernelapi::toString(const CurrentState state)
     {
     case Uninitialised:
         return uninitialisedStr;
-    case Valid1d:
-        return valid1dStr;
-    case Valid2d:
-        return valid2dStr;
-    case ValidCLG:
-        return validCLGStr;
-    case Deleted1d:
-        return deleted1dStr;
-    case Deleted2d:
-        return deleted2dStr;
-    case DeletedCLG:
-        return deletedCLGStr;
+    case ValidMesh:
+        return validMeshStr;
+    case DeletedMesh:
+        return deletedMeshStr;
     default:
         return unknown;
     };
