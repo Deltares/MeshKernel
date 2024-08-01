@@ -63,7 +63,7 @@ namespace meshkernel
         static std::vector<double> ComputeYValues(const MakeGridParameters& parameters);
 
         /// @brief Generate the graded rectangular grid
-        static lin_alg::Matrix<Point> GenerateRectangularGrid(const MakeGridParameters& parameters);
+        static lin_alg::Matrix<Point> GenerateGradedRectangularGrid(const MakeGridParameters& parameters);
         ///@}
 
         ///@{

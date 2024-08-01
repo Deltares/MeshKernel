@@ -1485,6 +1485,7 @@ TEST_P(CurvilineartBoundariesAsPolygonsTests, GetLocationIndex_OnACurvilinearGri
 
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
+
 INSTANTIATE_TEST_SUITE_P(CurvilineartBoundariesAsPolygonsTests, CurvilineartBoundariesAsPolygonsTests, ::testing::ValuesIn(CurvilineartBoundariesAsPolygonsTests::GetData()));
 
 TEST(CurvilinearGrid, MakeCircularGrid_CartesianCoordinate_ShouldMakeCurvilinearGrid)

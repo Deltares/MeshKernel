@@ -149,6 +149,16 @@ public:
         EXPECT_THROW(range_check::CheckNoneOf<T>(5, values, name), RangeError);
         EXPECT_NO_THROW(range_check::CheckNoneOf<T>(6, values, name));
     }
+    
+    void CheckPreconditionTest()
+    {
+        auto isZero = [](const T value)
+        { return value == static_cast<T>(0); };
+
+        EXPECT_NO_THROW(range_check::CheckPrecondition(static_cast<T>(0), name, preconditionName, isZero));
+        EXPECT_THROW(range_check::CheckPrecondition(static_cast<T>(1), name, preconditionName, isZero), RangeError);
+        EXPECT_THROW(range_check::CheckPrecondition(static_cast<T>(10), name, preconditionName, isZero), RangeError);
+    }
 
 private:
     inline static std::string const name{"dummy"};
@@ -190,4 +200,5 @@ TYPED_TEST(RangeCheckFixture, TestTypes)
     this->CheckOutsideOpenIntervalTest();
     this->CheckOneOfTest();
     this->CheckNoneOfTest();
+    this->CheckPreconditionTest();
 }
