@@ -32,6 +32,7 @@ int GenerateCurvilinearMesh(const int meshKernelId, const int nodes, const doubl
 
 TEST(UndoTests, BasicAllocationDeallocationTest)
 {
+
     // Two mesh kernel ids will be created
     // checks made on their validity at different stages of the test
     // one of the id's will be deallocated
@@ -42,6 +43,10 @@ TEST(UndoTests, BasicAllocationDeallocationTest)
     int errorCode;
     // Initialised with the opposite of the expected value
     bool isValid = true;
+
+    // Clear the meshkernel state and undo stack before starting the test.
+    errorCode = mkapi::mkernel_clear_state();
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     // meshKernelId1 should be not valid
     errorCode = mkapi::mkernel_is_valid_state(meshKernelId1, isValid);
@@ -67,6 +72,9 @@ TEST(UndoTests, BasicAllocationDeallocationTest)
 
     errorCode = mkapi::mkernel_allocate_state(0, meshKernelId2);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    std::cout << "meshKernelId1: " << meshKernelId1 << std::endl;
+    std::cout << "meshKernelId2: " << meshKernelId2 << std::endl;
 
     // deallocate meshKernelId1
     errorCode = mkapi::mkernel_deallocate_state(meshKernelId1);
@@ -130,6 +138,10 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
     // Initialised with the opposite of the expected value
     bool isValid = true;
 
+    // Clear the meshkernel state and undo stack before starting the test.
+    errorCode = mkapi::mkernel_clear_state();
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
     // meshKernelId1 should be not valid
     errorCode = mkapi::mkernel_is_valid_state(meshKernelId1, isValid);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
@@ -140,6 +152,9 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
 
     errorCode = mkapi::mkernel_allocate_state(0, meshKernelId2);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    std::cout << "meshKernelId1: " << meshKernelId1 << std::endl;
+    std::cout << "meshKernelId2: " << meshKernelId2 << std::endl;
 
     // Generate the curvilinear grids.
     errorCode = GenerateCurvilinearMesh(meshKernelId2, clg2Size, 1.0, 0.0);
@@ -162,7 +177,7 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
     bool didUndo = false;
     int undoId = mkapi::mkernel_get_null_identifier();
 
-    // Undo the curvilinear grid generation for the last grid generated.
+    // Undo the curvilinear grid generation for the last grid generated, meshKernelId1
     errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
@@ -176,7 +191,7 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
     EXPECT_EQ(curvilinearGrid.num_m, mkapi::mkernel_get_null_identifier());
 
     // Undo the undo of the clg generation
-    // The clg should be restored
+    // The clg for meshKernelId1 should be restored
     errorCode = mkapi::mkernel_redo_state(didUndo, undoId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_EQ(undoId, meshKernelId1);
@@ -196,7 +211,7 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
     EXPECT_EQ(curvilinearGrid.num_n, mkapi::mkernel_get_null_identifier());
     EXPECT_EQ(curvilinearGrid.num_m, mkapi::mkernel_get_null_identifier());
 
-    // Undo the deallocation
+    // Undo the deallocation or meshKernelId2
     errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
@@ -271,6 +286,10 @@ TEST(UndoTests, UnstructuredGrid)
     int meshKernelId1 = mkapi::mkernel_get_null_identifier();
     int meshKernelId2 = mkapi::mkernel_get_null_identifier();
     int errorCode;
+
+    // Clear the meshkernel state and undo stack before starting the test.
+    errorCode = mkapi::mkernel_clear_state();
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     errorCode = mkapi::mkernel_allocate_state(0, meshKernelId1);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);

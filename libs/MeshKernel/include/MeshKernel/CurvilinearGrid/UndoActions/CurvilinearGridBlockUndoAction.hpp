@@ -49,6 +49,11 @@ namespace meshkernel
                                                                       const CurvilinearGridNodeIndices& startOffset,
                                                                       const CurvilinearGridNodeIndices& endOffset);
 
+        /// @brief Return unique pointer to newly created CurvilinearGridBlockUndoAction object
+        ///
+        /// The entire grid is the block
+        static std::unique_ptr<CurvilinearGridBlockUndoAction> Create(CurvilinearGrid& grid);
+
         /// @brief Constructor, node values are copied from the grid for the block specified
         CurvilinearGridBlockUndoAction(CurvilinearGrid& grid,
                                        const CurvilinearGridNodeIndices& startOffset,

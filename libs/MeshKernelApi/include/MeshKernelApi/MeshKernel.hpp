@@ -690,6 +690,10 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_deallocate_state(int meshKernelId);
 
+        /// @brief Clear all internal mesh kernel state and undo actions, no undo will be possible after this
+        /// @returns Error code
+        MKERNEL_API int mkernel_clear_state();
+
         /// @brief Deallocate mesh state and remove it completely, no undo for this meshKernelId will be possible after expunging
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
