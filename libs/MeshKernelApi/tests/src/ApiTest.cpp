@@ -2957,6 +2957,9 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
 {
     using namespace meshkernelapi;
 
+    int errorCode = mkernel_clear_undo_state();
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
     meshkernel::UInt const num_nodes_x = 20;
     meshkernel::UInt const num_nodes_y = 15;
     double const delta = 1.0;
@@ -2990,7 +2993,7 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
 
     // allocate state
     int mk_id = 0;
-    int errorCode = mkernel_allocate_state(0, mk_id);
+    errorCode = mkernel_allocate_state(0, mk_id);
 
     // first initialise using the first mesh, mesh2d_1
     errorCode = mkernel_mesh2d_set(mk_id, mesh2d_1);
@@ -3057,7 +3060,7 @@ TEST(Mesh2D, Mesh2DAddEdge)
 {
     using namespace meshkernelapi;
 
-    int errorCode = mkernel_clear_undo_state();
+    int errorCode = mkernel_clear_state();
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::UInt const num_nodes_x = 4;
@@ -3098,6 +3101,13 @@ TEST(Mesh2D, Mesh2DAddEdge)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_TRUE(undoInsertEdge);
     ASSERT_EQ(mk_id, undoId);
+
+    // Undo creation of mesh2d
+    undoInsertEdge = false;
+    errorCode = mkernel_undo_state(undoInsertEdge, undoId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_TRUE(undoInsertEdge);
+    ASSERT_EQ(undoId, mk_id);
 
     // Should be no items on the undo action stack
     undoInsertEdge = false;
@@ -3213,7 +3223,7 @@ TEST(Mesh2D, SimpleMultiMeshUndoTest)
     errorCode = mkernel_undo_state_count(committedCount, restoredCount);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    EXPECT_EQ(committedCount, 10);
+    EXPECT_EQ(committedCount, 12);
     EXPECT_EQ(restoredCount, 0);
 
     bool didUndo = false;
@@ -3234,16 +3244,16 @@ TEST(Mesh2D, SimpleMultiMeshUndoTest)
     errorCode = mkernel_undo_state_count(committedCount, restoredCount);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    EXPECT_EQ(committedCount, 8);
+    EXPECT_EQ(committedCount, 10);
     EXPECT_EQ(restoredCount, 2);
 
-    errorCode = mkernel_deallocate_state(mkid1);
+    errorCode = mkernel_expunge_state(mkid1);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     errorCode = mkernel_undo_state_count_for_id(mkid2, committedCount, restoredCount);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    EXPECT_EQ(committedCount, 3);
+    EXPECT_EQ(committedCount, 4);
     EXPECT_EQ(restoredCount, 1);
 
     isValid = false;
@@ -3251,7 +3261,7 @@ TEST(Mesh2D, SimpleMultiMeshUndoTest)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_FALSE(isValid);
 
-    errorCode = mkernel_deallocate_state(mkid2);
+    errorCode = mkernel_expunge_state(mkid2);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     isValid = false;
@@ -3314,6 +3324,13 @@ TEST(Mesh2D, Mesh2DInsertNode)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_TRUE(undoInsertNode);
     ASSERT_EQ(mk_id, undoId);
+
+    // Undo creation of the mesh2d
+    undoInsertNode = false;
+    errorCode = mkernel_undo_state(undoInsertNode, undoId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_TRUE(undoInsertNode);
+    ASSERT_EQ(undoId, mk_id);
 
     // Should be zero items on the undo action stack.
     undoInsertNode = false;
@@ -3478,8 +3495,8 @@ TEST(Mesh2D, ConvertToCurvilinear_ShouldConvertMeshToCurvilinear)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(0, mesh2dOut.num_nodes);
-    ASSERT_EQ(0, mesh2dOut.num_edges);
+    ASSERT_EQ(meshkernelapi::mkernel_get_null_identifier(), mesh2dOut.num_nodes);
+    ASSERT_EQ(meshkernelapi::mkernel_get_null_identifier(), mesh2dOut.num_edges);
 
     ASSERT_EQ(11, curvilinearOut.num_m);
     ASSERT_EQ(11, curvilinearOut.num_n);
