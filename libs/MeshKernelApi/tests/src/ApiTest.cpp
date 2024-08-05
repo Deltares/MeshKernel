@@ -3313,8 +3313,8 @@ TEST(Mesh2D, ConvertToCurvilinear_ShouldConvertMeshToCurvilinear)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(0, mesh2dOut.num_nodes);
-    ASSERT_EQ(0, mesh2dOut.num_edges);
+    ASSERT_EQ(121, mesh2dOut.num_nodes);
+    ASSERT_EQ(220, mesh2dOut.num_edges);
 
     ASSERT_EQ(11, curvilinearOut.num_m);
     ASSERT_EQ(11, curvilinearOut.num_n);
