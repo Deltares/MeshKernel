@@ -40,28 +40,17 @@
 namespace meshkernelapi
 {
 
-    enum class CurrentState
-    {
-        Uninitialised,
-        ValidMesh,
-        DeletedMesh
-    };
-
-    static bool IsValidMeshState(const CurrentState state);
-
-    static bool IsDeletedMeshState(const CurrentState state);
-
-    static CurrentState DeleteMeshState(const CurrentState state);
-
-    static CurrentState RestoreMeshState(const CurrentState state);
-
-    static const std::string& toString(const CurrentState state);
-
-    // class MeshKernelState
-
     /// @brief The class holding the state of the C API library
     struct MeshKernelState
     {
+
+        /// @brief Indicator of the current state of the MeshKernelState
+        enum class CurrentState
+        {
+            Uninitialised, ///< MeshKernelState is currently not initialised.
+            ValidMesh,     ///< MeshKernelState currently points to a valid mesh, this may be mesh1d, mesh2d or curvilinear grid.
+            DeletedMesh    ///< MeshKernelState currently points to a deleted mesh.
+        };
 
         /// @brief Default constructor
         MeshKernelState() = default;
@@ -148,45 +137,12 @@ namespace meshkernelapi
         CurrentState m_state = CurrentState::Uninitialised;
     };
 
+
+    static const std::string& toString(const MeshKernelState::CurrentState state);
+
 } // namespace meshkernelapi
 
-inline bool meshkernelapi::IsValidMeshState(const CurrentState state)
-{
-    // TODO remove this function
-    return state == CurrentState::ValidMesh;
-}
-
-inline bool meshkernelapi::IsDeletedMeshState(const CurrentState state)
-{
-    // TODO remove this function
-    return state == CurrentState::DeletedMesh;
-}
-
-inline meshkernelapi::CurrentState meshkernelapi::DeleteMeshState(const CurrentState state)
-{
-    // TODO this about removing this function
-
-    if (state == CurrentState::ValidMesh)
-    {
-        return CurrentState::DeletedMesh;
-    }
-
-    return state;
-}
-
-inline meshkernelapi::CurrentState meshkernelapi::RestoreMeshState(const CurrentState state)
-{
-    // TODO this about removing this function
-
-    if (state == CurrentState::DeletedMesh)
-    {
-        return CurrentState::ValidMesh;
-    }
-
-    return state;
-}
-
-inline const std::string& meshkernelapi::toString(const CurrentState state)
+inline const std::string& meshkernelapi::toString(const MeshKernelState::CurrentState state)
 {
     static std::string uninitialisedStr = "Uninitialised";
     static std::string validMeshStr = "ValidMesh";
@@ -194,7 +150,7 @@ inline const std::string& meshkernelapi::toString(const CurrentState state)
 
     static std::string unknown = "UNKNOWN";
 
-    using enum CurrentState;
+    using enum MeshKernelState::CurrentState;
 
     switch (state)
     {
