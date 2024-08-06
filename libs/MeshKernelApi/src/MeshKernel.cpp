@@ -3342,17 +3342,19 @@ namespace meshkernelapi
             }
             else
             {
-                // Do not change the pointer, just the object it is pointing to
-                // Compute the faces
                 meshToConnect = std::make_unique<meshkernel::Mesh2D>(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection);
             }
 
             const auto mergedMeshes = meshkernel::Mesh2D::Merge(*meshKernelState[meshKernelId].m_mesh2d, *meshToConnect);
-            meshKernelUndoStack.Add(meshkernel::ConnectMeshes::Compute(*mergedMeshes, searchFraction));
+
+            // Keep existing mesh to restore with undo
+            auto undoAction = meshkernel::FullUnstructuredGridUndo::Create(*meshKernelState[meshKernelId].m_mesh2d);
+            // The undo information collected from the ConnectMeshes::Compute is not needed here.
+            [[maybe_unused]] auto undo = meshkernel::ConnectMeshes::Compute(*mergedMeshes, searchFraction);
             meshKernelState[meshKernelId].m_mesh2d->SetNodes(mergedMeshes->Nodes());
             meshKernelState[meshKernelId].m_mesh2d->SetEdges(mergedMeshes->Edges());
-            meshKernelState[meshKernelId].m_mesh2d->m_projection = mergedMeshes->m_projection;
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
+            meshKernelUndoStack.Add(std::move(undoAction));
         }
         catch (...)
         {
