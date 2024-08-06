@@ -3973,3 +3973,54 @@ TEST_F(CartesianApiTestFixture, Mesh2DSnapToLandboundary_ShouldSnapToLandBoundar
     errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
+
+TEST(Mesh2D, UndoConnectMeshes)
+{
+    const meshkernel::UInt num_nodes_x = 3;
+    const meshkernel::UInt num_nodes_y = 3;
+    const double delta = 1.0;
+
+    // create first mesh
+    auto [num_nodes_1, num_edges_1, node_x_1, node_y_1, edge_nodes_1] =
+        MakeRectangularMeshForApiTesting(num_nodes_x,
+                                         num_nodes_y,
+                                         delta,
+                                         meshkernel::Point(0.0, 0.0));
+    meshkernelapi::Mesh2D mesh2d_1{};
+    mesh2d_1.num_nodes = static_cast<int>(num_nodes_1);
+    mesh2d_1.num_edges = static_cast<int>(num_edges_1);
+    mesh2d_1.node_x = node_x_1.data();
+    mesh2d_1.node_y = node_y_1.data();
+    mesh2d_1.edge_nodes = edge_nodes_1.data();
+
+    // create second mesh
+    auto [num_nodes_2, num_edges_2, node_x_2, node_y_2, edge_nodes_2] =
+        MakeRectangularMeshForApiTesting(2 * num_nodes_x,
+                                         2 * num_nodes_y,
+                                         0.5 * delta,
+                                         meshkernel::Point(3.0, 0.0));
+    meshkernelapi::Mesh2D mesh2d_2{};
+    mesh2d_2.num_nodes = static_cast<int>(num_nodes_2);
+    mesh2d_2.num_edges = static_cast<int>(num_edges_2);
+    mesh2d_2.node_x = node_x_2.data();
+    mesh2d_2.node_y = node_y_2.data();
+    mesh2d_2.edge_nodes = edge_nodes_2.data();
+
+    // allocate state
+    int mk_id = 0;
+    int errorCode = meshkernelapi::mkernel_allocate_state(0, mk_id);
+
+    // first initialise using the first mesh, mesh2d_1
+    errorCode = meshkernelapi::mkernel_mesh2d_set(mk_id, mesh2d_1);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_connect_meshes(mk_id, mesh2d_2, 0.1);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    bool didUndo = false;
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_redo_state(didUndo);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+}
