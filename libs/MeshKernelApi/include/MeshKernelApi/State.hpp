@@ -137,7 +137,6 @@ namespace meshkernelapi
         CurrentState m_state = CurrentState::Uninitialised;
     };
 
-
     static const std::string& toString(const MeshKernelState::CurrentState state);
 
 } // namespace meshkernelapi

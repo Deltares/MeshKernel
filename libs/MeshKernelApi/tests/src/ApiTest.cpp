@@ -4203,9 +4203,13 @@ TEST(Mesh2D, UndoConnectMeshes)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     bool didUndo = false;
-    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    int undoMkId = meshkernelapi::mkernel_get_null_identifier();
 
-    errorCode = meshkernelapi::mkernel_redo_state(didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo, undoMkId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(undoMkId, mk_id);
+
+    errorCode = meshkernelapi::mkernel_redo_state(didUndo, undoMkId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(undoMkId, mk_id);
 }

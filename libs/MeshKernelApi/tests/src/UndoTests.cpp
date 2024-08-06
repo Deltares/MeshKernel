@@ -25,9 +25,148 @@ int GenerateCurvilinearMesh(const int meshKernelId, const int nodes, const doubl
     makeGridParameters.block_size_x = delta;
     makeGridParameters.block_size_y = delta;
 
-    // Execute
+    // Generate curvilinear grid.
     int errorCode = mkapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
     return errorCode;
+}
+
+bool CompareCurvilinearGrids(const int meshKernelId1, const int meshKernelId2)
+{
+    mkapi::CurvilinearGrid curvilinearGrid1{};
+    int errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinearGrid1);
+
+    if (mk::ExitCode::Success != errorCode)
+    {
+        return false;
+    }
+
+    std::vector<double> grid1NodesX(curvilinearGrid1.num_m * curvilinearGrid1.num_n);
+    std::vector<double> grid1NodesY(curvilinearGrid1.num_m * curvilinearGrid1.num_n);
+
+    curvilinearGrid1.node_x = grid1NodesX.data();
+    curvilinearGrid1.node_y = grid1NodesY.data();
+
+    errorCode = mkapi::mkernel_curvilinear_get_data(meshKernelId1, curvilinearGrid1);
+
+    if (mk::ExitCode::Success != errorCode)
+    {
+        return false;
+    }
+
+    mkapi::CurvilinearGrid curvilinearGrid2{};
+
+    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId2, curvilinearGrid2);
+
+    if (mk::ExitCode::Success != errorCode)
+    {
+        return false;
+    }
+
+    std::vector<double> grid2NodesX(curvilinearGrid2.num_m * curvilinearGrid2.num_n);
+    std::vector<double> grid2NodesY(curvilinearGrid2.num_m * curvilinearGrid2.num_n);
+
+    curvilinearGrid2.node_x = grid2NodesX.data();
+    curvilinearGrid2.node_y = grid2NodesY.data();
+
+    if (curvilinearGrid1.num_n != curvilinearGrid2.num_n || curvilinearGrid1.num_m != curvilinearGrid2.num_m)
+    {
+        return false;
+    }
+
+    errorCode = mkapi::mkernel_curvilinear_get_data(meshKernelId2, curvilinearGrid2);
+
+    size_t count = 0;
+
+    for (int i = 0; i < curvilinearGrid1.num_n; ++i)
+    {
+        for (int j = 0; j < curvilinearGrid1.num_n; ++j)
+        {
+            if (curvilinearGrid1.node_x[count] != curvilinearGrid2.node_x[count] || curvilinearGrid1.node_y[count] != curvilinearGrid2.node_y[count])
+            {
+                return false;
+            }
+
+            ++count;
+        }
+    }
+
+    return true;
+}
+
+bool CompareUnstructuredGrids(const int meshKernelId1, const int meshKernelId2)
+{
+    mkapi::Mesh2D grid1{};
+    int errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId1, grid1);
+
+    if (mk::ExitCode::Success != errorCode)
+    {
+        return false;
+    }
+
+    std::vector<double> grid1NodesX(grid1.num_nodes);
+    std::vector<double> grid1NodesY(grid1.num_nodes);
+    std::vector<int> grid1Edges(2 * grid1.num_edges);
+
+    grid1.node_x = grid1NodesX.data();
+    grid1.node_y = grid1NodesY.data();
+    grid1.edge_nodes = grid1Edges.data();
+
+    errorCode = mkapi::mkernel_mesh2d_get_node_edge_data(meshKernelId1, grid1);
+
+    if (mk::ExitCode::Success != errorCode)
+    {
+        return false;
+    }
+
+    mkapi::Mesh2D grid2{};
+
+    errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId2, grid2);
+
+    if (mk::ExitCode::Success != errorCode)
+    {
+        return false;
+    }
+
+    std::vector<double> grid2NodesX(grid2.num_nodes);
+    std::vector<double> grid2NodesY(grid2.num_nodes);
+    std::vector<int> grid2Edges(2 * grid2.num_edges);
+
+    grid2.node_x = grid2NodesX.data();
+    grid2.node_y = grid2NodesY.data();
+    grid2.edge_nodes = grid2Edges.data();
+
+    if (grid1.num_nodes != grid2.num_nodes)
+    {
+        return false;
+    }
+
+    errorCode = mkapi::mkernel_mesh2d_get_node_edge_data(meshKernelId2, grid2);
+
+    size_t count = 0;
+
+    for (int i = 0; i < grid1.num_nodes; ++i)
+    {
+        if (grid1.node_x[count] != grid2.node_x[count] || grid1.node_y[count] != grid2.node_y[count])
+        {
+            return false;
+        }
+
+        ++count;
+    }
+
+    count = 0;
+
+    for (int i = 0; i < 2 * grid1.num_nodes; ++i)
+    {
+        if (grid1.edge_nodes[count] != grid2.edge_nodes[count])
+        {
+            return false;
+        }
+
+        ++count;
+    }
+
+    return true;
 }
 
 TEST(UndoTests, BasicAllocationDeallocationTest)
@@ -72,9 +211,6 @@ TEST(UndoTests, BasicAllocationDeallocationTest)
 
     errorCode = mkapi::mkernel_allocate_state(0, meshKernelId2);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
-
-    std::cout << "meshKernelId1: " << meshKernelId1 << std::endl;
-    std::cout << "meshKernelId2: " << meshKernelId2 << std::endl;
 
     // deallocate meshKernelId1
     errorCode = mkapi::mkernel_deallocate_state(meshKernelId1);
@@ -121,6 +257,7 @@ TEST(UndoTests, BasicAllocationDeallocationTest)
     EXPECT_FALSE(didUndo);
     EXPECT_EQ(undoId, mkapi::mkernel_get_null_identifier());
 
+    // Finalise the test, remove all mesh kernel state objects and undo actions
     errorCode = mkapi::mkernel_expunge_state(meshKernelId2);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     errorCode = mkapi::mkernel_expunge_state(meshKernelId1);
@@ -152,9 +289,6 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
 
     errorCode = mkapi::mkernel_allocate_state(0, meshKernelId2);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
-
-    std::cout << "meshKernelId1: " << meshKernelId1 << std::endl;
-    std::cout << "meshKernelId2: " << meshKernelId2 << std::endl;
 
     // Generate the curvilinear grids.
     errorCode = GenerateCurvilinearMesh(meshKernelId2, clg2Size, 1.0, 0.0);
@@ -239,7 +373,7 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
     EXPECT_EQ(curvilinearGrid.num_n, mkapi::mkernel_get_null_identifier());
     EXPECT_EQ(curvilinearGrid.num_m, mkapi::mkernel_get_null_identifier());
 
-    // Undo the conversion of meshKernelId2 from curvilienar to unstructured.
+    // Undo the conversion of meshKernelId2 from curvilinear to unstructured.
     errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
@@ -251,7 +385,7 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
     EXPECT_EQ(mesh2d.num_nodes, mkapi::mkernel_get_null_identifier());
     EXPECT_EQ(mesh2d.num_edges, mkapi::mkernel_get_null_identifier());
 
-    // Expunge the grid and its undo data from the api.
+    // Finalise the test, remove all mesh kernel state objects and undo actions
     errorCode = mkapi::mkernel_expunge_state(meshKernelId2);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     errorCode = mkapi::mkernel_expunge_state(meshKernelId1);
@@ -268,7 +402,6 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
 
 TEST(UndoTests, UnstructuredGrid)
 {
-
     // setup
     //   1. create two curvilinear grids
     //   2. convert CLGs to unstructured grids.
@@ -276,8 +409,8 @@ TEST(UndoTests, UnstructuredGrid)
     //   3. overwrite second grid using set function
     //   4. undo overwriting, check sizes of new mesh
     //   5. update second grid using add function
-    //   4. undo grid update, check sizes of new mesh
-    //   5. undo again, this time undo the conversion to unstructured.
+    //   6. undo grid update, check sizes of new mesh
+    //   7. undo again, this time undo the conversion to unstructured.
 
     const int clg1Size = 8;
     const int clg2Size = 4;
@@ -285,6 +418,12 @@ TEST(UndoTests, UnstructuredGrid)
 
     int meshKernelId1 = mkapi::mkernel_get_null_identifier();
     int meshKernelId2 = mkapi::mkernel_get_null_identifier();
+
+    // Will be identical to meshKernelId1, to enable comparison after manipulation
+    int meshKernelId3 = mkapi::mkernel_get_null_identifier();
+    // Will be identical to meshKernelId2, to enable comparison after manipulation
+    int meshKernelId4 = mkapi::mkernel_get_null_identifier();
+
     int errorCode;
 
     // Clear the meshkernel state and undo stack before starting the test.
@@ -297,6 +436,15 @@ TEST(UndoTests, UnstructuredGrid)
     errorCode = mkapi::mkernel_allocate_state(0, meshKernelId2);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
+    errorCode = mkapi::mkernel_allocate_state(0, meshKernelId3);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    errorCode = mkapi::mkernel_allocate_state(0, meshKernelId4);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    errorCode = GenerateCurvilinearMesh(meshKernelId3, clg1Size, 0.5 * delta, static_cast<double>(clg2Size - 1) * delta);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
     errorCode = GenerateCurvilinearMesh(meshKernelId1, clg1Size, 0.5 * delta, static_cast<double>(clg2Size - 1) * delta);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
@@ -305,6 +453,7 @@ TEST(UndoTests, UnstructuredGrid)
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     // Generate the curvilinear grids, later to be converted to unstructured grids
+    errorCode = GenerateCurvilinearMesh(meshKernelId4, clg2Size, delta, 0.0);
     errorCode = GenerateCurvilinearMesh(meshKernelId2, clg2Size, delta, 0.0);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
@@ -377,7 +526,23 @@ TEST(UndoTests, UnstructuredGrid)
     errorCode = mkapi::mkernel_mesh2d_get_node_edge_data(meshKernelId1, mesh2d);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
-    // Add the contents of mesh2d meshKernelId2.
+    // Set the contents of mesh2d meshKernelId2.
+    errorCode = mkapi::mkernel_mesh2d_set(meshKernelId2, mesh2d);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    // Compare grid1 with grid2, should be the same at this point.
+    EXPECT_TRUE(CompareUnstructuredGrids(meshKernelId1, meshKernelId2));
+
+    // Undo the mesh2d_set
+    errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+    // meshKernelId2 was the last id set.
+    EXPECT_EQ(undoId, meshKernelId2);
+
+    // At this point meshKernelId1 should be restored to its original value
+
+    // Add the contents of mesh2d (which are retrieved from meshKernelId1) meshKernelId2.
     errorCode = mkapi::mkernel_mesh2d_add(meshKernelId2, mesh2d);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
@@ -414,14 +579,16 @@ TEST(UndoTests, UnstructuredGrid)
     EXPECT_EQ(curvilinearGrid.num_n, clg2Size);
     EXPECT_EQ(curvilinearGrid.num_m, clg2Size);
 
+    // Compare the curvilinear grids
+    EXPECT_TRUE(CompareCurvilinearGrids(meshKernelId2, meshKernelId4));
+
     errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId2, mesh2d);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_EQ(mesh2d.num_nodes, mkapi::mkernel_get_null_identifier());
     EXPECT_EQ(mesh2d.num_edges, mkapi::mkernel_get_null_identifier());
 
     //--------------------------------
-    // Finalise the test
-
+    // Finalise the test, remove all mesh kernel state objects and undo actions
     errorCode = mkapi::mkernel_expunge_state(meshKernelId2);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     // The mesh kernel state object and all undo information should have be removed.
@@ -438,3 +605,10 @@ TEST(UndoTests, UnstructuredGrid)
     EXPECT_EQ(committedCount, 0);
     EXPECT_EQ(restoredCount, 0);
 }
+
+// TODO
+// add tests for
+// 1. check that the SetMesh2dApiNodeEdgeData is correct after undoing a mesh change.
+//    basically want to know if the correct nodes and edges (valid and invalid) are retrieved.
+//
+// 2. more combinations of mk api calls with undo.

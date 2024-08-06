@@ -843,11 +843,6 @@ TEST(CurvilinearBasicTests, CompoundTest)
         std::tie(didUndo, actionId) = undoActions.Undo();
     } while (didUndo);
 
-    // while (auto [didUndo, actionId] = undoActions.Undo(); didUndo)
-    // {
-    //     // Nothing else to do
-    // }
-
     constexpr double tolerance = 1.0e-12;
 
     // Points should be same as inthe original mesh after all actions have bene undone
@@ -869,11 +864,6 @@ TEST(CurvilinearBasicTests, CompoundTest)
     {
         std::tie(didRedo, actionId) = undoActions.Commit();
     } while (didRedo);
-
-    // while (auto [didRedo, actionId] = undoActions.Commit(); didRedo)
-    // {
-    //     // Nothing else to do
-    // }
 
     // Points should be same as in the refined mesh after all actions have bene redone
     for (mk::UInt i = 0; i < grid->GetNumNodes(); ++i)

@@ -140,26 +140,12 @@ namespace meshkernelapi
         /// @brief Commit undo action.
         void DoCommit() override
         {
-            std::cout << "DoCommit" << std::endl;
-            std::cout << "pointer info: "
-                      << "mesh 2d: " << m_mkState.m_mesh2d->GetNumNodes() << "  "
-                      << "clg : " << m_mkState.m_curvilinearGrid->NumN() << ", " << m_mkState.m_curvilinearGrid->NumM() << "  "
-                      << "mesh 2d: " << m_mkStateCopy.m_mesh2d->GetNumNodes() << "  "
-                      << "clg : " << m_mkStateCopy.m_curvilinearGrid->NumN() << ", " << m_mkStateCopy.m_curvilinearGrid->NumM() << "  "
-                      << std::endl;
             SwapContents();
         }
 
         /// @brief Restore undo action
         void DoRestore() override
         {
-            std::cout << "DoRestore" << std::endl;
-            std::cout << "pointer info: "
-                      << "mesh 2d: " << m_mkState.m_mesh2d->GetNumNodes() << "  "
-                      << "clg : " << m_mkState.m_curvilinearGrid->NumN() << ", " << m_mkState.m_curvilinearGrid->NumM() << "  "
-                      << "mesh 2d: " << m_mkStateCopy.m_mesh2d->GetNumNodes() << "  "
-                      << "clg : " << m_mkStateCopy.m_curvilinearGrid->NumN() << ", " << m_mkStateCopy.m_curvilinearGrid->NumM() << "  "
-                      << std::endl;
             SwapContents();
         }
 
@@ -314,25 +300,7 @@ namespace meshkernelapi
 
         try
         {
-            // std::cout << " mkernel_undo_state number of nodes before: "
-            //           << meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() << "  "
-            //           << meshKernelState[meshKernelId].m_curvilinearGrid->NumN() << "  " << meshKernelState[meshKernelId].m_curvilinearGrid->NumM() << "  " < < < <
-            //     std::endl;
-            std::cout << std::endl
-                      << " mkernel_undo_state before " << std::endl;
-            meshKernelUndoStack.print();
             std::tie(undone, meshKernelId) = meshKernelUndoStack.Undo();
-            std::cout << std::endl
-                      << " mkernel_undo_state after " << std::endl;
-            meshKernelUndoStack.print();
-
-            if (meshKernelId >= 0)
-            {
-                std::cout << " mkernel_undo_state number of nodes after: "
-                          << meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() << "  "
-                          << meshKernelState[meshKernelId].m_curvilinearGrid->NumN() << "  " << meshKernelState[meshKernelId].m_curvilinearGrid->NumM() << "  "
-                          << std::endl;
-            }
         }
         catch (...)
         {
@@ -394,11 +362,6 @@ namespace meshkernelapi
         try
         {
             std::tie(redone, meshKernelId) = meshKernelUndoStack.Commit();
-
-            std::cout << " mkernel_redo_state number of nodes after: "
-                      << meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() << "  "
-                      << meshKernelState[meshKernelId].m_curvilinearGrid->NumN() << "  " << meshKernelState[meshKernelId].m_curvilinearGrid->NumM() << "  "
-                      << std::endl;
         }
         catch (...)
         {
@@ -633,6 +596,8 @@ namespace meshkernelapi
                                                                   mesh2d.node_x,
                                                                   mesh2d.node_y);
 
+            std::unique_ptr<meshkernel::UndoAction> undoAction;
+
             if (mesh2d.num_faces > 0 && mesh2d.face_nodes != nullptr && mesh2d.nodes_per_face != nullptr)
             {
                 const auto face_nodes = meshkernel::ConvertToFaceNodesVector(mesh2d.num_faces, mesh2d.face_nodes, mesh2d.nodes_per_face);
@@ -644,17 +609,22 @@ namespace meshkernelapi
                     num_face_nodes.emplace_back(static_cast<meshkernel::UInt>(mesh2d.nodes_per_face[n]));
                 }
 
-                meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges2d, nodes2d, face_nodes, num_face_nodes,
-                                                                                                        meshKernelState[meshKernelId].m_projection)),
-                                        meshKernelId);
+
+                undoAction = meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges2d, nodes2d, face_nodes, num_face_nodes,
+                                                                                             meshKernelState[meshKernelId].m_projection));
+                // meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges2d, nodes2d, face_nodes, num_face_nodes,
+                //                                                                                         meshKernelState[meshKernelId].m_projection)),
+                //                         meshKernelId);
             }
             else
             {
                 // Compute the faces
-                meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection)),
-                                        meshKernelId);
+                undoAction  = meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection));
+                // meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection)),
+                //                         meshKernelId);
             }
 
+            meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
             meshKernelState[meshKernelId].m_state = MeshKernelState::CurrentState::ValidMesh;
         }
         catch (...)
@@ -833,11 +803,6 @@ namespace meshkernelapi
             }
 
             auto mk = meshKernelState[meshKernelId];
-
-            // std::cout << " info: "
-            //           << "mesh 2d: " << mk.m_mesh2d->GetNumNodes() << "  "
-            //           << "clg : " << mk.m_curvilinearGrid->NumN() << ", " << mk.m_curvilinearGrid->NumM() << "  "
-            //           << std::endl;
 
             // TODO should it be an error if the this is not true, the mesh probably does not exist.
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() > 0)
@@ -1220,12 +1185,12 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
+            auto undoAction = MKStateUndoAction::Create(meshKernelState[meshKernelId]);
             meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(*meshKernelState[meshKernelId].m_mesh2d);
 
             meshKernelState[meshKernelId].m_curvilinearGrid = mesh2DToCurvilinear.Compute({xPointCoordinate, yPointCoordinate});
-
-            meshKernelUndoStack.Add(meshkernel::NoActionUndo::Create(), meshKernelId);
-            meshKernelState[meshKernelId].m_state = MeshKernelState::CurrentState::ValidMesh;
+            meshKernelState[meshKernelId].m_mesh2d = std::make_unique<meshkernel::Mesh2D>(meshKernelState[meshKernelId].m_projection);
+            meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
         }
         catch (...)
         {
@@ -3666,9 +3631,6 @@ namespace meshkernelapi
                 meshToConnect = std::make_unique<meshkernel::Mesh2D>(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection);
             }
 
-            // TODO how best to handl undo action here
-            auto undoAction = MKStateUndoAction::Create(meshKernelState[meshKernelId]);
-
             const auto mergedMeshes = meshkernel::Mesh2D::Merge(*meshKernelState[meshKernelId].m_mesh2d, *meshToConnect);
 
             // Keep existing mesh to restore with undo
@@ -4745,14 +4707,14 @@ namespace meshkernelapi
             const auto edges = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeEdges();
             const auto nodes = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeNodes();
 
-            std::cout << " mkernel_curvilinear_convert_to_mesh2d number of nodes before: " << meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() << std::endl;
-
-            // auto undoAction = MKStateUndoAction::Create(meshKernelState[meshKernelId]);
+            // The undo action for conversion of clg to m2d is made in two steps
             std::unique_ptr<meshkernel::CompoundUndoAction> undoAction = meshkernel::CompoundUndoAction::Create();
-            undoAction->Add(meshkernel::FullUnstructuredGridUndo::Create(*meshKernelState[meshKernelId].m_mesh2d));
-            undoAction->Add(meshkernel::CurvilinearGridBlockUndoAction::Create(*meshKernelState[meshKernelId].m_curvilinearGrid));
 
-            *meshKernelState[meshKernelId].m_mesh2d += meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->projection());
+            // 1. Keep the mesh kernel state to be able to restore (manily) the curvilinear grid and (secondly) other members.
+            undoAction->Add(MKStateUndoAction::Create(meshKernelState[meshKernelId]));
+
+            // 2. Keep track of the undo required to restore the mesh2d to its pre-converted state.
+            undoAction->Add(meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->projection())));
 
             // curvilinear grid must be reset to an empty curvilinear grid
             meshKernelState[meshKernelId].m_curvilinearGrid = std::make_unique<meshkernel::CurvilinearGrid>();
