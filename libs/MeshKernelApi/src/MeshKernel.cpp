@@ -3348,12 +3348,14 @@ namespace meshkernelapi
             const auto mergedMeshes = meshkernel::Mesh2D::Merge(*meshKernelState[meshKernelId].m_mesh2d, *meshToConnect);
 
             // Keep existing mesh to restore with undo
-            meshKernelUndoStack.Add(meshkernel::FullUnstructuredGridUndo::Create(*meshKernelState[meshKernelId].m_mesh2d));
+            auto undoAction = meshkernel::FullUnstructuredGridUndo::Create(*meshKernelState[meshKernelId].m_mesh2d);
             // The undo information collected from the ConnectMeshes::Compute is not needed here.
             [[maybe_unused]] auto undo = meshkernel::ConnectMeshes::Compute(*mergedMeshes, searchFraction);
             meshKernelState[meshKernelId].m_mesh2d->SetNodes(mergedMeshes->Nodes());
             meshKernelState[meshKernelId].m_mesh2d->SetEdges(mergedMeshes->Edges());
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
+            meshKernelUndoStack.Add(std::move(undoAction));
+
         }
         catch (...)
         {
