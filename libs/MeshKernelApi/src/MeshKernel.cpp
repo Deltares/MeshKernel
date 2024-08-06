@@ -3355,7 +3355,6 @@ namespace meshkernelapi
             meshKernelState[meshKernelId].m_mesh2d->SetEdges(mergedMeshes->Edges());
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
             meshKernelUndoStack.Add(std::move(undoAction));
-
         }
         catch (...)
         {
