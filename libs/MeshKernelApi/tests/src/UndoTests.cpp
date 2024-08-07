@@ -15,6 +15,7 @@
 namespace mk = meshkernel;
 namespace mkapi = meshkernelapi;
 
+// Helper function to generate a curvilinear grid for a meshKernelId
 int GenerateCurvilinearMesh(const int meshKernelId,
                             const int nodesX, const int nodesY,
                             const double deltaX, const double deltaY,
@@ -36,11 +37,13 @@ int GenerateCurvilinearMesh(const int meshKernelId,
     return errorCode;
 }
 
+// Helper function to generate a curvilinear grid for a meshKernelId
 int GenerateCurvilinearMesh(const int meshKernelId, const int nodes, const double delta, const double origin)
 {
     return GenerateCurvilinearMesh(meshKernelId, nodes, nodes, delta, delta, origin, origin);
 }
 
+// Helper function to compare two curvilinear grids
 bool CompareCurvilinearGrids(const int meshKernelId1, const int meshKernelId2)
 {
     mkapi::CurvilinearGrid curvilinearGrid1{};
@@ -109,6 +112,7 @@ bool CompareCurvilinearGrids(const int meshKernelId1, const int meshKernelId2)
     return true;
 }
 
+// Helper function to compare two unstructured grids
 bool CompareUnstructuredGrids(const int meshKernelId1, const int meshKernelId2)
 {
     mkapi::Mesh2D grid1{};
@@ -190,6 +194,7 @@ bool CompareUnstructuredGrids(const int meshKernelId1, const int meshKernelId2)
     return true;
 }
 
+// Helper function to compare the undo state for a meshKernelId
 bool CheckUndoStateCount(const int meshKernelId, const int expectedCommitted, const int expectedRestored)
 {
     int committedCount;

@@ -55,6 +55,7 @@ namespace meshkernelapi
         /// @brief Default constructor
         MeshKernelState() = default;
 
+        /// @brief Simple constructor
         explicit MeshKernelState(meshkernel::Projection projection) : m_projection(projection)
         {
             m_mesh1d = std::make_shared<meshkernel::Mesh1D>(projection);
@@ -80,9 +81,11 @@ namespace meshkernelapi
         // Exclusively owned state
         meshkernel::Projection m_projection{meshkernel::Projection::cartesian}; ///< Projection used by the meshes
 
+        /// @brief The current state of the MeshKernelState.
         CurrentState m_state = CurrentState::Uninitialised;
     };
 
+    /// @brief Get the string representation of the MeshKernelState::CurrentState enumeration
     static const std::string& toString(const MeshKernelState::CurrentState state);
 
 } // namespace meshkernelapi
