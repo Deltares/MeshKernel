@@ -2994,6 +2994,7 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
     // allocate state
     int mk_id = 0;
     errorCode = mkernel_allocate_state(0, mk_id);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // first initialise using the first mesh, mesh2d_1
     errorCode = mkernel_mesh2d_set(mk_id, mesh2d_1);

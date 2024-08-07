@@ -362,8 +362,6 @@ namespace meshkernel
         /// @returns The undo action
         std::unique_ptr<UndoAction> Join(const Mesh& rhs);
 
-        // std::unique_ptr<UndoAction> Join(nodes, edges);
-
         /// @brief Get the mapping/indexing from the node array mapped to valid nodes
         std::vector<UInt> GetValidNodeMapping() const;
 

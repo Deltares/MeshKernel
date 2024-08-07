@@ -46,10 +46,10 @@ namespace meshkernel
 
     private:
         /// @brief Perform the undo action, does not change anything
-        void DoCommit();
+        void DoCommit() override;
 
         /// @brief Perform the redo action, does not change anything
-        void DoRestore();
+        void DoRestore() override;
     };
 
 } // namespace meshkernel

@@ -86,6 +86,11 @@ bool CompareCurvilinearGrids(const int meshKernelId1, const int meshKernelId2)
 
     errorCode = mkapi::mkernel_curvilinear_get_data(meshKernelId2, curvilinearGrid2);
 
+    if (mk::ExitCode::Success != errorCode)
+    {
+        return false;
+    }
+
     size_t count = 0;
 
     for (int i = 0; i < curvilinearGrid1.num_n; ++i)
@@ -152,6 +157,11 @@ bool CompareUnstructuredGrids(const int meshKernelId1, const int meshKernelId2)
     }
 
     errorCode = mkapi::mkernel_mesh2d_get_node_edge_data(meshKernelId2, grid2);
+
+    if (mk::ExitCode::Success != errorCode)
+    {
+        return false;
+    }
 
     size_t count = 0;
 
@@ -464,8 +474,11 @@ TEST(UndoTests, UnstructuredGrid)
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     // Generate the curvilinear grids, later to be converted to unstructured grids
-    errorCode = GenerateCurvilinearMesh(meshKernelId4, clg2Size, delta, 0.0);
     errorCode = GenerateCurvilinearMesh(meshKernelId2, clg2Size, delta, 0.0);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    // Generate an identical copy of meshKernelId2 to enable easy comparing later
+    errorCode = GenerateCurvilinearMesh(meshKernelId4, clg2Size, delta, 0.0);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     // Convert the curvilinear grid id2 to an unstructured grid.
@@ -628,7 +641,7 @@ TEST(UndoTests, UnstructuredGridConnection)
     const double clg2DeltaX = 1.0;
     const double clg2DeltaY = 1.0;
 
-    const double fraction = 2.0 * 0.015625;
+    const double fraction = 0.03125;
 
     const double clg1OriginX = 0.0;
     const double clg1OriginY = 0.0;
@@ -674,6 +687,9 @@ TEST(UndoTests, UnstructuredGridConnection)
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     //--------------------------------
+    // Insert node in middle of an element and connect the surrounding 4 nodes to it.
+    // The undo these actions.
+    // This is to create some unused data in the node and edge lists.
 
     // insert node to mesh1
     int newNodeId;
@@ -725,7 +741,7 @@ TEST(UndoTests, UnstructuredGridConnection)
     errorCode = mkapi::mkernel_mesh2d_insert_edge(meshKernelId1, node4, newNodeId, edge4);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
-    // now, 5 undos to remove the added edges and inserted nodes.
+    // now, 5 undos to remove the adding of 4 edges and 1 inserted node.
 
     for (int i = 1; i <= 5; ++i)
     {
@@ -741,6 +757,7 @@ TEST(UndoTests, UnstructuredGridConnection)
 
     //--------------------------------
     // Now the nodes and edges of meshKernelId1, should contain holes from the undoing above.
+    // Connect the meshes, overwriting meshKernelId2 and check the connected mesh is correct.
 
     mkapi::Mesh2D mesh2d{};
     errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId1, mesh2d);
@@ -757,6 +774,7 @@ TEST(UndoTests, UnstructuredGridConnection)
     errorCode = mkapi::mkernel_mesh2d_get_node_edge_data(meshKernelId1, mesh2d);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
+    // Connect the meshes.
     errorCode = mkapi::mkernel_mesh2d_connect_meshes(meshKernelId2, mesh2d, 0.1);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
@@ -776,6 +794,7 @@ TEST(UndoTests, UnstructuredGridConnection)
 
     const double nullValue = mk::constants::missing::doubleValue;
 
+    // The null values are from the three common nodes of the two meshes being connected.
     std::vector<double> expectedNodesConnectedX{12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0,
                                                 12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 0.0, 4.0, 8.0,
                                                 nullValue, 0.0, 4.0, 8.0, nullValue, 0.0, 4.0, 8.0, nullValue, 0.0, 4.0, 8.0, 12.0, 8.0, 8.0};
@@ -800,7 +819,7 @@ TEST(UndoTests, UnstructuredGridConnection)
     }
 
     //--------------------------------
-    // Undo the connection
+    // Undo the connection of the meshes
 
     bool didUndo = false;
     int undoId = mkapi::mkernel_get_null_identifier();

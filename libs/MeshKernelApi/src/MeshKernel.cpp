@@ -429,12 +429,11 @@ namespace meshkernelapi
             {
                 throw meshkernel::ConstraintError("The 2d mesh contains no nodes.");
             }
+
             meshkernel::range_check::CheckOneOf<int>(deletionOption, meshkernel::GetValidDeletionOptions(), "Deletion");
 
             const std::vector<meshkernel::Point> polygonPoints = ConvertGeometryListToPointVector(polygon);
 
-            // if (polygonPoints.size () > 0)
-            // {
             const bool invertDeletionBool = invertDeletion == 1;
             const meshkernel::Polygons meshKernelPolygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             const auto deletionOptionEnum = static_cast<meshkernel::Mesh2D::DeleteMeshOptions>(deletionOption);
@@ -4213,7 +4212,8 @@ namespace meshkernelapi
             }
 
             auto undoAction = MKStateUndoAction::Create(meshKernelState[meshKernelId]);
-            *meshKernelState[meshKernelId].m_curvilinearGrid = std::move(meshkernel::CurvilinearGridGenerateCircularGrid::Compute(parameters, meshKernelState[meshKernelId].m_projection));
+            *meshKernelState[meshKernelId].m_curvilinearGrid = meshkernel::CurvilinearGridGenerateCircularGrid::Compute(parameters,
+                                                                                                                        meshKernelState[meshKernelId].m_projection);
 
             meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
             meshKernelState[meshKernelId].m_state = MeshKernelState::CurrentState::ValidMesh;

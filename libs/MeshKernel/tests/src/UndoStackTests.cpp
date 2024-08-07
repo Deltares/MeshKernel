@@ -552,7 +552,6 @@ TEST(UndoStackTests, RemovingUndoActionsRandomised)
     for (mk::UInt i = 0; i < totalActionCount; ++i)
     {
         mk::UInt randomNum = static_cast<mk::UInt>(generator()) % NumberOfUndoActions;
-        // int randomNum = rand() % NumberOfUndoActions;
         undoActionStack.Add(std::make_unique<MockUndoAction>(), actionIds[randomNum]);
         ++actionCounts[randomNum];
     }

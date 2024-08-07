@@ -105,6 +105,37 @@ CurvilinearGrid& CurvilinearGrid::operator=(CurvilinearGrid&& copy) noexcept
     return *this;
 }
 
+CurvilinearGrid& CurvilinearGrid::operator=(const CurvilinearGrid& copy)
+{
+    if (this != &copy)
+    {
+        m_projection = copy.m_projection;
+        m_gridNodes = copy.m_gridNodes;
+        m_gridFacesMask = copy.m_gridFacesMask;
+        m_gridNodesTypes = copy.m_gridNodesTypes;
+        m_gridIndices = copy.m_gridIndices;
+
+        m_nodesRTreeRequiresUpdate = true;
+        m_edgesRTreeRequiresUpdate = true;
+        m_facesRTreeRequiresUpdate = true;
+
+        m_RTrees.emplace(Location::Nodes, RTreeFactory::Create(m_projection));
+        m_RTrees.emplace(Location::Edges, RTreeFactory::Create(m_projection));
+        m_RTrees.emplace(Location::Faces, RTreeFactory::Create(m_projection));
+
+        m_boundingBoxCache = copy.m_boundingBoxCache;
+
+        m_edges = copy.m_edges;
+
+        m_startOffset = copy.m_startOffset;
+        m_endOffset = copy.m_endOffset;
+
+        SetGridNodes(m_gridNodes);
+    }
+
+    return *this;
+}
+
 void CurvilinearGrid::SetGridNodes(const lin_alg::Matrix<Point>& gridNodes)
 {
     if (gridNodes.rows() <= 1 || gridNodes.cols() <= 1)
