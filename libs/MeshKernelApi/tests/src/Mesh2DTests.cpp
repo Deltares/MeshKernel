@@ -47,10 +47,10 @@ TEST(Mesh2DTests, Mesh2dApiNodeEdgeDataTest)
     errorCode = mkapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
-    int node1;
-    int node2;
-    int node3;
-    int node4;
+    int node1 = mkapi::mkernel_get_null_identifier();
+    int node2 = mkapi::mkernel_get_null_identifier();
+    int node3 = mkapi::mkernel_get_null_identifier();
+    int node4 = mkapi::mkernel_get_null_identifier();
 
     mkapi::BoundingBox boundingBox{-0.1, -0.1, 1.1, 1.1};
 
@@ -82,10 +82,11 @@ TEST(Mesh2DTests, Mesh2dApiNodeEdgeDataTest)
     errorCode = mkapi::mkernel_mesh2d_insert_node(meshKernelId, 0.5, 0.5, newNodeId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
-    int edge1;
-    int edge2;
-    int edge3;
-    int edge4;
+    int edge1 = mkapi::mkernel_get_null_identifier();
+    int edge2 = mkapi::mkernel_get_null_identifier();
+    int edge3 = mkapi::mkernel_get_null_identifier();
+    int edge4 = mkapi::mkernel_get_null_identifier();
+
     errorCode = mkapi::mkernel_mesh2d_insert_edge(meshKernelId, node1, newNodeId, edge1);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     errorCode = mkapi::mkernel_mesh2d_insert_edge(meshKernelId, node2, newNodeId, edge2);
