@@ -624,6 +624,13 @@ namespace meshkernel
     /// Only nodes and node connectivity need be printed to visualise the graph.
     void Print(const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::ostream& out = std::cout);
 
+    /// @brief Print the (simplified) graph in a form that can be loaded into matlab/octave.
+    ///
+    /// Only nodes and node connectivity need be printed to visualise the graph.
+    void Print(const std::vector<double>& xNodes,
+               const std::vector<double>& yNodes,
+               const std::vector<int>& edges, std::ostream& out = std::cout);
+
     /// @brief Increment a valid value by an increment
     inline void IncrementValidValue(UInt& value, const UInt increment)
     {

@@ -2,7 +2,10 @@
 #include <gtest/gtest.h>
 #include <random>
 
+#include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Parameters.hpp"
+
+#include "MeshKernelApi/BoundingBox.hpp"
 #include "MeshKernelApi/Mesh2D.hpp"
 #include "MeshKernelApi/MeshKernel.hpp"
 
@@ -12,22 +15,30 @@
 namespace mk = meshkernel;
 namespace mkapi = meshkernelapi;
 
-int GenerateCurvilinearMesh(const int meshKernelId, const int nodes, const double delta, const double origin)
+int GenerateCurvilinearMesh(const int meshKernelId,
+                            const int nodesX, const int nodesY,
+                            const double deltaX, const double deltaY,
+                            const double originX, const double originY)
 {
     meshkernel::MakeGridParameters makeGridParameters;
 
     // num_columns and num_rows indicate number of elements in each direction, so value = nodes - 1
-    makeGridParameters.num_columns = nodes - 1;
-    makeGridParameters.num_rows = nodes - 1;
+    makeGridParameters.num_columns = nodesX - 1;
+    makeGridParameters.num_rows = nodesY - 1;
     makeGridParameters.angle = 0.0;
-    makeGridParameters.origin_x = origin;
-    makeGridParameters.origin_y = origin;
-    makeGridParameters.block_size_x = delta;
-    makeGridParameters.block_size_y = delta;
+    makeGridParameters.origin_x = originX;
+    makeGridParameters.origin_y = originY;
+    makeGridParameters.block_size_x = deltaX;
+    makeGridParameters.block_size_y = deltaY;
 
     // Generate curvilinear grid.
     int errorCode = mkapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
     return errorCode;
+}
+
+int GenerateCurvilinearMesh(const int meshKernelId, const int nodes, const double delta, const double origin)
+{
+    return GenerateCurvilinearMesh(meshKernelId, nodes, nodes, delta, delta, origin, origin);
 }
 
 bool CompareCurvilinearGrids(const int meshKernelId1, const int meshKernelId2)
@@ -604,6 +615,214 @@ TEST(UndoTests, UnstructuredGrid)
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_EQ(committedCount, 0);
     EXPECT_EQ(restoredCount, 0);
+}
+
+TEST(UndoTests, UnstructuredGridConnection)
+{
+    const int clg1SizeX = 4;
+    const int clg1SizeY = 4;
+    const int clg2SizeX = 3;
+    const int clg2SizeY = 9;
+    const double clg1DeltaX = 4.0;
+    const double clg1DeltaY = 4.0;
+    const double clg2DeltaX = 1.0;
+    const double clg2DeltaY = 1.0;
+
+    const double clg1OriginX = 0.0;
+    const double clg1OriginY = 0.0;
+    const double clg2OriginX = static_cast<double>(clg1SizeX - 1) * clg1DeltaX;
+    const double clg2OriginY = 0.0;
+
+    int meshKernelId1 = mkapi::mkernel_get_null_identifier();
+    int meshKernelId2 = mkapi::mkernel_get_null_identifier();
+
+    int errorCode;
+
+    // Clear the meshkernel state and undo stack before starting the test.
+    errorCode = mkapi::mkernel_clear_state();
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    errorCode = mkapi::mkernel_allocate_state(0, meshKernelId1);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    errorCode = mkapi::mkernel_allocate_state(0, meshKernelId2);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    // Generate the curvilinear grids, later to be converted to unstructured grids
+    errorCode = GenerateCurvilinearMesh(meshKernelId1, clg1SizeX, clg1SizeY, clg1DeltaX, clg1DeltaY, clg1OriginX, clg1OriginY);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    errorCode = GenerateCurvilinearMesh(meshKernelId2, clg2SizeX, clg2SizeY, clg2DeltaX, clg2DeltaY, clg2OriginX, clg2OriginY);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    // Convert the curvilinear grid id1 to an unstructured grid.
+    errorCode = mkapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId1);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    // Convert the curvilinear grid id2 to an unstructured grid.
+    errorCode = mkapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId2);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    //--------------------------------
+
+    // insert node to mesh1
+    int newNodeId;
+    errorCode = mkapi::mkernel_mesh2d_insert_node(meshKernelId1, 0.5, 0.5, newNodeId);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    int node1 = mkapi::mkernel_get_null_identifier();
+    int node2 = mkapi::mkernel_get_null_identifier();
+    int node3 = mkapi::mkernel_get_null_identifier();
+    int node4 = mkapi::mkernel_get_null_identifier();
+
+    mkapi::BoundingBox boundingBox{-0.1, -0.1, 1.1, 1.1};
+
+    errorCode = mkapi::mkernel_mesh2d_get_location_index(meshKernelId1, 0.0, 0.0,
+                                                         1 /*Location::Node*/,
+                                                         boundingBox,
+                                                         node1);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    errorCode = mkapi::mkernel_mesh2d_get_location_index(meshKernelId1, 1.0, 0.0,
+                                                         1 /*Location::Node*/,
+                                                         boundingBox,
+                                                         node2);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    errorCode = mkapi::mkernel_mesh2d_get_location_index(meshKernelId1, 1.0, 1.0,
+                                                         1 /*Location::Node*/,
+                                                         boundingBox,
+                                                         node3);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    errorCode = mkapi::mkernel_mesh2d_get_location_index(meshKernelId1, 0.0, 1.0,
+                                                         1 /*Location::Node*/,
+                                                         boundingBox,
+                                                         node4);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    int edge1 = mkapi::mkernel_get_null_identifier();
+    int edge2 = mkapi::mkernel_get_null_identifier();
+    int edge3 = mkapi::mkernel_get_null_identifier();
+    int edge4 = mkapi::mkernel_get_null_identifier();
+
+    errorCode = mkapi::mkernel_mesh2d_insert_edge(meshKernelId1, node1, newNodeId, edge1);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    errorCode = mkapi::mkernel_mesh2d_insert_edge(meshKernelId1, node2, newNodeId, edge2);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    errorCode = mkapi::mkernel_mesh2d_insert_edge(meshKernelId1, node3, newNodeId, edge3);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    errorCode = mkapi::mkernel_mesh2d_insert_edge(meshKernelId1, node4, newNodeId, edge4);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    // now, 5 undos to remove the added edges and inserted nodes.
+
+    for (int i = 1; i <= 5; ++i)
+    {
+        bool didUndo = false;
+        int undoId = mkapi::mkernel_get_null_identifier();
+
+        // Undo the deallocation
+        errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
+        ASSERT_EQ(mk::ExitCode::Success, errorCode);
+        EXPECT_TRUE(didUndo);
+        EXPECT_EQ(undoId, meshKernelId1);
+    }
+
+    //--------------------------------
+    // Now the nodes and edges of meshKernelId1, should contain holes from the undoing above.
+
+    mkapi::Mesh2D mesh2d{};
+    errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId1, mesh2d);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    std::vector<double> xNodes(mesh2d.num_nodes);
+    std::vector<double> yNodes(mesh2d.num_nodes);
+    std::vector<int> edges(2 * mesh2d.num_edges);
+
+    mesh2d.node_x = xNodes.data();
+    mesh2d.node_y = yNodes.data();
+    mesh2d.edge_nodes = edges.data();
+
+    errorCode = mkapi::mkernel_mesh2d_get_node_edge_data(meshKernelId1, mesh2d);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    errorCode = mkapi::mkernel_mesh2d_connect_meshes(meshKernelId2, mesh2d, 0.1);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId2, mesh2d);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    std::vector<double> xNodesConnected(mesh2d.num_nodes);
+    std::vector<double> yNodesConnected(mesh2d.num_nodes);
+    std::vector<int> edgesConnected(2 * mesh2d.num_edges);
+
+    mesh2d.node_x = xNodesConnected.data();
+    mesh2d.node_y = yNodesConnected.data();
+    mesh2d.edge_nodes = edgesConnected.data();
+
+    errorCode = mkapi::mkernel_mesh2d_get_node_edge_data(meshKernelId2, mesh2d);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    const double nullValue = mk::constants::missing::doubleValue;
+
+    std::vector<double> expectedNodesConnectedX{12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0,
+                                                12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 0.0, 4.0, 8.0,
+                                                nullValue, 0.0, 4.0, 8.0, nullValue, 0.0, 4.0, 8.0, nullValue, 0.0, 4.0, 8.0, 12.0, 8.0, 8.0};
+
+    std::vector<double> expectedNodesConnectedY{0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0,
+                                                5.0, 5.0, 5.0, 6.0, 6.0, 6.0, 7.0, 7.0, 7.0, 8.0, 8.0, 8.0, 0.0, 0.0, 0.0,
+                                                nullValue, 4.0, 4.0, 4.0, nullValue, 8.0, 8.0, 8.0, nullValue, 12.0, 12.0, 12.0, 12.0, 2.0, 6.0};
+
+    ASSERT_EQ(mesh2d.num_nodes, 45);
+    ASSERT_EQ(mesh2d.num_edges, 84);
+
+    for (size_t i = 0; i < static_cast<size_t>(mesh2d.num_nodes); ++i)
+    {
+        EXPECT_EQ(expectedNodesConnectedX[i], xNodesConnected[i]);
+        EXPECT_EQ(expectedNodesConnectedY[i], yNodesConnected[i]);
+    }
+
+    //--------------------------------
+    // Undo the connection
+
+    bool didUndo = false;
+    int undoId = mkapi::mkernel_get_null_identifier();
+
+    errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+    EXPECT_EQ(undoId, meshKernelId2);
+
+    std::vector<double> xNodesDisconnected(mesh2d.num_nodes);
+    std::vector<double> yNodesDisconnected(mesh2d.num_nodes);
+    std::vector<int> edgesDisconnected(2 * mesh2d.num_edges);
+
+    errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId2, mesh2d);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    mesh2d.node_x = xNodesDisconnected.data();
+    mesh2d.node_y = yNodesDisconnected.data();
+    mesh2d.edge_nodes = edgesDisconnected.data();
+
+    errorCode = mkapi::mkernel_mesh2d_get_node_edge_data(meshKernelId2, mesh2d);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    ASSERT_EQ(mesh2d.num_nodes, clg2SizeX * clg2SizeY /* 27 */);
+    ASSERT_EQ(mesh2d.num_edges, (clg2SizeX - 1) * clg2SizeY + clg2SizeX * (clg2SizeY - 1) /* 42 */);
+
+    std::vector<double> expectedNodesDisconnectedX{12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0,
+                                                   12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0,
+                                                   12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0};
+    std::vector<double> expectedNodesDisconnectedY{0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0,
+                                                   3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 5.0, 5.0, 5.0,
+                                                   6.0, 6.0, 6.0, 7.0, 7.0, 7.0, 8.0, 8.0, 8.0};
+
+    for (size_t i = 0; i < static_cast<size_t>(mesh2d.num_nodes); ++i)
+    {
+        EXPECT_EQ(expectedNodesDisconnectedX[i], xNodesDisconnected[i]);
+        EXPECT_EQ(expectedNodesDisconnectedY[i], yNodesDisconnected[i]);
+    }
 }
 
 // TODO
