@@ -190,6 +190,20 @@ bool CompareUnstructuredGrids(const int meshKernelId1, const int meshKernelId2)
     return true;
 }
 
+bool CheckUndoStateCount(const int meshKernelId, const int expectedCommitted, const int expectedRestored)
+{
+    int committedCount;
+    int restoredCount;
+    int errorCode = mkapi::mkernel_undo_state_count_for_id(meshKernelId, committedCount, restoredCount);
+
+    if (errorCode != mk::ExitCode::Success)
+    {
+        return false;
+    }
+
+    return committedCount == expectedCommitted && restoredCount == expectedRestored;
+}
+
 TEST(UndoTests, BasicAllocationDeallocationTest)
 {
 
@@ -523,14 +537,9 @@ TEST(UndoTests, UnstructuredGrid)
 
     bool didUndo = false;
     int undoId = mkapi::mkernel_get_null_identifier();
-    int committedCount = 0;
-    int restoredCount = 0;
 
-    errorCode = mkapi::mkernel_undo_state_count_for_id(meshKernelId2, committedCount, restoredCount);
-    ASSERT_EQ(mk::ExitCode::Success, errorCode);
     // 1. Creation of CLG, 2. conversion to unstructured, and 3. mesh2d_set
-    EXPECT_EQ(committedCount, 3);
-    EXPECT_EQ(restoredCount, 0);
+    EXPECT_TRUE(CheckUndoStateCount(meshKernelId2, 3, 0));
 
     // Undo the mesh2d_set
     errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
@@ -616,18 +625,12 @@ TEST(UndoTests, UnstructuredGrid)
     errorCode = mkapi::mkernel_expunge_state(meshKernelId2);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     // The mesh kernel state object and all undo information should have be removed.
-    errorCode = mkapi::mkernel_undo_state_count_for_id(meshKernelId2, committedCount, restoredCount);
-    ASSERT_EQ(mk::ExitCode::Success, errorCode);
-    EXPECT_EQ(committedCount, 0);
-    EXPECT_EQ(restoredCount, 0);
+    EXPECT_TRUE(CheckUndoStateCount(meshKernelId2, 0, 0));
 
     errorCode = mkapi::mkernel_expunge_state(meshKernelId1);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     // The mesh kernel state object and all undo information should have be removed.
-    errorCode = mkapi::mkernel_undo_state_count_for_id(meshKernelId1, committedCount, restoredCount);
-    ASSERT_EQ(mk::ExitCode::Success, errorCode);
-    EXPECT_EQ(committedCount, 0);
-    EXPECT_EQ(restoredCount, 0);
+    EXPECT_TRUE(CheckUndoStateCount(meshKernelId1, 0, 0));
 }
 
 TEST(UndoTests, UnstructuredGridConnection)
@@ -652,7 +655,6 @@ TEST(UndoTests, UnstructuredGridConnection)
     int meshKernelId2 = mkapi::mkernel_get_null_identifier();
     // Will contain the same grid as meshKernelId2 so that it can be compared later
     int meshKernelId3 = mkapi::mkernel_get_null_identifier();
-
     int errorCode;
 
     // Clear the meshkernel state and undo stack before starting the test.
@@ -741,8 +743,11 @@ TEST(UndoTests, UnstructuredGridConnection)
     errorCode = mkapi::mkernel_mesh2d_insert_edge(meshKernelId1, node4, newNodeId, edge4);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
-    // now, 5 undos to remove the adding of 4 edges and 1 inserted node.
+    // 7 undo actions
+    // 1 creation, 1 conversion, 1 insert node and 4 insert edges
+    EXPECT_TRUE(CheckUndoStateCount(meshKernelId1, 7, 0));
 
+    // now, 5 undos to remove. The adding of 4 edges and 1 inserted node.
     for (int i = 1; i <= 5; ++i)
     {
         bool didUndo = false;
@@ -754,6 +759,9 @@ TEST(UndoTests, UnstructuredGridConnection)
         EXPECT_TRUE(didUndo);
         EXPECT_EQ(undoId, meshKernelId1);
     }
+
+    EXPECT_TRUE(CheckUndoStateCount(meshKernelId1, 2, 5));
+    EXPECT_TRUE(CheckUndoStateCount(meshKernelId2, 2, 0));
 
     //--------------------------------
     // Now the nodes and edges of meshKernelId1, should contain holes from the undoing above.
@@ -824,6 +832,9 @@ TEST(UndoTests, UnstructuredGridConnection)
     bool didUndo = false;
     int undoId = mkapi::mkernel_get_null_identifier();
 
+    EXPECT_TRUE(CheckUndoStateCount(meshKernelId1, 2, 5));
+    EXPECT_TRUE(CheckUndoStateCount(meshKernelId2, 3, 0));
+
     errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
@@ -875,6 +886,9 @@ TEST(UndoTests, UnstructuredGridConnection)
     EXPECT_TRUE(didUndo);
     EXPECT_EQ(undoId, meshKernelId2);
 
+    EXPECT_TRUE(CheckUndoStateCount(meshKernelId1, 2, 5));
+    EXPECT_TRUE(CheckUndoStateCount(meshKernelId2, 1, 2));
+
     // Check that the curvilienar grid match the original grid.
     EXPECT_TRUE(CompareCurvilinearGrids(meshKernelId2, meshKernelId3));
 
@@ -892,6 +906,9 @@ TEST(UndoTests, UnstructuredGridConnection)
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
     EXPECT_EQ(undoId, meshKernelId2);
+
+    EXPECT_TRUE(CheckUndoStateCount(meshKernelId1, 2, 5));
+    EXPECT_TRUE(CheckUndoStateCount(meshKernelId2, 3, 0));
 
     // Check the dimensions are correct
     errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId2, mesh2d);
@@ -913,4 +930,16 @@ TEST(UndoTests, UnstructuredGridConnection)
         EXPECT_EQ(expectedNodesConnectedX[i], xNodesConnected[i]);
         EXPECT_EQ(expectedNodesConnectedY[i], yNodesConnected[i]);
     }
+
+    //--------------------------------
+    // Finalise the test, remove all mesh kernel state objects and undo actions
+    errorCode = mkapi::mkernel_expunge_state(meshKernelId2);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    // The mesh kernel state object and all undo information should have be removed.
+    EXPECT_TRUE(CheckUndoStateCount(meshKernelId2, 0, 0));
+
+    errorCode = mkapi::mkernel_expunge_state(meshKernelId1);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    // The mesh kernel state object and all undo information should have be removed.
+    EXPECT_TRUE(CheckUndoStateCount(meshKernelId1, 0, 0));
 }
