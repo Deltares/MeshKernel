@@ -90,7 +90,7 @@ bool CompareCurvilinearGrids(const int meshKernelId1, const int meshKernelId2)
 
     for (int i = 0; i < curvilinearGrid1.num_n; ++i)
     {
-        for (int j = 0; j < curvilinearGrid1.num_n; ++j)
+        for (int j = 0; j < curvilinearGrid1.num_m; ++j)
         {
             if (curvilinearGrid1.node_x[count] != curvilinearGrid2.node_x[count] || curvilinearGrid1.node_y[count] != curvilinearGrid2.node_y[count])
             {
@@ -637,6 +637,8 @@ TEST(UndoTests, UnstructuredGridConnection)
 
     int meshKernelId1 = mkapi::mkernel_get_null_identifier();
     int meshKernelId2 = mkapi::mkernel_get_null_identifier();
+    // Will contain the same grid as meshKernelId2 so that it can be compared later
+    int meshKernelId3 = mkapi::mkernel_get_null_identifier();
 
     int errorCode;
 
@@ -650,11 +652,17 @@ TEST(UndoTests, UnstructuredGridConnection)
     errorCode = mkapi::mkernel_allocate_state(0, meshKernelId2);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
+    errorCode = mkapi::mkernel_allocate_state(0, meshKernelId3);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
     // Generate the curvilinear grids, later to be converted to unstructured grids
     errorCode = GenerateCurvilinearMesh(meshKernelId1, clg1SizeX, clg1SizeY, clg1DeltaX, clg1DeltaY, clg1OriginX, clg1OriginY);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     errorCode = GenerateCurvilinearMesh(meshKernelId2, clg2SizeX, clg2SizeY, clg2DeltaX, clg2DeltaY, clg2OriginX, clg2OriginY);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    errorCode = GenerateCurvilinearMesh(meshKernelId3, clg2SizeX, clg2SizeY, clg2DeltaX, clg2DeltaY, clg2OriginX, clg2OriginY);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     // Convert the curvilinear grid id1 to an unstructured grid.
@@ -847,6 +855,9 @@ TEST(UndoTests, UnstructuredGridConnection)
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
     EXPECT_EQ(undoId, meshKernelId2);
+
+    // Check that the curvilienar grid match the original grid.
+    EXPECT_TRUE(CompareCurvilinearGrids(meshKernelId2, meshKernelId3));
 
     didUndo = false;
     undoId = mkapi::mkernel_get_null_identifier();
