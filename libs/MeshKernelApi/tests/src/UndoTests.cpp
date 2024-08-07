@@ -628,9 +628,11 @@ TEST(UndoTests, UnstructuredGridConnection)
     const double clg2DeltaX = 1.0;
     const double clg2DeltaY = 1.0;
 
+    const double fraction = 2.0 * 0.015625;
+
     const double clg1OriginX = 0.0;
     const double clg1OriginY = 0.0;
-    const double clg2OriginX = static_cast<double>(clg1SizeX - 1) * clg1DeltaX;
+    const double clg2OriginX = static_cast<double>(clg1SizeX - 1) * clg1DeltaX + fraction * clg2DeltaX;
     const double clg2OriginY = 0.0;
 
     int meshKernelId1 = mkapi::mkernel_get_null_identifier();
@@ -770,6 +772,12 @@ TEST(UndoTests, UnstructuredGridConnection)
                                                 12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 0.0, 4.0, 8.0,
                                                 nullValue, 0.0, 4.0, 8.0, nullValue, 0.0, 4.0, 8.0, nullValue, 0.0, 4.0, 8.0, 12.0, 8.0, 8.0};
 
+    // Shift the nodes of subdomain 1 slightly to match the generated mesh
+    for (size_t i = 0; i < 27; ++i)
+    {
+        expectedNodesConnectedX[i] += fraction * clg2DeltaX;
+    }
+
     std::vector<double> expectedNodesConnectedY{0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 4.0, 4.0, 4.0,
                                                 5.0, 5.0, 5.0, 6.0, 6.0, 6.0, 7.0, 7.0, 7.0, 8.0, 8.0, 8.0, 0.0, 0.0, 0.0,
                                                 nullValue, 4.0, 4.0, 4.0, nullValue, 8.0, 8.0, 8.0, nullValue, 12.0, 12.0, 12.0, 12.0, 2.0, 6.0};
@@ -814,20 +822,65 @@ TEST(UndoTests, UnstructuredGridConnection)
     std::vector<double> expectedNodesDisconnectedX{12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0,
                                                    12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0,
                                                    12.0, 13.0, 14.0, 12.0, 13.0, 14.0, 12.0, 13.0, 14.0};
+
     std::vector<double> expectedNodesDisconnectedY{0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0,
                                                    3.0, 3.0, 3.0, 4.0, 4.0, 4.0, 5.0, 5.0, 5.0,
                                                    6.0, 6.0, 6.0, 7.0, 7.0, 7.0, 8.0, 8.0, 8.0};
+
+    // Shift the nodes of subdomain 1 slightly to match the generated mesh
+    for (size_t i = 0; i < expectedNodesDisconnectedX.size(); ++i)
+    {
+        expectedNodesDisconnectedX[i] += fraction * clg2DeltaX;
+    }
 
     for (size_t i = 0; i < static_cast<size_t>(mesh2d.num_nodes); ++i)
     {
         EXPECT_EQ(expectedNodesDisconnectedX[i], xNodesDisconnected[i]);
         EXPECT_EQ(expectedNodesDisconnectedY[i], yNodesDisconnected[i]);
     }
-}
 
-// TODO
-// add tests for
-// 1. check that the SetMesh2dApiNodeEdgeData is correct after undoing a mesh change.
-//    basically want to know if the correct nodes and edges (valid and invalid) are retrieved.
-//
-// 2. more combinations of mk api calls with undo.
+    didUndo = false;
+    undoId = mkapi::mkernel_get_null_identifier();
+
+    // Undo mesh conversion of curvilinear to mesh2d
+    errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+    EXPECT_EQ(undoId, meshKernelId2);
+
+    didUndo = false;
+    undoId = mkapi::mkernel_get_null_identifier();
+
+    // Redo mesh conversion of curvilinear to mesh2d
+    errorCode = mkapi::mkernel_redo_state(didUndo, undoId);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+    EXPECT_EQ(undoId, meshKernelId2);
+
+    // Redo connecting meshes
+    errorCode = mkapi::mkernel_redo_state(didUndo, undoId);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+    EXPECT_EQ(undoId, meshKernelId2);
+
+    // Check the dimensions are correct
+    errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId2, mesh2d);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    ASSERT_EQ(mesh2d.num_nodes, static_cast<int>(xNodesConnected.size()));
+    ASSERT_EQ(2 * mesh2d.num_edges, static_cast<int>(edgesConnected.size()));
+
+    mesh2d.node_x = xNodesConnected.data();
+    mesh2d.node_y = yNodesConnected.data();
+    mesh2d.edge_nodes = edgesConnected.data();
+
+    // Now check the data is correct
+    errorCode = mkapi::mkernel_mesh2d_get_node_edge_data(meshKernelId2, mesh2d);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    // The nodes should be same as above directly after connecting the meshes.
+    for (size_t i = 0; i < static_cast<size_t>(mesh2d.num_nodes); ++i)
+    {
+        EXPECT_EQ(expectedNodesConnectedX[i], xNodesConnected[i]);
+        EXPECT_EQ(expectedNodesConnectedY[i], yNodesConnected[i]);
+    }
+}
