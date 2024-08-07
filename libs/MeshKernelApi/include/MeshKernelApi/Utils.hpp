@@ -345,6 +345,18 @@ namespace meshkernelapi
     /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
     static void SetMesh2dApiNodeEdgeData(meshkernel::Mesh2D& mesh2d, Mesh2D& mesh2dApi)
     {
+        if (mesh2dApi.num_nodes != static_cast<int>(mesh2d.GetNumNodes()))
+        {
+            throw meshkernel::ConstraintError("The number of nodes in the mesh2d api structure does not equal the number of nodes in the grid, {} /= {}",
+                                              mesh2dApi.num_nodes, mesh2d.GetNumNodes());
+        }
+
+        if (mesh2dApi.num_edges != static_cast<int>(mesh2d.GetNumEdges()))
+        {
+            throw meshkernel::ConstraintError("The number of edges in the mesh2d api structure does not equal the number of edges in the grid, {} /= {}",
+                                              mesh2dApi.num_edges, mesh2d.GetNumEdges());
+        }
+
         for (meshkernel::UInt n = 0; n < mesh2d.GetNumNodes(); ++n)
         {
             mesh2dApi.node_x[n] = mesh2d.Node(n).x;

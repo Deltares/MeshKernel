@@ -1543,6 +1543,13 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_set(int meshKernelId, const Mesh2D& mesh2d);
 
+        /// @brief Snaps a mesh to a land boundary.
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] selectingPolygon The polygon where to perform the snapping
+        /// @param[in] landBoundaries   The input land boundaries
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_snap_to_landboundary(int meshKernelId, const GeometryList& selectingPolygon, const GeometryList& landBoundaries);
+
         /// @brief An-isotropically refines the elements along a row or column, given a starting edge
         ///
         /// Only quadrilateral elements will be refined.

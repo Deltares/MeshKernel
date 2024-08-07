@@ -18,7 +18,7 @@ void meshkernel::UndoActionStack::Add(UndoActionPtr&& action, const int actionId
         m_committed.emplace_back(std::move(action), actionId, info);
 
         // Clear the restored actions for this actionId.
-        // Adding a new undo action means that they cannot be re-done
+        // Adding a new undo action for an actionId, means that no action for this Id can be restored
         m_restored.remove_if([actionId](const UndoActionForMesh& undoAction)
                              { return undoAction.m_actionId == actionId; });
 
