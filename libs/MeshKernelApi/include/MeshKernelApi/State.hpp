@@ -140,6 +140,7 @@ namespace meshkernelapi
     static const std::string& toString(const MeshKernelState::CurrentState state);
 
 } // namespace meshkernelapi
+
 inline const std::string& meshkernelapi::toString(const MeshKernelState::CurrentState state)
 {
     static std::string uninitialisedStr = "Uninitialised";
