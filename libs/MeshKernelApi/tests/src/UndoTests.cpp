@@ -301,6 +301,12 @@ TEST(UndoTests, BasicAllocationDeallocationTest)
 
 TEST(UndoTests, CurvilinearGridManipulationTests)
 {
+    // set up
+    // 1. generate curvilienar grids
+    // 2. check sizes of generated CLG's
+    // 3. undo generation of mkId1, and check size of CLG's (should be null)
+    // 4. deallocate the state for mkId2.
+
     const int clg1Size = 4;
     const int clg2Size = 8;
 
@@ -380,6 +386,12 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
     EXPECT_EQ(curvilinearGrid.num_n, mkapi::mkernel_get_null_identifier());
     EXPECT_EQ(curvilinearGrid.num_m, mkapi::mkernel_get_null_identifier());
 
+    // Check size of meshKernelId1 is not touched
+    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinearGrid);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    EXPECT_EQ(curvilinearGrid.num_n, clg1Size);
+    EXPECT_EQ(curvilinearGrid.num_m, clg1Size);
+
     // Undo the deallocation or meshKernelId2
     errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
@@ -395,6 +407,12 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
     // Convert the curvilinear grid id2 to an unstructured grid.
     errorCode = mkapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId2);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    // Check size of meshKernelId1 is not touched
+    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinearGrid);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    EXPECT_EQ(curvilinearGrid.num_n, clg1Size);
+    EXPECT_EQ(curvilinearGrid.num_m, clg1Size);
 
     mkapi::Mesh2D mesh2d{};
     errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId2, mesh2d);
@@ -419,6 +437,12 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_EQ(mesh2d.num_nodes, mkapi::mkernel_get_null_identifier());
     EXPECT_EQ(mesh2d.num_edges, mkapi::mkernel_get_null_identifier());
+
+    // Check size of meshKernelId1 is not touched
+    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinearGrid);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    EXPECT_EQ(curvilinearGrid.num_n, clg1Size);
+    EXPECT_EQ(curvilinearGrid.num_m, clg1Size);
 
     // Finalise the test, remove all mesh kernel state objects and undo actions
     errorCode = mkapi::mkernel_expunge_state(meshKernelId2);
@@ -635,6 +659,20 @@ TEST(UndoTests, UnstructuredGrid)
 
 TEST(UndoTests, UnstructuredGridConnection)
 {
+    // setup
+    //   1. create curvilinear grids
+    //   2. convert CLG's to unstructured grids
+    // test
+    //   3. insert node into grid with mkId1, connect surrounding corner nodes to this new node (4 undo actions)
+    //   4. undo the connecting of the nodes and the node insertion (this is to create holes in the node and edge lists)
+    //   5. get the mesh data for mkId1
+    //   6. connect this mesh data to mkId2, and check result
+    //   7. undo connection, check the nodal values
+    //   8. undo conversion, mkId2 should now be as it were originally
+    //   9. redo conversion and connection, check the nodal values again
+    // finalise
+    //  10. remove all data from the api.
+
     const int clg1SizeX = 4;
     const int clg1SizeY = 4;
     const int clg2SizeX = 3;
