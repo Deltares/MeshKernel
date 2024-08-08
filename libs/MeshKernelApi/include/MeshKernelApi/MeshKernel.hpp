@@ -103,13 +103,18 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_redo_state(bool& redone, int& meshKernelId);
 
-        /// @brief Clear the undo state for all mesh kernel ids
+        /// @brief Clear all internal mesh kernel state and undo actions, no undo will be possible after this
+        /// @returns Error code
+        MKERNEL_API int mkernel_clear_state();
+
+        /// @brief Clear the undo state for all mesh kernel ids, no undo is possible after this
         /// @returns Error code
         MKERNEL_API int mkernel_clear_undo_state();
 
-        /// @brief Clear the undo state for particular mesh kernel id
+        /// @brief Clear the undo state for particular mesh kernel id, no undo for the id is possible after this
+        /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
-        MKERNEL_API int mkernel_clear_undo_state_for_mesh(int& meshKernelId);
+        MKERNEL_API int mkernel_clear_undo_state_for_id(int meshKernelId);
 
         /// @brief Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)
         ///
@@ -691,10 +696,6 @@ namespace meshkernelapi
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
         MKERNEL_API int mkernel_deallocate_state(int meshKernelId);
-
-        /// @brief Clear all internal mesh kernel state and undo actions, no undo will be possible after this
-        /// @returns Error code
-        MKERNEL_API int mkernel_clear_state();
 
         /// @brief Deallocate mesh state and remove it completely, no undo for this meshKernelId will be possible after expunging
         /// @param[in] meshKernelId The id of the mesh state

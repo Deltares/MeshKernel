@@ -89,6 +89,7 @@
 #include <MeshKernel/UndoActions/UndoActionStack.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
+#include <MeshKernelApi/MKStateUndoAction.hpp>
 #include <MeshKernelApi/MeshKernel.hpp>
 #include <MeshKernelApi/State.hpp>
 #include <MeshKernelApi/Utils.hpp>
@@ -98,62 +99,6 @@
 #include <cstring>
 #include <unordered_map>
 #include <vector>
-
-namespace meshkernelapi
-{
-
-    class MKStateUndoAction : public meshkernel::UndoAction
-    {
-    public:
-        /// @brief Allocate a CompoundUndoAction and return a unique_ptr to the newly create object.
-        static std::unique_ptr<MKStateUndoAction> Create(MeshKernelState& mkState)
-        {
-            return std::make_unique<MKStateUndoAction>(mkState);
-        }
-
-        MKStateUndoAction(MeshKernelState& mkState) : m_mkStateCopy(mkState)
-        {
-            m_mkState.m_mesh1d = mkState.m_mesh1d;
-            m_mkState.m_network1d = mkState.m_network1d;
-            m_mkState.m_mesh2d = mkState.m_mesh2d;
-            m_mkState.m_contacts = mkState.m_contacts;
-            m_mkState.m_curvilinearGrid = mkState.m_curvilinearGrid;
-            m_mkState.m_meshOrthogonalization = mkState.m_meshOrthogonalization;
-            m_mkState.m_curvilinearGridFromSplines = mkState.m_curvilinearGridFromSplines;
-            m_mkState.m_curvilinearGridOrthogonalization = mkState.m_curvilinearGridOrthogonalization;
-            m_mkState.m_curvilinearGridLineShift = mkState.m_curvilinearGridLineShift;
-            m_mkState.m_projection = mkState.m_projection;
-            m_mkState.m_state = mkState.m_state;
-        }
-
-    private:
-        void SwapContents()
-        {
-            std::swap(m_mkState.m_mesh1d, m_mkStateCopy.m_mesh1d);
-            std::swap(m_mkState.m_mesh2d, m_mkStateCopy.m_mesh2d);
-            std::swap(m_mkState.m_network1d, m_mkStateCopy.m_network1d);
-            std::swap(m_mkState.m_contacts, m_mkStateCopy.m_contacts);
-            std::swap(m_mkState.m_curvilinearGrid, m_mkStateCopy.m_curvilinearGrid);
-            std::swap(m_mkState.m_state, m_mkStateCopy.m_state);
-        }
-
-        /// @brief Commit undo action.
-        void DoCommit() override
-        {
-            SwapContents();
-        }
-
-        /// @brief Restore undo action
-        void DoRestore() override
-        {
-            SwapContents();
-        }
-
-        MeshKernelState m_mkState;
-        MeshKernelState& m_mkStateCopy;
-    };
-
-} // namespace meshkernelapi
 
 namespace meshkernelapi
 {
@@ -401,7 +346,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_clear_undo_state_for_mesh(int meshKernelId)
+    MKERNEL_API int mkernel_clear_undo_state_for_id(int meshKernelId)
     {
         lastExitCode = meshkernel::ExitCode::Success;
 

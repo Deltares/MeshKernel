@@ -46,6 +46,7 @@ int GenerateCurvilinearMesh(const int meshKernelId, const int nodes, const doubl
 // Helper function to compare two curvilinear grids
 bool CompareCurvilinearGrids(const int meshKernelId1, const int meshKernelId2)
 {
+
     mkapi::CurvilinearGrid curvilinearGrid1{};
     int errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinearGrid1);
 
@@ -115,6 +116,7 @@ bool CompareCurvilinearGrids(const int meshKernelId1, const int meshKernelId2)
 // Helper function to compare two unstructured grids
 bool CompareUnstructuredGrids(const int meshKernelId1, const int meshKernelId2)
 {
+
     mkapi::Mesh2D grid1{};
     int errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId1, grid1);
 
