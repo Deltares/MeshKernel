@@ -356,6 +356,12 @@ namespace meshkernel
         /// @returns The resulting mesh
         Mesh& operator+=(Mesh const& rhs);
 
+        /// @brief Add meshes: result is a mesh composed of the additions
+        /// firstMesh += secondmesh results in the second mesh being added to firstMesh
+        /// @param[in] rhs The mesh to add
+        /// @returns The undo action
+        std::unique_ptr<UndoAction> Join(const Mesh& rhs);
+
         /// @brief Get the mapping/indexing from the node array mapped to valid nodes
         std::vector<UInt> GetValidNodeMapping() const;
 

@@ -1680,4 +1680,48 @@ namespace meshkernel
         }
     }
 
+    void Print(const std::vector<double>& xNodes,
+               const std::vector<double>& yNodes,
+               const std::vector<int>& edges,
+               std::ostream& out)
+    {
+        out << "nullId = " << constants::missing::uintValue << ";" << std::endl;
+        out << "nullValue = " << constants::missing::doubleValue << ";" << std::endl;
+        out << "nodex = nullValue * ones ( " << xNodes.size() << ", 1);" << std::endl;
+        out << "nodey = nullValue * ones ( " << yNodes.size() << ", 1);" << std::endl;
+        out << "edges = " << constants::missing::uintValue << " * ones ( " << edges.size() / 2 << ", 2);" << std::endl;
+
+        for (UInt i = 0; i < xNodes.size(); ++i)
+        {
+            if (xNodes[i] != constants::missing::doubleValue)
+            {
+                out << "nodex (" << i + 1 << " ) = " << xNodes[i] << ";" << std::endl;
+            }
+        }
+
+        for (UInt i = 0; i < yNodes.size(); ++i)
+        {
+            if (yNodes[i] != constants::missing::doubleValue)
+            {
+                out << "nodey (" << i + 1 << " ) = " << yNodes[i] << ";" << std::endl;
+            }
+        }
+
+        for (UInt i = 0; i < edges.size() / 2; ++i)
+        {
+            if (edges[2 * i] != constants::missing::intValue &&
+                edges[2 * i + 1] != constants::missing::intValue &&
+                edges[2 * i] != -1 &&
+                edges[2 * i + 1] != -1 &&
+                xNodes[edges[2 * i]] != constants::missing::doubleValue &&
+                xNodes[edges[2 * i + 1]] != constants::missing::doubleValue &&
+                yNodes[edges[2 * i]] != constants::missing::doubleValue &&
+                yNodes[edges[2 * i + 1]] != constants::missing::doubleValue)
+            {
+                out << "edges ( " << i + 1 << ", 1 ) = " << edges[2 * i] + 1 << ";" << std::endl;
+                out << "edges ( " << i + 1 << ", 2 ) = " << edges[2 * i + 1] + 1 << ";" << std::endl;
+            }
+        }
+    }
+
 } // namespace meshkernel

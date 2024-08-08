@@ -80,6 +80,62 @@ CurvilinearGrid::CurvilinearGrid(lin_alg::Matrix<Point>&& grid, Projection proje
     SetGridNodes(std::move(grid));
 }
 
+CurvilinearGrid& CurvilinearGrid::operator=(CurvilinearGrid&& copy) noexcept
+{
+    if (this != &copy)
+    {
+        m_projection = copy.m_projection;
+        m_gridNodes = std::move(copy.m_gridNodes);
+        m_gridFacesMask = std::move(copy.m_gridFacesMask);
+        m_gridNodesTypes = std::move(copy.m_gridNodesTypes);
+        m_gridIndices = std::move(copy.m_gridIndices);
+
+        m_nodesRTreeRequiresUpdate = copy.m_nodesRTreeRequiresUpdate;
+        m_edgesRTreeRequiresUpdate = copy.m_edgesRTreeRequiresUpdate;
+        m_facesRTreeRequiresUpdate = copy.m_facesRTreeRequiresUpdate;
+        m_RTrees = std::move(copy.m_RTrees);
+        m_boundingBoxCache = copy.m_boundingBoxCache;
+
+        m_edges = std::move(copy.m_edges);
+
+        m_startOffset = copy.m_startOffset;
+        m_endOffset = copy.m_endOffset;
+    }
+
+    return *this;
+}
+
+CurvilinearGrid& CurvilinearGrid::operator=(const CurvilinearGrid& copy)
+{
+    if (this != &copy)
+    {
+        m_projection = copy.m_projection;
+        m_gridNodes = copy.m_gridNodes;
+        m_gridFacesMask = copy.m_gridFacesMask;
+        m_gridNodesTypes = copy.m_gridNodesTypes;
+        m_gridIndices = copy.m_gridIndices;
+
+        m_nodesRTreeRequiresUpdate = true;
+        m_edgesRTreeRequiresUpdate = true;
+        m_facesRTreeRequiresUpdate = true;
+
+        m_RTrees.emplace(Location::Nodes, RTreeFactory::Create(m_projection));
+        m_RTrees.emplace(Location::Edges, RTreeFactory::Create(m_projection));
+        m_RTrees.emplace(Location::Faces, RTreeFactory::Create(m_projection));
+
+        m_boundingBoxCache = copy.m_boundingBoxCache;
+
+        m_edges = copy.m_edges;
+
+        m_startOffset = copy.m_startOffset;
+        m_endOffset = copy.m_endOffset;
+
+        SetGridNodes(m_gridNodes);
+    }
+
+    return *this;
+}
+
 void CurvilinearGrid::SetGridNodes(const lin_alg::Matrix<Point>& gridNodes)
 {
     if (gridNodes.rows() <= 1 || gridNodes.cols() <= 1)

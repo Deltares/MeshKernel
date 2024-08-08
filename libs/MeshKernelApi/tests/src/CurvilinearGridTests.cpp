@@ -1297,10 +1297,12 @@ TEST(CurvilinearGrid, SnapToLandBoundary)
     // Now undo snapping.
 
     bool didUndoOfDeleteNode = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
-    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfDeleteNode);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfDeleteNode, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfDeleteNode);
+    ASSERT_EQ(meshKernelId, undoId);
 
     errorCode = mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -1413,10 +1415,12 @@ TEST(CurvilinearGrid, SnapToSpline)
     // Now undo snapping.
 
     bool didUndoOfDeleteNode = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
-    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfDeleteNode);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfDeleteNode, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfDeleteNode);
+    ASSERT_EQ(meshKernelId, undoId);
 
     errorCode = mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);

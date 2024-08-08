@@ -6,6 +6,7 @@
 #include "MeshKernel/UndoActions/AddNodeAction.hpp"
 #include "MeshKernel/UndoActions/DeleteEdgeAction.hpp"
 #include "MeshKernel/UndoActions/DeleteNodeAction.hpp"
+#include "MeshKernel/UndoActions/NoActionUndo.hpp"
 #include "MeshKernel/UndoActions/ResetEdgeAction.hpp"
 #include "MeshKernel/UndoActions/ResetNodeAction.hpp"
 #include "MeshKernel/UndoActions/UndoActionStack.hpp"
@@ -465,7 +466,7 @@ TEST(UndoTests, AddAndResetEdgeInMeshTestUsingStack)
 
     ////////////////////////////////
     // Restore the resetting of the edge
-    EXPECT_TRUE(undoActionStack.Undo());
+    EXPECT_TRUE(std::get<0>(undoActionStack.Undo()));
 
     EXPECT_EQ(mesh->GetNumEdges(), 5);
     EXPECT_EQ(mesh->GetNumValidEdges(), 5);
@@ -474,7 +475,7 @@ TEST(UndoTests, AddAndResetEdgeInMeshTestUsingStack)
 
     ////////////////////////////////
     // Remove the added edge
-    EXPECT_TRUE(undoActionStack.Undo());
+    EXPECT_TRUE(std::get<0>(undoActionStack.Undo()));
 
     EXPECT_EQ(mesh->GetNumEdges(), 5);
     EXPECT_EQ(mesh->GetNumValidEdges(), 4);
@@ -483,5 +484,40 @@ TEST(UndoTests, AddAndResetEdgeInMeshTestUsingStack)
 
     ////////////////////////////////
     // Nothing else to undo
-    EXPECT_FALSE(undoActionStack.Undo());
+    EXPECT_FALSE(std::get<0>(undoActionStack.Undo()));
+}
+
+TEST(UndoTests, AddNoActionUndoTest)
+{
+    auto mesh = MakeRectangularMeshForTesting(2, 2, 1.0, meshkernel::Projection::cartesian);
+    mk::UndoActionStack undoActionStack;
+
+    mk::UInt initialStart = 0;
+    mk::UInt initialEnd = 3;
+
+    // Connect diagonally opposite nodes
+    auto [edgeId, connectNodesAction] = mesh->ConnectNodes(initialStart, initialEnd);
+    undoActionStack.Add(std::move(connectNodesAction));
+
+    EXPECT_EQ(mesh->GetNumEdges(), 5);
+    EXPECT_EQ(mesh->GetNumValidEdges(), 5);
+    EXPECT_EQ(mesh->GetEdge(edgeId).first, initialStart);
+    EXPECT_EQ(mesh->GetEdge(edgeId).second, initialEnd);
+
+    // Add the no action undo
+    undoActionStack.Add(meshkernel::NoActionUndo::Create());
+
+    // Mesh should be same as before adding the action
+    EXPECT_EQ(mesh->GetNumEdges(), 5);
+    EXPECT_EQ(mesh->GetNumValidEdges(), 5);
+    EXPECT_EQ(mesh->GetEdge(edgeId).first, initialStart);
+    EXPECT_EQ(mesh->GetEdge(edgeId).second, initialEnd);
+
+    EXPECT_TRUE(std::get<0>(undoActionStack.Undo()));
+
+    // Mesh should be same as before undo
+    EXPECT_EQ(mesh->GetNumEdges(), 5);
+    EXPECT_EQ(mesh->GetNumValidEdges(), 5);
+    EXPECT_EQ(mesh->GetEdge(edgeId).first, initialStart);
+    EXPECT_EQ(mesh->GetEdge(edgeId).second, initialEnd);
 }

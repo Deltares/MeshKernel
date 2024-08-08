@@ -1011,6 +1011,13 @@ Mesh& Mesh::operator+=(Mesh const& rhs)
     return *this;
 }
 
+std::unique_ptr<meshkernel::UndoAction> Mesh::Join(const Mesh& rhs)
+{
+    std::unique_ptr<FullUnstructuredGridUndo> joinAction = FullUnstructuredGridUndo::Create(*this);
+    *this += rhs;
+    return joinAction;
+}
+
 meshkernel::UInt Mesh::GetNumValidNodes() const
 {
     return static_cast<UInt>(std::ranges::count_if(m_nodes, [](const Point& p)

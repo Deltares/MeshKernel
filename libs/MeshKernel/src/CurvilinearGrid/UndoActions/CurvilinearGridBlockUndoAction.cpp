@@ -8,6 +8,13 @@ std::unique_ptr<meshkernel::CurvilinearGridBlockUndoAction> meshkernel::Curvilin
     return std::make_unique<CurvilinearGridBlockUndoAction>(grid, startOffset, endOffset);
 }
 
+std::unique_ptr<meshkernel::CurvilinearGridBlockUndoAction> meshkernel::CurvilinearGridBlockUndoAction::Create(CurvilinearGrid& grid)
+{
+    return std::make_unique<CurvilinearGridBlockUndoAction>(grid,
+                                                            CurvilinearGridNodeIndices(0, 0),
+                                                            CurvilinearGridNodeIndices(grid.NumN() - 1, grid.NumM() - 1));
+}
+
 meshkernel::CurvilinearGridBlockUndoAction::CurvilinearGridBlockUndoAction(CurvilinearGrid& grid,
                                                                            const CurvilinearGridNodeIndices& startOffset,
                                                                            const CurvilinearGridNodeIndices& endOffset)
