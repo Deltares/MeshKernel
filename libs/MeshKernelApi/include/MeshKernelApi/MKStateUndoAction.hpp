@@ -36,7 +36,11 @@
 namespace meshkernelapi
 {
 
-    /// @brief
+    /// @brief Undo action for MeshKernelState.
+    ///
+    /// \note This is for creational api functions, such as mesh generation, mesh set, mesh conversion and state deallocate.
+    /// The undo action manages a reference to the active MeshKernelState and keeps a copy of the pointers.
+    /// When the pointer is updated in the mk api, undoing is achieved by swapping the pointers.
     class MKStateUndoAction : public meshkernel::UndoAction
     {
     public:
@@ -49,7 +53,7 @@ namespace meshkernelapi
         MKStateUndoAction(MeshKernelState& mkState);
 
     private:
-        /// @brief Swap the poitner in the active state (referred to by m_mkStateReference) with the copies of the pointers.
+        /// @brief Swap the pointer in the active state (referred to by m_mkStateReference) with the copies of the pointers.
         void SwapContents();
 
         /// @brief Commit undo action.
@@ -58,7 +62,7 @@ namespace meshkernelapi
         /// @brief Restore undo action
         void DoRestore() override;
 
-        /// \brief
+        /// \brief Keeps a copy of the MeshKernelState, so that the pointers can be swapped with the active MeshKernelState on undo and redo.
         MeshKernelState m_mkState;
 
         /// \brief Reference to the active MeshKernelState.
