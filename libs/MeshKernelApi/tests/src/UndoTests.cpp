@@ -906,7 +906,8 @@ TEST(UndoTests, UnstructuredGridConnection)
                                                    6.0, 6.0, 6.0, 7.0, 7.0, 7.0, 8.0, 8.0, 8.0};
 
     // Shift the nodes of subdomain 1 slightly to match the generated mesh
-    std::ranges::for_each (expectedNodesDisconnectedX, [fraction, clg2DeltaX](double& value){value += fraction * clg2DeltaX;});
+    std::ranges::for_each(expectedNodesDisconnectedX, [fraction, clg2DeltaX](double& value)
+                          { value += fraction * clg2DeltaX; });
 
     for (size_t i = 0; i < static_cast<size_t>(mesh2d.num_nodes); ++i)
     {
