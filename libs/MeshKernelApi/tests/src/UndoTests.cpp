@@ -670,7 +670,7 @@ TEST(UndoTests, UnstructuredGridConnection)
     //   1. create curvilinear grids
     //   2. convert CLG's to unstructured grids
     // test
-    //   3. insert node into grid with mkId1, connect surrounding corner nodes to this new node (4 undo actions)
+    //   3. insert node into grid with mkId1 (1 undo action), connect surrounding corner nodes to this new node (4 undo actions)
     //   4. undo the connecting of the nodes and the node insertion (this is to create holes in the node and edge lists)
     //   5. get the mesh data for mkId1
     //   6. connect this mesh data to mkId2, and check result
