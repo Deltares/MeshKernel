@@ -280,7 +280,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
             for (UInt nn = 0; nn < numEdges; nn++)
             {
                 const auto edgeIndex = m_mesh.m_nodesEdges[nearestPointIndex][nn];
-                if (m_mesh.IsEdgeOnBoundary(edgeIndex))
+                if (edgeIndex != constants::missing::uintValue && m_mesh.IsEdgeOnBoundary(edgeIndex))
                 {
                     numNodes++;
                     if (numNodes == 1)
