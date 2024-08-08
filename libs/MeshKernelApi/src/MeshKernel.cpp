@@ -738,9 +738,6 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            auto mk = meshKernelState[meshKernelId];
-
-            // TODO should it be an error if the this is not true, the mesh probably does not exist.
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() > 0)
             {
                 meshKernelState[meshKernelId].m_mesh2d->Administrate();

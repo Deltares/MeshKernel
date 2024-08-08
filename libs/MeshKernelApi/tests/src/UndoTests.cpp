@@ -203,12 +203,7 @@ bool CheckUndoStateCount(const int meshKernelId, const int expectedCommitted, co
     int restoredCount;
     int errorCode = mkapi::mkernel_undo_state_count_for_id(meshKernelId, committedCount, restoredCount);
 
-    if (errorCode != mk::ExitCode::Success)
-    {
-        return false;
-    }
-
-    return committedCount == expectedCommitted && restoredCount == expectedRestored;
+    return errorCode == mk::ExitCode::Success && committedCount == expectedCommitted && restoredCount == expectedRestored;
 }
 
 TEST(UndoTests, BasicAllocationDeallocationTest)
@@ -911,10 +906,7 @@ TEST(UndoTests, UnstructuredGridConnection)
                                                    6.0, 6.0, 6.0, 7.0, 7.0, 7.0, 8.0, 8.0, 8.0};
 
     // Shift the nodes of subdomain 1 slightly to match the generated mesh
-    for (size_t i = 0; i < expectedNodesDisconnectedX.size(); ++i)
-    {
-        expectedNodesDisconnectedX[i] += fraction * clg2DeltaX;
-    }
+    std::ranges::for_each (expectedNodesDisconnectedX, [fraction, clg2DeltaX](double& value){value += fraction * clg2DeltaX;});
 
     for (size_t i = 0; i < static_cast<size_t>(mesh2d.num_nodes); ++i)
     {

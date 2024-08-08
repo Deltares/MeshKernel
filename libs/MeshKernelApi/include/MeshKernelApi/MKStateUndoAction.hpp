@@ -50,7 +50,7 @@ namespace meshkernelapi
         /// @brief Constructor.
         ///
         /// Keeps a reference to the active MeshKernelState and copies its pointers
-        MKStateUndoAction(MeshKernelState& mkState);
+        explicit MKStateUndoAction(MeshKernelState& mkState);
 
     private:
         /// @brief Swap the pointer in the active state (referred to by m_mkStateReference) with the copies of the pointers.
