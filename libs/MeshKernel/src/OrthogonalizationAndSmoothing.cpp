@@ -186,7 +186,7 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 {
     const double max_aptf = std::max(m_orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary,
                                      m_orthogonalizationParameters.orthogonalization_to_smoothing_factor);
-#pragma omp parallel for
+    // #pragma omp parallel for
     for (int n = 0; n < static_cast<int>(m_mesh.GetNumNodes()); n++)
     {
         if ((m_mesh.m_nodesTypes[n] != 1 && m_mesh.m_nodesTypes[n] != 2) || m_mesh.m_nodesNumEdges[n] < 2)
@@ -235,7 +235,7 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 void OrthogonalizationAndSmoothing::Solve()
 {
 
-#pragma omp parallel for
+    // #pragma omp parallel for
     for (int n = 0; n < static_cast<int>(m_mesh.GetNumNodes()); n++)
     {
         UpdateNodeCoordinates(n);
@@ -369,6 +369,7 @@ void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(UInt nodeIndex)
     dx0 = (dx0 + m_compressedRhs[firstCacheIndex]) / increments[0];
     dy0 = (dy0 + m_compressedRhs[firstCacheIndex + 1]) / increments[1];
     constexpr double relaxationFactor = 0.75;
+
     if (m_mesh.m_projection == Projection::cartesian || m_mesh.m_projection == Projection::spherical)
     {
         const double x0 = m_mesh.Node(nodeIndex).x + dx0;
@@ -378,6 +379,7 @@ void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(UInt nodeIndex)
         m_orthogonalCoordinates[nodeIndex].x = relaxationFactor * x0 + relaxationFactorCoordinates * m_mesh.Node(nodeIndex).x;
         m_orthogonalCoordinates[nodeIndex].y = relaxationFactor * y0 + relaxationFactorCoordinates * m_mesh.Node(nodeIndex).y;
     }
+
     if (m_mesh.m_projection == Projection::sphericalAccurate)
     {
         const Point localPoint{relaxationFactor * dx0, relaxationFactor * dy0};
