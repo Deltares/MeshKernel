@@ -766,7 +766,48 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
     // generate samples in all polygons
     const std::vector<std::vector<Point>> generatedPoints = refinedPolygon->ComputePointsInPolygons();
 
+    // const std::vector<Point> generatedPoints{{0, 0},
+    //                                          {25, 5},
+    //                                          {50, 10},
+    //                                          {75, 15},
+    //                                          {100, 20},
+    //                                          {125, 35},
+    //                                          {150, 50},
+    //                                          {125, 58.3333333333333},
+    //                                          {100, 66.6666666666667},
+    //                                          {75, 75},
+    //                                          {51.25, 63.75},
+    //                                          {27.5, 52.5},
+    //                                          {3.75, 41.25},
+    //                                          {-20, 30},
+    //                                          {0, 0},
+    //                                          {9.00462962962963, 19.9768518518519},
+    //                                          {31.9476387410203, 28.4501242767884},
+    //                                          {82.3333333333333, 43.3333333333333},
+    //                                          {107.222222222222, 46.6666666666667},
+    //                                          {46.2847540890471, 43.5377413675673},
+    //                                          {64.3452293472389, 49.8170906660684},
+    //                                          {61.1796956144564, 29.8095313713066},
+    //                                          {96.0666216303159, 35.3766325677154},
+    //                                          {46.760955377349, 24.8874342873849}};
+
+    // std::cout.precision(15);
+
+    // for (size_t i = 0; i < generatedPoints[0].size(); ++i)
+    // {
+    //     std::cout << "{ " << generatedPoints[0][i].x << ", " << generatedPoints[0][i].y << " }, ";
+    // }
+
+    // std::cout << std::endl;
+
     meshkernel::Mesh2D mesh(generatedPoints[0], *refinedPolygon, Projection::cartesian);
+
+    for (size_t i = 0; i < mesh.GetNumNodes(); ++i)
+    {
+        std::cout << "{ " << mesh.Node(i).x << ", " << mesh.Node(i).y << " }, " << std::endl;
+    }
+
+    std::cout << std::endl;
 
     std::unique_ptr<LandBoundaries> boundary = std::make_unique<LandBoundaries>(refinedPolygonPoints, mesh, *refinedPolygon);
 
