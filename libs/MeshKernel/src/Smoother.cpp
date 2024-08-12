@@ -93,7 +93,10 @@ void Smoother::ComputeOperators()
 
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
-        if (m_mesh.m_nodesTypes[n] != 1 && m_mesh.m_nodesTypes[n] != 2 && m_mesh.m_nodesTypes[n] != 3 && m_mesh.m_nodesTypes[n] != 4)
+        std::cout << " m_mesh.m_nodesTypes[n] "<< n << " =  " << m_mesh.m_nodesTypes[n] << "  " << m_mesh.Node (n).x << ", " << m_mesh.Node (n).y << std::endl;
+
+
+        if (!m_mesh.IsValidNode (n) || (m_mesh.m_nodesTypes[n] != 1 && m_mesh.m_nodesTypes[n] != 2 && m_mesh.m_nodesTypes[n] != 3 && m_mesh.m_nodesTypes[n] != 4))
         {
             continue;
         }
@@ -120,7 +123,7 @@ void Smoother::ComputeWeights()
 
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
-        if (m_mesh.m_nodesTypes[n] != 1 && m_mesh.m_nodesTypes[n] != 2 && m_mesh.m_nodesTypes[n] != 4)
+        if (!m_mesh.IsValidNode (n) || (m_mesh.m_nodesTypes[n] != 1 && m_mesh.m_nodesTypes[n] != 2 && m_mesh.m_nodesTypes[n] != 4))
         {
             continue;
         }
@@ -151,7 +154,7 @@ void Smoother::ComputeWeights()
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
 
-        if (m_mesh.m_nodesNumEdges[n] < 2)
+        if (!m_mesh.IsValidNode (n) || m_mesh.m_nodesNumEdges[n] < 2)
             continue;
 
         // Internal nodes and boundary nodes
@@ -276,7 +279,14 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
         if (numFaceNodes == 3)
         {
             // for triangular faces
-            const auto nodeIndex = FindIndex(m_mesh.m_facesNodes[m_topologySharedFaces[currentTopology][f]], static_cast<UInt>(currentNode));
+            const auto nodeIndex = FindIndex(m_mesh.m_facesNodes[m_topologySharedFaces[currentTopology][f]], currentNode);
+
+            if (nodeIndex == constants::missing::uintValue)
+            {
+                [[maybe_unused]] int i;
+                i = 1;
+            }
+
             const auto nodeLeft = NextCircularBackwardIndex(nodeIndex, numFaceNodes);
             const auto nodeRight = NextCircularForwardIndex(nodeIndex, numFaceNodes);
 
@@ -727,6 +737,7 @@ void Smoother::ComputeNodeXiEta(UInt currentNode)
     {
         throw MeshGeometryError(currentNode, Location::Nodes, "Fatal error (phiTot=0)");
     }
+
 
     double phi0 = 0.0;
     double dPhi0 = 0.0;
