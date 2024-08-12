@@ -1149,16 +1149,6 @@ bool Mesh::IsValidEdge(const UInt edgeId) const
            m_nodes[m_edges[edgeId].first].IsValid() && m_nodes[m_edges[edgeId].second].IsValid();
 }
 
-bool Mesh::IsValidNode(const UInt nodeId) const
-{
-    if (nodeId >= m_edges.size())
-    {
-        throw ConstraintError("The edge index is out of bounds. {} >= {}.", nodeId, m_nodes.size());
-    }
-
-    return m_nodes[nodeId].IsValid();
-}
-
 void Mesh::BuildTree(Location location, const BoundingBox& boundingBox)
 {
     switch (location)

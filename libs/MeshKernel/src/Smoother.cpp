@@ -93,10 +93,8 @@ void Smoother::ComputeOperators()
 
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
-        std::cout << " m_mesh.m_nodesTypes[n] "<< n << " =  " << m_mesh.m_nodesTypes[n] << "  " << m_mesh.Node (n).x << ", " << m_mesh.Node (n).y << std::endl;
 
-
-        if (!m_mesh.IsValidNode (n) || (m_mesh.m_nodesTypes[n] != 1 && m_mesh.m_nodesTypes[n] != 2 && m_mesh.m_nodesTypes[n] != 3 && m_mesh.m_nodesTypes[n] != 4))
+        if (m_mesh.m_nodesTypes[n] != 1 && m_mesh.m_nodesTypes[n] != 2 && m_mesh.m_nodesTypes[n] != 3 && m_mesh.m_nodesTypes[n] != 4)
         {
             continue;
         }
@@ -123,7 +121,7 @@ void Smoother::ComputeWeights()
 
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
-        if (!m_mesh.IsValidNode (n) || (m_mesh.m_nodesTypes[n] != 1 && m_mesh.m_nodesTypes[n] != 2 && m_mesh.m_nodesTypes[n] != 4))
+        if (m_mesh.m_nodesTypes[n] != 1 && m_mesh.m_nodesTypes[n] != 2 && m_mesh.m_nodesTypes[n] != 4)
         {
             continue;
         }
@@ -154,7 +152,7 @@ void Smoother::ComputeWeights()
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
 
-        if (!m_mesh.IsValidNode (n) || m_mesh.m_nodesNumEdges[n] < 2)
+        if (m_mesh.m_nodesNumEdges[n] < 2)
             continue;
 
         // Internal nodes and boundary nodes
@@ -280,13 +278,6 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
         {
             // for triangular faces
             const auto nodeIndex = FindIndex(m_mesh.m_facesNodes[m_topologySharedFaces[currentTopology][f]], currentNode);
-
-            if (nodeIndex == constants::missing::uintValue)
-            {
-                [[maybe_unused]] int i;
-                i = 1;
-            }
-
             const auto nodeLeft = NextCircularBackwardIndex(nodeIndex, numFaceNodes);
             const auto nodeRight = NextCircularForwardIndex(nodeIndex, numFaceNodes);
 
@@ -738,7 +729,6 @@ void Smoother::ComputeNodeXiEta(UInt currentNode)
         throw MeshGeometryError(currentNode, Location::Nodes, "Fatal error (phiTot=0)");
     }
 
-
     double phi0 = 0.0;
     double dPhi0 = 0.0;
     double dPhi = 0.0;
@@ -885,8 +875,10 @@ void Smoother::Initialize()
     m_connectedNodes.resize(m_mesh.GetNumNodes());
     std::fill(m_connectedNodes.begin(), m_connectedNodes.end(), std::vector<UInt>(Mesh::m_maximumNumberOfConnectedNodes, 0));
 
+    m_sharedFacesCache.clear();
     m_sharedFacesCache.reserve(Mesh::m_maximumNumberOfEdgesPerNode);
 
+    m_connectedNodesCache.clear();
     m_connectedNodesCache.reserve(Mesh::m_maximumNumberOfConnectedNodes);
 
     m_faceNodeMappingCache.resize(Mesh::m_maximumNumberOfConnectedNodes);
@@ -900,6 +892,17 @@ void Smoother::Initialize()
 
     m_nodeTopologyMapping.resize(m_mesh.GetNumNodes());
     std::fill(m_nodeTopologyMapping.begin(), m_nodeTopologyMapping.end(), constants::missing::uintValue);
+
+    //--------------------------------
+
+    m_topologyXi.clear();
+    m_topologyEta.clear();
+    m_topologySharedFaces.clear();
+    m_topologyFaceNodeMapping.clear();
+    m_topologyConnectedNodes.clear();
+
+    m_maximumNumConnectedNodes = 0;
+    m_maximumNumSharedFaces = 0;
 }
 
 void Smoother::AllocateNodeOperators(UInt topologyIndex)
