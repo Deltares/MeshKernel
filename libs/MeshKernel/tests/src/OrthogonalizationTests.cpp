@@ -832,8 +832,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
 
     for (meshkernel::UInt i = 0; i < mesh.GetNumNodes(); ++i)
     {
-        EXPECT_NEAR(expectedX[i], mesh.Node(i).x, tolerance);
-        EXPECT_NEAR(expectedY[i], mesh.Node(i).y, tolerance);
+        EXPECT_NEAR(expectedX[i], mesh.Node(i).x, tolerance) << " x-index " << i;
+        EXPECT_NEAR(expectedY[i], mesh.Node(i).y, tolerance) << " y-index " << i;
     }
 
     for (meshkernel::UInt i = 0; i < mesh.GetNumEdges(); ++i)
