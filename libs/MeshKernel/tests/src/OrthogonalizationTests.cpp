@@ -802,6 +802,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
 
     meshkernel::Mesh2D mesh(generatedPoints[0], *refinedPolygon, Projection::cartesian);
 
+    std::cout << "before orthogonalisation " << std::endl;
+
     for (meshkernel::UInt i = 0; i < mesh.GetNumNodes(); ++i)
     {
         std::cout << "{ " << mesh.Node(i).x << ", " << mesh.Node(i).y << " }, " << std::endl;
@@ -865,6 +867,15 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
         [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
         orthogonalization.Compute();
     }
+
+    std::cout << "after orthogonalisation " << std::endl;
+
+    for (meshkernel::UInt i = 0; i < mesh.GetNumNodes(); ++i)
+    {
+        std::cout << "{ " << mesh.Node(i).x << ", " << mesh.Node(i).y << " }, " << std::endl;
+    }
+
+    std::cout << std::endl;
 
     const double tolerance = 1.0e-10;
 
