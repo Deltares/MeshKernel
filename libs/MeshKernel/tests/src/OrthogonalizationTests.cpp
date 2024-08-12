@@ -653,10 +653,9 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
     }
 }
 
-TEST(OrthogonalizationAndSmoothing, RefineUndoTheOrthogonalise)
+TEST(OrthogonalizationAndSmoothing, RefineUndoThenOrthogonalise)
 {
     auto mesh = MakeRectangularMeshForTestingRand(20, 20, 1.0, Projection::cartesian);
-    std::cout.precision(20);
 
     const std::vector<meshkernel::Point> originalPoints = mesh->Nodes();
 
@@ -802,6 +801,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
 
     meshkernel::Mesh2D mesh(generatedPoints[0], *refinedPolygon, Projection::cartesian);
 
+    std::cout.precision(17);
     std::cout << "before orthogonalisation " << std::endl;
 
     for (meshkernel::UInt i = 0; i < mesh.GetNumNodes(); ++i)

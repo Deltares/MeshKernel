@@ -143,6 +143,7 @@ void OrthogonalizationAndSmoothing::PrepareOuterIteration()
     m_smoother->Compute();
 
     // allocate linear system for smoother and orthogonalizer
+    m_nodeCacheSize = 0;
     AllocateLinearSystem();
 
     // compute linear system terms for smoother and orthogonalizer
@@ -171,8 +172,11 @@ void OrthogonalizationAndSmoothing::AllocateLinearSystem()
         }
 
         m_compressedNodesNodes.resize(m_nodeCacheSize);
+        std::ranges::fill(m_compressedNodesNodes, 0);
         m_compressedWeightX.resize(m_nodeCacheSize);
+        std::ranges::fill(m_compressedWeightX, 0.0);
         m_compressedWeightY.resize(m_nodeCacheSize);
+        std::ranges::fill(m_compressedWeightY, 0.0);
     }
 }
 
@@ -186,7 +190,7 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 {
     const double max_aptf = std::max(m_orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary,
                                      m_orthogonalizationParameters.orthogonalization_to_smoothing_factor);
-    // #pragma omp parallel for
+#pragma omp parallel for
     for (int n = 0; n < static_cast<int>(m_mesh.GetNumNodes()); n++)
     {
         if ((m_mesh.m_nodesTypes[n] != 1 && m_mesh.m_nodesTypes[n] != 2) || m_mesh.m_nodesNumEdges[n] < 2)
@@ -197,7 +201,9 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
         const double atpfLoc = m_mesh.m_nodesTypes[n] == 2 ? max_aptf : m_orthogonalizationParameters.orthogonalization_to_smoothing_factor;
         const double atpf1Loc = 1.0 - atpfLoc;
         const auto maxnn = m_compressedStartNodeIndex[n] - m_compressedEndNodeIndex[n];
+
         auto cacheIndex = m_compressedEndNodeIndex[n];
+
         for (int nn = 1; nn < static_cast<int>(maxnn); nn++)
         {
             double wwx = 0.0;
@@ -235,7 +241,7 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 void OrthogonalizationAndSmoothing::Solve()
 {
 
-    // #pragma omp parallel for
+#pragma omp parallel for
     for (int n = 0; n < static_cast<int>(m_mesh.GetNumNodes()); n++)
     {
         UpdateNodeCoordinates(n);
