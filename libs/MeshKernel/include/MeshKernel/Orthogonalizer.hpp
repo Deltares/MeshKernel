@@ -27,6 +27,10 @@
 
 #pragma once
 
+#include <vector>
+
+#include "MeshKernel/Definitions.hpp"
+
 namespace meshkernel
 {
     class Mesh2D;
