@@ -143,7 +143,6 @@ void OrthogonalizationAndSmoothing::PrepareOuterIteration()
     m_smoother->Compute();
 
     // allocate linear system for smoother and orthogonalizer
-    m_nodeCacheSize = 0;
     AllocateLinearSystem();
 
     // compute linear system terms for smoother and orthogonalizer
