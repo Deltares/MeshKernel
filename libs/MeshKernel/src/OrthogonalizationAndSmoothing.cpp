@@ -152,6 +152,8 @@ void OrthogonalizationAndSmoothing::PrepareOuterIteration()
 void OrthogonalizationAndSmoothing::AllocateLinearSystem()
 {
     // reallocate caches
+    m_nodeCacheSize = 0;
+
     if (m_nodeCacheSize == 0)
     {
         m_compressedRhs.resize(m_mesh.GetNumNodes() * 2);

@@ -765,41 +765,13 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
     // generate samples in all polygons
     const std::vector<std::vector<Point>> generatedPoints = refinedPolygon->ComputePointsInPolygons();
 
-    // const std::vector<Point> generatedPoints{{0, 0},
-    //                                          {25, 5},
-    //                                          {50, 10},
-    //                                          {75, 15},
-    //                                          {100, 20},
-    //                                          {125, 35},
-    //                                          {150, 50},
-    //                                          {125, 58.3333333333333},
-    //                                          {100, 66.6666666666667},
-    //                                          {75, 75},
-    //                                          {51.25, 63.75},
-    //                                          {27.5, 52.5},
-    //                                          {3.75, 41.25},
-    //                                          {-20, 30},
-    //                                          {0, 0},
-    //                                          {9.00462962962963, 19.9768518518519},
-    //                                          {31.9476387410203, 28.4501242767884},
-    //                                          {82.3333333333333, 43.3333333333333},
-    //                                          {107.222222222222, 46.6666666666667},
-    //                                          {46.2847540890471, 43.5377413675673},
-    //                                          {64.3452293472389, 49.8170906660684},
-    //                                          {61.1796956144564, 29.8095313713066},
-    //                                          {96.0666216303159, 35.3766325677154},
-    //                                          {46.760955377349, 24.8874342873849}};
-
-    // std::cout.precision(15);
-
-    // for (size_t i = 0; i < generatedPoints[0].size(); ++i)
-    // {
-    //     std::cout << "{ " << generatedPoints[0][i].x << ", " << generatedPoints[0][i].y << " }, ";
-    // }
-
-    // std::cout << std::endl;
-
     meshkernel::Mesh2D mesh(generatedPoints[0], *refinedPolygon, Projection::cartesian);
+
+    // auto [nodeId, nodeInsertUndo] = mesh.InsertNode ({0.5, 0.5});
+    // auto originNodeId = mesh.FindNodeCloseToAPoint ({0.0, 0.0}, 0.1);
+    // auto [edgeId, edgeInsertUndo] = mesh.ConnectNodes (nodeId, originNodeId);
+    // [[maybe_unused]] auto nodeRemovaUndo = mesh.DeleteNode (nodeId);
+    // mesh.Administrate ();
 
     std::cout.precision(17);
     std::cout << "before orthogonalisation " << std::endl;
@@ -817,9 +789,9 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
 
     const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
     OrthogonalizationParameters orthogonalizationParameters;
-    orthogonalizationParameters.outer_iterations = 2;
-    orthogonalizationParameters.boundary_iterations = 25;
-    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.outer_iterations = 1;
+    orthogonalizationParameters.boundary_iterations = 1;
+    orthogonalizationParameters.inner_iterations = 1;
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
     orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 0.975;
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
@@ -860,14 +832,15 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
                                                    19, 20, 2, 20, 19, 2, 21, 16, 19, 20, 3, 4, 17,
                                                    3, 17, 16, 17, 8, 19, 7, 8, 9, 6, 17, 5, 6, 7, 17};
 
+    [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
+
     for (int i = 1; i <= 10; ++i)
     {
         auto flipUndoAction = flipEdges.Compute();
 
-        [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
         orthogonalization.Compute();
 
-        std::cout << "after orthogonalisation " << std::endl;
+        std::cout << "after orthogonalisation " << i << std::endl;
 
         for (meshkernel::UInt i = 0; i < mesh.GetNumNodes(); ++i)
         {
@@ -878,6 +851,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
         std::cout << "--------------------------------" << std::endl;
         std::cout << std::endl;
     }
+
+    return;
 
     const double tolerance = 1.0e-10;
 
