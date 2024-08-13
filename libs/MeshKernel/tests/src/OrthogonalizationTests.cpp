@@ -768,11 +768,11 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
     meshkernel::Mesh2D mesh(generatedPoints[0], *refinedPolygon, Projection::cartesian);
 
     // Create some gaps in the node and edge arrays
-    auto [nodeId, nodeInsertUndo] = mesh.InsertNode ({0.5, 0.5});
-    auto originNodeId = mesh.FindNodeCloseToAPoint ({0.0, 0.0}, 0.1);
-    [[maybe_unused]] auto [edgeId, edgeInsertUndo] = mesh.ConnectNodes (nodeId, originNodeId);
-    [[maybe_unused]] auto nodeRemovaUndo = mesh.DeleteNode (nodeId);
-    mesh.Administrate ();
+    auto [nodeId, nodeInsertUndo] = mesh.InsertNode({0.5, 0.5});
+    auto originNodeId = mesh.FindNodeCloseToAPoint({0.0, 0.0}, 0.1);
+    [[maybe_unused]] auto [edgeId, edgeInsertUndo] = mesh.ConnectNodes(nodeId, originNodeId);
+    [[maybe_unused]] auto nodeRemovaUndo = mesh.DeleteNode(nodeId);
+    mesh.Administrate();
 
     std::unique_ptr<LandBoundaries> boundary = std::make_unique<LandBoundaries>(refinedPolygonPoints, mesh, *refinedPolygon);
 
@@ -875,8 +875,8 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
 
     for (meshkernel::UInt i = 0; i < mesh.GetNumNodes(); ++i)
     {
-        EXPECT_NEAR(expectedX[i], mesh.Node(i).x, tolerance) << " x-index " << i;
-        EXPECT_NEAR(expectedY[i], mesh.Node(i).y, tolerance) << " y-index " << i;
+        EXPECT_NEAR(expectedX[i], mesh.Node(i).x, tolerance);
+        EXPECT_NEAR(expectedY[i], mesh.Node(i).y, tolerance);
     }
 
     for (meshkernel::UInt i = 0; i < mesh.GetNumEdges(); ++i)
