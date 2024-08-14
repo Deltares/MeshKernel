@@ -154,7 +154,6 @@ namespace meshkernel
         std::vector<Point> m_originalNodes;          ///< The original mesh
 
         // Linear system terms
-        UInt m_nodeCacheSize = 0;                     ///< Node cache size
         std::vector<UInt> m_compressedEndNodeIndex;   ///< Start index in m_compressedWeightX
         std::vector<UInt> m_compressedStartNodeIndex; ///< End index in m_compressedWeightY
         std::vector<double> m_compressedWeightX;      ///< The computed weights X

@@ -152,7 +152,6 @@ void OrthogonalizationAndSmoothing::PrepareOuterIteration()
 void OrthogonalizationAndSmoothing::AllocateLinearSystem()
 {
     // reallocate caches
-    m_nodeCacheSize = 0;
     m_compressedRhs.resize(m_mesh.GetNumNodes() * 2);
     std::fill(m_compressedRhs.begin(), m_compressedRhs.end(), 0.0);
 
@@ -162,18 +161,20 @@ void OrthogonalizationAndSmoothing::AllocateLinearSystem()
     m_compressedStartNodeIndex.resize(m_mesh.GetNumNodes());
     std::fill(m_compressedStartNodeIndex.begin(), m_compressedStartNodeIndex.end(), 0);
 
+    UInt nodeCacheSize = 0;
+
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
-        m_compressedEndNodeIndex[n] = m_nodeCacheSize;
-        m_nodeCacheSize += std::max(m_mesh.m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
-        m_compressedStartNodeIndex[n] = m_nodeCacheSize;
+        m_compressedEndNodeIndex[n] = nodeCacheSize;
+        nodeCacheSize += std::max(m_mesh.m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
+        m_compressedStartNodeIndex[n] = nodeCacheSize;
     }
 
-    m_compressedNodesNodes.resize(m_nodeCacheSize);
+    m_compressedNodesNodes.resize(nodeCacheSize);
     std::ranges::fill(m_compressedNodesNodes, 0);
-    m_compressedWeightX.resize(m_nodeCacheSize);
+    m_compressedWeightX.resize(nodeCacheSize);
     std::ranges::fill(m_compressedWeightX, 0.0);
-    m_compressedWeightY.resize(m_nodeCacheSize);
+    m_compressedWeightY.resize(nodeCacheSize);
     std::ranges::fill(m_compressedWeightY, 0.0);
 }
 
