@@ -1423,3 +1423,52 @@ TEST(CurvilinearGridFromSplines, GenerateGridWithHighRefinementFactor)
 
     EXPECT_THROW([[maybe_unused]] auto gridN = splinesToGrid.Compute(*splines, curvilinearParameters), mk::ConstraintError);
 }
+
+TEST(CurvilinearGridFromSplines, WTF)
+{
+    // Attempt to generate a grid with 4 splines forming a square
+    // with the refinement factor being too high
+    // Should raise a ConstraintError exception
+
+    namespace mk = meshkernel;
+    mk::CurvilinearParameters curvilinearParameters;
+    mk::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+
+    splinesToCurvilinearParameters.aspect_ratio = 0.1;
+    splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
+    splinesToCurvilinearParameters.average_width = 500.0;
+    splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
+    splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
+
+    splinesToCurvilinearParameters.check_front_collisions = 0;
+    splinesToCurvilinearParameters.grow_grid_outside = 0;
+    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = 1;
+    splinesToCurvilinearParameters.remove_skinny_triangles = 0;
+
+    curvilinearParameters.m_refinement = 20;
+    curvilinearParameters.n_refinement = 40;
+
+    std::vector<mk::Point> spline1{{-393.308358914916, 997.20779887993},
+                                   {170.716267339219, 137.209853898379}};
+
+    std::vector<mk::Point> spline2{{-457.528984676525, 349.417139023697},
+                                   {156.755261738869, 838.052335035942},
+                                   {528.118010708175, 1131.23345264329},
+                                   {1309.93432432777, 681.689072312023},
+                                   {1.360193944489029e+03, 7.174292466489187e+02},
+                                   // {1360.93432432777, 722.689072312023},
+                                   {1812.53052594036, 1039.09081568098},
+                                   {1862.79014610162, 1647.79065985623},
+                                   // {1940.97177746358, 1957.724984184},
+                                   {1940.97177746358, 1960.51718530407}};
+
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+    splines->AddSpline(spline1);
+    splines->AddSpline(spline2);
+
+    mk::CurvilinearGridFromSplines splinesToGrid(splines, curvilinearParameters, splinesToCurvilinearParameters);
+
+    [[maybe_unused]] auto grid = splinesToGrid.Compute();
+
+    meshkernel::Print(grid->ComputeNodes(), grid->ComputeEdges());
+}
