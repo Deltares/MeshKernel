@@ -80,6 +80,7 @@ void Splines::AddSpline(const std::vector<Point>& splines, UInt start, UInt size
     // compute second order derivatives
     m_splineDerivatives.emplace_back(ComputeSplineDerivative(splinesNodes));
     m_splinesLength.emplace_back(ComputeSplineLength(GetNumSplines() - 1, 0.0, static_cast<double>(size - 1)));
+    std::cout << "AddSpline: " << m_splinesLength.back() << std::endl;
 }
 
 std::vector<meshkernel::Point> Splines::ComputeSplineDerivative(const std::vector<Point>& splinesNodes)
@@ -409,6 +410,14 @@ double Splines::ComputeSplineLength(UInt index,
         leftPoint = rightPoint;
     }
 
+    // std::cout << "Splines::ComputeSplineLength: " << index << "   " << delta << "  "
+    //           << numSamples << "   "
+    //           << numPoints << "  "
+    //           << startAdimensionalCoordinate << "  "
+    //           << endAdimensionalCoordinate << "  "
+    //           << splineLength << "  "
+    //           << std::endl;
+
     return splineLength;
 }
 
@@ -435,6 +444,7 @@ Splines::ComputePointOnSplineFromAdimensionalDistance(UInt index,
         func.SetDimensionalDistance(distances[i]);
         adimensionalDistances[i] = FindFunctionRootWithGoldenSectionSearch(func, 0, static_cast<double>(numNodes) - 1.0);
         points[i] = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistances[i]);
+
         if (!points[i].IsValid())
         {
             throw AlgorithmError("Could not interpolate spline points.");
