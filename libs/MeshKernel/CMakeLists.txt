@@ -86,6 +86,11 @@ set(
 )
 
 set(
+  UTILITIES_SRC_LIST
+  ${UTILITIES_SRC_DIR}/Utilities.cpp
+)
+
+set(
   AVERAGING_STRATEGIES_SRC_LIST
   ${AVERAGING_STRATEGIES_SRC_DIR}/AveragingStrategyFactory.cpp
   ${AVERAGING_STRATEGIES_SRC_DIR}/ClosestAveragingStrategy.cpp
@@ -267,6 +272,7 @@ set(
   ${UTILITIES_INC_DIR}/RTree.hpp
   ${UTILITIES_INC_DIR}/RTreeBase.hpp
   ${UTILITIES_INC_DIR}/RTreeFactory.hpp
+  ${UTILITIES_INC_DIR}/Utilities.hpp
 )
 
 # add sources to target
@@ -361,6 +367,7 @@ source_group("Source Files/AveragingStrategies" FILES ${AVERAGING_STRATEGIES_SRC
 source_group("Source Files/CurvilinearGrid" FILES ${CURVILINEAR_GRID_SRC_LIST})
 source_group("Source Files/CurvilinearGrid/UndoActions" FILES ${CURVILINEAR_GRID_UNDO_ACTION_SRC_LIST})
 source_group("Source Files/UndoActions" FILES ${UNDO_SRC_LIST})
+source_group("Source Files/Utilities" FILES ${UTILITIES_SRC_LIST})
 
 # group the headers in IDE tree
 source_group("Header Files" FILES ${INC_LIST})

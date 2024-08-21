@@ -245,7 +245,11 @@ namespace meshkernelapi
 
         try
         {
-            std::tie(undone, meshKernelId) = meshKernelUndoStack.Undo();
+            if (auto undoOption = meshKernelUndoStack.Undo())
+            {
+                undone = true;
+                meshKernelId = *undoOption;
+            }
         }
         catch (...)
         {
@@ -306,7 +310,11 @@ namespace meshkernelapi
 
         try
         {
-            std::tie(redone, meshKernelId) = meshKernelUndoStack.Commit();
+            if (auto redoOption = meshKernelUndoStack.Commit())
+            {
+                redone = true;
+                meshKernelId = *redoOption;
+            }
         }
         catch (...)
         {

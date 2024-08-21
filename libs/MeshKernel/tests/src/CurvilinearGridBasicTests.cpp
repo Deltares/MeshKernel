@@ -836,11 +836,11 @@ TEST(CurvilinearBasicTests, CompoundTest)
     const std::vector<mk::Point> refinedPoints = grid->ComputeNodes();
 
     bool didUndo;
-    [[maybe_unused]] int actionId;
 
     do
     {
-        std::tie(didUndo, actionId) = undoActions.Undo();
+        auto undoOption = undoActions.Undo();
+        didUndo = static_cast<bool>(undoOption);
     } while (didUndo);
 
     constexpr double tolerance = 1.0e-12;
@@ -862,7 +862,8 @@ TEST(CurvilinearBasicTests, CompoundTest)
 
     do
     {
-        std::tie(didRedo, actionId) = undoActions.Commit();
+        auto redoOption = undoActions.Commit();
+        didRedo = static_cast<bool>(redoOption);
     } while (didRedo);
 
     // Points should be same as in the refined mesh after all actions have bene redone

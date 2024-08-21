@@ -65,42 +65,40 @@ meshkernel::UInt meshkernel::UndoActionStack::RestoredSize(const int actionId) c
     }
 }
 
-std::tuple<bool, int> meshkernel::UndoActionStack::Undo()
+std::optional<int> meshkernel::UndoActionStack::Undo()
 {
-    bool didUndo = false;
-    int actionId = constants::missing::intValue;
 
     if (!m_committed.empty())
     {
+        int actionId = constants::missing::intValue;
         // Perform undo operation
         m_committed.back().m_undoAction->Restore();
         actionId = m_committed.back().m_actionId;
         // Now move to restored stack
         m_restored.emplace_back(std::move(m_committed.back()));
         m_committed.pop_back();
-        didUndo = true;
+        return actionId;
     }
 
-    return {didUndo, actionId};
+    return std::nullopt;
 }
 
-std::tuple<bool, int> meshkernel::UndoActionStack::Commit()
+std::optional<int> meshkernel::UndoActionStack::Commit()
 {
-    bool didCommit = false;
-    int actionId = constants::missing::intValue;
 
     if (!m_restored.empty())
     {
+        int actionId = constants::missing::intValue;
         // Perform commit (redo) operation
         m_restored.back().m_undoAction->Commit();
         actionId = m_restored.back().m_actionId;
         // Now move to committed stack
         m_committed.emplace_back(std::move(m_restored.back()));
         m_restored.pop_back();
-        didCommit = true;
+        return actionId;
     }
 
-    return {didCommit, actionId};
+    return std::nullopt;
 }
 
 void meshkernel::UndoActionStack::Clear()
