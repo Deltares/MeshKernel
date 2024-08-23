@@ -1952,14 +1952,27 @@ TEST_F(CartesianApiTestFixture, Network1DComputeFixedChainages_ShouldGenerateMes
     double const fixedChainagesOffset = 10.0;
     std::vector<double> fixedChainages{5.0, separator, 5.0};
     errorCode = meshkernelapi::mkernel_network1d_compute_fixed_chainages(meshKernelId, fixedChainages.data(), fixedChainagesSize, minFaceSize, fixedChainagesOffset);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     // Convert network 1d to mesh1d
     errorCode = meshkernelapi::mkernel_network1d_to_mesh1d(meshKernelId, minFaceSize);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Asserts
     meshkernelapi::Mesh1D mesh1dResults;
     errorCode = mkernel_mesh1d_get_dimensions(meshKernelId, mesh1dResults);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_EQ(6, mesh1dResults.num_nodes);
     ASSERT_EQ(4, mesh1dResults.num_edges);
+
+    auto edge_nodes = std::vector<int>(mesh1dResults.num_edges * 2);
+    auto node_x = std::vector<double>(mesh1dResults.num_nodes);
+    auto node_y = std::vector<double>(mesh1dResults.num_nodes);
+    mesh1dResults.edge_nodes = edge_nodes.data();
+    mesh1dResults.node_x = node_x.data();
+    mesh1dResults.node_y = node_y.data();
+
+    errorCode = mkernel_mesh1d_get_data(meshKernelId, mesh1dResults);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
 TEST_F(CartesianApiTestFixture, Network1DToMesh1d_FromPolylines_ShouldGenerateMesh1D)

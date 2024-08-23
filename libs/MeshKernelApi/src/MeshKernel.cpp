@@ -721,6 +721,7 @@ namespace meshkernelapi
 
             meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh1d->Join(meshkernel::Mesh1D(*meshKernelState[meshKernelId].m_network1d, minFaceSize)),
                                     meshKernelId);
+            meshKernelState[meshKernelId].m_state = MeshKernelState::CurrentState::ValidMesh;
         }
         catch (...)
         {
