@@ -404,7 +404,7 @@ double Splines::ComputeSplineLength(UInt index,
         if (accountForCurvature)
         {
             const auto [normalVector, tangentialVector, computedCurvatureFactor] = ComputeCurvatureOnSplinePoint(index, 0.5 * (rightPointCoordinateOnSpline + leftPointCoordinateOnSpline));
-            curvatureFactor = computedCurvatureFactor;
+            curvatureFactor = 0.0 * computedCurvatureFactor; // 0.1 * computedCurvatureFactor / height;
         }
         splineLength = splineLength + ComputeDistance(leftPoint, rightPoint, m_projection) * (1.0 + curvatureFactor * height);
         leftPoint = rightPoint;

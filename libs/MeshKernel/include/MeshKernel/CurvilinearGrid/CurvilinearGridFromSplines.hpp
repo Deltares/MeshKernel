@@ -132,10 +132,24 @@ namespace meshkernel
         std::shared_ptr<Splines> m_splines; ///< A pointer to spline class instance
 
     private:
+        /// @brief Tolerance used throughout.
+        const double tolerance = 1e-8;
+
         /// @brief From the layerIndex index gets the next grid layerIndex and the transversal sublayer index (get_isub)
         /// @param[in] layerIndex The current grid layerIndex index
         /// @returns The next grid layerIndex and the sub layerIndex index
         std::tuple<UInt, UInt> ComputeGridLayerAndSubLayer(UInt layerIndex);
+
+        void GetNeighbouringLayerPoints(const std::vector<Point>& activeLayerPoints,
+                                        const UInt layerPoint,
+                                        UInt& layerPointLeft,
+                                        UInt& layerPointRight) const;
+
+        double ComputeMaximumTimeStep(const UInt layerIndex,
+                                      const std::vector<Point>& activeLayerPoints,
+                                      const std::vector<Point>& velocityVectorAtGridPoints,
+                                      const std::vector<Point>& frontVelocities,
+                                      const double timeStep) const;
 
         /// @brief Grow a layer starting from a given layer index
         void GrowLayer(UInt layerIndex);

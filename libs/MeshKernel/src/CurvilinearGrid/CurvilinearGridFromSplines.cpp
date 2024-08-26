@@ -103,8 +103,8 @@ namespace meshkernel
         Initialize();
 
         // Grow grid, from the second layer
-        for (auto layer = 1; layer <= 1; ++layer)
-        // for (auto layer = 1; layer <= m_curvilinearParameters.n_refinement; ++layer)
+        // for (auto layer = 1; layer <= 1; ++layer)
+        for (auto layer = 1; layer <= m_curvilinearParameters.n_refinement; ++layer)
         {
             Iterate(layer);
         }
@@ -646,6 +646,582 @@ namespace meshkernel
         return {gridLayer, subLayerIndex};
     }
 
+    void CurvilinearGridFromSplines::GetNeighbouringLayerPoints(const std::vector<Point>& activeLayerPoints,
+                                                                const UInt layerPoint,
+                                                                UInt& layerPointLeft,
+                                                                UInt& layerPointRight) const
+    {
+
+        const double dtolLR = 1.0e-4;
+
+        // Find left node
+        double dL1 = ComputeDistance(activeLayerPoints[i], activeLayerPoints[i + 1], m_splines->m_projection);
+
+        layerPointLeft = layerPoint;
+
+        while (ComputeDistance(activeLayerPoints[layerPointLeft], activeLayerPoints[layerPoint], m_splines->m_projection) < dtolLR)
+        {
+            if (layerPointLeft < 1)
+            {
+                break;
+            }
+
+            if (!activeLayerPoints[layerPointLeft - 1].IsValid())
+            {
+                break;
+            }
+
+            --layerPointLeft;
+        }
+
+        layerPointRight = layerPoint;
+
+        while (ComputeDistance(activeLayerPoints[layerPointRight], activeLayerPoints[layerPoint], m_splines->m_projection) < dtolLR)
+        {
+            if (layerPointRight > 1)
+            {
+                break;
+            }
+
+            if (!activeLayerPoints[layerPointRight + 1].IsValid())
+            {
+                break;
+            }
+
+            ++layerPointRight;
+        }
+    }
+
+    void rpoly() const
+    {
+        double are = std::numeric_limits<double>::epsilon();
+        double infinity = std::numeric_limits<double>::max();
+        double smalno = std::numeric_limits<double>::min();
+
+        double mre = are;
+        double lo = smalno / std::numeric_limits<double>::epsilon();
+
+        const double sqrtHalf = std::sqrt(0.5);
+        double yy = -sqrtHalf;
+
+        double cosr = -0.069756474;
+        double sinr = 0.99756405;
+
+        bool fail = false;
+
+        UInt n = static_cast<UInt>(coeffs.size() - 1);
+        UInt nn = n + 1;
+
+        if (coeffs[0] == 0.0)
+        {
+            fail = true;
+            // TODO add better error handling
+            return;
+        }
+
+        // This is probably incorrect.
+        while (coeffs[nn] == 0.0)
+        {
+            j = degree - n + 1;
+            realZeros[j] = 0.0;
+            imagZeros[j] = 0.0;
+            --nn;
+            --n;
+        }
+
+        std::array<double, 5> p;
+        p.fill(onstants::missing::doubleValue);
+        std::array<double, 5> qp(p);
+        std::array<double, 5> k(p);
+        std::array<double, 5> qk(p);
+        std::array<double, 5> svk(p);
+        std::array<double, 5> temp(p);
+        std::array<double, 5> pt(p);
+
+        std::copy_n(coeffs.begin(), nn, p.begin());
+        // p = coeffs;
+
+        if (n <= 2)
+        {
+            if (n < 1)
+            {
+                // Should set some parameters probably
+                return;
+            }
+
+            if (n != 2)
+            {
+                zeror[degree] = -p[1] / p[0];
+                zeroi[degree] = 0.0;
+                return;
+            }
+
+            SolveQuadratic(p[0], p[1], p[2], zeror[degree - 1], zeroi[degree - 1], zeror[degree], zeroi[degree]);
+            return;
+        }
+
+        double max = 0.0;
+        double min = infinity;
+
+        for (UInt i = 0; i < nn; ++i)
+        {
+            double x = std::abs(p(i));
+
+            if (x > max)
+            {
+                max = x;
+            }
+
+            if (x != 0.0 && x < min)
+            {
+                min = x;
+            }
+        }
+
+        double scaleFactor = lo / min;
+
+        if (scaleFactor <= 1.0)
+        {
+            if (max < 10.0)
+            {
+                goto label10;
+            }
+            if (scaleFactor == 0.0)
+            {
+                scaleFactor = smalno;
+            }
+        }
+        else
+        {
+            if (infinity / sc < max)
+            {
+                goto label10;
+            }
+        }
+
+        double l = std::log(sc) / stdd::log(2.0) + 0.5;
+        double factor = std::pow(2.0, l);
+
+        if (factor != 1.d0)
+        {
+            for (UInt i = 0; i < nn; ++i)
+            {
+                p[i] *= factor;
+            }
+        }
+
+    label10:
+
+        pt[nn] = -pt[nn];
+
+        double x = std::exp((std::log(-pt[nn]) - std::log(pt[0]) / static_cast<double>(n)));
+        double xm;
+
+        if (pt[n] != 0.0)
+        {
+            xm = -pt[nn] / pt[n];
+
+            if (xm < x)
+            {
+                x = xm;
+            }
+        }
+
+    label80:
+
+        xm = 0.1 * x;
+        double ff = pt[0];
+
+        for (UInt i = 1; i < nn; ++i)
+        {
+            ff = ff * xm + pt[i];
+        }
+
+        if (ff > 0.0)
+        {
+            x = xm;
+            goto label80;
+        }
+
+        double dx = x;
+
+        // do Newton iteration until x converges to two decimal places
+
+    label100:
+        if (std::abs(dx / x) > 0.005)
+        {
+            ff = pt[0];
+            df = ff;
+
+            for (UInt i = 1; i < n; ++i)
+            {
+                ff = ff * x + pt[i];
+                df = df * x + ff;
+            }
+
+            ff = ff * x + pt[nn];
+            dx = ff / df;
+            x - x - dx;
+            goto label100;
+        }
+
+        double bnd - x;
+
+        int nm1 = n - 1;
+
+        for (UInt i = 1; i < n; ++i)
+        {
+            k[i] = static_cast<double>(nn - i) * p[i] / static_cast<double>(n);
+        }
+
+        k[0] = p[0];
+        double aa = p[nn];
+        double bb = p[n];
+        bool zerok = (k[n] == 0.0);
+
+        for (UInt jj = 0; jj < 5; ++jj)
+        {
+            double cc = k[n];
+
+            if (!zerok)
+            {
+                // use scaled form of recurrence if value of k at 0 is nonzero
+                double t = -aa / cc;
+
+                for (UInt i = 0; i < nm1; ++i)
+                {
+                    int j = nn - i;
+                    k[j] = t * k[j - 1] + p[j];
+                }
+
+                k[0] = p[0];
+                zerok = (std::abs(k[n]) <= std::abs(bb) * eta * 10.0);
+            }
+            else
+            {
+                // use unscaled form of recurrence
+                for (UInt i = 0; i < nm1; ++i)
+                {
+                    int j = nn - i;
+                    k[j] = k[j - 1];
+                }
+
+                k[0] = 0.0;
+                zerok = (k[n] == 0.0);
+            }
+        }
+
+        // std::copy
+        for (UInt i = 0; i < n; ++i)
+        {
+            temp[i] = k[i];
+        }
+
+        // loop to select the quadratic corresponding to each new shift
+        for (UInt cnt = 0; cnt < 20; ++cnt)
+        {
+            // Quadratic corresponds to a double shift to a non-real point and its complex
+            // conjugate. The point has modulus bnd and amplitude rotated by 94 degrees
+            double xxx = cosr * xx - sinr * yy;
+            yy = sinr * xx + cosr * yy;
+            xx = xxx;
+            sr = bnd * xx;
+            si = bnd * yy;
+            u = -2.0 * sr;
+            v = bnd;
+
+            // second stage calculation, fixed quadratic
+            fxshfr(20 * cnt, nz);
+            if (nz != 0)
+            {
+                // The second stage jumps directly to one of the third stage iterations and
+                // returns here if successful.
+                // Deflate the polynomial, store the zero or zeros and return to the main
+                // algorithm.
+                int j = degree - n + 1;
+                zeror[j] = szr;
+                zeroi[j] = szi;
+                nn = nn - nz;
+                n = nn - 1;
+                for (UInt i = 1; i <= nn; ++i)
+                {
+                    p[i] = qp[i];
+                }
+                if (nz == 1)
+                    goto label30;
+                zeror[j + 1] = lzr;
+                zeroi[j + 1] = lzi;
+                goto label30;
+            }
+
+            // If the iteration is unsuccessful another quadratic
+            // is chosen after restoring k
+            for (UInt i = 1; i <= nn; ++i)
+            {
+                k[i] = temp[i];
+            }
+        }
+    label30: // Placeholder for label
+        // Return with failure if no convergence with 20 shifts
+        fail = true;
+        degree = degree - n;
+    }
+
+    std::array<double, 4> CurvilinearGridFromSplines::SolveQuartic(const std::array<double, 5>& coeffs) const
+    {
+        std::array<double, 4> roots;
+        roots.fill(constants::missing::doubleValue);
+
+        bool fail = true;
+        UInt degree = 4;
+
+        // Notice loop index in reverse and is 1 higher than required
+        for (UInt i = 4; i >= 1; --i)
+        {
+            degree = i;
+
+            if (std::abs(coeffs[i] < tolerance))
+            {
+                continue;
+            }
+        }
+
+        return roots;
+    }
+
+    double CurvilinearGridFromSplines::CompCrossTime1(const Point7& x1, const Point7& x3, const Point7& x4,
+                                                      const Point7& v1, const Point7& v3, const Point7& v4,
+                                                      const double clearence) const
+    {
+        double result;
+
+        Point x13 = x3 - x1;
+        Point x34 = x4 - x3;
+        Point v13 = v3 - v1;
+        Point v34 = v4 - v3;
+
+        double a = cross(v13, v34);
+        double b = cross(x13, v34) - cross(x34, v13);
+        double c = cross(x13, x34);
+        double e = 0.0;
+        double f = 0.0;
+        double g = 0.0;
+
+        std::array<double, 5> coeffs{0.0, 0.0, a, b, c};
+        std::array<double, 4> roots{0.0, 0.0, 0.0, 0.0};
+
+        if (clearance > 0.0)
+        {
+            coeffs = {a * a, 2.0 * a * b, 2.0 * a * c + b * b, 2.0 * b * c, c * c};
+            e = dot(v34, v34);
+            f = 2.0 * dot(v34, v34);
+            g = dot(x34, x34);
+
+            coeffs[2] -= clearance * clearance * e;
+            coeffs[3] -= clearance * clearance * f;
+            coeffs[4] -= clearance * clearance * g;
+        }
+
+        double t = constants::missing::doubleValue;
+        double beta = constants::missing::doubleValue;
+
+        SolveQuadtic(coeffs, roots);
+    }
+
+    double CurvilinearGridFromSplines::CompCrossTime2(const Point7& x1, const Point7& x3, const Point7& x4,
+                                                      const Point7& v1, const Point7& v3, const Point7& v4,
+                                                      const double clearence) const
+    {
+        auto [distance, intersectionPoint, ratio] = DistanceFromLine(x1, x3, x4, m_splines->m_projection);
+
+        double result = 1.0e99;
+        double t2 = 1.0e99;
+
+        // if ( -(x1(1)-x3(1))*(x4(2)-x3(2)) + (x1(2)-x3(2))*(x4(1)-x3(1)).lt.0d0 )
+
+        if (-dot(x1 - x3, x4 - x3) < 0.0)
+        {
+            return result;
+        }
+
+        if (distance <= clearancee && clearence > 0.0)
+        {
+            t2 = ComCrossTime1(x1, x3, x4, v1, v3, v4, 0.0);
+        }
+    }
+
+    double CurvilinearGridFromSplines::ComputeMaximumTimeStep(const UInt layerIndex,
+                                                              const std::vector<Point>& activeLayerPoints,
+                                                              const std::vector<Point>& velocityVectorAtGridPoints,
+                                                              const std::vector<Point>& frontVelocities,
+                                                              const double timeStep) const
+    {
+        double maximumTimeStep = std::numeric_limits<double>::max();
+
+        Point x1;
+        Point x2;
+        Point x3;
+        Point x4;
+
+        Point v1;
+        Point v2;
+        Point v3;
+        Point v4;
+
+        // Only need frontGridPoints
+        auto [gridPointsIndices, frontGridPoints, numFrontPoints] = FindFront();
+
+        for (UInt i = 0; i < activeLayerPoints.size() - 1; ++i)
+        {
+            if (!activeLayerPoints[i].IsValid() || !activeLayerPoints[i + 1].IsValid())
+            {
+                continue;
+            }
+
+            x1 = activeLayerPoints[i];
+            x2 = activeLayerPoints[i + 1];
+
+            v1 = velocityVectorAtGridPoints[i];
+            v2 = velocityVectorAtGridPoints[i];
+
+            double dL1 = ComputeDistance(x1, activeLayerPoints[i + 1], m_splines->m_projection);
+            UInt iL;
+            UInt iLL;
+            UInt iR;
+            UInt iRR;
+            UInt dummy;
+
+            // TODO combine calculation of the iL and iR, removing the need for the dummy and two calls
+            GetNeighbouringLayerPoints(activeLayerPoints, i, iL, dummy);
+            GetNeighbouringLayerPoints(activeLayerPoints, i + 1, dummy, iR);
+
+            GetNeighbouringLayerPoints(activeLayerPoints, iL, iLL, dummy);
+            GetNeighbouringLayerPoints(activeLayerPoints, iR, dummy, iRR);
+
+            dummy = iL;
+
+            for (UInt j = 0; j < nummax; ++j)
+            {
+                UInt imin;
+                UInt i1;
+                GetNeighbouringLayerPoints(activeLayerPoints, dummy, imin, i1);
+
+                if (imin == dummy)
+                {
+                    break;
+                }
+
+                dummy = imin;
+            }
+
+            dummy = iR;
+
+            for (UInt j = 0; j < nummax; ++j)
+            {
+                UInt imin;
+                UInt i1;
+                GetNeighbouringLayerPoints(activeLayerPoints, dummy, i1, imax);
+
+                if (imax == dummy)
+                {
+                    break;
+                }
+
+                dummy = imax;
+            }
+
+            for (UInt j = 0; j < frontGridPoints.size() - 1; ++j)
+            {
+                if (!frontGridPoints[j].IsValid() || !frontGridPoints[j + 1].IsValid())
+                {
+                    continue;
+                }
+
+                x3 = frontGridPoints[j];
+                x4 = frontGridPoints[j + 1];
+
+                v3 = frontVelocities[j];
+                v4 = frontVelocities[j + 1];
+
+                double dL2 = ComputeDistance(x3, frontGridPoints[j + 1], m_splines->m_projection);
+
+                if (ComputeDistance(x1, x3, m_splines->m_projection) < dtolLR ||
+                    ComputeDistance(activeLayerPoints[i + 1], frontGridPoints[j + 1], m_splines->m_projection) < dtolLR)
+                {
+                    continue;
+                }
+
+                if (ComputeDistance(activeLayerPoints[i + 1], x3, m_splines->m_projection) < dtolLR ||
+                    ComputeDistance(x1, frontGridPoints[j + 1], m_splines->m_projection) < dtolLR)
+                {
+                    continue;
+                }
+
+                double d1 = ComputeDistance(x1, x3, m_splines->m_projection);
+                double d2 = ComputeDistance(x2, x3, m_splines->m_projection);
+                double d3 = ComputeDistance(x1, x4, m_splines->m_projection);
+                double d4 = ComputeDistance(x2, x4, m_splines->m_projection);
+
+                if (d1 < tolerance || d2 < tolerance || d3 < tolerance || d4 < tolerance)
+                {
+                    continue;
+                }
+
+                double clearance = 0.0;
+
+                UInt i1 = gridPointsIndices(j, 0);
+                UInt i2 = gridPointsIndices(j + 1, 0);
+                UInt j1 = gridPointsIndices(j, 1);
+                UInt j2 = gridPointsIndices(j + 1, 1);
+
+                if ((iMin <= i1 && i1 <= iMax) || (iMin <= i2 && i2 <= iMax))
+                {
+                    clearence = 0.0;
+                }
+
+                if (iRR > iLL)
+                {
+                    if ((i1 > iLL && i1 < iRR) || (i2 > iLL && i2 < iRR) && j1 >= (layerIndex - 1) && j2 >= (layerIndex - 1))
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (!(i1 >= iRR && i1 <= iLL) || !(i2 >= iRR && i2 <= iLL) && j1 >= (layerIndex - 1) && j2 >= (layerIndex - 1))
+                    {
+                        continue;
+                    }
+                }
+
+                double dmin = std::min({d1, d2, d3, d4});
+
+                // get a lower bound for the cross time
+                hlow2 = 0.25 * std::max(dmin * dmin - 0.5 * std::pow(std::max(dL1, dL2), 2), 0.0);
+
+                // check if the lower bounds is larger than the minimum found so far
+                double vv1 = std::sqrt(length(v2 - v1));
+                double vv2 = std::sqrt(length(v3 - v2));
+                double vv3 = std::sqrt(length(v4 - v1));
+                double vv4 = std::sqrt(length(v4 - v2));
+
+                double maxvv = std::max(std::max(vv1, vv2), std::max(vv3, vv4));
+
+                if (std::sqrt(hlow2) - clearence > maxvv * min(tmax(i), tmax(i + 1)))
+                {
+                    continue;
+                }
+
+                double t1 = CompCrossTime2(x1, x3, x4, v1, v3, v4, clearence);
+                double t2 = CompCrossTime2(x2, x3, x4, v2, v3, v4, clearence);
+                double t3 = CompCrossTime2(x3, x1, x2, v3, v1, v2, clearence);
+                double t4 = CompCrossTime2(x4, x1, x2, v4, v1, v1, clearence);
+            }
+        }
+
+        return maximumTimeStep;
+    }
+
     void CurvilinearGridFromSplines::GrowLayer(UInt layerIndex)
     {
         auto velocityVectorAtGridPoints = ComputeVelocitiesAtGridPoints(layerIndex - 1);
@@ -689,7 +1265,8 @@ namespace meshkernel
             if (m_splinesToCurvilinearParameters.check_front_collisions)
             {
                 // TODO: implement front collisions
-                otherTimeStep = 0.0;
+                // otherTimeStep = 0.0;
+                otherTimeStep = ComputeMaximumTimeStep(layerIndex, activeLayerPoints, velocityVectorAtGridPoints, frontVelocities, localTimeStep + 1.0);
             }
 
             localTimeStep = std::min(localTimeStep, otherTimeStep);
@@ -727,14 +1304,6 @@ namespace meshkernel
                 {
                     activeLayerPoints[i].x = constants::missing::doubleValue;
                     activeLayerPoints[i].y = constants::missing::doubleValue;
-                }
-
-                // if (activeLayerPoints[i].y > 10000.0)
-                {
-                    std::cout << " localTimeStep " << i << "  " << localTimeStep << "  "
-                              << "{" << velocityVectorAtGridPoints[i].x << ", " << velocityVectorAtGridPoints[i].y << "}, "
-                              << "{" << activeLayerPoints[i].x << ", " << activeLayerPoints[i].y << "}, ";
-                    std::cout << std::endl;
                 }
             }
 
@@ -1368,7 +1937,6 @@ namespace meshkernel
         double aspectRatioGrowFactorIncremented = 1.0 + deps;
         auto heightDifferenceIncremented = ComputeTotalExponentialHeight(aspectRatioGrowFactorIncremented, m_edgeVelocities[splineIndex], m_numPerpendicularFacesOnSubintervalAndEdge(1, splineIndex)) - m_gridHeights(1, splineIndex);
 
-        const double tolerance = 1e-8;
         const UInt numIterations = 1000;
         const double relaxationFactor = 0.5;
         double oldAspectRatio;
