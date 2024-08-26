@@ -733,13 +733,6 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_mesh2d_get_dimensions(int meshKernelId, Mesh2D& mesh2d)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        mesh2d.num_nodes = mkernel_get_null_identifier();
-        mesh2d.num_valid_nodes = mkernel_get_null_identifier();
-        mesh2d.num_edges = mkernel_get_null_identifier();
-        mesh2d.num_valid_edges = mkernel_get_null_identifier();
-        mesh2d.num_faces = mkernel_get_null_identifier();
-        mesh2d.num_face_nodes = mkernel_get_null_identifier();
-
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -747,11 +740,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() > 0)
-            {
-                meshKernelState[meshKernelId].m_mesh2d->Administrate();
-                SetMesh2dApiDimensions(*meshKernelState[meshKernelId].m_mesh2d, mesh2d);
-            }
+            meshKernelState[meshKernelId].m_mesh2d->Administrate();
+            SetMesh2dApiDimensions(*meshKernelState[meshKernelId].m_mesh2d, mesh2d);
         }
         catch (...)
         {
@@ -847,9 +837,6 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_curvilinear_get_dimensions(int meshKernelId, CurvilinearGrid& curvilinearGrid)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        curvilinearGrid.num_n = meshkernel::constants::missing::intValue;
-        curvilinearGrid.num_m = meshkernel::constants::missing::intValue;
-
         try
         {
             if (!meshKernelState.contains(meshKernelId) || meshKernelState[meshKernelId].m_state != MeshKernelState::CurrentState::ValidMesh)

@@ -340,16 +340,17 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     // Check the sizes of the curvilinear grids.
-    mkapi::CurvilinearGrid curvilinearGrid{};
-    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId2, curvilinearGrid);
+    mkapi::CurvilinearGrid curvilinearGrid0{};
+    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId2, curvilinearGrid0);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
-    EXPECT_EQ(curvilinearGrid.num_n, clg2Size);
-    EXPECT_EQ(curvilinearGrid.num_m, clg2Size);
+    EXPECT_EQ(curvilinearGrid0.num_n, clg2Size);
+    EXPECT_EQ(curvilinearGrid0.num_m, clg2Size);
 
-    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinearGrid);
+    mkapi::CurvilinearGrid curvilinearGrid1{};
+    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinearGrid1);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
-    EXPECT_EQ(curvilinearGrid.num_n, clg1Size);
-    EXPECT_EQ(curvilinearGrid.num_m, clg1Size);
+    EXPECT_EQ(curvilinearGrid1.num_n, clg1Size);
+    EXPECT_EQ(curvilinearGrid1.num_m, clg1Size);
 
     bool didUndo = false;
     int undoId = mkapi::mkernel_get_null_identifier();
@@ -362,10 +363,11 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
     EXPECT_EQ(undoId, meshKernelId1);
 
     // Getting the size of this grid should be an error and the dimensions the null value.
-    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinearGrid);
+    mkapi::CurvilinearGrid curvilinearGrid2{};
+    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinearGrid2);
     ASSERT_EQ(mk::ExitCode::MeshKernelErrorCode, errorCode);
-    EXPECT_EQ(curvilinearGrid.num_n, mkapi::mkernel_get_null_identifier());
-    EXPECT_EQ(curvilinearGrid.num_m, mkapi::mkernel_get_null_identifier());
+    EXPECT_EQ(curvilinearGrid2.num_n, 0);
+    EXPECT_EQ(curvilinearGrid2.num_m, 0);
 
     // Undo the undo of the clg generation
     // The clg for meshKernelId1 should be restored
@@ -374,25 +376,28 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
     EXPECT_EQ(undoId, meshKernelId1);
 
     // With the correct size
-    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinearGrid);
+    mkapi::CurvilinearGrid curvilinearGrid3{};
+    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinearGrid3);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
-    EXPECT_EQ(curvilinearGrid.num_n, clg1Size);
-    EXPECT_EQ(curvilinearGrid.num_m, clg1Size);
+    EXPECT_EQ(curvilinearGrid3.num_n, clg1Size);
+    EXPECT_EQ(curvilinearGrid3.num_m, clg1Size);
 
     // Deallocate clg 2
     errorCode = mkapi::mkernel_deallocate_state(meshKernelId2);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
-    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId2, curvilinearGrid);
+    mkapi::CurvilinearGrid curvilinearGrid4{};
+    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId2, curvilinearGrid4);
     ASSERT_EQ(mk::ExitCode::MeshKernelErrorCode, errorCode);
-    EXPECT_EQ(curvilinearGrid.num_n, mkapi::mkernel_get_null_identifier());
-    EXPECT_EQ(curvilinearGrid.num_m, mkapi::mkernel_get_null_identifier());
+    EXPECT_EQ(curvilinearGrid4.num_n, 0);
+    EXPECT_EQ(curvilinearGrid4.num_m, 0);
 
     // Check size of meshKernelId1 is not touched
-    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinearGrid);
+    mkapi::CurvilinearGrid curvilinear5{};
+    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinear5);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
-    EXPECT_EQ(curvilinearGrid.num_n, clg1Size);
-    EXPECT_EQ(curvilinearGrid.num_m, clg1Size);
+    EXPECT_EQ(curvilinear5.num_n, clg1Size);
+    EXPECT_EQ(curvilinear5.num_m, clg1Size);
 
     // Undo the deallocation or meshKernelId2
     errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
@@ -401,32 +406,35 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
     EXPECT_EQ(undoId, meshKernelId2);
 
     // The grid should now have the correct size
-    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId2, curvilinearGrid);
+    mkapi::CurvilinearGrid curvilinearGrid6{};
+    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId2, curvilinearGrid6);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
-    EXPECT_EQ(curvilinearGrid.num_n, clg2Size);
-    EXPECT_EQ(curvilinearGrid.num_m, clg2Size);
+    EXPECT_EQ(curvilinearGrid6.num_n, clg2Size);
+    EXPECT_EQ(curvilinearGrid6.num_m, clg2Size);
 
     // Convert the curvilinear grid id2 to an unstructured grid.
     errorCode = mkapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId2);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     // Check size of meshKernelId1 is not touched
-    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinearGrid);
+    mkapi::CurvilinearGrid curvilinearGrid7{};
+    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinearGrid7);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
-    EXPECT_EQ(curvilinearGrid.num_n, clg1Size);
-    EXPECT_EQ(curvilinearGrid.num_m, clg1Size);
+    EXPECT_EQ(curvilinearGrid7.num_n, clg1Size);
+    EXPECT_EQ(curvilinearGrid7.num_m, clg1Size);
 
-    mkapi::Mesh2D mesh2d{};
-    errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId2, mesh2d);
+    mkapi::Mesh2D mesh2d0{};
+    errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId2, mesh2d0);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
-    EXPECT_EQ(mesh2d.num_nodes, clg2Size * clg2Size);
-    EXPECT_EQ(mesh2d.num_edges, 2 * (clg2Size - 1) * clg2Size);
+    EXPECT_EQ(mesh2d0.num_nodes, clg2Size * clg2Size);
+    EXPECT_EQ(mesh2d0.num_edges, 2 * (clg2Size - 1) * clg2Size);
 
     // Now that the grid has been converted to an unstructured grid the dimensions of the curvilienar grid are not
-    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId2, curvilinearGrid);
+    mkapi::CurvilinearGrid curvilinearGrid8{};
+    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId2, curvilinearGrid8);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
-    EXPECT_EQ(curvilinearGrid.num_n, mkapi::mkernel_get_null_identifier());
-    EXPECT_EQ(curvilinearGrid.num_m, mkapi::mkernel_get_null_identifier());
+    EXPECT_EQ(curvilinearGrid8.num_n, 0);
+    EXPECT_EQ(curvilinearGrid8.num_m, 0);
 
     // Undo the conversion of meshKernelId2 from curvilinear to unstructured.
     errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
@@ -435,16 +443,18 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
     EXPECT_EQ(undoId, meshKernelId2);
 
     // The unstructured grid is no longer available
-    errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId2, mesh2d);
+    mkapi::Mesh2D mesh2d1{};
+    errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId2, mesh2d1);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
-    EXPECT_EQ(mesh2d.num_nodes, mkapi::mkernel_get_null_identifier());
-    EXPECT_EQ(mesh2d.num_edges, mkapi::mkernel_get_null_identifier());
+    EXPECT_EQ(mesh2d1.num_nodes, 0);
+    EXPECT_EQ(mesh2d1.num_edges, 0);
 
     // Check size of meshKernelId1 is not touched
-    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinearGrid);
+    mkapi::CurvilinearGrid curvilinearGrid9{};
+    errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinearGrid9);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
-    EXPECT_EQ(curvilinearGrid.num_n, clg1Size);
-    EXPECT_EQ(curvilinearGrid.num_m, clg1Size);
+    EXPECT_EQ(curvilinearGrid9.num_n, clg1Size);
+    EXPECT_EQ(curvilinearGrid9.num_m, clg1Size);
 
     // Finalise the test, remove all mesh kernel state objects and undo actions
     errorCode = mkapi::mkernel_expunge_state(meshKernelId2);
@@ -643,8 +653,8 @@ TEST(UndoTests, UnstructuredGrid)
 
     errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId2, mesh2d);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
-    EXPECT_EQ(mesh2d.num_nodes, mkapi::mkernel_get_null_identifier());
-    EXPECT_EQ(mesh2d.num_edges, mkapi::mkernel_get_null_identifier());
+    EXPECT_EQ(mesh2d.num_nodes, 0);
+    EXPECT_EQ(mesh2d.num_edges, 0);
 
     //--------------------------------
     // Finalise the test, remove all mesh kernel state objects and undo actions

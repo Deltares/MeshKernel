@@ -39,10 +39,10 @@ namespace meshkernelapi
         double* node_y = nullptr;
 
         /// @brief The number of curvilinear grid nodes along m
-        int num_m = -1;
+        int num_m = 0;
 
         /// @brief The number of curvilinear grid nodes along n
-        int num_n = -1;
+        int num_n = 0;
     };
 
 } // namespace meshkernelapi
