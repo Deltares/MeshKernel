@@ -45,7 +45,6 @@ meshkernelapi::MKStateUndoAction::MKStateUndoAction(MeshKernelState& mkState) : 
     m_mkState.m_curvilinearGridOrthogonalization = mkState.m_curvilinearGridOrthogonalization;
     m_mkState.m_curvilinearGridLineShift = mkState.m_curvilinearGridLineShift;
     m_mkState.m_projection = mkState.m_projection;
-    m_mkState.m_state = mkState.m_state;
 }
 
 void meshkernelapi::MKStateUndoAction::SwapContents()
@@ -55,7 +54,6 @@ void meshkernelapi::MKStateUndoAction::SwapContents()
     std::swap(m_mkState.m_network1d, m_mkStateReference.m_network1d);
     std::swap(m_mkState.m_contacts, m_mkStateReference.m_contacts);
     std::swap(m_mkState.m_curvilinearGrid, m_mkStateReference.m_curvilinearGrid);
-    std::swap(m_mkState.m_state, m_mkStateReference.m_state);
 }
 
 void meshkernelapi::MKStateUndoAction::DoCommit()

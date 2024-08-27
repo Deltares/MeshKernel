@@ -214,8 +214,8 @@ TEST(UndoTests, BasicAllocationDeallocationTest)
     // one of the id's will be deallocated
     // further checks on validity
 
-    int meshKernelId1 = mkapi::mkernel_get_null_identifier();
-    int meshKernelId2 = mkapi::mkernel_get_null_identifier();
+    int meshKernelId1 = meshkernel::constants::missing::intValue;
+    int meshKernelId2 = meshkernel::constants::missing::intValue;
     int errorCode;
     // Initialised with the opposite of the expected value
     bool isValid = true;
@@ -254,13 +254,6 @@ TEST(UndoTests, BasicAllocationDeallocationTest)
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     // Initialised with the opposite of the expected value
-    // meshKernelId1 should not be valid
-    isValid = true;
-    errorCode = mkapi::mkernel_is_valid_state(meshKernelId1, isValid);
-    ASSERT_EQ(mk::ExitCode::Success, errorCode);
-    EXPECT_FALSE(isValid);
-
-    // Initialised with the opposite of the expected value
     // meshKernelId2 should still be valid
     isValid = false;
     errorCode = mkapi::mkernel_is_valid_state(meshKernelId2, isValid);
@@ -268,7 +261,7 @@ TEST(UndoTests, BasicAllocationDeallocationTest)
     EXPECT_TRUE(isValid);
 
     bool didUndo = false;
-    int undoId = mkapi::mkernel_get_null_identifier();
+    int undoId = meshkernel::constants::missing::intValue;
 
     // Undo the deallocation
     errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
@@ -292,7 +285,7 @@ TEST(UndoTests, BasicAllocationDeallocationTest)
     errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_FALSE(didUndo);
-    EXPECT_EQ(undoId, mkapi::mkernel_get_null_identifier());
+    EXPECT_EQ(undoId, meshkernel::constants::missing::intValue);
 
     // Finalise the test, remove all mesh kernel state objects and undo actions
     errorCode = mkapi::mkernel_expunge_state(meshKernelId2);
@@ -312,8 +305,8 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
     const int clg1Size = 4;
     const int clg2Size = 8;
 
-    int meshKernelId1 = mkapi::mkernel_get_null_identifier();
-    int meshKernelId2 = mkapi::mkernel_get_null_identifier();
+    int meshKernelId1 = meshkernel::constants::missing::intValue;
+    int meshKernelId2 = meshkernel::constants::missing::intValue;
     int errorCode;
     // Initialised with the opposite of the expected value
     bool isValid = true;
@@ -353,7 +346,7 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
     EXPECT_EQ(curvilinearGrid1.num_m, clg1Size);
 
     bool didUndo = false;
-    int undoId = mkapi::mkernel_get_null_identifier();
+    int undoId = meshkernel::constants::missing::intValue;
 
     // Undo the curvilinear grid generation for the last grid generated, meshKernelId1
     errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
@@ -365,7 +358,7 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
     // Getting the size of this grid should be an error and the dimensions the null value.
     mkapi::CurvilinearGrid curvilinearGrid2{};
     errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId1, curvilinearGrid2);
-    ASSERT_EQ(mk::ExitCode::MeshKernelErrorCode, errorCode);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_EQ(curvilinearGrid2.num_n, 0);
     EXPECT_EQ(curvilinearGrid2.num_m, 0);
 
@@ -388,7 +381,7 @@ TEST(UndoTests, CurvilinearGridManipulationTests)
 
     mkapi::CurvilinearGrid curvilinearGrid4{};
     errorCode = mkapi::mkernel_curvilinear_get_dimensions(meshKernelId2, curvilinearGrid4);
-    ASSERT_EQ(mk::ExitCode::MeshKernelErrorCode, errorCode);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_EQ(curvilinearGrid4.num_n, 0);
     EXPECT_EQ(curvilinearGrid4.num_m, 0);
 
@@ -487,13 +480,13 @@ TEST(UndoTests, UnstructuredGrid)
     const int clg2Size = 4;
     const double delta = 1.0;
 
-    int meshKernelId1 = mkapi::mkernel_get_null_identifier();
-    int meshKernelId2 = mkapi::mkernel_get_null_identifier();
+    int meshKernelId1 = meshkernel::constants::missing::intValue;
+    int meshKernelId2 = meshkernel::constants::missing::intValue;
 
     // Will be identical to meshKernelId1, to enable comparison after manipulation
-    int meshKernelId3 = mkapi::mkernel_get_null_identifier();
+    int meshKernelId3 = meshkernel::constants::missing::intValue;
     // Will be identical to meshKernelId2, to enable comparison after manipulation
-    int meshKernelId4 = mkapi::mkernel_get_null_identifier();
+    int meshKernelId4 = meshkernel::constants::missing::intValue;
 
     int errorCode;
 
@@ -572,7 +565,7 @@ TEST(UndoTests, UnstructuredGrid)
     EXPECT_EQ(mesh2d.num_edges, 2 * (clg1Size - 1) * clg1Size);
 
     bool didUndo = false;
-    int undoId = mkapi::mkernel_get_null_identifier();
+    int undoId = meshkernel::constants::missing::intValue;
 
     // 1. Creation of CLG, 2. conversion to unstructured, and 3. mesh2d_set
     EXPECT_TRUE(CheckUndoStateCount(meshKernelId2, 3, 0));
@@ -635,7 +628,7 @@ TEST(UndoTests, UnstructuredGrid)
     EXPECT_EQ(mesh2d.num_edges, 2 * (clg2Size - 1) * clg2Size);
 
     // Undo the conversion to unstructured
-    undoId = mkapi::mkernel_get_null_identifier();
+    undoId = meshkernel::constants::missing::intValue;
     errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
@@ -701,10 +694,10 @@ TEST(UndoTests, UnstructuredGridConnection)
     const double clg2OriginX = static_cast<double>(clg1SizeX - 1) * clg1DeltaX + fraction * clg2DeltaX;
     const double clg2OriginY = 0.0;
 
-    int meshKernelId1 = mkapi::mkernel_get_null_identifier();
-    int meshKernelId2 = mkapi::mkernel_get_null_identifier();
+    int meshKernelId1 = meshkernel::constants::missing::intValue;
+    int meshKernelId2 = meshkernel::constants::missing::intValue;
     // Will contain the same grid as meshKernelId2 so that it can be compared later
-    int meshKernelId3 = mkapi::mkernel_get_null_identifier();
+    int meshKernelId3 = meshkernel::constants::missing::intValue;
     int errorCode;
 
     // Clear the meshkernel state and undo stack before starting the test.
@@ -748,10 +741,10 @@ TEST(UndoTests, UnstructuredGridConnection)
     errorCode = mkapi::mkernel_mesh2d_insert_node(meshKernelId1, 0.5, 0.5, newNodeId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
-    int node1 = mkapi::mkernel_get_null_identifier();
-    int node2 = mkapi::mkernel_get_null_identifier();
-    int node3 = mkapi::mkernel_get_null_identifier();
-    int node4 = mkapi::mkernel_get_null_identifier();
+    int node1 = meshkernel::constants::missing::intValue;
+    int node2 = meshkernel::constants::missing::intValue;
+    int node3 = meshkernel::constants::missing::intValue;
+    int node4 = meshkernel::constants::missing::intValue;
 
     mkapi::BoundingBox boundingBox{-0.1, -0.1, 1.1, 1.1};
 
@@ -779,10 +772,10 @@ TEST(UndoTests, UnstructuredGridConnection)
                                                          node4);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
-    int edge1 = mkapi::mkernel_get_null_identifier();
-    int edge2 = mkapi::mkernel_get_null_identifier();
-    int edge3 = mkapi::mkernel_get_null_identifier();
-    int edge4 = mkapi::mkernel_get_null_identifier();
+    int edge1 = meshkernel::constants::missing::intValue;
+    int edge2 = meshkernel::constants::missing::intValue;
+    int edge3 = meshkernel::constants::missing::intValue;
+    int edge4 = meshkernel::constants::missing::intValue;
 
     errorCode = mkapi::mkernel_mesh2d_insert_edge(meshKernelId1, node1, newNodeId, edge1);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
@@ -801,7 +794,7 @@ TEST(UndoTests, UnstructuredGridConnection)
     for (int i = 1; i <= 5; ++i)
     {
         bool didUndo = false;
-        int undoId = mkapi::mkernel_get_null_identifier();
+        int undoId = meshkernel::constants::missing::intValue;
 
         // Undo the deallocation
         errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
@@ -880,7 +873,7 @@ TEST(UndoTests, UnstructuredGridConnection)
     // Undo the connection of the meshes
 
     bool didUndo = false;
-    int undoId = mkapi::mkernel_get_null_identifier();
+    int undoId = meshkernel::constants::missing::intValue;
 
     EXPECT_TRUE(CheckUndoStateCount(meshKernelId1, 2, 5));
     EXPECT_TRUE(CheckUndoStateCount(meshKernelId2, 3, 0));
@@ -926,7 +919,7 @@ TEST(UndoTests, UnstructuredGridConnection)
     }
 
     didUndo = false;
-    undoId = mkapi::mkernel_get_null_identifier();
+    undoId = meshkernel::constants::missing::intValue;
 
     // Undo mesh conversion of curvilinear to mesh2d
     errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
@@ -941,7 +934,7 @@ TEST(UndoTests, UnstructuredGridConnection)
     EXPECT_TRUE(CompareCurvilinearGrids(meshKernelId2, meshKernelId3));
 
     didUndo = false;
-    undoId = mkapi::mkernel_get_null_identifier();
+    undoId = meshkernel::constants::missing::intValue;
 
     // Redo mesh conversion of curvilinear to mesh2d
     errorCode = mkapi::mkernel_redo_state(didUndo, undoId);

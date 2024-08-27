@@ -45,14 +45,6 @@ namespace meshkernelapi
     struct MeshKernelState
     {
 
-        /// @brief Indicator of the current state of the MeshKernelState
-        enum class CurrentState
-        {
-            Uninitialised, ///< MeshKernelState is currently not initialised.
-            ValidMesh,     ///< MeshKernelState currently points to a valid mesh, this may be mesh1d, mesh2d or curvilinear grid.
-            DeletedMesh    ///< MeshKernelState currently points to a deleted mesh.
-        };
-
         /// @brief Default constructor
         MeshKernelState() = default;
 
@@ -81,35 +73,6 @@ namespace meshkernelapi
 
         // Exclusively owned state
         meshkernel::Projection m_projection{meshkernel::Projection::cartesian}; ///< Projection used by the meshes
-
-        /// @brief The current state of the MeshKernelState.
-        CurrentState m_state = CurrentState::Uninitialised;
     };
 
-    /// @brief Get the string representation of the MeshKernelState::CurrentState enumeration
-    static const std::string& toString(const MeshKernelState::CurrentState state);
-
 } // namespace meshkernelapi
-
-inline static const std::string& meshkernelapi::toString(const MeshKernelState::CurrentState state)
-{
-    static std::string uninitialisedStr = "Uninitialised";
-    static std::string validMeshStr = "ValidMesh";
-    static std::string deletedMeshStr = "DeletedMesh";
-
-    static std::string unknown = "UNKNOWN";
-
-    using enum MeshKernelState::CurrentState;
-
-    switch (state)
-    {
-    case Uninitialised:
-        return uninitialisedStr;
-    case ValidMesh:
-        return validMeshStr;
-    case DeletedMesh:
-        return deletedMeshStr;
-    default:
-        return unknown;
-    }
-}

@@ -4217,7 +4217,7 @@ TEST(Mesh2D, UndoConnectMeshes)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     bool didUndo = false;
-    int undoMkId = meshkernelapi::mkernel_get_null_identifier();
+    int undoMkId = meshkernel::constants::missing::intValue;
 
     errorCode = meshkernelapi::mkernel_undo_state(didUndo, undoMkId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);

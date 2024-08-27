@@ -62,10 +62,6 @@ namespace meshkernelapi
         /// @return The double missing value used in mesh kernel
         MKERNEL_API double mkernel_get_inner_outer_separator();
 
-        /// @brief Gets the integer (int) value used in the back-end library missing value and null identifier
-        /// @return The int missing value used in mesh kernel
-        MKERNEL_API int mkernel_get_null_identifier();
-
         /// @brief Creates a new mesh state and returns the generated \p meshKernelId
         /// @param[in] projectionType  Cartesian (0), spherical (1) or spherical accurate(2) state
         /// @param[out] meshKernelId The id of the mesh state
