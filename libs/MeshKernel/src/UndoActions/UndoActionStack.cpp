@@ -115,6 +115,13 @@ std::optional<int> meshkernel::UndoActionStack::Commit()
         // Now move to committed stack
         m_committed.emplace_back(std::move(m_restored.back()));
         m_restored.pop_back();
+
+        if (m_committed.size() > m_maxUndoSize)
+        {
+            // If the number of undo-actions is greater than the maximum, then remove the first item in the list.
+            m_committed.pop_front();
+        }
+
         return actionId;
     }
 
