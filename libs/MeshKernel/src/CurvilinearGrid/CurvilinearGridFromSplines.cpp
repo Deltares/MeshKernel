@@ -2389,8 +2389,8 @@ namespace meshkernel
                                                                  m_maximumGridHeights[splineIndex]);
 
         // first estimation of nodes along m
-        // auto numM = 1 + static_cast<UInt>(std::floor(splineLength / m_splinesToCurvilinearParameters.average_width));
-        auto numM = 1 + static_cast<UInt>(std::floor(m_splines->m_splinesLength[splineIndex] / m_splinesToCurvilinearParameters.average_width));
+        auto numM = 1 + static_cast<UInt>(std::floor(splineLength / m_splinesToCurvilinearParameters.average_width));
+        // auto numM = 1 + static_cast<UInt>(std::floor(m_splines->m_splinesLength[splineIndex] / m_splinesToCurvilinearParameters.average_width));
 
         numM = std::min(numM, static_cast<UInt>(m_curvilinearParameters.m_refinement));
 
@@ -2424,6 +2424,20 @@ namespace meshkernel
                                                                                                            m_splinesToCurvilinearParameters.curvature_adapted_grid_spacing,
                                                                                                            distances);
 
+            std::vector<double> computedDistances (distances.size ());
+            std::vector<Point> computedPoints (distances.size ());
+
+            Point start = m_splines->m_splineNodes [splineIndex][0];
+            Point end;
+
+            for (size_t i = 0; i < adimensionalDistances.size(); ++i)
+            {
+                end = m_splines->Evaluate(splineIndex, adimensionalDistances[i]);
+                computedPoints[i] = end;
+                computedDistances[i] = ComputeDistance(start, end, m_splines->m_projection);
+                start = end;
+            }
+
             // double h = 6.0 / adimensionalDistances.size();
             // points[0] = m_splines->Evaluate(splineIndex, adimensionalDistances[0]);
 
@@ -2433,6 +2447,14 @@ namespace meshkernel
             //     points[i] = m_splines->Evaluate(splineIndex, adimensionalDistances[i]);
             // }
 
+            std::cout << " distances[n] ";
+
+            for (UInt n = 0; n < numM; ++n)
+            {
+                std::cout << computedDistances[n] << "   ";
+            }
+
+            std::cout << std::endl;
             std::cout << " distances[n] ";
 
             for (UInt n = 0; n < numM; ++n)
@@ -2456,6 +2478,15 @@ namespace meshkernel
             for (size_t iii = 0; iii < points.size(); ++iii)
             {
                 std::cout << points[iii].x << ", " << points[iii].y << " --- ";
+            }
+
+            std::cout << std::endl;
+
+            std::cout << " points ";
+
+            for (size_t iii = 0; iii < computedPoints.size(); ++iii)
+            {
+                std::cout << computedPoints[iii].x << ", " << computedPoints[iii].y << " --- ";
             }
 
             std::cout << std::endl;
