@@ -1448,6 +1448,26 @@ TEST(CurvilinearGridFromSplines, WTF)
     curvilinearParameters.m_refinement = 20;
     curvilinearParameters.n_refinement = 40;
 
+    // std::vector<mk::Point> spline1{{0.0, 20.0},
+    //                                {20.0, 0.0}};
+
+    // std::vector<mk::Point> spline2{
+    //     {0.0, 0.0},
+    //     {100.0, 100.0},
+    //     {200.0, 200.0},
+    //     {300.0, 300.0},
+    //     {400.0, 400.0},
+    //     {500.0, 500.0},
+    //     {600.0, 600.0},
+    //     {700.0, 700.0},
+    //     {800.0, 800.0},
+    //     {900.0, 900.0},
+    // };
+
+    // for (size_t i = 0; i < spline2.size (); ++i) {
+    //     spline2[i].y = 1000*std::sin (spline2[i].x / 1000.0 * 2.0 * 3.141);
+    // }
+
     std::vector<mk::Point> spline1{{-393.308358914916, 997.20779887993},
                                    {170.716267339219, 137.209853898379}};
 
@@ -1455,16 +1475,41 @@ TEST(CurvilinearGridFromSplines, WTF)
                                    {156.755261738869, 838.052335035942},
                                    {528.118010708175, 1131.23345264329},
                                    {1309.93432432777, 681.689072312023},
-                                   {1.360193944489029e+03.174292466489187e+02},
+                                   {1.360193944489029e+03, 7.174292466489187e+02},
+                                   // {1.410453564650288e+03,   7.531694209858144e+02},
+                                   // {   1.561232425134065e+03,   8.603899439965015e+02},
                                    // {1360.93432432777, 722.689072312023},
                                    {1812.53052594036, 1039.09081568098},
                                    {1862.79014610162, 1647.79065985623},
-                                   // {1940.97177746358, 1957.724984184},
+                                   {1940.97177746358, 1957.724984184},
                                    {1940.97177746358, 1960.51718530407}};
 
     auto splines = std::make_shared<Splines>(Projection::cartesian);
     splines->AddSpline(spline1);
     splines->AddSpline(spline2);
+
+    double h = 0.01;
+    double x = 0.0;
+    int count = 1;
+
+    for (size_t i = 0; i < spline2.size (); ++i) {
+
+        std::cout << "xs2 ( "<< i + 1 << " ) = " << spline2[i].x << ";" << std::endl;
+        std::cout << "ys2 ( "<< i + 1 << " ) = " << spline2[i].y << ";" << std::endl;
+
+    }
+
+    while (x < static_cast<double>(spline2.size ()-1)) {
+        meshkernel::Point res = splines->Evaluate (1, x);
+
+        std::cout << "xs ( "<< count << " ) = " << res.x << ";" << std::endl;
+        std::cout << "ys ( "<< count << " ) = " << res.y << ";" << std::endl;
+
+        ++count;
+        x += h;
+    }
+
+    // return;
 
     mk::CurvilinearGridFromSplines splinesToGrid(splines, curvilinearParameters, splinesToCurvilinearParameters);
 

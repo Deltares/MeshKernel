@@ -139,7 +139,7 @@ void Splines::SwapSplines(const UInt firstSpline, const UInt secondSpline)
 
     if (firstSpline == secondSpline)
     {
-        // Nothig to do if spline indices are the same.
+        // Nothing to do if spline indices are the same.
         return;
     }
 
@@ -404,7 +404,12 @@ double Splines::ComputeSplineLength(UInt index,
         if (accountForCurvature)
         {
             const auto [normalVector, tangentialVector, computedCurvatureFactor] = ComputeCurvatureOnSplinePoint(index, 0.5 * (rightPointCoordinateOnSpline + leftPointCoordinateOnSpline));
-            curvatureFactor = 0.0 * computedCurvatureFactor; // 0.1 * computedCurvatureFactor / height;
+            curvatureFactor = computedCurvatureFactor;
+
+            // double curvatureLimit = 0.001;
+            // // curvatureFactor >= 0
+            // curvatureFactor = std::min (curvatureFactor, curvatureLimit);
+
         }
         splineLength = splineLength + ComputeDistance(leftPoint, rightPoint, m_projection) * (1.0 + curvatureFactor * height);
         leftPoint = rightPoint;
@@ -445,11 +450,24 @@ Splines::ComputePointOnSplineFromAdimensionalDistance(UInt index,
         adimensionalDistances[i] = FindFunctionRootWithGoldenSectionSearch(func, 0, static_cast<double>(numNodes) - 1.0);
         points[i] = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistances[i]);
 
+        auto [nnn, ttt, curvature] = ComputeCurvatureOnSplinePoint (index, adimensionalDistances[i]);
+        std::cout << "curvature: "  << curvature << std::endl;
+
         if (!points[i].IsValid())
         {
             throw AlgorithmError("Could not interpolate spline points.");
         }
     }
+
+    std::cout << "segment lengths: ";
+
+    for (size_t i = 1; i < m_splineNodes[index].size(); ++i) {
+        double distance = ComputeSplineLength (index, i - 1, i, 1000, true, maximumGridHeight);
+        std::cout << distance << "  ";
+    }
+
+    std::cout << std::endl;
+
     return {points, adimensionalDistances};
 }
 
