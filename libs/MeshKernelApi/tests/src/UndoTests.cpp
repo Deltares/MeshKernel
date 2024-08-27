@@ -1047,8 +1047,8 @@ TEST(UndoTests, SetUndoStackSize)
 
     errorCode = mkapi::mkernel_undo_state_count(commitedSize, restoredSize);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
-    EXPECT_EQ (commitedSize, 0);
-    EXPECT_EQ (restoredSize, 0);
+    EXPECT_EQ(commitedSize, 0);
+    EXPECT_EQ(restoredSize, 0);
 
     bool didUndo = false;
     int undoId = meshkernel::constants::missing::intValue;

@@ -245,7 +245,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Incorrect undo stack size: {}", undoStackSize);
             }
 
-            meshKernelUndoStack.SetMaximumSize (static_cast<meshkernel::UInt>(undoStackSize));
+            meshKernelUndoStack.SetMaximumSize(static_cast<meshkernel::UInt>(undoStackSize));
         }
         catch (...)
         {
