@@ -74,6 +74,13 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_is_valid_state(int meshKernelId, bool& isValid);
 
+        /// @brief Set the maximum size of the undo stack
+        ///
+        /// Setting the size to zero will disable the undo.
+        /// @param[in] undoStackSize The maximum size of the undo stack
+        /// @returns Error code
+        MKERNEL_API int mkernel_set_undo_size(int undoStackSize);
+
         /// @brief Attempt to undo by one undo-action.
         /// @param[out] undone Indicates if the undo action was actually undone
         /// @param[out] meshKernelId The mesh kernel id related to the undo action

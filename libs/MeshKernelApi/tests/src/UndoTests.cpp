@@ -984,3 +984,78 @@ TEST(UndoTests, UnstructuredGridConnection)
     // The mesh kernel state object and all undo information should have be removed.
     EXPECT_TRUE(CheckUndoStateCount(meshKernelId1, 0, 0));
 }
+
+TEST(UndoTests, SetUndoStackSize)
+{
+
+    // Two mesh kernel ids will be created
+    // checks made on their validity at different stages of the test
+    // one of the id's will be deallocated
+    // further checks on validity
+
+    int meshKernelId1 = meshkernel::constants::missing::intValue;
+    int meshKernelId2 = meshkernel::constants::missing::intValue;
+    int errorCode;
+    // Initialised with the opposite of the expected value
+    bool isValid = true;
+
+    // Clear the meshkernel state and undo stack before starting the test.
+    errorCode = mkapi::mkernel_clear_state();
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    // meshKernelId1 should be not valid
+    errorCode = mkapi::mkernel_is_valid_state(meshKernelId1, isValid);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    EXPECT_FALSE(isValid);
+
+    errorCode = mkapi::mkernel_set_undo_size(0);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    errorCode = mkapi::mkernel_allocate_state(0, meshKernelId1);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    // Initialised with the opposite of the expected value
+    // meshKernelId1 should now be valid
+    isValid = false;
+    errorCode = mkapi::mkernel_is_valid_state(meshKernelId1, isValid);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    EXPECT_TRUE(isValid);
+
+    // Initialised with the opposite of the expected value
+    // meshKernelId2 should still not be valid
+    isValid = true;
+    errorCode = mkapi::mkernel_is_valid_state(meshKernelId2, isValid);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    EXPECT_FALSE(isValid);
+
+    errorCode = mkapi::mkernel_allocate_state(0, meshKernelId2);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    // deallocate meshKernelId1
+    errorCode = mkapi::mkernel_deallocate_state(meshKernelId1);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    // Initialised with the opposite of the expected value
+    // meshKernelId2 should still be valid
+    isValid = false;
+    errorCode = mkapi::mkernel_is_valid_state(meshKernelId2, isValid);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    EXPECT_TRUE(isValid);
+
+    int commitedSize = -1;
+    int restoredSize = -1;
+
+    errorCode = mkapi::mkernel_undo_state_count(commitedSize, restoredSize);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    EXPECT_EQ (commitedSize, 0);
+    EXPECT_EQ (restoredSize, 0);
+
+    bool didUndo = false;
+    int undoId = meshkernel::constants::missing::intValue;
+
+    // Undo the deallocation
+    errorCode = mkapi::mkernel_undo_state(didUndo, undoId);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    EXPECT_FALSE(didUndo);
+    EXPECT_EQ(undoId, meshkernel::constants::missing::intValue);
+}
