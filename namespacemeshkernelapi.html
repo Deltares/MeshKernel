@@ -106,6 +106,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh_kernel_state.html">MeshKernelState</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The class holding the state of the C API library.  <a href="structmeshkernelapi_1_1_mesh_kernel_state.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernelapi_1_1_m_k_state_undo_action.html">MKStateUndoAction</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Undo action for <a class="el" href="structmeshkernelapi_1_1_mesh_kernel_state.html" title="The class holding the state of the C API library.">MeshKernelState</a>.  <a href="classmeshkernelapi_1_1_m_k_state_undo_action.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -118,15 +121,30 @@ Functions</h2></td></tr>
 <tr class="memitem:a8e737d3ce03b109b6aaff17396f63aac"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8e737d3ce03b109b6aaff17396f63aac">mkernel_allocate_state</a> (int projectionType, int &amp;meshKernelId)</td></tr>
 <tr class="memdesc:a8e737d3ce03b109b6aaff17396f63aac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new mesh state and returns the generated <code>meshKernelId</code>.  <a href="namespacemeshkernelapi.html#a8e737d3ce03b109b6aaff17396f63aac">More...</a><br /></td></tr>
 <tr class="separator:a8e737d3ce03b109b6aaff17396f63aac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a79f5154bfb31948a56eda792687b5246"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a79f5154bfb31948a56eda792687b5246">mkernel_undo_state</a> (bool &amp;undone)</td></tr>
-<tr class="memdesc:a79f5154bfb31948a56eda792687b5246"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempt to undo by one undo-action.  <a href="namespacemeshkernelapi.html#a79f5154bfb31948a56eda792687b5246">More...</a><br /></td></tr>
-<tr class="separator:a79f5154bfb31948a56eda792687b5246"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8014dac8ffbf5a8cf6173a94ed9d6416"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8014dac8ffbf5a8cf6173a94ed9d6416">mkernel_redo_state</a> (bool &amp;redone)</td></tr>
-<tr class="memdesc:a8014dac8ffbf5a8cf6173a94ed9d6416"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempt to redo by one undo-action.  <a href="namespacemeshkernelapi.html#a8014dac8ffbf5a8cf6173a94ed9d6416">More...</a><br /></td></tr>
-<tr class="separator:a8014dac8ffbf5a8cf6173a94ed9d6416"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad49b7f49c043fe26218d479d986a4b61"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ad49b7f49c043fe26218d479d986a4b61">mkernel_is_valid_state</a> (int meshKernelId, bool &amp;isValid)</td></tr>
+<tr class="memdesc:ad49b7f49c043fe26218d479d986a4b61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if the meshKernelId is valid.  <a href="namespacemeshkernelapi.html#ad49b7f49c043fe26218d479d986a4b61">More...</a><br /></td></tr>
+<tr class="separator:ad49b7f49c043fe26218d479d986a4b61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1e78675445f77fcf3fdfa7d2d3ea972"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#af1e78675445f77fcf3fdfa7d2d3ea972">mkernel_undo_state</a> (bool &amp;undone, int &amp;meshKernelId)</td></tr>
+<tr class="memdesc:af1e78675445f77fcf3fdfa7d2d3ea972"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempt to undo by one undo-action.  <a href="namespacemeshkernelapi.html#af1e78675445f77fcf3fdfa7d2d3ea972">More...</a><br /></td></tr>
+<tr class="separator:af1e78675445f77fcf3fdfa7d2d3ea972"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef00f9a1f84dd07f80ae270d908f2b0a"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aef00f9a1f84dd07f80ae270d908f2b0a">mkernel_undo_state_count</a> (int &amp;committedCount, int &amp;restoredCount)</td></tr>
+<tr class="memdesc:aef00f9a1f84dd07f80ae270d908f2b0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the number of undo actions.  <a href="namespacemeshkernelapi.html#aef00f9a1f84dd07f80ae270d908f2b0a">More...</a><br /></td></tr>
+<tr class="separator:aef00f9a1f84dd07f80ae270d908f2b0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1984f7e35632db869ead6e5eeeabf86c"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a1984f7e35632db869ead6e5eeeabf86c">mkernel_undo_state_count_for_id</a> (int meshKernelId, int &amp;committedCount, int &amp;restoredCount)</td></tr>
+<tr class="memdesc:a1984f7e35632db869ead6e5eeeabf86c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the number of undo actions for a particular meshKernelId.  <a href="namespacemeshkernelapi.html#a1984f7e35632db869ead6e5eeeabf86c">More...</a><br /></td></tr>
+<tr class="separator:a1984f7e35632db869ead6e5eeeabf86c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f2c4a68c9f17c7401f226b8e3f81070"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a3f2c4a68c9f17c7401f226b8e3f81070">mkernel_redo_state</a> (bool &amp;redone, int &amp;meshKernelId)</td></tr>
+<tr class="memdesc:a3f2c4a68c9f17c7401f226b8e3f81070"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempt to redo by one undo-action.  <a href="namespacemeshkernelapi.html#a3f2c4a68c9f17c7401f226b8e3f81070">More...</a><br /></td></tr>
+<tr class="separator:a3f2c4a68c9f17c7401f226b8e3f81070"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a635acda90d728526dbbf6b9180f9bde8"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a635acda90d728526dbbf6b9180f9bde8">mkernel_clear_state</a> ()</td></tr>
+<tr class="memdesc:a635acda90d728526dbbf6b9180f9bde8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear all internal mesh kernel state and undo actions, no undo will be possible after this.  <a href="namespacemeshkernelapi.html#a635acda90d728526dbbf6b9180f9bde8">More...</a><br /></td></tr>
+<tr class="separator:a635acda90d728526dbbf6b9180f9bde8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a300a35a4e10c61d1b109ae10f46939b9"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a300a35a4e10c61d1b109ae10f46939b9">mkernel_clear_undo_state</a> ()</td></tr>
-<tr class="memdesc:a300a35a4e10c61d1b109ae10f46939b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the undo state.  <a href="namespacemeshkernelapi.html#a300a35a4e10c61d1b109ae10f46939b9">More...</a><br /></td></tr>
+<tr class="memdesc:a300a35a4e10c61d1b109ae10f46939b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the undo state for all mesh kernel ids, no undo is possible after this.  <a href="namespacemeshkernelapi.html#a300a35a4e10c61d1b109ae10f46939b9">More...</a><br /></td></tr>
 <tr class="separator:a300a35a4e10c61d1b109ae10f46939b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb8f7b19c80078a6bd41e0676e3a0910"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aeb8f7b19c80078a6bd41e0676e3a0910">mkernel_clear_undo_state_for_id</a> (int meshKernelId)</td></tr>
+<tr class="memdesc:aeb8f7b19c80078a6bd41e0676e3a0910"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the undo state for particular mesh kernel id, no undo for the id is possible after this.  <a href="namespacemeshkernelapi.html#aeb8f7b19c80078a6bd41e0676e3a0910">More...</a><br /></td></tr>
+<tr class="separator:aeb8f7b19c80078a6bd41e0676e3a0910"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23418612b67e544a81b53b49da588b8c"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a23418612b67e544a81b53b49da588b8c">mkernel_contacts_compute_boundary</a> (int meshKernelId, const int *oneDNodeMask, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygons, double searchRadius)</td></tr>
 <tr class="memdesc:a23418612b67e544a81b53b49da588b8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes 1d-2d contacts, where 1d nodes are connected to the closest 2d faces at the boundary (ggeo_make1D2DRiverLinks_dll)  <a href="namespacemeshkernelapi.html#a23418612b67e544a81b53b49da588b8c">More...</a><br /></td></tr>
 <tr class="separator:a23418612b67e544a81b53b49da588b8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -296,6 +314,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a57d1b16ba8121e1f11b1692b755647c3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a57d1b16ba8121e1f11b1692b755647c3">mkernel_deallocate_state</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:a57d1b16ba8121e1f11b1692b755647c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocate mesh state.  <a href="namespacemeshkernelapi.html#a57d1b16ba8121e1f11b1692b755647c3">More...</a><br /></td></tr>
 <tr class="separator:a57d1b16ba8121e1f11b1692b755647c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01e91a7f466943f63bea081be84e2eab"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a01e91a7f466943f63bea081be84e2eab">mkernel_expunge_state</a> (int meshKernelId)</td></tr>
+<tr class="memdesc:a01e91a7f466943f63bea081be84e2eab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocate mesh state and remove it completely, no undo for this meshKernelId will be possible after expunging.  <a href="namespacemeshkernelapi.html#a01e91a7f466943f63bea081be84e2eab">More...</a><br /></td></tr>
+<tr class="separator:a01e91a7f466943f63bea081be84e2eab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61c310189351a979c7f2b170802e5fa3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a61c310189351a979c7f2b170802e5fa3">mkernel_get_averaging_method_closest_point</a> (int &amp;method)</td></tr>
 <tr class="memdesc:a61c310189351a979c7f2b170802e5fa3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an int indicating the closest point averaging method type.  <a href="namespacemeshkernelapi.html#a61c310189351a979c7f2b170802e5fa3">More...</a><br /></td></tr>
 <tr class="separator:a61c310189351a979c7f2b170802e5fa3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -493,6 +514,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a16c36845832e4dc42ce9437b844f5830"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a16c36845832e4dc42ce9437b844f5830">mkernel_mesh2d_get_data</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
 <tr class="memdesc:a16c36845832e4dc42ce9437b844f5830"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> dimensions data.  <a href="namespacemeshkernelapi.html#a16c36845832e4dc42ce9437b844f5830">More...</a><br /></td></tr>
 <tr class="separator:a16c36845832e4dc42ce9437b844f5830"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac69ba29d07c1fcbd9a1292693090eaef"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac69ba29d07c1fcbd9a1292693090eaef">mkernel_mesh2d_get_node_edge_data</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
+<tr class="memdesc:ac69ba29d07c1fcbd9a1292693090eaef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets only the node and edge <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> data.  <a href="namespacemeshkernelapi.html#ac69ba29d07c1fcbd9a1292693090eaef">More...</a><br /></td></tr>
+<tr class="separator:ac69ba29d07c1fcbd9a1292693090eaef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67f563fcc78f0992f5a7b01a70ad7bb4"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a67f563fcc78f0992f5a7b01a70ad7bb4">mkernel_mesh2d_get_dimensions</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
 <tr class="memdesc:a67f563fcc78f0992f5a7b01a70ad7bb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> dimensions.  <a href="namespacemeshkernelapi.html#a67f563fcc78f0992f5a7b01a70ad7bb4">More...</a><br /></td></tr>
 <tr class="separator:a67f563fcc78f0992f5a7b01a70ad7bb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -688,6 +712,26 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
+<a id="a635acda90d728526dbbf6b9180f9bde8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a635acda90d728526dbbf6b9180f9bde8">&#9670;&nbsp;</a></span>mkernel_clear_state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_clear_state </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear all internal mesh kernel state and undo actions, no undo will be possible after this. </p>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
 <a id="a300a35a4e10c61d1b109ae10f46939b9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a300a35a4e10c61d1b109ae10f46939b9">&#9670;&nbsp;</a></span>mkernel_clear_undo_state()</h2>
 
@@ -703,7 +747,34 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
       </table>
 </div><div class="memdoc">
 
-<p>Clear the undo state. </p>
+<p>Clear the undo state for all mesh kernel ids, no undo is possible after this. </p>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="aeb8f7b19c80078a6bd41e0676e3a0910"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb8f7b19c80078a6bd41e0676e3a0910">&#9670;&nbsp;</a></span>mkernel_clear_undo_state_for_id()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_clear_undo_state_for_id </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear the undo state for particular mesh kernel id, no undo for the id is possible after this. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
 
 </div>
@@ -3443,6 +3514,33 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
+<a id="a01e91a7f466943f63bea081be84e2eab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01e91a7f466943f63bea081be84e2eab">&#9670;&nbsp;</a></span>mkernel_expunge_state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_expunge_state </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deallocate mesh state and remove it completely, no undo for this meshKernelId will be possible after expunging. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
 <a id="a61c310189351a979c7f2b170802e5fa3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a61c310189351a979c7f2b170802e5fa3">&#9670;&nbsp;</a></span>mkernel_get_averaging_method_closest_point()</h2>
 
@@ -4353,6 +4451,44 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">version</td><td>Version string </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="ad49b7f49c043fe26218d479d986a4b61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad49b7f49c043fe26218d479d986a4b61">&#9670;&nbsp;</a></span>mkernel_is_valid_state()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_is_valid_state </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool &amp;&#160;</td>
+          <td class="paramname"><em>isValid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determine if the meshKernelId is valid. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">isValid</td><td>Indicates if the mesh id is valid, true is its valid, false otherwise </td></tr>
   </table>
   </dd>
 </dl>
@@ -6128,6 +6264,44 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">boundaryPolygons</td><td>The output network boundary polygon </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="ac69ba29d07c1fcbd9a1292693090eaef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac69ba29d07c1fcbd9a1292693090eaef">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_node_edge_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_get_node_edge_data </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh2d</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets only the node and edge <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> data. </p>
+<p>This function ought to be called after <code>mkernel_mesh2d_get_dimensions</code> has been called and the node_x, node_y and edge_nodes pointers have been set to correctly sized memory. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">mesh2d</td><td>The <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> data </td></tr>
   </table>
   </dd>
 </dl>
@@ -8397,8 +8571,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="a8014dac8ffbf5a8cf6173a94ed9d6416"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8014dac8ffbf5a8cf6173a94ed9d6416">&#9670;&nbsp;</a></span>mkernel_redo_state()</h2>
+<a id="a3f2c4a68c9f17c7401f226b8e3f81070"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f2c4a68c9f17c7401f226b8e3f81070">&#9670;&nbsp;</a></span>mkernel_redo_state()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -8407,8 +8581,18 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
           <td class="memname">MKERNEL_API int meshkernelapi::mkernel_redo_state </td>
           <td>(</td>
           <td class="paramtype">bool &amp;&#160;</td>
-          <td class="paramname"><em>redone</em></td><td>)</td>
+          <td class="paramname"><em>redone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -8417,6 +8601,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">redone</td><td>Indicates if the redo action was actually redone </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">meshKernelId</td><td>The mesh kernel id related to the undo action </td></tr>
   </table>
   </dd>
 </dl>
@@ -8483,8 +8668,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="a79f5154bfb31948a56eda792687b5246"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a79f5154bfb31948a56eda792687b5246">&#9670;&nbsp;</a></span>mkernel_undo_state()</h2>
+<a id="af1e78675445f77fcf3fdfa7d2d3ea972"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af1e78675445f77fcf3fdfa7d2d3ea972">&#9670;&nbsp;</a></span>mkernel_undo_state()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -8493,8 +8678,18 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
           <td class="memname">MKERNEL_API int meshkernelapi::mkernel_undo_state </td>
           <td>(</td>
           <td class="paramtype">bool &amp;&#160;</td>
-          <td class="paramname"><em>undone</em></td><td>)</td>
+          <td class="paramname"><em>undone</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -8503,6 +8698,90 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">undone</td><td>Indicates if the undo action was actually undone </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">meshKernelId</td><td>The mesh kernel id related to the undo action </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="aef00f9a1f84dd07f80ae270d908f2b0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef00f9a1f84dd07f80ae270d908f2b0a">&#9670;&nbsp;</a></span>mkernel_undo_state_count()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_undo_state_count </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>committedCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>restoredCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Count the number of undo actions. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">committedCount</td><td>The number of undo actions. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">restoredCount</td><td>The number of restored undo actions. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a1984f7e35632db869ead6e5eeeabf86c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1984f7e35632db869ead6e5eeeabf86c">&#9670;&nbsp;</a></span>mkernel_undo_state_count_for_id()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_undo_state_count_for_id </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>committedCount</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>restoredCount</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Count the number of undo actions for a particular meshKernelId. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">committedCount</td><td>The number of undo actions. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">restoredCount</td><td>The number of restored undo actions. </td></tr>
   </table>
   </dd>
 </dl>

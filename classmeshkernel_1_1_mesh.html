@@ -301,6 +301,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:abae11e12a202c2e4d2ee57fae97f9881"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_mesh.html">Mesh</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#abae11e12a202c2e4d2ee57fae97f9881">operator+=</a> (<a class="el" href="classmeshkernel_1_1_mesh.html">Mesh</a> const &amp;rhs)</td></tr>
 <tr class="memdesc:abae11e12a202c2e4d2ee57fae97f9881"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add meshes: result is a mesh composed of the additions firstMesh += secondmesh results in the second mesh being added to firstMesh.  <a href="classmeshkernel_1_1_mesh.html#abae11e12a202c2e4d2ee57fae97f9881">More...</a><br /></td></tr>
 <tr class="separator:abae11e12a202c2e4d2ee57fae97f9881"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2698146cee27873e7b439a7b91c5786"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ab2698146cee27873e7b439a7b91c5786">Join</a> (const <a class="el" href="classmeshkernel_1_1_mesh.html">Mesh</a> &amp;rhs)</td></tr>
+<tr class="memdesc:ab2698146cee27873e7b439a7b91c5786"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add meshes: result is a mesh composed of the additions firstMesh += secondmesh results in the second mesh being added to firstMesh.  <a href="classmeshkernel_1_1_mesh.html#ab2698146cee27873e7b439a7b91c5786">More...</a><br /></td></tr>
+<tr class="separator:ab2698146cee27873e7b439a7b91c5786"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3ced87b590b72a13a98645223271cf1b"><td class="memItemLeft" align="right" valign="top"><a id="a3ced87b590b72a13a98645223271cf1b"></a>
 std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a3ced87b590b72a13a98645223271cf1b">GetValidNodeMapping</a> () const</td></tr>
 <tr class="memdesc:a3ced87b590b72a13a98645223271cf1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the mapping/indexing from the node array mapped to valid nodes. <br /></td></tr>
@@ -1432,6 +1435,33 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
 
 <p>Indicate if the edge-id is a valid edge. </p>
 <p>A valid edge satisfies four conditions: The start and end indices are not the null value, if neither is, then also the nodes indexed by the edge are valid nodes. If any of these conditions is false then the edge is in-valid. </p>
+
+</div>
+</div>
+<a id="ab2698146cee27873e7b439a7b91c5786"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab2698146cee27873e7b439a7b91c5786">&#9670;&nbsp;</a></span>Join()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;UndoAction&gt; meshkernel::Mesh::Join </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_mesh.html">Mesh</a> &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Add meshes: result is a mesh composed of the additions firstMesh += secondmesh results in the second mesh being added to firstMesh. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">rhs</td><td>The mesh to add </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The undo action </dd></dl>
 
 </div>
 </div>

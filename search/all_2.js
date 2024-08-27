@@ -81,11 +81,12 @@ var searchData=
   ['converttosamples_106',['ConvertToSamples',['../classmeshkernel_1_1_sample.html#a305835e50b4453de4ed0bbf67871ece8',1,'meshkernel::Sample']]],
   ['coordinates_5fx_107',['coordinates_x',['../structmeshkernelapi_1_1_geometry_list.html#a3ad7abb71118ffcaf8cd7f1ab5a37ae3',1,'meshkernelapi::GeometryList']]],
   ['coordinates_5fy_108',['coordinates_y',['../structmeshkernelapi_1_1_geometry_list.html#a1818b6b32d7a3879f753b498bf7b3cfa',1,'meshkernelapi::GeometryList']]],
-  ['createboundingbox_109',['CreateBoundingBox',['../classmeshkernel_1_1_bounding_box.html#acf29fe83a13844ada155c6455b406f24',1,'meshkernel::BoundingBox']]],
-  ['crossproduct_110',['crossProduct',['../namespacemeshkernel.html#aaf0a80624cc39ca2bbcaaa9d772b4136',1,'meshkernel']]],
-  ['curvature_5fadapted_5fgrid_5fspacing_111',['curvature_adapted_grid_spacing',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#ae6275adeec04bc3424200f0a1353df8c',1,'meshkernel::SplinesToCurvilinearParameters']]],
-  ['curvilineardirection_112',['CurvilinearDirection',['../namespacemeshkernel.html#ada45df7d9a6b761430af4dbf350f67cc',1,'meshkernel']]],
-  ['curvilineardirectiontostring_113',['CurvilinearDirectionToString',['../namespacemeshkernel.html#aca6e05dec0589bb9b38e7b1f59d8f423',1,'meshkernel']]],
-  ['curvilineargrid_114',['CurvilinearGrid',['../structmeshkernelapi_1_1_curvilinear_grid.html',1,'meshkernelapi']]],
-  ['curvilinearparameters_115',['CurvilinearParameters',['../structmeshkernel_1_1_curvilinear_parameters.html',1,'meshkernel']]]
+  ['create_109',['Create',['../classmeshkernelapi_1_1_m_k_state_undo_action.html#ac422eb75534e287ce601b28ebe83a568',1,'meshkernelapi::MKStateUndoAction']]],
+  ['createboundingbox_110',['CreateBoundingBox',['../classmeshkernel_1_1_bounding_box.html#acf29fe83a13844ada155c6455b406f24',1,'meshkernel::BoundingBox']]],
+  ['crossproduct_111',['crossProduct',['../namespacemeshkernel.html#aaf0a80624cc39ca2bbcaaa9d772b4136',1,'meshkernel']]],
+  ['curvature_5fadapted_5fgrid_5fspacing_112',['curvature_adapted_grid_spacing',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#ae6275adeec04bc3424200f0a1353df8c',1,'meshkernel::SplinesToCurvilinearParameters']]],
+  ['curvilineardirection_113',['CurvilinearDirection',['../namespacemeshkernel.html#ada45df7d9a6b761430af4dbf350f67cc',1,'meshkernel']]],
+  ['curvilineardirectiontostring_114',['CurvilinearDirectionToString',['../namespacemeshkernel.html#aca6e05dec0589bb9b38e7b1f59d8f423',1,'meshkernel']]],
+  ['curvilineargrid_115',['CurvilinearGrid',['../structmeshkernelapi_1_1_curvilinear_grid.html',1,'meshkernelapi']]],
+  ['curvilinearparameters_116',['CurvilinearParameters',['../structmeshkernel_1_1_curvilinear_parameters.html',1,'meshkernel']]]
 ];

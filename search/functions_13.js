@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['walkboundaryfromnode_1402',['WalkBoundaryFromNode',['../classmeshkernel_1_1_mesh2_d.html#a9ccf24cf23136393e36d0fd07bbbfff2',1,'meshkernel::Mesh2D']]],
-  ['what_1403',['what',['../classmeshkernel_1_1_mesh_kernel_error.html#ae995508dd378b8a2245af33a4978880e',1,'meshkernel::MeshKernelError']]],
-  ['width_1404',['Width',['../classmeshkernel_1_1_bounding_box.html#a582e92518f7ad17457176eb147ba9e42',1,'meshkernel::BoundingBox']]]
+  ['vector_1419',['Vector',['../classmeshkernel_1_1_vector.html#a81b165cb61021577d947ee52cc5d6ca6',1,'meshkernel::Vector::Vector()'],['../classmeshkernel_1_1_vector.html#a17119ad36f152b6b0cb7bc48b47caf71',1,'meshkernel::Vector::Vector(const double x, const double y)'],['../classmeshkernel_1_1_translation.html#afaf1a7c15fceffbfe8022afacbab8fc3',1,'meshkernel::Translation::vector()']]],
+  ['vectorproduct_1420',['VectorProduct',['../namespacemeshkernel.html#a214dc989df380801d32a03bb4350300c',1,'meshkernel']]]
 ];

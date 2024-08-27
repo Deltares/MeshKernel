@@ -1,13 +1,19 @@
 var searchData=
 [
-  ['uint_753',['UInt',['../namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28',1,'meshkernel']]],
-  ['uniform_5fcolumns_5ffraction_754',['uniform_columns_fraction',['../structmeshkernel_1_1_make_grid_parameters.html#a0b59868fd0fc50f7437aa2b5ecbb94b4',1,'meshkernel::MakeGridParameters']]],
-  ['uniform_5frows_5ffraction_755',['uniform_rows_fraction',['../structmeshkernel_1_1_make_grid_parameters.html#a986ab081ccbb94bbba7ea3f674a20120',1,'meshkernel::MakeGridParameters']]],
-  ['unknown_756',['Unknown',['../namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9a88183b946cc5f0e8c96b2e66e1c74a7e',1,'meshkernel']]],
-  ['unknownexceptioncode_757',['UnknownExceptionCode',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba7c0e2f795722e07bd21f85e700dd1653',1,'meshkernel']]],
-  ['upper_5fright_5fx_758',['upper_right_x',['../structmeshkernel_1_1_make_grid_parameters.html#a3e6b4be2a2c9f6fc35c5446252587f16',1,'meshkernel::MakeGridParameters']]],
-  ['upper_5fright_5fy_759',['upper_right_y',['../structmeshkernel_1_1_make_grid_parameters.html#ada89a8003178c7cd3db3ffbb1434880f',1,'meshkernel::MakeGridParameters']]],
-  ['upperright_760',['upperRight',['../classmeshkernel_1_1_bounding_box.html#ac05aaea8216831b9d887d4ac5ebd79d0',1,'meshkernel::BoundingBox']]],
-  ['use_5fmass_5fcenter_5fwhen_5frefining_761',['use_mass_center_when_refining',['../structmeshkernel_1_1_mesh_refinement_parameters.html#a4a39fcca4669fa55c513a71ba798c91a',1,'meshkernel::MeshRefinementParameters']]],
-  ['utm_762',['UTM',['../classmeshkernel_1_1_convert_spherical_to_cartesian_base.html#a934004359d25af1c53a80d21cb76d609',1,'meshkernel::ConvertSphericalToCartesianBase::UTM()'],['../classmeshkernel_1_1_convert_cartesian_to_spherical_base.html#ad15d2ec3130b33e3f82465b1449e128f',1,'meshkernel::ConvertCartesianToSphericalBase::UTM()']]]
+  ['targetprojection_746',['TargetProjection',['../classmeshkernel_1_1_convert_spherical_to_cartesian_base.html#ad46697621f8ca5a86caff92056affc76',1,'meshkernel::ConvertSphericalToCartesianBase::TargetProjection()'],['../classmeshkernel_1_1_convert_cartesian_to_spherical_base.html#a3930d902a0a37b394d448272dc1dd97b',1,'meshkernel::ConvertCartesianToSphericalBase::TargetProjection()']]],
+  ['transformationfunction_747',['TransformationFunction',['../namespacemeshkernel.html#ad0be00d62721b0a8362e658f1c5b0d10',1,'meshkernel']]],
+  ['transformationprojection_748',['TransformationProjection',['../classmeshkernel_1_1_translation.html#ac345fafc81691b48c6c75b729df63df7',1,'meshkernel::Translation::TransformationProjection()'],['../classmeshkernel_1_1_rotation.html#a8bb6db1a699a319b658dad15d565cdcb',1,'meshkernel::Rotation::TransformationProjection()'],['../classmeshkernel_1_1_rigid_body_transformation.html#a611066234b11520d12243f3638218500',1,'meshkernel::RigidBodyTransformation::TransformationProjection()']]],
+  ['transformglobalvectortolocal_749',['TransformGlobalVectorToLocal',['../namespacemeshkernel.html#ae0627229f0f4bf223d00001cc39b8686',1,'meshkernel']]],
+  ['transformsphericaltocartesian_750',['TransformSphericalToCartesian',['../classmeshkernel_1_1_point.html#aa5944c99e57cc73b5c8b13d25e65e2d3',1,'meshkernel::Point']]],
+  ['translatesphericalcoordinates_751',['TranslateSphericalCoordinates',['../namespacemeshkernel.html#acde0b0ca587eded2a5e2167f4a737ca8',1,'meshkernel']]],
+  ['translation_752',['Translation',['../classmeshkernel_1_1_translation.html',1,'meshkernel::Translation'],['../classmeshkernel_1_1_translation.html#a4e7aad0e060b603beb970fc703cc1500',1,'meshkernel::Translation::Translation()=default'],['../classmeshkernel_1_1_translation.html#ac1f10d1fdf2a747956762be887e16b95',1,'meshkernel::Translation::Translation(const Vector &amp;trans)'],['../classmeshkernel_1_1_rigid_body_transformation.html#ac2949d690d42517ca4baa78c2201f00a',1,'meshkernel::RigidBodyTransformation::translation()']]],
+  ['traversaldirection_753',['TraversalDirection',['../namespacemeshkernel.html#a74432f6294d6952b6f3b363b0f85a3a4',1,'meshkernel']]],
+  ['triangulatefaces_754',['TriangulateFaces',['../classmeshkernel_1_1_mesh2_d.html#a7fc7d6b768b66089f341be1ba92faebb',1,'meshkernel::Mesh2D']]],
+  ['triangulatepoints_755',['TriangulatePoints',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1bafa3aac8b209f59ca7f9cb9f022bc72d76c',1,'meshkernel::TriangulationWrapper']]],
+  ['triangulatepointsandgeneratefaces_756',['TriangulatePointsAndGenerateFaces',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1bafa8fd89bb22640c4c53333ab29b9f84207',1,'meshkernel::TriangulationWrapper']]],
+  ['triangulation_757',['Triangulation',['../namespacemeshkernel.html#a329282934f3c7bc126cc4e4016307e0f',1,'meshkernel']]],
+  ['triangulationinterpolation_758',['TriangulationInterpolation',['../classmeshkernel_1_1_triangulation_interpolation.html',1,'meshkernel::TriangulationInterpolation'],['../classmeshkernel_1_1_triangulation_interpolation.html#a6b346ed9279976a221de5e4903fffc1c',1,'meshkernel::TriangulationInterpolation::TriangulationInterpolation()']]],
+  ['triangulationoptions_759',['TriangulationOptions',['../structmeshkernel_1_1_triangulation_wrapper.html#a65184054217a86e1fb086622c75e1baf',1,'meshkernel::TriangulationWrapper']]],
+  ['triangulationwrapper_760',['TriangulationWrapper',['../structmeshkernel_1_1_triangulation_wrapper.html',1,'meshkernel']]],
+  ['type_761',['Type',['../classmeshkernel_1_1_mesh.html#a2bdcf8039b306fc22ee56210ac137078',1,'meshkernel::Mesh']]]
 ];

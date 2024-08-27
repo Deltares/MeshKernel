@@ -1,13 +1,13 @@
 var searchData=
 [
-  ['edge_5ffaces_1435',['edge_faces',['../structmeshkernelapi_1_1_mesh2_d.html#ac6d3c23de07de8724ea5c8f576dc1658',1,'meshkernelapi::Mesh2D']]],
-  ['edge_5fnodes_1436',['edge_nodes',['../structmeshkernelapi_1_1_mesh1_d.html#adb3a270df6aaa1b67be8260f33a76552',1,'meshkernelapi::Mesh1D::edge_nodes()'],['../structmeshkernelapi_1_1_mesh2_d.html#ab2f9c8b312078b44a217e9561a3d9ae3',1,'meshkernelapi::Mesh2D::edge_nodes()']]],
-  ['edge_5fx_1437',['edge_x',['../structmeshkernelapi_1_1_mesh2_d.html#a48f6e7899444277dc99d00467dd83db9',1,'meshkernelapi::Mesh2D']]],
-  ['edge_5fy_1438',['edge_y',['../structmeshkernelapi_1_1_mesh2_d.html#aa56b27d679eb0ee8e4898da561e8a38a',1,'meshkernelapi::Mesh2D']]],
-  ['edgedistance_1439',['edgeDistance',['../structmeshkernel_1_1_edge_mesh_poly_line_intersection.html#a225801c479d92cd01e57fe17b95ba379',1,'meshkernel::EdgeMeshPolyLineIntersection']]],
-  ['edgefirstnode_1440',['edgeFirstNode',['../structmeshkernel_1_1_edge_mesh_poly_line_intersection.html#a86f717e476465c36e84415d2cae70b6a',1,'meshkernel::EdgeMeshPolyLineIntersection']]],
-  ['edgeindex_1441',['edgeIndex',['../structmeshkernel_1_1_edge_mesh_poly_line_intersection.html#a70a29af3b35446e95aa2a46f862d6617',1,'meshkernel::EdgeMeshPolyLineIntersection']]],
-  ['edgeindices_1442',['edgeIndices',['../structmeshkernel_1_1_face_mesh_poly_line_intersection.html#a09639203ee376b45daa10a482cf3ed70',1,'meshkernel::FaceMeshPolyLineIntersection']]],
-  ['edgenodes_1443',['edgeNodes',['../structmeshkernel_1_1_face_mesh_poly_line_intersection.html#aea85374e72f3e668979323a5788e60e3',1,'meshkernel::FaceMeshPolyLineIntersection']]],
-  ['edgesecondnode_1444',['edgeSecondNode',['../structmeshkernel_1_1_edge_mesh_poly_line_intersection.html#ae510c4bfb261f5cb5860d07dd0a46ff3',1,'meshkernel::EdgeMeshPolyLineIntersection']]]
+  ['edge_5ffaces_1454',['edge_faces',['../structmeshkernelapi_1_1_mesh2_d.html#ac6d3c23de07de8724ea5c8f576dc1658',1,'meshkernelapi::Mesh2D']]],
+  ['edge_5fnodes_1455',['edge_nodes',['../structmeshkernelapi_1_1_mesh1_d.html#adb3a270df6aaa1b67be8260f33a76552',1,'meshkernelapi::Mesh1D::edge_nodes()'],['../structmeshkernelapi_1_1_mesh2_d.html#ab2f9c8b312078b44a217e9561a3d9ae3',1,'meshkernelapi::Mesh2D::edge_nodes()']]],
+  ['edge_5fx_1456',['edge_x',['../structmeshkernelapi_1_1_mesh2_d.html#a48f6e7899444277dc99d00467dd83db9',1,'meshkernelapi::Mesh2D']]],
+  ['edge_5fy_1457',['edge_y',['../structmeshkernelapi_1_1_mesh2_d.html#aa56b27d679eb0ee8e4898da561e8a38a',1,'meshkernelapi::Mesh2D']]],
+  ['edgedistance_1458',['edgeDistance',['../structmeshkernel_1_1_edge_mesh_poly_line_intersection.html#a225801c479d92cd01e57fe17b95ba379',1,'meshkernel::EdgeMeshPolyLineIntersection']]],
+  ['edgefirstnode_1459',['edgeFirstNode',['../structmeshkernel_1_1_edge_mesh_poly_line_intersection.html#a86f717e476465c36e84415d2cae70b6a',1,'meshkernel::EdgeMeshPolyLineIntersection']]],
+  ['edgeindex_1460',['edgeIndex',['../structmeshkernel_1_1_edge_mesh_poly_line_intersection.html#a70a29af3b35446e95aa2a46f862d6617',1,'meshkernel::EdgeMeshPolyLineIntersection']]],
+  ['edgeindices_1461',['edgeIndices',['../structmeshkernel_1_1_face_mesh_poly_line_intersection.html#a09639203ee376b45daa10a482cf3ed70',1,'meshkernel::FaceMeshPolyLineIntersection']]],
+  ['edgenodes_1462',['edgeNodes',['../structmeshkernel_1_1_face_mesh_poly_line_intersection.html#aea85374e72f3e668979323a5788e60e3',1,'meshkernel::FaceMeshPolyLineIntersection']]],
+  ['edgesecondnode_1463',['edgeSecondNode',['../structmeshkernel_1_1_edge_mesh_poly_line_intersection.html#ae510c4bfb261f5cb5860d07dd0a46ff3',1,'meshkernel::EdgeMeshPolyLineIntersection']]]
 ];
