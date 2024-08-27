@@ -45,7 +45,7 @@ void meshkernel::UndoActionStack::SetMaximumSize(const UInt maximumSize)
     }
     else if (maximumSize < m_committed.size())
     {
-        UInt loopLimit = m_committed.size();
+        UInt loopLimit = static_cast<UInt>(m_committed.size());
 
         for (UInt i = maximumSize; i < loopLimit; ++i)
         {
