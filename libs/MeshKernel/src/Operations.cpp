@@ -1644,40 +1644,4 @@ namespace meshkernel
         return (matCoefficients[0] * x[0] + matCoefficients[1] * x[1]) * y[0] + (matCoefficients[2] * x[0] + matCoefficients[3] * x[1]) * y[1];
     }
 
-    void Print(const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::ostream& out)
-    {
-        out << "nullId = " << constants::missing::uintValue << ";" << std::endl;
-        out << "nullValue = " << constants::missing::doubleValue << ";" << std::endl;
-        out << "nodex = nullValue * ones ( " << nodes.size() << ", 1);" << std::endl;
-        out << "nodey = nullValue * ones ( " << nodes.size() << ", 1);" << std::endl;
-        out << "edges = " << constants::missing::uintValue << " * ones ( " << edges.size() << ", 2);" << std::endl;
-
-        for (UInt i = 0; i < nodes.size(); ++i)
-        {
-            if (nodes[i].x != constants::missing::doubleValue)
-            {
-                out << "nodex (" << i + 1 << " ) = " << nodes[i].x << ";" << std::endl;
-            }
-        }
-
-        for (UInt i = 0; i < nodes.size(); ++i)
-        {
-            if (nodes[i].y != constants::missing::doubleValue)
-            {
-                out << "nodey (" << i + 1 << " ) = " << nodes[i].y << ";" << std::endl;
-            }
-        }
-
-        for (UInt i = 0; i < edges.size(); ++i)
-        {
-            if (edges[i].first != constants::missing::uintValue &&
-                edges[i].second != constants::missing::uintValue &&
-                nodes[edges[i].first].IsValid() && nodes[edges[i].second].IsValid())
-            {
-                out << "edges ( " << i + 1 << ", 1 ) = " << edges[i].first + 1 << ";" << std::endl;
-                out << "edges ( " << i + 1 << ", 2 ) = " << edges[i].second + 1 << ";" << std::endl;
-            }
-        }
-    }
-
 } // namespace meshkernel

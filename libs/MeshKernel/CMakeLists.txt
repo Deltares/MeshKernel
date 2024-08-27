@@ -76,12 +76,18 @@ set(
   ${UNDO_SRC_DIR}/DeleteNodeAction.cpp
   ${UNDO_SRC_DIR}/FullUnstructuredGridUndo.cpp
   ${UNDO_SRC_DIR}/MeshConversionAction.cpp
+  ${UNDO_SRC_DIR}/NoActionUndo.cpp
   ${UNDO_SRC_DIR}/NodeTranslationAction.cpp
   ${UNDO_SRC_DIR}/ResetEdgeAction.cpp
   ${UNDO_SRC_DIR}/ResetNodeAction.cpp
   ${UNDO_SRC_DIR}/SphericalCoordinatesOffsetAction.cpp
   ${UNDO_SRC_DIR}/UndoAction.cpp
   ${UNDO_SRC_DIR}/UndoActionStack.cpp
+)
+
+set(
+  UTILITIES_SRC_LIST
+  ${UTILITIES_SRC_DIR}/Utilities.cpp
 )
 
 set(
@@ -195,6 +201,7 @@ set(
   ${UNDO_INC_DIR}/DeleteNodeAction.hpp
   ${UNDO_INC_DIR}/FullUnstructuredGridUndo.hpp
   ${UNDO_INC_DIR}/MeshConversionAction.hpp
+  ${UNDO_INC_DIR}/NoActionUndo.hpp
   ${UNDO_INC_DIR}/NodeTranslationAction.hpp
   ${UNDO_INC_DIR}/ResetEdgeAction.hpp
   ${UNDO_INC_DIR}/ResetNodeAction.hpp
@@ -265,6 +272,7 @@ set(
   ${UTILITIES_INC_DIR}/RTree.hpp
   ${UTILITIES_INC_DIR}/RTreeBase.hpp
   ${UTILITIES_INC_DIR}/RTreeFactory.hpp
+  ${UTILITIES_INC_DIR}/Utilities.hpp
 )
 
 # add sources to target
@@ -359,6 +367,7 @@ source_group("Source Files/AveragingStrategies" FILES ${AVERAGING_STRATEGIES_SRC
 source_group("Source Files/CurvilinearGrid" FILES ${CURVILINEAR_GRID_SRC_LIST})
 source_group("Source Files/CurvilinearGrid/UndoActions" FILES ${CURVILINEAR_GRID_UNDO_ACTION_SRC_LIST})
 source_group("Source Files/UndoActions" FILES ${UNDO_SRC_LIST})
+source_group("Source Files/Utilities" FILES ${UTILITIES_SRC_LIST})
 
 # group the headers in IDE tree
 source_group("Header Files" FILES ${INC_LIST})

@@ -20,7 +20,10 @@ set(DOMAIN_INC_DIR ${INC_DIR}/MeshKernelApi)
 set(VERSION_INC_DIR ${CMAKE_SOURCE_DIR}/tools)
 
 # list of target sources
-set(SRC_LIST ${SRC_DIR}/MeshKernel.cpp)
+set(SRC_LIST
+  ${SRC_DIR}/MKStateUndoAction.cpp
+  ${SRC_DIR}/MeshKernel.cpp
+)
 
 # list of target headers
 set(
@@ -30,6 +33,7 @@ set(
   ${DOMAIN_INC_DIR}/CurvilinearGrid.hpp
   ${DOMAIN_INC_DIR}/GeometryList.hpp
   ${DOMAIN_INC_DIR}/GriddedSamples.hpp
+  ${DOMAIN_INC_DIR}/MKStateUndoAction.hpp
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
   ${DOMAIN_INC_DIR}/MeshKernel.hpp
@@ -48,7 +52,7 @@ target_sources(
       BASE_DIRS
         ${INC_DIR} ${VERSION_INC_DIR}
       FILES
-        ${INC_LIST} 
+        ${INC_LIST}
 )
 
 # Expose the interface of the shared lib
@@ -74,11 +78,11 @@ target_precompile_headers(
   ${TARGET_NAME}
   PRIVATE
     <cstring>
-    <memory> 
+    <memory>
     <stdexcept>
     <unordered_map>
     <unordered_set>
-    <vector> 
+    <vector>
 )
 
 install(TARGETS ${TARGET_NAME} FILE_SET HEADERS DESTINATION "include")

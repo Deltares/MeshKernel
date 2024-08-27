@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 
 #include <iterator>
+#include <random>
 
 #include "MeshKernel/UndoActions/AddEdgeAction.hpp"
 #include "MeshKernel/UndoActions/AddNodeAction.hpp"
@@ -485,6 +486,98 @@ TEST(UndoStackTests, ExeedingMaximumUndoActions)
 
     // Check the size
     EXPECT_EQ(undoActionStack.Size(), mk::UndoActionStack::MaxUndoSize);
+
+    // Clear all undo actions form stack
+    undoActionStack.Clear();
+    EXPECT_EQ(undoActionStack.Size(), 0);
+}
+
+TEST(UndoStackTests, RemovingUndoActions)
+{
+    mk::UndoActionStack undoActionStack;
+    int actionId1 = 1;
+    int actionId2 = 2;
+    int actionId3 = 3;
+    int unknownActionId = 4;
+
+    mk::UInt actionCount = (mk::UndoActionStack::MaxUndoSize - mk::UndoActionStack::MaxUndoSize % 3) / 3;
+
+    EXPECT_EQ(undoActionStack.Size(), 0);
+
+    // Fill undo actions
+    for (mk::UInt i = 0; i < actionCount; ++i)
+    {
+        undoActionStack.Add(std::make_unique<MockUndoAction>(), actionId1);
+        undoActionStack.Add(std::make_unique<MockUndoAction>(), actionId2);
+        undoActionStack.Add(std::make_unique<MockUndoAction>(), actionId3);
+    }
+
+    // Check the size
+    EXPECT_EQ(undoActionStack.Size(), 3 * actionCount);
+
+    // Remove all undo actions associated with actionId2
+    EXPECT_EQ(undoActionStack.Remove(actionId2), actionCount);
+
+    // Check the size
+    EXPECT_EQ(undoActionStack.Size(), 2 * actionCount);
+
+    // There are no undo actions associated with unknownActionId. So, should remove 0 undo actions
+    EXPECT_EQ(undoActionStack.Remove(unknownActionId), 0);
+
+    // Check the size
+    EXPECT_EQ(undoActionStack.Size(), 2 * actionCount);
+
+    // Clear all undo actions form stack
+    undoActionStack.Clear();
+    EXPECT_EQ(undoActionStack.Size(), 0);
+}
+
+TEST(UndoStackTests, RemovingUndoActionsRandomised)
+{
+    constexpr mk::UInt NumberOfUndoActions = 4;
+
+    mk::UndoActionStack undoActionStack;
+    std::array<int, NumberOfUndoActions> actionIds{1, 10, 21, 33};
+    std::array<int, NumberOfUndoActions> actionCounts{0, 0, 0, 0};
+    int unknownActionId = 45;
+
+    mk::UInt actionCount = (mk::UndoActionStack::MaxUndoSize - mk::UndoActionStack::MaxUndoSize % NumberOfUndoActions) / NumberOfUndoActions;
+    mk::UInt totalActionCount = NumberOfUndoActions * actionCount;
+
+    EXPECT_EQ(undoActionStack.Size(), 0);
+
+    std::mt19937 generator;
+
+    // Fill undo actions
+    for (mk::UInt i = 0; i < totalActionCount; ++i)
+    {
+        mk::UInt randomNum = static_cast<mk::UInt>(generator()) % NumberOfUndoActions;
+        undoActionStack.Add(std::make_unique<MockUndoAction>(), actionIds[randomNum]);
+        ++actionCounts[randomNum];
+    }
+
+    // Check the size
+    EXPECT_EQ(undoActionStack.Size(), NumberOfUndoActions * actionCount);
+
+    // Remove all undo actions associated with actionId[1]
+    EXPECT_EQ(undoActionStack.Remove(actionIds[1]), actionCounts[1]);
+    totalActionCount -= actionCounts[1];
+
+    // Check the size
+    EXPECT_EQ(undoActionStack.Size(), totalActionCount);
+
+    // Remove all undo actions associated with actionId[3]
+    EXPECT_EQ(undoActionStack.Remove(actionIds[3]), actionCounts[3]);
+    totalActionCount -= actionCounts[3];
+
+    // Check the size
+    EXPECT_EQ(undoActionStack.Size(), totalActionCount);
+
+    // There are no undo actions associated with unknownActionId. So, should remove 0 undo actions
+    EXPECT_EQ(undoActionStack.Remove(unknownActionId), 0);
+
+    // Check the size
+    EXPECT_EQ(undoActionStack.Size(), totalActionCount);
 
     // Clear all undo actions form stack
     undoActionStack.Clear();

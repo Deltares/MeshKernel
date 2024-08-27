@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2024.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,24 +25,19 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
+#include "MeshKernel/UndoActions/NoActionUndo.hpp"
 
-namespace meshkernelapi
+std::unique_ptr<meshkernel::NoActionUndo> meshkernel::NoActionUndo::Create()
 {
-    /// @brief A struct used to describe the values of a curvilinear grid in a C-compatible manner
-    struct CurvilinearGrid
-    {
-        /// @brief The x-coordinates of network1d nodes
-        double* node_x = nullptr;
+    return std::make_unique<NoActionUndo>();
+}
 
-        /// @brief The y-coordinates of network1d nodes
-        double* node_y = nullptr;
+void meshkernel::NoActionUndo::DoCommit()
+{
+    // Nothing to do
+}
 
-        /// @brief The number of curvilinear grid nodes along m
-        int num_m = 0;
-
-        /// @brief The number of curvilinear grid nodes along n
-        int num_n = 0;
-    };
-
-} // namespace meshkernelapi
+void meshkernel::NoActionUndo::DoRestore()
+{
+    // Nothing to do
+}

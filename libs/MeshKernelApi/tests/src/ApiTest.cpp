@@ -1952,14 +1952,27 @@ TEST_F(CartesianApiTestFixture, Network1DComputeFixedChainages_ShouldGenerateMes
     double const fixedChainagesOffset = 10.0;
     std::vector<double> fixedChainages{5.0, separator, 5.0};
     errorCode = meshkernelapi::mkernel_network1d_compute_fixed_chainages(meshKernelId, fixedChainages.data(), fixedChainagesSize, minFaceSize, fixedChainagesOffset);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     // Convert network 1d to mesh1d
     errorCode = meshkernelapi::mkernel_network1d_to_mesh1d(meshKernelId, minFaceSize);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Asserts
     meshkernelapi::Mesh1D mesh1dResults;
     errorCode = mkernel_mesh1d_get_dimensions(meshKernelId, mesh1dResults);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_EQ(6, mesh1dResults.num_nodes);
     ASSERT_EQ(4, mesh1dResults.num_edges);
+
+    auto edge_nodes = std::vector<int>(mesh1dResults.num_edges * 2);
+    auto node_x = std::vector<double>(mesh1dResults.num_nodes);
+    auto node_y = std::vector<double>(mesh1dResults.num_nodes);
+    mesh1dResults.edge_nodes = edge_nodes.data();
+    mesh1dResults.node_x = node_x.data();
+    mesh1dResults.node_y = node_y.data();
+
+    errorCode = mkernel_mesh1d_get_data(meshKernelId, mesh1dResults);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
 TEST_F(CartesianApiTestFixture, Network1DToMesh1d_FromPolylines_ShouldGenerateMesh1D)
@@ -2957,6 +2970,9 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
 {
     using namespace meshkernelapi;
 
+    int errorCode = mkernel_clear_undo_state();
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
     meshkernel::UInt const num_nodes_x = 20;
     meshkernel::UInt const num_nodes_y = 15;
     double const delta = 1.0;
@@ -2990,7 +3006,8 @@ TEST(Mesh2D, Mesh2DSetAndAdd)
 
     // allocate state
     int mk_id = 0;
-    int errorCode = mkernel_allocate_state(0, mk_id);
+    errorCode = mkernel_allocate_state(0, mk_id);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // first initialise using the first mesh, mesh2d_1
     errorCode = mkernel_mesh2d_set(mk_id, mesh2d_1);
@@ -3057,7 +3074,7 @@ TEST(Mesh2D, Mesh2DAddEdge)
 {
     using namespace meshkernelapi;
 
-    int errorCode = mkernel_clear_undo_state();
+    int errorCode = mkernel_clear_state();
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernel::UInt const num_nodes_x = 4;
@@ -3093,15 +3110,184 @@ TEST(Mesh2D, Mesh2DAddEdge)
 
     // Should be only a single item on the undo action stack
     bool undoInsertEdge = false;
-    errorCode = mkernel_undo_state(undoInsertEdge);
+    int undoId = meshkernel::constants::missing::intValue;
+    errorCode = mkernel_undo_state(undoInsertEdge, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_TRUE(undoInsertEdge);
+    ASSERT_EQ(mk_id, undoId);
+
+    // Undo creation of mesh2d
+    undoInsertEdge = false;
+    errorCode = mkernel_undo_state(undoInsertEdge, undoId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_TRUE(undoInsertEdge);
+    ASSERT_EQ(undoId, mk_id);
 
     // Should be no items on the undo action stack
     undoInsertEdge = false;
-    errorCode = mkernel_undo_state(undoInsertEdge);
+    errorCode = mkernel_undo_state(undoInsertEdge, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_FALSE(undoInsertEdge);
+    ASSERT_EQ(undoId, meshkernel::constants::missing::intValue);
+}
+
+TEST(Mesh2D, SimpleMultiMeshUndoTest)
+{
+    using namespace meshkernelapi;
+
+    int committedCount = 0;
+    int restoredCount = 0;
+
+    int errorCode = mkernel_clear_undo_state();
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernel::UInt const num_nodes_x = 4;
+    meshkernel::UInt const num_nodes_y = 4;
+    double const delta = 1.0;
+
+    // create first mesh
+    auto [num_nodes, num_edges, node_x, node_y, edge_nodes] =
+        MakeRectangularMeshForApiTesting(num_nodes_x,
+                                         num_nodes_y,
+                                         delta,
+                                         meshkernel::Point(0.0, 0.0));
+    Mesh2D mesh2d{};
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+    // allocate state
+    int mkid1 = 0;
+    errorCode = mkernel_allocate_state(0, mkid1);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // first initialise using the first mesh, mesh2d
+    errorCode = mkernel_mesh2d_set(mkid1, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // create second mesh
+    std::tie(num_nodes, num_edges, node_x, node_y, edge_nodes) =
+        MakeRectangularMeshForApiTesting(num_nodes_x,
+                                         num_nodes_y,
+                                         delta,
+                                         meshkernel::Point(10.0, 10.0));
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+    int mkid2 = 0;
+    errorCode = mkernel_allocate_state(0, mkid2);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // initialise using the second mesh, mesh2d
+    errorCode = mkernel_mesh2d_set(mkid2, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Start test
+
+    // Check validity of mkid's
+    bool isValid = false;
+    errorCode = mkernel_is_valid_state(mkid2, isValid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(isValid);
+
+    isValid = false;
+    errorCode = mkernel_is_valid_state(mkid1, isValid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(isValid);
+
+    int nodeId = 0;
+    errorCode = mkernel_mesh2d_insert_node(mkid1, 0.25, 0.25, nodeId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = mkernel_mesh2d_insert_node(mkid1, 0.5, 0.25, nodeId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = mkernel_mesh2d_insert_node(mkid1, 0.75, 0.25, nodeId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = mkernel_mesh2d_insert_node(mkid1, 0.25, 0.5, nodeId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Save id to delete node later
+    int nodeId2;
+    errorCode = mkernel_mesh2d_insert_node(mkid1, 0.5, 0.5, nodeId2);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = mkernel_mesh2d_insert_node(mkid2, 0.75, 0.5, nodeId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = mkernel_mesh2d_insert_node(mkid2, 0.25, 0.75, nodeId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = mkernel_mesh2d_insert_node(mkid2, 0.5, 0.75, nodeId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = mkernel_mesh2d_insert_node(mkid2, 0.75, 0.75, nodeId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Delete node
+    errorCode = mkernel_mesh2d_delete_node(mkid1, nodeId2);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = mkernel_undo_state_count(committedCount, restoredCount);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    EXPECT_EQ(committedCount, 12);
+    EXPECT_EQ(restoredCount, 0);
+
+    bool didUndo = false;
+    int undoId = meshkernel::constants::missing::intValue;
+    // Undo deletion of node from mkid1
+    errorCode = mkernel_undo_state(didUndo, undoId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+    ASSERT_EQ(mkid1, undoId);
+
+    didUndo = false;
+    // Undo node insertion from mkid2
+    errorCode = mkernel_undo_state(didUndo, undoId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+    ASSERT_EQ(mkid2, undoId);
+
+    errorCode = mkernel_undo_state_count(committedCount, restoredCount);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    EXPECT_EQ(committedCount, 10);
+    EXPECT_EQ(restoredCount, 2);
+
+    errorCode = mkernel_expunge_state(mkid1);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = mkernel_undo_state_count_for_id(mkid2, committedCount, restoredCount);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    EXPECT_EQ(committedCount, 4);
+    EXPECT_EQ(restoredCount, 1);
+
+    isValid = false;
+    errorCode = mkernel_is_valid_state(mkid1, isValid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_FALSE(isValid);
+
+    errorCode = mkernel_expunge_state(mkid2);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    isValid = false;
+    errorCode = mkernel_is_valid_state(mkid2, isValid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_FALSE(isValid);
+
+    errorCode = mkernel_undo_state_count_for_id(mkid2, committedCount, restoredCount);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    EXPECT_EQ(committedCount, 0);
+    EXPECT_EQ(restoredCount, 0);
 }
 
 TEST(Mesh2D, Mesh2DInsertNode)
@@ -3147,15 +3333,25 @@ TEST(Mesh2D, Mesh2DInsertNode)
 
     // Should be only a single item on the undo action stack
     bool undoInsertNode = false;
-    errorCode = mkernel_undo_state(undoInsertNode);
+    int undoId = meshkernel::constants::missing::intValue;
+    errorCode = mkernel_undo_state(undoInsertNode, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_TRUE(undoInsertNode);
+    ASSERT_EQ(mk_id, undoId);
+
+    // Undo creation of the mesh2d
+    undoInsertNode = false;
+    errorCode = mkernel_undo_state(undoInsertNode, undoId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_TRUE(undoInsertNode);
+    ASSERT_EQ(undoId, mk_id);
 
     // Should be zero items on the undo action stack.
     undoInsertNode = false;
-    errorCode = mkernel_undo_state(undoInsertNode);
+    errorCode = mkernel_undo_state(undoInsertNode, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_FALSE(undoInsertNode);
+    ASSERT_EQ(undoId, meshkernel::constants::missing::intValue);
 }
 
 TEST(Mesh2D, InsertEdgeFromCoordinates_OnEmptyMesh_ShouldInsertNewEdge)
@@ -3609,9 +3805,11 @@ TEST(Mesh2D, CasulliDeRefinementWholeMesh)
     // Now check undo
 
     bool didUndo = false;
-    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
+    int undoId = meshkernel::constants::missing::intValue;
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
+    ASSERT_EQ(meshKernelId, undoId);
 
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -4019,9 +4217,13 @@ TEST(Mesh2D, UndoConnectMeshes)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     bool didUndo = false;
-    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    int undoMkId = meshkernel::constants::missing::intValue;
 
-    errorCode = meshkernelapi::mkernel_redo_state(didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo, undoMkId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(undoMkId, mk_id);
+
+    errorCode = meshkernelapi::mkernel_redo_state(didUndo, undoMkId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(undoMkId, mk_id);
 }

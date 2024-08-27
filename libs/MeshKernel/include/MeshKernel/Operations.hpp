@@ -619,11 +619,6 @@ namespace meshkernel
     /// @returns The computed matrix norm
     [[nodiscard]] double MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficients);
 
-    /// @brief Print the (simplified) graph in a form that can be loaded into matlab/octave.
-    ///
-    /// Only nodes and node connectivity need be printed to visualise the graph.
-    void Print(const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::ostream& out = std::cout);
-
     /// @brief Increment a valid value by an increment
     inline void IncrementValidValue(UInt& value, const UInt increment)
     {

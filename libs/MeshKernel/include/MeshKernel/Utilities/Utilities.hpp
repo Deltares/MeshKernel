@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2024.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,22 +27,25 @@
 
 #pragma once
 
-namespace meshkernelapi
+#include <iostream>
+#include <vector>
+
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Point.hpp"
+
+namespace meshkernel
 {
-    /// @brief A struct used to describe the values of a curvilinear grid in a C-compatible manner
-    struct CurvilinearGrid
-    {
-        /// @brief The x-coordinates of network1d nodes
-        double* node_x = nullptr;
 
-        /// @brief The y-coordinates of network1d nodes
-        double* node_y = nullptr;
+    /// @brief Print the (simplified) graph in a form that can be loaded into matlab/octave.
+    ///
+    /// Only nodes and node connectivity need be printed to visualise the graph.
+    void Print(const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::ostream& out = std::cout);
 
-        /// @brief The number of curvilinear grid nodes along m
-        int num_m = 0;
+    /// @brief Print the (simplified) graph in a form that can be loaded into matlab/octave.
+    ///
+    /// Only nodes and node connectivity need be printed to visualise the graph.
+    void Print(const std::vector<double>& xNodes,
+               const std::vector<double>& yNodes,
+               const std::vector<int>& edges, std::ostream& out = std::cout);
 
-        /// @brief The number of curvilinear grid nodes along n
-        int num_n = 0;
-    };
-
-} // namespace meshkernelapi
+} // namespace meshkernel
