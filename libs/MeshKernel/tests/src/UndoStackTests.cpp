@@ -450,7 +450,7 @@ TEST(UndoStackTests, MemorySizeStackTest)
     std::uint64_t expectedSize = sizeof(undoActionStack);
 
     // Fill undo actions to maximum
-    for (mk::UInt i = 0; i < mk::UndoActionStack::MaxUndoSize; ++i)
+    for (mk::UInt i = 0; i < mk::UndoActionStack::DefaultMaxUndoSize; ++i)
     {
         auto undoAction = std::make_unique<MockUndoAction>();
         expectedSize += undoAction->MemorySize();
@@ -472,20 +472,20 @@ TEST(UndoStackTests, ExeedingMaximumUndoActions)
     EXPECT_EQ(undoActionStack.Size(), 0);
 
     // Fill undo actions to maximum
-    for (mk::UInt i = 0; i < mk::UndoActionStack::MaxUndoSize; ++i)
+    for (mk::UInt i = 0; i < mk::UndoActionStack::DefaultMaxUndoSize; ++i)
     {
         undoActionStack.Add(std::make_unique<MockUndoAction>());
         EXPECT_EQ(undoActionStack.Size(), i + 1);
     }
 
     // Check the size
-    EXPECT_EQ(undoActionStack.Size(), mk::UndoActionStack::MaxUndoSize);
+    EXPECT_EQ(undoActionStack.Size(), mk::UndoActionStack::DefaultMaxUndoSize);
 
     // Now add another undo action. The number on the stack should not increase.
     undoActionStack.Add(std::make_unique<MockUndoAction>());
 
     // Check the size
-    EXPECT_EQ(undoActionStack.Size(), mk::UndoActionStack::MaxUndoSize);
+    EXPECT_EQ(undoActionStack.Size(), mk::UndoActionStack::DefaultMaxUndoSize);
 
     // Clear all undo actions form stack
     undoActionStack.Clear();
@@ -500,7 +500,7 @@ TEST(UndoStackTests, RemovingUndoActions)
     int actionId3 = 3;
     int unknownActionId = 4;
 
-    mk::UInt actionCount = (mk::UndoActionStack::MaxUndoSize - mk::UndoActionStack::MaxUndoSize % 3) / 3;
+    mk::UInt actionCount = (mk::UndoActionStack::DefaultMaxUndoSize - mk::UndoActionStack::DefaultMaxUndoSize % 3) / 3;
 
     EXPECT_EQ(undoActionStack.Size(), 0);
 
@@ -541,7 +541,7 @@ TEST(UndoStackTests, RemovingUndoActionsRandomised)
     std::array<int, NumberOfUndoActions> actionCounts{0, 0, 0, 0};
     int unknownActionId = 45;
 
-    mk::UInt actionCount = (mk::UndoActionStack::MaxUndoSize - mk::UndoActionStack::MaxUndoSize % NumberOfUndoActions) / NumberOfUndoActions;
+    mk::UInt actionCount = (mk::UndoActionStack::DefaultMaxUndoSize - mk::UndoActionStack::DefaultMaxUndoSize % NumberOfUndoActions) / NumberOfUndoActions;
     mk::UInt totalActionCount = NumberOfUndoActions * actionCount;
 
     EXPECT_EQ(undoActionStack.Size(), 0);
@@ -582,4 +582,81 @@ TEST(UndoStackTests, RemovingUndoActionsRandomised)
     // Clear all undo actions form stack
     undoActionStack.Clear();
     EXPECT_EQ(undoActionStack.Size(), 0);
+}
+
+TEST(UndoStackTests, InitaliseStackSizeToZero)
+{
+    mk::UndoActionStack undoActionStack (0);
+    EXPECT_EQ(undoActionStack.Size(), 0);
+
+    // Add large number of undo actions
+    for (mk::UInt i = 0; i < mk::UndoActionStack::DefaultMaxUndoSize; ++i)
+    {
+        undoActionStack.Add(std::make_unique<MockUndoAction>());
+    }
+
+    EXPECT_EQ(undoActionStack.Size(), 0);
+    // There should be nothing to undo
+    EXPECT_FALSE(undoActionStack.Undo());
+}
+
+TEST(UndoStackTests, SetStackSizeToZero)
+{
+    mk::UndoActionStack undoActionStack;
+
+    EXPECT_EQ(undoActionStack.Size(), 0);
+    undoActionStack.SetMaximumSize (0);
+
+    // Fill undo actions to maximum
+    for (mk::UInt i = 0; i < mk::UndoActionStack::DefaultMaxUndoSize; ++i)
+    {
+        undoActionStack.Add(std::make_unique<MockUndoAction>());
+    }
+
+    EXPECT_EQ(undoActionStack.Size(), 0);
+
+    // Cannot undo, there are no items stored in stack
+    EXPECT_FALSE (undoActionStack.Undo ());
+}
+
+TEST(UndoStackTests, SetStackSizeToZeroAfterAdding)
+{
+    mk::UInt InitialStackSize = 20;
+    // This number must be small than InitialStackSize but larger than 0
+    mk::UInt RevisedStackSize = 10;
+
+    mk::UndoActionStack undoActionStack (InitialStackSize);
+
+    // Fill undo actions to maximum
+    for (mk::UInt i = 0; i < InitialStackSize; ++i)
+    {
+        undoActionStack.Add(std::make_unique<MockUndoAction>());
+    }
+
+    EXPECT_EQ(undoActionStack.Size(), InitialStackSize);
+    undoActionStack.SetMaximumSize(RevisedStackSize);
+    EXPECT_EQ(undoActionStack.Size(), RevisedStackSize);
+
+    for (mk::UInt i = 0; i < RevisedStackSize; ++i)
+    {
+        EXPECT_TRUE(undoActionStack.Undo());
+    }
+
+    // Cannot undo further, there are no items left in stack
+    EXPECT_FALSE (undoActionStack.Undo ());
+
+    // Redo all the undone actions
+    for (mk::UInt i = 0; i < RevisedStackSize; ++i)
+    {
+        EXPECT_TRUE(undoActionStack.Commit());
+    }
+
+    EXPECT_EQ(undoActionStack.Size(), RevisedStackSize);
+
+    // Now finally set the maximum size to be zero.
+    undoActionStack.SetMaximumSize(0);
+    EXPECT_EQ(undoActionStack.Size(), 0);
+
+    // Cannot undo, there are no items in stack
+    EXPECT_FALSE (undoActionStack.Undo ());
 }

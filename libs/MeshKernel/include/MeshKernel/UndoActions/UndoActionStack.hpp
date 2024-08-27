@@ -44,12 +44,18 @@ namespace meshkernel
     class UndoActionStack
     {
     public:
-        /// @brief Maximum number of undo action items
-        static const UInt MaxUndoSize;
+        /// @brief Default maximum number of undo action items
+        static const UInt DefaultMaxUndoSize;
 
         // Add info about the action, both short and long form
         // Perhaps Short for for menu items, long form for tooltips?
         // long form for any exceptions?
+
+        /// @brief Constructor with maximum number of undo actions allowed
+        UndoActionStack (const UInt maximumSize = DefaultMaxUndoSize);
+
+        /// @brief Set the maximum undo stack size.
+        void SetMaximumSize (const UInt maximumSize);
 
         /// @brief Add an UndoAction with an associated action-id.
         ///
@@ -96,7 +102,7 @@ namespace meshkernel
         /// The number of restored actions.
         UInt RestoredSize(const int actionId = constants::missing::intValue) const;
 
-        /// \brief Compute the approximate amount of memory being used, in bytes, for all undo actions.
+        /// @brief Compute the approximate amount of memory being used, in bytes, for all undo actions.
         std::uint64_t MemorySize() const;
 
     private:
@@ -115,6 +121,9 @@ namespace meshkernel
 
         /// @brief Stack of restored undo actions
         std::list<UndoActionForMesh> m_restored;
+
+        /// @brief Maximum number of undo action items
+        UInt m_maxUndoSize = DefaultMaxUndoSize;
     };
 
 } // namespace meshkernel
