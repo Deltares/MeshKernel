@@ -1630,10 +1630,6 @@ namespace meshkernelapi
             auto const nodes = curvilinearGrid->ComputeNodes();
             auto const edges = curvilinearGrid->ComputeEdges();
             meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges, nodes, projection)), meshKernelId);
-            // No changes to the original mesh can be undone, so clear the undo-stack of actions associated with the mesh kernel id
-            // meshKernelUndoStack.Remove(meshKernelId);
-            // Clean up the mesh, by removing any invalid node and edges create for undo state
-            // meshKernelState[meshKernelId].m_mesh2d->DeleteInvalidNodesAndEdges();
         }
         catch (...)
         {
@@ -1661,10 +1657,6 @@ namespace meshkernelapi
             const auto nodes = curvilinearGrid->ComputeNodes();
 
             meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges, nodes, projection)), meshKernelId);
-            // No changes to the original mesh can be undone, so clear the undo-stack of actions associated with the mesh kernel id
-            // meshKernelUndoStack.Remove(meshKernelId);
-            // // Clean up the mesh, by removing any invalid node and edges create for undo state
-            // meshKernelState[meshKernelId].m_mesh2d->DeleteInvalidNodesAndEdges();
         }
         catch (...)
         {
@@ -1692,10 +1684,6 @@ namespace meshkernelapi
 
             meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges, nodes, meshKernelState[meshKernelId].m_curvilinearGrid->projection())),
                                     meshKernelId);
-            // No changes to the original mesh can be undone, so clear the undo-stack of actions associated with the mesh kernel id
-            // meshKernelUndoStack.Remove(meshKernelId);
-            // // Clean up the mesh, by removing any invalid node and edges create for undo state
-            // meshKernelState[meshKernelId].m_mesh2d->DeleteInvalidNodesAndEdges();
         }
         catch (...)
         {
