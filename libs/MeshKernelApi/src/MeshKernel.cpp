@@ -234,6 +234,26 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_set_undo_size(int undoStackSize)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+
+        try
+        {
+            if (undoStackSize < 0)
+            {
+                throw meshkernel::MeshKernelError("Incorrect undo stack size: {}", undoStackSize);
+            }
+
+            meshKernelUndoStack.SetMaximumSize(static_cast<meshkernel::UInt>(undoStackSize));
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_undo_state(bool& undone, int& meshKernelId)
     {
         lastExitCode = meshkernel::ExitCode::Success;

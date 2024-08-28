@@ -4,11 +4,13 @@
 #include <algorithm>
 #include <utility>
 
-const meshkernel::UInt meshkernel::UndoActionStack::MaxUndoSize = 50;
+const meshkernel::UInt meshkernel::UndoActionStack::DefaultMaxUndoSize = 50;
+
+meshkernel::UndoActionStack::UndoActionStack(const UInt maximumSize) : m_maxUndoSize(maximumSize) {}
 
 void meshkernel::UndoActionStack::Add(UndoActionPtr&& action, const int actionId)
 {
-    if (action != nullptr)
+    if (m_maxUndoSize > 0 && action != nullptr)
     {
         if (action->GetState() != UndoAction::State::Committed)
         {
@@ -22,7 +24,7 @@ void meshkernel::UndoActionStack::Add(UndoActionPtr&& action, const int actionId
         m_restored.remove_if([actionId](const UndoActionForMesh& undoAction)
                              { return undoAction.m_actionId == actionId; });
 
-        if (m_committed.size() > MaxUndoSize)
+        if (m_committed.size() > m_maxUndoSize)
         {
             // If the number of undo-actions is greater than the maximum, then remove the first item in the list.
             m_committed.pop_front();
@@ -32,6 +34,26 @@ void meshkernel::UndoActionStack::Add(UndoActionPtr&& action, const int actionId
     {
         // Logging message
     }
+}
+
+void meshkernel::UndoActionStack::SetMaximumSize(const UInt maximumSize)
+{
+    if (maximumSize == 0)
+    {
+        m_committed.clear();
+        m_restored.clear();
+    }
+    else if (maximumSize < m_committed.size())
+    {
+        UInt loopLimit = static_cast<UInt>(m_committed.size());
+
+        for (UInt i = maximumSize; i < loopLimit; ++i)
+        {
+            m_committed.pop_front();
+        }
+    }
+
+    m_maxUndoSize = maximumSize;
 }
 
 meshkernel::UInt meshkernel::UndoActionStack::Size() const
@@ -93,6 +115,13 @@ std::optional<int> meshkernel::UndoActionStack::Commit()
         // Now move to committed stack
         m_committed.emplace_back(std::move(m_restored.back()));
         m_restored.pop_back();
+
+        if (m_committed.size() > m_maxUndoSize)
+        {
+            // If the number of undo-actions is greater than the maximum, then remove the first item in the list.
+            m_committed.pop_front();
+        }
+
         return actionId;
     }
 
