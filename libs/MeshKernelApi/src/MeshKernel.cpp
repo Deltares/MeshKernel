@@ -328,6 +328,7 @@ namespace meshkernelapi
         {
             meshKernelUndoStack.Clear();
             meshKernelState.clear();
+            meshKernelStateCounter = 0;
         }
         catch (...)
         {
