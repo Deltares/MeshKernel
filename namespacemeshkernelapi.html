@@ -124,6 +124,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ad49b7f49c043fe26218d479d986a4b61"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ad49b7f49c043fe26218d479d986a4b61">mkernel_is_valid_state</a> (int meshKernelId, bool &amp;isValid)</td></tr>
 <tr class="memdesc:ad49b7f49c043fe26218d479d986a4b61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if the meshKernelId is valid.  <a href="namespacemeshkernelapi.html#ad49b7f49c043fe26218d479d986a4b61">More...</a><br /></td></tr>
 <tr class="separator:ad49b7f49c043fe26218d479d986a4b61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aca112975478ad5720cab80bd3330c7a0"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aca112975478ad5720cab80bd3330c7a0">mkernel_set_undo_size</a> (int undoStackSize)</td></tr>
+<tr class="memdesc:aca112975478ad5720cab80bd3330c7a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the maximum size of the undo stack.  <a href="namespacemeshkernelapi.html#aca112975478ad5720cab80bd3330c7a0">More...</a><br /></td></tr>
+<tr class="separator:aca112975478ad5720cab80bd3330c7a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af1e78675445f77fcf3fdfa7d2d3ea972"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#af1e78675445f77fcf3fdfa7d2d3ea972">mkernel_undo_state</a> (bool &amp;undone, int &amp;meshKernelId)</td></tr>
 <tr class="memdesc:af1e78675445f77fcf3fdfa7d2d3ea972"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attempt to undo by one undo-action.  <a href="namespacemeshkernelapi.html#af1e78675445f77fcf3fdfa7d2d3ea972">More...</a><br /></td></tr>
 <tr class="separator:af1e78675445f77fcf3fdfa7d2d3ea972"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -8602,6 +8605,33 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">redone</td><td>Indicates if the redo action was actually redone </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">meshKernelId</td><td>The mesh kernel id related to the undo action </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="aca112975478ad5720cab80bd3330c7a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca112975478ad5720cab80bd3330c7a0">&#9670;&nbsp;</a></span>mkernel_set_undo_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_set_undo_size </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>undoStackSize</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the maximum size of the undo stack. </p>
+<p>Setting the size to zero will disable the undo. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">undoStackSize</td><td>The maximum size of the undo stack </td></tr>
   </table>
   </dd>
 </dl>

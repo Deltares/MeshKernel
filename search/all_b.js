@@ -276,10 +276,11 @@ var searchData=
   ['mkernel_5fpolygon_5frefine_589',['mkernel_polygon_refine',['../namespacemeshkernelapi.html#aeab0dd1a911d90ab8ec462d2eec86e14',1,'meshkernelapi']]],
   ['mkernel_5fpolygon_5fsnap_5fto_5flandboundary_590',['mkernel_polygon_snap_to_landboundary',['../namespacemeshkernelapi.html#ab09fcdfed55040bf17cadff45647d1a6',1,'meshkernelapi']]],
   ['mkernel_5fredo_5fstate_591',['mkernel_redo_state',['../namespacemeshkernelapi.html#a3f2c4a68c9f17c7401f226b8e3f81070',1,'meshkernelapi']]],
-  ['mkernel_5fsplines_5fsnap_5fto_5flandboundary_592',['mkernel_splines_snap_to_landboundary',['../namespacemeshkernelapi.html#af0a396a0ad56ec345564e4ae9db73e11',1,'meshkernelapi']]],
-  ['mkernel_5fundo_5fstate_593',['mkernel_undo_state',['../namespacemeshkernelapi.html#af1e78675445f77fcf3fdfa7d2d3ea972',1,'meshkernelapi']]],
-  ['mkernel_5fundo_5fstate_5fcount_594',['mkernel_undo_state_count',['../namespacemeshkernelapi.html#aef00f9a1f84dd07f80ae270d908f2b0a',1,'meshkernelapi']]],
-  ['mkernel_5fundo_5fstate_5fcount_5ffor_5fid_595',['mkernel_undo_state_count_for_id',['../namespacemeshkernelapi.html#a1984f7e35632db869ead6e5eeeabf86c',1,'meshkernelapi']]],
-  ['mkstateundoaction_596',['MKStateUndoAction',['../classmeshkernelapi_1_1_m_k_state_undo_action.html',1,'meshkernelapi::MKStateUndoAction'],['../classmeshkernelapi_1_1_m_k_state_undo_action.html#a30cffeaff81c13b211912eebdfdb64c0',1,'meshkernelapi::MKStateUndoAction::MKStateUndoAction()']]],
-  ['movenode_597',['MoveNode',['../classmeshkernel_1_1_mesh.html#a359453dc8b4c1bd4760c2bf72ab32603',1,'meshkernel::Mesh']]]
+  ['mkernel_5fset_5fundo_5fsize_592',['mkernel_set_undo_size',['../namespacemeshkernelapi.html#aca112975478ad5720cab80bd3330c7a0',1,'meshkernelapi']]],
+  ['mkernel_5fsplines_5fsnap_5fto_5flandboundary_593',['mkernel_splines_snap_to_landboundary',['../namespacemeshkernelapi.html#af0a396a0ad56ec345564e4ae9db73e11',1,'meshkernelapi']]],
+  ['mkernel_5fundo_5fstate_594',['mkernel_undo_state',['../namespacemeshkernelapi.html#af1e78675445f77fcf3fdfa7d2d3ea972',1,'meshkernelapi']]],
+  ['mkernel_5fundo_5fstate_5fcount_595',['mkernel_undo_state_count',['../namespacemeshkernelapi.html#aef00f9a1f84dd07f80ae270d908f2b0a',1,'meshkernelapi']]],
+  ['mkernel_5fundo_5fstate_5fcount_5ffor_5fid_596',['mkernel_undo_state_count_for_id',['../namespacemeshkernelapi.html#a1984f7e35632db869ead6e5eeeabf86c',1,'meshkernelapi']]],
+  ['mkstateundoaction_597',['MKStateUndoAction',['../classmeshkernelapi_1_1_m_k_state_undo_action.html',1,'meshkernelapi::MKStateUndoAction'],['../classmeshkernelapi_1_1_m_k_state_undo_action.html#a30cffeaff81c13b211912eebdfdb64c0',1,'meshkernelapi::MKStateUndoAction::MKStateUndoAction()']]],
+  ['movenode_598',['MoveNode',['../classmeshkernel_1_1_mesh.html#a359453dc8b4c1bd4760c2bf72ab32603',1,'meshkernel::Mesh']]]
 ];
