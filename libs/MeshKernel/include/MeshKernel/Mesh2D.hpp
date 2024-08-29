@@ -379,6 +379,13 @@ namespace meshkernel
         /// If no such element can be found then the null value will be returned.
         UInt FindCommonFace(const UInt edge1, const UInt edge2) const;
 
+        /// @brief Compute faces inside polygon
+        /// @param[in] polygon        The polygon where to perform the operation
+        ///                           If this Polygons instance contains multiple polygons, the first one will be taken.
+        /// @param[in] deletionOption The deletion option
+        /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
+        [[nodiscard]] std::vector<bool> FacesInPolygonWithIntersectingOptions(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion);
+
     private:
         // orthogonalization
         static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length
@@ -444,6 +451,10 @@ namespace meshkernel
         /// @brief Perform complete administration
         /// @param[in,out] undoAction if not null then collect any undo actions generated during the administration.
         void DoAdministration(CompoundUndoAction* undoAction = nullptr);
+
+        [[nodiscard]] std::vector<bool> NodesInPolygon(const Polygons& polygon);
+
+        [[nodiscard]] std::vector<bool> FacesInPolygon(const Polygons& polygon);
     };
 
 } // namespace meshkernel

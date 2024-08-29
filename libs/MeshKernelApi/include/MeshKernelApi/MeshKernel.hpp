@@ -1243,6 +1243,23 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_face_polygons_dimension(int meshKernelId, int numEdges, int& geometryListDimension);
 
+        /// @brief Gets the dimension of faces polygons with a number of edges larger or equal to numNodes
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_polygons_of_deleted_faces_dimension(int meshKernelId,
+                                                                               const GeometryList& polygon,
+                                                                               int deletionOption,
+                                                                               int invertDeletion,
+                                                                               int& geometryListDimension);
+
+        /// @brief Gets the dimension of faces polygons with a number of edges larger or equal to numNodes
+        ///
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_polygons_of_deleted_faces(int meshKernelId,
+                                                                     const GeometryList& polygon,
+                                                                     int deletionOption,
+                                                                     int invertDeletion,
+                                                                     const GeometryList& facePolygons);
+        ;
         /// @brief Gets the mesh location closet to a specific coordinate.
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] xCoordinate The input xCoordinate
