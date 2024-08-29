@@ -1634,7 +1634,7 @@ std::vector<meshkernel::UInt> Mesh2D::GetHangingEdges() const
     return result;
 }
 
-std::vector<bool> Mesh2D::NodesInPolygon(const Polygons& polygon)
+std::vector<bool> Mesh2D::NodesInPolygon(const Polygons& polygon, bool invertDeletion)
 {
     std::vector<bool> result(GetNumNodes(), false);
     for (UInt n = 0; n < GetNumNodes(); ++n)
@@ -1648,12 +1648,20 @@ std::vector<bool> Mesh2D::NodesInPolygon(const Polygons& polygon)
             }
         }
     }
+    for (UInt n = 0; n < GetNumNodes(); ++n)
+    {
+        if (result[n])
+        {
+            result[n] = !invertDeletion;
+        }
+    }
+
     return result;
 }
 
 std::vector<bool> Mesh2D::FacesInPolygon(const Polygons& polygon)
 {
-    const auto nodesInPolygon = NodesInPolygon(polygon);
+    const auto nodesInPolygon = NodesInPolygon(polygon, false);
     std::vector<bool> result(GetNumFaces(), true);
 
     for (UInt f = 0; f < GetNumFaces(); ++f)
@@ -1671,7 +1679,7 @@ std::vector<bool> Mesh2D::FacesInPolygon(const Polygons& polygon)
     return result;
 }
 
-std::vector<bool> Mesh2D::FacesInPolygonWithIntersectingOptions(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion)
+std::vector<bool> Mesh2D::FacesInPolygonToBeDeleted(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion)
 {
     // Find crossed faces
     Mesh2DIntersections mesh2DIntersections(*this);
@@ -1701,16 +1709,15 @@ std::vector<bool> Mesh2D::FacesInPolygonWithIntersectingOptions(const Polygons& 
         { return faceInPolygon[f] || faceIntersections[f].faceIndex != constants::missing::uintValue; };
     }
 
-    std::vector<bool> result(GetNumFaces(), false);
-    // Mark edges for deletion
+    std::vector<bool> facesInPolygon(GetNumFaces(), false);
     for (UInt f = 0; f < GetNumFaces(); ++f)
     {
         if (excludedFace(f))
         {
-            result[f] = true;
+            facesInPolygon[f] = true;
         }
     }
-    return result;
+    return facesInPolygon;
 }
 
 std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMesh(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion)
@@ -1726,29 +1733,21 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMesh(const Polygons& polyg
     std::vector<bool> isNodeInsidePolygon(GetNumNodes(), false);
     std::vector<UInt> nodeEdgeCount(m_nodesNumEdges);
 
-    std::vector<bool> nodesInPolygon = NodesInPolygon(polygon);
-    for (UInt n = 0; n < nodesInPolygon.size(); ++n)
-    {
-        if (nodesInPolygon[n])
-        {
-            nodesInPolygon[n] = !invertDeletion;
-        }
-    }
-
-    const auto facesInsidePolygon = FacesInPolygonWithIntersectingOptions(polygon, deletionOption, invertDeletion);
+    auto nodesInPolygon = NodesInPolygon(polygon, invertDeletion);
+    const auto facesToBeDeleted = FacesInPolygonToBeDeleted(polygon, deletionOption, invertDeletion);
 
     // Mark edges for deletion
     for (UInt e = 0; e < GetNumEdges(); ++e)
     {
         const auto numEdgeFaces = GetNumEdgesFaces(e);
 
-        if (numEdgeFaces == 1 && facesInsidePolygon[m_edgesFaces[e][0]])
+        if (numEdgeFaces == 1 && facesToBeDeleted[m_edgesFaces[e][0]])
         {
             nodesInPolygon[m_edges[e].first] = false;
             nodesInPolygon[m_edges[e].second] = false;
             continue;
         }
-        if (numEdgeFaces == 2 && (facesInsidePolygon[m_edgesFaces[e][0]] || facesInsidePolygon[m_edgesFaces[e][1]]))
+        if (numEdgeFaces == 2 && (facesToBeDeleted[m_edgesFaces[e][0]] || facesToBeDeleted[m_edgesFaces[e][1]]))
         {
             nodesInPolygon[m_edges[e].first] = false;
             nodesInPolygon[m_edges[e].second] = false;

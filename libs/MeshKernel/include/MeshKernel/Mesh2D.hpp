@@ -379,12 +379,13 @@ namespace meshkernel
         /// If no such element can be found then the null value will be returned.
         UInt FindCommonFace(const UInt edge1, const UInt edge2) const;
 
-        /// @brief Compute faces inside polygon
+        /// @brief Compute faces inside polygon with intersecting options
         /// @param[in] polygon        The polygon where to perform the operation
         ///                           If this Polygons instance contains multiple polygons, the first one will be taken.
         /// @param[in] deletionOption The deletion option
         /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
-        [[nodiscard]] std::vector<bool> FacesInPolygonWithIntersectingOptions(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion);
+        /// @return A mask with the faces to be deleted
+        [[nodiscard]] std::vector<bool> FacesInPolygonToBeDeleted(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion);
 
     private:
         // orthogonalization
@@ -452,8 +453,15 @@ namespace meshkernel
         /// @param[in,out] undoAction if not null then collect any undo actions generated during the administration.
         void DoAdministration(CompoundUndoAction* undoAction = nullptr);
 
-        [[nodiscard]] std::vector<bool> NodesInPolygon(const Polygons& polygon);
+        /// @brief Computes the mesh nodes in polygon
+        /// @param[in] polygon The input polygon
+        /// @param[in] invertDeletion If selection should be inverted
+        /// @returns the mask indicating which node is inside the polygon
+        [[nodiscard]] std::vector<bool> NodesInPolygon(const Polygons& polygon, bool invertDeletion);
 
+        /// @brief Computes the face nodes in polygon
+        /// @param[in] polygon The input polygon
+        /// @returns the mask indicating which face is inside the polygon
         [[nodiscard]] std::vector<bool> FacesInPolygon(const Polygons& polygon);
     };
 

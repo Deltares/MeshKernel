@@ -84,7 +84,6 @@
 #include <MeshKernel/SplitRowColumnOfMesh.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
-#include <MeshKernel/UndoActions/NoActionUndo.hpp>
 #include <MeshKernel/UndoActions/UndoAction.hpp>
 #include <MeshKernel/UndoActions/UndoActionStack.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
@@ -2320,34 +2319,18 @@ namespace meshkernelapi
             }
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
             const auto numFaces = meshKernelState[meshKernelId].m_mesh2d->GetNumFaces();
-            meshkernel::UInt count = 0;
+
+            std::vector<bool> validFace(numFaces, false);
             for (meshkernel::UInt f = 0; f < numFaces; ++f)
             {
                 const auto& faceNodes = meshKernelState[meshKernelId].m_mesh2d->m_facesNodes[f];
                 const auto faceNumEdges = static_cast<int>(faceNodes.size());
-                if (faceNumEdges != numEdges)
+                if (faceNumEdges == numEdges)
                 {
-                    continue;
+                    validFace[f] = true;
                 }
-                if (count != 0)
-                {
-                    facePolygons.coordinates_x[count] = missing::doubleValue;
-                    facePolygons.coordinates_y[count] = missing::doubleValue;
-                    count++;
-                }
-
-                for (meshkernel::UInt n = 0u; n < faceNodes.size(); ++n)
-                {
-                    const auto& currentNode = meshKernelState[meshKernelId].m_mesh2d->Node(faceNodes[n]);
-                    facePolygons.coordinates_x[count] = currentNode.x;
-                    facePolygons.coordinates_y[count] = currentNode.y;
-                    count++;
-                }
-                const auto& currentNode = meshKernelState[meshKernelId].m_mesh2d->Node(faceNodes[0]);
-                facePolygons.coordinates_x[count] = currentNode.x;
-                facePolygons.coordinates_y[count] = currentNode.y;
-                count++;
             }
+            FillFacePolygons(meshKernelState[meshKernelId].m_mesh2d, validFace, facePolygons);
         }
         catch (...)
         {
@@ -2407,7 +2390,8 @@ namespace meshkernelapi
                 throw meshkernel::ConstraintError("The 2d mesh contains no nodes.");
             }
             const auto deletionOptionEnum = static_cast<meshkernel::Mesh2D::DeleteMeshOptions>(deletionOption);
-            if (deletionOptionEnum != meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected || deletionOptionEnum != meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected)
+            if (deletionOptionEnum != meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected ||
+                deletionOptionEnum != meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected)
             {
                 throw meshkernel::ConstraintError("Only InsideAndIntersected and InsideNotIntersected deletion options are supported");
             }
@@ -2416,18 +2400,18 @@ namespace meshkernelapi
             const bool invertDeletionBool = invertDeletion == 1;
             const meshkernel::Polygons meshKernelPolygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            const auto facesInPolygon = meshKernelState[meshKernelId].m_mesh2d->FacesInPolygonWithIntersectingOptions(meshKernelPolygon, deletionOptionEnum, invertDeletionBool);
+            const auto validFace = meshKernelState[meshKernelId].m_mesh2d->FacesInPolygonToBeDeleted(meshKernelPolygon, deletionOptionEnum, invertDeletionBool);
             const auto numFaces = meshKernelState[meshKernelId].m_mesh2d->GetNumFaces();
 
             geometryListDimension = 0;
             for (meshkernel::UInt f = 0; f < numFaces; ++f)
             {
-                if (!facesInPolygon[f])
+                if (!validFace[f])
                 {
                     continue;
                 }
                 const auto faceNumEdges = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->m_facesNodes[f].size());
-                geometryListDimension += faceNumEdges + 1;
+                geometryListDimension += faceNumEdges + 2;
             }
             geometryListDimension -= 1;
         }
@@ -2456,7 +2440,8 @@ namespace meshkernelapi
                 throw meshkernel::ConstraintError("The 2d mesh contains no nodes.");
             }
             const auto deletionOptionEnum = static_cast<meshkernel::Mesh2D::DeleteMeshOptions>(deletionOption);
-            if (deletionOptionEnum != meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected || deletionOptionEnum != meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected)
+            if (deletionOptionEnum != meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected ||
+                deletionOptionEnum != meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected)
             {
                 throw meshkernel::ConstraintError("Only InsideAndIntersected and InsideNotIntersected deletion options are supported");
             }
@@ -2465,38 +2450,8 @@ namespace meshkernelapi
             const bool invertDeletionBool = invertDeletion == 1;
             const meshkernel::Polygons meshKernelPolygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            const auto facesInPolygon = meshKernelState[meshKernelId].m_mesh2d->FacesInPolygonWithIntersectingOptions(meshKernelPolygon, deletionOptionEnum, invertDeletionBool);
-            const auto numFaces = meshKernelState[meshKernelId].m_mesh2d->GetNumFaces();
-            meshkernel::UInt count = 0;
-            for (meshkernel::UInt f = 0; f < numFaces; ++f)
-            {
-                if (!facesInPolygon[f])
-                {
-                    continue;
-                }
-
-                const auto& faceNodes = meshKernelState[meshKernelId].m_mesh2d->m_facesNodes[f];
-                const auto faceNumEdges = static_cast<int>(faceNodes.size());
-
-                if (count != 0)
-                {
-                    facePolygons.coordinates_x[count] = missing::doubleValue;
-                    facePolygons.coordinates_y[count] = missing::doubleValue;
-                    count++;
-                }
-
-                for (meshkernel::UInt n = 0u; n < faceNodes.size(); ++n)
-                {
-                    const auto& currentNode = meshKernelState[meshKernelId].m_mesh2d->Node(faceNodes[n]);
-                    facePolygons.coordinates_x[count] = currentNode.x;
-                    facePolygons.coordinates_y[count] = currentNode.y;
-                    count++;
-                }
-                const auto& currentNode = meshKernelState[meshKernelId].m_mesh2d->Node(faceNodes[0]);
-                facePolygons.coordinates_x[count] = currentNode.x;
-                facePolygons.coordinates_y[count] = currentNode.y;
-                count++;
-            }
+            const auto validFace = meshKernelState[meshKernelId].m_mesh2d->FacesInPolygonToBeDeleted(meshKernelPolygon, deletionOptionEnum, invertDeletionBool);
+            FillFacePolygons(meshKernelState[meshKernelId].m_mesh2d, validFace, facePolygons);
         }
         catch (...)
         {
