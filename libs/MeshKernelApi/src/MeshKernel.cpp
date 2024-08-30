@@ -801,6 +801,13 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_mesh2d_get_orthogonality_metric_type(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::Mesh2D::Metric::Orthogonality);
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_mesh1d_get_dimensions(int meshKernelId, Mesh1D& mesh1d)
     {
         lastExitCode = meshkernel::ExitCode::Success;

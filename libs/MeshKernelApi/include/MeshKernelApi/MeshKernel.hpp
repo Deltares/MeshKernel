@@ -1182,6 +1182,11 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_data(int meshKernelId, Mesh2D& mesh2d);
 
+        /// @brief Gets an int indicating the orthogonality metric type for mesh2d
+        /// @param[out] type The int indicating the orthogonality metric type
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_orthogonality_metric_type(int& type);
+
         /// @brief Gets only the node and edge Mesh2D data
         ///
         /// This function ought to be called after `mkernel_mesh2d_get_dimensions` has been called
@@ -1242,6 +1247,36 @@ namespace meshkernelapi
         /// @param[out] geometryListDimension The dimension of the geometry list containing the face polygons
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_face_polygons_dimension(int meshKernelId, int numEdges, int& geometryListDimension);
+
+                /// @brief Gets the dimension of the GeometryList containing the filtered face polygons
+        ///
+        /// @param[in] filterMetric The id of the mesh state
+        /// @param[in] filterMetric The metric to use for filtering
+        /// @param[in] minValue The min value of the metric
+        /// @param[in] maxValue The max value of the metric
+        /// @param[out] geometryListDimension The dimension of the geometry list containing the filtered face polygons
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_filtered_face_polygons_dimension(int meshKernelId,
+                                                                            int location,
+                                                                            int filter,
+                                                                            double minValue,
+                                                                            double maxValue,
+                                                                            int& geometryListDimension);
+
+        /// @brief Gets the GeometryList containing the filtered face polygons
+        ///
+        /// @param[in] filterMetric The id of the mesh state
+        /// @param[in] filterMetric The metric to use for filtering
+        /// @param[in] minValue The min value of the metric
+        /// @param[in] maxValue The max value of the metric
+        /// @param[out] facePolygons The geometry list containing the facePolygons
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_filtered_face_polygons(int meshKernelId,
+                                                                  int location,
+                                                                  int filter,
+                                                                  double minValue,
+                                                                  double maxValue,
+                                                                  const GeometryList& facePolygons);
 
         /// @brief Gets the mesh location closet to a specific coordinate.
         /// @param[in] meshKernelId The id of the mesh state
