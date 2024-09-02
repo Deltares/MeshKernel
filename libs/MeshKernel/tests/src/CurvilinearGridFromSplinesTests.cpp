@@ -1484,9 +1484,17 @@ TEST(CurvilinearGridFromSplines, WTF)
                                    // {1940.97177746358, 1957.724984184},
                                    {1940.97177746358, 1960.51718530407}};
 
+
+    std::vector<mk::Point> spline3{{1.272514E+02, 1.368770E+02},
+                                   {7.392552E+02, 9.187656E+01},
+                                   {8.172557E+02, 1.286269E+02},
+                                   {8.270058E+02, 1.721273E+02},
+                                   {6.575047E+02, 2.073777E+02},
+                                   {1.767517E+02, 2.501281E+02}};
+
     auto splines = std::make_shared<Splines>(Projection::cartesian);
     splines->AddSpline(spline1);
-    splines->AddSpline(spline2);
+    splines->AddSpline(spline3);
 
     double h = 0.01;
     double x = 0.0;
