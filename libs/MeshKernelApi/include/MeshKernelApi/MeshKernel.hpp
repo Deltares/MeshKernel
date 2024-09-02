@@ -1255,14 +1255,14 @@ namespace meshkernelapi
         /// filtered geometry list.
         ///
         /// @param[in] meshKernelId            The identifier of the mesh kernel or mesh state.
-        /// @param[in] filter                  The property used to filter the locations.
+        /// @param[in] propertyValue           The property used to filter the locations.
         /// @param[in] minValue                The minimum value of the property.
         /// @param[in] maxValue                The maximum value of the property.
         /// @param[out] geometryListDimension  The output parameter that will store the dimension (size) of the geometry list
         ///                                    containing the polygons that match the filtering criteria.
         /// @returns                           An error code indicating the success or failure of the operation.
         MKERNEL_API int mkernel_mesh2d_get_filtered_face_polygons_dimension(int meshKernelId,
-                                                                            int filter,
+                                                                            int propertyValue,
                                                                             double minValue,
                                                                             double maxValue,
                                                                             int& geometryListDimension);
@@ -1270,13 +1270,13 @@ namespace meshkernelapi
         /// @brief Gets the geometry list containing the face polygons within the filtering range
         ///
         /// @param[in] meshKernelId            The identifier of the mesh kernel or mesh state.
-        /// @param[in] filter                  The property used to filter the locations.
+        /// @param[in] propertyValue           The property used to filter the locations.
         /// @param[in] minValue                The minimum value of the property.
         /// @param[in] maxValue                The maximum value of the property.
         /// @param[out] facePolygons           The geometry list containing the filtered locations.
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_filtered_face_polygons(int meshKernelId,
-                                                                  int filter,
+                                                                  int propertyValue,
                                                                   double minValue,
                                                                   double maxValue,
                                                                   const GeometryList& facePolygons);

@@ -296,12 +296,12 @@ namespace meshkernel
 
         /// @brief  This method generates a mask indicating which locations are within the specified  range of the given metric.
         ///
-        /// @param[in] location A `Location` object representing the location to evaluate.
-        /// @param[in] metric A `Metric` object representing the metric by which to filter locations.
+        /// @param[in] location The location representing the location where to filter the object.
+        /// @param[in] property The property by which to filter locations.
         /// @param[in] minValue The minimum value of the metric for filtering.
         /// @param[in] maxValue The maximum value of the metric for filtering.
         /// @ return A vector of boolean values. Each element corresponds to a location and is `true` if the location's metric is within the specified range, and `false` otherwise.
-        [[nodiscard]] std::vector<bool> FilterBasedOnMetric(Location location, Property metric, double minValue, double maxValue) const;
+        [[nodiscard]] std::vector<bool> FilterBasedOnMetric(Location location, Property property, double minValue, double maxValue) const;
 
         /// @brief Inquire if a segment is crossing a face
         /// @param[in] firstPoint The first point of the segment

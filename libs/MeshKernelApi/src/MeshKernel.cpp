@@ -2380,7 +2380,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_mesh2d_get_filtered_face_polygons_dimension(int meshKernelId,
-                                                                        int filter,
+                                                                        int propertyValue,
                                                                         double minValue,
                                                                         double maxValue,
                                                                         int& geometryListDimension)
@@ -2396,7 +2396,7 @@ namespace meshkernelapi
             {
                 throw meshkernel::ConstraintError("The 2d mesh contains no nodes.");
             }
-            const auto filterEnum = static_cast<meshkernel::Mesh2D::Property>(filter);
+            const auto filterEnum = static_cast<meshkernel::Mesh2D::Property>(propertyValue);
             const auto filterMask = meshKernelState[meshKernelId].m_mesh2d->FilterBasedOnMetric(meshkernel::Location::Faces,
                                                                                                 filterEnum,
                                                                                                 minValue,
@@ -2424,7 +2424,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_mesh2d_get_filtered_face_polygons(int meshKernelId,
-                                                              int filter,
+                                                              int propertyValue,
                                                               double minValue,
                                                               double maxValue,
                                                               const GeometryList& facePolygons)
@@ -2441,7 +2441,7 @@ namespace meshkernelapi
                 throw meshkernel::ConstraintError("The 2d mesh contains no nodes.");
             }
 
-            const auto filterEnum = static_cast<meshkernel::Mesh2D::Property>(filter);
+            const auto filterEnum = static_cast<meshkernel::Mesh2D::Property>(propertyValue);
             const auto filterMask = meshKernelState[meshKernelId].m_mesh2d->FilterBasedOnMetric(meshkernel::Location::Faces,
                                                                                                 filterEnum,
                                                                                                 minValue,
