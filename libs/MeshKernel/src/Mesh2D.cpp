@@ -1654,7 +1654,7 @@ std::vector<bool> Mesh2D::FilterBasedOnMetric(Location location,
     std::vector<bool> result(numFaces, false);
 
     // Retrieve orthogonality values
-    const std::vector<double>& metricValues = GetOrthogonality();
+    const std::vector<double> metricValues = GetOrthogonality();
 
     // Loop through faces and compute how many edges have the metric within the range
     for (UInt f = 0; f < numFaces; ++f)

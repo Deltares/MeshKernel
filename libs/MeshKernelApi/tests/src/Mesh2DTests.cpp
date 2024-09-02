@@ -197,7 +197,7 @@ TEST(Mesh2DTests, GetPolygonsOfDeletedFaces_WithPolygon_ShouldGetPolygonOfDelete
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     std::vector<double> expectedFacePolygonsX{57.0, 49.1, 58.9, 66.7, 57.0};
     std::vector<double> expectedFacePolygonsY{23.6, 14.0, 6.9, 16.2, 23.6};
-    for (int i = 0; i < xfacePolygons.size(); ++i)
+    for (size_t i = 0u; i < xfacePolygons.size(); ++i)
     {
         ASSERT_NEAR(expectedFacePolygonsX[i], xfacePolygons[i], 1e-6);
         ASSERT_NEAR(expectedFacePolygonsY[i], yfacePolygons[i], 1e-6);
