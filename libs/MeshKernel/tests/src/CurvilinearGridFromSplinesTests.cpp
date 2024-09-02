@@ -1442,7 +1442,7 @@ TEST(CurvilinearGridFromSplines, WTF)
 
     splinesToCurvilinearParameters.check_front_collisions = 1;
     splinesToCurvilinearParameters.grow_grid_outside = 0;
-    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = 1;
+    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = 0;
     splinesToCurvilinearParameters.remove_skinny_triangles = 0;
 
     curvilinearParameters.m_refinement = 20;
@@ -1483,7 +1483,6 @@ TEST(CurvilinearGridFromSplines, WTF)
                                    {1862.79014610162, 1647.79065985623},
                                    // {1940.97177746358, 1957.724984184},
                                    {1940.97177746358, 1960.51718530407}};
-
 
     std::vector<mk::Point> spline3{{1.272514E+02, 1.368770E+02},
                                    {7.392552E+02, 9.187656E+01},

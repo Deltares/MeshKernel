@@ -34,6 +34,8 @@
 #include <MeshKernel/SplineAlgorithms.hpp>
 #include <MeshKernel/Splines.hpp>
 
+#include <span>
+
 // How to get the constants?
 
 // extern const int MaxDegree;
@@ -1096,7 +1098,9 @@ namespace meshkernel
         UInt iMin = constants::missing::uintValue;
 
         // Only need frontGridPoints
-        auto [gridPointsIndices, frontGridPoints, numFrontPoints] = FindFront();
+        auto [gridPointsIndices, frontGridPointsEigen, numFrontPoints] = FindFront();
+
+        std::span frontGridPoints(frontGridPointsEigen.data(), frontGridPointsEigen.size());
 
         for (UInt i = 0; i < activeLayerPoints.size() - 1; ++i)
         {
