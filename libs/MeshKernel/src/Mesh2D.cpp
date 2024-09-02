@@ -1635,7 +1635,7 @@ std::vector<meshkernel::UInt> Mesh2D::GetHangingEdges() const
 }
 
 std::vector<bool> Mesh2D::FilterBasedOnMetric(Location location,
-                                              Metric metric,
+                                              Property metric,
                                               double minValue,
                                               double maxValue) const
 {
@@ -1643,7 +1643,7 @@ std::vector<bool> Mesh2D::FilterBasedOnMetric(Location location,
     {
         throw ConstraintError("Unsupported location. Only location faces is supported");
     }
-    if (metric != Metric::Orthogonality)
+    if (metric != Property::Orthogonality)
     {
         throw ConstraintError("Unsupported metric. Only orthogonality metric is supported");
     }

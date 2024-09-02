@@ -801,10 +801,10 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_orthogonality_metric_type(int& type)
+    MKERNEL_API int mkernel_mesh2d_get_orthogonality_property_type(int& type)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        type = static_cast<int>(meshkernel::Mesh2D::Metric::Orthogonality);
+        type = static_cast<int>(meshkernel::Mesh2D::Property::Orthogonality);
         return lastExitCode;
     }
 
@@ -2396,7 +2396,7 @@ namespace meshkernelapi
             {
                 throw meshkernel::ConstraintError("The 2d mesh contains no nodes.");
             }
-            const auto filterEnum = static_cast<meshkernel::Mesh2D::Metric>(filter);
+            const auto filterEnum = static_cast<meshkernel::Mesh2D::Property>(filter);
             const auto filterMask = meshKernelState[meshKernelId].m_mesh2d->FilterBasedOnMetric(meshkernel::Location::Faces,
                                                                                                 filterEnum,
                                                                                                 minValue,
@@ -2441,7 +2441,7 @@ namespace meshkernelapi
                 throw meshkernel::ConstraintError("The 2d mesh contains no nodes.");
             }
 
-            const auto filterEnum = static_cast<meshkernel::Mesh2D::Metric>(filter);
+            const auto filterEnum = static_cast<meshkernel::Mesh2D::Property>(filter);
             const auto filterMask = meshKernelState[meshKernelId].m_mesh2d->FilterBasedOnMetric(meshkernel::Location::Faces,
                                                                                                 filterEnum,
                                                                                                 minValue,
