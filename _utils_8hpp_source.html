@@ -597,7 +597,41 @@ $(function() {
 <div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;        }</div>
 <div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;    }</div>
 <div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160; </div>
-<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;} <span class="comment">// namespace meshkernelapi</span></div>
+<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> FillFacePolygons(std::shared_ptr&lt;meshkernel::Mesh2D&gt; mesh2d,</div>
+<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;                                 <span class="keyword">const</span> std::vector&lt;bool&gt;&amp; facesInPolygon,</div>
+<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;                                 <span class="keyword">const</span> GeometryList&amp; facePolygons)</div>
+<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;    {</div>
+<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;        <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">meshkernel::UInt</a> count = 0;</div>
+<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;        <span class="keywordflow">for</span> (<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">meshkernel::UInt</a> f = 0; f &lt; mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a50abbc0382968330e4a530e84f093194">GetNumFaces</a>(); ++f)</div>
+<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;        {</div>
+<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;            <span class="keywordflow">if</span> (!facesInPolygon[f])</div>
+<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;            {</div>
+<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;            }</div>
+<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160; </div>
+<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span>&amp; faceNodes = mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a38b44ebfdf5d280a25d566fa5a763c78">m_facesNodes</a>[f];</div>
+<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;            <span class="keywordflow">if</span> (count != 0)</div>
+<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;            {</div>
+<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;                facePolygons.coordinates_x[count] = missing::doubleValue;</div>
+<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;                facePolygons.coordinates_y[count] = missing::doubleValue;</div>
+<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;                count++;</div>
+<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;            }</div>
+<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160; </div>
+<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;            <span class="keywordflow">for</span> (<a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">meshkernel::UInt</a> n = 0u; n &lt; faceNodes.size(); ++n)</div>
+<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;            {</div>
+<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;                <span class="keyword">const</span> <span class="keyword">auto</span>&amp; currentNode = mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a36d4f99b05e95ee10af584d047f879b8">Node</a>(faceNodes[n]);</div>
+<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;                facePolygons.coordinates_x[count] = currentNode.<a class="code" href="classmeshkernel_1_1_point.html#aa9c42c9b770ffa7d6357be7d03b1498a">x</a>;</div>
+<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;                facePolygons.coordinates_y[count] = currentNode.y;</div>
+<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;                count++;</div>
+<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;            }</div>
+<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;            <span class="keyword">const</span> <span class="keyword">auto</span>&amp; currentNode = mesh2d-&gt;<a class="code" href="classmeshkernel_1_1_mesh.html#a36d4f99b05e95ee10af584d047f879b8">Node</a>(faceNodes[0]);</div>
+<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;            facePolygons.coordinates_x[count] = currentNode.<a class="code" href="classmeshkernel_1_1_point.html#aa9c42c9b770ffa7d6357be7d03b1498a">x</a>;</div>
+<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;            facePolygons.coordinates_y[count] = currentNode.y;</div>
+<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;            count++;</div>
+<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;        }</div>
+<div class="line"><a name="l00618"></a><span class="lineno">  618</span>&#160;    }</div>
+<div class="line"><a name="l00619"></a><span class="lineno">  619</span>&#160; </div>
+<div class="line"><a name="l00620"></a><span class="lineno">  620</span>&#160;} <span class="comment">// namespace meshkernelapi</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclassmeshkernel_1_1_mesh_html_a231d2889405c66b1b5e4db91d86a6ee8"><div class="ttname"><a href="classmeshkernel_1_1_mesh.html#a231d2889405c66b1b5e4db91d86a6ee8">meshkernel::Mesh::m_edgesCenters</a></div><div class="ttdeci">std::vector&lt; Point &gt; m_edgesCenters</div><div class="ttdoc">The edges centers.</div><div class="ttdef"><b>Definition:</b> Mesh.hpp:476</div></div>
 <div class="ttc" id="anamespacemeshkernel_html_a22d09b6f79c4d1aa55aafadb84908716"><div class="ttname"><a href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">meshkernel::Projection</a></div><div class="ttdeci">Projection</div><div class="ttdoc">Enumerator describing the supported projections.</div><div class="ttdef"><b>Definition:</b> Definitions.hpp:41</div></div>

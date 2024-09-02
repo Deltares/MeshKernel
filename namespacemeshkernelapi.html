@@ -517,6 +517,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a16c36845832e4dc42ce9437b844f5830"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a16c36845832e4dc42ce9437b844f5830">mkernel_mesh2d_get_data</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
 <tr class="memdesc:a16c36845832e4dc42ce9437b844f5830"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> dimensions data.  <a href="namespacemeshkernelapi.html#a16c36845832e4dc42ce9437b844f5830">More...</a><br /></td></tr>
 <tr class="separator:a16c36845832e4dc42ce9437b844f5830"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac99b420d3c788df828c023e79f5c7c31"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac99b420d3c788df828c023e79f5c7c31">mkernel_mesh2d_get_orthogonality_property_type</a> (int &amp;type)</td></tr>
+<tr class="memdesc:ac99b420d3c788df828c023e79f5c7c31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an int indicating the orthogonality property type for mesh2d.  <a href="namespacemeshkernelapi.html#ac99b420d3c788df828c023e79f5c7c31">More...</a><br /></td></tr>
+<tr class="separator:ac99b420d3c788df828c023e79f5c7c31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac69ba29d07c1fcbd9a1292693090eaef"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac69ba29d07c1fcbd9a1292693090eaef">mkernel_mesh2d_get_node_edge_data</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
 <tr class="memdesc:ac69ba29d07c1fcbd9a1292693090eaef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets only the node and edge <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> data.  <a href="namespacemeshkernelapi.html#ac69ba29d07c1fcbd9a1292693090eaef">More...</a><br /></td></tr>
 <tr class="separator:ac69ba29d07c1fcbd9a1292693090eaef"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -535,6 +538,12 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:aed0ef73c3fc68077dfa50d6b1ab855b7"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aed0ef73c3fc68077dfa50d6b1ab855b7">mkernel_mesh2d_get_face_polygons_dimension</a> (int meshKernelId, int numEdges, int &amp;geometryListDimension)</td></tr>
 <tr class="memdesc:aed0ef73c3fc68077dfa50d6b1ab855b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the dimension of faces polygons with a number of edges larger or equal to numNodes.  <a href="namespacemeshkernelapi.html#aed0ef73c3fc68077dfa50d6b1ab855b7">More...</a><br /></td></tr>
 <tr class="separator:aed0ef73c3fc68077dfa50d6b1ab855b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac177194bf4d9998cf649f884f4210140"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac177194bf4d9998cf649f884f4210140">mkernel_mesh2d_get_filtered_face_polygons_dimension</a> (int meshKernelId, int propertyValue, double minValue, double maxValue, int &amp;geometryListDimension)</td></tr>
+<tr class="memdesc:ac177194bf4d9998cf649f884f4210140"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the dimension of the geometry list containing the face polygons within the filtering range.  <a href="namespacemeshkernelapi.html#ac177194bf4d9998cf649f884f4210140">More...</a><br /></td></tr>
+<tr class="separator:ac177194bf4d9998cf649f884f4210140"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a094481597e69f34b232c40cbde0a8c7e"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a094481597e69f34b232c40cbde0a8c7e">mkernel_mesh2d_get_filtered_face_polygons</a> (int meshKernelId, int propertyValue, double minValue, double maxValue, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;facePolygons)</td></tr>
+<tr class="memdesc:a094481597e69f34b232c40cbde0a8c7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the geometry list containing the face polygons within the filtering range.  <a href="namespacemeshkernelapi.html#a094481597e69f34b232c40cbde0a8c7e">More...</a><br /></td></tr>
+<tr class="separator:a094481597e69f34b232c40cbde0a8c7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab1d39c897149389496581641de8a216"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aab1d39c897149389496581641de8a216">mkernel_mesh2d_get_location_index</a> (int meshKernelId, double xCoordinate, double yCoordinate, int locationType, const <a class="el" href="structmeshkernelapi_1_1_bounding_box.html">BoundingBox</a> &amp;boundingBox, int &amp;locationIndex)</td></tr>
 <tr class="memdesc:aab1d39c897149389496581641de8a216"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mesh location closet to a specific coordinate.  <a href="namespacemeshkernelapi.html#aab1d39c897149389496581641de8a216">More...</a><br /></td></tr>
 <tr class="separator:aab1d39c897149389496581641de8a216"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -6132,6 +6141,125 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
+<a id="a094481597e69f34b232c40cbde0a8c7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a094481597e69f34b232c40cbde0a8c7e">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_filtered_face_polygons()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_get_filtered_face_polygons </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>propertyValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>minValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>maxValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>facePolygons</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the geometry list containing the face polygons within the filtering range. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The identifier of the mesh kernel or mesh state. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">propertyValue</td><td>The property used to filter the locations. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">minValue</td><td>The minimum value of the property. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">maxValue</td><td>The maximum value of the property. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">facePolygons</td><td>The geometry list containing the filtered locations. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="ac177194bf4d9998cf649f884f4210140"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac177194bf4d9998cf649f884f4210140">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_filtered_face_polygons_dimension()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_get_filtered_face_polygons_dimension </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>propertyValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>minValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>maxValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>geometryListDimension</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieves the dimension of the geometry list containing the face polygons within the filtering range. </p>
+<p>This function filters face polygons within a mesh based on a specific property and location, applying a range filter (minimum and maximum values). It then returns the dimension of the filtered geometry list.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The identifier of the mesh kernel or mesh state. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">propertyValue</td><td>The property used to filter the locations. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">minValue</td><td>The minimum value of the property. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">maxValue</td><td>The maximum value of the property. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">geometryListDimension</td><td>The output parameter that will store the dimension (size) of the geometry list containing the polygons that match the filtering criteria. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>An error code indicating the success or failure of the operation. </dd></dl>
+
+</div>
+</div>
 <a id="a2423ff72e320079ef555cbd7413fe767"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2423ff72e320079ef555cbd7413fe767">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_hanging_edges()</h2>
 
@@ -6520,6 +6648,33 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">geometryList</td><td>The orthogonality values of each edge </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="ac99b420d3c788df828c023e79f5c7c31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac99b420d3c788df828c023e79f5c7c31">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_orthogonality_property_type()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_get_orthogonality_property_type </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets an int indicating the orthogonality property type for mesh2d. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">type</td><td>The int indicating the orthogonality property type </td></tr>
   </table>
   </dd>
 </dl>

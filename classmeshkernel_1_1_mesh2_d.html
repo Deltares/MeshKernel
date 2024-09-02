@@ -117,6 +117,10 @@ Public Types</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a17db40a7b9ea9151e51231c4af416d47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerator describing the different node types. <br /></td></tr>
 <tr class="separator:a17db40a7b9ea9151e51231c4af416d47"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5302769bc3f1dd3291f60b7bb62fe85c"><td class="memItemLeft" align="right" valign="top"><a id="a5302769bc3f1dd3291f60b7bb62fe85c"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a5302769bc3f1dd3291f60b7bb62fe85c">Property</a> { <b>Orthogonality</b> = 0
+ }</td></tr>
+<tr class="memdesc:a5302769bc3f1dd3291f60b7bb62fe85c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerator for different filtering properties on a 2D mesh. <br /></td></tr>
+<tr class="separator:a5302769bc3f1dd3291f60b7bb62fe85c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_types_classmeshkernel_1_1_mesh"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classmeshkernel_1_1_mesh')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classmeshkernel_1_1_mesh.html">meshkernel::Mesh</a></td></tr>
 <tr class="memitem:a2bdcf8039b306fc22ee56210ac137078 inherit pub_types_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a2bdcf8039b306fc22ee56210ac137078">Type</a> { <a class="el" href="classmeshkernel_1_1_mesh.html#a2bdcf8039b306fc22ee56210ac137078a1e137f21a2ff25f665e60ff9b84768dc">Type::Mesh1D</a>, 
 <a class="el" href="classmeshkernel_1_1_mesh.html#a2bdcf8039b306fc22ee56210ac137078ac2a2ccf2a6184eaa7693608895d88d13">Type::Mesh2D</a>
@@ -199,12 +203,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a43ba61b67bf1c9b93d8f37124935545b">ComputeNodeNeighbours</a> ()</td></tr>
 <tr class="memdesc:a43ba61b67bf1c9b93d8f37124935545b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes m_nodesNodes, see class members. <br /></td></tr>
 <tr class="separator:a43ba61b67bf1c9b93d8f37124935545b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afaa6bfaadd219f15bbb7b45ee696a256"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#afaa6bfaadd219f15bbb7b45ee696a256">GetOrthogonality</a> ()</td></tr>
-<tr class="memdesc:afaa6bfaadd219f15bbb7b45ee696a256"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the orthogonality values, the inner product of edges and segments connecting the face circumcenters.  <a href="classmeshkernel_1_1_mesh2_d.html#afaa6bfaadd219f15bbb7b45ee696a256">More...</a><br /></td></tr>
-<tr class="separator:afaa6bfaadd219f15bbb7b45ee696a256"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aee516031de33d12a21a5d0aae1007162"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#aee516031de33d12a21a5d0aae1007162">GetSmoothness</a> ()</td></tr>
-<tr class="memdesc:aee516031de33d12a21a5d0aae1007162"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the smoothness values, ratios of the face areas.  <a href="classmeshkernel_1_1_mesh2_d.html#aee516031de33d12a21a5d0aae1007162">More...</a><br /></td></tr>
-<tr class="separator:aee516031de33d12a21a5d0aae1007162"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14121848df5f538cf7c18582540846e6"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a14121848df5f538cf7c18582540846e6">GetOrthogonality</a> () const</td></tr>
+<tr class="memdesc:a14121848df5f538cf7c18582540846e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the orthogonality values, the inner product of edges and segments connecting the face circumcenters.  <a href="classmeshkernel_1_1_mesh2_d.html#a14121848df5f538cf7c18582540846e6">More...</a><br /></td></tr>
+<tr class="separator:a14121848df5f538cf7c18582540846e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0b329f82e8c5fd8dc75d9d295954947"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#ab0b329f82e8c5fd8dc75d9d295954947">GetSmoothness</a> () const</td></tr>
+<tr class="memdesc:ab0b329f82e8c5fd8dc75d9d295954947"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the smoothness values, ratios of the face areas.  <a href="classmeshkernel_1_1_mesh2_d.html#ab0b329f82e8c5fd8dc75d9d295954947">More...</a><br /></td></tr>
+<tr class="separator:ab0b329f82e8c5fd8dc75d9d295954947"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a281602c3eee4a57f2f06a89badafa04d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a281602c3eee4a57f2f06a89badafa04d">ComputeAspectRatios</a> (std::vector&lt; double &gt; &amp;aspectRatios)</td></tr>
 <tr class="memdesc:a281602c3eee4a57f2f06a89badafa04d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the aspect ratios (the ratios edges lengths to flow edges lengths)  <a href="classmeshkernel_1_1_mesh2_d.html#a281602c3eee4a57f2f06a89badafa04d">More...</a><br /></td></tr>
 <tr class="separator:a281602c3eee4a57f2f06a89badafa04d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -245,6 +249,9 @@ std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="b
 <tr class="memitem:a515a1beaf82f73f9d461d2e0f7795cd7"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a515a1beaf82f73f9d461d2e0f7795cd7">DeleteMesh</a> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon, <a class="el" href="classmeshkernel_1_1_mesh2_d.html#a41e7c8bf5e92fec3f46ba18204e8cc6e">DeleteMeshOptions</a> deletionOption, bool invertDeletion)</td></tr>
 <tr class="memdesc:a515a1beaf82f73f9d461d2e0f7795cd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a mesh in a polygon, using several options (delnet)  <a href="classmeshkernel_1_1_mesh2_d.html#a515a1beaf82f73f9d461d2e0f7795cd7">More...</a><br /></td></tr>
 <tr class="separator:a515a1beaf82f73f9d461d2e0f7795cd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01cae78ccc351b8bb8dae7517a07b956"><td class="memItemLeft" align="right" valign="top">std::vector&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a01cae78ccc351b8bb8dae7517a07b956">FilterBasedOnMetric</a> (<a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> location, <a class="el" href="classmeshkernel_1_1_mesh2_d.html#a5302769bc3f1dd3291f60b7bb62fe85c">Property</a> property, double minValue, double maxValue) const</td></tr>
+<tr class="memdesc:a01cae78ccc351b8bb8dae7517a07b956"><td class="mdescLeft">&#160;</td><td class="mdescRight">This method generates a mask indicating which locations are within the specified range of the given metric.  <a href="classmeshkernel_1_1_mesh2_d.html#a01cae78ccc351b8bb8dae7517a07b956">More...</a><br /></td></tr>
+<tr class="separator:a01cae78ccc351b8bb8dae7517a07b956"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e7e8009c8aebe6d3d8420be59d7b882"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a8e7e8009c8aebe6d3d8420be59d7b882">IsSegmentCrossingABoundaryEdge</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondPoint) const</td></tr>
 <tr class="memdesc:a8e7e8009c8aebe6d3d8420be59d7b882"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inquire if a segment is crossing a face.  <a href="classmeshkernel_1_1_mesh2_d.html#a8e7e8009c8aebe6d3d8420be59d7b882">More...</a><br /></td></tr>
 <tr class="separator:a8e7e8009c8aebe6d3d8420be59d7b882"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1210,6 +1217,57 @@ Coincide circumcenter</div></div>
 
 </div>
 </div>
+<a id="a01cae78ccc351b8bb8dae7517a07b956"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01cae78ccc351b8bb8dae7517a07b956">&#9670;&nbsp;</a></span>FilterBasedOnMetric()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;bool&gt; meshkernel::Mesh2D::FilterBasedOnMetric </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a>&#160;</td>
+          <td class="paramname"><em>location</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a5302769bc3f1dd3291f60b7bb62fe85c">Property</a>&#160;</td>
+          <td class="paramname"><em>property</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>minValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>maxValue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>This method generates a mask indicating which locations are within the specified range of the given metric. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">location</td><td>The location representing the location where to filter the object. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">property</td><td>The property by which to filter locations. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">minValue</td><td>The minimum value of the metric for filtering. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">maxValue</td><td>The maximum value of the metric for filtering. @ return A vector of boolean values. Each element corresponds to a location and is <code>true</code> if the location's metric is within the specified range, and <code>false</code> otherwise. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a6f2b9e4b8632901a3d5774a6a4afeea4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6f2b9e4b8632901a3d5774a6a4afeea4">&#9670;&nbsp;</a></span>FindCommonFace()</h2>
 
@@ -1568,8 +1626,8 @@ Coincide circumcenter</div></div>
 
 </div>
 </div>
-<a id="afaa6bfaadd219f15bbb7b45ee696a256"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afaa6bfaadd219f15bbb7b45ee696a256">&#9670;&nbsp;</a></span>GetOrthogonality()</h2>
+<a id="a14121848df5f538cf7c18582540846e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14121848df5f538cf7c18582540846e6">&#9670;&nbsp;</a></span>GetOrthogonality()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1578,7 +1636,7 @@ Coincide circumcenter</div></div>
           <td class="memname">std::vector&lt;double&gt; meshkernel::Mesh2D::GetOrthogonality </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -1588,8 +1646,8 @@ Coincide circumcenter</div></div>
 
 </div>
 </div>
-<a id="aee516031de33d12a21a5d0aae1007162"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aee516031de33d12a21a5d0aae1007162">&#9670;&nbsp;</a></span>GetSmoothness()</h2>
+<a id="ab0b329f82e8c5fd8dc75d9d295954947"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0b329f82e8c5fd8dc75d9d295954947">&#9670;&nbsp;</a></span>GetSmoothness()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1598,7 +1656,7 @@ Coincide circumcenter</div></div>
           <td class="memname">std::vector&lt;double&gt; meshkernel::Mesh2D::GetSmoothness </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">
