@@ -1440,7 +1440,7 @@ TEST(CurvilinearGridFromSplines, WTF)
     splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
     splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
 
-    splinesToCurvilinearParameters.check_front_collisions = 0;
+    splinesToCurvilinearParameters.check_front_collisions = 1;
     splinesToCurvilinearParameters.grow_grid_outside = 0;
     splinesToCurvilinearParameters.curvature_adapted_grid_spacing = 1;
     splinesToCurvilinearParameters.remove_skinny_triangles = 0;
@@ -1475,13 +1475,13 @@ TEST(CurvilinearGridFromSplines, WTF)
                                    {156.755261738869, 838.052335035942},
                                    {528.118010708175, 1131.23345264329},
                                    {1309.93432432777, 681.689072312023},
-                                   {1.360193944489029e+03, 7.174292466489187e+02},
+                                   // {1.360193944489029e+03, 7.174292466489187e+02},
                                    // {1.410453564650288e+03,   7.531694209858144e+02},
                                    // {   1.561232425134065e+03,   8.603899439965015e+02},
                                    // {1360.93432432777, 722.689072312023},
                                    {1812.53052594036, 1039.09081568098},
                                    {1862.79014610162, 1647.79065985623},
-                                   {1940.97177746358, 1957.724984184},
+                                   // {1940.97177746358, 1957.724984184},
                                    {1940.97177746358, 1960.51718530407}};
 
     auto splines = std::make_shared<Splines>(Projection::cartesian);
@@ -1492,18 +1492,19 @@ TEST(CurvilinearGridFromSplines, WTF)
     double x = 0.0;
     int count = 1;
 
-    for (size_t i = 0; i < spline2.size (); ++i) {
+    for (size_t i = 0; i < spline2.size(); ++i)
+    {
 
-        std::cout << "xs2 ( "<< i + 1 << " ) = " << spline2[i].x << ";" << std::endl;
-        std::cout << "ys2 ( "<< i + 1 << " ) = " << spline2[i].y << ";" << std::endl;
-
+        std::cout << "xs2 ( " << i + 1 << " ) = " << spline2[i].x << ";" << std::endl;
+        std::cout << "ys2 ( " << i + 1 << " ) = " << spline2[i].y << ";" << std::endl;
     }
 
-    while (x < static_cast<double>(spline2.size ()-1)) {
-        meshkernel::Point res = splines->Evaluate (1, x);
+    while (x < static_cast<double>(spline2.size() - 1))
+    {
+        meshkernel::Point res = splines->Evaluate(1, x);
 
-        std::cout << "xs ( "<< count << " ) = " << res.x << ";" << std::endl;
-        std::cout << "ys ( "<< count << " ) = " << res.y << ";" << std::endl;
+        std::cout << "xs ( " << count << " ) = " << res.x << ";" << std::endl;
+        std::cout << "ys ( " << count << " ) = " << res.y << ";" << std::endl;
 
         ++count;
         x += h;

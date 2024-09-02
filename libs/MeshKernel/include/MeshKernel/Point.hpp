@@ -365,7 +365,7 @@ inline double meshkernel::dot(const Vector& v, const Point& p)
 
 inline double meshkernel::cross(const Point& p1, const Point& p2)
 {
-    return return p1.x * p2.y - p1.y * p2.x;
+    return p1.x * p2.y - p1.y * p2.x;
 }
 
 inline meshkernel::Point meshkernel::operator-(const Point& pnt)
