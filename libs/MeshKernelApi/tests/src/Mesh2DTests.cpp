@@ -3,11 +3,9 @@
 #include <random>
 
 #include "MeshKernel/Parameters.hpp"
-
 #include "MeshKernelApi/BoundingBox.hpp"
 #include "MeshKernelApi/Mesh2D.hpp"
 #include "MeshKernelApi/MeshKernel.hpp"
-
 #include "TestUtils/MakeMeshes.hpp"
 
 // namespace aliases
@@ -132,5 +130,76 @@ TEST(Mesh2DTests, Mesh2dApiNodeEdgeDataTest)
     for (size_t i = 0; i < edges.size(); ++i)
     {
         EXPECT_EQ(edges[i], expectedEdges[i]);
+    }
+}
+
+TEST(Mesh2DTests, GetPolygonsOfDeletedFaces_WithPolygon_ShouldGetPolygonOfDeletedFaces)
+{
+    // Prepare: set a mesh with two faces sharing an high orthogonality edge. 2 polygon faces should be return
+    std::vector<double> nodesX{57.0, 49.1, 58.9, 66.7, 48.8, 65.9, 67.0, 49.1};
+    std::vector<double> nodesY{23.6, 14.0, 6.9, 16.2, 23.4, 24.0, 7.2, 6.7};
+
+    std::vector edges{
+        0, 1,
+        1, 2,
+        2, 3,
+        0, 3,
+        1, 4,
+        0, 4,
+        0, 5,
+        3, 5,
+        3, 6,
+        2, 6,
+        2, 7,
+        1, 7};
+
+    meshkernelapi::Mesh2D mesh2d;
+    mesh2d.edge_nodes = edges.data();
+    mesh2d.node_x = nodesX.data();
+    mesh2d.node_y = nodesY.data();
+    mesh2d.num_nodes = static_cast<int>(nodesX.size());
+    mesh2d.num_edges = static_cast<int>(edges.size() * 0.5);
+
+    int meshKernelId = -1;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    int propertyType = -1;
+    errorCode = meshkernelapi::mkernel_mesh2d_get_orthogonality_property_type(propertyType);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    int geometryListDimension = -1;
+    errorCode = meshkernelapi::mkernel_mesh2d_get_filtered_face_polygons_dimension(meshKernelId,
+                                                                                   propertyType,
+                                                                                   0.04,
+                                                                                   1.0,
+                                                                                   geometryListDimension);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(5, geometryListDimension);
+
+    meshkernelapi::GeometryList facePolygons{};
+    facePolygons.num_coordinates = geometryListDimension;
+    facePolygons.geometry_separator = meshkernel::constants::missing::doubleValue;
+    std::vector<double> xfacePolygons(geometryListDimension);
+    std::vector<double> yfacePolygons(geometryListDimension);
+    facePolygons.coordinates_x = xfacePolygons.data();
+    facePolygons.coordinates_y = yfacePolygons.data();
+    errorCode = mkernel_mesh2d_get_filtered_face_polygons(meshKernelId,
+                                                          propertyType,
+                                                          0.04,
+                                                          1.0,
+                                                          facePolygons);
+
+    // Assert
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    std::vector<double> expectedFacePolygonsX{57.0, 49.1, 58.9, 66.7, 57.0};
+    std::vector<double> expectedFacePolygonsY{23.6, 14.0, 6.9, 16.2, 23.6};
+    for (size_t i = 0u; i < xfacePolygons.size(); ++i)
+    {
+        ASSERT_NEAR(expectedFacePolygonsX[i], xfacePolygons[i], 1e-6);
+        ASSERT_NEAR(expectedFacePolygonsY[i], yfacePolygons[i], 1e-6);
     }
 }

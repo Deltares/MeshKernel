@@ -76,6 +76,12 @@ namespace meshkernel
             other
         };
 
+        /// Enumerator for different filtering properties on a 2D mesh
+        enum class Property
+        {
+            Orthogonality = 0
+        };
+
         /// @brief Default destructor
         ~Mesh2D() override = default;
 
@@ -224,11 +230,11 @@ namespace meshkernel
 
         /// @brief Get the orthogonality values, the inner product of edges and segments connecting the face circumcenters
         /// @return The edge orthogonality
-        [[nodiscard]] std::vector<double> GetOrthogonality();
+        [[nodiscard]] std::vector<double> GetOrthogonality() const;
 
         /// @brief Gets the smoothness values, ratios of the face areas
         /// @return The smoothness at the edges
-        [[nodiscard]] std::vector<double> GetSmoothness();
+        [[nodiscard]] std::vector<double> GetSmoothness() const;
 
         /// @brief Gets the aspect ratios (the ratios edges lengths to flow edges lengths)
         /// @param[in,out] aspectRatios The aspect ratios (passed as reference to avoid re-allocation)
@@ -287,6 +293,15 @@ namespace meshkernel
         /// @param[in] deletionOption The deletion option
         /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
         [[nodiscard]] std::unique_ptr<UndoAction> DeleteMesh(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion);
+
+        /// @brief  This method generates a mask indicating which locations are within the specified  range of the given metric.
+        ///
+        /// @param[in] location The location representing the location where to filter the object.
+        /// @param[in] property The property by which to filter locations.
+        /// @param[in] minValue The minimum value of the metric for filtering.
+        /// @param[in] maxValue The maximum value of the metric for filtering.
+        /// @ return A vector of boolean values. Each element corresponds to a location and is `true` if the location's metric is within the specified range, and `false` otherwise.
+        [[nodiscard]] std::vector<bool> FilterBasedOnMetric(Location location, Property property, double minValue, double maxValue) const;
 
         /// @brief Inquire if a segment is crossing a face
         /// @param[in] firstPoint The first point of the segment

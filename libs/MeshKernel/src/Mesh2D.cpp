@@ -1158,7 +1158,7 @@ void Mesh2D::ComputeNodeNeighbours()
     }
 }
 
-std::vector<double> Mesh2D::GetOrthogonality()
+std::vector<double> Mesh2D::GetOrthogonality() const
 {
     std::vector<double> result(GetNumEdges());
     const auto numEdges = GetNumEdges();
@@ -1191,7 +1191,7 @@ std::vector<double> Mesh2D::GetOrthogonality()
     return result;
 }
 
-std::vector<double> Mesh2D::GetSmoothness()
+std::vector<double> Mesh2D::GetSmoothness() const
 {
     std::vector<double> result(GetNumEdges());
     const auto numEdges = GetNumEdges();
@@ -1628,6 +1628,54 @@ std::vector<meshkernel::UInt> Mesh2D::GetHangingEdges() const
                 continue;
             }
             result.emplace_back(e);
+        }
+    }
+
+    return result;
+}
+
+std::vector<bool> Mesh2D::FilterBasedOnMetric(Location location,
+                                              Property property,
+                                              double minValue,
+                                              double maxValue) const
+{
+    if (location != Location::Faces)
+    {
+        throw ConstraintError("Unsupported location. Only location faces is supported");
+    }
+    if (property != Property::Orthogonality)
+    {
+        throw ConstraintError("Unsupported metric. Only orthogonality metric is supported");
+    }
+
+    const auto numFaces = GetNumFaces();
+
+    // Pre-allocate memory for result vector and set all elements to false
+    std::vector<bool> result(numFaces, false);
+
+    // Retrieve orthogonality values
+    const std::vector<double> metricValues = GetOrthogonality();
+
+    // Loop through faces and compute how many edges have the metric within the range
+    for (UInt f = 0; f < numFaces; ++f)
+    {
+        const UInt numFaceEdges = GetNumFaceEdges(f);
+        UInt numEdgesFiltered = 0;
+        for (UInt e = 0; e < numFaceEdges; ++e)
+        {
+            const auto edge = m_facesEdges[f][e];
+            const double metricValue = metricValues[edge];
+            if (metricValue < minValue || metricValue > maxValue)
+            {
+                break;
+            }
+            numEdgesFiltered = numEdgesFiltered + 1;
+        }
+
+        // If all edges have the metric within the range, the face is masked
+        if (numEdgesFiltered == numFaceEdges)
+        {
+            result[f] = true;
         }
     }
 
