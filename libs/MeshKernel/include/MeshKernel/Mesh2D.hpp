@@ -76,6 +76,13 @@ namespace meshkernel
             other
         };
 
+        /// Enumerator for different filtering properties on a 2D mesh
+        enum class Property
+        {
+            Orthogonality = 0,
+            EdgeLength = 1
+        };
+
         /// @brief Default destructor
         ~Mesh2D() override = default;
 
@@ -378,6 +385,12 @@ namespace meshkernel
         ///
         /// If no such element can be found then the null value will be returned.
         UInt FindCommonFace(const UInt edge1, const UInt edge2) const;
+
+        /// @brief Find the id of the element that is common to both edges.
+        ///
+        /// @param [in] property The property to retrive
+        /// Returns the value of the property
+        // [[nodiscard]] std::vector<double> GetProperty(Property property) const;
 
     private:
         // orthogonalization

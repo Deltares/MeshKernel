@@ -1453,6 +1453,98 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_mesh2d_get_property(int meshKernelId, int propertyValue, const GeometryList& geometryList)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            const auto& mesh2d = meshKernelState.at(meshKernelId).m_mesh2d;
+
+            if (!mesh2d || mesh2d->GetNumNodes() <= 0)
+            {
+                return lastExitCode;
+            }
+
+            const auto propertyValueEnum = static_cast<meshkernel::Mesh2D::Property>(propertyValue);
+            switch (propertyValueEnum)
+            {
+            case meshkernel::Mesh2D::Property::Orthogonality:
+            {
+                std::vector<double> values = mesh2d->GetOrthogonality();
+                if (static_cast<size_t>(geometryList.num_coordinates) < values.size())
+                {
+                    throw meshkernel::MeshKernelError("GeometryList with wrong dimensions");
+                }
+                std::copy(values.begin(), values.end(), geometryList.values);
+            }
+            break;
+            case meshkernel::Mesh2D::Property::EdgeLength:
+            {
+                mesh2d->ComputeEdgesLengths();
+                std::vector<double> values = mesh2d->m_edgeLengths;
+                if (static_cast<size_t>(geometryList.num_coordinates) < values.size())
+                {
+                    throw meshkernel::MeshKernelError("GeometryList with wrong dimensions");
+                }
+                std::copy(values.begin(), values.end(), geometryList.values);
+            }
+            break;
+            default:
+                throw meshkernel::MeshKernelError("Property not supported");
+            }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_get_property_dimension(int meshKernelId, int propertyValue, int& dimension)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            const auto& mesh2d = meshKernelState.at(meshKernelId).m_mesh2d;
+
+            if (!mesh2d || mesh2d->GetNumNodes() <= 0)
+            {
+                return lastExitCode;
+            }
+
+            const auto propertyValueEnum = static_cast<meshkernel::Mesh2D::Property>(propertyValue);
+            dimension = -1;
+            switch (propertyValueEnum)
+            {
+            case meshkernel::Mesh2D::Property::Orthogonality:
+                dimension = static_cast<int>(mesh2d->GetOrthogonality().size());
+                break;
+
+            case meshkernel::Mesh2D::Property::EdgeLength:
+                mesh2d->ComputeEdgesLengths();
+                dimension = static_cast<int>(mesh2d->m_edgeLengths.size());
+                break;
+            default:
+                throw meshkernel::MeshKernelError("Property not supported");
+            }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_mesh2d_get_smoothness(int meshKernelId, GeometryList& geometryList)
     {
         lastExitCode = meshkernel::ExitCode::Success;

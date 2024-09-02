@@ -8,6 +8,7 @@
 #include "MeshKernelApi/Mesh2D.hpp"
 #include "MeshKernelApi/MeshKernel.hpp"
 
+#include "CartesianApiTestFixture.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 
 // namespace aliases
@@ -133,4 +134,39 @@ TEST(Mesh2DTests, Mesh2dApiNodeEdgeDataTest)
     {
         EXPECT_EQ(edges[i], expectedEdges[i]);
     }
+}
+
+TEST_F(CartesianApiTestFixture, Mesh2DGetPropertyTest)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    int geometryListDimension = -1;
+    int propertyEnum = 0;
+    auto errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, propertyEnum, geometryListDimension);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    meshkernelapi::GeometryList propertyvalues{};
+    propertyvalues.num_coordinates = geometryListDimension;
+    propertyvalues.geometry_separator = meshkernel::constants::missing::doubleValue;
+    std::vector<double> values(geometryListDimension);
+    propertyvalues.values = values.data();
+    errorCode = mkernel_mesh2d_get_property(meshKernelId, propertyEnum, propertyvalues);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert
+    EXPECT_EQ(propertyvalues.num_coordinates, 17);
+    const double tolerance = 1e-6;
+    EXPECT_NEAR(values[0], 0.0, tolerance);
+    EXPECT_NEAR(values[1], -999.0, tolerance);
+    EXPECT_NEAR(values[2], -999.0, tolerance);
+    EXPECT_NEAR(values[3], 0.0, tolerance);
+    EXPECT_NEAR(values[4], -999.0, tolerance);
+    EXPECT_NEAR(values[5], -999.0, tolerance);
+    EXPECT_NEAR(values[6], 0.0, tolerance);
+    EXPECT_NEAR(values[7], -999.0, tolerance);
+    EXPECT_NEAR(values[8], -999.0, tolerance);
+    EXPECT_NEAR(values[9], -999.0, tolerance);
 }
