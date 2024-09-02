@@ -166,14 +166,14 @@ TEST(Mesh2DTests, GetPolygonsOfDeletedFaces_WithPolygon_ShouldGetPolygonOfDelete
     errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    int metricType = -1;
-    errorCode = meshkernelapi::mkernel_mesh2d_get_orthogonality_metric_type(metricType);
+    int propertyType = -1;
+    errorCode = meshkernelapi::mkernel_mesh2d_get_orthogonality_property_type(propertyType);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Execute
     int geometryListDimension = -1;
     errorCode = meshkernelapi::mkernel_mesh2d_get_filtered_face_polygons_dimension(meshKernelId,
-                                                                                   metricType,
+                                                                                   propertyType,
                                                                                    0.04,
                                                                                    1.0,
                                                                                    geometryListDimension);
@@ -188,10 +188,12 @@ TEST(Mesh2DTests, GetPolygonsOfDeletedFaces_WithPolygon_ShouldGetPolygonOfDelete
     facePolygons.coordinates_x = xfacePolygons.data();
     facePolygons.coordinates_y = yfacePolygons.data();
     errorCode = mkernel_mesh2d_get_filtered_face_polygons(meshKernelId,
-                                                          metricType,
+                                                          propertyType,
                                                           0.04,
                                                           1.0,
                                                           facePolygons);
+
+    // Assert
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     std::vector<double> expectedFacePolygonsX{57.0, 49.1, 58.9, 66.7, 57.0};
     std::vector<double> expectedFacePolygonsY{23.6, 14.0, 6.9, 16.2, 23.6};
