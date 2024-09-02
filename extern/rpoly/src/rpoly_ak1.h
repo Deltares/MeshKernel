@@ -27,24 +27,14 @@
 // example, data is input from a file to eliminate the need for a user to type data in via
 // the console.
 
-#pragma once
+#include <float.h>
+#include <math.h>
 
-#include <cfloat>
-#include <cmath>
-#include <array>
+#define MAX_RPOLY_DEGREE 4
+#define MAX_RPOLY_DEGREE_P1 (MAX_RPOLY_DEGREE+1)
 
-
-namespace rpoly
-{
-    /// \brief Maximum degree of the polynomial
-    static constexpr int MaxDegree = 5;
-
-    /// \brief Maximum degree of the polynomial plus one, the number of coefficients in a degree polynomial
-    static constexpr int MaxDegreeP1 = MaxDegree + 1;
-
-    /// \brief Calculated the roots of a polynomial of real coefficients
-    void rpoly_ak1(const std::array<double, MaxDegreeP1>& op,
-                   int& Degree,
-                   std::array<double, MaxDegree>& zeror,
-                   std::array<double, MaxDegree>& zeroi);
-} // namespace rpoly
+/* Calculated the roots of a polynomial of real coefficients */
+void rpoly_ak1(double op [MAX_RPOLY_DEGREE_P1],
+               int* Degree,
+               double zeror [MAX_RPOLY_DEGREE],
+               double zeroi [MAX_RPOLY_DEGREE]);

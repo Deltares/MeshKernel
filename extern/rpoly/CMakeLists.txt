@@ -1,5 +1,5 @@
 # target name
-set(target_name rpoly)
+set(target_name Rpoly)
 
 # library
 add_library(${target_name} STATIC)
@@ -7,13 +7,14 @@ add_library(${target_name} STATIC)
 # list of target sources
 set(
   TARGET_SRC_LIST
-  src/rpoly.cpp
+  src/rpoly.c
+  src/rpoly_ak1.c
 )
 
 # list of target headers
 set(
   TARGET_HEADER_LIST
-  src/rpoly.hpp
+  src/rpoly_ak1.h
 )
 
 # set target sources

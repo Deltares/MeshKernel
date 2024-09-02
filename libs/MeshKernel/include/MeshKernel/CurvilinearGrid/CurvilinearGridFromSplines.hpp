@@ -140,6 +140,15 @@ namespace meshkernel
         /// @returns The next grid layerIndex and the sub layerIndex index
         std::tuple<UInt, UInt> ComputeGridLayerAndSubLayer(UInt layerIndex);
 
+        double CompCrossTime1(const Point& x1, const Point& x3, const Point& x4,
+                              const Point& v1, const Point& v3, const Point& v4,
+                              const double clearance) const;
+
+        double CompCrossTime2(const Point& x1, const Point& x3, const Point& x4,
+                              const Point& v1, const Point& v3, const Point& v4,
+                              const double clearance) const;
+
+        // (get_lr)
         void GetNeighbouringLayerPoints(const std::vector<Point>& activeLayerPoints,
                                         const UInt layerPoint,
                                         UInt& layerPointLeft,
@@ -169,7 +178,7 @@ namespace meshkernel
 
         /// @brief Computes the points at front, which have to be moved.
         /// @returns The indices of the grid points, the front grid points and the number of front points
-        std::tuple<lin_alg::Matrix<UInt>, lin_alg::RowVector<Point>, UInt> FindFront();
+        std::tuple<lin_alg::Matrix<UInt>, lin_alg::RowVector<Point>, UInt> FindFront() const;
 
         /// @brief Compute growth velocity vectors at grid points (comp_vel)
         /// @param[in] layerIndex The current grid layerIndex index
@@ -275,6 +284,13 @@ namespace meshkernel
 
         /// @brief Delete skewed cells and cells whose aspect ratio exceeds a prescribed value (postgrid)
         void DeleteSkinnyTriangles();
+
+        UInt GetCentralSplineIndex() const;
+
+        bool SegmentCrossesCentreSpline(const Point& x1, const Point& x2) const;
+
+        void SolveQuartic(const std::array<double, 5>& coeffs,
+                          std::array<double, 4>& roots) const;
 
         /// @brief Allocate spline properties arrays
         void AllocateSplinesProperties();
