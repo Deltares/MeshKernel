@@ -2380,7 +2380,6 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_mesh2d_get_filtered_face_polygons_dimension(int meshKernelId,
-                                                                        int location,
                                                                         int filter,
                                                                         double minValue,
                                                                         double maxValue,
@@ -2397,9 +2396,11 @@ namespace meshkernelapi
             {
                 throw meshkernel::ConstraintError("The 2d mesh contains no nodes.");
             }
-            const auto locationEnum = static_cast<meshkernel::Location>(location);
             const auto filterEnum = static_cast<meshkernel::Mesh2D::Metric>(filter);
-            const auto filterMask = meshKernelState[meshKernelId].m_mesh2d->FilterBasedOnMetric(locationEnum, filterEnum, minValue, maxValue);
+            const auto filterMask = meshKernelState[meshKernelId].m_mesh2d->FilterBasedOnMetric(meshkernel::Location::Faces,
+                                                                                                filterEnum,
+                                                                                                minValue,
+                                                                                                maxValue);
             geometryListDimension = 0;
             for (meshkernel::UInt f = 0; f < filterMask.size(); ++f)
             {
@@ -2423,7 +2424,6 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_mesh2d_get_filtered_face_polygons(int meshKernelId,
-                                                              int location,
                                                               int filter,
                                                               double minValue,
                                                               double maxValue,
@@ -2441,9 +2441,11 @@ namespace meshkernelapi
                 throw meshkernel::ConstraintError("The 2d mesh contains no nodes.");
             }
 
-            const auto locationEnum = static_cast<meshkernel::Location>(location);
             const auto filterEnum = static_cast<meshkernel::Mesh2D::Metric>(filter);
-            const auto filterMask = meshKernelState[meshKernelId].m_mesh2d->FilterBasedOnMetric(locationEnum, filterEnum, minValue, maxValue);
+            const auto filterMask = meshKernelState[meshKernelId].m_mesh2d->FilterBasedOnMetric(meshkernel::Location::Faces,
+                                                                                                filterEnum,
+                                                                                                minValue,
+                                                                                                maxValue);
             FillFacePolygons(meshKernelState[meshKernelId].m_mesh2d, filterMask, facePolygons);
         }
         catch (...)

@@ -1,5 +1,4 @@
 #include <algorithm>
-#include <gmock/gmock-matchers.h>
 #include <gtest/gtest.h>
 #include <random>
 
@@ -12,22 +11,6 @@
 // namespace aliases
 namespace mk = meshkernel;
 namespace mkapi = meshkernelapi;
-
-MATCHER_P2(ContainerNear, expected, tolerance, "")
-{
-    if (arg.size() != expected.size())
-    {
-        return false;
-    }
-    for (size_t i = 0; i < arg.size(); ++i)
-    {
-        if (std::fabs(arg[i] - expected[i]) > tolerance)
-        {
-            return false;
-        }
-    }
-    return true;
-}
 
 TEST(Mesh2DTests, Mesh2dApiNodeEdgeDataTest)
 {
@@ -183,10 +166,6 @@ TEST(Mesh2DTests, GetPolygonsOfDeletedFaces_WithPolygon_ShouldGetPolygonOfDelete
     errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    int faceLocationType = -1;
-    errorCode = meshkernelapi::mkernel_get_faces_location_type(faceLocationType);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
     int metricType = -1;
     errorCode = meshkernelapi::mkernel_mesh2d_get_orthogonality_metric_type(metricType);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -194,7 +173,6 @@ TEST(Mesh2DTests, GetPolygonsOfDeletedFaces_WithPolygon_ShouldGetPolygonOfDelete
     // Execute
     int geometryListDimension = -1;
     errorCode = meshkernelapi::mkernel_mesh2d_get_filtered_face_polygons_dimension(meshKernelId,
-                                                                                   faceLocationType,
                                                                                    metricType,
                                                                                    0.04,
                                                                                    1.0,
@@ -210,7 +188,6 @@ TEST(Mesh2DTests, GetPolygonsOfDeletedFaces_WithPolygon_ShouldGetPolygonOfDelete
     facePolygons.coordinates_x = xfacePolygons.data();
     facePolygons.coordinates_y = yfacePolygons.data();
     errorCode = mkernel_mesh2d_get_filtered_face_polygons(meshKernelId,
-                                                          faceLocationType,
                                                           metricType,
                                                           0.04,
                                                           1.0,
@@ -218,6 +195,9 @@ TEST(Mesh2DTests, GetPolygonsOfDeletedFaces_WithPolygon_ShouldGetPolygonOfDelete
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     std::vector<double> expectedFacePolygonsX{57.0, 49.1, 58.9, 66.7, 57.0};
     std::vector<double> expectedFacePolygonsY{23.6, 14.0, 6.9, 16.2, 23.6};
-    ASSERT_THAT(xfacePolygons, ContainerNear(expectedFacePolygonsX, 1e-6));
-    ASSERT_THAT(yfacePolygons, ContainerNear(expectedFacePolygonsY, 1e-6));
+    for (int i = 0; i < xfacePolygons.size(); ++i)
+    {
+        ASSERT_NEAR(expectedFacePolygonsX[i], xfacePolygons[i], 1e-6);
+        ASSERT_NEAR(expectedFacePolygonsY[i], yfacePolygons[i], 1e-6);
+    }
 }

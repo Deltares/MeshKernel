@@ -1641,11 +1641,11 @@ std::vector<bool> Mesh2D::FilterBasedOnMetric(Location location,
 {
     if (location != Location::Faces)
     {
-        throw ConstraintError("Unsupported location");
+        throw ConstraintError("Unsupported location. Only location faces is supported");
     }
     if (metric != Metric::Orthogonality)
     {
-        throw ConstraintError("Unsupported metric");
+        throw ConstraintError("Unsupported metric. Only orthogonality metric is supported");
     }
 
     const auto numFaces = GetNumFaces();

@@ -76,11 +76,10 @@ namespace meshkernel
             other
         };
 
-        /// Enumerator for different filtering metrics
+        /// Enumerator for different filtering metrics on a 2D mesh
         enum class Metric
         {
-            Orthogonality = 0,
-            Smoothness = 1
+            Orthogonality = 0
         };
 
         /// @brief Default destructor

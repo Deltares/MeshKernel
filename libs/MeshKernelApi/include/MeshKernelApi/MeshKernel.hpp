@@ -1248,31 +1248,34 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_face_polygons_dimension(int meshKernelId, int numEdges, int& geometryListDimension);
 
-                /// @brief Gets the dimension of the GeometryList containing the filtered face polygons
+        /// @brief Retrieves the dimension of the geometry list containing the face polygons within the filtering range.
         ///
-        /// @param[in] filterMetric The id of the mesh state
-        /// @param[in] filterMetric The metric to use for filtering
-        /// @param[in] minValue The min value of the metric
-        /// @param[in] maxValue The max value of the metric
-        /// @param[out] geometryListDimension The dimension of the geometry list containing the filtered face polygons
-        /// @returns Error code
+        /// This function filters face polygons within a mesh based on a specific metric and location,
+        /// applying a range filter (minimum and maximum values). It then returns the dimension of the
+        /// filtered geometry list.
+        ///
+        /// @param[in] meshKernelId            The identifier of the mesh kernel or mesh state.
+        /// @param[in] filter                  The metric used to filter the locations.
+        /// @param[in] minValue                The minimum value of the metric.
+        /// @param[in] maxValue                The maximum value of the metric.
+        /// @param[out] geometryListDimension  The output parameter that will store the dimension (size) of the geometry list
+        ///                                    containing the polygons that match the filtering criteria.
+        /// @returns                           An error code indicating the success or failure of the operation.
         MKERNEL_API int mkernel_mesh2d_get_filtered_face_polygons_dimension(int meshKernelId,
-                                                                            int location,
                                                                             int filter,
                                                                             double minValue,
                                                                             double maxValue,
                                                                             int& geometryListDimension);
 
-        /// @brief Gets the GeometryList containing the filtered face polygons
+        /// @brief Gets the geometry list containing the face polygons within the filtering range
         ///
-        /// @param[in] filterMetric The id of the mesh state
-        /// @param[in] filterMetric The metric to use for filtering
-        /// @param[in] minValue The min value of the metric
-        /// @param[in] maxValue The max value of the metric
-        /// @param[out] facePolygons The geometry list containing the facePolygons
+        /// @param[in] meshKernelId            The identifier of the mesh kernel or mesh state.
+        /// @param[in] filter                  The metric used to filter the locations.
+        /// @param[in] minValue                The minimum value of the metric.
+        /// @param[in] maxValue                The maximum value of the metric.
+        /// @param[out] facePolygons           The geometry list containing the filtered locations.
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_filtered_face_polygons(int meshKernelId,
-                                                                  int location,
                                                                   int filter,
                                                                   double minValue,
                                                                   double maxValue,
