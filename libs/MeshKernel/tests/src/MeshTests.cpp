@@ -716,8 +716,8 @@ public:
         return {
             {meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected, false, 16},
             {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, false, 14},
-            {meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected, true, 0},
-            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, true, 6}
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected, true, 6},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, true, 0}
 
         };
     }
@@ -747,7 +747,8 @@ TEST_P(MeshDeletion, expected_results)
     auto undoAction = mesh->DeleteMesh(polygon, deleteOption, invertSelection);
 
     // Assert
-    ASSERT_EQ(numNodes, mesh->GetNumValidNodes());
+    const auto numValidNodes = mesh->GetNumValidNodes();
+    ASSERT_EQ(numNodes, numValidNodes);
 
     // Test the undo action has been computed correctly
     undoAction->Restore();
