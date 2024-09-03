@@ -1098,46 +1098,6 @@ TEST(MeshRefinement, SplitAlongRow_FailureTests)
     ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
 }
 
-using namespace meshkernel;
-
-void PrintIt(const std::vector<double>& nodes_x, const std::vector<double>& nodes_y, const std::vector<int>& edges, std::ostream& out)
-{
-    out << "nullId = " << constants::missing::uintValue << ";" << std::endl;
-    out << "nullValue = " << constants::missing::doubleValue << ";" << std::endl;
-    out << "nodex = nullValue * ones ( " << nodes_x.size() << ", 1);" << std::endl;
-    out << "nodey = nullValue * ones ( " << nodes_y.size() << ", 1);" << std::endl;
-    out << "edges = " << constants::missing::uintValue << " * ones ( " << edges.size()/2 << ", 2);" << std::endl;
-
-    for (UInt i = 0; i < nodes_x.size(); ++i)
-    {
-        if (nodes_x[i] != constants::missing::doubleValue)
-        {
-            out << "nodex (" << i + 1 << " ) = " << nodes_x[i] << ";" << std::endl;
-        }
-    }
-
-    for (UInt i = 0; i < nodes_y.size(); ++i)
-    {
-        if (nodes_y[i] != constants::missing::doubleValue)
-        {
-            out << "nodey (" << i + 1 << " ) = " << nodes_y[i] << ";" << std::endl;
-        }
-    }
-
-    for (UInt i = 0; i < edges.size()/2; ++i)
-    {
-        if (edges[2*i] != constants::missing::intValue &&
-            edges[2*i+1] != constants::missing::intValue &&
-            edges[2*i] != -1 &&
-            edges[2*i+1] != -1 &&
-            nodes_x[edges[2*i]] != constants::missing::doubleValue && nodes_y[edges[2*i+1]] != constants::missing::doubleValue)
-        {
-            out << "edges ( " << i + 1 << ", 1 ) = " << edges[2*i] + 1 << ";" << std::endl;
-            out << "edges ( " << i + 1 << ", 2 ) = " << edges[2*i+1] + 1 << ";" << std::endl;
-        }
-    }
-}
-
 TEST(MeshRefinement, ConnectingTwoMeshesAfterCasulliRefinementDoesNotCrash)
 {
     // This test is really just to check that the sequence of steps involved does not cause a crash.
@@ -1195,7 +1155,7 @@ TEST(MeshRefinement, ConnectingTwoMeshesAfterCasulliRefinementDoesNotCrash)
     mesh2d1.node_y = node_y.data();
     mesh2d1.edge_nodes = edge_nodes.data();
 
-    errorCode = mkernel_mesh2d_get_node_edge_data (meshKernelId2, mesh2d1);
+    errorCode = mkernel_mesh2d_get_node_edge_data(meshKernelId2, mesh2d1);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Connect the two meshes
@@ -1218,10 +1178,9 @@ TEST(MeshRefinement, ConnectingTwoMeshesAfterCasulliRefinementDoesNotCrash)
     mesh2d2.node_y = node_y2.data();
     mesh2d2.edge_nodes = edge_nodes2.data();
 
-    errorCode = mkernel_mesh2d_get_node_edge_data (meshKernelId1, mesh2d2);
+    errorCode = mkernel_mesh2d_get_node_edge_data(meshKernelId1, mesh2d2);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    EXPECT_EQ (mesh2d2.num_nodes, 44);
-    EXPECT_EQ (mesh2d2.num_edges, 72);
-
+    EXPECT_EQ(mesh2d2.num_nodes, 44);
+    EXPECT_EQ(mesh2d2.num_edges, 72);
 }
