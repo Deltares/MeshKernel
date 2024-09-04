@@ -1158,7 +1158,7 @@ void Mesh2D::ComputeNodeNeighbours()
     }
 }
 
-std::vector<double> Mesh2D::GetOrthogonality()
+std::vector<double> Mesh2D::GetOrthogonality() const
 {
     std::vector<double> result(GetNumEdges());
     const auto numEdges = GetNumEdges();
@@ -1191,7 +1191,7 @@ std::vector<double> Mesh2D::GetOrthogonality()
     return result;
 }
 
-std::vector<double> Mesh2D::GetSmoothness()
+std::vector<double> Mesh2D::GetSmoothness() const
 {
     std::vector<double> result(GetNumEdges());
     const auto numEdges = GetNumEdges();
@@ -1634,6 +1634,54 @@ std::vector<meshkernel::UInt> Mesh2D::GetHangingEdges() const
     return result;
 }
 
+std::vector<bool> Mesh2D::FilterBasedOnMetric(Location location,
+                                              Property property,
+                                              double minValue,
+                                              double maxValue) const
+{
+    if (location != Location::Faces)
+    {
+        throw ConstraintError("Unsupported location. Only location faces is supported");
+    }
+    if (property != Property::Orthogonality)
+    {
+        throw ConstraintError("Unsupported metric. Only orthogonality metric is supported");
+    }
+
+    const auto numFaces = GetNumFaces();
+
+    // Pre-allocate memory for result vector and set all elements to false
+    std::vector<bool> result(numFaces, false);
+
+    // Retrieve orthogonality values
+    const std::vector<double> metricValues = GetOrthogonality();
+
+    // Loop through faces and compute how many edges have the metric within the range
+    for (UInt f = 0; f < numFaces; ++f)
+    {
+        const UInt numFaceEdges = GetNumFaceEdges(f);
+        UInt numEdgesFiltered = 0;
+        for (UInt e = 0; e < numFaceEdges; ++e)
+        {
+            const auto edge = m_facesEdges[f][e];
+            const double metricValue = metricValues[edge];
+            if (metricValue < minValue || metricValue > maxValue)
+            {
+                break;
+            }
+            numEdgesFiltered = numEdgesFiltered + 1;
+        }
+
+        // If all edges have the metric within the range, the face is masked
+        if (numEdgesFiltered == numFaceEdges)
+        {
+            result[f] = true;
+        }
+    }
+
+    return result;
+}
+
 std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMesh(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion)
 {
     if (deletionOption == FacesWithIncludedCircumcenters)
@@ -1696,7 +1744,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMesh(const Polygons& polyg
     else if (deletionOption == InsideNotIntersected && invertDeletion)
     {
         excludedFace = [&isFaceCompletlyIncludedInPolygon, &faceIntersections](UInt f)
-        { return isFaceCompletlyIncludedInPolygon[f] && faceIntersections[f].faceIndex == constants::missing::uintValue; };
+        { return isFaceCompletlyIncludedInPolygon[f] || faceIntersections[f].faceIndex != constants::missing::uintValue; };
     }
     else if (deletionOption == InsideAndIntersected && !invertDeletion)
     {
@@ -1706,7 +1754,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMesh(const Polygons& polyg
     else if (deletionOption == InsideAndIntersected && invertDeletion)
     {
         excludedFace = [&isFaceCompletlyIncludedInPolygon, &faceIntersections](UInt f)
-        { return isFaceCompletlyIncludedInPolygon[f] || faceIntersections[f].faceIndex != constants::missing::uintValue; };
+        { return isFaceCompletlyIncludedInPolygon[f] && faceIntersections[f].faceIndex == constants::missing::uintValue; };
     }
 
     // Mark edges for deletion
@@ -2138,9 +2186,9 @@ std::unique_ptr<Mesh2D> Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     // Initialise with mesh1,
     Mesh2D mergedMesh(mesh1.m_edges, mesh1.m_nodes, mesh1.m_projection);
 
-    const auto mesh1NodeOffset = static_cast<UInt>(mesh1.m_nodes.size());
-    const auto mesh1EdgeOffset = static_cast<UInt>(mesh1.m_edges.size());
-    const auto mesh1FaceOffset = static_cast<UInt>(mesh1.m_numFacesNodes.size());
+    const auto mesh1NodeOffset = static_cast<UInt>(mergedMesh.m_nodes.size());
+    const auto mesh1EdgeOffset = static_cast<UInt>(mergedMesh.m_edges.size());
+    const auto mesh1FaceOffset = static_cast<UInt>(mergedMesh.m_numFacesNodes.size());
 
     // Merge node arrays
     mergedMesh.m_nodes.insert(mergedMesh.m_nodes.end(), mesh2.m_nodes.begin(), mesh2.m_nodes.end());

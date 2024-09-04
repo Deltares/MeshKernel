@@ -801,6 +801,13 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_mesh2d_get_orthogonality_property_type(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::Mesh2D::Property::Orthogonality);
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_mesh1d_get_dimensions(int meshKernelId, Mesh1D& mesh1d)
     {
         lastExitCode = meshkernel::ExitCode::Success;
@@ -2412,34 +2419,17 @@ namespace meshkernelapi
             }
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
             const auto numFaces = meshKernelState[meshKernelId].m_mesh2d->GetNumFaces();
-            meshkernel::UInt count = 0;
+            std::vector<bool> validFace(numFaces, false);
             for (meshkernel::UInt f = 0; f < numFaces; ++f)
             {
                 const auto& faceNodes = meshKernelState[meshKernelId].m_mesh2d->m_facesNodes[f];
                 const auto faceNumEdges = static_cast<int>(faceNodes.size());
-                if (faceNumEdges != numEdges)
+                if (faceNumEdges == numEdges)
                 {
-                    continue;
+                    validFace[f] = true;
                 }
-                if (count != 0)
-                {
-                    facePolygons.coordinates_x[count] = missing::doubleValue;
-                    facePolygons.coordinates_y[count] = missing::doubleValue;
-                    count++;
-                }
-
-                for (meshkernel::UInt n = 0u; n < faceNodes.size(); ++n)
-                {
-                    const auto& currentNode = meshKernelState[meshKernelId].m_mesh2d->Node(faceNodes[n]);
-                    facePolygons.coordinates_x[count] = currentNode.x;
-                    facePolygons.coordinates_y[count] = currentNode.y;
-                    count++;
-                }
-                const auto& currentNode = meshKernelState[meshKernelId].m_mesh2d->Node(faceNodes[0]);
-                facePolygons.coordinates_x[count] = currentNode.x;
-                facePolygons.coordinates_y[count] = currentNode.y;
-                count++;
             }
+            FillFacePolygons(meshKernelState[meshKernelId].m_mesh2d, validFace, facePolygons);
         }
         catch (...)
         {
@@ -2473,6 +2463,82 @@ namespace meshkernelapi
             {
                 geometryListDimension = (numEdges + 2) * (numMatchingFaces - 1) + numEdges + 1;
             }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_get_filtered_face_polygons_dimension(int meshKernelId,
+                                                                        int propertyValue,
+                                                                        double minValue,
+                                                                        double maxValue,
+                                                                        int& geometryListDimension)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
+            {
+                throw meshkernel::ConstraintError("The 2d mesh contains no nodes.");
+            }
+            const auto filterEnum = static_cast<meshkernel::Mesh2D::Property>(propertyValue);
+            const auto filterMask = meshKernelState[meshKernelId].m_mesh2d->FilterBasedOnMetric(meshkernel::Location::Faces,
+                                                                                                filterEnum,
+                                                                                                minValue,
+                                                                                                maxValue);
+            geometryListDimension = 0;
+            for (meshkernel::UInt f = 0; f < filterMask.size(); ++f)
+            {
+                if (!filterMask[f])
+                {
+                    continue;
+                }
+                const auto faceNumEdges = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->m_facesNodes[f].size());
+                geometryListDimension += faceNumEdges + 2;
+            }
+            if (geometryListDimension > 0)
+            {
+                geometryListDimension -= 1;
+            }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_get_filtered_face_polygons(int meshKernelId,
+                                                              int propertyValue,
+                                                              double minValue,
+                                                              double maxValue,
+                                                              const GeometryList& facePolygons)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
+            {
+                throw meshkernel::ConstraintError("The 2d mesh contains no nodes.");
+            }
+
+            const auto filterEnum = static_cast<meshkernel::Mesh2D::Property>(propertyValue);
+            const auto filterMask = meshKernelState[meshKernelId].m_mesh2d->FilterBasedOnMetric(meshkernel::Location::Faces,
+                                                                                                filterEnum,
+                                                                                                minValue,
+                                                                                                maxValue);
+            FillFacePolygons(meshKernelState[meshKernelId].m_mesh2d, filterMask, facePolygons);
         }
         catch (...)
         {
