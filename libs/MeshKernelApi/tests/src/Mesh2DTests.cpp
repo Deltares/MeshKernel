@@ -134,15 +134,40 @@ TEST(Mesh2DTests, Mesh2dApiNodeEdgeDataTest)
     }
 }
 
-TEST_F(CartesianApiTestFixture, Mesh2DGetPropertyTest)
+TEST(Mesh2DTests, Mesh2DGetPropertyTest)
 {
-    // Prepare
-    MakeMesh();
-    auto const meshKernelId = GetMeshKernelId();
+    std::vector<double> nodesX{57.0, 49.1, 58.9, 66.7, 48.8, 65.9, 67.0, 49.1};
+    std::vector<double> nodesY{23.6, 14.0, 6.9, 16.2, 23.4, 24.0, 7.2, 6.7};
+
+    std::vector edges{
+        0, 1,
+        1, 2,
+        2, 3,
+        0, 3,
+        1, 4,
+        0, 4,
+        0, 5,
+        3, 5,
+        3, 6,
+        2, 6,
+        2, 7,
+        1, 7};
+
+    meshkernelapi::Mesh2D mesh2d;
+    mesh2d.edge_nodes = edges.data();
+    mesh2d.node_x = nodesX.data();
+    mesh2d.node_y = nodesY.data();
+    mesh2d.num_nodes = static_cast<int>(nodesX.size());
+    mesh2d.num_edges = static_cast<int>(edges.size() * 0.5);
+
+    int meshKernelId = -1;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     int geometryListDimension = -1;
-    int propertyEnum = 0;
-    auto errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, propertyEnum, geometryListDimension);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, 0, geometryListDimension);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Execute
@@ -151,22 +176,17 @@ TEST_F(CartesianApiTestFixture, Mesh2DGetPropertyTest)
     propertyvalues.geometry_separator = meshkernel::constants::missing::doubleValue;
     std::vector<double> values(geometryListDimension);
     propertyvalues.values = values.data();
-    errorCode = mkernel_mesh2d_get_property(meshKernelId, propertyEnum, propertyvalues);
+    errorCode = mkernel_mesh2d_get_property(meshKernelId, 0, propertyvalues);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    EXPECT_EQ(propertyvalues.num_coordinates, 17);
-    const double tolerance = 1e-6;
-    EXPECT_NEAR(values[0], 0.0, tolerance);
-    EXPECT_NEAR(values[1], -999.0, tolerance);
-    EXPECT_NEAR(values[2], -999.0, tolerance);
-    EXPECT_NEAR(values[3], 0.0, tolerance);
-    EXPECT_NEAR(values[4], -999.0, tolerance);
-    EXPECT_NEAR(values[5], -999.0, tolerance);
-    EXPECT_NEAR(values[6], 0.0, tolerance);
-    EXPECT_NEAR(values[7], -999.0, tolerance);
-    EXPECT_NEAR(values[8], -999.0, tolerance);
-    EXPECT_NEAR(values[9], -999.0, tolerance);
+    EXPECT_EQ(propertyvalues.num_coordinates, 12);
+    const double tolerance = 1e-4;
+
+    EXPECT_NEAR(values[0], 0.055751274056612614, tolerance);
+    EXPECT_NEAR(values[1], 0.056220640190527582, tolerance);
+    EXPECT_NEAR(values[2], 0.051193798544321531, tolerance);
+    EXPECT_NEAR(values[3], 0.056591641726992326, tolerance);
 }
 
 TEST(Mesh2DTests, GetPolygonsOfDeletedFaces_WithPolygon_ShouldGetPolygonOfDeletedFaces)
