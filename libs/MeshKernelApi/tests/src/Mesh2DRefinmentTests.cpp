@@ -1096,3 +1096,90 @@ TEST(MeshRefinement, SplitAlongRow_FailureTests)
     errorCode = meshkernelapi::mkernel_mesh2d_split_row(meshKernelId, node1, node2);
     ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
 }
+
+TEST(MeshRefinement, ConnectingTwoMeshesAfterCasulliRefinementDoesNotCrash)
+{
+    // This test is really just to check that the sequence of steps involved does not cause a crash.
+
+    // Prepare
+    int meshKernelId1;
+    int meshKernelId2;
+    constexpr int isSpherical = 0;
+    int errorCode = meshkernelapi::mkernel_allocate_state(isSpherical, meshKernelId1);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_allocate_state(isSpherical, meshKernelId2);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernel::MakeGridParameters gridParameters;
+    gridParameters.num_columns = 3;
+    gridParameters.num_rows = 3;
+    gridParameters.block_size_x = 10.0;
+    gridParameters.block_size_y = 10.0;
+    gridParameters.origin_x = 0.0;
+    gridParameters.origin_y = 0.0;
+    gridParameters.angle = 0.0;
+
+    errorCode = meshkernelapi::mkernel_mesh2d_make_rectangular_mesh(meshKernelId1, gridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    gridParameters.origin_x = 30.5;
+    gridParameters.origin_y = 0.0;
+
+    errorCode = meshkernelapi::mkernel_mesh2d_make_rectangular_mesh(meshKernelId2, gridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    //--------------------------------
+
+    std::vector<double> polygonPointsX({-5.0, 15.0, 15.0, -5.0, -5.0});
+    std::vector<double> polygonPointsY({15.0, 15.0, -5.0, -5.0, 15.0});
+    meshkernelapi::GeometryList polygon;
+    polygon.num_coordinates = 5;
+    polygon.coordinates_x = polygonPointsX.data();
+    polygon.coordinates_y = polygonPointsY.data();
+
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_refinement_on_polygon(meshKernelId1, polygon);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    //--------------------------------
+
+    meshkernelapi::Mesh2D mesh2d1{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId2, mesh2d1);
+
+    std::vector<double> node_x(mesh2d1.num_nodes);
+    std::vector<double> node_y(mesh2d1.num_nodes);
+    std::vector<int> edge_nodes(mesh2d1.num_edges * 2);
+
+    mesh2d1.node_x = node_x.data();
+    mesh2d1.node_y = node_y.data();
+    mesh2d1.edge_nodes = edge_nodes.data();
+
+    errorCode = mkernel_mesh2d_get_node_edge_data(meshKernelId2, mesh2d1);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Connect the two meshes
+    // to note: the mesh associated with meshKernelId1 has gaps in the node and edge data arrays (with invalid data)
+    // after the Casulli refinement. The mesh data, mesh2d1, does not have any such gaps.
+    // The mesh with gaps in the data must appear first in the mesh connection.
+    errorCode = meshkernelapi::mkernel_mesh2d_connect_meshes(meshKernelId1, mesh2d1, 0.1);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    //--------------------------------
+
+    meshkernelapi::Mesh2D mesh2d2{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId1, mesh2d2);
+
+    std::vector<double> node_x2(mesh2d2.num_nodes);
+    std::vector<double> node_y2(mesh2d2.num_nodes);
+    std::vector<int> edge_nodes2(mesh2d2.num_edges * 2);
+
+    mesh2d2.node_x = node_x2.data();
+    mesh2d2.node_y = node_y2.data();
+    mesh2d2.edge_nodes = edge_nodes2.data();
+
+    errorCode = mkernel_mesh2d_get_node_edge_data(meshKernelId1, mesh2d2);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    EXPECT_EQ(mesh2d2.num_nodes, 44);
+    EXPECT_EQ(mesh2d2.num_edges, 72);
+}

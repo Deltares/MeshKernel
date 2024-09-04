@@ -2186,9 +2186,9 @@ std::unique_ptr<Mesh2D> Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     // Initialise with mesh1,
     Mesh2D mergedMesh(mesh1.m_edges, mesh1.m_nodes, mesh1.m_projection);
 
-    const auto mesh1NodeOffset = static_cast<UInt>(mesh1.m_nodes.size());
-    const auto mesh1EdgeOffset = static_cast<UInt>(mesh1.m_edges.size());
-    const auto mesh1FaceOffset = static_cast<UInt>(mesh1.m_numFacesNodes.size());
+    const auto mesh1NodeOffset = static_cast<UInt>(mergedMesh.m_nodes.size());
+    const auto mesh1EdgeOffset = static_cast<UInt>(mergedMesh.m_edges.size());
+    const auto mesh1FaceOffset = static_cast<UInt>(mergedMesh.m_numFacesNodes.size());
 
     // Merge node arrays
     mergedMesh.m_nodes.insert(mergedMesh.m_nodes.end(), mesh2.m_nodes.begin(), mesh2.m_nodes.end());
