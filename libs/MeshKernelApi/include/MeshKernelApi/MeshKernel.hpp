@@ -1348,6 +1348,22 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_orthogonality(int meshKernelId, GeometryList& geometryList);
 
+        /// @brief Retrieves a specified property of a 2D mesh.
+        ///
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] propertyValue The value representing the specific property
+        /// @param[in] geometrylist A reference to a GeometryList object that will be populated with the values of the requested property
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_property(int meshKernelId, int propertyValue, const GeometryList& geometrylist);
+
+        /// @brief The dimension of a specified property of a 2D mesh.
+        ///
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] propertyValue The value representing the specific property
+        /// @param[in] dimension The dimension of the specified property
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_property_dimension(int meshKernelId, int propertyValue, int& dimension);
+
         /// @brief Gets the small mesh2d flow edges. The flow edges are the edges connecting faces circumcenters.
         /// @param[in]  meshKernelId            The id of the mesh state
         /// @param[in]  smallFlowEdgesThreshold The configurable threshold for detecting a small flow edge

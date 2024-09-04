@@ -76,10 +76,11 @@ namespace meshkernel
             other
         };
 
-        /// Enumerator for different filtering properties on a 2D mesh
+        /// Enumerator for different properties on a 2D mesh
         enum class Property
         {
-            Orthogonality = 0
+            Orthogonality = 0,
+            EdgeLength = 1
         };
 
         /// @brief Default destructor
