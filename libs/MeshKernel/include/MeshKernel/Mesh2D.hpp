@@ -395,12 +395,6 @@ namespace meshkernel
         /// If no such element can be found then the null value will be returned.
         UInt FindCommonFace(const UInt edge1, const UInt edge2) const;
 
-        /// @brief Find the id of the element that is common to both edges.
-        ///
-        /// @param [in] property The property to retrive
-        /// Returns the value of the property
-        // [[nodiscard]] std::vector<double> GetProperty(Property property) const;
-
     private:
         // orthogonalization
         static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length
