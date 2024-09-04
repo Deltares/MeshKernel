@@ -562,6 +562,12 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:aed83472a1ede3effc40d1a052ddf72cb"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aed83472a1ede3effc40d1a052ddf72cb">mkernel_mesh2d_get_orthogonality</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
 <tr class="memdesc:aed83472a1ede3effc40d1a052ddf72cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mesh orthogonality, expressed as the ratio between the edges and the segments connecting the face circumcenters.  <a href="namespacemeshkernelapi.html#aed83472a1ede3effc40d1a052ddf72cb">More...</a><br /></td></tr>
 <tr class="separator:aed83472a1ede3effc40d1a052ddf72cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e9662ba22623074a9231f2430ab95c7"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0e9662ba22623074a9231f2430ab95c7">mkernel_mesh2d_get_property</a> (int meshKernelId, int propertyValue, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometrylist)</td></tr>
+<tr class="memdesc:a0e9662ba22623074a9231f2430ab95c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a specified property of a 2D mesh.  <a href="namespacemeshkernelapi.html#a0e9662ba22623074a9231f2430ab95c7">More...</a><br /></td></tr>
+<tr class="separator:a0e9662ba22623074a9231f2430ab95c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b2686e90f73ffacb9c9ee363399337e"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a5b2686e90f73ffacb9c9ee363399337e">mkernel_mesh2d_get_property_dimension</a> (int meshKernelId, int propertyValue, int &amp;dimension)</td></tr>
+<tr class="memdesc:a5b2686e90f73ffacb9c9ee363399337e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The dimension of a specified property of a 2D mesh.  <a href="namespacemeshkernelapi.html#a5b2686e90f73ffacb9c9ee363399337e">More...</a><br /></td></tr>
+<tr class="separator:a5b2686e90f73ffacb9c9ee363399337e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c732d6cc407e5ef62f6ab00b423a908"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a4c732d6cc407e5ef62f6ab00b423a908">mkernel_mesh2d_get_small_flow_edge_centers</a> (int meshKernelId, double smallFlowEdgesThreshold, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;result)</td></tr>
 <tr class="memdesc:a4c732d6cc407e5ef62f6ab00b423a908"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the small mesh2d flow edges. The flow edges are the edges connecting faces circumcenters.  <a href="namespacemeshkernelapi.html#a4c732d6cc407e5ef62f6ab00b423a908">More...</a><br /></td></tr>
 <tr class="separator:a4c732d6cc407e5ef62f6ab00b423a908"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -6675,6 +6681,96 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">type</td><td>The int indicating the orthogonality property type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a0e9662ba22623074a9231f2430ab95c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e9662ba22623074a9231f2430ab95c7">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_property()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_get_property </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>propertyValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>geometrylist</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Retrieves a specified property of a 2D mesh. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">propertyValue</td><td>The value representing the specific property </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">geometrylist</td><td>A reference to a <a class="el" href="structmeshkernelapi_1_1_geometry_list.html" title="A struct used to describe a list of geometries in a C-compatible manner.">GeometryList</a> object that will be populated with the values of the requested property </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a5b2686e90f73ffacb9c9ee363399337e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b2686e90f73ffacb9c9ee363399337e">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_property_dimension()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_get_property_dimension </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>propertyValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>dimension</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The dimension of a specified property of a 2D mesh. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">propertyValue</td><td>The value representing the specific property </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">dimension</td><td>The dimension of the specified property </td></tr>
   </table>
   </dd>
 </dl>
