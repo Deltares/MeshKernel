@@ -2,11 +2,11 @@
 #include <gtest/gtest.h>
 #include <random>
 
+#include "CartesianApiTestFixture.hpp"
 #include "MeshKernel/Parameters.hpp"
 #include "MeshKernelApi/BoundingBox.hpp"
 #include "MeshKernelApi/Mesh2D.hpp"
 #include "MeshKernelApi/MeshKernel.hpp"
-#include "CartesianApiTestFixture.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 
 // namespace aliases
@@ -133,7 +133,6 @@ TEST(Mesh2DTests, Mesh2dApiNodeEdgeDataTest)
         EXPECT_EQ(edges[i], expectedEdges[i]);
     }
 }
-
 
 TEST_F(CartesianApiTestFixture, Mesh2DGetPropertyTest)
 {
