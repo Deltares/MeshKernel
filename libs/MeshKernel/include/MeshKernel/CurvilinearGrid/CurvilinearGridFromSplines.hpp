@@ -157,7 +157,9 @@ namespace meshkernel
         double ComputeMaximumTimeStep(const UInt layerIndex,
                                       const std::vector<Point>& activeLayerPoints,
                                       const std::vector<Point>& velocityVectorAtGridPoints,
+                                      const std::vector<Point>& frontGridPoints,
                                       const std::vector<Point>& frontVelocities,
+                                      const lin_alg::Matrix<UInt>& gridPointsIndices,
                                       const double timeStep) const;
 
         /// @brief Grow a layer starting from a given layer index
@@ -170,11 +172,14 @@ namespace meshkernel
         std::vector<double> ComputeMaximumEdgeGrowTime(const std::vector<Point>& coordinates,
                                                        const std::vector<Point>& velocities) const;
 
+
         /// @brief Copy growth velocities to the advancing front, add points at front corners corners (copy_vel_to_front)
         /// @param[in] layerIndex The current grid layerIndex index
         /// @param[in] previousFrontVelocities The previous front velocities
         /// @returns The front velocities for the next front
-        std::vector<Point> CopyVelocitiesToFront(UInt layerIndex, const std::vector<Point>& previousFrontVelocities);
+        std::tuple<std::vector<Point>, std::vector<Point>, lin_alg::Matrix<UInt>>  CopyVelocitiesToFront(UInt layerIndex,
+                                                                                                         const std::vector<Point>& previousFrontVelocities);
+
 
         /// @brief Computes the points at front, which have to be moved.
         /// @returns The indices of the grid points, the front grid points and the number of front points
