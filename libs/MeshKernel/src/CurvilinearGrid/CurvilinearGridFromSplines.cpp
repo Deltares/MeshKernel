@@ -366,20 +366,6 @@ namespace meshkernel
                     ys2 = yMiddle + 2.0 * m_maximumGridHeights[s] * normal.y * factor;
                 }
 
-                ++count;
-
-                if (count == 16)
-                {
-                    break;
-                }
-
-                std::cout << "adding spline: " << count << "  "
-                          << "{ " << xMiddle << ", " << yMiddle << " }"
-                          << " -- "
-                          << "{ " << xs1 << ", " << ys1 << " }"
-                          << " -- "
-                          << "{ " << xs2 << ", " << ys2 << " }" << std::endl;
-
                 newCrossSpline[0] = {xs1, ys1};
                 newCrossSpline[1] = {xs2, ys2};
                 m_splines->AddSpline(newCrossSpline);
@@ -525,7 +511,8 @@ namespace meshkernel
 
             if (subLayerLeftIndex == constants::missing::uintValue && subLayerRightIndex == constants::missing::uintValue)
             {
-                m_validFrontNodes[i] = constants::missing::uintValue;
+                m_validFrontNodes[i] = 0;
+                //constants::missing::uintValue;
             }
         }
 
@@ -728,7 +715,7 @@ namespace meshkernel
 
         while (ComputeDistance(activeLayerPoints[layerPointRight], activeLayerPoints[layerPoint], m_splines->m_projection) <= dtolLR)
         {
-            if (layerPointRight > 1)
+            if (layerPointRight >= activeLayerPoints.size() - 1)
             {
                 break;
             }
@@ -1110,28 +1097,35 @@ namespace meshkernel
             x2 = activeLayerPoints[i + 1];
 
             v1 = velocityVectorAtGridPoints[i];
-            v2 = velocityVectorAtGridPoints[i];
+            v2 = velocityVectorAtGridPoints[i + 1];
 
-            double dL1 = ComputeDistance(x1, activeLayerPoints[i + 1], m_splines->m_projection);
+            double dL1 = ComputeDistance(x1, frontGridPoints[i + 1], m_splines->m_projection);
             UInt iL;
             UInt iLL;
             UInt iR;
             UInt iRR;
             UInt dummy;
 
-            // TODO combine calculation of the iL and iR, removing the need for the dummy and two calls
-            GetNeighbouringLayerPoints(activeLayerPoints, i, iL, dummy);
-            GetNeighbouringLayerPoints(activeLayerPoints, i + 1, dummy, iR);
+            std::tie(iL, dummy) = GetNeighbours(activeLayerPoints, i);
+            std::tie(dummy, iR) = GetNeighbours(activeLayerPoints, i+1);
 
-            GetNeighbouringLayerPoints(activeLayerPoints, iL, iLL, dummy);
-            GetNeighbouringLayerPoints(activeLayerPoints, iR, dummy, iRR);
+            std::tie(iLL, dummy) = GetNeighbours(activeLayerPoints, iL);
+            std::tie(dummy,iRR) = GetNeighbours(activeLayerPoints, iR);
+
+            //// TODO combine calculation of the iL and iR, removing the need for the dummy and two calls
+            //GetNeighbouringLayerPoints(activeLayerPoints, i, iL, dummy);
+            //GetNeighbouringLayerPoints(activeLayerPoints, i + 1, dummy, iR);
+
+            //GetNeighbouringLayerPoints(activeLayerPoints, iL, iLL, dummy);
+            //GetNeighbouringLayerPoints(activeLayerPoints, iR, dummy, iRR);
 
             dummy = iL;
 
             for (UInt j = 0; j < nummax; ++j)
             {
                 UInt i1;
-                GetNeighbouringLayerPoints(activeLayerPoints, dummy, iMin, i1);
+                std::tie(iMin, i1) = GetNeighbours(activeLayerPoints, i);
+                //GetNeighbouringLayerPoints(activeLayerPoints, dummy, iMin, i1);
 
                 if (iMin == dummy)
                 {
@@ -1146,7 +1140,8 @@ namespace meshkernel
             for (UInt j = 0; j < nummax; ++j)
             {
                 UInt i1;
-                GetNeighbouringLayerPoints(activeLayerPoints, dummy, i1, iMax);
+                std::tie(i1, iMax) = GetNeighbours(activeLayerPoints, i);
+                //GetNeighbouringLayerPoints(activeLayerPoints, dummy, i1, iMax);
 
                 if (iMax == dummy)
                 {
@@ -1169,16 +1164,16 @@ namespace meshkernel
                 v3 = frontVelocities[j];
                 v4 = frontVelocities[j + 1];
 
-                double dL2 = ComputeDistance(x3, frontGridPoints[j + 1], m_splines->m_projection);
+                double dL2 = ComputeDistance(x3, x4, m_splines->m_projection);
 
                 if (ComputeDistance(x1, x3, m_splines->m_projection) < dtolLR ||
-                    ComputeDistance(activeLayerPoints[i + 1], frontGridPoints[j + 1], m_splines->m_projection) < dtolLR)
+                    ComputeDistance(x2, x4, m_splines->m_projection) < dtolLR)
                 {
                     continue;
                 }
 
-                if (ComputeDistance(activeLayerPoints[i + 1], x3, m_splines->m_projection) < dtolLR ||
-                    ComputeDistance(x1, frontGridPoints[j + 1], m_splines->m_projection) < dtolLR)
+                if (ComputeDistance(x2, x3, m_splines->m_projection) < dtolLR ||
+                    ComputeDistance(x1, x4, m_splines->m_projection) < dtolLR)
                 {
                     continue;
                 }
@@ -1223,10 +1218,10 @@ namespace meshkernel
                 double dmin = std::min({d1, d2, d3, d4});
 
                 // get a lower bound for the cross time
-                double hlow2 = 0.25 * std::max(dmin * dmin - 0.5 * std::pow(std::max(dL1, dL2), 2), 0.0);
+                double hlow2 = 0.25 * std::max(dmin * dmin - std::pow(0.5 * std::max(dL1, dL2), 2), 0.0);
 
                 // check if the lower bounds is larger than the minimum found so far
-                double vv1 = std::sqrt(length(v2 - v1));
+                double vv1 = std::sqrt(length(v3 - v1));
                 double vv2 = std::sqrt(length(v3 - v2));
                 double vv3 = std::sqrt(length(v4 - v1));
                 double vv4 = std::sqrt(length(v4 - v2));
@@ -1251,15 +1246,19 @@ namespace meshkernel
                 if (t1 == tmax1234)
                 {
                     tmax[i] = std::min(tmax[i], tmax1234);
+                    maximumTimeStep = std::min(maximumTimeStep, tmax[i]);
                 }
                 else if (t2 == tmax1234)
                 {
                     tmax[i + 1] = std::min(tmax[i + 1], tmax1234);
+                    maximumTimeStep = std::min(maximumTimeStep, tmax[i+1]);
                 }
                 else if (t3 == tmax1234 || t4 == tmax1234)
                 {
                     tmax[i] = std::min(tmax[i], tmax1234);
                     tmax[i + 1] = std::min(tmax[i + 1], tmax1234);
+                    maximumTimeStep = std::min(maximumTimeStep, tmax[i]);
+                    maximumTimeStep = std::min(maximumTimeStep, tmax[i+1]);
                 }
 
                 if (tmax1234 == 0.0)
@@ -1305,7 +1304,6 @@ namespace meshkernel
 
         double totalTimeStep = 0.0;
         double localTimeStep = 0.0;
-        double otherTimeStep = std::numeric_limits<double>::max();
         const auto numGridPoints = static_cast<UInt>(m_gridPoints.size());
         std::vector<UInt> newValidFrontNodes(numGridPoints);
 
@@ -1318,7 +1316,7 @@ namespace meshkernel
 
             for (UInt i = 0; i < m_validFrontNodes.size(); ++i)
             {
-                if (m_validFrontNodes[i] == constants::missing::uintValue)
+                if (m_validFrontNodes[i] == 0)//constants::missing::uintValue)
                 {
                     activeLayerPoints[i] = {constants::missing::doubleValue, constants::missing::doubleValue};
                 }
@@ -1326,6 +1324,7 @@ namespace meshkernel
 
             const auto maximumGridLayerGrowTime = ComputeMaximumEdgeGrowTime(activeLayerPoints, velocityVectorAtGridPoints);
             localTimeStep = std::min(m_timeStep - totalTimeStep, *std::min_element(maximumGridLayerGrowTime.begin(), maximumGridLayerGrowTime.end()));
+            double otherTimeStep = std::numeric_limits<double>::max();
 
             if (m_splinesToCurvilinearParameters.check_front_collisions)
             {
@@ -1482,11 +1481,21 @@ namespace meshkernel
         UInt p = 0;
         auto [gridPointsIndices, frontGridPointsEigen, numFrontPoints] = FindFront();
 
-        std::vector<Point> frontGridPoints (frontGridPointsEigen.size ());
 
+
+        std::vector<Point> frontGridPoints (frontGridPointsEigen.size ());
 
         for (UInt i = 0; i < frontGridPointsEigen.size (); ++i) {
             frontGridPoints[i] = frontGridPointsEigen(i);
+        }
+
+        std::vector<UInt> gridIndices0(gridPointsIndices.rows());
+        std::vector<UInt> gridIndices1(gridPointsIndices.rows());
+
+        for (UInt i = 0; i < gridPointsIndices.rows(); ++i)
+        {
+            gridIndices0[i] = gridPointsIndices(i, 0);
+            gridIndices1[i] = gridPointsIndices(i, 1);
         }
 
         while (p < numFrontPoints)
@@ -1501,21 +1510,34 @@ namespace meshkernel
 
                 // Check for corner nodes
                 const auto previous = p == 0 ? 0 : p - 1;
-                const auto previousIndices = gridPointsIndices.row(previous);
+                const auto previousIndicesEigen = gridPointsIndices.row(previous);
+                const std::span previousIndices(previousIndicesEigen.data(), previousIndicesEigen.size());
+
                 const auto next = std::min(p + 1, numFrontPoints);
-                const auto nextIndices = gridPointsIndices.row(next);
+                const auto nextIndicesEigen = gridPointsIndices.row(next);
+                const std::span nextIndices(nextIndicesEigen.data(), nextIndicesEigen.size());
+
+                [[maybe_unused]] const auto iprev = gridPointsIndices ((p == 0 ? p : p - 1), 0);
+                [[maybe_unused]] const auto jprev = gridPointsIndices((p == 0 ? p : p - 1), 1);
+                [[maybe_unused]] const auto inext = gridPointsIndices((p + 1 == numFrontPoints ? numFrontPoints - 1 : p + 1), 0);
+                [[maybe_unused]] const auto jnext = gridPointsIndices((p + 1 == numFrontPoints ? numFrontPoints - 1 : p + 1), 1);
+
 
                 // Check corner nodes
                 bool ll = previousIndices[0] == gridPointsIndices(p, 0) - 1 &&
                           previousIndices[1] == gridPointsIndices(p, 1) &&
-                          m_validFrontNodes[previousIndices[0]] == constants::missing::uintValue;
+                          m_validFrontNodes[previousIndices[0]] == 0;
+                //constants::missing::uintValue;
 
                 bool lr = nextIndices[0] == gridPointsIndices(p, 0) + 1 &&
                           nextIndices[1] == gridPointsIndices(p, 1) &&
-                          m_validFrontNodes[nextIndices[0]] == constants::missing::uintValue;
+                          m_validFrontNodes[nextIndices[0]] == 0;
+                //constants::missing::uintValue;
 
-                ll = ll || (previousIndices[0] == gridPointsIndices(p, 0) && previousIndices[1] < gridPointsIndices(p, 1));
-                lr = lr || (nextIndices[0] == gridPointsIndices(p, 0) && nextIndices[1] < gridPointsIndices(p, 1));
+                ll = ll || (previousIndices[0] == gridPointsIndices(p, 0) && 
+                    (previousIndices[1] == constants::missing::uintValue || previousIndices[1] < gridPointsIndices(p, 1)));
+                lr = lr || (nextIndices[0] == gridPointsIndices(p, 0) && (nextIndices[1] == constants::missing::uintValue ||nextIndices[1] < gridPointsIndices(p, 1)));
+
                 if (ll || lr)
                 {
                     if (numFrontPoints + 1 > frontGridPoints.size())
@@ -1791,7 +1813,21 @@ namespace meshkernel
         return velocityVector;
     }
 
-    std::pair<UInt, UInt> CurvilinearGridFromSplines::GetNeighbours(lin_alg::RowVector<Point> const& gridPoints,
+    std::pair<UInt, UInt> CurvilinearGridFromSplines::GetNeighbours(lin_alg::RowVector<Point> const& gridPointsEigen,
+                                                                    UInt index) const
+    {
+        std::vector<Point> gridPoints(gridPointsEigen.size());
+
+        for (UInt i = 0; i < gridPointsEigen.size(); ++i)
+        {
+            gridPoints[i] = gridPointsEigen[i];
+        }
+
+        return GetNeighbours(gridPoints, index);
+    }
+
+
+    std::pair<UInt, UInt> CurvilinearGridFromSplines::GetNeighbours(const std::vector<Point>& gridPoints,
                                                                     UInt index) const
     {
 
@@ -1832,18 +1868,19 @@ namespace meshkernel
         {
             if (!circularConnection)
             {
-                if (localRightIndex == static_cast<int>(gridPoints.size()))
+                if (localRightIndex +1== static_cast<int>(gridPoints.size()))
                 {
                     break;
                 }
             }
-            else if (localRightIndex == static_cast<int>(gridPoints.size()))
+            else if (localRightIndex +1== static_cast<int>(gridPoints.size()))
             {
                 localRightIndex = -1;
                 circularConnection = false;
             }
 
-            if (localRightIndex == static_cast<int>(gridPoints.size()) || !gridPoints[localRightIndex + 1].IsValid())
+
+            if (localRightIndex +1 == static_cast<int>(gridPoints.size()) || !gridPoints[localRightIndex + 1].IsValid())
             {
                 break;
             }
