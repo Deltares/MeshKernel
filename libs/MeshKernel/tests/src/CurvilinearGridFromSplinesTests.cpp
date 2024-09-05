@@ -1445,7 +1445,7 @@ TEST(CurvilinearGridFromSplines, WTF)
     splinesToCurvilinearParameters.curvature_adapted_grid_spacing = 0;
     splinesToCurvilinearParameters.remove_skinny_triangles = 0;
 
-    curvilinearParameters.m_refinement = 20;
+    curvilinearParameters.m_refinement = 40;
     curvilinearParameters.n_refinement = 40;
 
     // std::vector<mk::Point> spline1{{0.0, 20.0},
@@ -1493,7 +1493,7 @@ TEST(CurvilinearGridFromSplines, WTF)
 
     auto splines = std::make_shared<Splines>(Projection::cartesian);
     splines->AddSpline(spline1);
-    splines->AddSpline(spline3);
+    splines->AddSpline(spline2);
 
     double h = 0.01;
     double x = 0.0;
@@ -1506,7 +1506,7 @@ TEST(CurvilinearGridFromSplines, WTF)
         std::cout << "ys2 ( " << i + 1 << " ) = " << spline2[i].y << ";" << std::endl;
     }
 
-    while (x < static_cast<double>(spline2.size() - 1))
+    while (x < static_cast<double>(spline3.size() - 1))
     {
         meshkernel::Point res = splines->Evaluate(1, x);
 
@@ -1519,9 +1519,9 @@ TEST(CurvilinearGridFromSplines, WTF)
 
     // return;
 
-    mk::CurvilinearGridFromSplines splinesToGrid(splines, curvilinearParameters, splinesToCurvilinearParameters);
+   mk::CurvilinearGridFromSplines splinesToGrid(splines, curvilinearParameters, splinesToCurvilinearParameters);
 
     [[maybe_unused]] auto grid = splinesToGrid.Compute();
 
-    meshkernel::Print(grid->ComputeNodes(), grid->ComputeEdges());
+    //meshkernel::Print(grid->ComputeNodes(), grid->ComputeEdges());
 }
