@@ -322,7 +322,6 @@ namespace meshkernel
         // Store original number of splines
         std::vector<Point> newCrossSpline(2);
         m_numOriginalSplines = m_splines->GetNumSplines();
-        int count = 0;
 
         std::cout << "m_numOriginalSplines = " << m_numOriginalSplines << "  " << std::endl;
 
@@ -1534,7 +1533,7 @@ namespace meshkernel
                           m_validFrontNodes[nextIndices[0]] == 0;
                 //constants::missing::uintValue;
 
-                ll = ll || (previousIndices[0] == gridPointsIndices(p, 0) && 
+                ll = ll || (previousIndices[0] == gridPointsIndices(p, 0) &&
                     (previousIndices[1] == constants::missing::uintValue || previousIndices[1] < gridPointsIndices(p, 1)));
                 lr = lr || (nextIndices[0] == gridPointsIndices(p, 0) && (nextIndices[1] == constants::missing::uintValue ||nextIndices[1] < gridPointsIndices(p, 1)));
 

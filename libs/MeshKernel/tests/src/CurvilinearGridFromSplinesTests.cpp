@@ -1523,5 +1523,5 @@ TEST(CurvilinearGridFromSplines, WTF)
 
     [[maybe_unused]] auto grid = splinesToGrid.Compute();
 
-    //meshkernel::Print(grid->ComputeNodes(), grid->ComputeEdges());
+    meshkernel::Print(grid->ComputeNodes(), grid->ComputeEdges());
 }
