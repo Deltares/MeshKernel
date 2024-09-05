@@ -461,7 +461,7 @@ Splines::ComputePointOnSplineFromAdimensionalDistance(UInt index,
 
     std::cout << "segment lengths: ";
 
-    for (size_t i = 1; i < m_splineNodes[index].size(); ++i) {
+    for (UInt i = 1; i < m_splineNodes[index].size(); ++i) {
         double distance = ComputeSplineLength (index, i - 1, i, 1000, true, maximumGridHeight);
         std::cout << distance << "  ";
     }

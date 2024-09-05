@@ -196,6 +196,9 @@ namespace meshkernel
         /// @returns The left and the right index for the current front grid point index
         std::pair<UInt, UInt> GetNeighbours(lin_alg::RowVector<Point> const& gridPoints, UInt) const;
 
+        std::pair<UInt, UInt> GetNeighbours(const std::vector<Point>& gridPoints, UInt) const;
+
+
         /// @brief Compute the edge grow velocities (comp_edgevel)
         /// TODO: can this be split in compute heights and computeGrowFactors
         void ComputeEdgeVelocities();
