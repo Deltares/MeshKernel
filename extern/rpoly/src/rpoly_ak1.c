@@ -612,12 +612,8 @@ void rpoly_ak1(double op [MAX_RPOLY_DEGREE_P1],
   const double cosr = cos(94.0 * RADFAC); // = -0.069756474
   const double sinr = sin(94.0 * RADFAC); // = 0.99756405
 
-  printf ("RPOLY_ak: after degree = %i \n", *Degree);
-  printf ("RPOLY_ak: coeffs = %e %e %e %e %e \n", op[0], op[1], op[2], op[3], op[4]);
-
   if ((*Degree) > MAX_RPOLY_DEGREE)
   {
-    printf ("RPOLY_ak: returning \n");
     *Degree = -1;
     return;
   } // End ((Degree) > MAX_RPOLY_DEGREE)

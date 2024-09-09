@@ -1774,7 +1774,7 @@ namespace meshkernel
             const auto rightVelocity = normalVectorRight * m_edgeVelocities[currentRightIndex - 1];
             double rightLeftVelocityRatio = m_edgeVelocities[currentRightIndex - 1] / m_edgeVelocities[currentLeftIndex];
 
-            int value = 0;
+            [[maybe_unused]] int value = 0;
 
             // TODO Probably should be : std::abs(cosphi) <= cosTolerance
             if ((rightLeftVelocityRatio - cosphi > eps && 1.0 / rightLeftVelocityRatio - cosphi > eps)) // || std::abs(cosphi) <= cosTolerance)
