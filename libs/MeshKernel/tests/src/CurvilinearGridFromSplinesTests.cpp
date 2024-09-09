@@ -1499,23 +1499,23 @@ TEST(CurvilinearGridFromSplines, WTF)
     double x = 0.0;
     int count = 1;
 
-    for (size_t i = 0; i < spline2.size(); ++i)
-    {
+    //for (size_t i = 0; i < spline2.size(); ++i)
+    //{
 
-        std::cout << "xs2 ( " << i + 1 << " ) = " << spline2[i].x << ";" << std::endl;
-        std::cout << "ys2 ( " << i + 1 << " ) = " << spline2[i].y << ";" << std::endl;
-    }
+    //    std::cout << "xs2 ( " << i + 1 << " ) = " << spline2[i].x << ";" << std::endl;
+    //    std::cout << "ys2 ( " << i + 1 << " ) = " << spline2[i].y << ";" << std::endl;
+    //}
 
-    while (x < static_cast<double>(spline3.size() - 1))
-    {
-        meshkernel::Point res = splines->Evaluate(1, x);
+    //while (x < static_cast<double>(spline3.size() - 1))
+    //{
+    //    meshkernel::Point res = splines->Evaluate(1, x);
 
-        std::cout << "xs ( " << count << " ) = " << res.x << ";" << std::endl;
-        std::cout << "ys ( " << count << " ) = " << res.y << ";" << std::endl;
+    //    std::cout << "xs ( " << count << " ) = " << res.x << ";" << std::endl;
+    //    std::cout << "ys ( " << count << " ) = " << res.y << ";" << std::endl;
 
-        ++count;
-        x += h;
-    }
+    //    ++count;
+    //    x += h;
+    //}
 
     // return;
 
