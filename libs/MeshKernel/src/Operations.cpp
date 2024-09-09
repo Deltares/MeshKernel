@@ -994,6 +994,98 @@ namespace meshkernel
         return {distance, normalPoint, ratio};
     }
 
+
+    std::tuple<double, Point, double> DistanceFromLine2(const Point& point, const Point& firstNode, const Point& secondNode, const Projection& projection)
+    {
+        double distance = constants::missing::doubleValue;
+        Point normalPoint;
+        double ratio = constants::missing::doubleValue;
+        if (projection == Projection::cartesian || projection == Projection::spherical)
+        {
+            const auto squaredDistance = ComputeSquaredDistance(secondNode, firstNode, projection);
+            if (squaredDistance > 1.0e-8)
+            {
+                ratio = (GetDx(firstNode, point, projection) * GetDx(firstNode, secondNode, projection) +
+                         GetDy(firstNode, point, projection) * GetDy(firstNode, secondNode, projection)) /
+                        squaredDistance;
+                const auto correctedRatio = std::max(std::min(1.0, ratio), 0.0);
+
+                normalPoint = firstNode + correctedRatio * (secondNode - firstNode);
+
+                if (projection == Projection::spherical)
+                {
+                    if (secondNode.x - firstNode.x > 180.0)
+                    {
+                        normalPoint.x -= correctedRatio * 360.0;
+                    }
+                    else if (secondNode.x - firstNode.x < 180.0)
+                    {
+                        normalPoint.x += correctedRatio * 360.0;
+                    }
+                }
+
+                distance = ComputeDistance(point, normalPoint, projection);
+            }
+            else
+            {
+                distance = ComputeDistance(point, firstNode, projection);
+            }
+        }
+
+        if (projection == Projection::sphericalAccurate)
+        {
+            const Cartesian3DPoint firstNodeCartesian{SphericalToCartesian3D(firstNode)};
+            const auto xx1 = firstNodeCartesian.x;
+            const auto yy1 = firstNodeCartesian.y;
+            const auto zz1 = firstNodeCartesian.z;
+
+            const Cartesian3DPoint secondNodeCartesian{SphericalToCartesian3D(secondNode)};
+            const auto xx2 = secondNodeCartesian.x;
+            const auto yy2 = secondNodeCartesian.y;
+            const auto zz2 = secondNodeCartesian.z;
+
+            const Cartesian3DPoint pointCartesian{SphericalToCartesian3D(point)};
+            const auto xx3 = pointCartesian.x;
+            const auto yy3 = pointCartesian.y;
+            const auto zz3 = pointCartesian.z;
+
+            const double x21 = xx2 - xx1;
+            const double y21 = yy2 - yy1;
+            const double z21 = zz2 - zz1;
+            const double x31 = xx3 - xx1;
+            const double y31 = yy3 - yy1;
+            const double z31 = zz3 - zz1;
+
+            const double r2 = x21 * x21 + y21 * y21 + z21 * z21;
+
+            ratio = 0.0;
+            if (r2 >= 0.0)
+            {
+
+                ratio = (x31 * x21 + y31 * y21 + z31 * z21) / r2;
+                const double correctedRatio = std::max(std::min(1.0, ratio), 0.0);
+
+                Cartesian3DPoint cartesianNormal3DPoint;
+                cartesianNormal3DPoint.x = firstNodeCartesian.x + correctedRatio * x21;
+                cartesianNormal3DPoint.y = firstNodeCartesian.y + correctedRatio * y21;
+                cartesianNormal3DPoint.z = firstNodeCartesian.z + correctedRatio * z21;
+
+                cartesianNormal3DPoint.x = cartesianNormal3DPoint.x - xx3;
+                cartesianNormal3DPoint.y = cartesianNormal3DPoint.y - yy3;
+                cartesianNormal3DPoint.z = cartesianNormal3DPoint.z - zz3;
+
+                distance = std::sqrt(cartesianNormal3DPoint.x * cartesianNormal3DPoint.x +
+                                     cartesianNormal3DPoint.y * cartesianNormal3DPoint.y +
+                                     cartesianNormal3DPoint.z * cartesianNormal3DPoint.z);
+
+                const double referenceLongitude = std::max({firstNode.x, secondNode.x, point.x});
+                normalPoint = Cartesian3DToSpherical(cartesianNormal3DPoint, referenceLongitude);
+            }
+        }
+
+        return {distance, normalPoint, ratio};
+    }
+
     double InnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection)
     {
         if (projection == Projection::sphericalAccurate)

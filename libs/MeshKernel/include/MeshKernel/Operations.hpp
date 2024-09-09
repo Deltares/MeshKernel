@@ -442,6 +442,14 @@ namespace meshkernel
     /// @return The normal distance from the segment, the intersection of the normal projection on the segment, the distance from the first node, expressed as ratio of the segment length
     [[maybe_unused]] std::tuple<double, Point, double> DistanceFromLine(const Point& point, const Point& firstNode, const Point& secondNode, const Projection& projection);
 
+    /// @brief Computes the perpendicular distance of a point from a segment firstNode - secondNode (dlinedis)
+    /// @param[in] point      The point to consider in the distance calculation.
+    /// @param[in] firstNode  The first point of the segment.
+    /// @param[in] secondNode The second point of the segment.
+    /// @param[in] projection The coordinate system projection.
+    /// @return The normal distance from the segment, the intersection of the normal projection on the segment, the distance from the first node, expressed as ratio of the segment length
+    [[maybe_unused]] std::tuple<double, Point, double> DistanceFromLine2(const Point& point, const Point& firstNode, const Point& secondNode, const Projection& projection);
+
     /// @brief Inner product of two segments (dprodin)
     /// @param[in] firstPointFirstSegment   The first point of the first segment
     /// @param[in] secondPointFirstSegment  The second point of the first segment
