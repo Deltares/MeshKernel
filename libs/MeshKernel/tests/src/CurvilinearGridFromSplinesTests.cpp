@@ -1495,9 +1495,9 @@ TEST(CurvilinearGridFromSplines, WTF)
     splines->AddSpline(spline1);
     splines->AddSpline(spline2);
 
-    double h = 0.01;
-    double x = 0.0;
-    int count = 1;
+    // double h = 0.01;
+    // double x = 0.0;
+    // int count = 1;
 
     //for (size_t i = 0; i < spline2.size(); ++i)
     //{
@@ -1523,5 +1523,5 @@ TEST(CurvilinearGridFromSplines, WTF)
 
     [[maybe_unused]] auto grid = splinesToGrid.Compute();
 
-    meshkernel::Print(grid->ComputeNodes(), grid->ComputeEdges());
+   meshkernel::Print(grid->ComputeNodes(), grid->ComputeEdges());
 }
