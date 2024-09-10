@@ -4,22 +4,27 @@
 #include <algorithm>
 #include <utility>
 
-const meshkernel::UInt meshkernel::UndoActionStack::MaxUndoSize = 50;
+const meshkernel::UInt meshkernel::UndoActionStack::DefaultMaxUndoSize = 50;
 
-void meshkernel::UndoActionStack::Add(UndoActionPtr&& action)
+meshkernel::UndoActionStack::UndoActionStack(const UInt maximumSize) : m_maxUndoSize(maximumSize) {}
+
+void meshkernel::UndoActionStack::Add(UndoActionPtr&& action, const int actionId)
 {
-    if (action != nullptr)
+    if (m_maxUndoSize > 0 && action != nullptr)
     {
         if (action->GetState() != UndoAction::State::Committed)
         {
             throw ConstraintError("Cannot add an action in the {} state.", UndoAction::to_string(action->GetState()));
         }
 
-        m_committed.emplace_back(std::move(action));
-        // Clear the restored actions. Adding a new undo action means that they cannot be re-done
-        m_restored.clear();
+        m_committed.emplace_back(std::move(action), actionId);
 
-        if (m_committed.size() > MaxUndoSize)
+        // Clear the restored actions for this actionId.
+        // Adding a new undo action for an actionId, means that no action for this Id can be restored
+        m_restored.remove_if([actionId](const UndoActionForMesh& undoAction)
+                             { return undoAction.m_actionId == actionId; });
+
+        if (m_committed.size() > m_maxUndoSize)
         {
             // If the number of undo-actions is greater than the maximum, then remove the first item in the list.
             m_committed.pop_front();
@@ -31,53 +36,96 @@ void meshkernel::UndoActionStack::Add(UndoActionPtr&& action)
     }
 }
 
+void meshkernel::UndoActionStack::SetMaximumSize(const UInt maximumSize)
+{
+    if (maximumSize == 0)
+    {
+        m_committed.clear();
+        m_restored.clear();
+    }
+    else if (maximumSize < m_committed.size())
+    {
+        UInt loopLimit = static_cast<UInt>(m_committed.size());
+
+        for (UInt i = maximumSize; i < loopLimit; ++i)
+        {
+            m_committed.pop_front();
+        }
+    }
+
+    m_maxUndoSize = maximumSize;
+}
+
 meshkernel::UInt meshkernel::UndoActionStack::Size() const
 {
     return static_cast<UInt>(m_committed.size() + m_restored.size());
 }
 
-meshkernel::UInt meshkernel::UndoActionStack::CommittedSize() const
+meshkernel::UInt meshkernel::UndoActionStack::CommittedSize(const int actionId) const
 {
-    return static_cast<UInt>(m_committed.size());
+    if (actionId == constants::missing::intValue)
+    {
+        return static_cast<UInt>(m_committed.size());
+    }
+    else
+    {
+        return static_cast<UInt>(std::ranges::count_if(m_committed, [actionId](const UndoActionForMesh& undoAction)
+                                                       { return undoAction.m_actionId == actionId; }));
+    }
 }
 
-meshkernel::UInt meshkernel::UndoActionStack::RestoredSize() const
+meshkernel::UInt meshkernel::UndoActionStack::RestoredSize(const int actionId) const
 {
-    return static_cast<UInt>(m_restored.size());
+    if (actionId == constants::missing::intValue)
+    {
+        return static_cast<UInt>(m_restored.size());
+    }
+    else
+    {
+        return static_cast<UInt>(std::ranges::count_if(m_restored, [actionId](const UndoActionForMesh& undoAction)
+                                                       { return undoAction.m_actionId == actionId; }));
+    }
 }
 
-bool meshkernel::UndoActionStack::Undo()
+std::optional<int> meshkernel::UndoActionStack::Undo()
 {
-    bool didUndo = false;
 
     if (!m_committed.empty())
     {
         // Perform undo operation
-        m_committed.back()->Restore();
+        m_committed.back().m_undoAction->Restore();
+        int actionId = m_committed.back().m_actionId;
         // Now move to restored stack
         m_restored.emplace_back(std::move(m_committed.back()));
         m_committed.pop_back();
-        didUndo = true;
+        return actionId;
     }
 
-    return didUndo;
+    return std::nullopt;
 }
 
-bool meshkernel::UndoActionStack::Commit()
+std::optional<int> meshkernel::UndoActionStack::Commit()
 {
-    bool didCommit = false;
 
     if (!m_restored.empty())
     {
         // Perform commit (redo) operation
-        m_restored.back()->Commit();
+        m_restored.back().m_undoAction->Commit();
+        int actionId = m_restored.back().m_actionId;
         // Now move to committed stack
         m_committed.emplace_back(std::move(m_restored.back()));
         m_restored.pop_back();
-        didCommit = true;
+
+        if (m_committed.size() > m_maxUndoSize)
+        {
+            // If the number of undo-actions is greater than the maximum, then remove the first item in the list.
+            m_committed.pop_front();
+        }
+
+        return actionId;
     }
 
-    return didCommit;
+    return std::nullopt;
 }
 
 void meshkernel::UndoActionStack::Clear()
@@ -86,14 +134,27 @@ void meshkernel::UndoActionStack::Clear()
     m_restored.clear();
 }
 
+meshkernel::UInt meshkernel::UndoActionStack::Remove(const int actionId)
+{
+    UInt removedCount = 0;
+
+    auto hasMatchingActionId = [actionId](const UndoActionForMesh& action)
+    { return action.m_actionId == actionId; };
+
+    removedCount = static_cast<UInt>(m_committed.remove_if(hasMatchingActionId));
+    removedCount += static_cast<UInt>(m_restored.remove_if(hasMatchingActionId));
+
+    return removedCount;
+}
+
 std::uint64_t meshkernel::UndoActionStack::MemorySize() const
 {
     const std::uint64_t committedSize = std::accumulate(m_committed.begin(), m_committed.end(), static_cast<std::uint64_t>(0u),
-                                                        [](const std::uint64_t partialSum, const std::unique_ptr<UndoAction>& action)
-                                                        { return partialSum + action->MemorySize(); });
+                                                        [](const std::uint64_t partialSum, const UndoActionForMesh& action)
+                                                        { return partialSum + action.m_undoAction->MemorySize(); });
     const std::uint64_t restoredSize = std::accumulate(m_restored.begin(), m_restored.end(), static_cast<std::uint64_t>(0u),
-                                                       [](const std::uint64_t partialSum, const std::unique_ptr<UndoAction>& action)
-                                                       { return partialSum + action->MemorySize(); });
+                                                       [](const std::uint64_t partialSum, const UndoActionForMesh& action)
+                                                       { return partialSum + action.m_undoAction->MemorySize(); });
 
     return sizeof(*this) + committedSize + restoredSize;
 }

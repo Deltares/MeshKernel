@@ -161,7 +161,7 @@ meshkernel::UndoActionPtr CurvilinearGridLineShift::MoveNode(Point const& fromPo
     // Get the index in the grid of the line to be shifted
 
     auto const nodePosition = m_grid.FindLocationIndex(fromPoint, Location::Nodes);
-    auto const nodeIndex = m_grid.GetNodeIndex(nodePosition);
+    auto const nodeIndex = m_grid.GetCurvilinearGridNodeIndices(nodePosition);
 
     // Check the nodes are on the line to shift
     if (!m_lines[0].IsNodeOnLine(nodeIndex))

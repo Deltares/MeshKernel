@@ -64,7 +64,7 @@ void LandBoundaries::Administrate()
 
     // Mesh boundary to polygon
     const std::vector<Point> polygonNodes;
-    const auto meshBoundaryPolygon = m_mesh.MeshBoundaryToPolygon(polygonNodes);
+    const auto meshBoundaryPolygon = m_mesh.ComputeBoundaryPolygons(polygonNodes);
 
     // Find the start/end node of the land boundaries
     const auto landBoundaryIndices = m_landBoundary.FindPolylineIndices();
@@ -950,7 +950,7 @@ std::tuple<double, meshkernel::Point, meshkernel::UInt, double> LandBoundaries::
     }
 
     const auto startLandBoundaryIndex = segmentIndex == constants::missing::uintValue ? 0 : m_validLandBoundaries[segmentIndex].first;
-    const auto endLandBoundaryIndex = segmentIndex == constants::missing::uintValue ? static_cast<UInt>(m_landBoundary.GetNumNodes()) : m_validLandBoundaries[segmentIndex].second;
+    const auto endLandBoundaryIndex = segmentIndex == constants::missing::uintValue ? static_cast<UInt>(m_landBoundary.GetNumNodes() - 1) : m_validLandBoundaries[segmentIndex].second;
 
     for (auto n = startLandBoundaryIndex; n < endLandBoundaryIndex; n++)
     {

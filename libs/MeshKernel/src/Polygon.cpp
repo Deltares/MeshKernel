@@ -276,9 +276,9 @@ void meshkernel::Polygon::RefineSegment(std::vector<meshkernel::Point>& refinedP
     refinedPolygon.push_back(n0);
 
     const double segmentLength = ComputeDistance(n0, n1, projection);
-    int n = std::lround(segmentLength / refinementDistance);
+    long int n = std::lround(segmentLength / refinementDistance);
 
-    for (int i = 1; i < n; ++i)
+    for (long int i = 1; i < n; ++i)
     {
         double lambda = static_cast<double>(i) / static_cast<double>(n);
         refinedPolygon.push_back((1.0 - lambda) * n0 + lambda * n1);
@@ -362,7 +362,7 @@ meshkernel::Point meshkernel::Polygon::interpolatePointOnPolyline(const std::vec
     return (1.0 - ti) * points[intervalIndex - 1] + ti * points[intervalIndex];
 }
 
-std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startIndex, const size_t endIndex, const double refinementDistance) const
+std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const UInt startIndex, const UInt endIndex, const double refinementDistance) const
 {
     if (startIndex == endIndex)
     {
@@ -430,8 +430,23 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const size_t startInd
     return refinedPolygon;
 }
 
-std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t startIndex, const size_t endIndex) const
+std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const UInt startIndex, const UInt endIndex) const
 {
+
+    if (startIndex >= m_nodes.size())
+    {
+        throw ConstraintError("The start index is greater than the number of points in the polygon: {} >= {}.",
+                              startIndex,
+                              m_nodes.size());
+    }
+
+    if (endIndex >= m_nodes.size())
+    {
+        throw ConstraintError("The end index is greater than the number of points in the polygon: {} >= {}.",
+                              endIndex,
+                              m_nodes.size());
+    }
+
     if (startIndex == endIndex)
     {
         return m_nodes;
@@ -457,14 +472,34 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t st
     std::vector<double> actualAverageLengths(numPolygonNodes, 0.0);
     std::vector<Point> result(numPolygonNodes);
 
-    for (UInt i = 0; i < polygonNodes.size(); ++i)
+    if (startIndex < endIndex)
     {
-        auto polygonNodeIndex = i + startIndex;
-        if (polygonNodeIndex >= m_nodes.size())
+        for (UInt i = 0; i < polygonNodes.size(); ++i)
         {
-            polygonNodeIndex = polygonNodeIndex - m_nodes.size();
+            auto polygonNodeIndex = i + startIndex;
+            if (polygonNodeIndex >= m_nodes.size())
+            {
+                polygonNodeIndex = polygonNodeIndex - static_cast<UInt>(m_nodes.size());
+            }
+            polygonNodes[i] = m_nodes[polygonNodeIndex];
         }
-        polygonNodes[i] = m_nodes[polygonNodeIndex];
+    }
+    else
+    {
+        UInt count = 0;
+
+        for (UInt i = startIndex; i < m_nodes.size(); ++i)
+        {
+            polygonNodes[count] = m_nodes[i];
+            ++count;
+        }
+
+        // Do not include the start/end point twice.
+        for (UInt i = 1; i <= endIndex; ++i)
+        {
+            polygonNodes[count] = m_nodes[i];
+            ++count;
+        }
     }
 
     std::vector<double> cumulativeDistances(numPolygonNodes, 0.0);
@@ -473,6 +508,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const size_t st
     {
         cumulativeDistances[i] = cumulativeDistances[i - 1] + ComputeDistance(polygonNodes[i], polygonNodes[i - 1], m_projection);
     }
+
     std::vector<double> initialCumulativeDistances(cumulativeDistances);
 
     computeAverageLengths(cumulativeDistances, averageLengths);

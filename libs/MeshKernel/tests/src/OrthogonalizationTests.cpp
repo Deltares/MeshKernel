@@ -2,6 +2,7 @@
 
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
+#include <MeshKernel/FlipEdges.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
@@ -652,10 +653,9 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
     }
 }
 
-TEST(OrthogonalizationAndSmoothing, RefineUndoTheOrthogonalise)
+TEST(OrthogonalizationAndSmoothing, RefineUndoThenOrthogonalise)
 {
     auto mesh = MakeRectangularMeshForTestingRand(20, 20, 1.0, Projection::cartesian);
-    std::cout.precision(20);
 
     const std::vector<meshkernel::Point> originalPoints = mesh->Nodes();
 
@@ -749,4 +749,139 @@ TEST(OrthogonalizationAndSmoothing, RefineUndoTheOrthogonalise)
 
     // Only check the number of points not subject to orthogonalisation
     EXPECT_EQ(orignialCount, 319);
+}
+
+TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
+{
+
+    std::vector<Point> polygonPoints{{0.0, 0.0}, {100.0, 20.0}, {150.0, 50.0}, {75.0, 75.0}, {-20.0, 30.0}, {0.0, 0.0}};
+
+    const Polygons polygon(polygonPoints, Projection::cartesian);
+
+    std::vector<Point> refinedPolygonPoints = polygon.RefinePolygon(0, 0, 5, 25.0);
+
+    std::unique_ptr<Polygons> refinedPolygon = std::make_unique<Polygons>(refinedPolygonPoints, Projection::cartesian);
+
+    // generate samples in all polygons
+    const std::vector<std::vector<Point>> generatedPoints = refinedPolygon->ComputePointsInPolygons();
+
+    meshkernel::Mesh2D mesh(generatedPoints[0], *refinedPolygon, Projection::cartesian);
+
+    // Create some gaps in the node and edge arrays
+    auto [nodeId, nodeInsertUndo] = mesh.InsertNode({0.5, 0.5});
+    auto originNodeId = mesh.FindNodeCloseToAPoint({0.0, 0.0}, 0.1);
+    [[maybe_unused]] auto [edgeId, edgeInsertUndo] = mesh.ConnectNodes(nodeId, originNodeId);
+    [[maybe_unused]] auto nodeRemovaUndo = mesh.DeleteNode(nodeId);
+    mesh.Administrate();
+
+    std::unique_ptr<LandBoundaries> boundary = std::make_unique<LandBoundaries>(refinedPolygonPoints, mesh, *refinedPolygon);
+
+    FlipEdges flipEdges1(mesh, *boundary, true, false);
+
+    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    OrthogonalizationParameters orthogonalizationParameters;
+    orthogonalizationParameters.outer_iterations = 2;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 0.975;
+    orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
+
+    FlipEdges flipEdges(mesh, *boundary, true, false);
+
+    OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                    std::make_unique<Smoother>(mesh),
+                                                    std::make_unique<Orthogonalizer>(mesh),
+                                                    std::move(refinedPolygon),
+                                                    std::move(boundary),
+                                                    projectToLandBoundaryOption,
+                                                    orthogonalizationParameters);
+
+    const std::vector<double> expectedX{28.197593689053271,
+                                        45.122094904304319,
+                                        67.434041291301682,
+                                        91.65019268878028,
+                                        121.18012351239659,
+                                        150.0,
+                                        121.65514995517655,
+                                        96.144810647136211,
+                                        73.392601318383058,
+                                        49.383970314068847,
+                                        27.985698958218652,
+                                        9.2519807557372626,
+                                        -13.113266174727251,
+                                        8.0469903108904433,
+                                        18.108865376000267,
+                                        30.057404995092867,
+                                        81.572189207388078,
+                                        100.72370484044434,
+                                        44.08035834002014,
+                                        62.494201377406981,
+                                        56.221541072263449,
+                                        80.952825997664704,
+                                        39.468493116531533,
+                                        -999.0};
+
+    const std::vector<double> expectedY{5.6395187378106542,
+                                        9.0244189808608635,
+                                        13.486808258260337,
+                                        18.330038537756057,
+                                        32.708074107437959,
+                                        50.0,
+                                        59.448283348274487,
+                                        67.951729784287934,
+                                        74.238600624497238,
+                                        62.866091201401034,
+                                        52.730067927577252,
+                                        43.856201410612385,
+                                        33.262137075129196,
+                                        1.6093980621780888,
+                                        22.269932674539941,
+                                        35.917300713638298,
+                                        51.865232389386854,
+                                        45.127820397816109,
+                                        43.164232704286427,
+                                        48.110596487644287,
+                                        28.375434217690007,
+                                        34.073083926222459,
+                                        23.663968978263402,
+                                        -999.0};
+
+    const std::vector<meshkernel::UInt> edgeFirst{13, 14, 12, 13, 0, 22, 0, 0, 20, 18, 22, 15,
+                                                  22, 1, 14, 11, 10, 11, 15, 18, 9, 10, 18, 19,
+                                                  18, 1, 20, 21, 21, 1, 2, 21, 16, 19, 21, 3, 3,
+                                                  2, 21, 17, 4, 16, 8, 16, 7, 8, 4, 6, 4, 5, 6, 7,
+                                                  meshkernel::constants::missing::uintValue};
+
+    const std::vector<meshkernel::UInt> edgeSecond{14, 12, 13, 0, 14, 14, 1, 22, 18, 22, 20, 14,
+                                                   15, 22, 11, 12, 11, 15, 10, 9, 10, 18, 15, 9,
+                                                   19, 20, 2, 20, 19, 2, 21, 16, 19, 20, 3, 4, 17,
+                                                   3, 17, 16, 17, 8, 19, 7, 8, 9, 6, 17, 5, 6, 7, 17,
+                                                   meshkernel::constants::missing::uintValue};
+
+    [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
+
+    for (int i = 1; i <= 10; ++i)
+    {
+        auto flipUndoAction = flipEdges.Compute();
+
+        orthogonalization.Compute();
+    }
+
+    const double tolerance = 1.0e-8;
+
+    ASSERT_EQ(static_cast<size_t>(mesh.GetNumNodes()), expectedX.size());
+    ASSERT_EQ(static_cast<size_t>(mesh.GetNumEdges()), edgeFirst.size());
+
+    for (meshkernel::UInt i = 0; i < mesh.GetNumNodes(); ++i)
+    {
+        EXPECT_NEAR(expectedX[i], mesh.Node(i).x, tolerance);
+        EXPECT_NEAR(expectedY[i], mesh.Node(i).y, tolerance);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh.GetNumEdges(); ++i)
+    {
+        EXPECT_EQ(edgeFirst[i], mesh.GetEdge(i).first);
+        EXPECT_EQ(edgeSecond[i], mesh.GetEdge(i).second);
+    }
 }

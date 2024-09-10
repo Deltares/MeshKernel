@@ -87,6 +87,11 @@ std::unique_ptr<meshkernel::UndoAction> FlipEdges::Compute() const
             auto const leftFace = m_mesh.m_edgesFaces[e][0];
             auto const rightFace = m_mesh.m_edgesFaces[e][1];
 
+            if (leftFace == constants::missing::uintValue || rightFace == constants::missing::uintValue)
+            {
+                continue;
+            }
+
             const auto NumEdgesLeftFace = m_mesh.GetNumFaceEdges(leftFace);
             const auto NumEdgesRightFace = m_mesh.GetNumFaceEdges(rightFace);
             if (NumEdgesLeftFace != constants::geometric::numNodesInTriangle ||

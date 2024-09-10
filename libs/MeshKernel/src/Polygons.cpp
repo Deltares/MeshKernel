@@ -177,6 +177,17 @@ std::vector<meshkernel::Point> Polygons::RefinePolygon(UInt polygonIndex, UInt s
     return m_enclosures[polygonIndex].Outer().Refine(startIndex, endIndex, refinementDistance);
 }
 
+std::vector<meshkernel::Point> Polygons::LinearRefinePolygon(UInt polygonIndex, UInt startIndex, UInt endIndex) const
+{
+
+    if (polygonIndex >= m_enclosures.size())
+    {
+        throw ConstraintError("Invalid polygon index: {} > {}.", polygonIndex, m_enclosures.size() - 1);
+    }
+
+    return m_enclosures[polygonIndex].Outer().LinearRefine(startIndex, endIndex);
+}
+
 meshkernel::Polygons Polygons::OffsetCopy(double distance, bool innerAndOuter) const
 {
     UInt totalNumberOfPoints = GetNumNodes();

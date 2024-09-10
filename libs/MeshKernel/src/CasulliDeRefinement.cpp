@@ -34,13 +34,13 @@
 #include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
 #include "MeshKernel/UndoActions/FullUnstructuredGridUndo.hpp"
 
-std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliDeRefinement::Compute(Mesh2D& mesh) const
+std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliDeRefinement::Compute(Mesh2D& mesh)
 {
     Polygons emptyPolygon;
     return Compute(mesh, emptyPolygon);
 }
 
-std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliDeRefinement::Compute(Mesh2D& mesh, const Polygons& polygon) const
+std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliDeRefinement::Compute(Mesh2D& mesh, const Polygons& polygon)
 {
     std::unique_ptr<FullUnstructuredGridUndo> refinementAction = FullUnstructuredGridUndo::Create(mesh);
     const std::vector<Point> meshNodes(mesh.Nodes());
@@ -65,7 +65,7 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliDeRefinement::Compute
 
 void meshkernel::CasulliDeRefinement::FindDirectlyConnectedCells(const Mesh2D& mesh,
                                                                  const UInt elementId,
-                                                                 std::vector<UInt>& connected) const
+                                                                 std::vector<UInt>& connected)
 {
     connected.clear();
 
@@ -86,7 +86,7 @@ void meshkernel::CasulliDeRefinement::FindDirectlyConnectedCells(const Mesh2D& m
 void meshkernel::CasulliDeRefinement::FindIndirectlyConnectedCells(const Mesh2D& mesh,
                                                                    const UInt elementId,
                                                                    const std::vector<UInt>& directlyConnected,
-                                                                   std::vector<UInt>& indirectlyConnected) const
+                                                                   std::vector<UInt>& indirectlyConnected)
 {
     indirectlyConnected.clear();
 
@@ -119,7 +119,7 @@ void meshkernel::CasulliDeRefinement::FindIndirectlyConnectedCells(const Mesh2D&
 void meshkernel::CasulliDeRefinement::FindAdjacentCells(const Mesh2D& mesh,
                                                         const std::vector<UInt>& directlyConnected,
                                                         const std::vector<UInt>& indirectlyConnected,
-                                                        std::vector<std::array<int, 2>>& kne) const
+                                                        std::vector<std::array<int, 2>>& kne)
 {
     std::ranges::fill(kne, std::array<int, 2>{constants::missing::intValue, constants::missing::intValue});
 
@@ -182,7 +182,7 @@ void meshkernel::CasulliDeRefinement::FindSurroundingCells(const Mesh2D& mesh,
                                                            const UInt elementId,
                                                            std::vector<UInt>& directlyConnected,
                                                            std::vector<UInt>& indirectlyConnected,
-                                                           std::vector<std::array<int, 2>>& kne) const
+                                                           std::vector<std::array<int, 2>>& kne)
 {
     FindDirectlyConnectedCells(mesh, elementId, directlyConnected);
     FindIndirectlyConnectedCells(mesh, elementId, directlyConnected, indirectlyConnected);
@@ -191,7 +191,7 @@ void meshkernel::CasulliDeRefinement::FindSurroundingCells(const Mesh2D& mesh,
 
 bool meshkernel::CasulliDeRefinement::ElementIsSeed(const Mesh2D& mesh,
                                                     const std::vector<int>& nodeTypes,
-                                                    const UInt element) const
+                                                    const UInt element)
 {
     bool isSeed = true;
 
@@ -208,7 +208,7 @@ bool meshkernel::CasulliDeRefinement::ElementIsSeed(const Mesh2D& mesh,
 }
 
 meshkernel::UInt meshkernel::CasulliDeRefinement::FindElementSeedIndex(const Mesh2D& mesh,
-                                                                       const std::vector<int>& nodeTypes) const
+                                                                       const std::vector<int>& nodeTypes)
 {
     UInt seedIndex = constants::missing::uintValue;
 
@@ -268,7 +268,7 @@ meshkernel::UInt meshkernel::CasulliDeRefinement::FindElementSeedIndex(const Mes
     return seedIndex;
 }
 
-void meshkernel::CasulliDeRefinement::AddElementToList(const Mesh& mesh, const std::vector<UInt>& frontList, std::vector<UInt>& frontListCopy, const UInt elementId) const
+void meshkernel::CasulliDeRefinement::AddElementToList(const Mesh& mesh, const std::vector<UInt>& frontList, std::vector<UInt>& frontListCopy, const UInt elementId)
 {
     if (elementId != constants::missing::uintValue)
     {
@@ -287,7 +287,7 @@ void meshkernel::CasulliDeRefinement::AddElementToList(const Mesh& mesh, const s
 }
 
 std::vector<meshkernel::CasulliDeRefinement::ElementType> meshkernel::CasulliDeRefinement::InitialiseElementType(const Mesh2D& mesh,
-                                                                                                                 const std::vector<int>& nodeTypes) const
+                                                                                                                 const std::vector<int>& nodeTypes)
 {
     UInt seedElement = FindElementSeedIndex(mesh, nodeTypes);
     UInt iterationCount = 0;
@@ -406,7 +406,7 @@ std::vector<meshkernel::CasulliDeRefinement::ElementType> meshkernel::CasulliDeR
     return cellMask;
 }
 
-bool meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygons& polygon) const
+bool meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygons& polygon)
 {
     std::vector<UInt> directlyConnected;
     std::vector<UInt> indirectlyConnected;
@@ -437,7 +437,7 @@ bool meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
 bool meshkernel::CasulliDeRefinement::ElementCannotBeDeleted(const Mesh2D& mesh,
                                                              const std::vector<int>& nodeTypes,
                                                              const Polygons& polygon,
-                                                             const UInt elementId) const
+                                                             const UInt elementId)
 {
     bool noGo = false;
 
@@ -498,7 +498,7 @@ bool meshkernel::CasulliDeRefinement::ElementCannotBeDeleted(const Mesh2D& mesh,
 
 meshkernel::Point meshkernel::CasulliDeRefinement::ComputeNewNodeCoordinates(const Mesh2D& mesh,
                                                                              const std::vector<int>& nodeTypes,
-                                                                             const UInt elementId) const
+                                                                             const UInt elementId)
 {
 
     Point newNode(0.0, 0.0);
@@ -532,7 +532,7 @@ meshkernel::Point meshkernel::CasulliDeRefinement::ComputeNewNodeCoordinates(con
 bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedTriangleElements(Mesh2D& mesh,
                                                                               const UInt index,
                                                                               const UInt connectedElementId,
-                                                                              const std::vector<std::array<int, 2>>& kne) const
+                                                                              const std::vector<std::array<int, 2>>& kne)
 {
 
     for (UInt j = 0; j < mesh.m_numFacesNodes[connectedElementId]; ++j)
@@ -630,7 +630,7 @@ bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedTriangleElements(Me
 void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedNonTriangleElements(Mesh2D& mesh,
                                                                                  const UInt index,
                                                                                  const UInt elementId,
-                                                                                 const UInt connectedElementId) const
+                                                                                 const UInt connectedElementId)
 {
     // polygons of degree higher than three: remove node and link
 
@@ -680,7 +680,7 @@ void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedNonTriangleElements
 bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& mesh,
                                                                       const UInt elementId,
                                                                       const std::vector<UInt>& directlyConnected,
-                                                                      const std::vector<std::array<int, 2>>& kne) const
+                                                                      const std::vector<std::array<int, 2>>& kne)
 {
     for (UInt k = 0; k < directlyConnected.size(); ++k)
     {
@@ -704,7 +704,7 @@ bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& me
 
 int meshkernel::CasulliDeRefinement::GetNodeCode(const Mesh2D& mesh,
                                                  const std::vector<int>& nodeTypes,
-                                                 const UInt elementId) const
+                                                 const UInt elementId)
 {
     int nodeCode = std::numeric_limits<int>::lowest();
 
@@ -716,7 +716,7 @@ int meshkernel::CasulliDeRefinement::GetNodeCode(const Mesh2D& mesh,
     return nodeCode;
 }
 
-void meshkernel::CasulliDeRefinement::RedirectNodesOfConnectedElements(Mesh2D& mesh, const UInt elementId, const UInt nodeId, const std::vector<UInt>& indirectlyConnected) const
+void meshkernel::CasulliDeRefinement::RedirectNodesOfConnectedElements(Mesh2D& mesh, const UInt elementId, const UInt nodeId, const std::vector<UInt>& indirectlyConnected)
 {
     for (UInt i = 0; i < indirectlyConnected.size(); ++i)
     {
@@ -746,7 +746,7 @@ void meshkernel::CasulliDeRefinement::RedirectNodesOfConnectedElements(Mesh2D& m
 bool meshkernel::CasulliDeRefinement::RemoveUnwantedBoundaryNodes(Mesh2D& mesh,
                                                                   const std::vector<int>& nodeTypes,
                                                                   const Polygons& polygon,
-                                                                  const std::vector<UInt>& indirectlyConnected) const
+                                                                  const std::vector<UInt>& indirectlyConnected)
 {
     for (UInt kk = 0; kk < indirectlyConnected.size(); ++kk)
     {
@@ -856,7 +856,7 @@ bool meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
                                                     const UInt elementId,
                                                     const std::vector<UInt>& directlyConnected,
                                                     const std::vector<UInt>& indirectlyConnected,
-                                                    const std::vector<std::array<int, 2>>& kne) const
+                                                    const std::vector<std::array<int, 2>>& kne)
 {
     if (directlyConnected.empty() || indirectlyConnected.empty())
     {
@@ -923,7 +923,7 @@ bool meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
     return true;
 }
 
-bool meshkernel::CasulliDeRefinement::CleanUpEdge(Mesh2D& mesh, const UInt edgeId) const
+bool meshkernel::CasulliDeRefinement::CleanUpEdge(Mesh2D& mesh, const UInt edgeId)
 {
 
     for (UInt i = 0; i < 2; ++i)
@@ -965,7 +965,7 @@ bool meshkernel::CasulliDeRefinement::CleanUpEdge(Mesh2D& mesh, const UInt edgeI
     return true;
 }
 
-std::vector<int> meshkernel::CasulliDeRefinement::ComputeNodeTypes(const Mesh2D& mesh, const Polygons& polygon) const
+std::vector<int> meshkernel::CasulliDeRefinement::ComputeNodeTypes(const Mesh2D& mesh, const Polygons& polygon)
 {
     std::vector<int> nodeTypes(mesh.GetNumNodes(), 0);
 
@@ -980,7 +980,7 @@ std::vector<int> meshkernel::CasulliDeRefinement::ComputeNodeTypes(const Mesh2D&
     return nodeTypes;
 }
 
-std::vector<meshkernel::Point> meshkernel::CasulliDeRefinement::ElementsToDelete(const Mesh2D& mesh, const Polygons& polygon) const
+std::vector<meshkernel::Point> meshkernel::CasulliDeRefinement::ElementsToDelete(const Mesh2D& mesh, const Polygons& polygon)
 {
     std::vector<int> nodeTypes(ComputeNodeTypes(mesh, polygon));
     std::vector<ElementType> cellMask(InitialiseElementType(mesh, nodeTypes));

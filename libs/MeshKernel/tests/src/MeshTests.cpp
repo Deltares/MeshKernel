@@ -177,7 +177,7 @@ TEST(Mesh, MeshBoundaryToPolygon)
     auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     std::vector<meshkernel::Point> polygonNodes;
-    const auto meshBoundaryPolygon = mesh.MeshBoundaryToPolygon(polygonNodes);
+    const auto meshBoundaryPolygon = mesh.ComputeBoundaryPolygons(polygonNodes);
 
     const double tolerance = 1e-5;
     ASSERT_NEAR(0.0, meshBoundaryPolygon[0].x, tolerance);
@@ -716,8 +716,8 @@ public:
         return {
             {meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected, false, 16},
             {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, false, 14},
-            {meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected, true, 0},
-            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, true, 6}
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected, true, 6},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, true, 0}
 
         };
     }
@@ -747,7 +747,8 @@ TEST_P(MeshDeletion, expected_results)
     auto undoAction = mesh->DeleteMesh(polygon, deleteOption, invertSelection);
 
     // Assert
-    ASSERT_EQ(numNodes, mesh->GetNumValidNodes());
+    const auto numValidNodes = mesh->GetNumValidNodes();
+    ASSERT_EQ(numNodes, numValidNodes);
 
     // Test the undo action has been computed correctly
     undoAction->Restore();
@@ -775,43 +776,44 @@ INSTANTIATE_TEST_SUITE_P(Mesh, MeshDeletion, ::testing::ValuesIn(MeshDeletion::G
 class MeshDeletionWithInnerPolygons : public ::testing::TestWithParam<std::tuple<meshkernel::Mesh2D::DeleteMeshOptions, bool, std::vector<meshkernel::Point>, int>>
 {
 
-    static inline std::vector<meshkernel::Point> firstPolygon_{
-        {-0.5, -0.5},
-        {7.5, -0.5},
-        {7.5, 7.5},
-        {-0.5, 7.5},
-        {-0.5, -0.5},
-        {meshkernel::constants::missing::innerOuterSeparator, meshkernel::constants::missing::innerOuterSeparator},
-        {1.5, 1.5},
-        {4.5, 1.5},
-        {4.5, 4.5},
-        {1.5, 4.5},
-        {1.5, 1.5},
+    static inline std::vector<meshkernel::Point> single_polygon_{
+        {-0.722886114680926, 2.22765832371444},
+        {1.50244688883463, 2.65710855246306},
+        {3.04456361934103, 1.91533088462454},
+        {3.47401384808964, 5.56565782898778},
+        {-1.42562285263321, 5.70230108358961},
+        {-0.722886114680926, 2.22765832371444},
     };
 
-    static inline std::vector<meshkernel::Point> secondPolygon_{
-        {-0.5, -0.5},
-        {7.5, -0.5},
-        {7.5, 7.5},
-        {-0.5, 7.5},
-        {-0.5, -0.5},
-        {meshkernel::constants::missing::innerOuterSeparator, meshkernel::constants::missing::innerOuterSeparator},
-        {1.5, 1.5},
-        {4.5, 1.5},
-        {4.5, 4.5},
-        {2.7, 4.5},
-        {2.7, 3.3},
-        {1.5, 3.3},
-        {1.5, 1.5}};
+    static inline std::vector<meshkernel::Point> double_polygon_{
+        {-0.722886114680926, 2.22765832371444},
+        {1.50244688883463, 2.65710855246306},
+        {3.04456361934103, 1.91533088462454},
+        {3.47401384808964, 5.56565782898778},
+        {-1.42562285263321, 5.70230108358961},
+        {-0.722886114680926, 2.22765832371444},
+        {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue},
+        {3.59021337251456, -1.90949318892618},
+        {6.02802927483664, -1.86121960670198},
+        {5.88320852816404, 2.09721413568238},
+        {2.55233135469427, 0.600733086732198},
+        {3.59021337251456, -1.90949318892618},
+    };
 
 public:
     [[nodiscard]] static std::vector<std::tuple<meshkernel::Mesh2D::DeleteMeshOptions, bool, std::vector<meshkernel::Point>, int>> GetData()
     {
         return {
-            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, false, firstPolygon_, 9},
-            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, true, firstPolygon_, 48},
-            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, false, secondPolygon_, 8},
-            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, true, secondPolygon_, 49}};
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, false, single_polygon_, 23},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected, false, single_polygon_, 30},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, true, single_polygon_, 12},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected, true, single_polygon_, 23},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, false, double_polygon_, 17},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected, false, double_polygon_, 29},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideAndIntersected, true, double_polygon_, 16},
+            {meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected, true, double_polygon_, 29}
+
+        };
     }
 };
 
@@ -821,7 +823,7 @@ TEST_P(MeshDeletionWithInnerPolygons, expected_results)
     auto const& [deleteOption, invertSelection, polygonNodes, numNodes] = GetParam();
 
     // Setup
-    auto mesh = MakeRectangularMeshForTesting(7, 7, 1.0, meshkernel::Projection::cartesian);
+    auto mesh = MakeRectangularMeshForTesting(6, 6, 1.0, meshkernel::Projection::cartesian);
 
     const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
     const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
@@ -832,8 +834,8 @@ TEST_P(MeshDeletionWithInnerPolygons, expected_results)
     auto undoAction = mesh->DeleteMesh(polygon, deleteOption, invertSelection);
 
     // Assert
-    const auto nodes = mesh->Nodes();
-    ASSERT_EQ(numNodes, mesh->GetNumValidNodes());
+    const auto numValidNodes = mesh->GetNumValidNodes();
+    ASSERT_EQ(numNodes, numValidNodes);
 
     // Test the undo action has been computed correctly
     undoAction->Restore();

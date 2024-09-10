@@ -170,6 +170,14 @@ namespace meshkernel
         /// @return The number of faces an edges shares
         [[nodiscard]] auto GetNumEdgesFaces(UInt edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
 
+        /// @brief Get the local edge number for an element edge.
+        // TODO add unit test and with all failing cases
+        [[nodiscard]] UInt GetEdgeIndex(const UInt elementId, const UInt edgeId) const;
+
+        /// @brief Get the local node number for an element node.
+        // TODO add unit test and with all failing cases
+        [[nodiscard]] UInt GetNodeIndex(const UInt elementId, const UInt nodeId) const;
+
         /// @brief Inquire if an edge is on boundary
         /// @param edge The edge index
         /// @return If the edge is on boundary
@@ -347,6 +355,12 @@ namespace meshkernel
         /// @param[in] rhs The mesh to add
         /// @returns The resulting mesh
         Mesh& operator+=(Mesh const& rhs);
+
+        /// @brief Add meshes: result is a mesh composed of the additions
+        /// firstMesh += secondmesh results in the second mesh being added to firstMesh
+        /// @param[in] rhs The mesh to add
+        /// @returns The undo action
+        std::unique_ptr<UndoAction> Join(const Mesh& rhs);
 
         /// @brief Get the mapping/indexing from the node array mapped to valid nodes
         std::vector<UInt> GetValidNodeMapping() const;

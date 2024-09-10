@@ -194,7 +194,7 @@ TEST(Mesh2D, MeshBoundaryToPolygon)
     auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     std::vector<meshkernel::Point> polygonNodes;
-    const auto meshBoundaryPolygon = mesh.MeshBoundaryToPolygon(polygonNodes);
+    const auto meshBoundaryPolygon = mesh.ComputeBoundaryPolygons(polygonNodes);
 
     const double tolerance = 1e-5;
     ASSERT_NEAR(0.0, meshBoundaryPolygon[0].x, tolerance);
@@ -1250,11 +1250,11 @@ TEST(Mesh2D, Mesh2DToCurvilinear_WithRectangularMesh_ShouldCreateFullCurvilinear
     ASSERT_EQ(3, curvilinearGrid->NumN());
     ASSERT_EQ(9, curvilinearGrid->GetNumNodes());
 
-    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).x);
-    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).y);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(0, 2).x);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(0, 2).y);
 
-    ASSERT_EQ(5.0, curvilinearGrid->GetNode(0, 1).x);
-    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 1).y);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(0, 1).x);
+    ASSERT_EQ(5.0, curvilinearGrid->GetNode(0, 1).y);
 
     ASSERT_EQ(10.0, curvilinearGrid->GetNode(0, 0).x);
     ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 0).y);
@@ -1319,22 +1319,22 @@ TEST(Mesh2D, Mesh2DToCurvilinear_WithMixedMesh_ShouldCreatePartialCurvilinearMes
 
     ASSERT_EQ(20.0, curvilinearGrid->GetNode(0, 0).x);
     ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 0).y);
-    ASSERT_EQ(20.0, curvilinearGrid->GetNode(1, 0).x);
-    ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 0).y);
-    ASSERT_EQ(-999.0, curvilinearGrid->GetNode(2, 0).x);
-    ASSERT_EQ(-999.0, curvilinearGrid->GetNode(2, 0).y);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 0).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(1, 0).y);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(2, 0).x);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(2, 0).y);
 
-    ASSERT_EQ(10.0, curvilinearGrid->GetNode(0, 1).x);
-    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 1).y);
+    ASSERT_EQ(20.0, curvilinearGrid->GetNode(0, 1).x);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(0, 1).y);
     ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 1).x);
     ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 1).y);
-    ASSERT_EQ(10.0, curvilinearGrid->GetNode(2, 1).x);
-    ASSERT_EQ(20.0, curvilinearGrid->GetNode(2, 1).y);
+    ASSERT_EQ(0.0, curvilinearGrid->GetNode(2, 1).x);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(2, 1).y);
 
-    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).x);
-    ASSERT_EQ(0.0, curvilinearGrid->GetNode(0, 2).y);
-    ASSERT_EQ(0.0, curvilinearGrid->GetNode(1, 2).x);
-    ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 2).y);
+    ASSERT_EQ(-999.0, curvilinearGrid->GetNode(0, 2).x);
+    ASSERT_EQ(-999.0, curvilinearGrid->GetNode(0, 2).y);
+    ASSERT_EQ(10.0, curvilinearGrid->GetNode(1, 2).x);
+    ASSERT_EQ(20.0, curvilinearGrid->GetNode(1, 2).y);
     ASSERT_EQ(0.0, curvilinearGrid->GetNode(2, 2).x);
     ASSERT_EQ(20.0, curvilinearGrid->GetNode(2, 2).y);
 }
@@ -1409,4 +1409,51 @@ TEST(Mesh2D, GetEdgesBoundingBox_WithAnInvalidEdge_ShouldGetOneInvalidEdgeBoundi
     ASSERT_NEAR(edgesBoundingBoxes[1].lowerLeft().y, 1.1111111111111112, tolerance);
     ASSERT_NEAR(edgesBoundingBoxes[1].upperRight().x, 1.1111111111111112, tolerance);
     ASSERT_NEAR(edgesBoundingBoxes[1].upperRight().y, 1.1111111111111112, tolerance);
+}
+
+TEST(Mesh2D, GetSmoothness_OnTriangularMesh_ShouldgetSmoothnessValues)
+{
+    // Setup
+    const auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
+
+    // Execute
+    const auto smoothness = mesh->GetSmoothness();
+
+    // Assert
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(1.0000000000000047, smoothness[0], tolerance);
+    ASSERT_NEAR(1.5393847629344886, smoothness[10], tolerance);
+    ASSERT_NEAR(1.1609660187036754, smoothness[20], tolerance);
+    ASSERT_NEAR(1.4420158602682915, smoothness[30], tolerance);
+}
+
+TEST(Mesh2D, GetOrthogonality_OnTriangularMesh_ShouldGetOrthogonalityValues)
+{
+    // Setup
+    const auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
+
+    // Execute
+    const auto orthogonality = mesh->GetOrthogonality();
+
+    // Assert
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(1.0566340037701503e-15, orthogonality[0], tolerance);
+    ASSERT_NEAR(0.052159566591519289, orthogonality[10], tolerance);
+    ASSERT_NEAR(1.0342915752434056e-15, orthogonality[20], tolerance);
+    ASSERT_NEAR(0.045878303256790140, orthogonality[30], tolerance);
+}
+
+TEST(Mesh2D, MeshToCurvilinear_OnRealMesh_ShouldConvertCurvilinearPart)
+{
+    // Prepare
+    const auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/MeshToCurvilinear.nc");
+
+    meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(*mesh);
+
+    // Execute
+    const auto result = mesh2DToCurvilinear.Compute({10155.18, 391781.98});
+
+    // Assert
+    EXPECT_EQ(result->NumM(), 38);
+    EXPECT_EQ(result->NumN(), 45);
 }

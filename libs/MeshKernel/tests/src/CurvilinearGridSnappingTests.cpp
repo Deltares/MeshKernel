@@ -4,7 +4,6 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSnapGridToLandBoundary.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSnapGridToSpline.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSnapping.hpp>
-#include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 

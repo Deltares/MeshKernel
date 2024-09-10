@@ -152,28 +152,30 @@ void OrthogonalizationAndSmoothing::PrepareOuterIteration()
 void OrthogonalizationAndSmoothing::AllocateLinearSystem()
 {
     // reallocate caches
-    if (m_nodeCacheSize == 0)
+    m_compressedRhs.resize(m_mesh.GetNumNodes() * 2);
+    std::fill(m_compressedRhs.begin(), m_compressedRhs.end(), 0.0);
+
+    m_compressedEndNodeIndex.resize(m_mesh.GetNumNodes());
+    std::fill(m_compressedEndNodeIndex.begin(), m_compressedEndNodeIndex.end(), 0);
+
+    m_compressedStartNodeIndex.resize(m_mesh.GetNumNodes());
+    std::fill(m_compressedStartNodeIndex.begin(), m_compressedStartNodeIndex.end(), 0);
+
+    UInt nodeCacheSize = 0;
+
+    for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
-        m_compressedRhs.resize(m_mesh.GetNumNodes() * 2);
-        std::fill(m_compressedRhs.begin(), m_compressedRhs.end(), 0.0);
-
-        m_compressedEndNodeIndex.resize(m_mesh.GetNumNodes());
-        std::fill(m_compressedEndNodeIndex.begin(), m_compressedEndNodeIndex.end(), 0);
-
-        m_compressedStartNodeIndex.resize(m_mesh.GetNumNodes());
-        std::fill(m_compressedStartNodeIndex.begin(), m_compressedStartNodeIndex.end(), 0);
-
-        for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
-        {
-            m_compressedEndNodeIndex[n] = m_nodeCacheSize;
-            m_nodeCacheSize += std::max(m_mesh.m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
-            m_compressedStartNodeIndex[n] = m_nodeCacheSize;
-        }
-
-        m_compressedNodesNodes.resize(m_nodeCacheSize);
-        m_compressedWeightX.resize(m_nodeCacheSize);
-        m_compressedWeightY.resize(m_nodeCacheSize);
+        m_compressedEndNodeIndex[n] = nodeCacheSize;
+        nodeCacheSize += std::max(m_mesh.m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
+        m_compressedStartNodeIndex[n] = nodeCacheSize;
     }
+
+    m_compressedNodesNodes.resize(nodeCacheSize);
+    std::ranges::fill(m_compressedNodesNodes, 0);
+    m_compressedWeightX.resize(nodeCacheSize);
+    std::ranges::fill(m_compressedWeightX, 0.0);
+    m_compressedWeightY.resize(nodeCacheSize);
+    std::ranges::fill(m_compressedWeightY, 0.0);
 }
 
 void OrthogonalizationAndSmoothing::FinalizeOuterIteration()
@@ -197,7 +199,9 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
         const double atpfLoc = m_mesh.m_nodesTypes[n] == 2 ? max_aptf : m_orthogonalizationParameters.orthogonalization_to_smoothing_factor;
         const double atpf1Loc = 1.0 - atpfLoc;
         const auto maxnn = m_compressedStartNodeIndex[n] - m_compressedEndNodeIndex[n];
+
         auto cacheIndex = m_compressedEndNodeIndex[n];
+
         for (int nn = 1; nn < static_cast<int>(maxnn); nn++)
         {
             double wwx = 0.0;
@@ -280,7 +284,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
             for (UInt nn = 0; nn < numEdges; nn++)
             {
                 const auto edgeIndex = m_mesh.m_nodesEdges[nearestPointIndex][nn];
-                if (m_mesh.IsEdgeOnBoundary(edgeIndex))
+                if (edgeIndex != constants::missing::uintValue && m_mesh.IsEdgeOnBoundary(edgeIndex))
                 {
                     numNodes++;
                     if (numNodes == 1)
@@ -369,6 +373,7 @@ void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(UInt nodeIndex)
     dx0 = (dx0 + m_compressedRhs[firstCacheIndex]) / increments[0];
     dy0 = (dy0 + m_compressedRhs[firstCacheIndex + 1]) / increments[1];
     constexpr double relaxationFactor = 0.75;
+
     if (m_mesh.m_projection == Projection::cartesian || m_mesh.m_projection == Projection::spherical)
     {
         const double x0 = m_mesh.Node(nodeIndex).x + dx0;
@@ -378,6 +383,7 @@ void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(UInt nodeIndex)
         m_orthogonalCoordinates[nodeIndex].x = relaxationFactor * x0 + relaxationFactorCoordinates * m_mesh.Node(nodeIndex).x;
         m_orthogonalCoordinates[nodeIndex].y = relaxationFactor * y0 + relaxationFactorCoordinates * m_mesh.Node(nodeIndex).y;
     }
+
     if (m_mesh.m_projection == Projection::sphericalAccurate)
     {
         const Point localPoint{relaxationFactor * dx0, relaxationFactor * dy0};

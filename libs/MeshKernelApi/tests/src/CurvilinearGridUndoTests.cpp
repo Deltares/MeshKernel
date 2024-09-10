@@ -71,10 +71,12 @@ TEST(CurvilinearGridUndoTests, DeleteNode)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     bool didUndoOfDeleteNode = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
-    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfDeleteNode);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfDeleteNode, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfDeleteNode);
+    ASSERT_EQ(meshKernelId, undoId);
 
     errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -148,10 +150,12 @@ TEST(CurvilinearGridUndoTests, MoveNode)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     bool didUndoOfDeleteNode = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
-    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfDeleteNode);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfDeleteNode, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfDeleteNode);
+    ASSERT_EQ(meshKernelId, undoId);
 
     errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -250,11 +254,13 @@ TEST(CurvilinearGridUndoTests, Smoothing)
     }
 
     bool didUndoOfSmoothing = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
     // Undo the smoothing
-    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfSmoothing);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfSmoothing, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfSmoothing);
+    ASSERT_EQ(meshKernelId, undoId);
 
     // Get the current state of the curvilinear grid
     errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
@@ -334,10 +340,12 @@ TEST(CurvilinearGridUndoTests, SmoothingDirectional)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     bool didUndoOfSmoothing = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
-    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfSmoothing);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfSmoothing, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfSmoothing);
+    ASSERT_EQ(meshKernelId, undoId);
 
     errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -430,11 +438,13 @@ TEST(CurvilinearGridUndoTests, DeleteInterior)
     }
 
     bool didUndoOfDeleteInterior = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
     // Undo the delete interior block
-    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfDeleteInterior);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfDeleteInterior, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfDeleteInterior);
+    ASSERT_EQ(meshKernelId, undoId);
 
     // Get the current state of the curvilinear grid
     errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
@@ -529,11 +539,13 @@ TEST(CurvilinearGridUndoTests, DeleteExterior)
     checkInvalidBlock(lowerBoundIndex, upperBoundIndex, upperBoundIndex + 1, makeGridParameters.num_columns);
 
     bool didUndoOfDeleteExterior = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
     // Undo the delete exterior
-    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfDeleteExterior);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfDeleteExterior, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfDeleteExterior);
+    ASSERT_EQ(meshKernelId, undoId);
 
     // Get the current state of the curvilinear grid
     errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
@@ -608,11 +620,13 @@ TEST(CurvilinearGridUndoTests, Refine)
     EXPECT_GT(refinedGrid.num_m, curvilinearGrid.num_m);
 
     bool didUndoOfRefinement = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
     // Undo the refinement
-    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfRefinement);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfRefinement, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfRefinement);
+    ASSERT_EQ(meshKernelId, undoId);
 
     errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, refinedGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -694,11 +708,13 @@ TEST(CurvilinearGridUndoTests, Derefine)
     EXPECT_LT(refinedGrid.num_m, curvilinearGrid.num_m);
 
     bool didUndoOfRefinement = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
     // Undo the refinement
-    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfRefinement);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfRefinement, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfRefinement);
+    ASSERT_EQ(meshKernelId, undoId);
 
     errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, refinedGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -778,11 +794,13 @@ TEST(CurvilinearGridUndoTests, InsertFace)
     EXPECT_EQ(refinedGrid.num_m, curvilinearGrid.num_m);
 
     bool didUndoOfRefinement = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
     // Undo the refinement
-    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfRefinement);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfRefinement, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfRefinement);
+    ASSERT_EQ(meshKernelId, undoId);
 
     errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, refinedGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -878,14 +896,17 @@ TEST(CurvilinearGridUndoTests, LineShift)
 
     bool didUndoOfLineShift = false;
     bool didUndoOfMoveNode = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
-    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfLineShift);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfLineShift, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfLineShift);
+    ASSERT_EQ(meshKernelId, undoId);
 
-    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfMoveNode);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfMoveNode, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfMoveNode);
+    ASSERT_EQ(meshKernelId, undoId);
 
     errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -952,10 +973,12 @@ TEST(CurvilinearGridUndoTests, LineMirror)
     EXPECT_EQ(extendedGrid.num_m, curvilinearGrid.num_m + 1);
 
     bool didUndoOfInsertLine = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
-    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfInsertLine);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfInsertLine, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfInsertLine);
+    ASSERT_EQ(meshKernelId, undoId);
 
     errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -1026,10 +1049,12 @@ TEST(CurvilinearGridUndoTests, LineAttractionRepulsion)
     ASSERT_NEAR(0.0, curvilinearGrid.node_y[4], tolerance);
 
     bool didUndoOfInsertLine = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
-    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfInsertLine);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfInsertLine, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfInsertLine);
+    ASSERT_EQ(meshKernelId, undoId);
 
     errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -1141,11 +1166,13 @@ TEST(CurvilinearGridUndoTests, OrthogonaliseEntireGrid)
     }
 
     bool didUndoOfSmoothing = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
     // Undo the orthogonalisation
-    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfSmoothing);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndoOfSmoothing, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndoOfSmoothing);
+    ASSERT_EQ(meshKernelId, undoId);
 
     // Get the current state of the curvilinear grid
     errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, curvilinearGrid);
@@ -1251,18 +1278,21 @@ TEST(CurvilinearGridUndoTests, RefineAndOrthogonalise)
     // Undo orthogonalisation and refinement
 
     bool didUndo = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
     // Undo the orthogonalisation
-    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
+    ASSERT_EQ(meshKernelId, undoId);
 
     didUndo = false;
 
     // Undo the orthogonalisation
-    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
+    ASSERT_EQ(meshKernelId, undoId);
 
     //--------------------------------
     // The mesh should now be in the original (perturbed) state
@@ -1350,10 +1380,12 @@ TEST(CurvilinearGridUndoTests, RefineUndoThenOrthogonalise)
     //--------------------------------
     // Undo the refinement
     bool didUndo = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
-    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
+    ASSERT_EQ(meshKernelId, undoId);
 
     //--------------------------------
     // Perform orthogonalisation on perturbed grid
@@ -1384,9 +1416,10 @@ TEST(CurvilinearGridUndoTests, RefineUndoThenOrthogonalise)
 
     didUndo = false;
 
-    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
+    ASSERT_EQ(meshKernelId, undoId);
 
     //--------------------------------
     // The mesh should now be in the original (perturbed) state
@@ -1470,11 +1503,13 @@ TEST(CurvilinearGridUndoTests, InsertFaceUndoThenMirrorLine)
 
     // Undo insert face
     bool didUndo = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
     // Undo the refinement
-    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
+    ASSERT_EQ(meshKernelId, undoId);
 
     //-------------------------------
 
@@ -1497,9 +1532,10 @@ TEST(CurvilinearGridUndoTests, InsertFaceUndoThenMirrorLine)
     EXPECT_EQ(updatedGrid.num_m, curvilinearGrid.num_m + 1);
 
     // Undo the mirror line
-    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
+    ASSERT_EQ(meshKernelId, undoId);
 
     //--------------------------------
     // Grid should be in original state
@@ -1595,10 +1631,12 @@ TEST(CurvilinearGridUndoTests, MultiStepUndoTest)
 
     // Undo the refinement
     bool didUndo = false;
+    int undoId = meshkernel::constants::missing::intValue;
 
-    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
+    ASSERT_EQ(meshKernelId, undoId);
 
     errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, updatedGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -1622,9 +1660,10 @@ TEST(CurvilinearGridUndoTests, MultiStepUndoTest)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     didUndo = false;
-    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
+    ASSERT_EQ(meshKernelId, undoId);
 
     errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, updatedGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -1650,9 +1689,10 @@ TEST(CurvilinearGridUndoTests, MultiStepUndoTest)
     // Undo the refinement
     didUndo = false;
 
-    errorCode = meshkernelapi::mkernel_undo_state(didUndo);
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo, undoId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     EXPECT_TRUE(didUndo);
+    ASSERT_EQ(meshKernelId, undoId);
 
     errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, updatedGrid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);

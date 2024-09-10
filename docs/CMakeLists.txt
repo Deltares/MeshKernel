@@ -7,6 +7,10 @@ endif()
 set(DOXYGEN_IMAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/images)
 set(DOXYGEN_INPUT_LIST
     "${CMAKE_SOURCE_DIR}/libs/MeshKernel/include/MeshKernel \
+    ${CMAKE_SOURCE_DIR}/libs/MeshKernel/include/MeshKernel/CurvilinearGrid \
+    ${CMAKE_SOURCE_DIR}/libs/MeshKernel/include/MeshKernel/UndoActions \
+    ${CMAKE_SOURCE_DIR}/libs/MeshKernel/include/MeshKernel/AveragingStrategies \
+    ${CMAKE_SOURCE_DIR}/libs/MeshKernel/include/MeshKernel/Utilities \
     ${CMAKE_SOURCE_DIR}/libs/MeshKernelApi/include/MeshKernelApi \
     ${CMAKE_CURRENT_SOURCE_DIR}/main_page.md \
     ${CMAKE_CURRENT_SOURCE_DIR}/introduction.md \
@@ -28,7 +32,11 @@ file(MAKE_DIRECTORY ${DOXYGEN_OUTPUT_DIR})
 
 # meshkernel headers
 file(GLOB MESHKERNEL_HEADER_LIST CONFIGURE_DEPENDS
-     "${CMAKE_SOURCE_DIR}/libs/MeshKernel/include/MeshKernel/*.hpp")
+     "${CMAKE_SOURCE_DIR}/libs/MeshKernel/include/MeshKernel/*.hpp"
+     "${CMAKE_SOURCE_DIR}/libs/MeshKernel/include/MeshKernel/CurvilinearGrid/*.hpp")
+
+# file(GLOB MESHKERNEL_CURVILINEAR_HEADER_LIST CONFIGURE_DEPENDS
+#      "${CMAKE_SOURCE_DIR}/libs/MeshKernel/include/MeshKernel/CurvilinearGrid/*.hpp")
 
 # meshkernelapi headers
 file(GLOB MESHKERNELAPI_HEADER_LIST CONFIGURE_DEPENDS

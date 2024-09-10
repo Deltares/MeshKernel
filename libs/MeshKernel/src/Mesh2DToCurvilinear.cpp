@@ -83,28 +83,35 @@ std::unique_ptr<CurvilinearGrid> Mesh2DToCurvilinear::Compute(const Point& point
     const auto thirdEdge = m_mesh.m_facesEdges[initialFaceIndex][2];
     const auto fourthEdge = m_mesh.m_facesEdges[initialFaceIndex][3];
 
+    m_mapping.resize(-3, -3, 3, 3);
+
     const auto firstNodeIndex = m_mesh.FindCommonNode(firstEdge, secondEdge);
-    m_i[firstNodeIndex] = 0;
     m_j[firstNodeIndex] = 0;
+    m_i[firstNodeIndex] = 0;
+
+    m_mapping.setValue(0, 0, firstNodeIndex);
 
     const auto secondNodeIndex = m_mesh.FindCommonNode(secondEdge, thirdEdge);
-    m_i[secondNodeIndex] = 1;
     m_j[secondNodeIndex] = 0;
+    m_i[secondNodeIndex] = 1;
+    m_mapping.setValue(0, 1, secondNodeIndex);
 
     const auto thirdNodeIndex = m_mesh.FindCommonNode(thirdEdge, fourthEdge);
     m_i[thirdNodeIndex] = 1;
     m_j[thirdNodeIndex] = 1;
+    m_mapping.setValue(1, 1, thirdNodeIndex);
 
     const auto fourthNodeIndex = m_mesh.FindCommonNode(fourthEdge, firstEdge);
-    m_i[fourthNodeIndex] = 0;
     m_j[fourthNodeIndex] = 1;
+    m_i[fourthNodeIndex] = 0;
+
+    m_mapping.setValue(1, 0, fourthNodeIndex);
 
     // 4. Grow the front using the breath first search algorithm
     const auto numFaces = m_mesh.GetNumFaces();
     std::vector visitedFace(numFaces, false);
     std::queue<UInt> q;
     q.push(initialFaceIndex);
-
     while (!q.empty())
     {
         const auto face = q.front();
@@ -122,7 +129,7 @@ std::unique_ptr<CurvilinearGrid> Mesh2DToCurvilinear::Compute(const Point& point
         }
 
         const auto localNodeMapping = ComputeLocalNodeMapping(face);
-        for (UInt d = 0; d < geometric::numNodesInQuadrilateral; ++d)
+        for (auto d = 0u; d < geometric::numNodesInQuadrilateral; ++d)
         {
             const auto newFaceIndex = ComputeNeighbouringFaceNodes(face, localNodeMapping, d, visitedFace);
             if (newFaceIndex != missing::uintValue)
@@ -217,7 +224,7 @@ UInt Mesh2DToCurvilinear::ComputeNeighbouringFaceNodes(const UInt face,
         }
     }
     auto nextEdgeIndexInNewFace = edgeIndexInNewFace + 1;
-    nextEdgeIndexInNewFace = nextEdgeIndexInNewFace == 4 ? 0 : nextEdgeIndexInNewFace;
+    nextEdgeIndexInNewFace = nextEdgeIndexInNewFace == geometric::numNodesInQuadrilateral ? 0 : nextEdgeIndexInNewFace;
     const auto nextEdgeInNewFace = m_mesh.m_facesEdges[newFace][nextEdgeIndexInNewFace];
     const auto firstCommonNode = m_mesh.FindCommonNode(edgeIndex, nextEdgeInNewFace);
     const auto firstOtherNode = OtherNodeOfEdge(m_mesh.GetEdge(nextEdgeInNewFace), firstCommonNode);
@@ -225,7 +232,7 @@ UInt Mesh2DToCurvilinear::ComputeNeighbouringFaceNodes(const UInt face,
     const auto jFirstOtherNode = m_j[firstCommonNode] + m_directionsDeltas[d][1];
 
     auto previousEdgeIndexInNewFace = edgeIndexInNewFace - 1;
-    previousEdgeIndexInNewFace = previousEdgeIndexInNewFace == -1 ? 3 : previousEdgeIndexInNewFace;
+    previousEdgeIndexInNewFace = previousEdgeIndexInNewFace == -1 ? geometric::numNodesInQuadrilateral - 1 : previousEdgeIndexInNewFace;
     const auto previousEdgeInNewFace = m_mesh.m_facesEdges[newFace][previousEdgeIndexInNewFace];
     const auto secondCommonNode = m_mesh.FindCommonNode(edgeIndex, previousEdgeInNewFace);
     const auto secondOtherNode = OtherNodeOfEdge(m_mesh.GetEdge(previousEdgeInNewFace), secondCommonNode);
@@ -237,60 +244,108 @@ UInt Mesh2DToCurvilinear::ComputeNeighbouringFaceNodes(const UInt face,
                          (m_i[secondOtherNode] != missing::intValue && m_i[secondOtherNode] != iSecondCommonNode) ||
                          (m_j[secondOtherNode] != missing::intValue && m_j[secondOtherNode] != jSecondCommonNode);
 
-    if (!invalid)
+    if (invalid)
     {
-        m_i[firstOtherNode] = iFirstOtherNode;
-        m_j[firstOtherNode] = jFirstOtherNode;
-        m_i[secondOtherNode] = iSecondCommonNode;
-        m_j[secondOtherNode] = jSecondCommonNode;
-        return newFace;
+        return missing::uintValue;
     }
-    return missing::uintValue;
+    if (!IsConnectionValid(firstOtherNode, iFirstOtherNode, jFirstOtherNode))
+    {
+        return missing::uintValue;
+    }
+    if (!IsConnectionValid(secondOtherNode, iSecondCommonNode, jSecondCommonNode))
+    {
+        return missing::uintValue;
+    }
+
+    m_i[firstOtherNode] = iFirstOtherNode;
+    m_j[firstOtherNode] = jFirstOtherNode;
+    m_i[secondOtherNode] = iSecondCommonNode;
+    m_j[secondOtherNode] = jSecondCommonNode;
+    m_mapping.setValue(jFirstOtherNode, iFirstOtherNode, firstOtherNode);
+    m_mapping.setValue(jSecondCommonNode, iSecondCommonNode, secondOtherNode);
+    return newFace;
+}
+
+bool Mesh2DToCurvilinear::IsConnectionValid(const UInt candidateNode, const int iCandidate, const int jCandidate)
+{
+    const int iLeft = iCandidate - 1;
+    const int iRight = iCandidate + 1;
+    const int jBottom = jCandidate - 1;
+    const int jUp = jCandidate + 1;
+    m_mapping.resize(jBottom, iLeft, jUp, iRight);
+
+    if (m_mapping.IsValid(jCandidate, iLeft) && !CheckGridLine(m_mapping.getValue(jCandidate, iLeft), candidateNode))
+    {
+        return false;
+    }
+
+    if (m_mapping.IsValid(jCandidate, iRight) && !CheckGridLine(m_mapping.getValue(jCandidate, iRight), candidateNode))
+    {
+        return false;
+    }
+
+    if (m_mapping.IsValid(jBottom, iCandidate) && !CheckGridLine(m_mapping.getValue(jBottom, iCandidate), candidateNode))
+    {
+        return false;
+    }
+
+    if (m_mapping.IsValid(jUp, iCandidate) && !CheckGridLine(m_mapping.getValue(jUp, iCandidate), candidateNode))
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool Mesh2DToCurvilinear::CheckGridLine(const UInt validNode, const UInt candidateNode) const
+{
+    bool valid = false;
+    for (auto e = 0u; e < m_mesh.m_nodesEdges[candidateNode].size(); ++e)
+    {
+        const auto edgeIndex = m_mesh.m_nodesEdges[candidateNode][e];
+        const auto otherNode = OtherNodeOfEdge(m_mesh.GetEdge(edgeIndex), candidateNode);
+
+        bool doCheck = m_mesh.GetNumFaceEdges(m_mesh.m_edgesFaces[edgeIndex][0]) == geometric::numNodesInQuadrilateral;
+
+        if (m_mesh.m_edgesNumFaces[edgeIndex] == 2)
+        {
+            doCheck = doCheck || m_mesh.GetNumFaceEdges(m_mesh.m_edgesFaces[edgeIndex][1]) == geometric::numNodesInQuadrilateral;
+        }
+
+        if (doCheck && otherNode == validNode)
+        {
+            valid = true;
+            break;
+        }
+    }
+
+    return valid;
 }
 
 lin_alg::Matrix<Point> Mesh2DToCurvilinear::ComputeCurvilinearMatrix()
 {
+    auto validI = m_i | std::views::filter([](const auto& x)
+                                           { return x != missing::intValue; });
+    const auto [minI, maxI] = std::ranges::minmax_element(validI);
 
-    int minI = n_maxNumRowsColumns;
-    int minJ = n_maxNumRowsColumns;
-    const auto numNodes = m_mesh.GetNumNodes();
-    for (UInt n = 0; n < numNodes; ++n)
+    auto validJ = m_j | std::views::filter([](const auto& x)
+                                           { return x != missing::intValue; });
+    const auto [minJ, maxJ] = std::ranges::minmax_element(validJ);
+
+    const auto numM = *maxI - *minI + 1;
+    const auto numN = *maxJ - *minJ + 1;
+
+    lin_alg::Matrix<Point> result(numN, numM);
+
+    for (auto n = 0u; n < m_mesh.GetNumNodes(); ++n)
     {
-        if (m_i[n] != missing::intValue)
+        if (m_j[n] != missing::intValue && m_i[n] != missing::intValue)
         {
-            minI = std::min(minI, m_i[n]);
-        }
-        if (m_j[n] != missing::intValue)
-        {
-            minJ = std::min(minJ, m_j[n]);
+            const int j = m_j[n] - *minJ;
+            const int i = m_i[n] - *minI;
+            result(j, i) = m_mesh.Node(n);
         }
     }
 
-    int maxI = -n_maxNumRowsColumns;
-    int maxJ = -n_maxNumRowsColumns;
-    for (UInt n = 0; n < numNodes; ++n)
-    {
-        if (m_i[n] != missing::intValue)
-        {
-            m_i[n] = m_i[n] - minI;
-            maxI = std::max(maxI, m_i[n]);
-        }
-        if (m_j[n] != missing::intValue)
-        {
-            m_j[n] = m_j[n] - minJ;
-            maxJ = std::max(maxJ, m_j[n]);
-        }
-    }
-
-    lin_alg::Matrix<Point> result(maxI + 1, maxJ + 1);
-    for (UInt n = 0; n < numNodes; ++n)
-    {
-        const auto i = m_i[n];
-        const auto j = m_j[n];
-        if (i != missing::intValue && j != missing::intValue)
-        {
-            result(i, j) = m_mesh.Node(n);
-        }
-    }
     return result;
 }

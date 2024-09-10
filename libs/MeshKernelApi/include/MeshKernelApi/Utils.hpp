@@ -340,6 +340,36 @@ namespace meshkernelapi
         mesh2dApi.num_valid_edges = static_cast<int>(mesh2d.GetNumValidEdges());
     }
 
+    /// @brief Sets only the node and edge data for meshkernelapi::Mesh2D
+    /// @param[in]  mesh2d    The meshkernel::Mesh2D instance
+    /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
+    static void SetMesh2dApiNodeEdgeData(meshkernel::Mesh2D& mesh2d, Mesh2D& mesh2dApi)
+    {
+        if (mesh2dApi.num_nodes != static_cast<int>(mesh2d.GetNumNodes()))
+        {
+            throw meshkernel::ConstraintError("The number of nodes in the mesh2d api structure does not equal the number of nodes in the grid, {} /= {}",
+                                              mesh2dApi.num_nodes, mesh2d.GetNumNodes());
+        }
+
+        if (mesh2dApi.num_edges != static_cast<int>(mesh2d.GetNumEdges()))
+        {
+            throw meshkernel::ConstraintError("The number of edges in the mesh2d api structure does not equal the number of edges in the grid, {} /= {}",
+                                              mesh2dApi.num_edges, mesh2d.GetNumEdges());
+        }
+
+        for (meshkernel::UInt n = 0; n < mesh2d.GetNumNodes(); ++n)
+        {
+            mesh2dApi.node_x[n] = mesh2d.Node(n).x;
+            mesh2dApi.node_y[n] = mesh2d.Node(n).y;
+        }
+
+        for (meshkernel::UInt edgeIndex = 0; edgeIndex < mesh2d.GetNumEdges(); ++edgeIndex)
+        {
+            mesh2dApi.edge_nodes[edgeIndex * 2] = static_cast<int>(mesh2d.GetEdge(edgeIndex).first);
+            mesh2dApi.edge_nodes[edgeIndex * 2 + 1] = static_cast<int>(mesh2d.GetEdge(edgeIndex).second);
+        }
+    }
+
     /// @brief Sets the meshkernelapi::Mesh2D data
     /// @param[in]  mesh2d    The meshkernel::Mesh2D instance
     /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
@@ -550,6 +580,40 @@ namespace meshkernelapi
             return CreateBilinearInterpolator<double>(mesh2d, griddedSamples);
         default:
             throw meshkernel::MeshKernelError("Invalid value_type for GriddedSamples");
+        }
+    }
+
+    static void FillFacePolygons(std::shared_ptr<meshkernel::Mesh2D> mesh2d,
+                                 const std::vector<bool>& facesInPolygon,
+                                 const GeometryList& facePolygons)
+    {
+        meshkernel::UInt count = 0;
+        for (meshkernel::UInt f = 0; f < mesh2d->GetNumFaces(); ++f)
+        {
+            if (!facesInPolygon[f])
+            {
+                continue;
+            }
+
+            const auto& faceNodes = mesh2d->m_facesNodes[f];
+            if (count != 0)
+            {
+                facePolygons.coordinates_x[count] = missing::doubleValue;
+                facePolygons.coordinates_y[count] = missing::doubleValue;
+                count++;
+            }
+
+            for (meshkernel::UInt n = 0u; n < faceNodes.size(); ++n)
+            {
+                const auto& currentNode = mesh2d->Node(faceNodes[n]);
+                facePolygons.coordinates_x[count] = currentNode.x;
+                facePolygons.coordinates_y[count] = currentNode.y;
+                count++;
+            }
+            const auto& currentNode = mesh2d->Node(faceNodes[0]);
+            facePolygons.coordinates_x[count] = currentNode.x;
+            facePolygons.coordinates_y[count] = currentNode.y;
+            count++;
         }
     }
 
