@@ -1496,7 +1496,7 @@ TEST(CurvilinearGridFromSplines, WTF)
 
     splinesToCurvilinearParameters.aspect_ratio = 0.4;
     splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
-    splinesToCurvilinearParameters.average_width = 50.0;
+    splinesToCurvilinearParameters.average_width = 100.0;
     splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
     splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
 
@@ -1505,8 +1505,8 @@ TEST(CurvilinearGridFromSplines, WTF)
     splinesToCurvilinearParameters.curvature_adapted_grid_spacing = 0;
     splinesToCurvilinearParameters.remove_skinny_triangles = 0;
 
-    curvilinearParameters.m_refinement = 100;
-    curvilinearParameters.n_refinement = 100;
+    curvilinearParameters.m_refinement = 40;
+    curvilinearParameters.n_refinement = 40;
 
 
     std::vector<mk::Point> spline1{{9.500679E+00,   6.187624E+01},
