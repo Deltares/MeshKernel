@@ -148,12 +148,6 @@ namespace meshkernel
                               const Point& v1, const Point& v3, const Point& v4,
                               const double clearance) const;
 
-        // (get_lr)
-        void GetNeighbouringLayerPoints(const std::vector<Point>& activeLayerPoints,
-                                        const UInt layerPoint,
-                                        UInt& layerPointLeft,
-                                        UInt& layerPointRight) const;
-
         double ComputeMaximumTimeStep(const UInt layerIndex,
                                       const std::vector<Point>& activeLayerPoints,
                                       const std::vector<Point>& velocityVectorAtGridPoints,
@@ -196,6 +190,7 @@ namespace meshkernel
         /// @returns The left and the right index for the current front grid point index
         std::pair<UInt, UInt> GetNeighbours(lin_alg::RowVector<Point> const& gridPoints, UInt) const;
 
+        // Remove one or other of these GetNeighbours functions
         std::pair<UInt, UInt> GetNeighbours(const std::vector<Point>& gridPoints, UInt) const;
 
 
