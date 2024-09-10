@@ -1434,19 +1434,19 @@ TEST(CurvilinearGridFromSplines, WTF)
     mk::CurvilinearParameters curvilinearParameters;
     mk::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
 
-    splinesToCurvilinearParameters.aspect_ratio = 0.1;
-    splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
-    splinesToCurvilinearParameters.average_width = 500.0;
-    splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
-    splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
+    // splinesToCurvilinearParameters.aspect_ratio = 0.1;
+    // splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
+    // splinesToCurvilinearParameters.average_width = 500.0;
+    // splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
+    // splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
 
-    splinesToCurvilinearParameters.check_front_collisions = 1;
-    splinesToCurvilinearParameters.grow_grid_outside = 0;
-    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = 0;
-    splinesToCurvilinearParameters.remove_skinny_triangles = 0;
+    // splinesToCurvilinearParameters.check_front_collisions = 1;
+    // splinesToCurvilinearParameters.grow_grid_outside = 0;
+    // splinesToCurvilinearParameters.curvature_adapted_grid_spacing = 0;
+    // splinesToCurvilinearParameters.remove_skinny_triangles = 0;
 
-    curvilinearParameters.m_refinement = 40;
-    curvilinearParameters.n_refinement = 40;
+    // curvilinearParameters.m_refinement = 40;
+    // curvilinearParameters.n_refinement = 40;
 
     // std::vector<mk::Point> spline1{{0.0, 20.0},
     //                                {20.0, 0.0}};
@@ -1468,28 +1468,58 @@ TEST(CurvilinearGridFromSplines, WTF)
     //     spline2[i].y = 1000*std::sin (spline2[i].x / 1000.0 * 2.0 * 3.141);
     // }
 
-    std::vector<mk::Point> spline1{{-393.308358914916, 997.20779887993},
-                                   {170.716267339219, 137.209853898379}};
+    // std::vector<mk::Point> spline1{{-393.308358914916, 997.20779887993},
+    //                                {170.716267339219, 137.209853898379}};
 
-    std::vector<mk::Point> spline2{{-457.528984676525, 349.417139023697},
-                                   {156.755261738869, 838.052335035942},
-                                   {528.118010708175, 1131.23345264329},
-                                   {1309.93432432777, 681.689072312023},
-                                   // {1.360193944489029e+03, 7.174292466489187e+02},
-                                   // {1.410453564650288e+03,   7.531694209858144e+02},
-                                   // {   1.561232425134065e+03,   8.603899439965015e+02},
-                                   // {1360.93432432777, 722.689072312023},
-                                   {1812.53052594036, 1039.09081568098},
-                                   {1862.79014610162, 1647.79065985623},
-                                   // {1940.97177746358, 1957.724984184},
-                                   {1940.97177746358, 1960.51718530407}};
+    // std::vector<mk::Point> spline2{{-457.528984676525, 349.417139023697},
+    //                                {156.755261738869, 838.052335035942},
+    //                                {528.118010708175, 1131.23345264329},
+    //                                {1309.93432432777, 681.689072312023},
+    //                                // {1.360193944489029e+03, 7.174292466489187e+02},
+    //                                // {1.410453564650288e+03,   7.531694209858144e+02},
+    //                                // {   1.561232425134065e+03,   8.603899439965015e+02},
+    //                                // {1360.93432432777, 722.689072312023},
+    //                                {1812.53052594036, 1039.09081568098},
+    //                                {1862.79014610162, 1647.79065985623},
+    //                                // {1940.97177746358, 1957.724984184},
+    //                                {1940.97177746358, 1960.51718530407}};
 
-    std::vector<mk::Point> spline3{{1.272514E+02, 1.368770E+02},
-                                   {7.392552E+02, 9.187656E+01},
-                                   {8.172557E+02, 1.286269E+02},
-                                   {8.270058E+02, 1.721273E+02},
-                                   {6.575047E+02, 2.073777E+02},
-                                   {1.767517E+02, 2.501281E+02}};
+    // std::vector<mk::Point> spline3{{1.272514E+02, 1.368770E+02},
+    //                                {7.392552E+02, 9.187656E+01},
+    //                                {8.172557E+02, 1.286269E+02},
+    //                                {8.270058E+02, 1.721273E+02},
+    //                                {6.575047E+02, 2.073777E+02},
+    //                                {1.767517E+02, 2.501281E+02}};
+
+    //--------------------------------
+
+
+    splinesToCurvilinearParameters.aspect_ratio = 0.4;
+    splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
+    splinesToCurvilinearParameters.average_width = 50.0;
+    splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
+    splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
+
+    splinesToCurvilinearParameters.check_front_collisions = 1;
+    splinesToCurvilinearParameters.grow_grid_outside = 0;
+    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = 0;
+    splinesToCurvilinearParameters.remove_skinny_triangles = 0;
+
+    curvilinearParameters.m_refinement = 100;
+    curvilinearParameters.n_refinement = 100;
+
+
+    std::vector<mk::Point> spline1{{9.500679E+00,   6.187624E+01},
+                                   {4.130032E+02,   5.362616E+01},
+                                   {7.370052E+02,   5.212615E+01},
+                                   {8.352558E+02,   1.248769E+02},
+                                   {7.865055E+02,   1.788774E+02},
+                                   {5.472540E+02,   2.073777E+02},
+                                   {2.825024E+02,   2.171278E+02}};
+
+
+    std::vector<mk::Point> spline2{{6.500102E+01,   1.848775E+02},
+                                   {4.700092E+01,  -2.137459E+01}};
 
     auto splines = std::make_shared<Splines>(Projection::cartesian);
     splines->AddSpline(spline1);
