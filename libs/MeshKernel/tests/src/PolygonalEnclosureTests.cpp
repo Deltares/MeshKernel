@@ -317,8 +317,8 @@ TEST(PolygonalEnclosureTests, SnappingFailureTest)
 
     mk::PolygonalEnclosure enclosure(polygonPoints, mk::Projection::cartesian);
 
-    EXPECT_THROW(enclosure.SnapToLandBoundary(3, 2, landBoundary), mk::ConstraintError);
     EXPECT_THROW(enclosure.SnapToLandBoundary(0, 6, landBoundary), mk::ConstraintError);
+    EXPECT_THROW(enclosure.SnapToLandBoundary(6, 3, landBoundary), mk::ConstraintError);
 }
 
 TEST(PolygonalEnclosureTests, OffsetTest)
