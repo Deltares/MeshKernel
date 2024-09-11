@@ -171,6 +171,7 @@ namespace meshkernel
         /// @param[in] layerIndex The current grid layerIndex index
         /// @param[in] previousFrontVelocities The previous front velocities
         /// @returns The front velocities for the next front
+        // TODO update return comment and perhaps rename, it now does more than the name suggests
         std::tuple<std::vector<Point>, std::vector<Point>, lin_alg::Matrix<UInt>>  CopyVelocitiesToFront(UInt layerIndex,
                                                                                                          const std::vector<Point>& previousFrontVelocities);
 

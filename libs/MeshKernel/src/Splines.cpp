@@ -450,23 +450,11 @@ Splines::ComputePointOnSplineFromAdimensionalDistance(UInt index,
         adimensionalDistances[i] = FindFunctionRootWithGoldenSectionSearch(func, 0, static_cast<double>(numNodes) - 1.0);
         points[i] = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistances[i]);
 
-        auto [nnn, ttt, curvature] = ComputeCurvatureOnSplinePoint (index, adimensionalDistances[i]);
-        std::cout << "curvature: "  << curvature << std::endl;
-
         if (!points[i].IsValid())
         {
             throw AlgorithmError("Could not interpolate spline points.");
         }
     }
-
-    std::cout << "segment lengths: ";
-
-    for (UInt i = 1; i < m_splineNodes[index].size(); ++i) {
-        double distance = ComputeSplineLength (index, i - 1, i, 1000, true, maximumGridHeight);
-        std::cout << distance << "  ";
-    }
-
-    std::cout << std::endl;
 
     return {points, adimensionalDistances};
 }

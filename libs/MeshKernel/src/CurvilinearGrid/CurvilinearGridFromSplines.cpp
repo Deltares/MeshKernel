@@ -1260,7 +1260,6 @@ namespace meshkernel
 
             for (UInt i = 0; i < velocityVectorAtGridPoints.size(); ++i)
             {
-
                 if (m_validFrontNodes[i] == 1 && velocityVectorAtGridPoints[i].IsValid())
                 {
                     activeLayerPoints[i].x = activeLayerPoints[i].x + localTimeStep * velocityVectorAtGridPoints[i].x;
@@ -1295,13 +1294,25 @@ namespace meshkernel
                     }
                 }
 
-                auto [frontVelocities, newFrontPoints, gridPointIndices2] = CopyVelocitiesToFront(layerIndex - 1, velocityVectorAtGridPoints);
+                std::tie(frontVelocities, newFrontPoints, gridPointIndices) = CopyVelocitiesToFront(layerIndex - 1, velocityVectorAtGridPoints);
             }
         }
 
-        [[maybe_unused]] auto [gridPointsIndices, frontGridPoints, numFrontPoints] = FindFront();
+        // TODO newFrontPoints is updated twice, unnecessarily
+        UInt numFrontPoints2;
+        lin_alg::RowVector<Point> newFrontPointsEigen;
+        std::tie(gridPointIndices, newFrontPointsEigen, numFrontPoints2) = FindFront();
+        // std::tie(gridPointIndices, frontGridPoints, numFrontPoints2) = FindFront();
 
-        if (layerIndex >= 2 && gridPointsIndices.size () != constants::missing::uintValue)
+        newFrontPoints.resize (newFrontPointsEigen.size ());
+
+        for (UInt i = 0; i < newFrontPointsEigen.size (); ++i)
+        {
+            newFrontPoints[i] = newFrontPointsEigen[i];
+        }
+
+
+        if (layerIndex >= 2 && gridPointIndices.size () != constants::missing::uintValue)
         {
             for (UInt i = 1; i < m_numM - 1; ++i)
             {
@@ -1319,7 +1330,8 @@ namespace meshkernel
 
                 if (cosphi < -0.5)
                 {
-                    const auto [currentLeftIndex, currentRightIndex] = GetNeighbours(frontGridPoints, i);
+                    const auto [currentLeftIndex, currentRightIndex] = GetNeighbours(activeLayerPoints, i);
+                    // const auto [currentLeftIndex, currentRightIndex] = GetNeighbours(frontGridPoints, i);
 
                     for (auto j = currentLeftIndex + 1; j < currentRightIndex; ++j)
                     {
@@ -1440,12 +1452,14 @@ namespace meshkernel
                     {
                         continue;
                     }
+
                     for (auto i = numFrontPoints; i >= p; --i)
                     {
                         frontGridPoints[i + 1] = frontGridPoints[i];
                         velocities[i + 1] = velocities[i];
                         gridPointsIndices.row(i + 1) = gridPointsIndices.row(i);
                     }
+
                     numFrontPoints++;
 
                     if (ll)
