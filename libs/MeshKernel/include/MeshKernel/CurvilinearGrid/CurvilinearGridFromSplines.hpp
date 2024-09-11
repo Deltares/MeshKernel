@@ -148,13 +148,15 @@ namespace meshkernel
                               const Point& v1, const Point& v3, const Point& v4,
                               const double clearance) const;
 
-        double ComputeMaximumTimeStep(const UInt layerIndex,
+        void ComputeMaximumTimeStep(const UInt layerIndex,
                                       const std::vector<Point>& activeLayerPoints,
                                       const std::vector<Point>& velocityVectorAtGridPoints,
                                       const std::vector<Point>& frontGridPoints,
                                       const std::vector<Point>& frontVelocities,
                                       const lin_alg::Matrix<UInt>& gridPointsIndices,
-                                      const double timeStep) const;
+                                    const double timeStep,
+                                    double& otherTimeStep,
+                                    std::vector<double>& otherTimeStepMax) const;
 
         /// @brief Grow a layer starting from a given layer index
         void GrowLayer(UInt layerIndex);
