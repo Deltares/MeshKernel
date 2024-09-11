@@ -1228,7 +1228,7 @@ namespace meshkernel
             const auto maximumGridLayerGrowTime = ComputeMaximumEdgeGrowTime(activeLayerPoints, velocityVectorAtGridPoints);
             localTimeStep = std::min(m_timeStep - totalTimeStep, *std::min_element(maximumGridLayerGrowTime.begin(), maximumGridLayerGrowTime.end()));
             double otherTimeStep = std::numeric_limits<double>::max();
-            std::vector<double> otherTimeStepMax(newValidFrontNodes.size (), 1.0e99);
+            std::vector<double> otherTimeStepMax(newValidFrontNodes.size (), 1.0 + localTimeStep);
 
             if (m_splinesToCurvilinearParameters.check_front_collisions)
             {
@@ -1312,6 +1312,15 @@ namespace meshkernel
                 }
 
                 std::tie(frontVelocities, newFrontPoints, gridPointIndices) = CopyVelocitiesToFront(layerIndex - 0, velocityVectorAtGridPoints);
+                //auto [gridPointIndicesZZZ, newFrontPointsEigenZZZ, numFrontPointsZZZ] = FindFront();
+
+                //std::span<Point> newFrontPointsZZZ(newFrontPointsEigenZZZ.data(), newFrontPointsEigenZZZ.size ());
+                //newFrontPoints.resize(newFrontPointsZZZ.size ());
+                //std::copy(newFrontPointsZZZ.begin(), newFrontPointsZZZ.end(), newFrontPoints.begin ());
+
+
+                //CopyVelocitiesToFront(layerIndex - 1, static_cast<UInt>(activeLayerPoints.size()), velocityVectorAtGridPoints, frontVelocities, newFrontPoints, gridPointIndices);
+
             }
         }
 
@@ -1401,6 +1410,92 @@ namespace meshkernel
 
         return maximumGridLayerGrowTime;
     }
+
+        void CurvilinearGridFromSplines::CopyVelocitiesToFront(UInt layerIndex,
+                                                           UInt numFrontPoints,
+                                                           const std::vector<Point>& previousFrontVelocities,
+                                                           std::vector<Point>& velocities,
+                                                           std::vector<Point>& frontGridPoints,
+                                                           lin_alg::Matrix<UInt>& gridPointsIndices)
+    {
+        UInt p = 0;
+
+        std::vector<UInt> gridIndices0(gridPointsIndices.rows());
+        std::vector<UInt> gridIndices1(gridPointsIndices.rows());
+
+        for (UInt i = 0; i < gridPointsIndices.rows(); ++i)
+        {
+            gridIndices0[i] = gridPointsIndices(i, 0);
+            gridIndices1[i] = gridPointsIndices(i, 1);
+        }
+
+        std::ranges::fill(velocities, Point(0.0, 0.0));
+
+        while (p < numFrontPoints)
+        {
+            if (gridPointsIndices(p, 1) == layerIndex && m_validFrontNodes[gridPointsIndices(p, 0)] == 1)
+            {
+                velocities[p] = previousFrontVelocities[gridPointsIndices(p, 0)];
+                if (!velocities[p].IsValid())
+                {
+                    velocities[p] = {0.0, 0.0};
+                }
+
+                // Check for corner nodes
+                const auto previous = p == 0 ? 0 : p - 1;
+                const auto previousIndicesEigen = gridPointsIndices.row(previous);
+                const std::span previousIndices(previousIndicesEigen.data(), previousIndicesEigen.size());
+
+                const auto next = std::min(p + 1, numFrontPoints);
+                const auto nextIndicesEigen = gridPointsIndices.row(next);
+                const std::span nextIndices(nextIndicesEigen.data(), nextIndicesEigen.size());
+
+                // Check corner nodes
+                bool ll = previousIndices[0] == gridPointsIndices(p, 0) - 1 &&
+                          previousIndices[1] == gridPointsIndices(p, 1) &&
+                          m_validFrontNodes[previousIndices[0]] == 0;
+                // constants::missing::uintValue;
+
+                bool lr = nextIndices[0] == gridPointsIndices(p, 0) + 1 &&
+                          nextIndices[1] == gridPointsIndices(p, 1) &&
+                          m_validFrontNodes[nextIndices[0]] == 0;
+                // constants::missing::uintValue;
+
+                ll = ll || (previousIndices[0] == gridPointsIndices(p, 0) &&
+                            (previousIndices[1] == constants::missing::uintValue || previousIndices[1] < gridPointsIndices(p, 1)));
+                lr = lr || (nextIndices[0] == gridPointsIndices(p, 0) && (nextIndices[1] == constants::missing::uintValue || nextIndices[1] < gridPointsIndices(p, 1)));
+
+                if (ll || lr)
+                {
+                    if (numFrontPoints + 1 > frontGridPoints.size())
+                    {
+                        continue;
+                    }
+
+                    for (auto i = numFrontPoints; i >= p; --i)
+                    {
+                        frontGridPoints[i + 1] = frontGridPoints[i];
+                        velocities[i + 1] = velocities[i];
+                        gridPointsIndices.row(i + 1) = gridPointsIndices.row(i);
+                    }
+
+                    numFrontPoints++;
+
+                    if (ll)
+                    {
+                        velocities[p] = {0.0, 0.0};
+                    }
+                    else
+                    {
+                        velocities[p + 1] = {0.0, 0.0};
+                    }
+                    p = p + 1;
+                }
+            }
+            p = p + 1;
+        }
+    }
+
 
     std::tuple<std::vector<Point>, std::vector<Point>, lin_alg::Matrix<UInt>> CurvilinearGridFromSplines::CopyVelocitiesToFront(UInt layerIndex,
                                                                                                                                 const std::vector<Point>& previousFrontVelocities)
