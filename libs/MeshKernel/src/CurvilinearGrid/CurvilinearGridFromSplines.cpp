@@ -1311,6 +1311,7 @@ namespace meshkernel
                     }
                 }
 
+                // TODO not sure what the layerindex - 1 or -0
                 std::tie(frontVelocities, newFrontPoints, gridPointIndices) = CopyVelocitiesToFront(layerIndex - 0, velocityVectorAtGridPoints);
                 //auto [gridPointIndicesZZZ, newFrontPointsEigenZZZ, numFrontPointsZZZ] = FindFront();
 
