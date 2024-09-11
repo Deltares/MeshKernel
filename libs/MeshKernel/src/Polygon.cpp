@@ -218,12 +218,12 @@ bool meshkernel::Polygon::Contains(const Point& pnt) const
 void meshkernel::Polygon::SnapToLandBoundary(const size_t startIndex, const size_t endIndex, const LandBoundary& landBoundary)
 {
 
-    if (startIndex < 0 || startIndex >= m_nodes.size())
+    if (startIndex >= m_nodes.size())
     {
         throw ConstraintError("The start index is not valid: {}.", startIndex);
     }
 
-    if (endIndex < 0 || endIndex >= m_nodes.size())
+    if (endIndex >= m_nodes.size())
     {
         throw ConstraintError("The end index is not valid: {}.", endIndex);
     }
