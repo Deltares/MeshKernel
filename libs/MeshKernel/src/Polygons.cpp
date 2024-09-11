@@ -241,12 +241,6 @@ void Polygons::SnapToLandBoundary(const LandBoundary& landBoundary, UInt startIn
         endIndex = static_cast<UInt>(m_enclosures[0].Outer().Size()) - 1;
     }
 
-    // TODO is it valid to snap a single point to the land boundary?
-    if (startIndex >= endIndex)
-    {
-        throw ConstraintError("The start index is greater than the end index: {} >= {}.", startIndex, endIndex);
-    }
-
     const auto [polygonIndex, polygonStartNode, polygonEndNode] = PolygonIndex(startIndex, endIndex);
     m_enclosures[polygonIndex].SnapToLandBoundary(polygonStartNode, polygonEndNode, landBoundary);
 }

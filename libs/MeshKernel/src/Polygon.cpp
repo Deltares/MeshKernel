@@ -218,17 +218,31 @@ bool meshkernel::Polygon::Contains(const Point& pnt) const
 void meshkernel::Polygon::SnapToLandBoundary(const size_t startIndex, const size_t endIndex, const LandBoundary& landBoundary)
 {
 
-    if (startIndex > endIndex || endIndex >= m_nodes.size())
+    if (startIndex < 0 || startIndex >= m_nodes.size())
     {
-        throw ConstraintError("The indices are not valid: {}, {}.", startIndex, endIndex);
+        throw ConstraintError("The start index is not valid: {}.", startIndex);
     }
 
-    // snap polygon section to land boundary
-    for (size_t i = startIndex; i <= endIndex; ++i)
+    if (endIndex < 0 || endIndex >= m_nodes.size())
     {
-        if (m_nodes[i].IsValid())
+        throw ConstraintError("The end index is not valid: {}.", endIndex);
+    }
+
+    const auto numNodes = Size();
+    for (auto i = 0u; i < numNodes; i++)
+    {
+        // Adjust currentIndex for wrap-around
+        const auto currentIndex = (startIndex + i) % numNodes;
+
+        if (m_nodes[currentIndex].IsValid())
         {
-            m_nodes[i] = landBoundary.FindNearestPoint(m_nodes[i], m_projection);
+            m_nodes[currentIndex] = landBoundary.FindNearestPoint(m_nodes[currentIndex], m_projection);
+        }
+
+        // Break the loop if we have reached the lastIndex
+        if (currentIndex == endIndex)
+        {
+            break;
         }
     }
 

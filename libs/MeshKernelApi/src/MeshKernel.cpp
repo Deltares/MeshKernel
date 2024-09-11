@@ -3248,13 +3248,6 @@ namespace meshkernelapi
                                                   endIndex);
             }
 
-            if (startIndex > endIndex)
-            {
-                throw meshkernel::ConstraintError("Invalid polygon points range: startIndex greater than endIndex {} > {}",
-                                                  startIndex,
-                                                  endIndex);
-            }
-
             if (endIndex >= polygon.num_coordinates)
             {
                 throw meshkernel::ConstraintError("Invalid polygon points range: endIndex greater than number of polygon coordinates {} >= {}",
@@ -3276,7 +3269,7 @@ namespace meshkernelapi
 
             const std::vector<meshkernel::Point>& snappedPolygonPoints = polygons.Enclosure(enclosureIndex).Outer().Nodes();
 
-            for (int i = startIndex; i <= endIndex; ++i)
+            for (int i = 0; i < polygon.num_coordinates; ++i)
             {
                 polygon.coordinates_x[i] = snappedPolygonPoints[i].x;
                 polygon.coordinates_y[i] = snappedPolygonPoints[i].y;
