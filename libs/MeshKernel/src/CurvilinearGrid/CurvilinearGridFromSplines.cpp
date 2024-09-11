@@ -962,13 +962,15 @@ namespace meshkernel
         return std::min(t1, t2);
     }
 
-    double CurvilinearGridFromSplines::ComputeMaximumTimeStep(const UInt layerIndex,
+    void CurvilinearGridFromSplines::ComputeMaximumTimeStep(const UInt layerIndex,
                                                               const std::vector<Point>& activeLayerPoints,
                                                               const std::vector<Point>& velocityVectorAtGridPoints,
                                                               const std::vector<Point>& frontGridPoints,
                                                               const std::vector<Point>& frontVelocities,
                                                               const lin_alg::Matrix<UInt>& gridPointsIndices,
-                                                              const double timeStep) const
+                                                              const double timeStep,
+                                                              double& otherTimeStep,
+                                                              std::vector<double>& otherTimeStepMax) const
     {
         double maximumTimeStep = timeStep;
         // Should be in header
@@ -1147,20 +1149,20 @@ namespace meshkernel
 
                 if (t1 == tmax1234)
                 {
-                    tmax[i] = std::min(tmax[i], tmax1234);
-                    maximumTimeStep = std::min(maximumTimeStep, tmax[i]);
+                    otherTimeStepMax[i] = std::min(otherTimeStepMax[i], tmax1234);
+                    maximumTimeStep = std::min(maximumTimeStep, otherTimeStepMax[i]);
                 }
                 else if (t2 == tmax1234)
                 {
-                    tmax[i + 1] = std::min(tmax[i + 1], tmax1234);
-                    maximumTimeStep = std::min(maximumTimeStep, tmax[i+1]);
+                    otherTimeStepMax[i + 1] = std::min(otherTimeStepMax[i + 1], tmax1234);
+                    maximumTimeStep = std::min(maximumTimeStep, otherTimeStepMax[i + 1]);
                 }
                 else if (t3 == tmax1234 || t4 == tmax1234)
                 {
-                    tmax[i] = std::min(tmax[i], tmax1234);
-                    tmax[i + 1] = std::min(tmax[i + 1], tmax1234);
-                    maximumTimeStep = std::min(maximumTimeStep, tmax[i]);
-                    maximumTimeStep = std::min(maximumTimeStep, tmax[i+1]);
+                    otherTimeStepMax[i] = std::min(otherTimeStepMax[i], tmax1234);
+                    otherTimeStepMax[i + 1] = std::min(otherTimeStepMax[i + 1], tmax1234);
+                    maximumTimeStep = std::min(maximumTimeStep, otherTimeStepMax[i]);
+                    maximumTimeStep = std::min(maximumTimeStep, otherTimeStepMax[i + 1]);
                 }
 
                 if (tmax1234 == 0.0)
@@ -1170,7 +1172,7 @@ namespace meshkernel
             }
         }
 
-        return maximumTimeStep;
+        otherTimeStep = maximumTimeStep;
     }
 
     UInt CurvilinearGridFromSplines::GetCentralSplineIndex() const
@@ -1226,13 +1228,28 @@ namespace meshkernel
             const auto maximumGridLayerGrowTime = ComputeMaximumEdgeGrowTime(activeLayerPoints, velocityVectorAtGridPoints);
             localTimeStep = std::min(m_timeStep - totalTimeStep, *std::min_element(maximumGridLayerGrowTime.begin(), maximumGridLayerGrowTime.end()));
             double otherTimeStep = std::numeric_limits<double>::max();
+            std::vector<double> otherTimeStepMax(newValidFrontNodes.size (), 1.0e99);
 
             if (m_splinesToCurvilinearParameters.check_front_collisions)
             {
                 // TODO: implement front collisions
                 // otherTimeStep = 0.0;
-                otherTimeStep = ComputeMaximumTimeStep(layerIndex, activeLayerPoints, velocityVectorAtGridPoints, newFrontPoints, frontVelocities, gridPointIndices, localTimeStep + 1.0);
+                ComputeMaximumTimeStep(layerIndex, 
+                                       activeLayerPoints, velocityVectorAtGridPoints, 
+                                       newFrontPoints, frontVelocities, gridPointIndices, 
+                                       localTimeStep + 1.0, otherTimeStep, otherTimeStepMax);
                 std::cout << " otherTimeStep " << otherTimeStep << std::endl;
+            }
+
+            if (otherTimeStep < localTimeStep)
+            {
+                for (UInt i = 0; i < newValidFrontNodes.size(); ++i)
+                {
+                    if (otherTimeStepMax[i] - otherTimeStep < tolerance && (localTimeStep - otherTimeStepMax[i]) > tolerance)
+                    {
+                        newValidFrontNodes[i] = 0;
+                    }
+                }
             }
 
             localTimeStep = std::min(localTimeStep, otherTimeStep);
@@ -1294,7 +1311,7 @@ namespace meshkernel
                     }
                 }
 
-                std::tie(frontVelocities, newFrontPoints, gridPointIndices) = CopyVelocitiesToFront(layerIndex - 1, velocityVectorAtGridPoints);
+                std::tie(frontVelocities, newFrontPoints, gridPointIndices) = CopyVelocitiesToFront(layerIndex - 0, velocityVectorAtGridPoints);
             }
         }
 
