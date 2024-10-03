@@ -18,6 +18,7 @@ set(SRC_LIST
     ${SRC_DIR}/ErrorHandlingTests.cpp
     ${SRC_DIR}/Mesh2DRefinmentTests.cpp
     ${SRC_DIR}/Mesh2DTests.cpp
+    ${SRC_DIR}/PolygonTests.cpp
     ${SRC_DIR}/UndoTests.cpp
 )
 
