@@ -788,7 +788,23 @@ namespace meshkernel
 
             // shuffle coefficients up
 
-            if (degree == 2)
+            if (degree == 0)
+            {
+                coeffs[0] = 0.0;
+                coeffs[1] = 0.0;
+                coeffs[2] = 0.0;
+                coeffs[3] = 0.0;
+                coeffs[4] = 0.0;
+            }
+            else if (degree == 1)
+            {
+                coeffs[0] = coeffs[3];
+                coeffs[1] = coeffs[4];
+                coeffs[2] = 0.0;
+                coeffs[3] = 0.0;
+                coeffs[4] = 0.0;
+            }
+            else if (degree == 2)
             {
                 coeffs[0] = coeffs[2];
                 coeffs[1] = coeffs[3];
@@ -1100,7 +1116,7 @@ namespace meshkernel
                     clearance = 0.0;
                 }
 
-                if (iRR > iLL)
+                if (iRR >= iLL)
                 {
                     if (((i1 > iLL && i1 < iRR) || (i2 > iLL && i2 < iRR)) && j1 >= (layerIndex - 1) && j2 >= (layerIndex - 1))
                     {
@@ -1516,14 +1532,10 @@ namespace meshkernel
             frontGridPoints[i] = frontGridPointsEigen(i);
         }
 
-        std::vector<UInt> gridIndices0(gridPointsIndices.rows());
-        std::vector<UInt> gridIndices1(gridPointsIndices.rows());
+        std::span < UInt> gridIndices0(gridPointsIndices.data(), gridPointsIndices.size () * 2);
 
-        for (UInt i = 0; i < gridPointsIndices.rows(); ++i)
-        {
-            gridIndices0[i] = gridPointsIndices(i, 0);
-            gridIndices1[i] = gridPointsIndices(i, 1);
-        }
+        [[maybe_unused]] int dummy;
+        dummy = 1;
 
         while (p < numFrontPoints)
         {
@@ -1601,10 +1613,14 @@ namespace meshkernel
         lin_alg::Matrix<UInt> gridPointsIndices(numGridPoints, 2);
         gridPointsIndices.fill(constants::missing::uintValue);
         lin_alg::RowVector<Point> frontGridPoints(numGridPoints);
-        frontGridPoints.fill(Point{0.0, 0.0});
+        //frontGridPoints.fill(Point{0.0, 0.0});
+        frontGridPoints.fill(Point());
         UInt numFrontPoints;
 
-        std::vector<int> frontPosition(m_gridPoints.cols() - 2,
+       std::span<Point> frontGridPointsZZZ(frontGridPoints.data(), frontGridPoints.size ());
+      [[maybe_unused]]  std::span<UInt> gridPointIndicesFF(gridPointsIndices.data(), 2 * gridPointsIndices.size());
+
+       std::vector<int> frontPosition(m_gridPoints.cols() - 2,
                                        static_cast<int>(m_gridPoints.rows()));
 
         for (UInt m = 0; m < frontPosition.size(); ++m)
@@ -1659,7 +1675,7 @@ namespace meshkernel
                     gridPointsIndices(numFrontPoints, 1) = i;
                     numFrontPoints++;
                 }
-                for (auto i = previousFrontPosition; i > currentFrontPosition; --i)
+                for (auto i = previousFrontPosition - 1; i >= currentFrontPosition; --i)
                 {
                     frontGridPoints[numFrontPoints] = m_gridPoints(i, m);
                     gridPointsIndices(numFrontPoints, 0) = m;
