@@ -177,10 +177,10 @@ namespace meshkernel
         std::tuple<std::vector<Point>, std::vector<Point>, lin_alg::Matrix<UInt>>  CopyVelocitiesToFront(UInt layerIndex,
                                                                                                          const std::vector<Point>& previousFrontVelocities);
 
-                void CopyVelocitiesToFront(UInt layerIndex,
+        void CopyVelocitiesToFront(UInt layerIndex,
                                    UInt numFrontPoints,
                                    const std::vector<Point>& previousFrontVelocities,
-                                   std::vector<Point>& velocities,
+                                   std::vector<Point>& velocities ,
                                    std::vector<Point>& frontGridPoints,
                                    lin_alg::Matrix<UInt>& gridPointIndices);
 
