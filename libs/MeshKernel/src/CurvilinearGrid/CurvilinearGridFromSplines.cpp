@@ -91,6 +91,7 @@ namespace meshkernel
           m_curvilinearParameters(curvilinearParameters),
           m_splinesToCurvilinearParameters(splinesToCurvilinearParameters)
     {
+        m_splinesToCurvilinearParameters.curvature_adapted_grid_spacing = 0;
         CheckCurvilinearParameters(curvilinearParameters);
         CheckSplinesToCurvilinearParameters(splinesToCurvilinearParameters);
 
