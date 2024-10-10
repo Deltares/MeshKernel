@@ -1423,3 +1423,120 @@ TEST(CurvilinearGridFromSplines, GenerateGridWithHighRefinementFactor)
 
     EXPECT_THROW([[maybe_unused]] auto gridN = splinesToGrid.Compute(*splines, curvilinearParameters), mk::ConstraintError);
 }
+
+TEST(CurvilinearGridFromSplines, WithoutOverlappingElements)
+{
+
+    namespace mk = meshkernel;
+    mk::CurvilinearParameters curvilinearParameters;
+    mk::SplinesToCurvilinearParameters splinesToCurvilinearParameters;
+
+    splinesToCurvilinearParameters.aspect_ratio = 0.2;
+    splinesToCurvilinearParameters.aspect_ratio_grow_factor = 1.1;
+    splinesToCurvilinearParameters.average_width = 100.0;
+    splinesToCurvilinearParameters.nodes_on_top_of_each_other_tolerance = 1e-4;
+    splinesToCurvilinearParameters.min_cosine_crossing_angles = 0.95;
+
+    splinesToCurvilinearParameters.check_front_collisions = 1;
+    splinesToCurvilinearParameters.grow_grid_outside = 0;
+    splinesToCurvilinearParameters.curvature_adapted_grid_spacing = 0;
+    splinesToCurvilinearParameters.remove_skinny_triangles = 0;
+
+    curvilinearParameters.m_refinement = 10;
+    curvilinearParameters.n_refinement = 3;
+
+    std::vector<mk::Point> spline1{{9.500679E+00, 6.187624E+01},
+                                   {4.130032E+02, 5.362616E+01},
+                                   {7.370052E+02, 5.212615E+01},
+                                   {8.352558E+02, 1.248769E+02},
+                                   {7.865055E+02, 1.788774E+02},
+                                   {5.472540E+02, 2.073777E+02},
+                                   {2.825024E+02, 2.171278E+02}};
+
+    std::vector<mk::Point> spline2{{6.500102E+01, 1.848775E+02},
+                                   {4.700092E+01, -2.137459E+01}};
+
+    auto splines = std::make_shared<Splines>(Projection::cartesian);
+    splines->AddSpline(spline1);
+    splines->AddSpline(spline2);
+
+    const double tolerance = 1.0e-8;
+
+    mk::CurvilinearGridFromSplines splinesToGrid(splines, curvilinearParameters, splinesToCurvilinearParameters);
+
+    [[maybe_unused]] auto grid = splinesToGrid.Compute();
+    std::cout.precision(12);
+
+    std::vector<double> xNodes({8.49759082988, 8.9343870837, 9.25917578417, 9.500679, 9.74218221583, 10.1851367696,
+                                10.9975844882, 153.068185819, 153.635954468, 154.058130345, 154.372047768, 154.685965192,
+                                155.261738693, 156.157323803, 296.983176781, 297.960035756, 298.686399031, 299.226501153,
+                                299.766603276, 300.757234784, -999, 440.860416881, 442.236601148, 443.259890829,
+                                444.020778596, 444.781666362, 446.177253165, -999, 588.547149155, 588.646587946,
+                                588.720527673, 588.775507054, 588.830486436, 588.931327194, -999, 764.201804305,
+                                750.779207691, 740.798564145, 733.377254509, 725.955944873, 712.344105847, -999,
+                                994.126426047, 925.996638475, 875.337355168, 837.668619119, 799.999883069, 730.909547721,
+                                -999, 737.988284591, 728.488463362, 721.424678897, 716.172258903, 710.91983891,
+                                701.286081667, -999, 578.243881409, 575.530316198, 573.512589831, 572.012268528,
+                                570.511947224, 567.760124019, -999, 430.604350702, 429.17794234, 428.117307514,
+                                427.32865101, 426.539994506, 425.093475507, -999, 284.744766133, 283.771578515,
+                                283.047945152, 282.50987291, 281.971800668, 280.984892278, -999});
+
+    std::vector<double> yNodes({-21.1880814511, 14.9824023768, 41.8776981482, 61.87624, 81.8747818518, 118.555225846,
+                                185.832879467, -22.9339219161, 13.2349802838, 40.1291000037, 60.1267673785, 80.1244347534,
+                                116.803274821, 184.079924471, -25.7143270936, 10.4466715734, 37.3349144613, 57.3282119987,
+                                77.3215095362, 113.99233464, -999, -30.7085566668, 5.43858072396, 32.3165167792,
+                                52.3021504624, 72.2877841457, 108.944552546, -999, -36.827600308, -0.627564047093,
+                                26.2897060344, 46.3045873294, 66.3194686244, 103.029881705, -999, -30.5162375246,
+                                5.1979449971, 31.7539486913, 51.5002030477, 71.2464574042, 107.464166795, -999,
+                                156.5921184, 147.78661234, 141.239099981, 136.370564566, 131.502029152, 122.572376084,
+                                -999, 272.831103885, 237.418518661, 211.086773745, 191.507271545, 171.927769345,
+                                136.01590941, -999, 288.562178287, 252.481306123, 225.652642919, 205.703647062,
+                                185.754651206, 149.165082292, -999, 296.242370889, 260.094540963, 233.21608996,
+                                213.230073376, 193.244056793, 156.586586094, -999, 300.167941502, 264.007913886,
+                                237.120393043, 217.127632397, 197.134871751, 160.465031388, -999});
+
+    std::vector<mk::UInt> edgeStart({0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,
+                                     12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+                                     24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+                                     36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+                                     48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+                                     60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 0, 1,
+                                     2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 14, 15,
+                                     16, 17, 18, 19, 21, 22, 23, 24, 25, 26, 28, 29,
+                                     30, 31, 32, 33, 35, 36, 37, 38, 39, 40, 42, 43,
+                                     44, 45, 46, 47, 49, 50, 51, 52, 53, 54, 56, 57,
+                                     58, 59, 60, 61, 63, 64, 65, 66, 67, 68, 70, 71,
+                                     72, 73, 74, 75});
+
+    std::vector<mk::UInt> edgeEnd({7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+                                   19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+                                   31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
+                                   43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54,
+                                   55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66,
+                                   67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 1, 2,
+                                   3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 15, 16,
+                                   17, 18, 19, 20, 22, 23, 24, 25, 26, 27, 29, 30,
+                                   31, 32, 33, 34, 36, 37, 38, 39, 40, 41, 43, 44,
+                                   45, 46, 47, 48, 50, 51, 52, 53, 54, 55, 57, 58,
+                                   59, 60, 61, 62, 64, 65, 66, 67, 68, 69, 71, 72,
+                                   73, 74, 75, 76});
+
+    auto nodes = grid->ComputeNodes();
+    auto edges = grid->ComputeEdges();
+
+    ASSERT_EQ(nodes.size(), xNodes.size());
+
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        EXPECT_NEAR(nodes[i].x, xNodes[i], tolerance);
+        EXPECT_NEAR(nodes[i].y, yNodes[i], tolerance);
+    }
+
+    ASSERT_EQ(edges.size(), edgeStart.size());
+
+    for (size_t i = 0; i < edges.size(); ++i)
+    {
+        EXPECT_EQ(edges[i].first, edgeStart[i]);
+        EXPECT_EQ(edges[i].second, edgeEnd[i]);
+    }
+}
