@@ -140,20 +140,25 @@ namespace meshkernel
         /// @returns The next grid layerIndex and the sub layerIndex index
         std::tuple<UInt, UInt> ComputeGridLayerAndSubLayer(UInt layerIndex);
 
-        double CompCrossTime1(const Point& x1, const Point& x3, const Point& x4,
-                              const Point& v1, const Point& v3, const Point& v4,
-                              const double clearance) const;
+        /// @brief Compute the time node x1 will cross thee segment with end points x3 and x4
+        double ComputeNodeSegmentCrossingTime(const Point& x1, const Point& x3, const Point& x4,
+                                              const Point& v1, const Point& v3, const Point& v4) const;
 
-        double CompCrossTime2(const Point& x1, const Point& x3, const Point& x4,
-                              const Point& v1, const Point& v3, const Point& v4,
-                              const double clearance) const;
+        /// @brief Should the direct neighbour be included, circular grids also checked
+        bool IncludeDirectNeighbours(const UInt layerIndex,
+                                     const UInt loopIndex,
+                                     const lin_alg::Matrix<UInt>& gridPointsIndices,
+                                     const UInt indexLeftOfLeft,
+                                     const UInt indexRightOfRight) const;
 
+        /// @brief Compute maximum allowable grid layer growth time
         void ComputeMaximumTimeStep(const UInt layerIndex,
-                                      const std::vector<Point>& activeLayerPoints,
-                                      const std::vector<Point>& velocityVectorAtGridPoints,
-                                      const std::vector<Point>& frontGridPoints,
-                                      const std::vector<Point>& frontVelocities,
-                                      const lin_alg::Matrix<UInt>& gridPointsIndices,
+                                    const lin_alg::RowVector<Point>& activeLayerPoints,
+                                    // const std::vector<Point>& activeLayerPoints,
+                                    const std::vector<Point>& velocityVectorAtGridPoints,
+                                    const std::vector<Point>& frontGridPoints,
+                                    const std::vector<Point>& frontVelocities,
+                                    const lin_alg::Matrix<UInt>& gridPointsIndices,
                                     const double timeStep,
                                     double& otherTimeStep,
                                     std::vector<double>& otherTimeStepMax) const;
@@ -165,29 +170,20 @@ namespace meshkernel
         /// @param[in] coordinates The starting point coordinates
         /// @param[in] velocities  The velocities at the coordinates
         /// @returns The maximum allowable time step for each edge
-        std::vector<double> ComputeMaximumEdgeGrowTime(const std::vector<Point>& coordinates,
+        std::vector<double> ComputeMaximumEdgeGrowTime(const lin_alg::RowVector<Point>& coordinates,
                                                        const std::vector<Point>& velocities) const;
-
 
         /// @brief Copy growth velocities to the advancing front, add points at front corners corners (copy_vel_to_front)
         /// @param[in] layerIndex The current grid layerIndex index
         /// @param[in] previousFrontVelocities The previous front velocities
         /// @returns The front velocities for the next front
         // TODO update return comment and perhaps rename, it now does more than the name suggests
-        std::tuple<std::vector<Point>, std::vector<Point>, lin_alg::Matrix<UInt>>  CopyVelocitiesToFront(UInt layerIndex,
-                                                                                                         const std::vector<Point>& previousFrontVelocities);
-
-        void CopyVelocitiesToFront(UInt layerIndex,
-                                   UInt numFrontPoints,
-                                   const std::vector<Point>& previousFrontVelocities,
-                                   std::vector<Point>& velocities ,
-                                   std::vector<Point>& frontGridPoints,
-                                   lin_alg::Matrix<UInt>& gridPointIndices);
-
+        std::tuple<std::vector<Point>, std::vector<Point>, lin_alg::Matrix<UInt>> CopyVelocitiesToFront(UInt layerIndex,
+                                                                                                        const std::vector<Point>& previousFrontVelocities);
 
         /// @brief Computes the points at front, which have to be moved.
         /// @returns The indices of the grid points, the front grid points and the number of front points
-        std::tuple<lin_alg::Matrix<UInt>, lin_alg::RowVector<Point>, UInt> FindFront() const;
+        std::tuple<lin_alg::Matrix<UInt>, std::vector<Point>, UInt> FindFront() const;
 
         /// @brief Compute growth velocity vectors at grid points (comp_vel)
         /// @param[in] layerIndex The current grid layerIndex index
@@ -199,10 +195,6 @@ namespace meshkernel
         /// @param[in] index The front grid point index from which the neighbors should be searched
         /// @returns The left and the right index for the current front grid point index
         std::pair<UInt, UInt> GetNeighbours(lin_alg::RowVector<Point> const& gridPoints, UInt) const;
-
-        // Remove one or other of these GetNeighbours functions
-        std::pair<UInt, UInt> GetNeighbours(const std::vector<Point>& gridPoints, UInt) const;
-
 
         /// @brief Compute the edge grow velocities (comp_edgevel)
         /// TODO: can this be split in compute heights and computeGrowFactors
@@ -298,10 +290,13 @@ namespace meshkernel
         /// @brief Delete skewed cells and cells whose aspect ratio exceeds a prescribed value (postgrid)
         void DeleteSkinnyTriangles();
 
+        /// @brief Get the index of the centre spline
         UInt GetCentralSplineIndex() const;
 
+        /// @brief Determine if segments crosses the centre spline
         bool SegmentCrossesCentreSpline(const Point& x1, const Point& x2) const;
 
+        /// @brief Find the roots of up to a quartic polynomial
         void SolveQuartic(const std::array<double, 5>& coeffs,
                           std::array<double, 4>& roots) const;
 
