@@ -80,7 +80,6 @@ void Splines::AddSpline(const std::vector<Point>& splines, UInt start, UInt size
     // compute second order derivatives
     m_splineDerivatives.emplace_back(ComputeSplineDerivative(splinesNodes));
     m_splinesLength.emplace_back(ComputeSplineLength(GetNumSplines() - 1, 0.0, static_cast<double>(size - 1)));
-    std::cout << "AddSpline: " << m_splinesLength.back() << std::endl;
 }
 
 std::vector<meshkernel::Point> Splines::ComputeSplineDerivative(const std::vector<Point>& splinesNodes)
@@ -409,7 +408,6 @@ double Splines::ComputeSplineLength(UInt index,
             // double curvatureLimit = 0.001;
             // // curvatureFactor >= 0
             // curvatureFactor = std::min (curvatureFactor, curvatureLimit);
-
         }
         splineLength = splineLength + ComputeDistance(leftPoint, rightPoint, m_projection) * (1.0 + curvatureFactor * height);
         leftPoint = rightPoint;
