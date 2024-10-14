@@ -154,7 +154,6 @@ namespace meshkernel
         /// @brief Compute maximum allowable grid layer growth time
         void ComputeMaximumTimeStep(const UInt layerIndex,
                                     const lin_alg::RowVector<Point>& activeLayerPoints,
-                                    // const std::vector<Point>& activeLayerPoints,
                                     const std::vector<Point>& velocityVectorAtGridPoints,
                                     const std::vector<Point>& frontGridPoints,
                                     const std::vector<Point>& frontVelocities,
