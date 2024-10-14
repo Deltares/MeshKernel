@@ -781,10 +781,10 @@ namespace meshkernel
 
         for (UInt i = 0; i < 4; ++i)
         {
+            // Extend limits by a relatively small amount
             const double lowerLimit = -8.0 * std::numeric_limits<double>::epsilon();
             const double upperLimit = 1.0 + 8.0 * std::numeric_limits<double>::epsilon();
 
-            // TODO need to check that this is valid. (-1.0e-10 and 1.00001)
             if (beta[i] >= lowerLimit && beta[i] <= upperLimit && roots[i] >= 0.0 && roots[i] != constants::missing::doubleValue)
             {
                 time = std::min(time, roots[i]);
@@ -911,7 +911,7 @@ namespace meshkernel
                 double vv3 = std::sqrt(length(v4 - v1));
                 double vv4 = std::sqrt(length(v4 - v2));
 
-                double maxvv = std::max(std::max(vv1, vv2), std::max(vv3, vv4));
+                const double maxvv = std::max(std::max(vv1, vv2), std::max(vv3, vv4));
 
                 if (std::sqrt(hlow2) > maxvv * std::min(tmax[i], tmax[i + 1]))
                 {
@@ -1087,8 +1087,7 @@ namespace meshkernel
                     }
                 }
 
-                // TODO check layerindex - 1 or - 0
-                std::tie(frontVelocities, newFrontPoints, gridPointIndices) = CopyVelocitiesToFront(layerIndex - 0, velocityVectorAtGridPoints);
+                std::tie(frontVelocities, newFrontPoints, gridPointIndices) = CopyVelocitiesToFront(layerIndex, velocityVectorAtGridPoints);
             }
         }
 
@@ -1204,7 +1203,8 @@ namespace meshkernel
 
                 ll = ll || (previousIndices[0] == gridPointsIndices(p, 0) &&
                             (previousIndices[1] == constants::missing::uintValue || previousIndices[1] < gridPointsIndices(p, 1)));
-                lr = lr || (nextIndices[0] == gridPointsIndices(p, 0) && (nextIndices[1] == constants::missing::uintValue || nextIndices[1] < gridPointsIndices(p, 1)));
+                lr = lr || (nextIndices[0] == gridPointsIndices(p, 0) &&
+                            (nextIndices[1] == constants::missing::uintValue || nextIndices[1] < gridPointsIndices(p, 1)));
 
                 if (ll || lr)
                 {
@@ -1432,10 +1432,9 @@ namespace meshkernel
             }
             const auto leftVelocity = normalVectorLeft * m_edgeVelocities[currentLeftIndex];
             const auto rightVelocity = normalVectorRight * m_edgeVelocities[currentRightIndex - 1];
-            double rightLeftVelocityRatio = m_edgeVelocities[currentRightIndex - 1] / m_edgeVelocities[currentLeftIndex];
+            const double rightLeftVelocityRatio = m_edgeVelocities[currentRightIndex - 1] / m_edgeVelocities[currentLeftIndex];
 
-            // TODO Probably should be : std::abs(cosphi) <= cosTolerance
-            if ((rightLeftVelocityRatio - cosphi > eps && 1.0 / rightLeftVelocityRatio - cosphi > eps)) // || std::abs(cosphi) <= cosTolerance)
+            if (rightLeftVelocityRatio - cosphi > eps && 1.0 / rightLeftVelocityRatio - cosphi > eps)
             {
                 velocityVector[m] = (leftVelocity * (1.0 - rightLeftVelocityRatio * cosphi) +
                                      rightVelocity * (1.0 - 1.0 / rightLeftVelocityRatio * cosphi)) /
