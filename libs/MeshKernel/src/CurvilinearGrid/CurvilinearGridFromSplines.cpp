@@ -2122,8 +2122,6 @@ namespace meshkernel
                                                                  m_splinesToCurvilinearParameters.curvature_adapted_grid_spacing,
                                                                  m_maximumGridHeights[splineIndex]);
 
-        // auto numM = 1 + static_cast<UInt>(std::floor(splineLength / m_splinesToCurvilinearParameters.average_width));
-
         m_gridLine[startingIndex] = m_splines->m_splineNodes[splineIndex][0];
 
         auto currentMaxWidth = std::numeric_limits<double>::max();
