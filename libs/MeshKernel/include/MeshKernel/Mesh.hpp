@@ -509,10 +509,9 @@ namespace meshkernel
         bool m_nodesRTreeRequiresUpdate = true;                            ///< m_nodesRTree requires an update
         bool m_edgesRTreeRequiresUpdate = true;                            ///< m_edgesRTree requires an update
         bool m_facesRTreeRequiresUpdate = true;                            ///< m_facesRTree requires an update
+        bool m_administrationRequired = true;                              ///< Indicates if mesh administration requires an update
         std::unordered_map<Location, std::unique_ptr<RTreeBase>> m_RTrees; ///< The RTrees to use
         BoundingBox m_boundingBoxCache;                                    ///< Caches the last bounding box used for selecting the locations
-
-        bool m_administrationRequired = true;
 
         /// @brief Set nodes and edges that are not connected to be invalid.
         void SetUnConnectedNodesAndEdgesToInvalid(CompoundUndoAction* undoAction);
