@@ -785,17 +785,21 @@ bool meshkernel::CasulliDeRefinement::RemoveUnwantedBoundaryNodes(Mesh2D& mesh,
                             std::shift_left(mesh.m_facesNodes[connectedElementId].begin() + i, mesh.m_facesNodes[connectedElementId].end(), 1);
                             std::shift_left(mesh.m_facesEdges[connectedElementId].begin() + i, mesh.m_facesEdges[connectedElementId].end(), 1);
 
+                            Edge edge = mesh.GetEdge(edgeId);
+
                             --mesh.m_numFacesNodes[connectedElementId];
 
                             // redirect node of the link that is kept
                             if (mesh.GetEdge(previousEdgeId).first == nodeId)
                             {
-                                mesh.GetEdge(previousEdgeId).first = mesh.GetEdge(edgeId).first + mesh.GetEdge(edgeId).second - nodeId;
+                                edge.first = mesh.GetEdge(edgeId).first + mesh.GetEdge(edgeId).second - nodeId;
                             }
                             else
                             {
-                                mesh.GetEdge(previousEdgeId).second = mesh.GetEdge(edgeId).first + mesh.GetEdge(edgeId).second - nodeId;
+                                edge.second = mesh.GetEdge(edgeId).first + mesh.GetEdge(edgeId).second - nodeId;
                             }
+
+                            mesh.SetEdge(edgeId, edge);
 
                             // delete other link
 
@@ -960,8 +964,8 @@ bool meshkernel::CasulliDeRefinement::CleanUpEdge(Mesh2D& mesh, const UInt edgeI
         --mesh.m_nodesNumEdges[nodeId];
     }
 
-    mesh.GetEdge(edgeId).first = constants::missing::uintValue;
-    mesh.GetEdge(edgeId).second = constants::missing::uintValue;
+    mesh.SetEdge(edgeId, {constants::missing::uintValue, constants::missing::uintValue});
+
     return true;
 }
 
