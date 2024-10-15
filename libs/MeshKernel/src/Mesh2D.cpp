@@ -152,6 +152,11 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
 
 void Mesh2D::DoAdministration(CompoundUndoAction* undoAction)
 {
+    if (!AdministrationRequired ())
+    {
+        return;
+    }
+
     AdministrateNodesEdges(undoAction);
 
     // face administration
@@ -165,6 +170,8 @@ void Mesh2D::DoAdministration(CompoundUndoAction* undoAction)
 
     // classify node types
     ClassifyNodes();
+
+    SetAdministrationRequired (false);
 }
 
 void Mesh2D::DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
@@ -792,6 +799,8 @@ void Mesh2D::ComputeFaceClosedPolygon(UInt faceIndex, std::vector<Point>& polygo
 
 std::unique_ptr<meshkernel::SphericalCoordinatesOffsetAction> Mesh2D::OffsetSphericalCoordinates(double minx, double maxx)
 {
+    // The nodes change in value, but not in any conectivity
+    // So it is unnecessary to redo administration
     std::unique_ptr<SphericalCoordinatesOffsetAction> undoAction;
 
     if (m_projection == Projection::spherical && maxx - minx > 180.0)
@@ -2285,6 +2294,8 @@ std::unique_ptr<Mesh2D> Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     mergedMesh.SetNodesRTreeRequiresUpdate(true);
     mergedMesh.SetEdgesRTreeRequiresUpdate(true);
     mergedMesh.SetFacesRTreeRequiresUpdate(true);
+
+    mergedMesh.SetAdministrationRequired (true);
 
     return std::make_unique<Mesh2D>(mergedMesh.m_edges,
                                     mergedMesh.m_nodes,
