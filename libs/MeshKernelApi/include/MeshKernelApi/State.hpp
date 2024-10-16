@@ -73,6 +73,24 @@ namespace meshkernelapi
 
         // Exclusively owned state
         meshkernel::Projection m_projection{meshkernel::Projection::cartesian}; ///< Projection used by the meshes
+
+        std::vector<double> m_facePolygonsCoordsX;
+        std::vector<double> m_facePolygonsCoordsY;
+
+        int m_facePolygonsPropertyValue = 0;
+        double m_facePolygonsMinValue = -999.0;
+        double m_facePolygonsMaxValue = -999.0;
+        bool m_facePolygonsCoordsCached = false;
+
+        std::vector<double> m_boundaryPolygonsCoordsX;
+        std::vector<double> m_boundaryPolygonsCoordsY;
+
+        int m_lowerLeftNValue = -1;
+        int m_lowerLeftMValue = -1;
+        int m_upperRightNValue = -1;
+        int m_upperRightMValue = -1;
+
+        bool m_boundaryPolygonsCoordsCached = false;
     };
 
 } // namespace meshkernelapi
