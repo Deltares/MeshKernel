@@ -259,3 +259,91 @@ TEST(Mesh2DTests, GetPolygonsOfDeletedFaces_WithPolygon_ShouldGetPolygonOfDelete
         ASSERT_NEAR(expectedFacePolygonsY[i], yfacePolygons[i], 1e-6);
     }
 }
+
+TEST(Mesh2DTests, GetPolygonsOfDeletedFaces_WithPolygon_FailureTests)
+{
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = 1.0;
+    makeGridParameters.block_size_y = 1.0;
+    makeGridParameters.num_columns = 20;
+    makeGridParameters.num_rows = 20;
+
+    int meshKernelId = 0;
+    const int projectionType = 0;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(projectionType, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = mkapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    //
+
+    int propertyType = -1;
+    errorCode = meshkernelapi::mkernel_mesh2d_get_orthogonality_property_type(propertyType);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    double minValue = -1.0;
+    double maxValue = 1.0;
+
+    meshkernelapi::GeometryList facePolygons{};
+
+    // face data not yet cached
+    errorCode = mkernel_mesh2d_get_filtered_face_polygons(meshKernelId,
+                                                          propertyType + 1,
+                                                          minValue,
+                                                          maxValue,
+                                                          facePolygons);
+
+    // Assert
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+
+    // Execute
+    int geometryListDimension = -1;
+    errorCode = meshkernelapi::mkernel_mesh2d_get_filtered_face_polygons_dimension(meshKernelId,
+                                                                                   propertyType,
+                                                                                   minValue,
+                                                                                   maxValue,
+                                                                                   geometryListDimension);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    facePolygons.num_coordinates = geometryListDimension;
+    facePolygons.geometry_separator = meshkernel::constants::missing::doubleValue;
+    std::vector<double> xfacePolygons(geometryListDimension);
+    std::vector<double> yfacePolygons(geometryListDimension);
+    facePolygons.coordinates_x = xfacePolygons.data();
+    facePolygons.coordinates_y = yfacePolygons.data();
+
+    // Check different property type
+    errorCode = mkernel_mesh2d_get_filtered_face_polygons(meshKernelId,
+                                                          propertyType + 1,
+                                                          minValue,
+                                                          maxValue,
+                                                          facePolygons);
+
+    // Assert
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+
+    // Check different minimum value
+    errorCode = mkernel_mesh2d_get_filtered_face_polygons(meshKernelId,
+                                                          propertyType,
+                                                          minValue + 0.5,
+                                                          maxValue,
+                                                          facePolygons);
+
+    // Assert
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+    // Check different minimum value
+    errorCode = mkernel_mesh2d_get_filtered_face_polygons(meshKernelId,
+                                                          propertyType,
+                                                          minValue,
+                                                          maxValue + 0.5,
+                                                          facePolygons);
+
+    // Assert
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+}
