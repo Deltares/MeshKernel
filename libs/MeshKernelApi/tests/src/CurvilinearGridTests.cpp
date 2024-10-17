@@ -1515,9 +1515,11 @@ TEST(CurvilineartGrid, GetLocationIndex_OnACurvilinearGrid_GetLocationIndexFailu
     errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    int numberOfPolygonNodes;
+    // Initialise with a temporary size value
+    int numberOfPolygonNodes = 1000;
 
     meshkernelapi::GeometryList boundaryPolygon;
+    // Set coordinate arrays with temporary size for first test
     std::vector<double> coordinates_x(numberOfPolygonNodes);
     std::vector<double> coordinates_y(numberOfPolygonNodes);
 
@@ -1532,6 +1534,14 @@ TEST(CurvilineartGrid, GetLocationIndex_OnACurvilinearGrid_GetLocationIndexFailu
 
     errorCode = meshkernelapi::mkernel_curvilinear_count_boundaries_as_polygons(meshKernelId, lowerLeftN, lowerLeftM, upperRightN, upperRightM, numberOfPolygonNodes);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Resize coordinate array with correct size
+    coordinates_x.resize(numberOfPolygonNodes);
+    coordinates_y.resize(numberOfPolygonNodes);
+
+    boundaryPolygon.coordinates_x = coordinates_x.data();
+    boundaryPolygon.coordinates_y = coordinates_y.data();
+    boundaryPolygon.num_coordinates = numberOfPolygonNodes;
 
     // Check working version
     boundaryPolygon.num_coordinates = numberOfPolygonNodes;

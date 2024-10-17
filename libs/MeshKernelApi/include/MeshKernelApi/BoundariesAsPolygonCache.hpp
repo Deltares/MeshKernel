@@ -39,7 +39,7 @@
 namespace meshkernelapi
 {
 
-    /// @brief Boundary points
+    /// @brief Cache boundary polygon points
     class BoundariesAsPolygonCache : public CachedPointValues
     {
     public:
