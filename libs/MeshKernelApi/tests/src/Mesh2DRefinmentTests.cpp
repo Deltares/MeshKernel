@@ -53,7 +53,7 @@ TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApi)
     geometryListOut.coordinates_x = xCoordinatesOut.data();
     geometryListOut.coordinates_y = yCoordinatesOut.data();
     geometryListOut.values = valuesOut.data();
-    errorCode = mkernel_polygon_refine(meshKernelId, geometryListIn, false, 0, 2, geometryListOut);
+    errorCode = mkernel_polygon_refine(meshKernelId, geometryListIn, 0, 2, 40, geometryListOut);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
