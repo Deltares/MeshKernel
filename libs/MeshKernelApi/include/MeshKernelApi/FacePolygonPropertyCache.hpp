@@ -35,12 +35,12 @@
 
 namespace meshkernelapi
 {
-    /// @brief
+    /// @brief Cache node values of faces
     class FacePolygonPropertyCache : public CachedPointValues
     {
 
     public:
-        /// @brief Constuctor
+        /// @brief Constructor
         FacePolygonPropertyCache(const int propertyValue,
                                  const double minValue,
                                  const double maxValue,
