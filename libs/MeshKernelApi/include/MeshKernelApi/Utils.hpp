@@ -44,6 +44,8 @@
 #include "MeshKernel/BilinearInterpolationOnGriddedSamples.hpp"
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRectangular.hpp>
 
+#include "MeshKernelApi/CurvilinearGrid.hpp"
+
 #include <span>
 #include <stdexcept>
 #include <vector>
@@ -582,34 +584,34 @@ namespace meshkernelapi
         }
     }
 
-    static void FillFacePolygons(std::shared_ptr<meshkernel::Mesh2D> mesh2d,
+    static void FillFacePolygons(const meshkernel::Mesh2D& mesh2d,
                                  const std::vector<bool>& facesInPolygon,
                                  const GeometryList& facePolygons)
     {
         meshkernel::UInt count = 0;
-        for (meshkernel::UInt f = 0; f < mesh2d->GetNumFaces(); ++f)
+        for (meshkernel::UInt f = 0; f < mesh2d.GetNumFaces(); ++f)
         {
             if (!facesInPolygon[f])
             {
                 continue;
             }
 
-            const auto& faceNodes = mesh2d->m_facesNodes[f];
+            const auto& faceNodes = mesh2d.m_facesNodes[f];
             if (count != 0)
             {
-                facePolygons.coordinates_x[count] = missing::doubleValue;
-                facePolygons.coordinates_y[count] = missing::doubleValue;
+                facePolygons.coordinates_x[count] = meshkernel::constants::missing::doubleValue;
+                facePolygons.coordinates_y[count] = meshkernel::constants::missing::doubleValue;
                 count++;
             }
 
             for (meshkernel::UInt n = 0u; n < faceNodes.size(); ++n)
             {
-                const auto& currentNode = mesh2d->Node(faceNodes[n]);
+                const auto& currentNode = mesh2d.Node(faceNodes[n]);
                 facePolygons.coordinates_x[count] = currentNode.x;
                 facePolygons.coordinates_y[count] = currentNode.y;
                 count++;
             }
-            const auto& currentNode = mesh2d->Node(faceNodes[0]);
+            const auto& currentNode = mesh2d.Node(faceNodes[0]);
             facePolygons.coordinates_x[count] = currentNode.x;
             facePolygons.coordinates_y[count] = currentNode.y;
             count++;
