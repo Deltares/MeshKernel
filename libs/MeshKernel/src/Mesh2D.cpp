@@ -1744,7 +1744,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMesh(const Polygons& polyg
     else if (deletionOption == InsideNotIntersected && invertDeletion)
     {
         excludedFace = [&isFaceCompletlyIncludedInPolygon, &faceIntersections](UInt f)
-        { return isFaceCompletlyIncludedInPolygon[f] || faceIntersections[f].faceIndex != constants::missing::uintValue; };
+        { return isFaceCompletlyIncludedInPolygon[f] && faceIntersections[f].faceIndex == constants::missing::uintValue; };
     }
     else if (deletionOption == InsideAndIntersected && !invertDeletion)
     {
@@ -1754,7 +1754,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMesh(const Polygons& polyg
     else if (deletionOption == InsideAndIntersected && invertDeletion)
     {
         excludedFace = [&isFaceCompletlyIncludedInPolygon, &faceIntersections](UInt f)
-        { return isFaceCompletlyIncludedInPolygon[f] && faceIntersections[f].faceIndex == constants::missing::uintValue; };
+        { return isFaceCompletlyIncludedInPolygon[f] || faceIntersections[f].faceIndex != constants::missing::uintValue; };
     }
 
     // Mark edges for deletion
