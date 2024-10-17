@@ -486,9 +486,6 @@ namespace meshkernelapi
                                                                                          const meshkernel::Projection& projection)
     {
         meshkernel::CurvilinearGridRectangular grid(projection);
-        std::cout << "grid.Compute: " << makeGridParameters.num_columns << "  " << makeGridParameters.num_rows << "  "
-                  << makeGridParameters.origin_x << "  " << makeGridParameters.origin_y << "  "
-                  << makeGridParameters.angle << "  " << makeGridParameters.block_size_x << "  " << makeGridParameters.block_size_y << std::endl;
         return grid.Compute(makeGridParameters.num_columns,
                             makeGridParameters.num_rows,
                             makeGridParameters.origin_x,
