@@ -964,7 +964,9 @@ namespace meshkernelapi
                                                   meshKernelState[meshKernelId].m_boundariesAsPolygonCache->Size());
             }
 
+            // Retrieve cached values
             meshKernelState[meshKernelId].m_boundariesAsPolygonCache->Copy(boundaryPolygons);
+            // Clear the cache now that the values have been retrieved
             meshKernelState[meshKernelId].m_boundariesAsPolygonCache.reset();
         }
 
@@ -1969,7 +1971,9 @@ namespace meshkernelapi
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_projection);
             auto const refinementResult = polygon.RefineFirstPolygon(firstNodeIndex, secondNodeIndex, targetEdgeLength);
 
+            // Retrieve cached values
             meshKernelState[meshKernelId].m_polygonRefinementCache->Copy(refinedPolygon);
+            // Clear the cache now that the values have been retrieved
             meshKernelState[meshKernelId].m_polygonRefinementCache.reset();
         }
         catch (...)
@@ -2002,7 +2006,9 @@ namespace meshkernelapi
                 throw meshkernel::ConstraintError("Given refinement properties are incompatible with the cached values. Cached values will be deleted.");
             }
 
+            // Retrieve cached values
             meshKernelState[meshKernelId].m_polygonRefinementCache->Copy(refinedPolygon);
+            // Clear the cache now that the values have been retrieved
             meshKernelState[meshKernelId].m_polygonRefinementCache.reset();
         }
         catch (...)
@@ -2616,7 +2622,9 @@ namespace meshkernelapi
                 throw meshkernel::ConstraintError("Given filter properties are incompatible with the cached values. Cached values will be deleted.");
             }
 
+            // Retrieve cached values
             meshKernelState[meshKernelId].m_facePropertyCache->Copy(facePolygons);
+            // Clear the cache now that the values have been retrieved
             meshKernelState[meshKernelId].m_facePropertyCache.reset();
         }
         catch (...)
