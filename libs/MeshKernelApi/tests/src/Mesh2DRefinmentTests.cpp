@@ -62,6 +62,73 @@ TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApi)
     ASSERT_NEAR(92.626556, geometryListOut.coordinates_y[0], tolerance);
 }
 
+TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApiFailures)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
+
+    std::vector xCoordinatesIn{76.251099, 498.503723, 505.253784, 76.251099};
+    std::vector yCoordinatesIn{92.626556, 91.126541, 490.130554, 92.626556};
+    std::vector valuesIn{0.0, 0.0, 0.0, 0.0};
+
+    geometryListIn.coordinates_x = xCoordinatesIn.data();
+    geometryListIn.coordinates_y = yCoordinatesIn.data();
+    geometryListIn.values = valuesIn.data();
+    geometryListIn.num_coordinates = static_cast<int>(xCoordinatesIn.size());
+
+    // Execute
+    meshkernelapi::GeometryList geometryListOut;
+    // Should fail due to the values not yet being cached.
+    auto errorCode = mkernel_polygon_refine(meshKernelId, geometryListIn, 0, 2, 40, geometryListOut);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    int numberOfpolygonNodes;
+    // cache the values
+    errorCode = mkernel_polygon_count_refine(meshKernelId, geometryListIn, 0, 2, 40, numberOfpolygonNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    geometryListOut.num_coordinates = numberOfpolygonNodes;
+    geometryListOut.geometry_separator = meshkernel::constants::missing::doubleValue;
+    std::vector<double> xCoordinatesOut(numberOfpolygonNodes);
+    std::vector<double> yCoordinatesOut(numberOfpolygonNodes);
+    std::vector<double> valuesOut(numberOfpolygonNodes);
+    geometryListOut.coordinates_x = xCoordinatesOut.data();
+    geometryListOut.coordinates_y = yCoordinatesOut.data();
+    geometryListOut.values = valuesOut.data();
+    errorCode = mkernel_polygon_refine(meshKernelId, geometryListIn, 0, 2, 40, geometryListOut);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Should fail due to the values have been deleted in the last call
+    errorCode = mkernel_polygon_refine(meshKernelId, geometryListIn, 0, 2, 40, geometryListOut);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    // re-cache the values
+    errorCode = mkernel_polygon_count_refine(meshKernelId, geometryListIn, 0, 2, 40, numberOfpolygonNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Should fail due to different parameters
+    errorCode = mkernel_polygon_refine(meshKernelId, geometryListIn, 1, 2, 40, geometryListOut);
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+
+    // re-cache the values
+    errorCode = mkernel_polygon_count_refine(meshKernelId, geometryListIn, 0, 2, 40, numberOfpolygonNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // Should fail due to different parameters
+    errorCode = mkernel_polygon_refine(meshKernelId, geometryListIn, 0, 3, 40, geometryListOut);
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+
+    // re-cache the values
+    errorCode = mkernel_polygon_count_refine(meshKernelId, geometryListIn, 0, 2, 40, numberOfpolygonNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // Should fail due to different parameters
+    errorCode = mkernel_polygon_refine(meshKernelId, geometryListIn, 0, 2, 41, geometryListOut);
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+}
+
 TEST_F(CartesianApiTestFixture, LinearRefineAPolygonThroughApi)
 {
     // Prepare
@@ -104,6 +171,61 @@ TEST_F(CartesianApiTestFixture, LinearRefineAPolygonThroughApi)
 
     ASSERT_NEAR(11.0, geometryListOut.coordinates_x[4], tolerance);
     ASSERT_NEAR(8.281492376, geometryListOut.coordinates_y[4], tolerance);
+}
+
+TEST_F(CartesianApiTestFixture, LinearRefineAPolygonThroughApiFailures)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
+
+    std::vector xCoordinatesIn{0.0, 1.0, 3.0, 11.0, 11.0, 0.0, 0.0};
+    std::vector yCoordinatesIn{10.0, 10.0, 10.0, 10.0, 0.0, 0.0, 10.0};
+
+    geometryListIn.coordinates_x = xCoordinatesIn.data();
+    geometryListIn.coordinates_y = yCoordinatesIn.data();
+    geometryListIn.num_coordinates = static_cast<int>(xCoordinatesIn.size());
+
+    // Execute
+    meshkernelapi::GeometryList geometryListOut;
+    auto errorCode = mkernel_polygon_linear_refine(meshKernelId, geometryListIn, 1, 4, geometryListOut);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    int expectedNumberOfpolygonNodes;
+    // cache the values
+    errorCode = mkernel_polygon_count_linear_refine(meshKernelId, geometryListIn, 1, 4, expectedNumberOfpolygonNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    geometryListOut.num_coordinates = expectedNumberOfpolygonNodes;
+    geometryListOut.geometry_separator = meshkernel::constants::missing::doubleValue;
+    std::vector<double> xCoordinatesOut(expectedNumberOfpolygonNodes);
+    std::vector<double> yCoordinatesOut(expectedNumberOfpolygonNodes);
+    geometryListOut.coordinates_x = xCoordinatesOut.data();
+    geometryListOut.coordinates_y = yCoordinatesOut.data();
+
+    errorCode = mkernel_polygon_linear_refine(meshKernelId, geometryListIn, 1, 4, geometryListOut);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Should fail due to the values have been deleted in the last call
+    errorCode = mkernel_polygon_linear_refine(meshKernelId, geometryListIn, 1, 4, geometryListOut);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    // re-cache the values
+    errorCode = mkernel_polygon_count_linear_refine(meshKernelId, geometryListIn, 1, 4, expectedNumberOfpolygonNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // Should fail due to different parameters
+    errorCode = mkernel_polygon_linear_refine(meshKernelId, geometryListIn, 2, 4, geometryListOut);
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+
+    // re-cache the values
+    errorCode = mkernel_polygon_count_linear_refine(meshKernelId, geometryListIn, 1, 4, expectedNumberOfpolygonNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // Should fail due to different parameters
+    errorCode = mkernel_polygon_linear_refine(meshKernelId, geometryListIn, 1, 5, geometryListOut);
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
 }
 
 TEST_F(CartesianApiTestFixture, RefineBasedOnSamplesWaveCourant_OnAUniformMesh_shouldRefineMesh)
