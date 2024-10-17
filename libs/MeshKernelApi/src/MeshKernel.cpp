@@ -935,30 +935,41 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            if (!meshKernelState.contains(meshKernelId))
-            {
-                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
-            }
-
             if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
             {
                 throw meshkernel::MeshKernelError("Invalid curvilinear grid");
             }
 
-            auto lowerLeftNUnsigned = static_cast<meshkernel::UInt>(lowerLeftN);
-            auto lowerLeftMUnsigned = static_cast<meshkernel::UInt>(lowerLeftM);
-            auto upperRightNUnsigned = static_cast<meshkernel::UInt>(upperRightN);
-            auto upperRightMUnsigned = static_cast<meshkernel::UInt>(upperRightM);
+            if (boundaryPolygons.coordinates_x == nullptr || boundaryPolygons.coordinates_y == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Boundary polygon array are null");
+            }
 
-            const auto minN = std::min(lowerLeftNUnsigned, upperRightNUnsigned);
-            const auto maxN = std::max(lowerLeftNUnsigned, upperRightNUnsigned);
-            const auto minM = std::min(lowerLeftMUnsigned, upperRightMUnsigned);
-            const auto maxM = std::max(lowerLeftMUnsigned, upperRightMUnsigned);
+            if (meshKernelState[meshKernelId].m_boundariesAsPolygonCache == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Polygon data has not been cached");
+            }
 
-            const auto boundaryPolygon = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeBoundaryPolygons({minN, minM},
-                                                                                                                  {maxN, maxM});
-            ConvertPointVectorToGeometryList(boundaryPolygon, boundaryPolygons);
+            if (!meshKernelState[meshKernelId].m_boundariesAsPolygonCache->ValidOptions(lowerLeftN, lowerLeftM, upperRightN, upperRightM))
+            {
+                meshKernelState[meshKernelId].m_boundariesAsPolygonCache.reset();
+                throw meshkernel::ConstraintError("Given polygon ranges are incompatible with the cached values. Cached values will be deleted.");
+            }
+
+            if (boundaryPolygons.num_coordinates != meshKernelState[meshKernelId].m_boundariesAsPolygonCache->Size())
+            {
+                meshKernelState[meshKernelId].m_boundariesAsPolygonCache.reset();
+                throw meshkernel::ConstraintError("Incompatible boundary polygon size (user-size /= cached-size): {} /= {}. Cached values will be deleted.",
+                                                  boundaryPolygons.num_coordinates,
+                                                  meshKernelState[meshKernelId].m_boundariesAsPolygonCache->Size());
+            }
+
+            // Retrieve cached values
+            meshKernelState[meshKernelId].m_boundariesAsPolygonCache->Copy(boundaryPolygons);
+            // Clear the cache now that the values have been retrieved
+            meshKernelState[meshKernelId].m_boundariesAsPolygonCache.reset();
         }
+
         catch (...)
         {
             lastExitCode = HandleException();
@@ -981,6 +992,12 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Invalid curvilinear grid");
             }
 
+            if (meshKernelState[meshKernelId].m_boundariesAsPolygonCache != nullptr)
+            {
+                std::cout << "Polygon data has already been cached" << std::endl;
+                throw meshkernel::MeshKernelError("Polygon data has already been cached");
+            }
+
             const auto lowerLeftNUnsigned = static_cast<meshkernel::UInt>(lowerLeftN);
             const auto lowerLeftMUnsigned = static_cast<meshkernel::UInt>(lowerLeftM);
             const auto upperRightNUnsigned = static_cast<meshkernel::UInt>(upperRightN);
@@ -994,6 +1011,7 @@ namespace meshkernelapi
             const auto boundaryPolygon = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeBoundaryPolygons({minN, minM},
                                                                                                                   {maxN, maxM});
             numberOfPolygonNodes = static_cast<int>(boundaryPolygon.size());
+            meshKernelState[meshKernelId].m_boundariesAsPolygonCache = std::make_shared<BoundariesAsPolygonCache>(lowerLeftN, lowerLeftM, upperRightN, upperRightM, boundaryPolygon);
         }
         catch (...)
         {
@@ -1936,12 +1954,27 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
+
+            if (meshKernelState[meshKernelId].m_polygonRefinementCache == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Polygon data has not been cached");
+            }
+
             auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
+
+            if (!meshKernelState[meshKernelId].m_polygonRefinementCache->ValidOptions(polygonVector, firstNodeIndex, secondNodeIndex, targetEdgeLength))
+            {
+                meshKernelState[meshKernelId].m_polygonRefinementCache.reset();
+                throw meshkernel::ConstraintError("Given refinement properties are incompatible with the cached values. Cached values will be deleted.");
+            }
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_projection);
             auto const refinementResult = polygon.RefineFirstPolygon(firstNodeIndex, secondNodeIndex, targetEdgeLength);
 
-            ConvertPointVectorToGeometryList(refinementResult, refinedPolygon);
+            // Retrieve cached values
+            meshKernelState[meshKernelId].m_polygonRefinementCache->Copy(refinedPolygon);
+            // Clear the cache now that the values have been retrieved
+            meshKernelState[meshKernelId].m_polygonRefinementCache.reset();
         }
         catch (...)
         {
@@ -1960,14 +1993,23 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
+            if (meshKernelState[meshKernelId].m_polygonRefinementCache == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Polygon data has not been cached");
+            }
+
             auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
 
-            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_projection);
-            const auto firstNodeIndexUnsigned = static_cast<meshkernel::UInt>(firstNodeIndex);
-            const auto secondNodeUnsigned = static_cast<meshkernel::UInt>(secondNodeIndex);
-            const auto refinementResult = polygon.LinearRefinePolygon(0, firstNodeIndexUnsigned, secondNodeUnsigned);
+            if (!meshKernelState[meshKernelId].m_polygonRefinementCache->ValidOptions(polygonVector, firstNodeIndex, secondNodeIndex, meshkernel::constants::missing::doubleValue))
+            {
+                meshKernelState[meshKernelId].m_polygonRefinementCache.reset();
+                throw meshkernel::ConstraintError("Given refinement properties are incompatible with the cached values. Cached values will be deleted.");
+            }
 
-            ConvertPointVectorToGeometryList(refinementResult, refinedPolygon);
+            // Retrieve cached values
+            meshKernelState[meshKernelId].m_polygonRefinementCache->Copy(refinedPolygon);
+            // Clear the cache now that the values have been retrieved
+            meshKernelState[meshKernelId].m_polygonRefinementCache.reset();
         }
         catch (...)
         {
@@ -1991,11 +2033,20 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
+            if (meshKernelState[meshKernelId].m_polygonRefinementCache != nullptr)
+            {
+                meshKernelState[meshKernelId].m_polygonRefinementCache.reset();
+                throw meshkernel::MeshKernelError("Polygon data has already been cached. Cached values will be delelted.");
+            }
+
             auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_projection);
 
             const auto refinedPolygon = polygon.RefineFirstPolygon(firstIndex, secondIndex, distance);
+
+            // Cache refinedPolygon
+            meshKernelState[meshKernelId].m_polygonRefinementCache = std::make_shared<PolygonRefinementCache>(polygonVector, firstIndex, secondIndex, distance, refinedPolygon);
 
             numberOfPolygonNodes = static_cast<int>(refinedPolygon.size());
         }
@@ -2016,12 +2067,22 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
+            if (meshKernelState[meshKernelId].m_polygonRefinementCache != nullptr)
+            {
+                meshKernelState[meshKernelId].m_polygonRefinementCache.reset();
+                throw meshkernel::MeshKernelError("Polygon data has already been cached. Cached values will be delelted.");
+            }
 
+            auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_projection);
             const auto firstNodeIndexUnsigned = static_cast<meshkernel::UInt>(firstNodeIndex);
             const auto secondNodeUnsigned = static_cast<meshkernel::UInt>(secondNodeIndex);
             const auto refinementResult = polygon.LinearRefinePolygon(0, firstNodeIndexUnsigned, secondNodeUnsigned);
+
+            // Cache refinedPolygon
+            meshKernelState[meshKernelId].m_polygonRefinementCache = std::make_shared<PolygonRefinementCache>(polygonVector, firstNodeIndex, secondNodeIndex,
+                                                                                                              meshkernel::constants::missing::doubleValue,
+                                                                                                              refinementResult);
 
             numberOfPolygonNodes = static_cast<int>(refinementResult.size());
         }
@@ -2429,7 +2490,7 @@ namespace meshkernelapi
                     validFace[f] = true;
                 }
             }
-            FillFacePolygons(meshKernelState[meshKernelId].m_mesh2d, validFace, facePolygons);
+            FillFacePolygons(*meshKernelState[meshKernelId].m_mesh2d, validFace, facePolygons);
         }
         catch (...)
         {
@@ -2484,28 +2545,45 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
+
             if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
             {
                 throw meshkernel::ConstraintError("The 2d mesh contains no nodes.");
             }
+
+            if (meshKernelState[meshKernelId].m_facePropertyCache != nullptr)
+            {
+                meshKernelState[meshKernelId].m_facePropertyCache.reset();
+                throw meshkernel::ConstraintError("Filtered data has already been cached. Cached values will be deleted.");
+            }
+
+            geometryListDimension = 0;
+
             const auto filterEnum = static_cast<meshkernel::Mesh2D::Property>(propertyValue);
             const auto filterMask = meshKernelState[meshKernelId].m_mesh2d->FilterBasedOnMetric(meshkernel::Location::Faces,
                                                                                                 filterEnum,
                                                                                                 minValue,
                                                                                                 maxValue);
-            geometryListDimension = 0;
+
+            // Now compute the size of the arrays required
             for (meshkernel::UInt f = 0; f < filterMask.size(); ++f)
             {
                 if (!filterMask[f])
                 {
                     continue;
                 }
+
                 const auto faceNumEdges = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->m_facesNodes[f].size());
                 geometryListDimension += faceNumEdges + 2;
             }
+
             if (geometryListDimension > 0)
             {
                 geometryListDimension -= 1;
+                meshKernelState[meshKernelId].m_facePropertyCache = std::make_shared<FacePolygonPropertyCache>(propertyValue, minValue, maxValue,
+                                                                                                               *meshKernelState[meshKernelId].m_mesh2d,
+                                                                                                               geometryListDimension,
+                                                                                                               filterMask);
             }
         }
         catch (...)
@@ -2533,12 +2611,21 @@ namespace meshkernelapi
                 throw meshkernel::ConstraintError("The 2d mesh contains no nodes.");
             }
 
-            const auto filterEnum = static_cast<meshkernel::Mesh2D::Property>(propertyValue);
-            const auto filterMask = meshKernelState[meshKernelId].m_mesh2d->FilterBasedOnMetric(meshkernel::Location::Faces,
-                                                                                                filterEnum,
-                                                                                                minValue,
-                                                                                                maxValue);
-            FillFacePolygons(meshKernelState[meshKernelId].m_mesh2d, filterMask, facePolygons);
+            if (meshKernelState[meshKernelId].m_facePropertyCache == nullptr)
+            {
+                throw meshkernel::ConstraintError("Filtered data has not been cached");
+            }
+
+            if (!meshKernelState[meshKernelId].m_facePropertyCache->ValidOptions(propertyValue, minValue, maxValue))
+            {
+                meshKernelState[meshKernelId].m_facePropertyCache.reset();
+                throw meshkernel::ConstraintError("Given filter properties are incompatible with the cached values. Cached values will be deleted.");
+            }
+
+            // Retrieve cached values
+            meshKernelState[meshKernelId].m_facePropertyCache->Copy(facePolygons);
+            // Clear the cache now that the values have been retrieved
+            meshKernelState[meshKernelId].m_facePropertyCache.reset();
         }
         catch (...)
         {

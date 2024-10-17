@@ -38,6 +38,11 @@
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
 
+#include "MeshKernelApi/BoundariesAsPolygonCache.hpp"
+#include "MeshKernelApi/CachedPointValues.hpp"
+#include "MeshKernelApi/FacePolygonPropertyCache.hpp"
+#include "MeshKernelApi/PolygonRefinementCache.hpp"
+
 namespace meshkernelapi
 {
 
@@ -73,6 +78,11 @@ namespace meshkernelapi
 
         // Exclusively owned state
         meshkernel::Projection m_projection{meshkernel::Projection::cartesian}; ///< Projection used by the meshes
+
+        // Cached values, used when dimensions are computed first, followed by values beign retrieved in a separate call
+        std::shared_ptr<FacePolygonPropertyCache> m_facePropertyCache;        ///< Cache for
+        std::shared_ptr<BoundariesAsPolygonCache> m_boundariesAsPolygonCache; ///< Cache
+        std::shared_ptr<PolygonRefinementCache> m_polygonRefinementCache;     ///< Cache for polygon refinement
     };
 
 } // namespace meshkernelapi
