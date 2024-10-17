@@ -43,7 +43,6 @@
 #include "MeshKernelApi/FacePolygonPropertyCache.hpp"
 #include "MeshKernelApi/PolygonRefinementCache.hpp"
 
-
 namespace meshkernelapi
 {
 
