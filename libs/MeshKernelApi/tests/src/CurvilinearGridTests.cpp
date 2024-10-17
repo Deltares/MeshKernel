@@ -1490,7 +1490,7 @@ TEST_P(CurvilineartBoundariesAsPolygonsTests, GetLocationIndex_OnACurvilinearGri
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
-TEST(CurvilineartGrid, GetLocationIndex_OnACurvilinearGrid_GetLocationIdexFailures)
+TEST(CurvilineartGrid, GetLocationIndex_OnACurvilinearGrid_GetLocationIndexFailures)
 {
     const int lowerLeftN = 1;
     const int lowerLeftM = 1;
@@ -1512,8 +1512,6 @@ TEST(CurvilineartGrid, GetLocationIndex_OnACurvilinearGrid_GetLocationIdexFailur
     makeGridParameters.block_size_x = 10.0;
     makeGridParameters.block_size_y = 10.0;
 
-    std::cout << "here 0 " << std::endl;
-
     errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
@@ -1528,42 +1526,39 @@ TEST(CurvilineartGrid, GetLocationIndex_OnACurvilinearGrid_GetLocationIdexFailur
     boundaryPolygon.num_coordinates = numberOfPolygonNodes;
     boundaryPolygon.geometry_separator = constants::missing::doubleValue;
 
-    std::cout << "here 1 " << std::endl;
-
-    // Get before being cached
+    // Try to get before being cached
     errorCode = mkernel_curvilinear_get_boundaries_as_polygons(meshKernelId, lowerLeftN, lowerLeftM, upperRightN, upperRightM, boundaryPolygon);
     ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
-
-    std::cout << "here 2 " << std::endl;
 
     errorCode = meshkernelapi::mkernel_curvilinear_count_boundaries_as_polygons(meshKernelId, lowerLeftN, lowerLeftM, upperRightN, upperRightM, numberOfPolygonNodes);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    std::cout << "here 3 " << std::endl;
-
     // Check working version
+    boundaryPolygon.num_coordinates = numberOfPolygonNodes;
     errorCode = mkernel_curvilinear_get_boundaries_as_polygons(meshKernelId, lowerLeftN, lowerLeftM, upperRightN, upperRightM, boundaryPolygon);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    std::cout << "here 4 " << std::endl;
-
     // Different lowerLeftN
+    errorCode = meshkernelapi::mkernel_curvilinear_count_boundaries_as_polygons(meshKernelId, lowerLeftN, lowerLeftM, upperRightN, upperRightM, numberOfPolygonNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     errorCode = mkernel_curvilinear_get_boundaries_as_polygons(meshKernelId, lowerLeftN + 1, lowerLeftM, upperRightN, upperRightM, boundaryPolygon);
     ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
 
-    std::cout << "here 5 " << std::endl;
-
     // Different lowerLeftM
+    errorCode = meshkernelapi::mkernel_curvilinear_count_boundaries_as_polygons(meshKernelId, lowerLeftN, lowerLeftM, upperRightN, upperRightM, numberOfPolygonNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     errorCode = mkernel_curvilinear_get_boundaries_as_polygons(meshKernelId, lowerLeftN, lowerLeftM + 1, upperRightN, upperRightM, boundaryPolygon);
     ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
 
-    std::cout << "here 6 " << std::endl;
-
     // Different upperRightN
+    errorCode = meshkernelapi::mkernel_curvilinear_count_boundaries_as_polygons(meshKernelId, lowerLeftN, lowerLeftM, upperRightN, upperRightM, numberOfPolygonNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     errorCode = mkernel_curvilinear_get_boundaries_as_polygons(meshKernelId, lowerLeftN, lowerLeftM, upperRightN + 1, upperRightM, boundaryPolygon);
     ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
 
     // Different upperRightM
+    errorCode = meshkernelapi::mkernel_curvilinear_count_boundaries_as_polygons(meshKernelId, lowerLeftN, lowerLeftM, upperRightN, upperRightM, numberOfPolygonNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     errorCode = mkernel_curvilinear_get_boundaries_as_polygons(meshKernelId, lowerLeftN, lowerLeftM, upperRightN, upperRightM + 1, boundaryPolygon);
     ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
 
