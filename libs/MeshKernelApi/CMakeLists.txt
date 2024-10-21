@@ -29,6 +29,7 @@ set(SRC_LIST
   ${SRC_DIR}/MKStateUndoAction.cpp
   ${SRC_DIR}/MeshKernel.cpp
   ${SRC_DIR}/NodeInPolygonCache.cpp
+  ${SRC_DIR}/ObtuseTriangleCentreCache.cpp
   ${SRC_DIR}/PolygonRefinementCache.cpp
   ${SRC_DIR}/SmallFlowEdgeCentreCache.cpp
 )
@@ -51,6 +52,7 @@ set(
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
   ${DOMAIN_INC_DIR}/MeshKernel.hpp
   ${DOMAIN_INC_DIR}/NodeInPolygonCache.hpp
+  ${DOMAIN_INC_DIR}/ObtuseTriangleCentreCache.hpp
   ${DOMAIN_INC_DIR}/PolygonRefinementCache.hpp
   ${DOMAIN_INC_DIR}/SmallFlowEdgeCentreCache.hpp
   ${DOMAIN_INC_DIR}/State.hpp

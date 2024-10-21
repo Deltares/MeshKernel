@@ -3591,9 +3591,16 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const auto obtuseTriangles = meshKernelState[meshKernelId].m_mesh2d->GetObtuseTrianglesCenters();
+            if (meshKernelState[meshKernelId].m_obtuseTriangleCentreCache != nullptr)
+            {
+                meshKernelState[meshKernelId].m_obtuseTriangleCentreCache.reset();
+                throw meshkernel::MeshKernelError("Obtuse triangle centre data has already been cached, deleting cached data");
+            }
 
-            numObtuseTriangles = static_cast<int>(obtuseTriangles.size());
+            const auto obtuseTriangles = meshKernelState[meshKernelId].m_mesh2d->GetObtuseTrianglesCenters();
+            meshKernelState[meshKernelId].m_obtuseTriangleCentreCache = std::make_shared<ObtuseTriangleCentreCache>(obtuseTriangles);
+
+            numObtuseTriangles = meshKernelState[meshKernelId].m_obtuseTriangleCentreCache->Size();
         }
         catch (...)
         {
@@ -3612,9 +3619,13 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const auto obtuseTriangles = meshKernelState[meshKernelId].m_mesh2d->GetObtuseTrianglesCenters();
+            if (meshKernelState[meshKernelId].m_obtuseTriangleCentreCache == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Obtuse triangle centre data has not been cached");
+            }
 
-            ConvertPointVectorToGeometryList(obtuseTriangles, result);
+            meshKernelState[meshKernelId].m_obtuseTriangleCentreCache->Copy(result);
+            meshKernelState[meshKernelId].m_obtuseTriangleCentreCache.reset();
         }
         catch (...)
         {
