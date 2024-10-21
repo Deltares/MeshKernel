@@ -26,6 +26,7 @@ set(SRC_LIST
   ${SRC_DIR}/FacePolygonPropertyCache.cpp
   ${SRC_DIR}/MKStateUndoAction.cpp
   ${SRC_DIR}/MeshKernel.cpp
+  ${SRC_DIR}/NodeInPolygonCache.cpp
   ${SRC_DIR}/PolygonRefinementCache.cpp
 )
 
@@ -44,6 +45,7 @@ set(
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
   ${DOMAIN_INC_DIR}/MeshKernel.hpp
+  ${DOMAIN_INC_DIR}/NodeInPolygonCache.hpp
   ${DOMAIN_INC_DIR}/PolygonRefinementCache.hpp
   ${DOMAIN_INC_DIR}/State.hpp
   ${DOMAIN_INC_DIR}/Utils.hpp
