@@ -22,8 +22,10 @@ set(VERSION_INC_DIR ${CMAKE_SOURCE_DIR}/tools)
 # list of target sources
 set(SRC_LIST
   ${SRC_DIR}/BoundariesAsPolygonCache.cpp
+  ${SRC_DIR}/CachedIntegerValues.cpp
   ${SRC_DIR}/CachedPointValues.cpp
   ${SRC_DIR}/FacePolygonPropertyCache.cpp
+  ${SRC_DIR}/HangingEdgeCache.cpp
   ${SRC_DIR}/MKStateUndoAction.cpp
   ${SRC_DIR}/MeshKernel.cpp
   ${SRC_DIR}/NodeInPolygonCache.cpp
@@ -36,12 +38,14 @@ set(
   INC_LIST
   ${DOMAIN_INC_DIR}/BoundariesAsPolygonCache.hpp
   ${DOMAIN_INC_DIR}/BoundingBox.hpp
+  ${DOMAIN_INC_DIR}/CachedIntegerValues.hpp
   ${DOMAIN_INC_DIR}/CachedPointValues.hpp
   ${DOMAIN_INC_DIR}/Contacts.hpp
   ${DOMAIN_INC_DIR}/CurvilinearGrid.hpp
   ${DOMAIN_INC_DIR}/FacePolygonPropertyCache.hpp
   ${DOMAIN_INC_DIR}/GeometryList.hpp
   ${DOMAIN_INC_DIR}/GriddedSamples.hpp
+  ${DOMAIN_INC_DIR}/HangingEdgeCache.hpp
   ${DOMAIN_INC_DIR}/MKStateUndoAction.hpp
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp

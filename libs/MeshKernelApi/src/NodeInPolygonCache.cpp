@@ -38,16 +38,19 @@ meshkernelapi::NodeInPolygonCache::NodeInPolygonCache(const std::vector<int>& no
                                                       const int inside)
     : m_polygonPoints(polygonPoints), m_inside(inside)
 {
+    std::vector<int> nodeIndices;
 
-    m_nodeIndices.reserve(m_polygonPoints.size());
+    nodeIndices.reserve(m_polygonPoints.size());
 
     for (size_t i = 0; i < nodeMask.size(); ++i)
     {
         if (nodeMask[i] > 0)
         {
-            m_nodeIndices.push_back(static_cast<int>(i));
+            nodeIndices.push_back(static_cast<int>(i));
         }
     }
+
+    Reset(std::move(nodeIndices));
 }
 
 bool meshkernelapi::NodeInPolygonCache::ValidOptions(const std::vector<meshkernel::Point>& polygonPoints, const int inside) const
@@ -55,16 +58,4 @@ bool meshkernelapi::NodeInPolygonCache::ValidOptions(const std::vector<meshkerne
     return inside == m_inside &&
            polygonPoints.size() == m_polygonPoints.size() &&
            std::equal(polygonPoints.begin(), polygonPoints.end(), m_polygonPoints.begin());
-}
-
-void meshkernelapi::NodeInPolygonCache::Copy(int* selectedNodes) const
-{
-    if (selectedNodes == nullptr)
-    {
-        throw meshkernel::MeshKernelError("Selected nodes array is null.");
-    }
-
-    size_t valueCount = sizeof(int) * m_nodeIndices.size();
-
-    std::memcpy(selectedNodes, m_nodeIndices.data(), valueCount);
 }

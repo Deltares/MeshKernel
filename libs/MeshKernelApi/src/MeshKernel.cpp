@@ -1173,9 +1173,17 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
+
+            if (meshKernelState[meshKernelId].m_hangingEdgeCache != nullptr)
+            {
+                meshKernelState[meshKernelId].m_hangingEdgeCache.reset();
+                throw meshkernel::MeshKernelError("Polygon Hanging edge has already been cached. Cached values will be delelted.");
+            }
+
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
             const auto hangingEdges = meshKernelState[meshKernelId].m_mesh2d->GetHangingEdges();
-            numHangingEdges = static_cast<int>(hangingEdges.size());
+            meshKernelState[meshKernelId].m_hangingEdgeCache = std::make_shared<HangingEdgeCache>(hangingEdges);
+            numHangingEdges = meshKernelState[meshKernelId].m_hangingEdgeCache->Size();
         }
         catch (...)
         {
@@ -1193,11 +1201,14 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
-            const auto hangingEdges = meshKernelState[meshKernelId].m_mesh2d->GetHangingEdges();
-            for (size_t i = 0; i < hangingEdges.size(); ++i)
+
+            if (meshKernelState[meshKernelId].m_hangingEdgeCache == nullptr)
             {
-                edges[i] = static_cast<int>(hangingEdges[i]);
+                throw meshkernel::MeshKernelError("Hanging edge data has not been cached");
             }
+
+            meshKernelState[meshKernelId].m_hangingEdgeCache->Copy(edges);
+            meshKernelState[meshKernelId].m_hangingEdgeCache.reset();
         }
         catch (...)
         {
