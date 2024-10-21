@@ -37,17 +37,22 @@
 namespace meshkernelapi
 {
 
+    /// @brief Cache node indices contained in a polygon
     class NodeInPolygonCache
     {
     public:
+        /// @brief Constructor
         NodeInPolygonCache(const std::vector<int>& nodeMask,
                            const std::vector<meshkernel::Point>& polygonPoints,
                            const int inside);
 
+        /// @brief Determine if current options match those used to construct the object
         bool ValidOptions(const std::vector<meshkernel::Point>& polygonPoints, const int inside) const;
 
+        /// @brief Get the number of values being cached.
         int Size() const;
 
+        /// @brief Copy cached values to array
         void Copy(int* selectedNodes) const;
 
     private:
