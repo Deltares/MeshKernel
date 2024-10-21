@@ -1485,8 +1485,18 @@ TEST_F(CartesianApiTestFixture, GetNodesInPolygonMesh2D_OnMesh2D_ShouldGetAllNod
     auto errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
+    int numberOfNodes = -1;
+
+    errorCode = mkernel_mesh2d_count_nodes_in_polygons(meshKernelId,
+                                                       geometryListIn,
+                                                       1,
+                                                       numberOfNodes);
+
+    ASSERT_EQ(numberOfNodes, mesh2d.num_nodes);
+
     // Execute
     std::vector<int> selectedNodes(mesh2d.num_nodes);
+
     errorCode = mkernel_mesh2d_get_nodes_in_polygons(meshKernelId,
                                                      geometryListIn,
                                                      1,
@@ -1520,6 +1530,53 @@ TEST_F(CartesianApiTestFixture, CountNodesInPolygonMesh2D_OnMesh2D_ShouldCountAl
 
     // Assert all nodes have been selected
     ASSERT_EQ(12, numNodes);
+}
+
+TEST_F(CartesianApiTestFixture, GetNodesInPolygonMesh2D_OnMesh2D_NodeInPolygonFailures)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    // By using an empty list, all nodes will be selected
+    const meshkernelapi::GeometryList geometryListIn{};
+
+    meshkernelapi::Mesh2D mesh2d{};
+    auto errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    int numberOfNodes = -1;
+    // Execute
+    std::vector<int> selectedNodes(mesh2d.num_nodes);
+
+    // No daata has been cached.
+    errorCode = mkernel_mesh2d_get_nodes_in_polygons(meshKernelId, geometryListIn, 0, selectedNodes.data());
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    errorCode = mkernel_mesh2d_count_nodes_in_polygons(meshKernelId, geometryListIn, 1, numberOfNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(numberOfNodes, mesh2d.num_nodes);
+
+    // Values have been cached already
+    errorCode = mkernel_mesh2d_count_nodes_in_polygons(meshKernelId, geometryListIn, 1, numberOfNodes);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    // Re-cache data
+    errorCode = mkernel_mesh2d_count_nodes_in_polygons(meshKernelId, geometryListIn, 1, numberOfNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Incorrect parameters, should be the same as the call to count (which does the cahcing)
+    errorCode = mkernel_mesh2d_get_nodes_in_polygons(meshKernelId, geometryListIn, 0, selectedNodes.data());
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+
+    // Re-cache data
+    errorCode = mkernel_mesh2d_count_nodes_in_polygons(meshKernelId, geometryListIn, 1, numberOfNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Incorrect parameters, should be the same as the call to count (which does the cahcing)
+    int* nullArray = nullptr;
+    errorCode = mkernel_mesh2d_get_nodes_in_polygons(meshKernelId, geometryListIn, 1, nullArray);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
 }
 
 TEST_F(CartesianApiTestFixture, InsertNodeAndEdge_OnMesh2D_ShouldInsertNodeAndEdge)

@@ -1490,7 +1490,7 @@ TEST_P(CurvilineartBoundariesAsPolygonsTests, GetLocationIndex_OnACurvilinearGri
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
-TEST(CurvilineartGrid, GetLocationIndex_OnACurvilinearGrid_GetLocationIndexFailures)
+TEST(CurvilinearGrid, GetLocationIndex_OnACurvilinearGrid_GetLocationIndexFailures)
 {
     const int lowerLeftN = 1;
     const int lowerLeftM = 1;

@@ -89,10 +89,15 @@
 #include <MeshKernel/UndoActions/UndoActionStack.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
-#include <MeshKernelApi/MKStateUndoAction.hpp>
-#include <MeshKernelApi/MeshKernel.hpp>
-#include <MeshKernelApi/State.hpp>
-#include <MeshKernelApi/Utils.hpp>
+#include "MeshKernelApi/BoundariesAsPolygonCache.hpp"
+#include "MeshKernelApi/CachedPointValues.hpp"
+#include "MeshKernelApi/FacePolygonPropertyCache.hpp"
+#include "MeshKernelApi/MKStateUndoAction.hpp"
+#include "MeshKernelApi/MeshKernel.hpp"
+#include "MeshKernelApi/NodeInPolygonCache.hpp"
+#include "MeshKernelApi/PolygonRefinementCache.hpp"
+#include "MeshKernelApi/State.hpp"
+#include "MeshKernelApi/Utils.hpp"
 
 #include <Version/Version.hpp>
 
@@ -994,8 +999,8 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_boundariesAsPolygonCache != nullptr)
             {
-                std::cout << "Polygon data has already been cached" << std::endl;
-                throw meshkernel::MeshKernelError("Polygon data has already been cached");
+                meshKernelState[meshKernelId].m_boundariesAsPolygonCache.reset();
+                throw meshkernel::MeshKernelError("Polygon data has already been cached, deleting cached data");
             }
 
             const auto lowerLeftNUnsigned = static_cast<meshkernel::UInt>(lowerLeftN);
@@ -2174,22 +2179,27 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
+            if (meshKernelState[meshKernelId].m_nodeInPolygonCache == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Node in polygon data has not been cached");
+            }
+
             auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
 
-            const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-
-            const bool selectInside = inside == 1 ? true : false;
-            const auto nodeMask = meshKernelState[meshKernelId].m_mesh2d->NodeMaskFromPolygon(polygon, selectInside);
-
-            int index = 0;
-            for (size_t i = 0; i < meshKernelState[meshKernelId].m_mesh2d->GetNumNodes(); ++i)
+            if (!meshKernelState[meshKernelId].m_nodeInPolygonCache->ValidOptions(polygonVector, inside))
             {
-                if (nodeMask[i] > 0)
-                {
-                    selectedNodes[index] = static_cast<int>(i);
-                    index++;
-                }
+                meshKernelState[meshKernelId].m_nodeInPolygonCache.reset();
+                throw meshkernel::ConstraintError("Given polygon data and inside flag are incompatible with the cached values. Cached values will be deleted.");
             }
+
+            if (selectedNodes == nullptr)
+            {
+                meshKernelState[meshKernelId].m_nodeInPolygonCache.reset();
+                throw meshkernel::MeshKernelError("Selected node array is null");
+            }
+
+            meshKernelState[meshKernelId].m_nodeInPolygonCache->Copy(selectedNodes);
+            meshKernelState[meshKernelId].m_nodeInPolygonCache.reset();
         }
         catch (...)
         {
@@ -2210,21 +2220,22 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
+
+            if (meshKernelState[meshKernelId].m_nodeInPolygonCache != nullptr)
+            {
+                meshKernelState[meshKernelId].m_nodeInPolygonCache.reset();
+                throw meshkernel::MeshKernelError("Node in polygon data has already been cached, deleting cached data");
+            }
+
             auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            const bool selectInside = inside == 1 ? true : false;
+            const bool selectInside = inside == 1;
             const auto nodeMask = meshKernelState[meshKernelId].m_mesh2d->NodeMaskFromPolygon(polygon, selectInside);
 
-            numberOfMeshNodes = 0;
-            for (size_t i = 0; i < meshKernelState[meshKernelId].m_mesh2d->GetNumNodes(); ++i)
-            {
-                if (nodeMask[i] > 0)
-                {
-                    numberOfMeshNodes++;
-                }
-            }
+            meshKernelState[meshKernelId].m_nodeInPolygonCache = std::make_shared<NodeInPolygonCache>(nodeMask, polygonVector, inside);
+            numberOfMeshNodes = meshKernelState[meshKernelId].m_nodeInPolygonCache->Size();
         }
         catch (...)
         {
