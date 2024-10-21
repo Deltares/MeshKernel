@@ -1761,6 +1761,65 @@ TEST_F(CartesianApiTestFixture, GetSmallFlowEdges_OnMesh2D_ShouldGetSmallFlowEdg
     ASSERT_NEAR(result.coordinates_y[0], 0.0, tolerance);
 }
 
+TEST_F(CartesianApiTestFixture, GetSmallFlowEdges_OnMesh2D_GetSmallFlowEdgesFailures)
+{
+    // Prepare a mesh with two triangles
+    meshkernelapi::Mesh2D mesh2d;
+
+    std::vector<double> node_x{0.0, 1.0, 1.0, 1.0};
+    std::vector<double> node_y{0.0, 0.0, 0.3, -0.3};
+    std::vector<int> edge_nodes{0, 3, 3, 1, 1, 0, 1, 2, 2, 0};
+
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+    mesh2d.num_edges = static_cast<int>(edge_nodes.size() * 0.5);
+    mesh2d.num_nodes = static_cast<int>(node_x.size());
+
+    // Get the meshkernel id
+    auto const meshKernelId = GetMeshKernelId();
+    double const smallFlowEdgesThreshold = 100.0;
+    meshkernelapi::GeometryList result{};
+
+    auto errorCode = mkernel_mesh2d_get_small_flow_edge_centers(meshKernelId, smallFlowEdgesThreshold, result);
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+
+    // Execute
+    errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    int numSmallFlowEdges;
+    errorCode = meshkernelapi::mkernel_mesh2d_count_small_flow_edge_centers(meshKernelId, smallFlowEdgesThreshold, numSmallFlowEdges);
+
+    // Assert
+    std::vector<double> coordinates_x(numSmallFlowEdges);
+    std::vector<double> coordinates_y(numSmallFlowEdges);
+    result.coordinates_x = coordinates_x.data();
+    result.coordinates_y = coordinates_y.data();
+    result.num_coordinates = numSmallFlowEdges;
+
+    errorCode = mkernel_mesh2d_get_small_flow_edge_centers(meshKernelId, smallFlowEdgesThreshold, result);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Cache has been deleted
+    errorCode = mkernel_mesh2d_get_small_flow_edge_centers(meshKernelId, smallFlowEdgesThreshold, result);
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+
+    // Re-cache values
+    errorCode = meshkernelapi::mkernel_mesh2d_count_small_flow_edge_centers(meshKernelId, smallFlowEdgesThreshold, numSmallFlowEdges);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Get values with different set of options
+    errorCode = mkernel_mesh2d_get_small_flow_edge_centers(meshKernelId, 2.0 * smallFlowEdgesThreshold, result);
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+
+    // Re-cache values
+    errorCode = meshkernelapi::mkernel_mesh2d_count_small_flow_edge_centers(meshKernelId, smallFlowEdgesThreshold, numSmallFlowEdges);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // Attempt at getting the size again will cause an error
+    errorCode = meshkernelapi::mkernel_mesh2d_count_small_flow_edge_centers(meshKernelId, smallFlowEdgesThreshold, numSmallFlowEdges);
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+}
+
 TEST_F(CartesianApiTestFixture, CountObtuseTriangles_OnMesh2DWithOneObtuseTriangle_ShouldCountObtuseTriangles)
 {
     // Prepare a mesh with one obtuse triangle

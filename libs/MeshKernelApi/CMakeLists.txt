@@ -28,6 +28,7 @@ set(SRC_LIST
   ${SRC_DIR}/MeshKernel.cpp
   ${SRC_DIR}/NodeInPolygonCache.cpp
   ${SRC_DIR}/PolygonRefinementCache.cpp
+  ${SRC_DIR}/SmallFlowEdgeCentreCache.cpp
 )
 
 # list of target headers
@@ -47,6 +48,7 @@ set(
   ${DOMAIN_INC_DIR}/MeshKernel.hpp
   ${DOMAIN_INC_DIR}/NodeInPolygonCache.hpp
   ${DOMAIN_INC_DIR}/PolygonRefinementCache.hpp
+  ${DOMAIN_INC_DIR}/SmallFlowEdgeCentreCache.hpp
   ${DOMAIN_INC_DIR}/State.hpp
   ${DOMAIN_INC_DIR}/Utils.hpp
   ${VERSION_INC_DIR}/Version/Version.hpp

@@ -3426,10 +3426,19 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
+
+            if (meshKernelState[meshKernelId].m_smallFlowEdgeCentreCache != nullptr)
+            {
+                meshKernelState[meshKernelId].m_smallFlowEdgeCentreCache.reset();
+                throw meshkernel::ConstraintError("Small flow edge data has already been cached. Cached values will be deleted.");
+            }
+
             const auto edgesCrossingSmallFlowEdges = meshKernelState[meshKernelId].m_mesh2d->GetEdgesCrossingSmallFlowEdges(smallFlowEdgesLengthThreshold);
             const auto smallFlowEdgeCenters = meshKernelState[meshKernelId].m_mesh2d->GetFlowEdgesCenters(edgesCrossingSmallFlowEdges);
 
-            numSmallFlowEdges = static_cast<int>(smallFlowEdgeCenters.size());
+            meshKernelState[meshKernelId].m_smallFlowEdgeCentreCache = std::make_shared<SmallFlowEdgeCentreCache>(smallFlowEdgesLengthThreshold, smallFlowEdgeCenters);
+
+            numSmallFlowEdges = meshKernelState[meshKernelId].m_smallFlowEdgeCentreCache->Size();
         }
         catch (...)
         {
@@ -3448,10 +3457,19 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const auto edgesCrossingSmallFlowEdges = meshKernelState[meshKernelId].m_mesh2d->GetEdgesCrossingSmallFlowEdges(smallFlowEdgesThreshold);
-            const auto smallFlowEdgeCenters = meshKernelState[meshKernelId].m_mesh2d->GetFlowEdgesCenters(edgesCrossingSmallFlowEdges);
+            if (meshKernelState[meshKernelId].m_smallFlowEdgeCentreCache == nullptr)
+            {
+                throw meshkernel::ConstraintError("Small flow edge data has not been cached");
+            }
 
-            ConvertPointVectorToGeometryList(smallFlowEdgeCenters, result);
+            if (!meshKernelState[meshKernelId].m_smallFlowEdgeCentreCache->ValidOptions(smallFlowEdgesThreshold))
+            {
+                meshKernelState[meshKernelId].m_smallFlowEdgeCentreCache.reset();
+                throw meshkernel::ConstraintError("Given small flow edge options are incompatible with the cached values. Cached values will be deleted.");
+            }
+
+            meshKernelState[meshKernelId].m_smallFlowEdgeCentreCache->Copy(result);
+            meshKernelState[meshKernelId].m_smallFlowEdgeCentreCache.reset();
         }
         catch (...)
         {
