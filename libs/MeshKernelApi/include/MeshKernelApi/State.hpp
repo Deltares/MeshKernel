@@ -41,6 +41,7 @@
 #include "MeshKernelApi/BoundariesAsPolygonCache.hpp"
 #include "MeshKernelApi/CachedPointValues.hpp"
 #include "MeshKernelApi/FacePolygonPropertyCache.hpp"
+#include "MeshKernelApi/HangingEdgeCache.hpp"
 #include "MeshKernelApi/NodeInPolygonCache.hpp"
 #include "MeshKernelApi/PolygonRefinementCache.hpp"
 #include "MeshKernelApi/SmallFlowEdgeCentreCache.hpp"
@@ -87,6 +88,7 @@ namespace meshkernelapi
         std::shared_ptr<PolygonRefinementCache> m_polygonRefinementCache;     ///< Cache for polygon refinement
         std::shared_ptr<NodeInPolygonCache> m_nodeInPolygonCache;             ///< Cache for node in polygon
         std::shared_ptr<SmallFlowEdgeCentreCache> m_smallFlowEdgeCentreCache; ///< Cache for small flow edge centres
+        std::shared_ptr<HangingEdgeCache> m_hangingEdgeCache;                 ///< Cache for hanging edge ids
     };
 
 } // namespace meshkernelapi

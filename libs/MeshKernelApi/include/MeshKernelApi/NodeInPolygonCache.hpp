@@ -32,13 +32,14 @@
 
 #include "MeshKernel/Point.hpp"
 
+#include "MeshKernelApi/CachedIntegerValues.hpp"
 #include "MeshKernelApi/GeometryList.hpp"
 
 namespace meshkernelapi
 {
 
     /// @brief Cache node indices contained in a polygon
-    class NodeInPolygonCache
+    class NodeInPolygonCache : public CachedIntegerValues
     {
     public:
         /// @brief Constructor
@@ -49,26 +50,12 @@ namespace meshkernelapi
         /// @brief Determine if current options match those used to construct the object
         bool ValidOptions(const std::vector<meshkernel::Point>& polygonPoints, const int inside) const;
 
-        /// @brief Get the number of values being cached.
-        int Size() const;
-
-        /// @brief Copy cached values to array
-        void Copy(int* selectedNodes) const;
-
     private:
         /// @brief Points making up the polygon
         std::vector<meshkernel::Point> m_polygonPoints;
 
         /// @brief Indicates if the points are inside or outside of the polygon
         int m_inside = -1;
-
-        /// @brief Indices of nodes in the polygon
-        std::vector<int> m_nodeIndices;
     };
 
 } // namespace meshkernelapi
-
-inline int meshkernelapi::NodeInPolygonCache::Size() const
-{
-    return static_cast<int>(m_nodeIndices.size());
-}

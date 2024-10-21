@@ -1358,6 +1358,36 @@ TEST_F(CartesianApiTestFixture, GetHangingEdgesMesh2D_WithOneHangingEdges_Should
     ASSERT_EQ(hangingEdges[0], 9);
 }
 
+TEST_F(CartesianApiTestFixture, GetHangingEdgesMesh2D_WithOneHangingEdges_GetOneHangingEdgesFailures)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    // delete an edge at the lower left corner to create a new hanging edge
+    auto errorCode = meshkernelapi::mkernel_mesh2d_delete_edge(meshKernelId, 0.5, 0.0, 0.0, 0.0, 1.0, 1.0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    int numHangingEdges;
+    errorCode = meshkernelapi::mkernel_mesh2d_count_hanging_edges(meshKernelId, numHangingEdges);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Already cached
+    errorCode = meshkernelapi::mkernel_mesh2d_count_hanging_edges(meshKernelId, numHangingEdges);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    // Re-cache
+    errorCode = meshkernelapi::mkernel_mesh2d_count_hanging_edges(meshKernelId, numHangingEdges);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    std::vector<int> hangingEdges(numHangingEdges);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_hanging_edges(meshKernelId, hangingEdges.data());
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_get_hanging_edges(meshKernelId, hangingEdges.data());
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+}
+
 TEST_F(CartesianApiTestFixture, DeleteHangingEdgesMesh2D_WithOneHangingEdges_ShouldDeleteOneHangingEdges)
 {
     // Prepare
