@@ -43,6 +43,7 @@
 #include "MeshKernelApi/FacePolygonPropertyCache.hpp"
 #include "MeshKernelApi/NodeInPolygonCache.hpp"
 #include "MeshKernelApi/PolygonRefinementCache.hpp"
+#include "MeshKernelApi/SmallFlowEdgeCentreCache.hpp"
 
 namespace meshkernelapi
 {
@@ -85,6 +86,7 @@ namespace meshkernelapi
         std::shared_ptr<BoundariesAsPolygonCache> m_boundariesAsPolygonCache; ///< Cache
         std::shared_ptr<PolygonRefinementCache> m_polygonRefinementCache;     ///< Cache for polygon refinement
         std::shared_ptr<NodeInPolygonCache> m_nodeInPolygonCache;             ///< Cache for node in polygon
+        std::shared_ptr<SmallFlowEdgeCentreCache> m_smallFlowEdgeCentreCache; ///< Cache for small flow edge centres
     };
 
 } // namespace meshkernelapi
