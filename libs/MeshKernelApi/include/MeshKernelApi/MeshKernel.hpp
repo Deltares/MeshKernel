@@ -351,6 +351,7 @@ namespace meshkernelapi
         /// @param[in]  upperRightM  The m index of the upper right corner
         /// @param[out] boundaryPolygons The geometry list containing the boundary polygons
         /// @returns Error code
+        /// @note Values are retrieved from the cache, cached values are deleted after copying
         MKERNEL_API int mkernel_curvilinear_get_boundaries_as_polygons(int meshKernelId, int lowerLeftN, int lowerLeftM, int upperRightN, int upperRightM, GeometryList& boundaryPolygons);
 
         /// @brief Count the number of nodes in curvilinear grid boundary polygons.
@@ -362,6 +363,7 @@ namespace meshkernelapi
         /// @param[in]  upperRightM  The m index of the upper right corner
         /// @param[out] numberOfPolygonNodes The number of polygon nodes
         /// @returns Error code
+        /// @note Refined boundary polygon values are cached, so that they can be copied
         MKERNEL_API int mkernel_curvilinear_count_boundaries_as_polygons(int meshKernelId, int lowerLeftN, int lowerLeftM, int upperRightN, int upperRightM, int& numberOfPolygonNodes);
 
         /// @brief Gets the curvilinear grid dimensions as a CurvilinearGrid struct (converted as set of edges and nodes).
@@ -1261,6 +1263,7 @@ namespace meshkernelapi
         /// @param[out] geometryListDimension  The output parameter that will store the dimension (size) of the geometry list
         ///                                    containing the polygons that match the filtering criteria.
         /// @returns                           An error code indicating the success or failure of the operation.
+        /// @note property values are cached, so that they can be copied
         MKERNEL_API int mkernel_mesh2d_get_filtered_face_polygons_dimension(int meshKernelId,
                                                                             int propertyValue,
                                                                             double minValue,
@@ -1275,6 +1278,7 @@ namespace meshkernelapi
         /// @param[in] maxValue                The maximum value of the property.
         /// @param[out] facePolygons           The geometry list containing the filtered locations.
         /// @returns Error code
+        /// @note Values are retrieved from the cache, cached values are deleted after copying
         MKERNEL_API int mkernel_mesh2d_get_filtered_face_polygons(int meshKernelId,
                                                                   int propertyValue,
                                                                   double minValue,
@@ -1697,6 +1701,7 @@ namespace meshkernelapi
         /// @param[in] distance              The target interval edge length
         /// @param[out] numberOfPolygonNodes The number of nodes after refinement
         /// @returns Error code
+        /// @note Refined polygon values are cached, so that they can be copied in the mkernel_polygon_refine
         MKERNEL_API int mkernel_polygon_count_refine(int meshKernelId,
                                                      const GeometryList& polygonToRefine,
                                                      int firstIndex,
@@ -1713,6 +1718,7 @@ namespace meshkernelapi
         /// @param[in] secondIndex           The second index of the refinement interval
         /// @param[out] numberOfPolygonNodes The number of nodes after refinement
         /// @returns Error code
+        /// @note Refined polygon values are cached, so that they can be copied in the mkernel_polygon_linear_refine
         MKERNEL_API int mkernel_polygon_count_linear_refine(int meshKernelId,
                                                             const GeometryList& polygonToRefine,
                                                             int firstIndex,
@@ -1756,6 +1762,7 @@ namespace meshkernelapi
         /// @param[in]  targetEdgeLength   The target interval edge length
         /// @param[out] refinedPolygon     The refined polygon
         /// @returns Error code
+        /// @note Values are retrieved from the cache, cached values are cleared after copying
         MKERNEL_API int mkernel_polygon_refine(int meshKernelId,
                                                const GeometryList& polygonToRefine,
                                                int firstNodeIndex,
@@ -1771,6 +1778,7 @@ namespace meshkernelapi
         /// @param[in]  secondNodeIndex    The second index of the refinement interval
         /// @param[out] refinedPolygon     The refined polygon
         /// @returns Error code
+        /// @note Values are retrieved from the cache, cached values are cleared after copying
         MKERNEL_API int mkernel_polygon_linear_refine(int meshKernelId,
                                                       const GeometryList& polygonToRefine,
                                                       int firstNodeIndex,
