@@ -83,7 +83,7 @@ namespace meshkernelapi
         // Exclusively owned state
         meshkernel::Projection m_projection{meshkernel::Projection::cartesian}; ///< Projection used by the meshes
 
-        // Cached values, used when dimensions are computed first, followed by values beign retrieved in a separate call
+        // Cached values, used when dimensions are computed first, followed by values being retrieved in a separate call
         std::shared_ptr<FacePolygonPropertyCache> m_facePropertyCache;          ///< face property cache
         std::shared_ptr<BoundariesAsPolygonCache> m_boundariesAsPolygonCache;   ///< boundaries as polygon cache
         std::shared_ptr<PolygonRefinementCache> m_polygonRefinementCache;       ///< polygon refinement cache
