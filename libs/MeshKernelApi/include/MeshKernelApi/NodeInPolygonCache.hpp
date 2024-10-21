@@ -56,13 +56,13 @@ namespace meshkernelapi
         void Copy(int* selectedNodes) const;
 
     private:
-        /// &brief Points making up the polygon
+        /// @brief Points making up the polygon
         std::vector<meshkernel::Point> m_polygonPoints;
 
-        /// &brief Indicates if the points are inside or outside of the polygon
+        /// @brief Indicates if the points are inside or outside of the polygon
         int m_inside = -1;
 
-        /// &brief Indices of nodes in the polygon
+        /// @brief Indices of nodes in the polygon
         std::vector<int> m_nodeIndices;
     };
 
