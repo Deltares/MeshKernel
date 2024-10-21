@@ -43,6 +43,7 @@
 #include "MeshKernelApi/FacePolygonPropertyCache.hpp"
 #include "MeshKernelApi/HangingEdgeCache.hpp"
 #include "MeshKernelApi/NodeInPolygonCache.hpp"
+#include "MeshKernelApi/ObtuseTriangleCentreCache.hpp"
 #include "MeshKernelApi/PolygonRefinementCache.hpp"
 #include "MeshKernelApi/SmallFlowEdgeCentreCache.hpp"
 
@@ -83,12 +84,13 @@ namespace meshkernelapi
         meshkernel::Projection m_projection{meshkernel::Projection::cartesian}; ///< Projection used by the meshes
 
         // Cached values, used when dimensions are computed first, followed by values beign retrieved in a separate call
-        std::shared_ptr<FacePolygonPropertyCache> m_facePropertyCache;        ///< Cache for
-        std::shared_ptr<BoundariesAsPolygonCache> m_boundariesAsPolygonCache; ///< Cache
-        std::shared_ptr<PolygonRefinementCache> m_polygonRefinementCache;     ///< Cache for polygon refinement
-        std::shared_ptr<NodeInPolygonCache> m_nodeInPolygonCache;             ///< Cache for node in polygon
-        std::shared_ptr<SmallFlowEdgeCentreCache> m_smallFlowEdgeCentreCache; ///< Cache for small flow edge centres
-        std::shared_ptr<HangingEdgeCache> m_hangingEdgeCache;                 ///< Cache for hanging edge ids
+        std::shared_ptr<FacePolygonPropertyCache> m_facePropertyCache;          ///< Cache for
+        std::shared_ptr<BoundariesAsPolygonCache> m_boundariesAsPolygonCache;   ///< Cache
+        std::shared_ptr<PolygonRefinementCache> m_polygonRefinementCache;       ///< Cache for polygon refinement
+        std::shared_ptr<NodeInPolygonCache> m_nodeInPolygonCache;               ///< Cache for node in polygon
+        std::shared_ptr<SmallFlowEdgeCentreCache> m_smallFlowEdgeCentreCache;   ///< Cache for small flow edge centres
+        std::shared_ptr<HangingEdgeCache> m_hangingEdgeCache;                   ///< Cache for hanging edge ids
+        std::shared_ptr<ObtuseTriangleCentreCache> m_obtuseTriangleCentreCache; ///< Cache for the centre of obtuse triangles
     };
 
 } // namespace meshkernelapi
