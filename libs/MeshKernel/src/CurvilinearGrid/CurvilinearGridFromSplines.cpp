@@ -55,7 +55,7 @@ namespace meshkernel
 
             double discriminant = b * b - 4.0 * a * c;
 
-            if (discriminant > 0.0)
+            if (discriminant >= 0.0)
             {
                 realRoots[1] = (-b + std::sqrt(discriminant)) / (2.0 * a);
                 realRoots[0] = (-b - std::sqrt(discriminant)) / (2.0 * a);
