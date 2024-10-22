@@ -204,18 +204,21 @@ namespace meshkernel
         /// @brief Set the node to a new value, this value may be the in-valid value.
         [[nodiscard]] std::unique_ptr<ResetNodeAction> ResetNode(const UInt index, const Point& newValue);
 
-        /// @brief Get constant reference to an edge
-        const Edge& GetEdge(const UInt index) const;
-
-        /// @brief Get a non-constant reference to an edge
-        Edge& GetEdge(const UInt index);
-
         /// @brief Get all edges
         // TODO get rid of this function
         const std::vector<Edge>& Edges() const;
 
+        /// @brief Get constant reference to an edge
+        const Edge& GetEdge(const UInt index) const;
+
         /// @brief Set all edges to a new set of values.
         void SetEdges(const std::vector<Edge>& newValues);
+
+        /// @brief Set the edge to a new value, bypassing the undo action
+        void SetEdge(const UInt index, const Edge& edge);
+
+        /// @brief Change the nodes referenced by the edge.
+        [[nodiscard]] std::unique_ptr<ResetEdgeAction> ResetEdge(UInt edgeId, const Edge& edge);
 
         /// @brief Get the local index of the node belong to a face.
         ///
@@ -243,9 +246,6 @@ namespace meshkernel
         /// @param[in] endNode The end node index
         /// @return The index of the new edge and the undoAction to connect two nodes
         [[nodiscard]] std::tuple<UInt, std::unique_ptr<AddEdgeAction>> ConnectNodes(UInt startNode, UInt endNode);
-
-        /// @brief Change the nodes referenced by the edge.
-        [[nodiscard]] std::unique_ptr<ResetEdgeAction> ResetEdge(UInt edgeId, const Edge& edge);
 
         /// @brief Deletes a node and removes any connected edges
         /// @param[in] node The node index
@@ -492,6 +492,12 @@ namespace meshkernel
         static constexpr UInt m_maximumNumberOfConnectedNodes = m_maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
 
     protected:
+        /// @brief Determine if a administration is required
+        bool AdministrationRequired() const;
+
+        /// @brief Determine if a administration is required
+        void SetAdministrationRequired(const bool value);
+
         // Make private
         std::vector<Point> m_nodes; ///< The mesh nodes (xk, yk)
         std::vector<Edge> m_edges;  ///< The edges, defined as first and second node(kn)
@@ -503,6 +509,7 @@ namespace meshkernel
         bool m_nodesRTreeRequiresUpdate = true;                            ///< m_nodesRTree requires an update
         bool m_edgesRTreeRequiresUpdate = true;                            ///< m_edgesRTree requires an update
         bool m_facesRTreeRequiresUpdate = true;                            ///< m_facesRTree requires an update
+        bool m_administrationRequired = true;                              ///< Indicates if mesh administration requires an update
         std::unordered_map<Location, std::unique_ptr<RTreeBase>> m_RTrees; ///< The RTrees to use
         BoundingBox m_boundingBoxCache;                                    ///< Caches the last bounding box used for selecting the locations
 
@@ -544,6 +551,7 @@ inline void meshkernel::Mesh::SetNodes(const std::vector<Point>& newValues)
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
     m_facesRTreeRequiresUpdate = true;
+    m_administrationRequired = true;
 }
 
 inline const meshkernel::Edge& meshkernel::Mesh::GetEdge(const UInt index) const
@@ -556,14 +564,15 @@ inline const meshkernel::Edge& meshkernel::Mesh::GetEdge(const UInt index) const
     return m_edges[index];
 }
 
-inline meshkernel::Edge& meshkernel::Mesh::GetEdge(const UInt index)
+inline void meshkernel::Mesh::SetEdge(const UInt index, const Edge& edge)
 {
     if (index >= GetNumEdges())
     {
         throw ConstraintError("The edge index, {}, is not in range.", index);
     }
 
-    return m_edges[index];
+    m_administrationRequired = true;
+    m_edges[index] = edge;
 }
 
 inline const std::vector<meshkernel::Edge>& meshkernel::Mesh::Edges() const
@@ -577,4 +586,10 @@ inline void meshkernel::Mesh::SetEdges(const std::vector<Edge>& newValues)
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
     m_facesRTreeRequiresUpdate = true;
+    m_administrationRequired = true;
+}
+
+inline bool meshkernel::Mesh::AdministrationRequired() const
+{
+    return m_administrationRequired;
 }

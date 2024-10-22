@@ -178,6 +178,8 @@ void Mesh::InvalidateUnConnectedNodes(const std::vector<bool>& connectedNodes, U
             {
                 undoAction->Add(ResetNode(n, {constants::missing::doubleValue, constants::missing::doubleValue}));
             }
+
+            SetAdministrationRequired(true);
         }
 
         if (!m_nodes[n].IsValid())
@@ -244,6 +246,7 @@ void Mesh::DeleteInvalidNodesAndEdges()
     const auto endEdgeVector = std::remove_if(m_edges.begin(), m_edges.end(), [](const Edge& e)
                                               { return e.first == constants::missing::uintValue || e.second == constants::missing::uintValue; });
     m_edges.erase(endEdgeVector, m_edges.end());
+    SetAdministrationRequired(true);
 }
 
 void Mesh::SetUnConnectedNodesAndEdgesToInvalid(CompoundUndoAction* undoAction)
@@ -288,6 +291,8 @@ void Mesh::SetUnConnectedNodesAndEdgesToInvalid(CompoundUndoAction* undoAction)
             {
                 undoAction->Add(ResetEdge(e, {constants::missing::uintValue, constants::missing::uintValue}));
             }
+
+            SetAdministrationRequired(true);
         }
     }
 }
@@ -347,6 +352,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeTwoNodes(UInt firstNodeIndex,
                 if (secondNodeSecondEdge == secondNodeIndex)
                 {
                     undoAction->Add(DeleteEdge(secondEdgeIndex));
+                    SetAdministrationRequired(true);
                 }
             }
         }
@@ -379,10 +385,12 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeTwoNodes(UInt firstNodeIndex,
             if (m_edges[edgeIndex].first == firstNodeIndex)
             {
                 undoAction->Add(ResetEdge(edgeIndex, {secondNodeIndex, m_edges[edgeIndex].second}));
+                SetAdministrationRequired(true);
             }
             else if (m_edges[edgeIndex].second == firstNodeIndex)
             {
                 undoAction->Add(ResetEdge(edgeIndex, {m_edges[edgeIndex].first, secondNodeIndex}));
+                SetAdministrationRequired(true);
             }
 
             numSecondNodeEdges++;
@@ -456,6 +464,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeNodesInPolygon(const Polygons
                 {
                     undoAction->Add(MergeTwoNodes(originalNodeIndices[i], originalNodeIndices[nodeIndexInFilteredNodes]));
                     nodesRtree->DeleteNode(i);
+                    SetAdministrationRequired(true);
                 }
             }
         }
@@ -476,6 +485,7 @@ std::tuple<meshkernel::UInt, std::unique_ptr<meshkernel::AddNodeAction>> Mesh::I
     std::unique_ptr<AddNodeAction> undoAction = AddNodeAction::Create(*this, newNodeIndex, newPoint);
     CommitAction(*undoAction);
 
+    SetAdministrationRequired(true);
     return {newNodeIndex, std::move(undoAction)};
 }
 
@@ -492,6 +502,7 @@ std::tuple<meshkernel::UInt, std::unique_ptr<meshkernel::AddEdgeAction>> Mesh::C
 
     std::unique_ptr<AddEdgeAction> undoAction = AddEdgeAction::Create(*this, newEdgeIndex, startNode, endNode);
     CommitAction(*undoAction);
+    SetAdministrationRequired(true);
     return {newEdgeIndex, std::move(undoAction)};
 }
 
@@ -504,6 +515,7 @@ std::unique_ptr<meshkernel::ResetNodeAction> Mesh::ResetNode(const UInt nodeId, 
 
     std::unique_ptr<ResetNodeAction> undoAction = ResetNodeAction::Create(*this, nodeId, m_nodes[nodeId], newValue);
     CommitAction(*undoAction);
+    SetAdministrationRequired(true);
     return undoAction;
 }
 
@@ -514,6 +526,7 @@ void Mesh::SetNode(const UInt nodeId, const Point& newValue)
         throw ConstraintError("The node index, {}, is not in range.", nodeId);
     }
 
+    SetAdministrationRequired(true);
     m_nodes[nodeId] = newValue;
 }
 
@@ -527,6 +540,7 @@ std::unique_ptr<meshkernel::DeleteEdgeAction> Mesh::DeleteEdge(UInt edge)
     std::unique_ptr<meshkernel::DeleteEdgeAction> undoAction = DeleteEdgeAction::Create(*this, edge, m_edges[edge].first, m_edges[edge].second);
 
     CommitAction(*undoAction);
+    SetAdministrationRequired(true);
     return undoAction;
 }
 
@@ -545,6 +559,7 @@ std::unique_ptr<meshkernel::DeleteNodeAction> Mesh::DeleteNode(UInt node)
         undoAction->Add(DeleteEdge(edgeIndex));
     }
 
+    SetAdministrationRequired(true);
     CommitAction(*undoAction);
     return undoAction;
 }
@@ -759,6 +774,7 @@ std::unique_ptr<meshkernel::ResetEdgeAction> Mesh::ResetEdge(UInt edgeId, const 
 {
     std::unique_ptr<meshkernel::ResetEdgeAction> undoAction = ResetEdgeAction::Create(*this, edgeId, m_edges[edgeId], edge);
     CommitAction(*undoAction);
+    SetAdministrationRequired(true);
     return undoAction;
 }
 
@@ -858,7 +874,14 @@ void Mesh::SortEdgesInCounterClockWiseOrder(UInt startNode, UInt endNode)
 
 void Mesh::Administrate(CompoundUndoAction* undoAction)
 {
+    if (!AdministrationRequired())
+    {
+        return;
+    }
+
     AdministrateNodesEdges(undoAction);
+
+    SetAdministrationRequired(false);
 }
 
 void Mesh::AdministrateNodesEdges(CompoundUndoAction* undoAction)
@@ -1003,6 +1026,7 @@ Mesh& Mesh::operator+=(Mesh const& rhs)
         m_edges[e].second = rhs.m_edges[index].second + numNodes;
     }
 
+    SetAdministrationRequired(true);
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
 
@@ -1185,6 +1209,11 @@ void Mesh::BuildTree(Location location, const BoundingBox& boundingBox)
     }
 }
 
+void Mesh::SetAdministrationRequired(const bool value)
+{
+    m_administrationRequired = value;
+}
+
 //--------------------------------
 
 void Mesh::CommitAction(const AddNodeAction& undoAction)
@@ -1192,12 +1221,14 @@ void Mesh::CommitAction(const AddNodeAction& undoAction)
     m_nodes[undoAction.NodeId()] = undoAction.Node();
     m_nodesNumEdges[undoAction.NodeId()] = 0;
     m_nodesRTreeRequiresUpdate = true;
+    SetAdministrationRequired(true);
 }
 
 void Mesh::CommitAction(const AddEdgeAction& undoAction)
 {
     m_edges[undoAction.EdgeId()] = undoAction.GetEdge();
     m_edgesRTreeRequiresUpdate = true;
+    SetAdministrationRequired(true);
 }
 
 void Mesh::CommitAction(const ResetNodeAction& undoAction)
@@ -1205,24 +1236,28 @@ void Mesh::CommitAction(const ResetNodeAction& undoAction)
     m_nodes[undoAction.NodeId()] = undoAction.UpdatedNode();
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
+    SetAdministrationRequired(true);
 }
 
 void Mesh::CommitAction(const ResetEdgeAction& undoAction)
 {
     m_edges[undoAction.EdgeId()] = undoAction.UpdatedEdge();
     m_edgesRTreeRequiresUpdate = true;
+    SetAdministrationRequired(true);
 }
 
 void Mesh::CommitAction(const DeleteEdgeAction& undoAction)
 {
     m_edges[undoAction.EdgeId()] = {constants::missing::uintValue, constants::missing::uintValue};
     m_edgesRTreeRequiresUpdate = true;
+    SetAdministrationRequired(true);
 }
 
 void Mesh::CommitAction(const DeleteNodeAction& undoAction)
 {
     m_nodes[undoAction.NodeId()] = {constants::missing::doubleValue, constants::missing::doubleValue};
     m_nodesRTreeRequiresUpdate = true;
+    SetAdministrationRequired(true);
 }
 
 void Mesh::CommitAction(NodeTranslationAction& undoAction)
@@ -1238,6 +1273,7 @@ void Mesh::CommitAction(MeshConversionAction& undoAction)
 void Mesh::CommitAction(FullUnstructuredGridUndo& undoAction)
 {
     undoAction.Swap(m_nodes, m_edges);
+    SetAdministrationRequired(true);
     Administrate();
 }
 
@@ -1246,12 +1282,14 @@ void Mesh::RestoreAction(const AddNodeAction& undoAction)
     m_nodes[undoAction.NodeId()] = Point(constants::missing::doubleValue, constants::missing::doubleValue);
     m_nodesNumEdges[undoAction.NodeId()] = 0;
     m_nodesRTreeRequiresUpdate = true;
+    SetAdministrationRequired(true);
 }
 
 void Mesh::RestoreAction(const AddEdgeAction& undoAction)
 {
     m_edges[undoAction.EdgeId()] = {constants::missing::uintValue, constants::missing::uintValue};
     m_edgesRTreeRequiresUpdate = true;
+    SetAdministrationRequired(true);
 }
 
 void Mesh::RestoreAction(const ResetNodeAction& undoAction)
@@ -1259,24 +1297,28 @@ void Mesh::RestoreAction(const ResetNodeAction& undoAction)
     m_nodes[undoAction.NodeId()] = undoAction.InitialNode();
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
+    SetAdministrationRequired(true);
 }
 
 void Mesh::RestoreAction(const ResetEdgeAction& undoAction)
 {
     m_edges[undoAction.EdgeId()] = undoAction.InitialEdge();
     m_edgesRTreeRequiresUpdate = true;
+    SetAdministrationRequired(true);
 }
 
 void Mesh::RestoreAction(const DeleteEdgeAction& undoAction)
 {
     m_edges[undoAction.EdgeId()] = undoAction.GetEdge();
     m_edgesRTreeRequiresUpdate = true;
+    SetAdministrationRequired(true);
 }
 
 void Mesh::RestoreAction(const DeleteNodeAction& undoAction)
 {
     m_nodes[undoAction.NodeId()] = undoAction.Node();
     m_nodesRTreeRequiresUpdate = true;
+    SetAdministrationRequired(true);
 }
 
 void Mesh::RestoreAction(NodeTranslationAction& undoAction)
@@ -1292,5 +1334,8 @@ void Mesh::RestoreAction(MeshConversionAction& undoAction)
 void Mesh::RestoreAction(FullUnstructuredGridUndo& undoAction)
 {
     undoAction.Swap(m_nodes, m_edges);
+    m_nodesRTreeRequiresUpdate = true;
+    m_edgesRTreeRequiresUpdate = true;
+    SetAdministrationRequired(true);
     Administrate();
 }
