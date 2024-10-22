@@ -135,6 +135,10 @@ namespace meshkernel
         /// @brief Tolerance used throughout.
         const double tolerance = 1e-8;
 
+        static constexpr int MaxDegree = 2;
+
+        static constexpr int MaxDegreeP1 = MaxDegree + 1;
+
         /// @brief From the layerIndex index gets the next grid layerIndex and the transversal sublayer index (get_isub)
         /// @param[in] layerIndex The current grid layerIndex index
         /// @returns The next grid layerIndex and the sub layerIndex index
@@ -295,9 +299,14 @@ namespace meshkernel
         /// @brief Determine if segments crosses the centre spline
         bool SegmentCrossesCentreSpline(const Point& x1, const Point& x2) const;
 
-        /// @brief Find the roots of up to a quartic polynomial
-        void SolveQuartic(const std::array<double, 5>& coeffs,
-                          std::array<double, 4>& roots) const;
+        void RootFinder(const std::array<double, MaxDegreeP1>& coefficients,
+                        int& degree,
+                        std::array<double, MaxDegree>& realRoots,
+                        std::array<double, MaxDegree>& imaginaryRoots) const;
+
+        /// @brief Find the roots of up to a quadratic polynomial
+        void SolveQuadratic(const std::array<double, MaxDegreeP1>& coeffs,
+                            std::array<double, MaxDegree>& roots) const;
 
         /// @brief Allocate spline properties arrays
         void AllocateSplinesProperties();
