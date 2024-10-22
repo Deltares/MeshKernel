@@ -36,51 +36,49 @@
 
 #include <span>
 
-// How to get the constants?
-
-// extern const int MaxDegree;
-// extern const int MaxDegreeP1;
-
-static constexpr int MaxDegree = 4;
-static const int MaxDegreeP1 = MaxDegree + 1;
-
-extern "C"
-{
-    /// @brief Function of the rpoly library
-    void rpoly(double op[MaxDegreeP1],
-               int* degree,
-               double zeror[MaxDegree],
-               double zeroi[MaxDegree]);
-}
-
 namespace meshkernel
 {
-    void RootFinder(const std::array<double, MaxDegreeP1>& coefficients,
-                    int& degree,
-                    std::array<double, MaxDegree>& realRoots,
-                    std::array<double, MaxDegree>& imaginaryRoots)
+    void CurvilinearGridFromSplines::RootFinder(const std::array<double, MaxDegreeP1>& coefficients,
+                                                int& degree,
+                                                std::array<double, MaxDegree>& realRoots,
+                                                std::array<double, MaxDegree>& imaginaryRoots) const
     {
-        double coeffs[MaxDegreeP1];
-        double rootsR[MaxDegree];
-        double rootsI[MaxDegree];
+        std::ranges::fill(realRoots, 0.0);
+        std::ranges::fill(imaginaryRoots, 0.0);
+        degree = 0;
 
-        for (size_t i = 0; i < MaxDegreeP1; ++i)
+        if (coefficients[0] != 0.0)
         {
-            coeffs[i] = coefficients[i];
+            double a = coefficients[0];
+            double b = coefficients[1];
+            double c = coefficients[2];
+
+            double discriminant = b * b - 4.0 * a * c;
+
+            if (discriminant > 0.0)
+            {
+                realRoots[1] = (-b + std::sqrt(discriminant)) / (2.0 * a);
+                realRoots[0] = (-b - std::sqrt(discriminant)) / (2.0 * a);
+            }
+            else
+            {
+                std::complex<double> r1 = (-b + std::sqrt(std::complex<double>(discriminant, 0.0))) / (2.0 * a);
+                std::complex<double> r0 = (-b - std::sqrt(std::complex<double>(discriminant, 0.0))) / (2.0 * a);
+
+                realRoots[1] = r1.real();
+                realRoots[0] = r0.real();
+
+                imaginaryRoots[1] = r1.imag();
+                imaginaryRoots[0] = r0.imag();
+            }
+
+            degree = 2;
         }
-
-        for (size_t i = 0; i < MaxDegree; ++i)
+        else if (coefficients[0] != 0.0)
         {
-            rootsR[i] = realRoots[i];
-            rootsI[i] = imaginaryRoots[i];
-        }
-
-        rpoly(coeffs, &degree, rootsR, rootsI);
-
-        for (size_t i = 0; i < MaxDegree; ++i)
-        {
-            realRoots[i] = rootsR[i];
-            imaginaryRoots[i] = rootsI[i];
+            // linear or constant
+            realRoots[0] = -coefficients[1] / coefficients[0];
+            degree = 1;
         }
     }
 
@@ -681,19 +679,19 @@ namespace meshkernel
         return false;
     }
 
-    void CurvilinearGridFromSplines::SolveQuartic(const std::array<double, 5>& coefficients,
-                                                  std::array<double, 4>& roots) const
+    void CurvilinearGridFromSplines::SolveQuadratic(const std::array<double, MaxDegreeP1>& coefficients,
+                                                    std::array<double, MaxDegree>& roots) const
     {
-        int degree = 4;
-        std::array<double, 5> coeffs(coefficients);
-        std::array<double, 4> realRoots{0.0, 0.0, 0.0, 0.0};
-        std::array<double, 4> imagRoots{0.0, 0.0, 0.0, 0.0};
+        int degree = MaxDegree;
+        std::array<double, MaxDegreeP1> coeffs(coefficients);
+        std::array<double, MaxDegree> realRoots{0.0, 0.0};
+        std::array<double, MaxDegree> imagRoots{0.0, 0.0};
         roots.fill(constants::missing::doubleValue);
 
-        for (UInt i = 4; i >= 1; --i)
+        for (UInt i = MaxDegree; i >= 1; --i)
         {
 
-            if (std::abs(coeffs[4 - i]) > tolerance)
+            if (std::abs(coeffs[MaxDegree - i]) > tolerance)
             {
                 degree = i;
                 break;
@@ -701,14 +699,14 @@ namespace meshkernel
         }
 
         // shuffle coefficients up if necessary
-        if (degree < 4)
+        if (degree < MaxDegree)
         {
             for (int j = 0; j <= degree; ++j)
             {
-                coeffs[j] = coeffs[4 - degree + j];
+                coeffs[j] = coeffs[MaxDegree - degree + j];
             }
 
-            for (int j = degree + 1; j < 5; ++j)
+            for (int j = degree + 1; j < MaxDegreeP1; ++j)
             {
                 coeffs[j] = 0.0;
             }
@@ -748,15 +746,15 @@ namespace meshkernel
         double b = cross(x13, v34) - cross(x34, v13);
         double c = cross(x13, x34);
 
-        std::array<double, 5> coeffs{0.0, 0.0, a, b, c};
-        std::array<double, 4> roots{0.0, 0.0, 0.0, 0.0};
-        std::array<double, 4> beta;
+        std::array<double, MaxDegreeP1> coeffs{a, b, c};
+        std::array<double, MaxDegree> roots{0.0, 0.0};
+        std::array<double, MaxDegree> beta;
         beta.fill(constants::missing::doubleValue);
         roots.fill(constants::missing::doubleValue);
 
-        SolveQuartic(coeffs, roots);
+        SolveQuadratic(coeffs, roots);
 
-        for (UInt i = 0; i < 4; ++i)
+        for (UInt i = 0; i < MaxDegree; ++i)
         {
 
             if (roots[i] == constants::missing::doubleValue)
@@ -779,7 +777,7 @@ namespace meshkernel
 
         double time = 1.0e99;
 
-        for (UInt i = 0; i < 4; ++i)
+        for (UInt i = 0; i < MaxDegree; ++i)
         {
             // Extend limits by a relatively small amount
             const double lowerLimit = -8.0 * std::numeric_limits<double>::epsilon();

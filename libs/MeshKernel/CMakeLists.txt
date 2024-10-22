@@ -313,7 +313,6 @@ target_link_libraries(
   ${TARGET_NAME}
   LINK_PUBLIC
     Triangle
-    Rpoly
     OpenMP::OpenMP_CXX
     Eigen3::Eigen
 )
