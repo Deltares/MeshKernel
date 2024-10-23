@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include <algorithm>
+#include <tuple>
 
 #include "MeshKernel/CasulliRefinement.hpp"
 #include "MeshKernel/Exceptions.hpp"
@@ -210,7 +211,8 @@ void meshkernel::CasulliRefinement::Administrate(Mesh2D& mesh, const UInt numNod
     {
         if (nodeMask[i] > NodeMask::Unassigned && nodeMask[i] < NodeMask::CornerNode)
         {
-            [[maybe_unused]] auto undoAction = mesh.DeleteNode(i);
+            // With passing false for the collectUndo, DeleteNode should return a null pointer
+            [[maybe_unused]] auto undoAction = mesh.DeleteNode(i, false /* collectUndo info */);
         }
     }
 
@@ -262,23 +264,24 @@ void meshkernel::CasulliRefinement::ConnectNodes(Mesh2D& mesh, const std::vector
         // Parallel edges, these are the start-end connections
         if (node1 != constants::missing::uintValue && node2 != constants::missing::uintValue && node1 != node2)
         {
-            auto [edgeId, connectionAction] = mesh.ConnectNodes(node1, node2);
+            // With passing false for the collectUndo, ConnectNodes should return a null pointer
+            [[maybe_unused]] auto ignore = mesh.ConnectNodes(node1, node2, false /* collectUndo info */);
         }
 
         if (node3 != constants::missing::uintValue && node4 != constants::missing::uintValue && node3 != node4)
         {
-            auto [edgeId, connectionAction] = mesh.ConnectNodes(node3, node4);
+            [[maybe_unused]] auto ignore = mesh.ConnectNodes(node3, node4, false /* collectUndo info */);
         }
 
         // normal edges, these are the left-right connections
         if (node1 != constants::missing::uintValue && node3 != constants::missing::uintValue && node1 != node3)
         {
-            auto [edgeId, connectionAction] = mesh.ConnectNodes(node1, node3);
+            [[maybe_unused]] auto ignore = mesh.ConnectNodes(node1, node3, false /* collectUndo info */);
         }
 
         if (node2 != constants::missing::uintValue && node4 != constants::missing::uintValue && node2 != node4)
         {
-            auto [edgeId, connectionAction] = mesh.ConnectNodes(node2, node4);
+            [[maybe_unused]] auto ignore = mesh.ConnectNodes(node2, node4, false /* collectUndo info */);
         }
     }
 }
@@ -338,21 +341,22 @@ void meshkernel::CasulliRefinement::ConnectFaceNodes(Mesh2D& mesh, const UInt cu
         // only one new node: new diagonal edge connects new node with one old node
         if (nodeMask[node1] < NodeMask::Unassigned && nodeMask[node2] == NodeMask::Unassigned && nodeMask[node3] == NodeMask::Unassigned && nodeMask[node4] == NodeMask::Unassigned)
         {
-            auto [edgeId, connectionAction] = mesh.ConnectNodes(node1, node4);
+            // With passing false for the collectUndo, ConnectNodes should return a null pointer
+            [[maybe_unused]] auto ignore = mesh.ConnectNodes(node1, node4, false /* collectUndo info */);
             break;
         }
 
         // only one old node: new diagonal edge connects new nodes only (i.e. perpendicular to previous one)
         if (nodeMask[node1] < NodeMask::Unassigned && nodeMask[node2] > NodeMask::Unassigned && nodeMask[node3] > NodeMask::Unassigned && nodeMask[node4] == NodeMask::Unassigned)
         {
-            auto [edgeId, connectionAction] = mesh.ConnectNodes(newIndex[previousIndex], newIndex[nextIndex]);
+            [[maybe_unused]] auto ignore = mesh.ConnectNodes(newIndex[previousIndex], newIndex[nextIndex], false /* collectUndo info */);
             break;
         }
 
         // two new and opposing nodes: new diagonal edge connects the new nodes
         if (nodeMask[node1] < NodeMask::Unassigned && nodeMask[node2] == NodeMask::Unassigned && nodeMask[node3] == NodeMask::Unassigned && nodeMask[node4] == NodeMask::RegisteredNode)
         {
-            auto [edgeId, connectionAction] = mesh.ConnectNodes(node1, newIndex[nextNextIndex]);
+            [[maybe_unused]] auto ignore = mesh.ConnectNodes(node1, newIndex[nextNextIndex], false /* collectUndo info */);
             break;
         }
     }
@@ -360,7 +364,7 @@ void meshkernel::CasulliRefinement::ConnectFaceNodes(Mesh2D& mesh, const UInt cu
 
 void meshkernel::CasulliRefinement::ConnectEdges(Mesh2D& mesh, const UInt currentNode, const std::vector<EdgeNodes>& newNodes, UInt& edgeCount, std::vector<UInt>& newEdges)
 {
-    std::fill(newEdges.begin(), newEdges.end(), constants::missing::uintValue);
+    std::ranges::fill(newEdges, constants::missing::uintValue);
     edgeCount = 0;
 
     for (UInt j = 0; j < mesh.m_nodesNumEdges[currentNode]; ++j)
@@ -381,13 +385,14 @@ void meshkernel::CasulliRefinement::ConnectEdges(Mesh2D& mesh, const UInt curren
         {
             if (mesh.GetEdge(edgeId).first == currentNode)
             {
-                auto [edgeId1, connectionAction1] = mesh.ConnectNodes(currentNode, newNodes[edgeId][0]);
-                auto [edgeId2, connectionAction2] = mesh.ConnectNodes(currentNode, newNodes[edgeId][2]);
+                // With passing false for the collectUndo, ConnectNodes should return a null pointer
+                [[maybe_unused]] auto ignore1 = mesh.ConnectNodes(currentNode, newNodes[edgeId][0], false /* collectUndo info */);
+                [[maybe_unused]] auto ignore2 = mesh.ConnectNodes(currentNode, newNodes[edgeId][2], false /* collectUndo info */);
             }
             else
             {
-                auto [edgeId1, connectionAction1] = mesh.ConnectNodes(currentNode, newNodes[edgeId][1]);
-                auto [edgeId2, connectionAction2] = mesh.ConnectNodes(currentNode, newNodes[edgeId][3]);
+                [[maybe_unused]] auto ignore1 = mesh.ConnectNodes(currentNode, newNodes[edgeId][1], false /* collectUndo info */);
+                [[maybe_unused]] auto ignore2 = mesh.ConnectNodes(currentNode, newNodes[edgeId][3], false /* collectUndo info */);
             }
         }
     }
@@ -449,7 +454,8 @@ void meshkernel::CasulliRefinement::CreateMissingBoundaryEdges(Mesh2D& mesh, con
             {
                 if (nodesToConnect[0] != constants::missing::uintValue && nodesToConnect[1] != constants::missing::uintValue && nodesToConnect[0] != nodesToConnect[1])
                 {
-                    auto [edgeId, connectionAction] = mesh.ConnectNodes(nodesToConnect[0], nodesToConnect[1]);
+                    // With passing false for the collectUndo, ConnectNodes should return a null pointer
+                    [[maybe_unused]] auto ignore = mesh.ConnectNodes(nodesToConnect[0], nodesToConnect[1], false /* collectUndo info */);
                 }
             }
         }
@@ -459,7 +465,7 @@ void meshkernel::CasulliRefinement::CreateMissingBoundaryEdges(Mesh2D& mesh, con
             {
                 if (nodesToConnect[j] != constants::missing::uintValue && nodesToConnect[j] != i)
                 {
-                    auto [edgeId, connectionAction] = mesh.ConnectNodes(i, nodesToConnect[j]);
+                    [[maybe_unused]] auto ignore = mesh.ConnectNodes(i, nodesToConnect[j], false /* collectUndo info */);
                 }
             }
         }
@@ -512,13 +518,14 @@ void meshkernel::CasulliRefinement::ConnectNewNodes(Mesh2D& mesh, const std::vec
 
             if (mesh.GetEdge(edgeId).first == i)
             {
-                auto [edgeId1, connectionAction1] = mesh.ConnectNodes(i, newNodes[edgeId][0]);
-                auto [edgeId2, connectionAction2] = mesh.ConnectNodes(i, newNodes[edgeId][2]);
+                // With passing false for the collectUndo, ConnectNodes should return a null pointer
+                [[maybe_unused]] auto ignore1 = mesh.ConnectNodes(i, newNodes[edgeId][0], false /* collectUndo info */);
+                [[maybe_unused]] auto ignore2 = mesh.ConnectNodes(i, newNodes[edgeId][2], false /* collectUndo info */);
             }
             else
             {
-                auto [edgeId1, connectionAction1] = mesh.ConnectNodes(i, newNodes[edgeId][1]);
-                auto [edgeId2, connectionAction2] = mesh.ConnectNodes(i, newNodes[edgeId][3]);
+                [[maybe_unused]] auto ignore1 = mesh.ConnectNodes(i, newNodes[edgeId][1], false /* collectUndo info */);
+                [[maybe_unused]] auto ignore2 = mesh.ConnectNodes(i, newNodes[edgeId][3], false /* collectUndo info */);
             }
         }
     }

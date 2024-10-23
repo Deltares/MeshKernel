@@ -479,7 +479,7 @@ std::tuple<meshkernel::UInt, std::unique_ptr<meshkernel::AddNodeAction>> Mesh::I
     return {newNodeIndex, std::move(undoAction)};
 }
 
-std::tuple<meshkernel::UInt, std::unique_ptr<meshkernel::AddEdgeAction>> Mesh::ConnectNodes(UInt startNode, UInt endNode)
+std::tuple<meshkernel::UInt, std::unique_ptr<meshkernel::AddEdgeAction>> Mesh::ConnectNodes(UInt startNode, UInt endNode, const bool collectUndo)
 {
     if (FindEdge(startNode, endNode) != constants::missing::uintValue)
     {
@@ -490,9 +490,18 @@ std::tuple<meshkernel::UInt, std::unique_ptr<meshkernel::AddEdgeAction>> Mesh::C
     const auto newEdgeIndex = GetNumEdges();
     m_edges.resize(newEdgeIndex + 1);
 
-    std::unique_ptr<AddEdgeAction> undoAction = AddEdgeAction::Create(*this, newEdgeIndex, startNode, endNode);
-    CommitAction(*undoAction);
-    return {newEdgeIndex, std::move(undoAction)};
+    if (collectUndo)
+    {
+        std::unique_ptr<AddEdgeAction> undoAction = AddEdgeAction::Create(*this, newEdgeIndex, startNode, endNode);
+        CommitAction(*undoAction);
+        return {newEdgeIndex, std::move(undoAction)};
+    }
+    else
+    {
+        AddEdgeAction undoAction(*this, newEdgeIndex, startNode, endNode);
+        CommitAction(undoAction);
+        return {newEdgeIndex, nullptr};
+    }
 }
 
 std::unique_ptr<meshkernel::ResetNodeAction> Mesh::ResetNode(const UInt nodeId, const Point& newValue)
@@ -517,36 +526,60 @@ void Mesh::SetNode(const UInt nodeId, const Point& newValue)
     m_nodes[nodeId] = newValue;
 }
 
-std::unique_ptr<meshkernel::DeleteEdgeAction> Mesh::DeleteEdge(UInt edge)
+std::unique_ptr<meshkernel::DeleteEdgeAction> Mesh::DeleteEdge(UInt edge, const bool collectUndo)
 {
     if (edge == constants::missing::uintValue) [[unlikely]]
     {
         throw std::invalid_argument("Mesh::DeleteEdge: The index of the edge to be deleted does not exist.");
     }
 
-    std::unique_ptr<meshkernel::DeleteEdgeAction> undoAction = DeleteEdgeAction::Create(*this, edge, m_edges[edge].first, m_edges[edge].second);
+    if (collectUndo)
+    {
+        std::unique_ptr<meshkernel::DeleteEdgeAction> undoAction = DeleteEdgeAction::Create(*this, edge, m_edges[edge].first, m_edges[edge].second);
 
-    CommitAction(*undoAction);
-    return undoAction;
+        CommitAction(*undoAction);
+        return undoAction;
+    }
+    else
+    {
+        DeleteEdgeAction undoAction(*this, edge, m_edges[edge].first, m_edges[edge].second);
+
+        CommitAction(undoAction);
+        return nullptr;
+    }
 }
 
-std::unique_ptr<meshkernel::DeleteNodeAction> Mesh::DeleteNode(UInt node)
+std::unique_ptr<meshkernel::DeleteNodeAction> Mesh::DeleteNode(UInt node, const bool collectUndo)
 {
     if (node >= GetNumNodes()) [[unlikely]]
     {
         throw std::invalid_argument("Mesh::DeleteNode: The index of the node to be deleted does not exist.");
     }
 
-    std::unique_ptr<DeleteNodeAction> undoAction = DeleteNodeAction::Create(*this, node, m_nodes[node]);
-
-    for (UInt e = 0; e < m_nodesEdges[node].size(); e++)
+    if (collectUndo)
     {
-        const auto edgeIndex = m_nodesEdges[node][e];
-        undoAction->Add(DeleteEdge(edgeIndex));
-    }
+        std::unique_ptr<DeleteNodeAction> undoAction = DeleteNodeAction::Create(*this, node, m_nodes[node]);
 
-    CommitAction(*undoAction);
-    return undoAction;
+        for (UInt e = 0; e < m_nodesEdges[node].size(); e++)
+        {
+            undoAction->Add(DeleteEdge(m_nodesEdges[node][e], true));
+        }
+
+        CommitAction(*undoAction);
+        return undoAction;
+    }
+    else
+    {
+        DeleteNodeAction undoAction(*this, node, m_nodes[node]);
+
+        for (UInt e = 0; e < m_nodesEdges[node].size(); e++)
+        {
+            [[maybe_unused]] auto nullUndo = DeleteEdge(m_nodesEdges[node][e], false);
+        }
+
+        CommitAction(undoAction);
+        return nullptr;
+    }
 }
 
 void Mesh::ComputeEdgesLengths()

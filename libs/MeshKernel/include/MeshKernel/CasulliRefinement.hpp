@@ -28,6 +28,7 @@
 #pragma once
 
 #include <array>
+#include <memory>
 #include <vector>
 
 #include "MeshKernel/Mesh2D.hpp"
