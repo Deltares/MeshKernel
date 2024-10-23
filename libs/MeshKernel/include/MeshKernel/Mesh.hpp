@@ -244,13 +244,15 @@ namespace meshkernel
         /// If the nodes are not connected a new edge is formed, otherwise UInt invalid value is returned. (connectdbn)
         /// @param[in] startNode The start node index
         /// @param[in] endNode The end node index
+        /// @param[in] collectUndo Indicate whether or not an undo action should be created, if false then the undo result will be nullptr
         /// @return The index of the new edge and the undoAction to connect two nodes
-        [[nodiscard]] std::tuple<UInt, std::unique_ptr<AddEdgeAction>> ConnectNodes(UInt startNode, UInt endNode);
+        [[nodiscard]] std::tuple<UInt, std::unique_ptr<AddEdgeAction>> ConnectNodes(UInt startNode, UInt endNode, const bool collectUndo = true);
 
         /// @brief Deletes a node and removes any connected edges
         /// @param[in] node The node index
+        /// @param[in] collectUndo Indicate whether or not an undo action should be created, if false then the undo result will be nullptr.
         /// @return The undoAction to delete the node and any connecting edges
-        [[nodiscard]] std::unique_ptr<DeleteNodeAction> DeleteNode(UInt node);
+        [[nodiscard]] std::unique_ptr<DeleteNodeAction> DeleteNode(UInt node, const bool collectUndo = true);
 
         /// @brief Find the edge sharing two nodes
         /// @param[in] firstNodeIndex The index of the first node
@@ -288,8 +290,9 @@ namespace meshkernel
 
         /// @brief Deletes an edge
         /// @param[in] edge The edge index
+        /// @param[in] collectUndo Indicate whether or not an undo action should be created, if false then the undo result will be nullptr.
         /// @return The undoAction to delete the edge
-        [[nodiscard]] std::unique_ptr<DeleteEdgeAction> DeleteEdge(UInt edge);
+        [[nodiscard]] std::unique_ptr<DeleteEdgeAction> DeleteEdge(UInt edge, const bool collectUndo = true);
 
         /// @brief Find the common node two edges share
         /// This method uses return parameters since the success is evaluated in a hot loop
