@@ -251,6 +251,41 @@ void meshkernel::CasulliRefinement::FindPatchIds(const Mesh2D& mesh,
     mesh.FindNodesSharedByFaces(currentNode, sharedFaces, connectedNodes, faceNodeMapping);
 }
 
+std::vector<meshkernel::UInt> meshkernel::CasulliRefinement::GetNodesToConnect(const Mesh2D& mesh,
+                                                                               const std::vector<NodeMask>& nodeMask,
+                                                                               const std::vector<UInt>& newEdges,
+                                                                               const std::vector<EdgeNodes>& newNodes,
+                                                                               const UInt edgeCount,
+                                                                               const UInt nodeIndex)
+{
+    std::vector<UInt> nodesToConnect(edgeCount, constants::missing::uintValue);
+
+    for (UInt j = 0; j < edgeCount; ++j)
+    {
+        if (mesh.GetEdge(newEdges[j]).first == nodeIndex && nodeMask[newNodes[newEdges[j]][0]] == NodeMask::NewGeneralNode)
+        {
+            nodesToConnect[j] = newNodes[newEdges[j]][0];
+        }
+
+        if (mesh.GetEdge(newEdges[j]).first == nodeIndex && nodeMask[newNodes[newEdges[j]][2]] == NodeMask::NewGeneralNode)
+        {
+            nodesToConnect[j] = newNodes[newEdges[j]][2];
+        }
+
+        if (mesh.GetEdge(newEdges[j]).second == nodeIndex && nodeMask[newNodes[newEdges[j]][1]] == NodeMask::NewGeneralNode)
+        {
+            nodesToConnect[j] = newNodes[newEdges[j]][1];
+        }
+
+        if (mesh.GetEdge(newEdges[j]).second == nodeIndex && nodeMask[newNodes[newEdges[j]][3]] == NodeMask::NewGeneralNode)
+        {
+            nodesToConnect[j] = newNodes[newEdges[j]][3];
+        }
+    }
+
+    return nodesToConnect;
+}
+
 void meshkernel::CasulliRefinement::ConnectNodes(Mesh2D& mesh, const std::vector<EdgeNodes>& newNodes, const UInt numEdges)
 {
     // make the original-edge based new edges
@@ -398,7 +433,43 @@ void meshkernel::CasulliRefinement::ConnectEdges(Mesh2D& mesh, const UInt curren
     }
 }
 
-void meshkernel::CasulliRefinement::CreateMissingBoundaryEdges(Mesh2D& mesh, const UInt numNodes, const std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask)
+void meshkernel::CasulliRefinement::ConnectNodes(Mesh2D& mesh,
+                                                 const NodeMask nodeMask,
+                                                 const std::vector<UInt>& nodesToConnect,
+                                                 const UInt edgeCount,
+                                                 const UInt nodeIndex)
+{
+
+    if (nodeMask != NodeMask::CornerNode)
+    {
+        if (edgeCount != 2)
+        {
+            throw AlgorithmError("Incorrect number of edges found: {}", edgeCount);
+        }
+        else
+        {
+            if (nodesToConnect[0] != constants::missing::uintValue && nodesToConnect[1] != constants::missing::uintValue && nodesToConnect[0] != nodesToConnect[1])
+            {
+                [[maybe_unused]] auto [edgeId, connectionAction] = mesh.ConnectNodes(nodesToConnect[0], nodesToConnect[1]);
+            }
+        }
+    }
+    else
+    {
+        for (UInt j = 0; j < edgeCount; ++j)
+        {
+            if (nodesToConnect[j] != constants::missing::uintValue && nodesToConnect[j] != nodeIndex)
+            {
+                [[maybe_unused]] auto [edgeId, connectionAction] = mesh.ConnectNodes(nodeIndex, nodesToConnect[j]);
+            }
+        }
+    }
+}
+
+void meshkernel::CasulliRefinement::CreateMissingBoundaryEdges(Mesh2D& mesh,
+                                                               const UInt numNodes,
+                                                               const std::vector<EdgeNodes>& newNodes,
+                                                               std::vector<NodeMask>& nodeMask)
 {
     std::vector<UInt> newEdges(InitialEdgeArraySize);
 
@@ -419,56 +490,8 @@ void meshkernel::CasulliRefinement::CreateMissingBoundaryEdges(Mesh2D& mesh, con
             continue;
         }
 
-        std::vector<UInt> nodesToConnect(edgeCount, constants::missing::uintValue);
-
-        for (UInt j = 0; j < edgeCount; ++j)
-        {
-            if (mesh.GetEdge(newEdges[j]).first == i && nodeMask[newNodes[newEdges[j]][0]] == NodeMask::NewGeneralNode)
-            {
-                nodesToConnect[j] = newNodes[newEdges[j]][0];
-            }
-
-            if (mesh.GetEdge(newEdges[j]).first == i && nodeMask[newNodes[newEdges[j]][2]] == NodeMask::NewGeneralNode)
-            {
-                nodesToConnect[j] = newNodes[newEdges[j]][2];
-            }
-
-            if (mesh.GetEdge(newEdges[j]).second == i && nodeMask[newNodes[newEdges[j]][1]] == NodeMask::NewGeneralNode)
-            {
-                nodesToConnect[j] = newNodes[newEdges[j]][1];
-            }
-
-            if (mesh.GetEdge(newEdges[j]).second == i && nodeMask[newNodes[newEdges[j]][3]] == NodeMask::NewGeneralNode)
-            {
-                nodesToConnect[j] = newNodes[newEdges[j]][3];
-            }
-        }
-
-        if (nodeMask[i] != NodeMask::CornerNode)
-        {
-            if (edgeCount != 2)
-            {
-                throw AlgorithmError("Incorrect number of edges found: {}", edgeCount);
-            }
-            else
-            {
-                if (nodesToConnect[0] != constants::missing::uintValue && nodesToConnect[1] != constants::missing::uintValue && nodesToConnect[0] != nodesToConnect[1])
-                {
-                    // With passing false for the collectUndo, ConnectNodes should return a null pointer
-                    [[maybe_unused]] auto ignore = mesh.ConnectNodes(nodesToConnect[0], nodesToConnect[1], false /* collectUndo info */);
-                }
-            }
-        }
-        else
-        {
-            for (UInt j = 0; j < edgeCount; ++j)
-            {
-                if (nodesToConnect[j] != constants::missing::uintValue && nodesToConnect[j] != i)
-                {
-                    [[maybe_unused]] auto ignore = mesh.ConnectNodes(i, nodesToConnect[j], false /* collectUndo info */);
-                }
-            }
-        }
+        std::vector<UInt> nodesToConnect(GetNodesToConnect(mesh, nodeMask, newEdges, newNodes, edgeCount, i));
+        ConnectNodes(mesh, nodeMask[i], nodesToConnect, edgeCount, i);
     }
 }
 
