@@ -404,22 +404,10 @@ double Splines::ComputeSplineLength(UInt index,
         {
             const auto [normalVector, tangentialVector, computedCurvatureFactor] = ComputeCurvatureOnSplinePoint(index, 0.5 * (rightPointCoordinateOnSpline + leftPointCoordinateOnSpline));
             curvatureFactor = computedCurvatureFactor;
-
-            // double curvatureLimit = 0.001;
-            // // curvatureFactor >= 0
-            // curvatureFactor = std::min (curvatureFactor, curvatureLimit);
         }
         splineLength = splineLength + ComputeDistance(leftPoint, rightPoint, m_projection) * (1.0 + curvatureFactor * height);
         leftPoint = rightPoint;
     }
-
-    // std::cout << "Splines::ComputeSplineLength: " << index << "   " << delta << "  "
-    //           << numSamples << "   "
-    //           << numPoints << "  "
-    //           << startAdimensionalCoordinate << "  "
-    //           << endAdimensionalCoordinate << "  "
-    //           << splineLength << "  "
-    //           << std::endl;
 
     return splineLength;
 }

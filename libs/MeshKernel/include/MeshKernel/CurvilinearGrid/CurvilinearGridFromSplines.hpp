@@ -135,8 +135,14 @@ namespace meshkernel
         /// @brief Tolerance used throughout.
         const double tolerance = 1e-8;
 
+        /// @brief Maximum degree of polynomial
+        ///
+        /// Used to bound an array
         static constexpr int MaxDegree = 2;
 
+        /// @brief Maximum degree of polynomial plus 1, the number of coefficients for a degre p polynomial
+        ///
+        /// Used to bound an array
         static constexpr int MaxDegreeP1 = MaxDegree + 1;
 
         /// @brief From the layerIndex index gets the next grid layerIndex and the transversal sublayer index (get_isub)
@@ -299,6 +305,7 @@ namespace meshkernel
         /// @brief Determine if segments crosses the centre spline
         bool SegmentCrossesCentreSpline(const Point& x1, const Point& x2) const;
 
+        /// @brief Find the roots of a polynomial upto a quadratic
         void RootFinder(const std::array<double, MaxDegreeP1>& coefficients,
                         int& degree,
                         std::array<double, MaxDegree>& realRoots,

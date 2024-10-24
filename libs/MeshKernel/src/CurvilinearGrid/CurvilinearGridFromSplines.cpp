@@ -49,11 +49,11 @@ namespace meshkernel
 
         if (coefficients[0] != 0.0)
         {
-            double a = coefficients[0];
-            double b = coefficients[1];
-            double c = coefficients[2];
+            const double a = coefficients[0];
+            const double b = coefficients[1];
+            const double c = coefficients[2];
 
-            double discriminant = b * b - 4.0 * a * c;
+            const double discriminant = b * b - 4.0 * a * c;
 
             if (discriminant >= 0.0)
             {
@@ -62,8 +62,8 @@ namespace meshkernel
             }
             else
             {
-                std::complex<double> r1 = (-b + std::sqrt(std::complex<double>(discriminant, 0.0))) / (2.0 * a);
-                std::complex<double> r0 = (-b - std::sqrt(std::complex<double>(discriminant, 0.0))) / (2.0 * a);
+                const std::complex<double> r1 = (-b + std::sqrt(std::complex<double>(discriminant, 0.0))) / (2.0 * a);
+                const std::complex<double> r0 = (-b - std::sqrt(std::complex<double>(discriminant, 0.0))) / (2.0 * a);
 
                 realRoots[1] = r1.real();
                 realRoots[0] = r0.real();
@@ -731,47 +731,48 @@ namespace meshkernel
     double CurvilinearGridFromSplines::ComputeNodeSegmentCrossingTime(const Point& x1, const Point& x3, const Point& x4,
                                                                       const Point& v1, const Point& v3, const Point& v4) const
     {
-        if ((x1.y - x3.y) * (x4.x - x3.x) - (x1.x - x3.x) * (x4.y - x3.y) < 0.0)
+        // Extend limits by a relatively small amount
+        const double lowerLimit = -8.0 * std::numeric_limits<double>::epsilon();
+        const double upperLimit = 1.0 + 8.0 * std::numeric_limits<double>::epsilon();
+
+        // Compute node differences
+        const Point deltaPos13 = x3 - x1;
+        const Point deltaPos34 = x4 - x3;
+        const double cross13And34 = cross(deltaPos13, deltaPos34);
+
+        if (cross13And34 < 0.0)
         {
             return 1.0e99;
         }
 
-        // Compute differences
-        Point x13 = x3 - x1;
-        Point x34 = x4 - x3;
-        Point v13 = v3 - v1;
-        Point v34 = v4 - v3;
+        // Compute velocity differences
+        const Point deltaVel13 = v3 - v1;
+        const Point deltaVel34 = v4 - v3;
 
-        double a = cross(v13, v34);
-        double b = cross(x13, v34) - cross(x34, v13);
-        double c = cross(x13, x34);
+        const double a = cross(deltaVel13, deltaVel34);
+        const double b = cross(deltaPos13, deltaVel34) - cross(deltaPos34, deltaVel13);
+        const double c = cross13And34;
 
         std::array<double, MaxDegreeP1> coeffs{a, b, c};
-        std::array<double, MaxDegree> roots{0.0, 0.0};
-        std::array<double, MaxDegree> beta;
-        beta.fill(constants::missing::doubleValue);
-        roots.fill(constants::missing::doubleValue);
+        std::array<double, MaxDegree> roots{constants::missing::doubleValue, constants::missing::doubleValue};
+        std::array<double, MaxDegree> beta{constants::missing::doubleValue, constants::missing::doubleValue};
 
         SolveQuadratic(coeffs, roots);
 
         for (UInt i = 0; i < MaxDegree; ++i)
         {
 
-            if (roots[i] == constants::missing::doubleValue)
+            if (roots[i] == constants::missing::doubleValue || roots[i] < tolerance)
             {
                 continue;
             }
 
-            if (roots[i] < tolerance)
-            {
-                continue;
-            }
-            Point xs = x4 - x3 + (v4 - v3) * roots[i];
-            double det = length(xs);
+            Point displacedPoint = deltaPos34 + deltaVel34 * roots[i];
+            double det = lengthSquared(displacedPoint);
 
             if (std::abs(det) > tolerance)
             {
-                beta[i] = -dot(x3 - x1 + (v3 - v1) * roots[i], xs) / det;
+                beta[i] = -dot(deltaPos13 + deltaVel13 * roots[i], displacedPoint) / det;
             }
         }
 
@@ -779,9 +780,6 @@ namespace meshkernel
 
         for (UInt i = 0; i < MaxDegree; ++i)
         {
-            // Extend limits by a relatively small amount
-            const double lowerLimit = -8.0 * std::numeric_limits<double>::epsilon();
-            const double upperLimit = 1.0 + 8.0 * std::numeric_limits<double>::epsilon();
 
             if (beta[i] >= lowerLimit && beta[i] <= upperLimit && roots[i] >= 0.0 && roots[i] != constants::missing::doubleValue)
             {
@@ -789,12 +787,7 @@ namespace meshkernel
             }
         }
 
-        if (time == constants::missing::doubleValue || time <= 0.0)
-        {
-            time = 1.0e99;
-        }
-
-        return time;
+        return (time == constants::missing::doubleValue || time <= 0.0) ? 1.0e99 : time;
     }
 
     bool CurvilinearGridFromSplines::IncludeDirectNeighbours(const UInt layerIndex,
@@ -804,27 +797,25 @@ namespace meshkernel
                                                              const UInt indexRightOfRight) const
     {
 
-        UInt i1 = gridPointsIndices(loopIndex, 0);
-        UInt i2 = gridPointsIndices(loopIndex + 1, 0);
         UInt j1 = gridPointsIndices(loopIndex, 1);
         UInt j2 = gridPointsIndices(loopIndex + 1, 1);
 
-        if (indexRightOfRight >= indexLeftOfLeft)
+        // Common check for layer index validity
+        if (j1 < (layerIndex - 1) || j2 < (layerIndex - 1))
         {
-            if (((i1 > indexLeftOfLeft && i1 < indexRightOfRight) || (i2 > indexLeftOfLeft && i2 < indexRightOfRight)) && j1 >= (layerIndex - 1) && j2 >= (layerIndex - 1))
-            {
-                return false;
-            }
-        }
-        else
-        {
-            if ((!(i1 >= indexRightOfRight && i1 <= indexLeftOfLeft) || !(i2 >= indexRightOfRight && i2 <= indexLeftOfLeft)) && j1 >= (layerIndex - 1) && j2 >= (layerIndex - 1))
-            {
-                return false;
-            }
+            return true; // If layer indices are out of bounds, the neighbors should be included
         }
 
-        return true;
+        UInt i1 = gridPointsIndices(loopIndex, 0);
+        UInt i2 = gridPointsIndices(loopIndex + 1, 0);
+
+        // Check index range conditions based on the relationship between indexRightOfRight and indexLeftOfLeft
+        const bool isWithinRange = (indexRightOfRight >= indexLeftOfLeft)
+                                       ? ((i1 > indexLeftOfLeft && i1 < indexRightOfRight) || (i2 > indexLeftOfLeft && i2 < indexRightOfRight))
+                                       : (!(i1 >= indexRightOfRight && i1 <= indexLeftOfLeft) || !(i2 >= indexRightOfRight && i2 <= indexLeftOfLeft));
+
+        // If the points are within the range, exclude the direct neighbors
+        return !isWithinRange;
     }
 
     void CurvilinearGridFromSplines::ComputeMaximumTimeStep(const UInt layerIndex,
@@ -839,8 +830,7 @@ namespace meshkernel
     {
         double maximumTimeStep = timeStep;
 
-        std::vector<double> tmax(activeLayerPoints.size());
-        std::ranges::fill(tmax, timeStep);
+        std::vector<double> tmax(activeLayerPoints.size(), timeStep);
 
         for (UInt i = 0; i < activeLayerPoints.size() - 1; ++i)
         {
@@ -849,11 +839,11 @@ namespace meshkernel
                 continue;
             }
 
-            Point x1 = activeLayerPoints[i];
-            Point x2 = activeLayerPoints[i + 1];
+            const Point x1 = activeLayerPoints[i];
+            const Point x2 = activeLayerPoints[i + 1];
 
-            Point v1 = velocityVectorAtGridPoints[i];
-            Point v2 = velocityVectorAtGridPoints[i + 1];
+            const Point v1 = velocityVectorAtGridPoints[i];
+            const Point v2 = velocityVectorAtGridPoints[i + 1];
 
             const double dL1 = ComputeDistance(x1, activeLayerPoints[i + 1], m_splines->m_projection);
             UInt indexLeft;
@@ -875,18 +865,18 @@ namespace meshkernel
                     continue;
                 }
 
-                Point x3 = frontGridPoints[j];
-                Point x4 = frontGridPoints[j + 1];
+                const Point x3 = frontGridPoints[j];
+                const Point x4 = frontGridPoints[j + 1];
 
-                Point v3 = frontVelocities[j];
-                Point v4 = frontVelocities[j + 1];
+                const Point v3 = frontVelocities[j];
+                const Point v4 = frontVelocities[j + 1];
 
                 const double dL2 = ComputeDistance(x3, x4, m_splines->m_projection);
 
-                double d1 = ComputeDistance(x1, x3, m_splines->m_projection);
-                double d2 = ComputeDistance(x2, x3, m_splines->m_projection);
-                double d3 = ComputeDistance(x1, x4, m_splines->m_projection);
-                double d4 = ComputeDistance(x2, x4, m_splines->m_projection);
+                const double d1 = ComputeDistance(x1, x3, m_splines->m_projection);
+                const double d2 = ComputeDistance(x2, x3, m_splines->m_projection);
+                const double d3 = ComputeDistance(x1, x4, m_splines->m_projection);
+                const double d4 = ComputeDistance(x2, x4, m_splines->m_projection);
 
                 if (d1 < tolerance || d2 < tolerance || d3 < tolerance || d4 < tolerance)
                 {
@@ -898,16 +888,16 @@ namespace meshkernel
                     continue;
                 }
 
-                double dmin = std::min({d1, d2, d3, d4});
+                const double dmin = std::min({d1, d2, d3, d4});
 
                 // get a lower bound for the cross time
-                double hlow2 = 0.25 * std::max(dmin * dmin - std::pow(0.5 * std::max(dL1, dL2), 2), 0.0);
+                const double hlow2 = 0.25 * std::max(dmin * dmin - std::pow(0.5 * std::max(dL1, dL2), 2), 0.0);
 
                 // check if the lower bounds is larger than the minimum found so far
-                double vv1 = std::sqrt(length(v3 - v1));
-                double vv2 = std::sqrt(length(v3 - v2));
-                double vv3 = std::sqrt(length(v4 - v1));
-                double vv4 = std::sqrt(length(v4 - v2));
+                const double vv1 = std::sqrt(lengthSquared(v3 - v1));
+                const double vv2 = std::sqrt(lengthSquared(v3 - v2));
+                const double vv3 = std::sqrt(lengthSquared(v4 - v1));
+                const double vv4 = std::sqrt(lengthSquared(v4 - v2));
 
                 const double maxvv = std::max(std::max(vv1, vv2), std::max(vv3, vv4));
 
@@ -916,12 +906,12 @@ namespace meshkernel
                     continue;
                 }
 
-                double t1 = ComputeNodeSegmentCrossingTime(x1, x3, x4, v1, v3, v4);
-                double t2 = ComputeNodeSegmentCrossingTime(x2, x3, x4, v2, v3, v4);
-                double t3 = ComputeNodeSegmentCrossingTime(x3, x1, x2, v3, v1, v2);
-                double t4 = ComputeNodeSegmentCrossingTime(x4, x1, x2, v4, v1, v2);
+                const double t1 = ComputeNodeSegmentCrossingTime(x1, x3, x4, v1, v3, v4);
+                const double t2 = ComputeNodeSegmentCrossingTime(x2, x3, x4, v2, v3, v4);
+                const double t3 = ComputeNodeSegmentCrossingTime(x3, x1, x2, v3, v1, v2);
+                const double t4 = ComputeNodeSegmentCrossingTime(x4, x1, x2, v4, v1, v2);
 
-                double tmin1234 = std::min(std::min(t1, t2), std::min(t3, t4));
+                const double tmin1234 = std::min(std::min(t1, t2), std::min(t3, t4));
 
                 if (t1 == tmin1234)
                 {
@@ -1423,7 +1413,8 @@ namespace meshkernel
                 continue;
             }
 
-            const auto cosphi = DotProduct(normalVectorLeft.x, normalVectorRight.x, normalVectorLeft.y, normalVectorRight.y);
+            const auto cosphi = dot(normalVectorLeft, normalVectorRight);
+
             if (cosphi < -1.0 + cosTolerance)
             {
                 continue;
