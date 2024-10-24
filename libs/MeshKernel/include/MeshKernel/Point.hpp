@@ -122,6 +122,16 @@ namespace meshkernel
         }
     };
 
+    /// @brief Compute the dot product of a point with itself.
+    ///
+    /// This is mainly a convenience function
+    double lengthSquared(const Point& p1);
+
+    /// @brief Compute the dot product of two points.
+    ///
+    /// This is mainly a convenience function
+    double dot(const Point& p1, const Point& p2);
+
     /// @brief Compute the dot product of a point and a vector.
     ///
     /// This is mainly a convenience function
@@ -131,6 +141,11 @@ namespace meshkernel
     ///
     /// This is mainly a convenience function
     double dot(const Vector& v, const Point& p);
+
+    /// @brief Compute the cross product of two points (as vectors).
+    ///
+    /// This is mainly a convenience function
+    double cross(const Point& p1, const Point& p2);
 
     /// @brief Unary minus
     ///
@@ -328,6 +343,16 @@ inline meshkernel::Point& meshkernel::Point::operator*=(const double p)
     return *this;
 }
 
+inline double meshkernel::lengthSquared(const Point& p)
+{
+    return p.x * p.x + p.y * p.y;
+}
+
+inline double meshkernel::dot(const Point& p1, const Point& p2)
+{
+    return p1.x * p2.x + p1.y * p2.y;
+}
+
 inline double meshkernel::dot(const Point& p, const Vector& v)
 {
     return p.x * v.x() + p.y * v.y();
@@ -336,6 +361,11 @@ inline double meshkernel::dot(const Point& p, const Vector& v)
 inline double meshkernel::dot(const Vector& v, const Point& p)
 {
     return dot(p, v);
+}
+
+inline double meshkernel::cross(const Point& p1, const Point& p2)
+{
+    return p1.x * p2.y - p1.y * p2.x;
 }
 
 inline meshkernel::Point meshkernel::operator-(const Point& pnt)
