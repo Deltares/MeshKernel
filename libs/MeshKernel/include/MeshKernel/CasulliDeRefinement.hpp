@@ -78,11 +78,12 @@ namespace meshkernel
             Unassigned = 0     //< not assigned a value                           0
         };
 
+        /// @brief Indicates what should happen
         enum class ResultIndicator
         {
-            ReturnFromFunction,
-            BreakInnerLoop,
-            ContinueInnerLoop
+            ReturnFromFunction, //< Return (false) from the current function
+            BreakInnerLoop,     //< Break the inner loop
+            ContinueInnerLoop   //< Continue in the inner loop
         };
 
         /// @brief Indicate if the element can be a seed element or not.
