@@ -86,30 +86,6 @@ namespace meshkernel
         }
     }
 
-    /// @brief Defines generic dot product for one dimension
-    /// @tparam T Requires * operator
-    /// @param[in] dx1 First component
-    /// @param[in] dx2 Second component
-    /// @return The dot product
-    template <typename T>
-    [[nodiscard]] T DotProduct(const T& dx1, const T& dx2)
-    {
-        return dx1 * dx2;
-    }
-
-    /// @brief Defines generic dot product of infinite dimensions
-    /// @tparam T Requires * operator
-    /// @tparam ...Args Parameter pack, requires a multiple of 2 number of parameters
-    /// @param[in] dx1 First component
-    /// @param[in] dx2 Second component
-    /// @param[in] ...args Parameter pack
-    /// @return The dot product
-    template <typename T, typename... Args>
-    [[nodiscard]] T DotProduct(const T& dx1, const T& dx2, Args&... args)
-    {
-        return dx1 * dx2 + DotProduct(args...);
-    }
-
     /// @brief Defines vector product for cartesian 3D-space
     /// @param[in] a The first cartesian 3D point
     /// @param[in] b The second cartesian 3D point
@@ -121,6 +97,21 @@ namespace meshkernel
     /// @param[in] b The second cartesian 3D point
     /// @return The resulting inner product
     [[nodiscard]] double InnerProduct(const Cartesian3DPoint& a, const Cartesian3DPoint& b);
+
+    /// @brief Multiply Cartesian point p by a scalar value
+    Cartesian3DPoint operator*(const Cartesian3DPoint& p, const double value);
+
+    /// @brief Multiply Cartesian point p by a scalar value
+    Cartesian3DPoint operator*(const double value, const Cartesian3DPoint& p);
+
+    /// @brief Divide Cartesian point p by a scalar value
+    Cartesian3DPoint operator/(const Cartesian3DPoint& p, const double value);
+
+    /// @brief Add Cartesian point p2 to p1.
+    Cartesian3DPoint operator+(const Cartesian3DPoint& p1, const Cartesian3DPoint& p2);
+
+    /// @brief Subtract Cartesian point p2 from p1.
+    Cartesian3DPoint operator-(const Cartesian3DPoint& p1, const Cartesian3DPoint& p2);
 
     /// @brief Find index of a certain element
     /// @param[in] vec The vector to search in
@@ -629,3 +620,28 @@ namespace meshkernel
     }
 
 } // namespace meshkernel
+
+inline meshkernel::Cartesian3DPoint meshkernel::operator+(const Cartesian3DPoint& p1, const Cartesian3DPoint& p2)
+{
+    return {p1.x + p2.x, p1.y + p2.y, p1.z + p2.z};
+}
+
+inline meshkernel::Cartesian3DPoint meshkernel::operator-(const Cartesian3DPoint& p1, const Cartesian3DPoint& p2)
+{
+    return {p1.x - p2.x, p1.y - p2.y, p1.z - p2.z};
+}
+
+inline meshkernel::Cartesian3DPoint meshkernel::operator/(const Cartesian3DPoint& p, const double value)
+{
+    return {p.x / value, p.y / value, p.z / value};
+}
+
+inline meshkernel::Cartesian3DPoint meshkernel::operator*(const double value, const Cartesian3DPoint& p)
+{
+    return {value * p.x, value * p.y, value * p.z};
+}
+
+inline meshkernel::Cartesian3DPoint meshkernel::operator*(const Cartesian3DPoint& p, const double value)
+{
+    return value * p;
+}

@@ -125,7 +125,7 @@ namespace meshkernel
     /// @brief Compute the dot product of a point with itself.
     ///
     /// This is mainly a convenience function
-    double length(const Point& p1);
+    double lengthSquared(const Point& p1);
 
     /// @brief Compute the dot product of two points.
     ///
@@ -343,7 +343,7 @@ inline meshkernel::Point& meshkernel::Point::operator*=(const double p)
     return *this;
 }
 
-inline double meshkernel::length(const Point& p)
+inline double meshkernel::lengthSquared(const Point& p)
 {
     return p.x * p.x + p.y * p.y;
 }
