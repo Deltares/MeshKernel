@@ -1182,16 +1182,6 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_data(int meshKernelId, Mesh2D& mesh2d);
 
-        /// @brief Gets the reduced Mesh2D data
-        ///
-        /// This function ought to be called after `mkernel_mesh2d_get_dimensions` has been called
-        /// and the pointers have been set to correctly sized memory.
-        /// @param[in]     meshKernelId The id of the mesh state
-        /// @param[in,out] mesh2d       The Mesh2D data
-        /// @returns Error code
-        /// @note Only node, edge, face-node data will be retrieved (face node data include the number of nodes per face mesh2d.nodes_per_face)
-        MKERNEL_API int mkernel_mesh2d_get_data_reduced(int meshKernelId, Mesh2D& mesh2d);
-
         /// @brief Gets an int indicating the orthogonality property type for mesh2d
         /// @param[out] type The int indicating the orthogonality property type
         /// @returns Error code

@@ -782,32 +782,6 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_data_reduced(int meshKernelId, Mesh2D& mesh2d)
-    {
-        lastExitCode = meshkernel::ExitCode::Success;
-        try
-        {
-            if (!meshKernelState.contains(meshKernelId))
-            {
-                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
-            }
-
-            if (mesh2d.node_x == nullptr || mesh2d.node_y == nullptr ||
-                mesh2d.edge_nodes == nullptr ||
-                mesh2d.nodes_per_face == nullptr || mesh2d.face_nodes == nullptr)
-            {
-                throw meshkernel::MeshKernelError("The meshkernel api Mesh2D has not been initialised correctly.");
-            }
-
-            SetMesh2dApiNodeEdgeFaceNodeData(*meshKernelState[meshKernelId].m_mesh2d, mesh2d);
-        }
-        catch (...)
-        {
-            lastExitCode = HandleException();
-        }
-        return lastExitCode;
-    }
-
     MKERNEL_API int mkernel_mesh2d_get_data(int meshKernelId, Mesh2D& mesh2d)
     {
         lastExitCode = meshkernel::ExitCode::Success;
