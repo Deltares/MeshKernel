@@ -60,6 +60,15 @@ namespace meshkernel
         /// finds intersections and orders the splines
         void CharacteriseSplines();
 
+        /// @brief Compute spline intersections in n-direction
+        void ComputeNDirectionIntersections();
+
+        /// @brief Compute spline intersections in m-direction
+        void ComputeMDirectionIntersections();
+
+        /// @brief Compute spline intersection start and end points
+        void ComputeSplineStartAndEnd(const UInt outerStart, const UInt outerEnd, const UInt innerStart, const UInt innerEnd);
+
         /// @brief Label each spline and its intersection.
         ///
         /// In which group does it lie (m or n), and spline crossing indices.

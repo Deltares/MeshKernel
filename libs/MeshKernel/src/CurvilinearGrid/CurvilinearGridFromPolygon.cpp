@@ -63,8 +63,6 @@ void CurvilinearGridFromPolygon::ComputeNumberOfMNodes(const UInt firstNode,
         diffBackward = firstNode - secondNode;
     }
 
-    // int direction;
-    // UInt numMNodes;
     if (diffForward <= diffBackward)
     {
         direction = 1;
@@ -129,7 +127,7 @@ void CurvilinearGridFromPolygon::AssignPolygonPointsToSegment(UInt nodeIndex,
     {
         sideToFill[i] = nodes[nodeIndex];
 
-        if ((nodeIndex == 0 && direction == -1))
+        if (nodeIndex == 0 && direction == -1)
         {
             nodeIndex = nodeIndex + numPolygonNodes + direction;
         }
