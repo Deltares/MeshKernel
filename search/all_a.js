@@ -3,7 +3,7 @@ var searchData=
   ['landboundaries_305',['LandBoundaries',['../classmeshkernel_1_1_land_boundaries.html',1,'meshkernel::LandBoundaries'],['../classmeshkernel_1_1_land_boundaries.html#a84b2095aa34593790950362c082f6212',1,'meshkernel::LandBoundaries::LandBoundaries()=default'],['../classmeshkernel_1_1_land_boundaries.html#a652ef2840cf3b59b78f6feab62858131',1,'meshkernel::LandBoundaries::LandBoundaries(const std::vector&lt; Point &gt; &amp;landBoundary, Mesh2D &amp;mesh, const Polygons &amp;polygons)']]],
   ['landboundary_306',['LandBoundary',['../classmeshkernel_1_1_land_boundary.html',1,'meshkernel::LandBoundary'],['../classmeshkernel_1_1_land_boundary.html#ad2e7d36dc35d8796461a33a0acb74cd6',1,'meshkernel::LandBoundary::LandBoundary()']]],
   ['length_307',['length',['../classmeshkernel_1_1_vector.html#ab3e9a44ab7c1e139b1364e53cf3060e8',1,'meshkernel::Vector']]],
-  ['lengthsquared_308',['lengthSquared',['../classmeshkernel_1_1_vector.html#a062eee060772375fb9d67f2bd4a94b4c',1,'meshkernel::Vector']]],
+  ['lengthsquared_308',['lengthSquared',['../classmeshkernel_1_1_vector.html#a062eee060772375fb9d67f2bd4a94b4c',1,'meshkernel::Vector::lengthSquared()'],['../namespacemeshkernel.html#add2c2f4acc03877edd3a45a749223dd9',1,'meshkernel::lengthSquared()']]],
   ['linearalgebraerror_309',['LinearAlgebraError',['../classmeshkernel_1_1_linear_algebra_error.html',1,'meshkernel']]],
   ['linearalgebraerrorcode_310',['LinearAlgebraErrorCode',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbac294e24213b70aed92e2c5fd4d99fa44',1,'meshkernel']]],
   ['linearinterpolationintriangle_311',['LinearInterpolationInTriangle',['../namespacemeshkernel.html#a60b5f4d4e7bf35bb934de88f52537e8a',1,'meshkernel']]],

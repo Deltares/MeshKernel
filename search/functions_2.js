@@ -65,6 +65,7 @@ var searchData=
   ['converttosamples_962',['ConvertToSamples',['../classmeshkernel_1_1_sample.html#a305835e50b4453de4ed0bbf67871ece8',1,'meshkernel::Sample']]],
   ['create_963',['Create',['../classmeshkernelapi_1_1_m_k_state_undo_action.html#ac422eb75534e287ce601b28ebe83a568',1,'meshkernelapi::MKStateUndoAction']]],
   ['createboundingbox_964',['CreateBoundingBox',['../classmeshkernel_1_1_bounding_box.html#acf29fe83a13844ada155c6455b406f24',1,'meshkernel::BoundingBox']]],
-  ['crossproduct_965',['crossProduct',['../namespacemeshkernel.html#aaf0a80624cc39ca2bbcaaa9d772b4136',1,'meshkernel']]],
-  ['curvilineardirectiontostring_966',['CurvilinearDirectionToString',['../namespacemeshkernel.html#aca6e05dec0589bb9b38e7b1f59d8f423',1,'meshkernel']]]
+  ['cross_965',['cross',['../namespacemeshkernel.html#a3f4c3ca491d4f343464dfc0f0f5084d2',1,'meshkernel']]],
+  ['crossproduct_966',['crossProduct',['../namespacemeshkernel.html#aaf0a80624cc39ca2bbcaaa9d772b4136',1,'meshkernel']]],
+  ['curvilineardirectiontostring_967',['CurvilinearDirectionToString',['../namespacemeshkernel.html#aca6e05dec0589bb9b38e7b1f59d8f423',1,'meshkernel']]]
 ];
