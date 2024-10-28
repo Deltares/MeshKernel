@@ -414,9 +414,11 @@ std::vector<meshkernel::CasulliDeRefinement::ElementType> meshkernel::CasulliDeR
     frontIndex.reserve(maximumSize);
     frontIndexCopy.reserve(maximumSize);
 
-    std::vector<ElementType> cellMask(mesh.GetNumFaces(), ElementType::Unassigned);
+    using enum ElementType;
 
-    cellMask[seedElement] = ElementType::WasNodeFirst;
+    std::vector<ElementType> cellMask(mesh.GetNumFaces(), Unassigned);
+
+    cellMask[seedElement] = WasNodeFirst;
     frontIndex.push_back(seedElement);
 
     while (frontIndex.size() > 0 && iterationCount < maxIterationCount)
@@ -431,17 +433,17 @@ std::vector<meshkernel::CasulliDeRefinement::ElementType> meshkernel::CasulliDeR
             // get the connected cells
             FindSurroundingCells(mesh, elementId, directlyConnected, indirectlyConnected, kne);
 
-            if (cellMask[elementId] == ElementType::WasNodeFirst)
+            if (cellMask[elementId] == WasNodeFirst)
             {
                 UpdateCellMaskDirectlyConnectedNodeFirst(directlyConnected, mesh, frontIndex, frontIndexCopy, cellMask);
                 UpdateCellMaskIndirectlyConnectedNodeFirst(indirectlyConnected, mesh, cellMask);
-                cellMask[elementId] = ElementType::WasNodeAfter;
+                cellMask[elementId] = WasNodeAfter;
             }
-            else if (cellMask[elementId] == ElementType::WasEdgeFirst)
+            else if (cellMask[elementId] == WasEdgeFirst)
             {
                 UpdateCellMaskDirectlyConnectedEdgeFirst(directlyConnected, mesh, frontIndex, frontIndexCopy, cellMask);
                 UpdateCellMaskIndirectlyConnectedEdgeFirst(directlyConnected, mesh, frontIndex, frontIndexCopy, cellMask);
-                cellMask[elementId] = ElementType::WasEdgeAfter;
+                cellMask[elementId] = WasEdgeAfter;
             }
         }
 
@@ -463,9 +465,11 @@ bool meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
     std::vector<ElementType> cellMask(InitialiseElementType(mesh, nodeTypes));
     mesh.ComputeCircumcentersMassCentersAndFaceAreas(true);
 
+    using enum ElementType;
+
     for (UInt k = 0; k < cellMask.size(); ++k)
     {
-        if (cellMask[k] == ElementType::WasNodeAfter && mesh.m_numFacesNodes[k] > 0)
+        if (cellMask[k] == WasNodeAfter && mesh.m_numFacesNodes[k] > 0)
         {
             FindSurroundingCells(mesh, k, directlyConnected, indirectlyConnected, kne);
 
@@ -1075,9 +1079,11 @@ std::vector<meshkernel::Point> meshkernel::CasulliDeRefinement::ElementsToDelete
     std::vector<Point> elementCentres;
     elementCentres.reserve(cellMask.size());
 
+    using enum ElementType;
+
     for (UInt k = 0; k < cellMask.size(); ++k)
     {
-        if (cellMask[k] == ElementType::WasNodeAfter && mesh.m_numFacesNodes[k] > 0)
+        if (cellMask[k] == WasNodeAfter && mesh.m_numFacesNodes[k] > 0)
         {
             bool toDelete = false;
 

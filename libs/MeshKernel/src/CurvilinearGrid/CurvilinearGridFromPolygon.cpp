@@ -35,6 +35,115 @@ using meshkernel::CurvilinearGridFromPolygon;
 
 CurvilinearGridFromPolygon::CurvilinearGridFromPolygon(const Polygon& polygon) : m_polygon(polygon) {}
 
+void CurvilinearGridFromPolygon::ComputeNumberOfMNodes(const UInt firstNode,
+                                                       const UInt secondNode,
+                                                       const UInt numPolygonNodes,
+                                                       int& direction,
+                                                       UInt& numMNodes) const
+{
+    // get rid of size and orientation first part
+    UInt diffForward;
+
+    if (firstNode > secondNode)
+    {
+        diffForward = secondNode + numPolygonNodes - firstNode;
+    }
+    else
+    {
+        diffForward = secondNode - firstNode;
+    }
+
+    UInt diffBackward;
+    if (secondNode > firstNode)
+    {
+        diffBackward = firstNode + numPolygonNodes - secondNode;
+    }
+    else
+    {
+        diffBackward = firstNode - secondNode;
+    }
+
+    // int direction;
+    // UInt numMNodes;
+    if (diffForward <= diffBackward)
+    {
+        direction = 1;
+        numMNodes = diffForward + 1;
+    }
+    else
+    {
+        direction = -1;
+        numMNodes = diffBackward + 1;
+    }
+}
+
+void CurvilinearGridFromPolygon::ComputeNumberOfNNodes(const UInt secondNode,
+                                                       const UInt thirdNode,
+                                                       const UInt numPolygonNodes,
+                                                       const int direction,
+                                                       UInt& numNNodes) const
+{
+    // get rid of size and orientation first part
+    UInt diffForward;
+    UInt diffBackward;
+
+    // get rid of size and orientation second part
+    if (secondNode > thirdNode)
+    {
+        diffForward = thirdNode + numPolygonNodes - secondNode;
+    }
+    else
+    {
+        diffForward = thirdNode - secondNode;
+    }
+
+    if (thirdNode > secondNode)
+    {
+        diffBackward = secondNode + numPolygonNodes - thirdNode;
+    }
+    else
+    {
+        diffBackward = secondNode - thirdNode;
+    }
+
+    if (direction == 1)
+    {
+        numNNodes = diffForward + 1;
+    }
+    else
+    {
+        numNNodes = diffBackward + 1;
+    }
+}
+
+void CurvilinearGridFromPolygon::AssignPolygonPointsToSegment(UInt nodeIndex,
+                                                              UInt numPointsSide,
+                                                              int direction,
+                                                              std::vector<Point>& sideToFill) const
+
+{
+    const std::vector<Point>& nodes = m_polygon.Nodes();
+    const UInt numPolygonNodes = m_polygon.Size() - 1;
+
+    for (UInt i = 0; i < numPointsSide; i++)
+    {
+        sideToFill[i] = nodes[nodeIndex];
+
+        if ((nodeIndex == 0 && direction == -1))
+        {
+            nodeIndex = nodeIndex + numPolygonNodes + direction;
+        }
+        else if (nodeIndex + direction > numPolygonNodes)
+        {
+            nodeIndex = nodeIndex + direction - numPolygonNodes;
+        }
+        else
+        {
+            nodeIndex = nodeIndex + direction;
+        }
+    }
+}
+
 std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstNode,
                                                                      UInt secondNode,
                                                                      UInt thirdNode,
@@ -56,84 +165,20 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstN
     }
 
     // for the current polygon find the number of nodes
-    UInt start = 0;
     UInt end = m_polygon.Size() - 1;
 
     // This does not include the last, closing, node of the polygon
-    const UInt numPolygonNodes = end - start;
-
-    // get rid of size and orientation first part
-    UInt diffForward;
-    if (firstNode > secondNode)
-    {
-        diffForward = secondNode + numPolygonNodes - firstNode;
-    }
-    else
-    {
-        diffForward = secondNode - firstNode;
-    }
-
-    UInt diffBackward;
-    if (secondNode > firstNode)
-    {
-        diffBackward = firstNode + numPolygonNodes - secondNode;
-    }
-    else
-    {
-        diffBackward = firstNode - secondNode;
-    }
+    const UInt numPolygonNodes = end;
 
     int direction;
     UInt numMNodes;
-    if (diffForward <= diffBackward)
-    {
-        direction = 1;
-        numMNodes = diffForward + 1;
-    }
-    else
-    {
-
-        direction = -1;
-        numMNodes = diffBackward + 1;
-    }
-
-    // get rid of size and orientation second part
-    if (secondNode > thirdNode)
-    {
-        diffForward = thirdNode + numPolygonNodes - secondNode;
-    }
-    else
-    {
-        diffForward = thirdNode - secondNode;
-    }
-
-    if (thirdNode > secondNode)
-    {
-        diffBackward = secondNode + numPolygonNodes - thirdNode;
-    }
-    else
-    {
-        diffBackward = secondNode - thirdNode;
-    }
-
     UInt numNNodes;
-    if (direction == 1)
-    {
-        numNNodes = diffForward + 1;
-    }
-    else
-    {
-        numNNodes = diffBackward + 1;
-    }
+
+    ComputeNumberOfMNodes(firstNode, secondNode, numPolygonNodes, direction, numMNodes);
+    ComputeNumberOfNNodes(secondNode, thirdNode, numPolygonNodes, direction, numNNodes);
 
     // get the fourth node
     auto fourthNode = thirdNode + direction * (numMNodes - 1);
-
-    // This can never be true now
-    if (fourthNode < start)
-    {
-        fourthNode += numPolygonNodes;
-    }
 
     if (fourthNode >= numPolygonNodes)
     {
@@ -161,37 +206,9 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstN
     std::vector<Point> sideThree(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
     std::vector<Point> sideFour(maximumNumberOfNodes, {constants::missing::doubleValue, constants::missing::doubleValue});
 
-    // Fill boundary coordinates
-    auto assignPolygonPointsToSegment = [&nodes = std::as_const(m_polygon.Nodes()),
-                                         startIndex = start,
-                                         endIndex = end,
-                                         numPolygonNodes](UInt nodeIndex,
-                                                          UInt numPointsSide,
-                                                          int direction,
-                                                          std::vector<Point>& sideToFill)
-    {
-        for (UInt i = 0; i < numPointsSide; i++)
-        {
-            sideToFill[i] = nodes[nodeIndex];
-
-            if ((nodeIndex == 0 && direction == -1) || nodeIndex + direction < startIndex)
-            {
-                nodeIndex = nodeIndex + numPolygonNodes + direction;
-            }
-            else if (nodeIndex + direction > endIndex)
-            {
-                nodeIndex = nodeIndex + direction - numPolygonNodes;
-            }
-            else
-            {
-                nodeIndex = nodeIndex + direction;
-            }
-        }
-    };
-
     if (useFourthSide)
     {
-        assignPolygonPointsToSegment(firstNode, numNNodes, -direction, sideOne);
+        AssignPolygonPointsToSegment(firstNode, numNNodes, -direction, sideOne);
     }
     else
     {
@@ -204,9 +221,9 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstN
         }
     }
 
-    assignPolygonPointsToSegment(secondNode, numNNodes, direction, sideTwo);
-    assignPolygonPointsToSegment(firstNode, numMNodes, direction, sideThree);
-    assignPolygonPointsToSegment(fourthNode, numMNodes, -direction, sideFour);
+    AssignPolygonPointsToSegment(secondNode, numNNodes, direction, sideTwo);
+    AssignPolygonPointsToSegment(firstNode, numMNodes, direction, sideThree);
+    AssignPolygonPointsToSegment(fourthNode, numMNodes, -direction, sideFour);
 
     Projection const polygonProjection = m_polygon.GetProjection();
 

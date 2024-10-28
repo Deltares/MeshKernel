@@ -272,6 +272,18 @@ namespace meshkernel
         /// @return The new displacement
         [[nodiscard]] Point TransformDisplacement(Point const& displacement, CurvilinearGridNodeIndices const& node, bool isLocal) const;
 
+        UndoActionPtr AddGridLineAtBottom(const CurvilinearGridNodeIndices& firstNode,
+                                          const CurvilinearGridNodeIndices& secondNode);
+
+        UndoActionPtr AddGridLineAtTop(const CurvilinearGridNodeIndices& firstNode,
+                                       const CurvilinearGridNodeIndices& secondNode);
+
+        UndoActionPtr AddGridLineAtLeft(const CurvilinearGridNodeIndices& firstNode,
+                                        const CurvilinearGridNodeIndices& secondNode);
+
+        UndoActionPtr AddGridLineAtRight(const CurvilinearGridNodeIndices& firstNode,
+                                         const CurvilinearGridNodeIndices& secondNode);
+
         /// @brief Allocates a new grid line at the boundary of the curvilinear grid if needed.
         /// @param firstNode The first node of the boundary grid line.
         /// @param secondNode The second node of the boundary grid line.

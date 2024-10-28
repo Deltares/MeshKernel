@@ -678,6 +678,100 @@ meshkernel::UndoActionPtr CurvilinearGrid::InsertFace(Point const& point)
     return undoAction;
 }
 
+meshkernel::UndoActionPtr CurvilinearGrid::AddGridLineAtBottom(const CurvilinearGridNodeIndices& firstNode,
+                                                               const CurvilinearGridNodeIndices& secondNode)
+{
+    UndoActionPtr undoAction;
+
+    if (firstNode.m_n == 0 || secondNode.m_n == 0)
+    {
+
+        // n-direction
+        if (m_startOffset.m_n == 0)
+        {
+            lin_alg::InsertRow(m_gridNodes, lin_alg::RowVector<Point>(FullNumM()), 0);
+        }
+        else
+        {
+            m_startOffset.m_n -= 1;
+        }
+
+        undoAction = AddGridLineUndoAction::Create(*this, {1, 0}, {0, 0});
+    }
+
+    return undoAction;
+}
+
+meshkernel::UndoActionPtr CurvilinearGrid::AddGridLineAtTop(const CurvilinearGridNodeIndices& firstNode,
+                                                            const CurvilinearGridNodeIndices& secondNode)
+{
+    UndoActionPtr undoAction;
+
+    if (firstNode.m_n == NumN() - 1 || secondNode.m_n == NumN() - 1)
+    {
+        // n-direction
+        if (m_endOffset.m_n == 0)
+        {
+            lin_alg::InsertRow(m_gridNodes, lin_alg::RowVector<Point>(FullNumM()), FullNumN());
+        }
+        else
+        {
+            m_endOffset.m_n -= 1;
+        }
+
+        undoAction = AddGridLineUndoAction::Create(*this, {0, 0}, {1, 0});
+    }
+
+    return undoAction;
+}
+
+meshkernel::UndoActionPtr CurvilinearGrid::AddGridLineAtLeft(const CurvilinearGridNodeIndices& firstNode,
+                                                             const CurvilinearGridNodeIndices& secondNode)
+{
+    UndoActionPtr undoAction;
+
+    if (firstNode.m_m == 0 || secondNode.m_m == 0)
+    {
+
+        // m-direction
+        if (m_startOffset.m_m == 0)
+        {
+            lin_alg::InsertCol(m_gridNodes, lin_alg::ColVector<Point>(FullNumN()), 0);
+        }
+        else
+        {
+            m_startOffset.m_m -= 1;
+        }
+
+        undoAction = AddGridLineUndoAction::Create(*this, {0, 1}, {0, 0});
+    }
+
+    return undoAction;
+}
+
+meshkernel::UndoActionPtr CurvilinearGrid::AddGridLineAtRight(const CurvilinearGridNodeIndices& firstNode,
+                                                              const CurvilinearGridNodeIndices& secondNode)
+{
+    UndoActionPtr undoAction;
+
+    if (firstNode.m_m == NumM() - 1 || secondNode.m_m == NumM() - 1)
+    {
+        // m-direction
+        if (m_endOffset.m_m == 0)
+        {
+            lin_alg::InsertCol(m_gridNodes, lin_alg::ColVector<Point>(FullNumN()), FullNumM());
+        }
+        else
+        {
+            m_endOffset.m_m -= 1;
+        }
+
+        undoAction = AddGridLineUndoAction::Create(*this, {0, 0}, {0, 1});
+    }
+
+    return undoAction;
+}
+
 std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode,
                                                                                    CurvilinearGridNodeIndices const& secondNode)
 {
@@ -710,84 +804,25 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
     if (areNodesValid)
     {
 
-        if (gridLineType == BoundaryGridLineType::Bottom)
+        switch (gridLineType)
         {
-            if (firstNode.m_n == 0 || secondNode.m_n == 0)
-            {
-
-                // n-direction
-                if (m_startOffset.m_n == 0)
-                {
-                    lin_alg::InsertRow(m_gridNodes, lin_alg::RowVector<Point>(FullNumM()), 0);
-                }
-                else
-                {
-                    m_startOffset.m_n -= 1;
-                }
-
-                undoAction = AddGridLineUndoAction::Create(*this, {1, 0}, {0, 0});
-                gridSizeChanged = true;
-            }
+        case BoundaryGridLineType::Bottom:
+            undoAction = AddGridLineAtBottom(firstNode, secondNode);
+            break;
+        case BoundaryGridLineType::Top:
+            undoAction = AddGridLineAtTop(firstNode, secondNode);
+            break;
+        case BoundaryGridLineType::Right:
+            undoAction = AddGridLineAtRight(firstNode, secondNode);
+            break;
+        case BoundaryGridLineType::Left:
+            undoAction = AddGridLineAtLeft(firstNode, secondNode);
+            break;
+        default:
+            throw ConstraintError("Invalid gridLineType");
         }
 
-        if (gridLineType == BoundaryGridLineType::Top)
-        {
-            if (firstNode.m_n == NumN() - 1 || secondNode.m_n == NumN() - 1)
-            {
-                // n-direction
-                if (m_endOffset.m_n == 0)
-                {
-                    lin_alg::InsertRow(m_gridNodes, lin_alg::RowVector<Point>(FullNumM()), FullNumN());
-                }
-                else
-                {
-                    m_endOffset.m_n -= 1;
-                }
-
-                undoAction = AddGridLineUndoAction::Create(*this, {0, 0}, {1, 0});
-                gridSizeChanged = true;
-            }
-        }
-
-        if (gridLineType == BoundaryGridLineType::Right)
-        {
-            if (firstNode.m_m == NumM() - 1 || secondNode.m_m == NumM() - 1)
-            {
-                // m-direction
-                if (m_endOffset.m_m == 0)
-                {
-                    lin_alg::InsertCol(m_gridNodes, lin_alg::ColVector<Point>(FullNumN()), FullNumM());
-                }
-                else
-                {
-                    m_endOffset.m_m -= 1;
-                }
-
-                undoAction = AddGridLineUndoAction::Create(*this, {0, 0}, {0, 1});
-                gridSizeChanged = true;
-            }
-        }
-
-        if (gridLineType == BoundaryGridLineType::Left)
-        {
-
-            if (firstNode.m_m == 0 || secondNode.m_m == 0)
-            {
-
-                // m-direction
-                if (m_startOffset.m_m == 0)
-                {
-                    lin_alg::InsertCol(m_gridNodes, lin_alg::ColVector<Point>(FullNumN()), 0);
-                }
-                else
-                {
-                    m_startOffset.m_m -= 1;
-                }
-
-                undoAction = AddGridLineUndoAction::Create(*this, {0, 1}, {0, 0});
-                gridSizeChanged = true;
-            }
-        }
+        gridSizeChanged = undoAction != nullptr;
     }
 
     return {gridSizeChanged, std::move(undoAction)};
