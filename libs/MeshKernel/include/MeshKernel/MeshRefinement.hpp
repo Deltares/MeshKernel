@@ -150,6 +150,17 @@ namespace meshkernel
                                                        size_t& numberOfEdgesToRefine,
                                                        std::vector<UInt>& edgeToRefine) const;
 
+        bool DetermineRequiredRefinement(const UInt face,
+                                         const UInt edge) const;
+
+        void ResetNumberOfEdgesToRefineForFace(const UInt face,
+                                               const std::vector<UInt>& edgeToRefine,
+                                               size_t& numberOfEdgesToRefine) const;
+
+        void DetermineEdgesToRefine(const UInt face,
+                                    std::vector<UInt>& edgeToRefine,
+                                    size_t& numberOfEdgesToRefine) const;
+
         /// @brief Computes the refinement mask for refinement based on wave courant criteria
         void ComputeRefinementMasksForWaveCourant(UInt face,
                                                   size_t& numberOfEdgesToRefine,
@@ -185,20 +196,82 @@ namespace meshkernel
         /// @returns The number of hanging nodes
         UInt CountEdgesToRefine(UInt face) const;
 
+        /// @brief Update the face mask
+        void UpdateFaceMask(const int level);
+
 #if 0
         /// Deletes isolated hanging nodes(remove_isolated_hanging_nodes)
         /// @returns Number of deleted isolated hanging nodes
         [[nodiscard]] UInt DeleteIsolatedHangingnodes();
 #endif
 
+        /// @brief Connect one hanging node for quadrilateral
+        void ConnectOneHangingNodeForQuadrilateral(const UInt numNonHangingNodes,
+                                                   const std::vector<UInt>& edgeEndNodeCache,
+                                                   std::vector<UInt>& hangingNodeCache,
+                                                   CompoundUndoAction& hangingNodeAction);
+
+        /// @brief Connect two hanging nodes for quadrilateral
+        void ConnectTwoHangingNodesForQuadrilateral(const UInt numNonHangingNodes,
+                                                    const std::vector<UInt>& edgeEndNodeCache,
+                                                    std::vector<UInt>& hangingNodeCache,
+                                                    CompoundUndoAction& hangingNodeAction);
+
+        /// @brief Connect one hanging node for triangle
+        void ConnectOneHangingNodeForTriangle(const UInt numNonHangingNodes,
+                                              const std::vector<UInt>& edgeEndNodeCache,
+                                              std::vector<UInt>& hangingNodeCache,
+                                              CompoundUndoAction& hangingNodeAction);
+
+        /// @brief Connect two hanging nodes for triangle
+        void ConnectTwoHangingNodesForTriangle(const UInt numNonHangingNodes,
+                                               std::vector<UInt>& hangingNodeCache,
+                                               CompoundUndoAction& hangingNodeAction);
+
         /// @brief Connect the hanging nodes with triangles (connect_hanging_nodes)
         std::unique_ptr<meshkernel::UndoAction> ConnectHangingNodes();
+
+        void FindEdgesToSplit(const UInt faceId,
+                              const UInt numEdges,
+                              std::vector<bool>& splitEdge) const;
+
+        void UpdateFaceRefinementMask(std::vector<bool>& splitEdge);
+
+        void UpdateEdgeRefinementMask();
 
         /// @brief Smooth the face and edge refinement masks (smooth_jarefine)
         void SmoothRefinementMasks();
 
         /// @brief Computes m_faceMask, if a face must be split later on (split_cells)
         void ComputeIfFaceShouldBeSplit();
+
+        Point ComputeMidPoint(const Point& firstNode, const Point& secondNode) const;
+
+        int DetermineNodeMaskValue(const int firstNodeMask, const int secondNodeMask) const;
+
+        bool DetermineIfParentIsCrossed(const UInt faceId, const UInt numEdges) const;
+
+        bool FindNonHangingNodeEdges(const UInt faceId,
+                                     const UInt numEdges,
+                                     std::vector<UInt>& notHangingFaceNodes,
+                                     std::vector<UInt>& nonHangingEdges,
+                                     UInt& numBrotherEdges) const;
+
+        void ComputeSplittingNode(const UInt faceId,
+                                  std::vector<Point>& facePolygonWithoutHangingNodes,
+                                  std::vector<UInt>& localEdgesNumFaces,
+                                  Point& splittingNode) const;
+
+        void FindFacePolygonWithoutHangingNodes(const UInt faceId,
+                                                const std::vector<UInt>& nonHangingEdges,
+                                                std::vector<Point>& facePolygonWithoutHangingNodes,
+                                                std::vector<UInt>& localEdgesNumFaces) const;
+
+        void SplitEdges(const bool isParentCrossed,
+                        const std::vector<UInt>& localEdgesNumFaces,
+                        const std::vector<UInt>& notHangingFaceNodes,
+                        const Point& splittingNode,
+                        CompoundUndoAction& refineFacesAction);
 
         /// @brief The refinement operation by splitting the face (refine_cells)
         std::unique_ptr<meshkernel::UndoAction> RefineFacesBySplittingEdges();
