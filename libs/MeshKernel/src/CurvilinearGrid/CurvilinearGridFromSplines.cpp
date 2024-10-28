@@ -1154,6 +1154,21 @@ namespace meshkernel
         return maximumGridLayerGrowTime;
     }
 
+    bool CurvilinearGridFromSplines::CheckCornerNodes(const UInt p,
+                                                      const lin_alg::RowVector<UInt>& indices,
+                                                      const lin_alg::Matrix<UInt>& gridPointsIndices,
+                                                      const bool increaseOffset) const
+    {
+
+        bool result = indices[0] == gridPointsIndices(p, 0) + (increaseOffset ? 1 : -1) &&
+                      indices[1] == gridPointsIndices(p, 1) &&
+                      m_validFrontNodes[indices[0]] == constants::missing::uintValue;
+
+        result = result || (indices[0] == gridPointsIndices(p, 0) && indices[1] < gridPointsIndices(p, 1));
+
+        return result;
+    }
+
     std::tuple<std::vector<Point>, std::vector<Point>, lin_alg::Matrix<UInt>> CurvilinearGridFromSplines::CopyVelocitiesToFront(UInt layerIndex,
                                                                                                                                 const std::vector<Point>& previousFrontVelocities)
     {
@@ -1168,6 +1183,7 @@ namespace meshkernel
             if (gridPointsIndices(p, 1) == layerIndex && m_validFrontNodes[gridPointsIndices(p, 0)] == 1)
             {
                 velocities[p] = previousFrontVelocities[gridPointsIndices(p, 0)];
+
                 if (!velocities[p].IsValid())
                 {
                     velocities[p] = {0.0, 0.0};
@@ -1175,24 +1191,12 @@ namespace meshkernel
 
                 // Check for corner nodes
                 const auto previous = p == 0 ? 0 : p - 1;
-                const auto previousIndices = gridPointsIndices.row(previous);
-
+                const lin_alg::RowVector<UInt> previousIndices = gridPointsIndices.row(previous);
                 const auto next = std::min(p + 1, numFrontPoints);
-                const auto nextIndices = gridPointsIndices.row(next);
+                const lin_alg::RowVector<UInt> nextIndices = gridPointsIndices.row(next);
 
-                // Check corner nodes
-                bool ll = previousIndices[0] == gridPointsIndices(p, 0) - 1 &&
-                          previousIndices[1] == gridPointsIndices(p, 1) &&
-                          m_validFrontNodes[previousIndices[0]] == 0;
-
-                bool lr = nextIndices[0] == gridPointsIndices(p, 0) + 1 &&
-                          nextIndices[1] == gridPointsIndices(p, 1) &&
-                          m_validFrontNodes[nextIndices[0]] == 0;
-
-                ll = ll || (previousIndices[0] == gridPointsIndices(p, 0) &&
-                            (previousIndices[1] == constants::missing::uintValue || previousIndices[1] < gridPointsIndices(p, 1)));
-                lr = lr || (nextIndices[0] == gridPointsIndices(p, 0) &&
-                            (nextIndices[1] == constants::missing::uintValue || nextIndices[1] < gridPointsIndices(p, 1)));
+                bool ll = CheckCornerNodes(p, previousIndices, gridPointsIndices, false /* sign */);
+                bool lr = CheckCornerNodes(p, nextIndices, gridPointsIndices, true /* sign */);
 
                 if (ll || lr)
                 {

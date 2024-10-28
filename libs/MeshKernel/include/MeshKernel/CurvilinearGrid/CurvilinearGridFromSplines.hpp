@@ -182,6 +182,12 @@ namespace meshkernel
         std::vector<double> ComputeMaximumEdgeGrowTime(const lin_alg::RowVector<Point>& coordinates,
                                                        const std::vector<Point>& velocities) const;
 
+        /// @brief Check corner nodes
+        bool CheckCornerNodes(const UInt p,
+                              const lin_alg::RowVector<UInt>& indices,
+                              const lin_alg::Matrix<UInt>& gridPointsIndices,
+                              const bool increaseOffset) const;
+
         /// @brief Copy growth velocities to the advancing front, add points at front corners corners (copy_vel_to_front)
         /// @param[in] layerIndex The current grid layerIndex index
         /// @param[in] previousFrontVelocities The previous front velocities
