@@ -138,7 +138,7 @@ void Splines::SwapSplines(const UInt firstSpline, const UInt secondSpline)
 
     if (firstSpline == secondSpline)
     {
-        // Nothig to do if spline indices are the same.
+        // Nothing to do if spline indices are the same.
         return;
     }
 
@@ -435,11 +435,13 @@ Splines::ComputePointOnSplineFromAdimensionalDistance(UInt index,
         func.SetDimensionalDistance(distances[i]);
         adimensionalDistances[i] = FindFunctionRootWithGoldenSectionSearch(func, 0, static_cast<double>(numNodes) - 1.0);
         points[i] = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[index], m_splineDerivatives[index], adimensionalDistances[i]);
+
         if (!points[i].IsValid())
         {
             throw AlgorithmError("Could not interpolate spline points.");
         }
     }
+
     return {points, adimensionalDistances};
 }
 

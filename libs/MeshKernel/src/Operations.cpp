@@ -268,9 +268,7 @@ namespace meshkernel
             const Cartesian3DPoint polygonCenterCartesian3D{SphericalToCartesian3D(polygonCenter)};
             for (UInt i = 0; i < currentPolygonSize; ++i)
             {
-                cartesian3DPoints[i].x = polygonCenterCartesian3D.x + enlargementFactor * (cartesian3DPoints[i].x - polygonCenterCartesian3D.x);
-                cartesian3DPoints[i].y = polygonCenterCartesian3D.y + enlargementFactor * (cartesian3DPoints[i].y - polygonCenterCartesian3D.y);
-                cartesian3DPoints[i].z = polygonCenterCartesian3D.z + enlargementFactor * (cartesian3DPoints[i].z - polygonCenterCartesian3D.z);
+                cartesian3DPoints[i] = polygonCenterCartesian3D + enlargementFactor * (cartesian3DPoints[i] - polygonCenterCartesian3D);
             }
 
             // convert point
@@ -1003,27 +1001,19 @@ namespace meshkernel
             const Cartesian3DPoint firstPointSecondSegment3D{SphericalToCartesian3D(firstPointSecondSegment)};
             const Cartesian3DPoint secondPointSecondSegment3D{SphericalToCartesian3D(secondPointSecondSegment)};
 
-            const double dx1 = secondPointFirstSegment3D.x - firstPointFirstSegment3D.x;
-            const double dy1 = secondPointFirstSegment3D.y - firstPointFirstSegment3D.y;
-            const double dz1 = secondPointFirstSegment3D.z - firstPointFirstSegment3D.z;
+            const Cartesian3DPoint delta1 = secondPointFirstSegment3D - firstPointFirstSegment3D;
+            const Cartesian3DPoint delta2 = secondPointSecondSegment3D - firstPointSecondSegment3D;
 
-            const double dx2 = secondPointSecondSegment3D.x - firstPointSecondSegment3D.x;
-            const double dy2 = secondPointSecondSegment3D.y - firstPointSecondSegment3D.y;
-            const double dz2 = secondPointSecondSegment3D.z - firstPointSecondSegment3D.z;
-
-            return DotProduct(dx1, dx2, dy1, dy2, dz1, dz2);
+            return InnerProduct(delta1, delta2);
         }
 
         // cartesian and spherical
         if (projection == Projection::cartesian || projection == Projection::spherical)
         {
-            const double dx1 = GetDx(firstPointFirstSegment, secondPointFirstSegment, projection);
-            const double dx2 = GetDx(firstPointSecondSegment, secondPointSecondSegment, projection);
+            const Vector delta1{GetDx(firstPointFirstSegment, secondPointFirstSegment, projection), GetDy(firstPointFirstSegment, secondPointFirstSegment, projection)};
+            const Vector delta2{GetDx(firstPointSecondSegment, secondPointSecondSegment, projection), GetDy(firstPointSecondSegment, secondPointSecondSegment, projection)};
 
-            double dy1 = GetDy(firstPointFirstSegment, secondPointFirstSegment, projection);
-            double dy2 = GetDy(firstPointSecondSegment, secondPointSecondSegment, projection);
-
-            return DotProduct(dx1, dx2, dy1, dy2);
+            return dot(delta1, delta2);
         }
 
         return constants::missing::doubleValue;

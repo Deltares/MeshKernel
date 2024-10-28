@@ -885,9 +885,8 @@ meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
                 const Point previousCircumCenter = estimatedCircumCenter;
                 for (UInt n = 0; n < pointCount; n++)
                 {
-                    const auto dx = GetDx(middlePoints[n], estimatedCircumCenter, m_projection);
-                    const auto dy = GetDy(middlePoints[n], estimatedCircumCenter, m_projection);
-                    const auto increment = -0.1 * DotProduct(dx, normals[n].x, dy, normals[n].y);
+                    const Point delta{GetDx(middlePoints[n], estimatedCircumCenter, m_projection), GetDy(middlePoints[n], estimatedCircumCenter, m_projection)};
+                    const auto increment = -0.1 * dot(delta, normals[n]);
                     AddIncrementToPoint(normals[n], increment, centerOfMass, m_projection, estimatedCircumCenter);
                 }
                 if (iter > 0 &&
