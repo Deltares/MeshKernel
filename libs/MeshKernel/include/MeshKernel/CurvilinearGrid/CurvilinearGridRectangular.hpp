@@ -45,7 +45,7 @@ namespace meshkernel
         /// @brief Class constructor
         ///
         /// @param[in] projection The projection to use
-        CurvilinearGridRectangular(Projection projection);
+        explicit CurvilinearGridRectangular(Projection projection);
 
         /// @brief Compute a rectangular curvilinear grid, given the origin and the number of rows, columns and block size
         /// @param[in] numColumns The number of columns in x direction

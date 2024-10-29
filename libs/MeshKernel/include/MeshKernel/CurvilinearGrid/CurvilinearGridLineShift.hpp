@@ -46,7 +46,7 @@ namespace meshkernel
     public:
         /// @brief Class constructor
         /// @param[in] grid The input curvilinear grid
-        CurvilinearGridLineShift(CurvilinearGrid& grid);
+        explicit CurvilinearGridLineShift(CurvilinearGrid& grid);
 
         /// @brief Computes a new curvilinear grid with the line shift
         [[nodiscard]] UndoActionPtr Compute() override;

@@ -39,7 +39,7 @@ namespace meshkernel::averaging
         /// @brief Construct a new ClosestAveragingStrategy.
         /// @param[in] interpolationPoint The point for which the average should be calculated.
         /// @param[in] projection         The projection used to calculate distances with.
-        ClosestAveragingStrategy(Projection projection);
+        explicit ClosestAveragingStrategy(Projection projection);
 
         /// @brief Calculates the average value based on the sample values.
         /// @param[in] interpolationPoint The point for which the average should be calculated.

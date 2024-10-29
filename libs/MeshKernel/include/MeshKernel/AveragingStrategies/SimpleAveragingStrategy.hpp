@@ -39,7 +39,7 @@ namespace meshkernel::averaging
     public:
         /// @brief Constructor taking the minimum amount of points parameter
         /// @param minNumSamples[in] The minimum amount of samples for a valid interpolation
-        SimpleAveragingStrategy(size_t minNumSamples);
+        explicit SimpleAveragingStrategy(size_t minNumSamples);
 
         /// @brief Calculates the average value based on the sample values.
         /// @param[in] interpolationPoint The point for which the average should be calculated.

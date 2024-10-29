@@ -52,7 +52,7 @@ namespace meshkernel
         // long form for any exceptions?
 
         /// @brief Constructor with maximum number of undo actions allowed
-        UndoActionStack(const UInt maximumSize = DefaultMaxUndoSize);
+        explicit UndoActionStack(const UInt maximumSize = DefaultMaxUndoSize);
 
         /// @brief Set the maximum undo stack size.
         void SetMaximumSize(const UInt maximumSize);

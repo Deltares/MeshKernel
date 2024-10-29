@@ -44,7 +44,7 @@ namespace meshkernel
 
         // @brief Construct a Network1D only from the projection
         /// @param[in] projection The projection to use
-        Network1D(Projection projection);
+        explicit Network1D(Projection projection);
 
         /// @brief Construct a mesh1d by discretizing polyLines
         /// @param[in] polyLines The polylines to be discretize
