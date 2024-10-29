@@ -430,6 +430,130 @@ void CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
     RemoveInvalidNodes(invalidNodesToRemove);
 }
 
+meshkernel::NodeType CurvilinearGrid::GetBottomNodeType (const UInt n) const
+{
+    NodeType result = NodeType::Bottom;
+
+    if (n == 0)
+    {
+        result = NodeType::BottomLeft;
+    }
+    else if (n == NumN() - 1)
+    {
+        result = NodeType::BottomRight;
+    }
+    else if (!GetNode(n - 1, 0).IsValid())
+    {
+        result = NodeType::BottomLeft;
+    }
+    else if (!GetNode(n + 1, 0).IsValid())
+    {
+        result = NodeType::BottomRight;
+    }
+
+    return result;
+}
+
+meshkernel::NodeType CurvilinearGrid::GetTopNodeType (const UInt n) const
+{
+    NodeType result = NodeType::Up;
+    UInt m = NumM() - 1;
+
+    if (n == 0)
+    {
+        result = NodeType::UpperLeft;
+    }
+    else if (n == NumN () - 1)
+    {
+        result = NodeType::UpperRight;
+    }
+    else if (!GetNode(n - 1, m).IsValid())
+    {
+        result = NodeType::UpperLeft;
+    }
+    else if (!GetNode(n + 1, m).IsValid())
+    {
+        result = NodeType::UpperRight;
+    }
+
+    return result;
+}
+
+
+meshkernel::NodeType CurvilinearGrid::GetLeftNodeType (const UInt m) const
+{
+    NodeType result = NodeType::Left;
+
+    if (!GetNode(0, m - 1).IsValid())
+    {
+        result = NodeType::BottomLeft;
+    }
+    else if (!GetNode(0, m + 1).IsValid())
+    {
+        // TODO SHould this be NodeType::UpperLeft
+        result = NodeType::UpperLeft;//UpperRight;
+    }
+
+    return result;
+}
+
+meshkernel::NodeType CurvilinearGrid::GetRightNodeType (const UInt m) const
+{
+    NodeType result = NodeType::Right;
+    UInt n = NumN() - 1;
+
+
+    if (!GetNode(n, m - 1).IsValid())
+    {
+        result = NodeType::BottomRight;
+    }
+    else if (!GetNode(n, m + 1).IsValid())
+    {
+        result = NodeType::UpperRight;
+    }
+
+    return result;
+}
+
+meshkernel::CurvilinearGrid::NodeTypeArray4D CurvilinearGrid::InitialiseInteriorNodeType () {
+
+    NodeTypeArray4D result;
+
+    result[0][0][0][0] = NodeType::Invalid;
+    result[0][0][0][1] = NodeType::UpperLeft;
+    result[0][0][1][0] = NodeType::UpperRight;
+    result[0][0][1][1] = NodeType::Up;
+    result[0][1][0][0] = NodeType::BottomRight;
+    result[0][1][0][1] = NodeType::Invalid;
+    result[0][1][1][0] = NodeType::Right;
+    result[0][1][1][1] = NodeType::BottomLeft;
+    result[1][0][0][0] = NodeType::BottomLeft;
+    result[1][0][0][1] = NodeType::Left;
+    result[1][0][1][0] = NodeType::Invalid;
+    result[1][0][1][1] = NodeType::BottomRight;
+    result[1][1][0][0] = NodeType::Bottom;
+    result[1][1][0][1] = NodeType::UpperRight;
+    result[1][1][1][0] = NodeType::UpperLeft;
+    result[1][1][1][1] = NodeType::InternalValid;
+
+    return result;
+
+}
+
+
+meshkernel::NodeType CurvilinearGrid::GetInteriorNodeType (const UInt n, const UInt m) const
+{
+    static const NodeTypeArray4D InteriorNodeType = InitialiseInteriorNodeType ();
+
+    const size_t isTopRightFaceValid = IsFaceMaskValid(n, m) ? 1u : 0u;
+    const size_t isTopLeftFaceValid = IsFaceMaskValid(n - 1, m) ? 1u : 0u;
+    const size_t isBottomLeftFaceValid = IsFaceMaskValid(n - 1, m - 1) ? 1u : 0u;
+    const size_t isBottomRightFaceValid = IsFaceMaskValid(n, m - 1) ? 1u : 0u;
+
+    return InteriorNodeType [isTopRightFaceValid][isTopLeftFaceValid][isBottomLeftFaceValid][isBottomRightFaceValid];
+}
+
+
 void CurvilinearGrid::ComputeGridNodeTypes()
 {
     RemoveInvalidNodes(true);
@@ -446,206 +570,36 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 continue;
             }
 
+            // Get boundary node types
             // Bottom side
-            if (m == 0 && n == 0)
-            {
-                GetNodeType(n, m) = NodeType::BottomLeft;
-                continue;
-            }
-            if (m == 0 && n == NumN() - 1)
-            {
-                GetNodeType(n, m) = NodeType::BottomRight;
-                continue;
-            }
-            if (m == 0 && !GetNode(n - 1, m).IsValid())
-            {
-                GetNodeType(n, m) = NodeType::BottomLeft;
-                continue;
-            }
-            if (m == 0 && !GetNode(n + 1, m).IsValid())
-            {
-                GetNodeType(n, m) = NodeType::BottomRight;
-                continue;
-            }
             if (m == 0)
             {
-                GetNodeType(n, m) = NodeType::Bottom;
+                GetNodeType(n, m) = GetBottomNodeType (n);
                 continue;
             }
+
             // Upper side
-            if (m == NumM() - 1 && n == 0)
-            {
-                GetNodeType(n, m) = NodeType::UpperLeft;
-                continue;
-            }
-            if (m == NumM() - 1 && n == NumN() - 1)
-            {
-                GetNodeType(n, m) = NodeType::UpperRight;
-                continue;
-            }
-            if (m == NumM() - 1 && !GetNode(n - 1, m).IsValid())
-            {
-                GetNodeType(n, m) = NodeType::UpperLeft;
-                continue;
-            }
-            if (m == NumM() - 1 && !GetNode(n + 1, m).IsValid())
-            {
-                GetNodeType(n, m) = NodeType::UpperRight;
-                continue;
-            }
             if (m == NumM() - 1)
             {
-                GetNodeType(n, m) = NodeType::Up;
+                GetNodeType(n, m) = GetTopNodeType (n);
                 continue;
             }
-            // Bottom side
-            if (n == 0 && !GetNode(n, m - 1).IsValid())
-            {
-                GetNodeType(n, m) = NodeType::BottomLeft;
-                continue;
-            }
-            if (n == 0 && !GetNode(n, m + 1).IsValid())
-            {
-                GetNodeType(n, m) = NodeType::UpperRight;
-                continue;
-            }
+
+            // left side
             if (n == 0)
             {
-                GetNodeType(n, m) = NodeType::Left;
+                GetNodeType(n, m) = GetLeftNodeType(m);
                 continue;
             }
-            // Upper side
-            if (n == NumN() - 1 && !GetNode(n, m - 1).IsValid())
-            {
-                GetNodeType(n, m) = NodeType::BottomRight;
-                continue;
-            }
-            if (n == NumN() - 1 && !GetNode(n, m + 1).IsValid())
-            {
-                GetNodeType(n, m) = NodeType::UpperRight;
-                continue;
-            }
+
+            // right side
             if (n == NumN() - 1)
             {
-                GetNodeType(n, m) = NodeType::Right;
+                GetNodeType(n, m) = GetRightNodeType(m);
                 continue;
             }
 
-            auto const isBottomRightFaceValid = IsFaceMaskValid(n, m - 1);
-            auto const isBottomLeftFaceValid = IsFaceMaskValid(n - 1, m - 1);
-            auto const isTopRightFaceValid = IsFaceMaskValid(n, m);
-            auto const isTopLeftFaceValid = IsFaceMaskValid(n - 1, m);
-
-            if (isTopRightFaceValid &&
-                isTopLeftFaceValid &&
-                isBottomLeftFaceValid &&
-                isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::InternalValid;
-                continue;
-            }
-            if (!isTopRightFaceValid &&
-                isTopLeftFaceValid &&
-                isBottomLeftFaceValid &&
-                isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::BottomLeft;
-                continue;
-            }
-            if (isTopRightFaceValid &&
-                !isTopLeftFaceValid &&
-                isBottomLeftFaceValid &&
-                isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::BottomRight;
-                continue;
-            }
-            if (isTopRightFaceValid &&
-                isTopLeftFaceValid &&
-                !isBottomLeftFaceValid &&
-                isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::UpperRight;
-                continue;
-            }
-            if (isTopRightFaceValid &&
-                isTopLeftFaceValid &&
-                isBottomLeftFaceValid &&
-                !isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::UpperLeft;
-                continue;
-            }
-
-            if (isTopRightFaceValid &&
-                isTopLeftFaceValid &&
-                !isBottomLeftFaceValid &&
-                !isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::Bottom;
-                continue;
-            }
-            if (isTopRightFaceValid &&
-                !isTopLeftFaceValid &&
-                !isBottomLeftFaceValid &&
-                isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::Left;
-                continue;
-            }
-
-            if (!isTopRightFaceValid &&
-                !isTopLeftFaceValid &&
-                isBottomLeftFaceValid &&
-                isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::Up;
-                continue;
-            }
-
-            if (!isTopRightFaceValid &&
-                isTopLeftFaceValid &&
-                isBottomLeftFaceValid &&
-                !isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::Right;
-                continue;
-            }
-
-            if (isTopRightFaceValid &&
-                !isTopLeftFaceValid &&
-                !isBottomLeftFaceValid &&
-                !isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::BottomLeft;
-                continue;
-            }
-
-            if (!isTopRightFaceValid &&
-                isTopLeftFaceValid &&
-                !isBottomLeftFaceValid &&
-                !isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::BottomRight;
-                continue;
-            }
-
-            if (!isTopRightFaceValid &&
-                !isTopLeftFaceValid &&
-                isBottomLeftFaceValid &&
-                !isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::UpperRight;
-                continue;
-            }
-
-            if (!isTopRightFaceValid &&
-                !isTopLeftFaceValid &&
-                !isBottomLeftFaceValid &&
-                isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::UpperLeft;
-            }
+            GetNodeType(n, m) = GetInteriorNodeType (n, m);
         }
     }
 }

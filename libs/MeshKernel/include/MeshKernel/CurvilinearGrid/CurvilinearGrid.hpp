@@ -463,6 +463,24 @@ namespace meshkernel
         void CommitAction(const ResetCurvilinearNodeAction& undoAction);
 
     private:
+
+        /// @brief One dimensional array of NodeType
+        using NodeTypeArray1D =  std::array<meshkernel::NodeType, 2>;
+
+        /// @brief Two dimensional array of NodeType
+        using NodeTypeArray2D = std::array<NodeTypeArray1D, 2>;
+
+        /// @brief Three dimensional array of NodeType
+        using NodeTypeArray3D = std::array<NodeTypeArray2D, 2>;
+
+        /// @brief Four dimensional array of NodeType
+        /// Indices are (n, m),    (n-1, m), (n-1, m-1),  (n, m-1)
+        ///             top-right, top-left, bottom-left, bottom-right,
+        using NodeTypeArray4D = std::array<NodeTypeArray3D, 2>;
+
+        /// @brief Get interior node type array
+        static NodeTypeArray4D InitialiseInteriorNodeType ();
+
         /// @brief Remove invalid nodes.
         /// This function is recursive
         /// @param[in] invalidNodesToRemove Whether there are still invalid nodes to remove
@@ -510,6 +528,22 @@ namespace meshkernel
         /// @brief Set the m_facesRTreeRequiresUpdate flag
         /// @param[in] value The value of the flag
         void SetFacesRTreeRequiresUpdate(bool value) { m_facesRTreeRequiresUpdate = value; }
+
+        /// @brief Get the node type of the bottom row of nodes, m = 0
+        NodeType GetBottomNodeType (const UInt n) const;
+
+        /// @brief Get the node type of the top row of nodes, m = NumM - 1
+        NodeType GetTopNodeType (const UInt n) const;
+
+        /// @brief Get the node type of the left row of nodes, n = 0
+        NodeType GetLeftNodeType (const UInt m) const;
+
+        /// @brief Get the node type of the right row of nodes, m = NumN - 1
+        NodeType GetRightNodeType (const UInt m) const;
+
+        /// @brief Get the node type of the interior nodes
+        NodeType GetInteriorNodeType (const UInt n, const UInt m) const;
+
 
         Projection m_projection;                               ///< The curvilinear grid projection
         lin_alg::Matrix<Point> m_gridNodes;                    ///< Member variable storing the grid
