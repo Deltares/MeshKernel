@@ -174,7 +174,7 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::Compute()
         ComputeEdgesRefinementMask();
         ComputeIfFaceShouldBeSplit();
 
-        UInt numFacesToRefine = std::count_if(m_faceMask.begin(), m_faceMask.begin() + m_mesh.GetNumFaces(),
+        auto numFacesToRefine = std::count_if(m_faceMask.begin(), m_faceMask.begin() + m_mesh.GetNumFaces(),
                                               [](const int maskValue)
                                               { return maskValue != 0; });
 
@@ -535,7 +535,7 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::ConnectHangingNodes()
 
 meshkernel::Point MeshRefinement::ComputeMidPoint(const Point& firstNode, const Point& secondNode) const
 {
-    meshkernel::Point midPoint(0.5 * (firstNode + secondNode)); //(firstNode.x + secondNode.x) * 0.5, (firstNode.y + secondNode.y) * 0.5};
+    meshkernel::Point midPoint = 0.5 * (firstNode + secondNode);
 
     if (m_mesh.m_projection == Projection::spherical)
     {

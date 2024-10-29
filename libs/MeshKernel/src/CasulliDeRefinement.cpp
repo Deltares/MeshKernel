@@ -307,6 +307,8 @@ void meshkernel::CasulliDeRefinement::UpdateCellMaskDirectlyConnectedNodeFirst(c
                                                                                std::vector<UInt>& frontIndexCopy,
                                                                                std::vector<ElementType>& cellMask)
 {
+    using enum ElementType;
+
     for (UInt j = 0; j < directlyConnected.size(); ++j)
     {
         UInt connectedElementId = directlyConnected[j];
@@ -316,10 +318,10 @@ void meshkernel::CasulliDeRefinement::UpdateCellMaskDirectlyConnectedNodeFirst(c
             continue;
         }
 
-        if ((cellMask[connectedElementId] != ElementType::WasNodeFirst && cellMask[connectedElementId] != ElementType::WasNodeAfter) &&
-            (cellMask[connectedElementId] != ElementType::WasEdgeFirst && cellMask[connectedElementId] != ElementType::WasEdgeAfter))
+        if ((cellMask[connectedElementId] != WasNodeFirst && cellMask[connectedElementId] != WasNodeAfter) &&
+            (cellMask[connectedElementId] != WasEdgeFirst && cellMask[connectedElementId] != WasEdgeAfter))
         {
-            cellMask[connectedElementId] = ElementType::WasEdgeFirst;
+            cellMask[connectedElementId] = WasEdgeFirst;
             AddElementToList(mesh, frontIndex, frontIndexCopy, connectedElementId);
         }
     }
@@ -329,6 +331,8 @@ void meshkernel::CasulliDeRefinement::UpdateCellMaskIndirectlyConnectedNodeFirst
                                                                                  const Mesh2D& mesh,
                                                                                  std::vector<ElementType>& cellMask)
 {
+    using enum ElementType;
+
     for (UInt j = 0; j < indirectlyConnected.size(); ++j)
     {
         UInt connectedElementId = indirectlyConnected[j];
@@ -338,9 +342,9 @@ void meshkernel::CasulliDeRefinement::UpdateCellMaskIndirectlyConnectedNodeFirst
             continue;
         }
 
-        if (cellMask[connectedElementId] != ElementType::WasCell)
+        if (cellMask[connectedElementId] != WasCell)
         {
-            cellMask[connectedElementId] = ElementType::WasCell;
+            cellMask[connectedElementId] = WasCell;
         }
     }
 }
@@ -351,6 +355,7 @@ void meshkernel::CasulliDeRefinement::UpdateCellMaskDirectlyConnectedEdgeFirst(c
                                                                                std::vector<UInt>& frontIndexCopy,
                                                                                std::vector<ElementType>& cellMask)
 {
+    using enum ElementType;
 
     for (UInt j = 0; j < directlyConnected.size(); ++j)
     {
@@ -361,11 +366,11 @@ void meshkernel::CasulliDeRefinement::UpdateCellMaskDirectlyConnectedEdgeFirst(c
             continue;
         }
 
-        if ((cellMask[connectedElementId] != ElementType::WasCell) &&
-            (cellMask[connectedElementId] != ElementType::WasNodeFirst && cellMask[connectedElementId] != ElementType::WasNodeAfter) &&
-            (cellMask[connectedElementId] != ElementType::WasEdgeFirst && cellMask[connectedElementId] != ElementType::WasEdgeAfter))
+        if ((cellMask[connectedElementId] != WasCell) &&
+            (cellMask[connectedElementId] != WasNodeFirst && cellMask[connectedElementId] != WasNodeAfter) &&
+            (cellMask[connectedElementId] != WasEdgeFirst && cellMask[connectedElementId] != WasEdgeAfter))
         {
-            cellMask[connectedElementId] = ElementType::WasNodeFirst;
+            cellMask[connectedElementId] = WasNodeFirst;
             AddElementToList(mesh, frontIndex, frontIndexCopy, connectedElementId);
         }
     }
@@ -377,6 +382,7 @@ void meshkernel::CasulliDeRefinement::UpdateCellMaskIndirectlyConnectedEdgeFirst
                                                                                  std::vector<UInt>& frontIndexCopy,
                                                                                  std::vector<ElementType>& cellMask)
 {
+    using enum ElementType;
 
     for (UInt j = 0; j < indirectlyConnected.size(); ++j)
     {
@@ -387,11 +393,11 @@ void meshkernel::CasulliDeRefinement::UpdateCellMaskIndirectlyConnectedEdgeFirst
             continue;
         }
 
-        if ((cellMask[connectedElementId] != ElementType::WasEdgeFirst && cellMask[connectedElementId] != ElementType::WasEdgeAfter) &&
-            (cellMask[connectedElementId] != ElementType::WasNodeFirst && cellMask[connectedElementId] != ElementType::WasNodeAfter) &&
-            cellMask[connectedElementId] != ElementType::WasCell)
+        if ((cellMask[connectedElementId] != WasEdgeFirst && cellMask[connectedElementId] != WasEdgeAfter) &&
+            (cellMask[connectedElementId] != WasNodeFirst && cellMask[connectedElementId] != WasNodeAfter) &&
+            cellMask[connectedElementId] != WasCell)
         {
-            cellMask[connectedElementId] = ElementType::WasEdgeFirst;
+            cellMask[connectedElementId] = WasEdgeFirst;
             AddElementToList(mesh, frontIndex, frontIndexCopy, connectedElementId);
         }
     }
