@@ -1133,21 +1133,6 @@ void MeshRefinement::ComputeRefinementMasksForWaveCourant(UInt face,
     if (m_meshRefinementParameters.directional_refinement == 0)
     {
         DetermineEdgesToRefine(face, edgeToRefine, numberOfEdgesToRefine);
-
-        //     if (numberOfEdgesToRefine == m_mesh.GetNumFaceEdges(face))
-        // {
-        //     for (UInt i = 0; i < m_mesh.GetNumFaceEdges(face); i++)
-        //     {
-        //         if (!m_isHangingNodeCache[i])
-        //         {
-        //             edgeToRefine[i] = 1;
-        //         }
-        //     }
-        // }
-        // else
-        // {
-        //     numberOfEdgesToRefine = 0;
-        // }
     }
 }
 
