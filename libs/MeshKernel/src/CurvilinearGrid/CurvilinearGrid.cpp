@@ -430,7 +430,7 @@ void CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
     RemoveInvalidNodes(invalidNodesToRemove);
 }
 
-meshkernel::NodeType CurvilinearGrid::GetBottomNodeType (const UInt n) const
+meshkernel::NodeType CurvilinearGrid::GetBottomNodeType(const UInt n) const
 {
     NodeType result = NodeType::Bottom;
 
@@ -454,7 +454,7 @@ meshkernel::NodeType CurvilinearGrid::GetBottomNodeType (const UInt n) const
     return result;
 }
 
-meshkernel::NodeType CurvilinearGrid::GetTopNodeType (const UInt n) const
+meshkernel::NodeType CurvilinearGrid::GetTopNodeType(const UInt n) const
 {
     NodeType result = NodeType::Up;
     UInt m = NumM() - 1;
@@ -463,7 +463,7 @@ meshkernel::NodeType CurvilinearGrid::GetTopNodeType (const UInt n) const
     {
         result = NodeType::UpperLeft;
     }
-    else if (n == NumN () - 1)
+    else if (n == NumN() - 1)
     {
         result = NodeType::UpperRight;
     }
@@ -479,8 +479,7 @@ meshkernel::NodeType CurvilinearGrid::GetTopNodeType (const UInt n) const
     return result;
 }
 
-
-meshkernel::NodeType CurvilinearGrid::GetLeftNodeType (const UInt m) const
+meshkernel::NodeType CurvilinearGrid::GetLeftNodeType(const UInt m) const
 {
     NodeType result = NodeType::Left;
 
@@ -491,17 +490,16 @@ meshkernel::NodeType CurvilinearGrid::GetLeftNodeType (const UInt m) const
     else if (!GetNode(0, m + 1).IsValid())
     {
         // TODO SHould this be NodeType::UpperLeft
-        result = NodeType::UpperLeft;//UpperRight;
+        result = NodeType::UpperLeft; // UpperRight;
     }
 
     return result;
 }
 
-meshkernel::NodeType CurvilinearGrid::GetRightNodeType (const UInt m) const
+meshkernel::NodeType CurvilinearGrid::GetRightNodeType(const UInt m) const
 {
     NodeType result = NodeType::Right;
     UInt n = NumN() - 1;
-
 
     if (!GetNode(n, m - 1).IsValid())
     {
@@ -515,7 +513,8 @@ meshkernel::NodeType CurvilinearGrid::GetRightNodeType (const UInt m) const
     return result;
 }
 
-meshkernel::CurvilinearGrid::NodeTypeArray4D CurvilinearGrid::InitialiseInteriorNodeType () {
+meshkernel::CurvilinearGrid::NodeTypeArray4D CurvilinearGrid::InitialiseInteriorNodeType()
+{
 
     NodeTypeArray4D result;
 
@@ -537,22 +536,19 @@ meshkernel::CurvilinearGrid::NodeTypeArray4D CurvilinearGrid::InitialiseInterior
     result[1][1][1][1] = NodeType::InternalValid;
 
     return result;
-
 }
 
-
-meshkernel::NodeType CurvilinearGrid::GetInteriorNodeType (const UInt n, const UInt m) const
+meshkernel::NodeType CurvilinearGrid::GetInteriorNodeType(const UInt n, const UInt m) const
 {
-    static const NodeTypeArray4D InteriorNodeType = InitialiseInteriorNodeType ();
+    static const NodeTypeArray4D InteriorNodeType = InitialiseInteriorNodeType();
 
     const size_t isTopRightFaceValid = IsFaceMaskValid(n, m) ? 1u : 0u;
     const size_t isTopLeftFaceValid = IsFaceMaskValid(n - 1, m) ? 1u : 0u;
     const size_t isBottomLeftFaceValid = IsFaceMaskValid(n - 1, m - 1) ? 1u : 0u;
     const size_t isBottomRightFaceValid = IsFaceMaskValid(n, m - 1) ? 1u : 0u;
 
-    return InteriorNodeType [isTopRightFaceValid][isTopLeftFaceValid][isBottomLeftFaceValid][isBottomRightFaceValid];
+    return InteriorNodeType[isTopRightFaceValid][isTopLeftFaceValid][isBottomLeftFaceValid][isBottomRightFaceValid];
 }
-
 
 void CurvilinearGrid::ComputeGridNodeTypes()
 {
@@ -574,14 +570,14 @@ void CurvilinearGrid::ComputeGridNodeTypes()
             // Bottom side
             if (m == 0)
             {
-                GetNodeType(n, m) = GetBottomNodeType (n);
+                GetNodeType(n, m) = GetBottomNodeType(n);
                 continue;
             }
 
             // Upper side
             if (m == NumM() - 1)
             {
-                GetNodeType(n, m) = GetTopNodeType (n);
+                GetNodeType(n, m) = GetTopNodeType(n);
                 continue;
             }
 
@@ -599,7 +595,7 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 continue;
             }
 
-            GetNodeType(n, m) = GetInteriorNodeType (n, m);
+            GetNodeType(n, m) = GetInteriorNodeType(n, m);
         }
     }
 }

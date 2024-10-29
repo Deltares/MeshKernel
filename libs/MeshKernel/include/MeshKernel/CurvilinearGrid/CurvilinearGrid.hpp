@@ -463,9 +463,8 @@ namespace meshkernel
         void CommitAction(const ResetCurvilinearNodeAction& undoAction);
 
     private:
-
         /// @brief One dimensional array of NodeType
-        using NodeTypeArray1D =  std::array<meshkernel::NodeType, 2>;
+        using NodeTypeArray1D = std::array<meshkernel::NodeType, 2>;
 
         /// @brief Two dimensional array of NodeType
         using NodeTypeArray2D = std::array<NodeTypeArray1D, 2>;
@@ -479,7 +478,7 @@ namespace meshkernel
         using NodeTypeArray4D = std::array<NodeTypeArray3D, 2>;
 
         /// @brief Get interior node type array
-        static NodeTypeArray4D InitialiseInteriorNodeType ();
+        static NodeTypeArray4D InitialiseInteriorNodeType();
 
         /// @brief Remove invalid nodes.
         /// This function is recursive
@@ -530,20 +529,19 @@ namespace meshkernel
         void SetFacesRTreeRequiresUpdate(bool value) { m_facesRTreeRequiresUpdate = value; }
 
         /// @brief Get the node type of the bottom row of nodes, m = 0
-        NodeType GetBottomNodeType (const UInt n) const;
+        NodeType GetBottomNodeType(const UInt n) const;
 
         /// @brief Get the node type of the top row of nodes, m = NumM - 1
-        NodeType GetTopNodeType (const UInt n) const;
+        NodeType GetTopNodeType(const UInt n) const;
 
         /// @brief Get the node type of the left row of nodes, n = 0
-        NodeType GetLeftNodeType (const UInt m) const;
+        NodeType GetLeftNodeType(const UInt m) const;
 
         /// @brief Get the node type of the right row of nodes, m = NumN - 1
-        NodeType GetRightNodeType (const UInt m) const;
+        NodeType GetRightNodeType(const UInt m) const;
 
         /// @brief Get the node type of the interior nodes
-        NodeType GetInteriorNodeType (const UInt n, const UInt m) const;
-
+        NodeType GetInteriorNodeType(const UInt n, const UInt m) const;
 
         Projection m_projection;                               ///< The curvilinear grid projection
         lin_alg::Matrix<Point> m_gridNodes;                    ///< Member variable storing the grid
