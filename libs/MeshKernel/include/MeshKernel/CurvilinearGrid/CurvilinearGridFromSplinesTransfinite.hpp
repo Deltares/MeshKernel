@@ -123,6 +123,19 @@ namespace meshkernel
                                     const std::vector<double>& intersectionDistances,
                                     std::vector<double>& distances) const;
 
+        /// @brief Fill side point arrays
+        void FillInterpolationPlaneBlock(const lin_alg::Matrix<Point>& gridNodes,
+                                         const UInt i,
+                                         const UInt j,
+                                         std::vector<Point>& bottomSide,
+                                         std::vector<Point>& upperSide,
+                                         std::vector<Point>& leftSide,
+                                         std::vector<Point>& rightSide) const;
+
+        /// @brief Assign interpolated points to the grid block
+        void AssignInterpolatedNodes(const lin_alg::Matrix<Point>& interpolationResult,
+                                     lin_alg::Matrix<Point>& gridNodes) const;
+
         std::vector<int> m_splineType;                                           ///< The spline types (1 horizontal, -1 vertical)
         std::vector<std::vector<double>> m_splineIntersectionRatios;             ///< For each spline, stores the intersections in terms of total spline length
         std::vector<std::vector<UInt>> m_splineGroupIndexAndFromToIntersections; ///< For each spline: position in m or n group, from and to spline crossing indices (MN12)

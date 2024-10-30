@@ -43,6 +43,72 @@ CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(std
     m_numN = curvilinearParameters.n_refinement;
 }
 
+void CurvilinearGridFromSplinesTransfinite::FillInterpolationPlaneBlock(const lin_alg::Matrix<Point>& gridNodes,
+                                                                        const UInt i,
+                                                                        const UInt j,
+                                                                        std::vector<Point>& bottomSide,
+                                                                        std::vector<Point>& upperSide,
+                                                                        std::vector<Point>& leftSide,
+                                                                        std::vector<Point>& rightSide) const
+{
+    // Fill each block of the interpolation plane
+    for (UInt k = 0; k < leftSide.size(); k++)
+    {
+        for (UInt l = 0; l < bottomSide.size(); l++)
+        {
+            const auto m = i * m_numM + l;
+            const auto n = j * m_numN + k;
+            const auto val = gridNodes(n, m);
+
+            // We are at the boundary
+            if (!val.IsValid())
+            {
+                continue;
+            }
+
+            // k : numNPoints
+            if (k == 0)
+            {
+                bottomSide[l] = val;
+            }
+            if (k == m_numN)
+            {
+                upperSide[l] = val;
+            }
+            if (l == 0)
+            {
+                leftSide[k] = val;
+            }
+            if (l == m_numM)
+            {
+                rightSide[k] = val;
+            }
+        }
+    }
+}
+
+void CurvilinearGridFromSplinesTransfinite::AssignInterpolatedNodes(const lin_alg::Matrix<Point>& interpolationResult,
+                                                                    lin_alg::Matrix<Point>& gridNodes) const
+{
+    // assign the points
+    for (UInt k = 0; k < interpolationResult.rows(); k++)
+    {
+        for (UInt l = 0; l < interpolationResult.cols(); l++)
+        {
+            const auto n = j * m_numN + k;
+            const auto m = i * m_numM + l;
+
+            if (gridNodes(n, m).IsValid())
+            {
+                continue;
+            }
+            const auto val = interpolationResult(k, l);
+
+            gridNodes(n, m) = val;
+        }
+    }
+}
+
 std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute()
 {
     if (m_numN == 0 || m_numM == 0)
@@ -172,67 +238,36 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute(
     {
         for (UInt j = 0; j < numMSplines - 1; j++)
         {
-            // Fill each block of the interpolation plane
-            for (UInt k = 0; k < numNPoints; k++)
-            {
-                for (UInt l = 0; l < numMPoints; l++)
-                {
-                    const auto m = i * m_numM + l;
-                    const auto n = j * m_numN + k;
-                    const auto val = gridNodes(n, m);
-
-                    // We are at the boundary
-                    if (!val.IsValid())
-                    {
-                        continue;
-                    }
-
-                    // k : numNPoints
-                    if (k == 0)
-                    {
-                        bottomSide[l] = val;
-                    }
-                    if (k == m_numN)
-                    {
-                        upperSide[l] = val;
-                    }
-                    if (l == 0)
-                    {
-                        leftSide[k] = val;
-                    }
-                    if (l == m_numM)
-                    {
-                        rightSide[k] = val;
-                    }
-                }
-            }
+            FillInterpolationPlaneBlock(gridNodes, i, j, bottomSide, upperSide, leftSide, rightSide);
 
             // call transfinite interpolation
-            auto interpolationResult = DiscretizeTransfinite(bottomSide,
-                                                             upperSide,
-                                                             leftSide,
-                                                             rightSide,
-                                                             m_splines->m_projection,
-                                                             m_numM,
-                                                             m_numN);
+            const auto interpolationResult = DiscretizeTransfinite(bottomSide,
+                                                                   upperSide,
+                                                                   leftSide,
+                                                                   rightSide,
+                                                                   m_splines->m_projection,
+                                                                   m_numM,
+                                                                   m_numN);
 
-            // assign the points
-            for (UInt k = 0; k < interpolationResult.rows(); k++)
-            {
-                for (UInt l = 0; l < interpolationResult.cols(); l++)
-                {
-                    const auto n = j * m_numN + k;
-                    const auto m = i * m_numM + l;
+            AssignInterpolatedNodes(interpolationResult, gridNodes);
 
-                    if (gridNodes(n, m).IsValid())
-                    {
-                        continue;
-                    }
-                    const auto val = interpolationResult(k, l);
+            // // assign the points
+            // for (UInt k = 0; k < interpolationResult.rows(); k++)
+            // {
+            //     for (UInt l = 0; l < interpolationResult.cols(); l++)
+            //     {
+            //         const auto n = j * m_numN + k;
+            //         const auto m = i * m_numM + l;
 
-                    gridNodes(n, m) = val;
-                }
-            }
+            //         if (gridNodes(n, m).IsValid())
+            //         {
+            //             continue;
+            //         }
+            //         const auto val = interpolationResult(k, l);
+
+            //         gridNodes(n, m) = val;
+            //     }
+            // }
         }
     }
 
