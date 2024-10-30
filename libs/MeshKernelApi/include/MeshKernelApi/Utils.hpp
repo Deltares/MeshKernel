@@ -368,6 +368,7 @@ namespace meshkernelapi
             mesh2dApi.edge_nodes[edgeIndex * 2] = static_cast<int>(mesh2d.GetEdge(edgeIndex).first);
             mesh2dApi.edge_nodes[edgeIndex * 2 + 1] = static_cast<int>(mesh2d.GetEdge(edgeIndex).second);
         }
+        SetMesh2dApiDimensions(mesh2d, mesh2dApi);
     }
 
     /// @brief Sets the meshkernelapi::Mesh2D data
@@ -408,7 +409,6 @@ namespace meshkernelapi
                 faceIndex++;
             }
         }
-
         SetMesh2dApiDimensions(mesh2d, mesh2dApi);
     }
 
