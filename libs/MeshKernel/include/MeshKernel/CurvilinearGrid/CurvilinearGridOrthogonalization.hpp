@@ -82,11 +82,17 @@ namespace meshkernel
         /// @return A matrix whose coefficients are true if the node is an invalid boundary node, false otherwise
         [[nodiscard]] lin_alg::Matrix<bool> ComputeInvalidVerticalBoundaryNodes() const;
 
-        /// @brief Compute and assign grid points for grid line section
-        void ComputePointsForGridLine(const UInt m,
-                                      const UInt n,
-                                      const UInt startN,
-                                      const int nextVertical);
+        /// @brief Compute and assign grid points for grid line section in n-direction
+        void ComputePointsForGridLineN(const UInt m,
+                                       const UInt n,
+                                       const UInt startN,
+                                       const int nextVertical);
+
+        /// @brief Compute and assign grid points for grid line section in m-direction
+        void ComputePointsForGridLineM(const UInt m,
+                                       const UInt n,
+                                       const UInt startM,
+                                       const int nextHorizontal);
 
         OrthogonalizationParameters m_orthogonalizationParameters; ///< The orthogonalization parameters
 

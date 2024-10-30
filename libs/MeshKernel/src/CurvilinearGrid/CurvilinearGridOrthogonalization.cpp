@@ -97,10 +97,10 @@ meshkernel::UndoActionPtr CurvilinearGridOrthogonalization::Compute()
     return undoAction;
 }
 
-void CurvilinearGridOrthogonalization::ComputePointsForGridLine(const UInt m,
-                                                                const UInt n,
-                                                                const UInt startN,
-                                                                const int nextVertical)
+void CurvilinearGridOrthogonalization::ComputePointsForGridLineN(const UInt m,
+                                                                 const UInt n,
+                                                                 const UInt startN,
+                                                                 const int nextVertical)
 {
 
     for (auto nn = startN + 1; nn < n; ++nn)
@@ -150,6 +150,60 @@ void CurvilinearGridOrthogonalization::ComputePointsForGridLine(const UInt m,
     }
 }
 
+void CurvilinearGridOrthogonalization::ComputePointsForGridLineM(const UInt m,
+                                                                 const UInt n,
+                                                                 const UInt startM,
+                                                                 const int nextHorizontal)
+{
+
+    for (auto mm = startM + 1; mm < m; ++mm)
+    {
+
+        if (mm < m_lowerLeft.m_m || mm > m_upperRight.m_m || n < m_lowerLeft.m_n || n > m_upperRight.m_n)
+        {
+            continue;
+        }
+        if (m_grid.GetNodeType(n, m) == NodeType::Invalid)
+        {
+            continue;
+        }
+        const auto bottomNode = m_grid.GetNode(n, mm - 1);
+        const auto horizontalNode = m_grid.GetNode(n + nextHorizontal, mm);
+        const auto upperNode = m_grid.GetNode(n, mm + 1);
+
+        Point boundaryNode;
+        if (nextHorizontal == 1)
+        {
+            const auto qb = 1.0 / m_orthoEqTerms.atp(n, mm - 1);
+            const auto qc = 1.0 / m_orthoEqTerms.atp(n, mm);
+            const auto qbc = m_orthoEqTerms.atp(n, mm - 1) + m_orthoEqTerms.atp(n, mm);
+            const auto rn = qb + qc + qbc;
+            boundaryNode.x = (bottomNode.x * qb + horizontalNode.x * qbc + upperNode.x * qc + bottomNode.y - upperNode.y) / rn;
+            boundaryNode.y = (bottomNode.y * qb + horizontalNode.y * qbc + upperNode.y * qc + upperNode.x - bottomNode.x) / rn;
+        }
+
+        if (nextHorizontal == -1)
+        {
+            const auto qb = 1.0 / m_orthoEqTerms.atp(n - 1, mm - 1);
+            const auto qc = 1.0 / m_orthoEqTerms.atp(n - 1, mm);
+            const auto qbc = m_orthoEqTerms.atp(n - 1, mm - 1) + m_orthoEqTerms.atp(n - 1, mm);
+            const auto rn = qb + qc + qbc;
+            boundaryNode.x = (bottomNode.x * qb + horizontalNode.x * qbc + upperNode.x * qc + upperNode.y - bottomNode.y) / rn;
+            boundaryNode.y = (bottomNode.y * qb + horizontalNode.y * qbc + upperNode.y * qc + bottomNode.x - upperNode.x) / rn;
+        }
+
+        // Vertical spline index
+        const auto splineIndex = m_grid.NumM() + n;
+
+        const auto node_value = m_splines.ComputeClosestPointOnSplineSegment(splineIndex,
+                                                                             startM,
+                                                                             m,
+                                                                             boundaryNode);
+
+        m_grid.GetNode(n, mm) = node_value;
+    }
+}
+
 void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 {
     // m grid lines (horizontal)
@@ -182,7 +236,7 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
                 (nodeType == NodeType::BottomRight || nodeType == NodeType::UpperRight) &&
                 nextVertical != 0)
             {
-                ComputePointsForGridLine(m, n, startN, nextVertical);
+                ComputePointsForGridLineN(m, n, startN, nextVertical);
             }
         }
     }
@@ -220,52 +274,7 @@ void CurvilinearGridOrthogonalization::ProjectVerticalBoundariesGridNodes()
                 nextHorizontal != 0 &&
                 startM != constants::missing::uintValue)
             {
-                for (auto mm = startM + 1; mm < m; ++mm)
-                {
-
-                    if (mm < m_lowerLeft.m_m || mm > m_upperRight.m_m || n < m_lowerLeft.m_n || n > m_upperRight.m_n)
-                    {
-                        continue;
-                    }
-                    if (m_grid.GetNodeType(n, m) == NodeType::Invalid)
-                    {
-                        continue;
-                    }
-                    const auto bottomNode = m_grid.GetNode(n, mm - 1);
-                    const auto horizontalNode = m_grid.GetNode(n + nextHorizontal, mm);
-                    const auto upperNode = m_grid.GetNode(n, mm + 1);
-
-                    Point boundaryNode;
-                    if (nextHorizontal == 1)
-                    {
-                        const auto qb = 1.0 / m_orthoEqTerms.atp(n, mm - 1);
-                        const auto qc = 1.0 / m_orthoEqTerms.atp(n, mm);
-                        const auto qbc = m_orthoEqTerms.atp(n, mm - 1) + m_orthoEqTerms.atp(n, mm);
-                        const auto rn = qb + qc + qbc;
-                        boundaryNode.x = (bottomNode.x * qb + horizontalNode.x * qbc + upperNode.x * qc + bottomNode.y - upperNode.y) / rn;
-                        boundaryNode.y = (bottomNode.y * qb + horizontalNode.y * qbc + upperNode.y * qc + upperNode.x - bottomNode.x) / rn;
-                    }
-
-                    if (nextHorizontal == -1)
-                    {
-                        const auto qb = 1.0 / m_orthoEqTerms.atp(n - 1, mm - 1);
-                        const auto qc = 1.0 / m_orthoEqTerms.atp(n - 1, mm);
-                        const auto qbc = m_orthoEqTerms.atp(n - 1, mm - 1) + m_orthoEqTerms.atp(n - 1, mm);
-                        const auto rn = qb + qc + qbc;
-                        boundaryNode.x = (bottomNode.x * qb + horizontalNode.x * qbc + upperNode.x * qc + upperNode.y - bottomNode.y) / rn;
-                        boundaryNode.y = (bottomNode.y * qb + horizontalNode.y * qbc + upperNode.y * qc + bottomNode.x - upperNode.x) / rn;
-                    }
-
-                    // Vertical spline index
-                    const auto splineIndex = m_grid.NumM() + n;
-
-                    const auto node_value = m_splines.ComputeClosestPointOnSplineSegment(splineIndex,
-                                                                                         startM,
-                                                                                         m,
-                                                                                         boundaryNode);
-
-                    m_grid.GetNode(n, mm) = node_value;
-                }
+                ComputePointsForGridLineM(m, n, startM, nextHorizontal);
             }
         }
     }
