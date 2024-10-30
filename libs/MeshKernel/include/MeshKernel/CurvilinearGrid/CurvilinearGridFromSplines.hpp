@@ -374,5 +374,28 @@ namespace meshkernel
         std::vector<UInt> m_subLayerGridPoints;                            ///< Sublayer grid points
         lin_alg::Matrix<UInt> m_numPerpendicularFacesOnSubintervalAndEdge; ///< Perpendicular faces on subinterval and edge
         lin_alg::Matrix<double> m_growFactorOnSubintervalAndEdge;          ///< Grow factor on subinterval and edge
+
+    private:
+        /// @brief Move any grid nodes
+        /// @returns Number of grid nodes moved.
+        UInt MoveGridNodes(const UInt i, const UInt j, const UInt firstLeftIndex, const UInt firstRightIndex);
+
+        /// @brief Compute the end points of the spline crossing the main spline
+        std::tuple<Point, Point> GetCrossSplinePoints(const UInt s, const UInt i) const;
+
+        void TranslateActiveLayerPoints(const std::vector<Point>& velocityVectorAtGridPoints,
+                                        const double localTimeStep,
+                                        lin_alg::RowVector<Point>& activeLayerPoints) const;
+
+        void DisableValidFrontNodes(const std::vector<double>& otherTimeStepMax,
+                                    const double otherTimeStep,
+                                    const double localTimeStep,
+                                    std::vector<UInt>& newValidFrontNodes) const;
+
+        void InvalidateActiveLayerPoints(lin_alg::RowVector<Point>& activeLayerPoints) const;
+
+        void InvalidateGridNodes(const UInt layerIndex,
+                                 lin_alg::RowVector<Point>& activeLayerPoints,
+                                 std::vector<UInt>& newValidFrontNodes);
     };
 } // namespace meshkernel

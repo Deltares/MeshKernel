@@ -149,13 +149,83 @@ namespace meshkernel
         return ComputeCurvilinearGridFromGridPoints();
     }
 
+    UInt CurvilinearGridFromSplines::MoveGridNodes(const UInt i, const UInt j, const UInt firstLeftIndex, const UInt firstRightIndex)
+    {
+        constexpr double maxCosine = 0.93969;
+        constexpr double squaredDistanceTolerance = 1e-4;
+        constexpr double cosineTolerance = 1e-2;
+        UInt numChanged = 0;
+
+        const auto squaredCurrentDistance = ComputeSquaredDistance(m_gridPoints(j + 1, i),
+                                                                   m_gridPoints(j + 1, firstRightIndex),
+                                                                   m_splines->m_projection);
+        const auto currentCosPhi = NormalizedInnerProductTwoSegments(m_gridPoints(j + 1, i),
+                                                                     m_gridPoints(j, i),
+                                                                     m_gridPoints(j + 1, i),
+                                                                     m_gridPoints(j, firstRightIndex),
+                                                                     m_splines->m_projection);
+
+        if (squaredCurrentDistance < squaredDistanceTolerance && currentCosPhi > maxCosine)
+        {
+
+            // determine persistent node
+            const auto leftCosPhi = NormalizedInnerProductTwoSegments(m_gridPoints(j - 1, i),
+                                                                      m_gridPoints(j, i),
+                                                                      m_gridPoints(j, i),
+                                                                      m_gridPoints(j + 1, i),
+                                                                      m_splines->m_projection);
+
+            const auto rightCosPhi = NormalizedInnerProductTwoSegments(m_gridPoints(j - 1, firstRightIndex),
+                                                                       m_gridPoints(j, firstRightIndex),
+                                                                       m_gridPoints(j, firstRightIndex),
+                                                                       m_gridPoints(j + 1, firstRightIndex),
+                                                                       m_splines->m_projection);
+
+            const auto [secondLeftIndex, secondRightIndex] = GetNeighbours(m_gridPoints.row(j), firstRightIndex);
+
+            if ((secondRightIndex == firstRightIndex || leftCosPhi - rightCosPhi < -cosineTolerance) && firstLeftIndex != i)
+            {
+                // move left node
+                for (auto k = i; k <= firstRightIndex - 1; ++k)
+                {
+                    m_gridPoints(j, k) = m_gridPoints(j, firstRightIndex);
+                }
+                numChanged++;
+            }
+            else if ((firstLeftIndex == i || rightCosPhi - leftCosPhi < -cosineTolerance) && secondRightIndex != firstRightIndex)
+            {
+                // move right node
+                for (auto k = firstRightIndex; k <= secondRightIndex - 1; ++k)
+                {
+                    m_gridPoints(j, k) = m_gridPoints(j, i);
+                }
+                numChanged++;
+            }
+            else
+            {
+                // move both nodes
+                const Point middle = (m_gridPoints(j, i) + m_gridPoints(j, firstRightIndex)) * 0.5;
+                for (auto k = i; k <= firstRightIndex - 1; ++k)
+                {
+                    m_gridPoints(j, k) = middle;
+                }
+                for (auto k = firstRightIndex; k <= secondRightIndex - 1; ++k)
+                {
+                    m_gridPoints(j, k) = middle;
+                }
+                numChanged++;
+            }
+        }
+
+        return numChanged;
+    }
+
     void CurvilinearGridFromSplines::DeleteSkinnyTriangles()
     {
         constexpr UInt numMaxIterations = 10;
         const UInt numN = static_cast<UInt>(m_gridPoints.rows()) - 2;
         constexpr double squaredDistanceTolerance = 1e-4;
-        constexpr double cosineTolerance = 1e-2;
-        constexpr double maxCosine = 0.93969;
+
         for (UInt j = numN - 1; j >= 1; --j)
         {
             for (UInt iter = 0; iter < numMaxIterations; ++iter)
@@ -211,68 +281,7 @@ namespace meshkernel
 
                     if (m_gridPoints(j + 1, firstRightIndex).IsValid())
                     {
-                        const auto squaredCurrentDistance = ComputeSquaredDistance(m_gridPoints(j + 1, i),
-                                                                                   m_gridPoints(j + 1, firstRightIndex),
-                                                                                   m_splines->m_projection);
-                        const auto currentCosPhi = NormalizedInnerProductTwoSegments(
-                            m_gridPoints(j + 1, i),
-                            m_gridPoints(j, i),
-                            m_gridPoints(j + 1, i),
-                            m_gridPoints(j, firstRightIndex),
-                            m_splines->m_projection);
-                        if (squaredCurrentDistance < squaredDistanceTolerance && currentCosPhi > maxCosine)
-                        {
-
-                            // determine persistent node
-                            const auto leftCosPhi = NormalizedInnerProductTwoSegments(
-                                m_gridPoints(j - 1, i),
-                                m_gridPoints(j, i),
-                                m_gridPoints(j, i),
-                                m_gridPoints(j + 1, i),
-                                m_splines->m_projection);
-
-                            const auto rightCosPhi = NormalizedInnerProductTwoSegments(
-                                m_gridPoints(j - 1, firstRightIndex),
-                                m_gridPoints(j, firstRightIndex),
-                                m_gridPoints(j, firstRightIndex),
-                                m_gridPoints(j + 1, firstRightIndex),
-                                m_splines->m_projection);
-
-                            const auto [secondLeftIndex, secondRightIndex] = GetNeighbours(m_gridPoints.row(j), firstRightIndex);
-
-                            if ((secondRightIndex == firstRightIndex || leftCosPhi - rightCosPhi < -cosineTolerance) && firstLeftIndex != i)
-                            {
-                                // move left node
-                                for (auto k = i; k <= firstRightIndex - 1; ++k)
-                                {
-                                    m_gridPoints(j, k) = m_gridPoints(j, firstRightIndex);
-                                }
-                                numChanged++;
-                            }
-                            else if ((firstLeftIndex == i || rightCosPhi - leftCosPhi < -cosineTolerance) && secondRightIndex != firstRightIndex)
-                            {
-                                // move right node
-                                for (auto k = firstRightIndex; k <= secondRightIndex - 1; ++k)
-                                {
-                                    m_gridPoints(j, k) = m_gridPoints(j, i);
-                                }
-                                numChanged++;
-                            }
-                            else
-                            {
-                                // move both nodes
-                                const Point middle = (m_gridPoints(j, i) + m_gridPoints(j, firstRightIndex)) * 0.5;
-                                for (auto k = i; k <= firstRightIndex - 1; ++k)
-                                {
-                                    m_gridPoints(j, k) = middle;
-                                }
-                                for (auto k = firstRightIndex; k <= secondRightIndex - 1; ++k)
-                                {
-                                    m_gridPoints(j, k) = middle;
-                                }
-                                numChanged++;
-                            }
-                        }
+                        numChanged += MoveGridNodes(i, j, firstLeftIndex, firstRightIndex);
                     }
                 }
 
@@ -282,6 +291,30 @@ namespace meshkernel
                 }
             }
         }
+    }
+
+    std::tuple<Point, Point> CurvilinearGridFromSplines::GetCrossSplinePoints(const UInt s, const UInt i) const
+    {
+        const auto normal = NormalVectorOutside(m_gridLine[i], m_gridLine[i + 1], m_splines->m_projection);
+
+        Point middle = 0.5 * (m_gridLine[i] + m_gridLine[i + 1]);
+        Point x1{constants::missing::doubleValue, constants::missing::doubleValue};
+        Point x2{constants::missing::doubleValue, constants::missing::doubleValue};
+
+        if (m_splines->m_projection == Projection::cartesian)
+        {
+            x1 = middle - 2.0 * m_maximumGridHeights[s] * normal;
+            x2 = middle + 2.0 * m_maximumGridHeights[s] * normal;
+        }
+
+        if (m_splines->m_projection == Projection::spherical)
+        {
+            const double factor = 1.0 / (constants::geometric::earth_radius * constants::conversion::degToRad);
+            x1 = middle - (2.0 * m_maximumGridHeights[s] * factor) * normal;
+            x2 = middle + (2.0 * m_maximumGridHeights[s] * factor) * normal;
+        }
+
+        return {x1, x2};
     }
 
     void CurvilinearGridFromSplines::Initialize()
@@ -313,35 +346,45 @@ namespace meshkernel
             // construct the cross splines through the edges, along m discretization
             for (auto i = m_leftGridLineIndex[s]; i < m_leftGridLineIndex[s] + m_numMSplines[s]; ++i)
             {
-                const auto normal = NormalVectorOutside(m_gridLine[i], m_gridLine[i + 1], m_splines->m_projection);
+                // const auto normal = NormalVectorOutside(m_gridLine[i], m_gridLine[i + 1], m_splines->m_projection);
 
-                const double xMiddle = (m_gridLine[i].x + m_gridLine[i + 1].x) * 0.5;
-                const double yMiddle = (m_gridLine[i].y + m_gridLine[i + 1].y) * 0.5;
+                // const double xMiddle = (m_gridLine[i].x + m_gridLine[i + 1].x) * 0.5;
+                // const double yMiddle = (m_gridLine[i].y + m_gridLine[i + 1].y) * 0.5;
 
-                double xs1 = constants::missing::doubleValue;
-                double xs2 = constants::missing::doubleValue;
-                double ys1 = constants::missing::doubleValue;
-                double ys2 = constants::missing::doubleValue;
+                // Point middle = 0.5 * (m_gridLine[i] + m_gridLine[i + 1]);
+                // Point x1{constants::missing::doubleValue, constants::missing::doubleValue};
+                // Point x2{constants::missing::doubleValue, constants::missing::doubleValue};
 
-                if (m_splines->m_projection == Projection::cartesian)
-                {
-                    xs1 = xMiddle + 2.0 * m_maximumGridHeights[s] * -normal.x;
-                    xs2 = xMiddle + 2.0 * m_maximumGridHeights[s] * normal.x;
-                    ys1 = yMiddle + 2.0 * m_maximumGridHeights[s] * -normal.y;
-                    ys2 = yMiddle + 2.0 * m_maximumGridHeights[s] * normal.y;
-                }
+                // double xs1 = constants::missing::doubleValue;
+                // double xs2 = constants::missing::doubleValue;
+                // double ys1 = constants::missing::doubleValue;
+                // double ys2 = constants::missing::doubleValue;
 
-                if (m_splines->m_projection == Projection::spherical)
-                {
-                    const double factor = 1.0 / (constants::geometric::earth_radius * constants::conversion::degToRad);
-                    xs1 = xMiddle + 2.0 * m_maximumGridHeights[s] * -normal.x * factor;
-                    xs2 = xMiddle + 2.0 * m_maximumGridHeights[s] * normal.x * factor;
-                    ys1 = yMiddle + 2.0 * m_maximumGridHeights[s] * -normal.y * factor;
-                    ys2 = yMiddle + 2.0 * m_maximumGridHeights[s] * normal.y * factor;
-                }
+                std::tie(newCrossSpline[0], newCrossSpline[1]) = GetCrossSplinePoints(s, i);
 
-                newCrossSpline[0] = {xs1, ys1};
-                newCrossSpline[1] = {xs2, ys2};
+                // if (m_splines->m_projection == Projection::cartesian)
+                // {
+                //     x1 = middle - 2.0 * m_maximumGridHeights[s] * normal;
+                //     // xs1 = xMiddle + 2.0 * m_maximumGridHeights[s] * -normal.x;
+                //     // ys1 = yMiddle + 2.0 * m_maximumGridHeights[s] * -normal.y;
+                //     x2 = middle + 2.0 * m_maximumGridHeights[s] * normal;
+
+                //     // xs2 = xMiddle + 2.0 * m_maximumGridHeights[s] * normal.x;
+                //     // ys2 = yMiddle + 2.0 * m_maximumGridHeights[s] * normal.y;
+                // }
+
+                // if (m_splines->m_projection == Projection::spherical)
+                // {
+                //     const double factor = 1.0 / (constants::geometric::earth_radius * constants::conversion::degToRad);
+                //     xs1 = xMiddle + 2.0 * m_maximumGridHeights[s] * -normal.x * factor;
+                //     ys1 = yMiddle + 2.0 * m_maximumGridHeights[s] * -normal.y * factor;
+
+                //     xs2 = xMiddle + 2.0 * m_maximumGridHeights[s] * normal.x * factor;
+                //     ys2 = yMiddle + 2.0 * m_maximumGridHeights[s] * normal.y * factor;
+                // }
+
+                // newCrossSpline[0] = {xs1, ys1};
+                // newCrossSpline[1] = {xs2, ys2};
                 m_splines->AddSpline(newCrossSpline);
                 // flag the cross spline as artificially added
                 m_type.emplace_back(SplineTypes::artificial);
@@ -956,6 +999,108 @@ namespace meshkernel
         return constants::missing::uintValue;
     }
 
+    void CurvilinearGridFromSplines::TranslateActiveLayerPoints(const std::vector<Point>& velocityVectorAtGridPoints,
+                                                                const double localTimeStep,
+                                                                lin_alg::RowVector<Point>& activeLayerPoints) const
+    {
+        for (UInt i = 0; i < velocityVectorAtGridPoints.size(); ++i)
+        {
+            if (m_validFrontNodes[i] == 1 && velocityVectorAtGridPoints[i].IsValid())
+            {
+                activeLayerPoints[i] += localTimeStep * velocityVectorAtGridPoints[i];
+            }
+            else
+            {
+                activeLayerPoints[i].x = constants::missing::doubleValue;
+                activeLayerPoints[i].y = constants::missing::doubleValue;
+            }
+        }
+    }
+
+    void CurvilinearGridFromSplines::DisableValidFrontNodes(const std::vector<double>& otherTimeStepMax,
+                                                            const double otherTimeStep,
+                                                            const double localTimeStep,
+                                                            std::vector<UInt>& newValidFrontNodes) const
+    {
+        if (otherTimeStep < localTimeStep)
+        {
+            for (UInt i = 0; i < newValidFrontNodes.size(); ++i)
+            {
+                if (otherTimeStepMax[i] - otherTimeStep < tolerance && (localTimeStep - otherTimeStepMax[i]) > tolerance)
+                {
+                    newValidFrontNodes[i] = 0;
+                }
+            }
+        }
+
+        // remove isolated points at the start end end of the masl
+        if (newValidFrontNodes[0] == 1 && newValidFrontNodes[1] == 0)
+        {
+            newValidFrontNodes[0] = 0;
+        }
+
+        if (newValidFrontNodes[m_numM - 1] == 1 && newValidFrontNodes[m_numM - 2] == 0)
+        {
+            newValidFrontNodes[m_numM - 1] = 0;
+        }
+
+        for (UInt i = 0; i < newValidFrontNodes.size() - 2; ++i)
+        {
+            if (newValidFrontNodes[i + 1] == 1 && newValidFrontNodes[i] == 0 && newValidFrontNodes[i + 2] == 0)
+            {
+                newValidFrontNodes[i + 1] = 0;
+            }
+        }
+    }
+
+    void CurvilinearGridFromSplines::InvalidateActiveLayerPoints(lin_alg::RowVector<Point>& activeLayerPoints) const
+    {
+
+        for (UInt i = 0; i < m_validFrontNodes.size(); ++i)
+        {
+            if (m_validFrontNodes[i] == 0)
+            {
+                activeLayerPoints[i] = {constants::missing::doubleValue, constants::missing::doubleValue};
+            }
+        }
+    }
+
+    void CurvilinearGridFromSplines::InvalidateGridNodes(const UInt layerIndex,
+                                                         lin_alg::RowVector<Point>& activeLayerPoints,
+                                                         std::vector<UInt>& newValidFrontNodes)
+    {
+        if (layerIndex < 2)
+        {
+            return;
+        }
+
+        for (UInt i = 1; i < m_numM - 1; ++i)
+        {
+
+            if (!activeLayerPoints[i].IsValid())
+            {
+                continue;
+            }
+
+            const auto cosphi = NormalizedInnerProductTwoSegments(m_gridPoints(layerIndex - 2, i),
+                                                                  m_gridPoints(layerIndex - 1, i),
+                                                                  m_gridPoints(layerIndex - 1, i),
+                                                                  activeLayerPoints[i],
+                                                                  m_splines->m_projection);
+
+            if (cosphi < -0.5)
+            {
+                const auto [currentLeftIndex, currentRightIndex] = GetNeighbours(activeLayerPoints, i);
+
+                for (auto j = currentLeftIndex + 1; j < currentRightIndex; ++j)
+                {
+                    newValidFrontNodes[j] = 0;
+                    m_gridPoints(layerIndex - 1, j) = {constants::missing::doubleValue, constants::missing::doubleValue};
+                }
+            }
+        }
+    }
+
     void CurvilinearGridFromSplines::GrowLayer(UInt layerIndex)
     {
         auto velocityVectorAtGridPoints = ComputeVelocitiesAtGridPoints(layerIndex - 1);
@@ -983,14 +1128,7 @@ namespace meshkernel
 
             // Copy old front velocities
             newValidFrontNodes = m_validFrontNodes;
-
-            for (UInt i = 0; i < m_validFrontNodes.size(); ++i)
-            {
-                if (m_validFrontNodes[i] == 0)
-                {
-                    activeLayerPoints[i] = {constants::missing::doubleValue, constants::missing::doubleValue};
-                }
-            }
+            InvalidateActiveLayerPoints(activeLayerPoints);
 
             const auto maximumGridLayerGrowTime = ComputeMaximumEdgeGrowTime(activeLayerPoints, velocityVectorAtGridPoints);
             localTimeStep = std::min(m_timeStep - totalTimeStep, *std::min_element(maximumGridLayerGrowTime.begin(), maximumGridLayerGrowTime.end()));
@@ -1005,53 +1143,12 @@ namespace meshkernel
                                        localTimeStep + 1.0, otherTimeStep, otherTimeStepMax);
             }
 
-            if (otherTimeStep < localTimeStep)
-            {
-                for (UInt i = 0; i < newValidFrontNodes.size(); ++i)
-                {
-                    if (otherTimeStepMax[i] - otherTimeStep < tolerance && (localTimeStep - otherTimeStepMax[i]) > tolerance)
-                    {
-                        newValidFrontNodes[i] = 0;
-                    }
-                }
-            }
-
-            localTimeStep = std::min(localTimeStep, otherTimeStep);
-
-            // remove isolated points at the start end end of the masl
-            if (newValidFrontNodes[0] == 1 && newValidFrontNodes[1] == 0)
-            {
-                newValidFrontNodes[0] = 0;
-            }
-
-            if (newValidFrontNodes[m_numM - 1] == 1 && newValidFrontNodes[m_numM - 2] == 0)
-            {
-                newValidFrontNodes[m_numM - 1] = 0;
-            }
-
-            for (UInt i = 0; i < newValidFrontNodes.size() - 2; ++i)
-            {
-                if (newValidFrontNodes[i + 1] == 1 && newValidFrontNodes[i] == 0 && newValidFrontNodes[i + 2] == 0)
-                {
-                    newValidFrontNodes[i + 1] = 0;
-                }
-            }
+            DisableValidFrontNodes(otherTimeStepMax, otherTimeStep, localTimeStep, newValidFrontNodes);
 
             m_validFrontNodes = newValidFrontNodes;
+            localTimeStep = std::min(localTimeStep, otherTimeStep);
 
-            for (UInt i = 0; i < velocityVectorAtGridPoints.size(); ++i)
-            {
-                if (m_validFrontNodes[i] == 1 && velocityVectorAtGridPoints[i].IsValid())
-                {
-                    activeLayerPoints[i].x = activeLayerPoints[i].x + localTimeStep * velocityVectorAtGridPoints[i].x;
-                    activeLayerPoints[i].y = activeLayerPoints[i].y + localTimeStep * velocityVectorAtGridPoints[i].y;
-                }
-                else
-                {
-                    activeLayerPoints[i].x = constants::missing::doubleValue;
-                    activeLayerPoints[i].y = constants::missing::doubleValue;
-                }
-            }
+            TranslateActiveLayerPoints(velocityVectorAtGridPoints, localTimeStep, activeLayerPoints);
 
             // update the grid points
             m_gridPoints.row(layerIndex) = lin_alg::RowVector<Point>::Map(activeLayerPoints.data(),
@@ -1082,34 +1179,7 @@ namespace meshkernel
         UInt numFrontPoints;
         std::tie(gridPointIndices, newFrontPoints, numFrontPoints) = FindFront();
 
-        if (layerIndex >= 2)
-        {
-            for (UInt i = 1; i < m_numM - 1; ++i)
-            {
-
-                if (!activeLayerPoints[i].IsValid())
-                {
-                    continue;
-                }
-
-                const auto cosphi = NormalizedInnerProductTwoSegments(m_gridPoints(layerIndex - 2, i),
-                                                                      m_gridPoints(layerIndex - 1, i),
-                                                                      m_gridPoints(layerIndex - 1, i),
-                                                                      activeLayerPoints[i],
-                                                                      m_splines->m_projection);
-
-                if (cosphi < -0.5)
-                {
-                    const auto [currentLeftIndex, currentRightIndex] = GetNeighbours(activeLayerPoints, i);
-
-                    for (auto j = currentLeftIndex + 1; j < currentRightIndex; ++j)
-                    {
-                        newValidFrontNodes[j] = 0;
-                        m_gridPoints(layerIndex - 1, j) = {constants::missing::doubleValue, constants::missing::doubleValue};
-                    }
-                }
-            }
-        }
+        InvalidateGridNodes(layerIndex, activeLayerPoints, newValidFrontNodes);
 
         m_validFrontNodes = newValidFrontNodes;
     }
