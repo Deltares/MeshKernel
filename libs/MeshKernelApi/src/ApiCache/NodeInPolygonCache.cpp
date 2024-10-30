@@ -25,24 +25,37 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
-
+#include <algorithm>
 #include <cstring>
-#include <vector>
+#include <utility>
 
-#include "MeshKernel/Point.hpp"
+#include "MeshKernel/Exceptions.hpp"
 
-#include "MeshKernelApi/CachedPointValues.hpp"
+#include "MeshKernelApi/ApiCache/NodeInPolygonCache.hpp"
 
-namespace meshkernelapi
+meshkernelapi::NodeInPolygonCache::NodeInPolygonCache(const std::vector<int>& nodeMask,
+                                                      const std::vector<meshkernel::Point>& polygonPoints,
+                                                      const int inside)
+    : m_polygonPoints(polygonPoints), m_inside(inside)
 {
+    std::vector<int> nodeIndices;
 
-    /// @brief Cache centre of edges
-    class ObtuseTriangleCentreCache : public CachedPointValues
+    nodeIndices.reserve(m_polygonPoints.size());
+
+    for (size_t i = 0; i < nodeMask.size(); ++i)
     {
-    public:
-        /// @brief Constructor
-        ObtuseTriangleCentreCache(const std::vector<meshkernel::Point>& triangleCentres);
-    };
+        if (nodeMask[i] > 0)
+        {
+            nodeIndices.push_back(static_cast<int>(i));
+        }
+    }
 
-} // namespace meshkernelapi
+    Reset(std::move(nodeIndices));
+}
+
+bool meshkernelapi::NodeInPolygonCache::ValidOptions(const std::vector<meshkernel::Point>& polygonPoints, const int inside) const
+{
+    return inside == m_inside &&
+           polygonPoints.size() == m_polygonPoints.size() &&
+           std::equal(polygonPoints.begin(), polygonPoints.end(), m_polygonPoints.begin());
+}

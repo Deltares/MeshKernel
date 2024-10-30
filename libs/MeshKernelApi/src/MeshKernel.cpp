@@ -89,13 +89,16 @@
 #include <MeshKernel/UndoActions/UndoActionStack.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
-#include "MeshKernelApi/BoundariesAsPolygonCache.hpp"
-#include "MeshKernelApi/CachedPointValues.hpp"
-#include "MeshKernelApi/FacePolygonPropertyCache.hpp"
+#include "MeshKernelApi/ApiCache/BoundariesAsPolygonCache.hpp"
+#include "MeshKernelApi/ApiCache/CachedPointValues.hpp"
+#include "MeshKernelApi/ApiCache/FacePolygonPropertyCache.hpp"
+#include "MeshKernelApi/ApiCache/HangingEdgeCache.hpp"
+#include "MeshKernelApi/ApiCache/NodeInPolygonCache.hpp"
+#include "MeshKernelApi/ApiCache/ObtuseTriangleCentreCache.hpp"
+#include "MeshKernelApi/ApiCache/PolygonRefinementCache.hpp"
+#include "MeshKernelApi/ApiCache/SmallFlowEdgeCentreCache.hpp"
 #include "MeshKernelApi/MKStateUndoAction.hpp"
 #include "MeshKernelApi/MeshKernel.hpp"
-#include "MeshKernelApi/NodeInPolygonCache.hpp"
-#include "MeshKernelApi/PolygonRefinementCache.hpp"
 #include "MeshKernelApi/State.hpp"
 #include "MeshKernelApi/Utils.hpp"
 

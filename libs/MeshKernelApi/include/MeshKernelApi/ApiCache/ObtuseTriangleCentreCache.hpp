@@ -27,36 +27,22 @@
 
 #pragma once
 
+#include <cstring>
 #include <vector>
 
-#include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/Point.hpp"
 
-#include "MeshKernelApi/CachedPointValues.hpp"
+#include "MeshKernelApi/ApiCache/CachedPointValues.hpp"
 
 namespace meshkernelapi
 {
-    /// @brief Cache node values of faces
-    class FacePolygonPropertyCache : public CachedPointValues
-    {
 
+    /// @brief Cache centre of edges
+    class ObtuseTriangleCentreCache : public CachedPointValues
+    {
     public:
         /// @brief Constructor
-        FacePolygonPropertyCache(const int propertyValue,
-                                 const double minValue,
-                                 const double maxValue,
-                                 const meshkernel::Mesh2D& mesh,
-                                 const int validSize,
-                                 const std::vector<bool>& filterMask);
-
-        /// @brief Determine if current options match those used to construct the object
-        bool ValidOptions(const int propertyValue,
-                          const double minValue,
-                          const double maxValue) const;
-
-    private:
-        int m_propertyValue = 0;                                             ///< Initial property value
-        double m_minimumValue = meshkernel::constants::missing::doubleValue; ///< Initial minimum value
-        double m_maximumValue = meshkernel::constants::missing::doubleValue; ///< Initial maximum value
+        ObtuseTriangleCentreCache(const std::vector<meshkernel::Point>& triangleCentres);
     };
 
 } // namespace meshkernelapi

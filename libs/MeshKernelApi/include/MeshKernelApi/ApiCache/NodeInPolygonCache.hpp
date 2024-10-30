@@ -25,33 +25,37 @@
 //
 //------------------------------------------------------------------------------
 
+#pragma once
+
 #include <cstring>
-#include <utility>
+#include <vector>
 
-#include "MeshKernelApi/CachedPointValues.hpp"
+#include "MeshKernel/Point.hpp"
 
-meshkernelapi::CachedPointValues::CachedPointValues(const std::vector<meshkernel::Point>& coordinates)
-    : m_coordsX(coordinates.size()),
-      m_coordsY(coordinates.size())
+#include "MeshKernelApi/ApiCache/CachedIntegerValues.hpp"
+#include "MeshKernelApi/GeometryList.hpp"
+
+namespace meshkernelapi
 {
-    for (size_t i = 0; i < coordinates.size(); ++i)
+
+    /// @brief Cache node indices contained in a polygon
+    class NodeInPolygonCache : public CachedIntegerValues
     {
-        m_coordsX[i] = coordinates[i].x;
-        m_coordsY[i] = coordinates[i].y;
-    }
-}
+    public:
+        /// @brief Constructor
+        NodeInPolygonCache(const std::vector<int>& nodeMask,
+                           const std::vector<meshkernel::Point>& polygonPoints,
+                           const int inside);
 
-void meshkernelapi::CachedPointValues::Copy(const GeometryList& geometry) const
-{
-    size_t valueCount = sizeof(double) * m_coordsX.size();
+        /// @brief Determine if current options match those used to construct the object
+        bool ValidOptions(const std::vector<meshkernel::Point>& polygonPoints, const int inside) const;
 
-    std::memcpy(geometry.coordinates_x, m_coordsX.data(), valueCount);
-    std::memcpy(geometry.coordinates_y, m_coordsY.data(), valueCount);
-}
+    private:
+        /// @brief Points making up the polygon
+        std::vector<meshkernel::Point> m_polygonPoints;
 
-void meshkernelapi::CachedPointValues::Reset(std::vector<double>&& xValues,
-                                             std::vector<double>&& yValues)
-{
-    m_coordsX = std::move(xValues);
-    m_coordsY = std::move(yValues);
-}
+        /// @brief Indicates if the points are inside or outside of the polygon
+        int m_inside = -1;
+    };
+
+} // namespace meshkernelapi

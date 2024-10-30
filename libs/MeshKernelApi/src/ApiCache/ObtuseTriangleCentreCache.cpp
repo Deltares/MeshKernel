@@ -25,24 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
+#include "MeshKernelApi/ApiCache/ObtuseTriangleCentreCache.hpp"
 
-#include <cstring>
-#include <vector>
-
-#include "MeshKernel/Point.hpp"
-
-#include "MeshKernelApi/CachedIntegerValues.hpp"
-
-namespace meshkernelapi
-{
-
-    /// @brief Cache edge indices for hanging nodes/edges
-    class HangingEdgeCache : public CachedIntegerValues
-    {
-    public:
-        /// @brief Constructor
-        HangingEdgeCache(const std::vector<meshkernel::UInt>& edgeIds);
-    };
-
-} // namespace meshkernelapi
+meshkernelapi::ObtuseTriangleCentreCache::ObtuseTriangleCentreCache(const std::vector<meshkernel::Point>& triangleCentres)
+    : CachedPointValues(triangleCentres) {}

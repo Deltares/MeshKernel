@@ -27,31 +27,36 @@
 
 #pragma once
 
-#include <cstring>
 #include <vector>
 
-#include "MeshKernel/Point.hpp"
+#include "MeshKernel/Mesh2D.hpp"
 
-#include "MeshKernelApi/CachedPointValues.hpp"
-#include "MeshKernelApi/GeometryList.hpp"
+#include "MeshKernelApi/ApiCache/CachedPointValues.hpp"
 
 namespace meshkernelapi
 {
-
-    /// @brief Cache centre of edges
-    class SmallFlowEdgeCentreCache : public CachedPointValues
+    /// @brief Cache node values of faces
+    class FacePolygonPropertyCache : public CachedPointValues
     {
+
     public:
         /// @brief Constructor
-        SmallFlowEdgeCentreCache(const double lengthThreshold,
-                                 const std::vector<meshkernel::Point>& edgeCentres);
+        FacePolygonPropertyCache(const int propertyValue,
+                                 const double minValue,
+                                 const double maxValue,
+                                 const meshkernel::Mesh2D& mesh,
+                                 const int validSize,
+                                 const std::vector<bool>& filterMask);
 
         /// @brief Determine if current options match those used to construct the object
-        bool ValidOptions(const double lengthThreshold) const;
+        bool ValidOptions(const int propertyValue,
+                          const double minValue,
+                          const double maxValue) const;
 
     private:
-        /// @brief Threshold for small edge length
-        double m_lengthThreshold;
+        int m_propertyValue = 0;                                             ///< Initial property value
+        double m_minimumValue = meshkernel::constants::missing::doubleValue; ///< Initial minimum value
+        double m_maximumValue = meshkernel::constants::missing::doubleValue; ///< Initial maximum value
     };
 
 } // namespace meshkernelapi

@@ -25,37 +25,13 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
+#include "MeshKernelApi/ApiCache/SmallFlowEdgeCentreCache.hpp"
 
-#include <cstring>
-#include <vector>
+meshkernelapi::SmallFlowEdgeCentreCache::SmallFlowEdgeCentreCache(const double lengthThreshold,
+                                                                  const std::vector<meshkernel::Point>& edgeCentres)
+    : CachedPointValues(edgeCentres), m_lengthThreshold(lengthThreshold) {}
 
-#include "MeshKernel/Point.hpp"
-
-#include "MeshKernelApi/CachedIntegerValues.hpp"
-#include "MeshKernelApi/GeometryList.hpp"
-
-namespace meshkernelapi
+bool meshkernelapi::SmallFlowEdgeCentreCache::ValidOptions(const double lengthThreshold) const
 {
-
-    /// @brief Cache node indices contained in a polygon
-    class NodeInPolygonCache : public CachedIntegerValues
-    {
-    public:
-        /// @brief Constructor
-        NodeInPolygonCache(const std::vector<int>& nodeMask,
-                           const std::vector<meshkernel::Point>& polygonPoints,
-                           const int inside);
-
-        /// @brief Determine if current options match those used to construct the object
-        bool ValidOptions(const std::vector<meshkernel::Point>& polygonPoints, const int inside) const;
-
-    private:
-        /// @brief Points making up the polygon
-        std::vector<meshkernel::Point> m_polygonPoints;
-
-        /// @brief Indicates if the points are inside or outside of the polygon
-        int m_inside = -1;
-    };
-
-} // namespace meshkernelapi
+    return lengthThreshold == m_lengthThreshold;
+}

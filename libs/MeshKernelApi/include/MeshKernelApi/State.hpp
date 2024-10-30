@@ -38,14 +38,14 @@
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
 
-#include "MeshKernelApi/BoundariesAsPolygonCache.hpp"
-#include "MeshKernelApi/CachedPointValues.hpp"
-#include "MeshKernelApi/FacePolygonPropertyCache.hpp"
-#include "MeshKernelApi/HangingEdgeCache.hpp"
-#include "MeshKernelApi/NodeInPolygonCache.hpp"
-#include "MeshKernelApi/ObtuseTriangleCentreCache.hpp"
-#include "MeshKernelApi/PolygonRefinementCache.hpp"
-#include "MeshKernelApi/SmallFlowEdgeCentreCache.hpp"
+#include "MeshKernelApi/ApiCache/BoundariesAsPolygonCache.hpp"
+#include "MeshKernelApi/ApiCache/CachedPointValues.hpp"
+#include "MeshKernelApi/ApiCache/FacePolygonPropertyCache.hpp"
+#include "MeshKernelApi/ApiCache/HangingEdgeCache.hpp"
+#include "MeshKernelApi/ApiCache/NodeInPolygonCache.hpp"
+#include "MeshKernelApi/ApiCache/ObtuseTriangleCentreCache.hpp"
+#include "MeshKernelApi/ApiCache/PolygonRefinementCache.hpp"
+#include "MeshKernelApi/ApiCache/SmallFlowEdgeCentreCache.hpp"
 
 namespace meshkernelapi
 {

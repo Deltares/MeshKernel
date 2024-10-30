@@ -31,7 +31,7 @@
 
 #include "MeshKernel/Exceptions.hpp"
 
-#include "MeshKernelApi/HangingEdgeCache.hpp"
+#include "MeshKernelApi/ApiCache/HangingEdgeCache.hpp"
 
 meshkernelapi::HangingEdgeCache::HangingEdgeCache(const std::vector<meshkernel::UInt>& edgeId)
 {

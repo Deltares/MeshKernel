@@ -25,13 +25,22 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernelApi/SmallFlowEdgeCentreCache.hpp"
+#include <cstring>
+#include <utility>
 
-meshkernelapi::SmallFlowEdgeCentreCache::SmallFlowEdgeCentreCache(const double lengthThreshold,
-                                                                  const std::vector<meshkernel::Point>& edgeCentres)
-    : CachedPointValues(edgeCentres), m_lengthThreshold(lengthThreshold) {}
+#include "MeshKernelApi/ApiCache/CachedIntegerValues.hpp"
 
-bool meshkernelapi::SmallFlowEdgeCentreCache::ValidOptions(const double lengthThreshold) const
+meshkernelapi::CachedIntegerValues::CachedIntegerValues(const std::vector<int>& values)
+    : m_values(values) {}
+
+void meshkernelapi::CachedIntegerValues::Copy(int* values) const
 {
-    return lengthThreshold == m_lengthThreshold;
+    size_t valueCount = sizeof(int) * m_values.size();
+
+    std::memcpy(values, m_values.data(), valueCount);
+}
+
+void meshkernelapi::CachedIntegerValues::Reset(std::vector<int>&& values)
+{
+    m_values = std::move(values);
 }

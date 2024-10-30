@@ -25,7 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernelApi/BoundariesAsPolygonCache.hpp"
+#include "MeshKernelApi/ApiCache/BoundariesAsPolygonCache.hpp"
 
 meshkernelapi::BoundariesAsPolygonCache::BoundariesAsPolygonCache(const int lowerLeftN,
                                                                   const int lowerLeftM,

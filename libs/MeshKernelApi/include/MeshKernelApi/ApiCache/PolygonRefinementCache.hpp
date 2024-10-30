@@ -29,7 +29,7 @@
 
 #include <vector>
 
-#include "MeshKernelApi/CachedPointValues.hpp"
+#include "MeshKernelApi/ApiCache/CachedPointValues.hpp"
 
 namespace meshkernelapi
 {

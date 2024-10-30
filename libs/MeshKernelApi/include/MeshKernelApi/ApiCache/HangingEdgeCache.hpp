@@ -25,22 +25,24 @@
 //
 //------------------------------------------------------------------------------
 
+#pragma once
+
 #include <cstring>
-#include <utility>
+#include <vector>
 
-#include "MeshKernelApi/CachedIntegerValues.hpp"
+#include "MeshKernel/Point.hpp"
 
-meshkernelapi::CachedIntegerValues::CachedIntegerValues(const std::vector<int>& values)
-    : m_values(values) {}
+#include "MeshKernelApi/ApiCache/CachedIntegerValues.hpp"
 
-void meshkernelapi::CachedIntegerValues::Copy(int* values) const
+namespace meshkernelapi
 {
-    size_t valueCount = sizeof(int) * m_values.size();
 
-    std::memcpy(values, m_values.data(), valueCount);
-}
+    /// @brief Cache edge indices for hanging nodes/edges
+    class HangingEdgeCache : public CachedIntegerValues
+    {
+    public:
+        /// @brief Constructor
+        HangingEdgeCache(const std::vector<meshkernel::UInt>& edgeIds);
+    };
 
-void meshkernelapi::CachedIntegerValues::Reset(std::vector<int>&& values)
-{
-    m_values = std::move(values);
-}
+} // namespace meshkernelapi

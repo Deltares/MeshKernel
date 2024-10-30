@@ -25,37 +25,33 @@
 //
 //------------------------------------------------------------------------------
 
-#include <algorithm>
 #include <cstring>
 #include <utility>
 
-#include "MeshKernel/Exceptions.hpp"
+#include "MeshKernelApi/ApiCache/CachedPointValues.hpp"
 
-#include "MeshKernelApi/NodeInPolygonCache.hpp"
-
-meshkernelapi::NodeInPolygonCache::NodeInPolygonCache(const std::vector<int>& nodeMask,
-                                                      const std::vector<meshkernel::Point>& polygonPoints,
-                                                      const int inside)
-    : m_polygonPoints(polygonPoints), m_inside(inside)
+meshkernelapi::CachedPointValues::CachedPointValues(const std::vector<meshkernel::Point>& coordinates)
+    : m_coordsX(coordinates.size()),
+      m_coordsY(coordinates.size())
 {
-    std::vector<int> nodeIndices;
-
-    nodeIndices.reserve(m_polygonPoints.size());
-
-    for (size_t i = 0; i < nodeMask.size(); ++i)
+    for (size_t i = 0; i < coordinates.size(); ++i)
     {
-        if (nodeMask[i] > 0)
-        {
-            nodeIndices.push_back(static_cast<int>(i));
-        }
+        m_coordsX[i] = coordinates[i].x;
+        m_coordsY[i] = coordinates[i].y;
     }
-
-    Reset(std::move(nodeIndices));
 }
 
-bool meshkernelapi::NodeInPolygonCache::ValidOptions(const std::vector<meshkernel::Point>& polygonPoints, const int inside) const
+void meshkernelapi::CachedPointValues::Copy(const GeometryList& geometry) const
 {
-    return inside == m_inside &&
-           polygonPoints.size() == m_polygonPoints.size() &&
-           std::equal(polygonPoints.begin(), polygonPoints.end(), m_polygonPoints.begin());
+    size_t valueCount = sizeof(double) * m_coordsX.size();
+
+    std::memcpy(geometry.coordinates_x, m_coordsX.data(), valueCount);
+    std::memcpy(geometry.coordinates_y, m_coordsY.data(), valueCount);
+}
+
+void meshkernelapi::CachedPointValues::Reset(std::vector<double>&& xValues,
+                                             std::vector<double>&& yValues)
+{
+    m_coordsX = std::move(xValues);
+    m_coordsY = std::move(yValues);
 }

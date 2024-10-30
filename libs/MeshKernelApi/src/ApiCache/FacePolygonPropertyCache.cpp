@@ -27,7 +27,7 @@
 
 #include <utility>
 
-#include "MeshKernelApi/FacePolygonPropertyCache.hpp"
+#include "MeshKernelApi/ApiCache/FacePolygonPropertyCache.hpp"
 #include "MeshKernelApi/Utils.hpp"
 
 meshkernelapi::FacePolygonPropertyCache::FacePolygonPropertyCache(const int propertyValue,
