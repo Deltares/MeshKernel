@@ -2195,7 +2195,7 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_nodeInPolygonCache == nullptr)
             {
-              throw meshkernel::MeshKernelError("Node in polygon data has not been cached, mkernel_mesh2d_count_nodes_in_polygons must be called before");
+                throw meshkernel::MeshKernelError("Node in polygon data has not been cached, mkernel_mesh2d_count_nodes_in_polygons must be called before");
             }
 
             auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
