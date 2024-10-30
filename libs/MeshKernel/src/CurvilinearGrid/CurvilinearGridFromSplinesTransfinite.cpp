@@ -87,7 +87,9 @@ void CurvilinearGridFromSplinesTransfinite::FillInterpolationPlaneBlock(const li
     }
 }
 
-void CurvilinearGridFromSplinesTransfinite::AssignInterpolatedNodes(const lin_alg::Matrix<Point>& interpolationResult,
+void CurvilinearGridFromSplinesTransfinite::AssignInterpolatedNodes(const UInt i,
+                                                                    const UInt j,
+                                                                    const lin_alg::Matrix<Point>& interpolationResult,
                                                                     lin_alg::Matrix<Point>& gridNodes) const
 {
     // assign the points
@@ -249,25 +251,7 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute(
                                                                    m_numM,
                                                                    m_numN);
 
-            AssignInterpolatedNodes(interpolationResult, gridNodes);
-
-            // // assign the points
-            // for (UInt k = 0; k < interpolationResult.rows(); k++)
-            // {
-            //     for (UInt l = 0; l < interpolationResult.cols(); l++)
-            //     {
-            //         const auto n = j * m_numN + k;
-            //         const auto m = i * m_numM + l;
-
-            //         if (gridNodes(n, m).IsValid())
-            //         {
-            //             continue;
-            //         }
-            //         const auto val = interpolationResult(k, l);
-
-            //         gridNodes(n, m) = val;
-            //     }
-            // }
+            AssignInterpolatedNodes(i, j, interpolationResult, gridNodes);
         }
     }
 

@@ -133,7 +133,9 @@ namespace meshkernel
                                          std::vector<Point>& rightSide) const;
 
         /// @brief Assign interpolated points to the grid block
-        void AssignInterpolatedNodes(const lin_alg::Matrix<Point>& interpolationResult,
+        void AssignInterpolatedNodes(const UInt i,
+                                     const UInt j,
+                                     const lin_alg::Matrix<Point>& interpolationResult,
                                      lin_alg::Matrix<Point>& gridNodes) const;
 
         std::vector<int> m_splineType;                                           ///< The spline types (1 horizontal, -1 vertical)
