@@ -955,7 +955,7 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_boundariesAsPolygonCache == nullptr)
             {
-                throw meshkernel::MeshKernelError("Polygon data has not been cached");
+                throw meshkernel::MeshKernelError("Polygon data has not been cached, mkernel_curvilinear_count_boundaries_as_polygons must be called before");
             }
 
             if (!meshKernelState[meshKernelId].m_boundariesAsPolygonCache->ValidOptions(lowerLeftN, lowerLeftM, upperRightN, upperRightM))
@@ -1003,7 +1003,7 @@ namespace meshkernelapi
             if (meshKernelState[meshKernelId].m_boundariesAsPolygonCache != nullptr)
             {
                 meshKernelState[meshKernelId].m_boundariesAsPolygonCache.reset();
-                throw meshkernel::MeshKernelError("Polygon data has already been cached, deleting cached data");
+                throw meshkernel::MeshKernelError("Polygon data has already been cached, deleting cached data, ");
             }
 
             const auto lowerLeftNUnsigned = static_cast<meshkernel::UInt>(lowerLeftN);
@@ -1976,7 +1976,7 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_polygonRefinementCache == nullptr)
             {
-                throw meshkernel::MeshKernelError("Polygon data has not been cached");
+                throw meshkernel::MeshKernelError("Polygon data has not been cached, mkernel_polygon_count_refine must be called before");
             }
 
             auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
@@ -2014,7 +2014,7 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_polygonRefinementCache == nullptr)
             {
-                throw meshkernel::MeshKernelError("Polygon data has not been cached");
+                throw meshkernel::MeshKernelError("Polygon data has not been cached, mkernel_polygon_count_linear_refine must be called before");
             }
 
             auto const polygonVector = ConvertGeometryListToPointVector(polygonToRefine);
@@ -2195,7 +2195,7 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_nodeInPolygonCache == nullptr)
             {
-                throw meshkernel::MeshKernelError("Node in polygon data has not been cached");
+              throw meshkernel::MeshKernelError("Node in polygon data has not been cached, mkernel_mesh2d_count_nodes_in_polygons must be called before");
             }
 
             auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
@@ -2638,7 +2638,7 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_facePropertyCache == nullptr)
             {
-                throw meshkernel::ConstraintError("Filtered data has not been cached");
+                throw meshkernel::ConstraintError("Filtered data has not been cached, mkernel_mesh2d_get_filtered_face_polygons_dimension must be called before");
             }
 
             if (!meshKernelState[meshKernelId].m_facePropertyCache->ValidOptions(propertyValue, minValue, maxValue))
@@ -3473,7 +3473,7 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_smallFlowEdgeCentreCache == nullptr)
             {
-                throw meshkernel::ConstraintError("Small flow edge data has not been cached");
+                throw meshkernel::ConstraintError("Small flow edge data has not been cached, mkernel_mesh2d_count_small_flow_edge_centers must be called before");
             }
 
             if (!meshKernelState[meshKernelId].m_smallFlowEdgeCentreCache->ValidOptions(smallFlowEdgesThreshold))
