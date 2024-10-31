@@ -396,7 +396,7 @@ namespace meshkernel
                                     const double localTimeStep,
                                     std::vector<UInt>& newValidFrontNodes) const;
 
-        /// @brief Set avtive layer points to invalid is indicated by validFrontNodes
+        /// @brief Set active layer points to invalid is indicated by validFrontNodes
         void InvalidateActiveLayerPoints(lin_alg::RowVector<Point>& activeLayerPoints) const;
 
         /// @brief Invalidate grid nodes that exceed edge angle requirements

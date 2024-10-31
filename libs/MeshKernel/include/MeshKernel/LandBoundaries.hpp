@@ -181,7 +181,7 @@ namespace meshkernel
         ///          the closest land boundary node and the length of the segment from the starting point to the projected point expressed as an edge ratio.
         std::tuple<double, Point, UInt, double> NearestLandBoundarySegment(UInt landBoundaryIndex, const Point& node) const;
 
-        /// @brief Initialse the node locations.
+        /// @brief Initialise the node locations.
         ///
         /// @returns true if edge is valid and the nodesLoc was initialised, false otherwise
         bool InitialiseNodeLocations(const bool initialize,
@@ -194,7 +194,7 @@ namespace meshkernel
         /// @brief Get the nearest land boundary segment index
         UInt GetSegmentIndex(const UInt nearestLandBoundaryNodeIndex) const;
 
-        /// @brief Determine is the path seach should continue or not
+        /// @brief Determine is the path search should continue or not
         bool StopPathSearch(const UInt landBoundaryIndex, const UInt currentNode);
 
         /// @brief Determine if the face crosses the land boundary

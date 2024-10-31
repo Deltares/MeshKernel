@@ -508,7 +508,7 @@ namespace meshkernel
         /// @param[in,out] undoAction if not null then collect any undo actions generated during the administration.
         void DoAdministration(CompoundUndoAction* undoAction = nullptr);
 
-        /// @brief Initialise the node type array for nodes that lie on the boudnary
+        /// @brief Initialise the node type array for nodes that lie on the boundary
         void InitialiseBoundaryNodeClassification();
 
         /// @brief Classify a single node
