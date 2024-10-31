@@ -507,6 +507,38 @@ namespace meshkernel
         /// @brief Perform complete administration
         /// @param[in,out] undoAction if not null then collect any undo actions generated during the administration.
         void DoAdministration(CompoundUndoAction* undoAction = nullptr);
+
+        /// @brief Initialise the node type array for nodes that lie on the boudnary
+        void InitialiseBoundaryNodeClassification();
+
+        /// @brief Classify a single node
+        void ClassifyNode(const UInt nodeId);
+
+        /// @brief Count the number of value edge in list
+        UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, const UInt numNodes) const;
+
+        /// @brief Compute mid point and normal of polygon segment
+        void ComputeMidPointsAndNormals(const std::vector<Point>& polygon,
+                                        const std::vector<UInt>& edgesNumFaces,
+                                        const UInt numNodes,
+                                        std::array<Point, m_maximumNumberOfNodesPerFace>& middlePoints,
+                                        std::array<Point, m_maximumNumberOfNodesPerFace>& normals,
+                                        UInt& pointCount) const;
+
+        /// @brief Compute circumcentre of face
+        Point ComputeCircumCentre(const Point& centerOfMass,
+                                  const UInt pointCount,
+                                  const std::array<Point, m_maximumNumberOfNodesPerFace>& middlePoints,
+                                  const std::array<Point, m_maximumNumberOfNodesPerFace>& normals) const;
+
+        void ComputeAverageFlowEdgesLength(std::vector<double>& edgesLength,
+                                           std::vector<double>& averageFlowEdgesLength) const;
+
+        void ComputeAverageEdgeLength(const std::vector<double>& edgesLength,
+                                      const std::vector<double>& averageFlowEdgesLength,
+                                      std::vector<bool>& curvilinearGridIndicator,
+                                      std::vector<std::array<double, 2>>& averageEdgesLength,
+                                      std::vector<double>& aspectRatios) const;
     };
 
 } // namespace meshkernel

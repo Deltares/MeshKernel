@@ -662,10 +662,8 @@ void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters
     }
 }
 
-void Mesh2D::ClassifyNodes()
+void Mesh2D::InitialiseBoundaryNodeClassification()
 {
-    m_nodesTypes.resize(GetNumNodes(), 0);
-    std::ranges::fill(m_nodesTypes, 0);
 
     for (UInt e = 0; e < GetNumEdges(); e++)
     {
@@ -693,53 +691,112 @@ void Mesh2D::ClassifyNodes()
             m_nodesTypes[secondNode] += 1;
         }
     }
+}
+
+void Mesh2D::ClassifyNode(const UInt nodeId)
+{
+
+    if (m_nodesNumEdges[nodeId] == 2)
+    {
+        // corner point
+        m_nodesTypes[nodeId] = 3;
+    }
+    else
+    {
+        UInt firstNode = constants::missing::uintValue;
+        UInt secondNode = constants::missing::uintValue;
+        for (UInt i = 0; i < m_nodesNumEdges[nodeId]; ++i)
+        {
+            const auto edgeIndex = m_nodesEdges[nodeId][i];
+
+            if (!IsEdgeOnBoundary(edgeIndex))
+            {
+                continue;
+            }
+
+            if (firstNode == 0)
+            {
+                firstNode = OtherNodeOfEdge(m_edges[edgeIndex], nodeId);
+            }
+            else
+            {
+                secondNode = OtherNodeOfEdge(m_edges[edgeIndex], nodeId);
+                break;
+            }
+        }
+
+        // point at the border
+        m_nodesTypes[nodeId] = 2;
+        if (firstNode != constants::missing::uintValue && secondNode != constants::missing::uintValue)
+        {
+            const double cosPhi = NormalizedInnerProductTwoSegments(m_nodes[nodeId], m_nodes[firstNode], m_nodes[nodeId], m_nodes[secondNode], m_projection);
+
+            // threshold for corner points
+            const double cornerCosine = 0.25;
+            if (cosPhi > -cornerCosine)
+            {
+                // void angle
+                m_nodesTypes[nodeId] = 3;
+            }
+        }
+    }
+}
+
+void Mesh2D::ClassifyNodes()
+{
+    m_nodesTypes.resize(GetNumNodes(), 0);
+    std::ranges::fill(m_nodesTypes, 0);
+
+    InitialiseBoundaryNodeClassification();
 
     for (UInt n = 0; n < GetNumNodes(); n++)
     {
         if (m_nodesTypes[n] == 1 || m_nodesTypes[n] == 2)
         {
-            if (m_nodesNumEdges[n] == 2)
-            {
-                // corner point
-                m_nodesTypes[n] = 3;
-            }
-            else
-            {
-                UInt firstNode = constants::missing::uintValue;
-                UInt secondNode = constants::missing::uintValue;
-                for (UInt i = 0; i < m_nodesNumEdges[n]; ++i)
-                {
-                    const auto edgeIndex = m_nodesEdges[n][i];
-                    if (!IsEdgeOnBoundary(edgeIndex))
-                    {
-                        continue;
-                    }
-                    if (firstNode == 0)
-                    {
-                        firstNode = OtherNodeOfEdge(m_edges[edgeIndex], n);
-                    }
-                    else
-                    {
-                        secondNode = OtherNodeOfEdge(m_edges[edgeIndex], n);
-                        break;
-                    }
-                }
+            ClassifyNode(n);
 
-                // point at the border
-                m_nodesTypes[n] = 2;
-                if (firstNode != constants::missing::uintValue && secondNode != constants::missing::uintValue)
-                {
-                    const double cosPhi = NormalizedInnerProductTwoSegments(m_nodes[n], m_nodes[firstNode], m_nodes[n], m_nodes[secondNode], m_projection);
+            // if (m_nodesNumEdges[n] == 2)
+            // {
+            //     // corner point
+            //     m_nodesTypes[n] = 3;
+            // }
+            // else
+            // {
+            //     UInt firstNode = constants::missing::uintValue;
+            //     UInt secondNode = constants::missing::uintValue;
+            //     for (UInt i = 0; i < m_nodesNumEdges[n]; ++i)
+            //     {
+            //         const auto edgeIndex = m_nodesEdges[n][i];
+            //         if (!IsEdgeOnBoundary(edgeIndex))
+            //         {
+            //             continue;
+            //         }
+            //         if (firstNode == 0)
+            //         {
+            //             firstNode = OtherNodeOfEdge(m_edges[edgeIndex], n);
+            //         }
+            //         else
+            //         {
+            //             secondNode = OtherNodeOfEdge(m_edges[edgeIndex], n);
+            //             break;
+            //         }
+            //     }
 
-                    // threshold for corner points
-                    const double cornerCosine = 0.25;
-                    if (cosPhi > -cornerCosine)
-                    {
-                        // void angle
-                        m_nodesTypes[n] = 3;
-                    }
-                }
-            }
+            //     // point at the border
+            //     m_nodesTypes[n] = 2;
+            //     if (firstNode != constants::missing::uintValue && secondNode != constants::missing::uintValue)
+            //     {
+            //         const double cosPhi = NormalizedInnerProductTwoSegments(m_nodes[n], m_nodes[firstNode], m_nodes[n], m_nodes[secondNode], m_projection);
+
+            //         // threshold for corner points
+            //         const double cornerCosine = 0.25;
+            //         if (cosPhi > -cornerCosine)
+            //         {
+            //             // void angle
+            //             m_nodesTypes[n] = 3;
+            //         }
+            //     }
+            // }
         }
         else if (m_nodesTypes[n] > 2)
         {
@@ -836,11 +893,78 @@ void Mesh2D::RestoreAction(const SphericalCoordinatesOffsetAction& undoAction)
     undoAction.UndoOffset(m_nodes);
 }
 
-meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                                 const std::vector<UInt>& edgesNumFaces) const
+meshkernel::UInt Mesh2D::CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, const UInt numNodes) const
+{
+    UInt numValidEdges = 0;
+
+    for (UInt n = 0; n < numNodes; ++n)
+    {
+        if (edgesNumFaces[n] == 2)
+        {
+            numValidEdges++;
+        }
+    }
+
+    return numValidEdges;
+}
+
+void Mesh2D::ComputeMidPointsAndNormals(const std::vector<Point>& polygon,
+                                        const std::vector<UInt>& edgesNumFaces,
+                                        const UInt numNodes,
+                                        std::array<Point, m_maximumNumberOfNodesPerFace>& middlePoints,
+                                        std::array<Point, m_maximumNumberOfNodesPerFace>& normals,
+                                        UInt& pointCount) const
+{
+    for (UInt n = 0; n < numNodes; n++)
+    {
+        if (edgesNumFaces[n] != 2)
+        {
+            continue;
+        }
+
+        const auto nextNode = NextCircularForwardIndex(n, numNodes);
+
+        middlePoints[pointCount] = ((polygon[n] + polygon[nextNode]) * 0.5);
+        normals[pointCount] = NormalVector(polygon[n], polygon[nextNode], middlePoints[pointCount], m_projection);
+        ++pointCount;
+    }
+}
+
+meshkernel::Point Mesh2D::ComputeCircumCentre(const Point& centerOfMass,
+                                              const UInt pointCount,
+                                              const std::array<Point, m_maximumNumberOfNodesPerFace>& middlePoints,
+                                              const std::array<Point, m_maximumNumberOfNodesPerFace>& normals) const
 {
     const UInt maximumNumberCircumcenterIterations = 100;
     const double eps = m_projection == Projection::cartesian ? 1e-3 : 9e-10; // 111km = 0-e digit.
+
+    Point estimatedCircumCenter = centerOfMass;
+
+    for (UInt iter = 0; iter < maximumNumberCircumcenterIterations; ++iter)
+    {
+        const Point previousCircumCenter = estimatedCircumCenter;
+        for (UInt n = 0; n < pointCount; n++)
+        {
+            const Point delta{GetDx(middlePoints[n], estimatedCircumCenter, m_projection), GetDy(middlePoints[n], estimatedCircumCenter, m_projection)};
+            const auto increment = -0.1 * dot(delta, normals[n]);
+            AddIncrementToPoint(normals[n], increment, centerOfMass, m_projection, estimatedCircumCenter);
+        }
+        if (iter > 0 &&
+            abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps &&
+            abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
+        {
+            break;
+        }
+    }
+
+    return estimatedCircumCenter;
+}
+
+meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
+                                                 const std::vector<UInt>& edgesNumFaces) const
+{
+    // const UInt maximumNumberCircumcenterIterations = 100;
+    // const double eps = m_projection == Projection::cartesian ? 1e-3 : 9e-10; // 111km = 0-e digit.
 
     std::array<Point, m_maximumNumberOfNodesPerFace> middlePoints;
     std::array<Point, m_maximumNumberOfNodesPerFace> normals;
@@ -864,55 +988,18 @@ meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
     }
     else if (!edgesNumFaces.empty())
     {
-        UInt numValidEdges = 0;
-        for (UInt n = 0; n < numNodes; ++n)
-        {
-            if (edgesNumFaces[n] == 2)
-            {
-                numValidEdges++;
-            }
-        }
+        UInt numValidEdges = CountNumberOfValidEdges(edgesNumFaces, numNodes);
 
         if (numValidEdges > 1)
         {
-            for (UInt n = 0; n < numNodes; n++)
-            {
-                if (edgesNumFaces[n] != 2)
-                {
-                    continue;
-                }
-                const auto nextNode = NextCircularForwardIndex(n, numNodes);
-
-                middlePoints[pointCount] = ((polygon[n] + polygon[nextNode]) * 0.5);
-                normals[pointCount] = NormalVector(polygon[n], polygon[nextNode], middlePoints[pointCount], m_projection);
-                ++pointCount;
-            }
-
-            Point estimatedCircumCenter = centerOfMass;
-            for (UInt iter = 0; iter < maximumNumberCircumcenterIterations; ++iter)
-            {
-                const Point previousCircumCenter = estimatedCircumCenter;
-                for (UInt n = 0; n < pointCount; n++)
-                {
-                    const Point delta{GetDx(middlePoints[n], estimatedCircumCenter, m_projection), GetDy(middlePoints[n], estimatedCircumCenter, m_projection)};
-                    const auto increment = -0.1 * dot(delta, normals[n]);
-                    AddIncrementToPoint(normals[n], increment, centerOfMass, m_projection, estimatedCircumCenter);
-                }
-                if (iter > 0 &&
-                    abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps &&
-                    abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
-                {
-                    result = estimatedCircumCenter;
-                    break;
-                }
-            }
+            ComputeMidPointsAndNormals(polygon, edgesNumFaces, numNodes, middlePoints, normals, pointCount);
+            result = ComputeCircumCentre(centerOfMass, pointCount, middlePoints, normals);
         }
     }
 
     for (UInt n = 0; n < numNodes; n++)
     {
-        polygon[n].x = m_weightCircumCenter * polygon[n].x + (1.0 - m_weightCircumCenter) * centerOfMass.x;
-        polygon[n].y = m_weightCircumCenter * polygon[n].y + (1.0 - m_weightCircumCenter) * centerOfMass.y;
+        polygon[n] = m_weightCircumCenter * polygon[n] + (1.0 - m_weightCircumCenter) * centerOfMass;
     }
 
     // The circumcenter is included in the face, then return the calculated circumcentre
@@ -1276,13 +1363,9 @@ std::vector<double> Mesh2D::GetSmoothness() const
     return result;
 }
 
-void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
+void Mesh2D::ComputeAverageFlowEdgesLength(std::vector<double>& edgesLength,
+                                           std::vector<double>& averageFlowEdgesLength) const
 {
-    std::vector<std::array<double, 2>> averageEdgesLength(GetNumEdges(), std::array<double, 2>({constants::missing::doubleValue, constants::missing::doubleValue}));
-    std::vector<double> averageFlowEdgesLength(GetNumEdges(), constants::missing::doubleValue);
-    std::vector<bool> curvilinearGridIndicator(GetNumNodes(), true);
-    std::vector<double> edgesLength(GetNumEdges(), 0.0);
-    aspectRatios.resize(GetNumEdges(), 0.0);
 
     for (UInt e = 0; e < GetNumEdges(); e++)
     {
@@ -1290,7 +1373,10 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
         const auto second = m_edges[e].second;
 
         if (first == second)
+        {
             continue;
+        }
+
         const double edgeLength = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
         edgesLength[e] = edgeLength;
 
@@ -1323,7 +1409,14 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
 
         averageFlowEdgesLength[e] = ComputeDistance(leftCenter, rightCenter, m_projection);
     }
+}
 
+void Mesh2D::ComputeAverageEdgeLength(const std::vector<double>& edgesLength,
+                                      const std::vector<double>& averageFlowEdgesLength,
+                                      std::vector<bool>& curvilinearGridIndicator,
+                                      std::vector<std::array<double, 2>>& averageEdgesLength,
+                                      std::vector<double>& aspectRatios) const
+{
     // Compute normal length
     for (UInt f = 0; f < GetNumFaces(); f++)
     {
@@ -1334,7 +1427,9 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
         for (UInt n = 0; n < numberOfFaceNodes; n++)
         {
             if (numberOfFaceNodes != constants::geometric::numNodesInQuadrilateral)
+            {
                 curvilinearGridIndicator[m_facesNodes[f][n]] = false;
+            }
             const auto edgeIndex = m_facesEdges[f][n];
 
             if (m_edgesNumFaces[edgeIndex] == 0)
@@ -1371,9 +1466,24 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
             }
         }
     }
+}
+
+void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
+{
+    std::vector<std::array<double, 2>> averageEdgesLength(GetNumEdges(), std::array<double, 2>{constants::missing::doubleValue, constants::missing::doubleValue});
+    std::vector<double> averageFlowEdgesLength(GetNumEdges(), constants::missing::doubleValue);
+    std::vector<double> edgesLength(GetNumEdges(), 0.0);
+    std::vector<bool> curvilinearGridIndicator(GetNumNodes(), true);
+    aspectRatios.resize(GetNumEdges(), 0.0);
+
+    ComputeAverageFlowEdgesLength(edgesLength, averageFlowEdgesLength);
+    ComputeAverageEdgeLength(edgesLength, averageFlowEdgesLength,
+                             curvilinearGridIndicator, averageEdgesLength, aspectRatios);
 
     if (m_curvilinearToOrthogonalRatio == 1.0)
+    {
         return;
+    }
 
     for (UInt e = 0; e < GetNumEdges(); e++)
     {
