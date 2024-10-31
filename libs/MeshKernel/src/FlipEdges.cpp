@@ -397,8 +397,9 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
 
     // Connected edges needs to be counterclockwise
     const auto sign = sgn(crossProduct(m_mesh.Node(nodeIndex), m_mesh.Node(firstNode), m_mesh.Node(firstNode), m_mesh.Node(secondNode), m_mesh.m_projection));
-    const auto isClockWise = sign < 0 ? true : false;
-    if (isClockWise)
+
+    // sign < 0 => is clockwise
+    if (sign < 0)
     {
         const auto firstNodeTemp = firstNode;
         firstNode = secondNode;
