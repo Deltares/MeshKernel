@@ -1485,8 +1485,18 @@ TEST_F(CartesianApiTestFixture, GetNodesInPolygonMesh2D_OnMesh2D_ShouldGetAllNod
     auto errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
+    int numberOfNodes = -1;
+
+    errorCode = mkernel_mesh2d_count_nodes_in_polygons(meshKernelId,
+                                                       geometryListIn,
+                                                       1,
+                                                       numberOfNodes);
+
+    ASSERT_EQ(numberOfNodes, mesh2d.num_nodes);
+
     // Execute
     std::vector<int> selectedNodes(mesh2d.num_nodes);
+
     errorCode = mkernel_mesh2d_get_nodes_in_polygons(meshKernelId,
                                                      geometryListIn,
                                                      1,
@@ -1727,6 +1737,17 @@ TEST_F(CartesianApiTestFixture, CountObtuseTriangles_OnMesh2DWithOneObtuseTriang
     // Assert
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_EQ(1, numObtuseTriangles);
+
+    // Need to clear the obtuse triangle cache for the next tests
+    meshkernelapi::GeometryList geometryList{};
+
+    std::vector<double> coordinatesObtuseTrianglesX(numObtuseTriangles);
+    std::vector<double> coordinatesObtuseTrianglesY(numObtuseTriangles);
+    geometryList.coordinates_x = coordinatesObtuseTrianglesX.data();
+    geometryList.coordinates_y = coordinatesObtuseTrianglesY.data();
+    geometryList.num_coordinates = numObtuseTriangles;
+    errorCode = mkernel_mesh2d_get_obtuse_triangles_mass_centers(meshKernelId, geometryList);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
 TEST_F(CartesianApiTestFixture, Mesh2DCountObtuseTriangles_OnMesh2DWithOneObtuseTriangle_ShouldGetObtuseTriangle)

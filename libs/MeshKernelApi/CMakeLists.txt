@@ -13,10 +13,12 @@ add_library(${TARGET_NAME} SHARED ${CMAKE_BINARY_DIR}/version.rc)
 
 # source directory
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
+set(CACHE_SRC_DIR ${SRC_DIR}/ApiCache)
 
 # include directory
 set(INC_DIR ${PROJECT_SOURCE_DIR}/include)
 set(DOMAIN_INC_DIR ${INC_DIR}/MeshKernelApi)
+set(CACHE_INC_DIR ${DOMAIN_INC_DIR}/ApiCache)
 set(VERSION_INC_DIR ${CMAKE_SOURCE_DIR}/tools)
 
 # list of target sources
@@ -24,6 +26,19 @@ set(SRC_LIST
   ${SRC_DIR}/MKStateUndoAction.cpp
   ${SRC_DIR}/MeshKernel.cpp
 )
+
+set(CACHE_SRC_LIST
+  ${CACHE_SRC_DIR}/BoundariesAsPolygonCache.cpp
+  ${CACHE_SRC_DIR}/CachedIntegerValues.cpp
+  ${CACHE_SRC_DIR}/CachedPointValues.cpp
+  ${CACHE_SRC_DIR}/FacePolygonPropertyCache.cpp
+  ${CACHE_SRC_DIR}/HangingEdgeCache.cpp
+  ${CACHE_SRC_DIR}/NodeInPolygonCache.cpp
+  ${CACHE_SRC_DIR}/ObtuseTriangleCentreCache.cpp
+  ${CACHE_SRC_DIR}/PolygonRefinementCache.cpp
+  ${CACHE_SRC_DIR}/SmallFlowEdgeCentreCache.cpp
+)
+
 
 # list of target headers
 set(
@@ -42,17 +57,33 @@ set(
   ${VERSION_INC_DIR}/Version/Version.hpp
 )
 
+set(
+  CACHE_INC_LIST
+  ${CACHE_INC_DIR}/BoundariesAsPolygonCache.hpp
+  ${CACHE_INC_DIR}/CachedIntegerValues.hpp
+  ${CACHE_INC_DIR}/CachedPointValues.hpp
+  ${CACHE_INC_DIR}/FacePolygonPropertyCache.hpp
+  ${CACHE_INC_DIR}/HangingEdgeCache.hpp
+  ${CACHE_INC_DIR}/NodeInPolygonCache.hpp
+  ${CACHE_INC_DIR}/ObtuseTriangleCentreCache.hpp
+  ${CACHE_INC_DIR}/PolygonRefinementCache.hpp
+  ${CACHE_INC_DIR}/SmallFlowEdgeCentreCache.hpp
+)
+
+
 # add sources to target
 target_sources(
   ${TARGET_NAME}
   PRIVATE
-    ${SRC_LIST}
+  ${SRC_LIST}
+  ${CACHE_SRC_LIST}
   PUBLIC
     FILE_SET HEADERS
       BASE_DIRS
         ${INC_DIR} ${VERSION_INC_DIR}
       FILES
-        ${INC_LIST}
+      ${INC_LIST}
+      ${CACHE_INC_LIST}
 )
 
 # Expose the interface of the shared lib
@@ -88,10 +119,10 @@ target_precompile_headers(
 install(TARGETS ${TARGET_NAME} FILE_SET HEADERS DESTINATION "include")
 
 # group the sources in IDE tree
-source_group("Source Files" FILES ${SRC_LIST})
+source_group("Source Files" FILES ${SRC_LIST} ${CACHE_SRC_LIST})
 
 # group the headers in IDE tree
-source_group("Header Files" FILES ${INC_LIST})
+source_group("Header Files" FILES ${INC_LIST} ${CACHE_INC_LIST})
 
 # Add unit tests
 if(ENABLE_UNIT_TESTING)
