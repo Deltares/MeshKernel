@@ -531,9 +531,11 @@ namespace meshkernel
                                   const std::array<Point, m_maximumNumberOfNodesPerFace>& middlePoints,
                                   const std::array<Point, m_maximumNumberOfNodesPerFace>& normals) const;
 
+        /// @brief Compute edge and average flow length
         void ComputeAverageFlowEdgesLength(std::vector<double>& edgesLength,
                                            std::vector<double>& averageFlowEdgesLength) const;
 
+        /// @brief Compute average edge length and aspect ratios
         void ComputeAverageEdgeLength(const std::vector<double>& edgesLength,
                                       const std::vector<double>& averageFlowEdgesLength,
                                       std::vector<bool>& curvilinearGridIndicator,
