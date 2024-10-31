@@ -244,10 +244,8 @@ void Smoother::ComputeWeights()
     }
 }
 
-void Smoother::ComputeOperatorsNode(UInt currentNode)
+void Smoother::ComputeCellCircumcentreCoefficients(const UInt currentNode, const UInt currentTopology)
 {
-    // the current topology index
-    const auto currentTopology = m_nodeTopologyMapping[currentNode];
 
     for (UInt f = 0; f < m_topologySharedFaces[currentTopology].size(); f++)
     {
@@ -299,6 +297,60 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
             }
         }
     }
+}
+
+void Smoother::ComputeLaplacianSmootherWeights(const UInt currentNode, const UInt currentTopology)
+{
+    // compute the weights in the Laplacian smoother
+    std::fill(m_ww2[currentTopology].begin(), m_ww2[currentTopology].end(), 0.0);
+    for (UInt n = 0; n < m_mesh.m_nodesNumEdges[currentNode]; n++)
+    {
+        for (UInt i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
+        {
+            m_ww2[currentTopology][i] += m_Divxi[currentTopology][n] * m_Gxi[currentTopology][n][i] + m_Diveta[currentTopology][n] * m_Geta[currentTopology][n][i];
+        }
+    }
+}
+
+void Smoother::ComputeNodeToNodeGradients(const UInt currentNode, const UInt currentTopology)
+{
+    for (UInt f = 0; f < m_topologySharedFaces[currentTopology].size(); f++)
+    {
+        // internal edge
+        if (!m_mesh.IsEdgeOnBoundary(m_mesh.m_nodesEdges[currentNode][f]))
+        {
+            UInt rightNode;
+            if (f == 0)
+            {
+                rightNode = f + m_mesh.m_nodesNumEdges[currentNode] - 1;
+            }
+            else
+            {
+                rightNode = f - 1;
+            }
+
+            for (UInt i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
+            {
+                m_Jxi[currentTopology][i] += m_Divxi[currentTopology][f] * 0.5 * (m_Az[currentTopology][f][i] + m_Az[currentTopology][rightNode][i]);
+                m_Jeta[currentTopology][i] += m_Diveta[currentTopology][f] * 0.5 * (m_Az[currentTopology][f][i] + m_Az[currentTopology][rightNode][i]);
+            }
+        }
+        else
+        {
+            m_Jxi[currentTopology][0] += m_Divxi[currentTopology][f] * 0.5;
+            m_Jxi[currentTopology][f + 1] += m_Divxi[currentTopology][f] * 0.5;
+            m_Jeta[currentTopology][0] += m_Diveta[currentTopology][f] * 0.5;
+            m_Jeta[currentTopology][f + 1] += m_Diveta[currentTopology][f] * 0.5;
+        }
+    }
+}
+
+void Smoother::ComputeOperatorsNode(UInt currentNode)
+{
+    // the current topology index
+    const auto currentTopology = m_nodeTopologyMapping[currentNode];
+
+    ComputeCellCircumcentreCoefficients(currentNode, currentTopology);
 
     // Initialize caches
     std::fill(m_boundaryEdgesCache.begin(), m_boundaryEdgesCache.end(), constants::missing::uintValue);
@@ -338,6 +390,7 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
         double rightXi = 0.0;
         double rightEta = 0.0;
         double alpha_x = 0.0;
+
         if (m_mesh.IsEdgeOnBoundary(edgeIndex))
         {
             // Boundary face
@@ -450,6 +503,7 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
         {
             m_Gxi[currentTopology][f][i] = facxiL * m_Az[currentTopology][faceLeftIndex][i];
             m_Geta[currentTopology][f][i] = facetaL * m_Az[currentTopology][faceLeftIndex][i];
+
             if (!m_mesh.IsEdgeOnBoundary(edgeIndex))
             {
                 m_Gxi[currentTopology][f][i] += facxiR * m_Az[currentTopology][faceRightIndex][i];
@@ -491,45 +545,192 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
         m_Diveta[currentTopology][i] = m_Diveta[currentTopology][i] / volxi;
     }
 
-    // compute the node-to-node gradients
-    for (UInt f = 0; f < m_topologySharedFaces[currentTopology].size(); f++)
+    ComputeNodeToNodeGradients(currentNode, currentTopology);
+    ComputeLaplacianSmootherWeights(currentNode, currentTopology);
+}
+
+void Smoother::ComputeInternalAngle(const UInt currentNode,
+                                    const UInt numSharedFaces,
+                                    const std::vector<double>& thetaSquare,
+                                    const std::vector<bool>& isSquareFace,
+                                    InternalAngleData& internalAngleData,
+                                    UInt& numNonStencilQuad)
+{
+    internalAngleData.numSquaredTriangles = 0;
+    internalAngleData.numTriangles = 0;
+    internalAngleData.phiSquaredTriangles = 0.0;
+    internalAngleData.phiQuads = 0.0;
+    internalAngleData.phiTriangles = 0.0;
+    internalAngleData.phiTot = 0.0;
+
+    for (UInt f = 0; f < numSharedFaces; f++)
     {
-        // internal edge
-        if (!m_mesh.IsEdgeOnBoundary(m_mesh.m_nodesEdges[currentNode][f]))
+        // boundary face
+        if (m_sharedFacesCache[f] == constants::missing::uintValue)
         {
-            UInt rightNode;
-            if (f == 0)
+            continue;
+        }
+
+        auto numFaceNodes = m_mesh.GetNumFaceEdges(m_sharedFacesCache[f]);
+        double phi = OptimalEdgeAngle(numFaceNodes);
+
+        if (isSquareFace[f] || numFaceNodes == 4)
+        {
+            UInt nextNode = static_cast<UInt>(f) + static_cast<UInt>(2);
+
+            if (nextNode > numSharedFaces)
             {
-                rightNode = f + m_mesh.m_nodesNumEdges[currentNode] - 1;
-            }
-            else
-            {
-                rightNode = f - 1;
+                nextNode = nextNode - numSharedFaces;
             }
 
-            for (UInt i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
+            phi = OptimalEdgeAngle(numFaceNodes, thetaSquare[f + 1], thetaSquare[nextNode], m_mesh.IsEdgeOnBoundary(m_mesh.m_nodesEdges[currentNode][f]));
+
+            if (numFaceNodes == 3)
             {
-                m_Jxi[currentTopology][i] += m_Divxi[currentTopology][f] * 0.5 * (m_Az[currentTopology][f][i] + m_Az[currentTopology][rightNode][i]);
-                m_Jeta[currentTopology][i] += m_Diveta[currentTopology][f] * 0.5 * (m_Az[currentTopology][f][i] + m_Az[currentTopology][rightNode][i]);
+                internalAngleData.numSquaredTriangles += 1;
+                internalAngleData.phiSquaredTriangles += phi;
+            }
+            else if (numFaceNodes == 4)
+            {
+                numNonStencilQuad += 1;
+                internalAngleData.phiQuads += phi;
             }
         }
         else
         {
-            m_Jxi[currentTopology][0] += m_Divxi[currentTopology][f] * 0.5;
-            m_Jxi[currentTopology][f + 1] += m_Divxi[currentTopology][f] * 0.5;
-            m_Jeta[currentTopology][0] += m_Diveta[currentTopology][f] * 0.5;
-            m_Jeta[currentTopology][f + 1] += m_Diveta[currentTopology][f] * 0.5;
+            internalAngleData.numTriangles += 1;
+            internalAngleData.phiTriangles += phi;
+        }
+
+        internalAngleData.phiTot += phi;
+    }
+}
+
+void Smoother::UpdateThetaForInteriorFaces(const UInt numSharedFaces, std::vector<double>& thetaSquare)
+{
+
+    for (UInt f = 0; f < numSharedFaces; f++)
+    {
+        // boundary face
+        if (m_sharedFacesCache[f] == constants::missing::uintValue || m_mesh.GetNumFaceEdges(m_sharedFacesCache[f]) != 4)
+        {
+            continue;
+        }
+
+        // non boundary face
+        for (UInt n = 0; n < m_mesh.GetNumFaceEdges(m_sharedFacesCache[f]); n++)
+        {
+            if (m_faceNodeMappingCache[f][n] <= numSharedFaces)
+            {
+                continue;
+            }
+
+            thetaSquare[m_faceNodeMappingCache[f][n]] = 0.5 * M_PI;
         }
     }
+}
 
-    // compute the weights in the Laplacian smoother
-    std::fill(m_ww2[currentTopology].begin(), m_ww2[currentTopology].end(), 0.0);
-    for (UInt n = 0; n < m_mesh.m_nodesNumEdges[currentNode]; n++)
+void Smoother::UpdateXiEtaForSharedFace(const UInt currentNode,
+                                        const UInt currentFace,
+                                        const UInt numFaceNodes,
+                                        const double dPhi,
+                                        const double phi0)
+{
+    // optimal angle
+    double dTheta = 2.0 * M_PI / static_cast<double>(numFaceNodes);
+
+    // determine the index of the current stencil node
+    const UInt nodeIndex = FindIndex(m_mesh.m_facesNodes[m_sharedFacesCache[currentFace]], static_cast<UInt>(currentNode));
+
+    // orientation of the face (necessary for folded cells)
+    const auto previousNode = NextCircularForwardIndex(nodeIndex, numFaceNodes);
+    const auto nextNode = NextCircularBackwardIndex(nodeIndex, numFaceNodes);
+
+    if (m_faceNodeMappingCache[currentFace][nextNode] + 1 == m_faceNodeMappingCache[currentFace][previousNode] ||
+        m_faceNodeMappingCache[currentFace][nextNode] - m_faceNodeMappingCache[currentFace][previousNode] == m_mesh.m_nodesNumEdges[currentNode])
     {
-        for (UInt i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
+        dTheta = -dTheta;
+    }
+
+    double aspectRatio = (1.0 - std::cos(dTheta)) / std::sin(std::abs(dTheta)) * std::tan(0.5 * dPhi);
+    double radius = std::cos(0.5 * dPhi) / (1.0 - cos(dTheta));
+
+    for (UInt n = 0; n < numFaceNodes; n++)
+    {
+        double theta = dTheta * (static_cast<int>(n) - static_cast<int>(nodeIndex));
+        double xip = radius - radius * std::cos(theta);
+        double ethap = -radius * std::sin(theta);
+
+        m_xiCache[m_faceNodeMappingCache[currentFace][n]] = xip * std::cos(phi0) - aspectRatio * ethap * std::sin(phi0);
+        m_etaCache[m_faceNodeMappingCache[currentFace][n]] = xip * std::sin(phi0) + aspectRatio * ethap * std::cos(phi0);
+    }
+}
+
+void Smoother::ComputeOptimalAngleForSharedFaces(const UInt currentNode,
+                                                 const UInt numSharedFaces,
+                                                 const std::vector<double>& thetaSquare,
+                                                 const std::vector<bool>& isSquareFace,
+                                                 const double mu,
+                                                 const double muSquaredTriangles,
+                                                 const double muTriangles)
+{
+    double phi0 = 0.0;
+    double dPhi0 = 0.0;
+    double dPhi = 0.0;
+
+    for (UInt f = 0; f < numSharedFaces; f++)
+    {
+        phi0 = phi0 + 0.5 * dPhi;
+        if (m_sharedFacesCache[f] == constants::missing::uintValue)
         {
-            m_ww2[currentTopology][i] += m_Divxi[currentTopology][n] * m_Gxi[currentTopology][n][i] + m_Diveta[currentTopology][n] * m_Geta[currentTopology][n][i];
+            if (m_mesh.m_nodesTypes[currentNode] == 2)
+            {
+                dPhi = M_PI;
+            }
+            else if (m_mesh.m_nodesTypes[currentNode] == 3)
+            {
+                dPhi = 1.5 * M_PI;
+            }
+            else
+            {
+                throw MeshGeometryError(currentNode, Location::Nodes, "Inappropriate fictitious boundary face");
+            }
+            phi0 = phi0 + 0.5 * dPhi;
+            continue;
         }
+
+        const auto numFaceNodes = m_mesh.GetNumFaceEdges(m_sharedFacesCache[f]);
+        if (numFaceNodes > Mesh::m_maximumNumberOfEdgesPerNode)
+        {
+            throw AlgorithmError("The number of face nodes is greater than the maximum number of edges per node.");
+        }
+
+        dPhi0 = OptimalEdgeAngle(numFaceNodes);
+        if (isSquareFace[f])
+        {
+            auto nextNode = f + 2u;
+
+            if (nextNode > numSharedFaces)
+            {
+                nextNode = nextNode - numSharedFaces;
+            }
+
+            dPhi0 = OptimalEdgeAngle(numFaceNodes, thetaSquare[f + 1], thetaSquare[nextNode], m_mesh.IsEdgeOnBoundary(m_mesh.m_nodesEdges[currentNode][f]));
+
+            if (numFaceNodes == 3)
+            {
+                dPhi0 = muSquaredTriangles * dPhi0;
+            }
+        }
+        else if (numFaceNodes == 3)
+        {
+            dPhi0 = muTriangles * dPhi0;
+        }
+
+        dPhi = mu * dPhi0;
+        phi0 = phi0 + 0.5 * dPhi;
+
+        UpdateXiEtaForSharedFace(currentNode, f, numFaceNodes, dPhi, phi0);
     }
 }
 
@@ -628,72 +829,12 @@ void Smoother::ComputeNodeXiEta(UInt currentNode)
         isSquareFace[leftFaceIndex] = isSquareFace[leftFaceIndex] || isSquare;
     }
 
-    for (UInt f = 0; f < numSharedFaces; f++)
-    {
-        // boundary face
-        if (m_sharedFacesCache[f] == constants::missing::uintValue)
-            continue;
-
-        // non boundary face
-        if (m_mesh.GetNumFaceEdges(m_sharedFacesCache[f]) == 4)
-        {
-            for (UInt n = 0; n < m_mesh.GetNumFaceEdges(m_sharedFacesCache[f]); n++)
-            {
-                if (m_faceNodeMappingCache[f][n] <= numSharedFaces)
-                {
-                    continue;
-                }
-                thetaSquare[m_faceNodeMappingCache[f][n]] = 0.5 * M_PI;
-            }
-        }
-    }
+    UpdateThetaForInteriorFaces(numSharedFaces, thetaSquare);
 
     // Compute internal angle
-    UInt numSquaredTriangles = 0;
-    UInt numTriangles = 0;
-    double phiSquaredTriangles = 0.0;
-    double phiQuads = 0.0;
-    double phiTriangles = 0.0;
-    double phiTot = 0.0;
     numNonStencilQuad = 0;
-    for (UInt f = 0; f < numSharedFaces; f++)
-    {
-        // boundary face
-        if (m_sharedFacesCache[f] == constants::missing::uintValue)
-        {
-            continue;
-        }
-
-        auto numFaceNodes = m_mesh.GetNumFaceEdges(m_sharedFacesCache[f]);
-        double phi = OptimalEdgeAngle(numFaceNodes);
-
-        if (isSquareFace[f] || numFaceNodes == 4)
-        {
-            UInt nextNode = static_cast<UInt>(f) + static_cast<UInt>(2);
-            if (nextNode > numSharedFaces)
-            {
-                nextNode = nextNode - numSharedFaces;
-            }
-
-            phi = OptimalEdgeAngle(numFaceNodes, thetaSquare[f + 1], thetaSquare[nextNode], m_mesh.IsEdgeOnBoundary(m_mesh.m_nodesEdges[currentNode][f]));
-            if (numFaceNodes == 3)
-            {
-                numSquaredTriangles += 1;
-                phiSquaredTriangles += phi;
-            }
-            else if (numFaceNodes == 4)
-            {
-                numNonStencilQuad += 1;
-                phiQuads += phi;
-            }
-        }
-        else
-        {
-            numTriangles += 1;
-            phiTriangles += phi;
-        }
-        phiTot += phi;
-    }
+    InternalAngleData internalAngleData;
+    ComputeInternalAngle(currentNode, numSharedFaces, thetaSquare, isSquareFace, internalAngleData, numNonStencilQuad);
 
     double factor = 1.0;
     if (m_mesh.m_nodesTypes[currentNode] == 2)
@@ -709,109 +850,30 @@ void Smoother::ComputeNodeXiEta(UInt currentNode)
     double mu = 1.0;
     double muSquaredTriangles = 1.0;
     double muTriangles = 1.0;
-    double minPhi = 15.0 / 180.0 * M_PI;
-    if (numTriangles > 0)
+    const double minPhi = 15.0 / 180.0 * M_PI;
+
+    if (internalAngleData.numTriangles > 0)
     {
-        muTriangles = (factor * 2.0 * M_PI - (phiTot - phiTriangles)) / phiTriangles;
-        muTriangles = std::max(muTriangles, double(numTriangles) * minPhi / phiTriangles);
+        muTriangles = (factor * 2.0 * M_PI - (internalAngleData.phiTot - internalAngleData.phiTriangles)) / internalAngleData.phiTriangles;
+        muTriangles = std::max(muTriangles, double(internalAngleData.numTriangles) * minPhi / internalAngleData.phiTriangles);
     }
-    else if (numSquaredTriangles > 0)
+    else if (internalAngleData.numSquaredTriangles > 0)
     {
-        muSquaredTriangles = std::max(factor * 2.0 * M_PI - (phiTot - phiSquaredTriangles), static_cast<double>(numSquaredTriangles) * minPhi) / phiSquaredTriangles;
+        muSquaredTriangles = std::max(factor * 2.0 * M_PI - (internalAngleData.phiTot - internalAngleData.phiSquaredTriangles),
+                                      static_cast<double>(internalAngleData.numSquaredTriangles) * minPhi) /
+                             internalAngleData.phiSquaredTriangles;
     }
 
-    if (phiTot > 1e-18)
+    if (internalAngleData.phiTot > 1e-18)
     {
-        mu = factor * 2.0 * M_PI / (phiTot - (1.0 - muTriangles) * phiTriangles - (1.0 - muSquaredTriangles) * phiSquaredTriangles);
+        mu = factor * 2.0 * M_PI / (internalAngleData.phiTot - (1.0 - muTriangles) * internalAngleData.phiTriangles - (1.0 - muSquaredTriangles) * internalAngleData.phiSquaredTriangles);
     }
     else if (numSharedFaces > 0)
     {
         throw MeshGeometryError(currentNode, Location::Nodes, "Fatal error (phiTot=0)");
     }
 
-    double phi0 = 0.0;
-    double dPhi0 = 0.0;
-    double dPhi = 0.0;
-    double dTheta = 0.0;
-    for (UInt f = 0; f < numSharedFaces; f++)
-    {
-        phi0 = phi0 + 0.5 * dPhi;
-        if (m_sharedFacesCache[f] == constants::missing::uintValue)
-        {
-            if (m_mesh.m_nodesTypes[currentNode] == 2)
-            {
-                dPhi = M_PI;
-            }
-            else if (m_mesh.m_nodesTypes[currentNode] == 3)
-            {
-                dPhi = 1.5 * M_PI;
-            }
-            else
-            {
-                throw MeshGeometryError(currentNode, Location::Nodes, "Inappropriate fictitious boundary face");
-            }
-            phi0 = phi0 + 0.5 * dPhi;
-            continue;
-        }
-
-        const auto numFaceNodes = m_mesh.GetNumFaceEdges(m_sharedFacesCache[f]);
-        if (numFaceNodes > Mesh::m_maximumNumberOfEdgesPerNode)
-        {
-            throw AlgorithmError("The number of face nodes is greater than the maximum number of edges per node.");
-        }
-
-        dPhi0 = OptimalEdgeAngle(numFaceNodes);
-        if (isSquareFace[f])
-        {
-            auto nextNode = f + static_cast<UInt>(2);
-            if (nextNode > numSharedFaces)
-            {
-                nextNode = nextNode - numSharedFaces;
-            }
-
-            dPhi0 = OptimalEdgeAngle(numFaceNodes, thetaSquare[f + 1], thetaSquare[nextNode], m_mesh.IsEdgeOnBoundary(m_mesh.m_nodesEdges[currentNode][f]));
-            if (numFaceNodes == 3)
-            {
-                dPhi0 = muSquaredTriangles * dPhi0;
-            }
-        }
-        else if (numFaceNodes == 3)
-        {
-            dPhi0 = muTriangles * dPhi0;
-        }
-
-        dPhi = mu * dPhi0;
-        phi0 = phi0 + 0.5 * dPhi;
-
-        // determine the index of the current stencil node
-        const UInt nodeIndex = FindIndex(m_mesh.m_facesNodes[m_sharedFacesCache[f]], static_cast<UInt>(currentNode));
-
-        // optimal angle
-        dTheta = 2.0 * M_PI / static_cast<double>(numFaceNodes);
-
-        // orientation of the face (necessary for folded cells)
-        const auto previousNode = NextCircularForwardIndex(nodeIndex, numFaceNodes);
-        const auto nextNode = NextCircularBackwardIndex(nodeIndex, numFaceNodes);
-
-        if (m_faceNodeMappingCache[f][nextNode] + 1 == m_faceNodeMappingCache[f][previousNode] ||
-            m_faceNodeMappingCache[f][nextNode] - m_faceNodeMappingCache[f][previousNode] == m_mesh.m_nodesNumEdges[currentNode])
-        {
-            dTheta = -dTheta;
-        }
-
-        double aspectRatio = (1.0 - std::cos(dTheta)) / std::sin(std::abs(dTheta)) * std::tan(0.5 * dPhi);
-        double radius = std::cos(0.5 * dPhi) / (1.0 - cos(dTheta));
-
-        for (UInt n = 0; n < numFaceNodes; n++)
-        {
-            double theta = dTheta * (static_cast<int>(n) - static_cast<int>(nodeIndex));
-            double xip = radius - radius * std::cos(theta);
-            double ethap = -radius * std::sin(theta);
-
-            m_xiCache[m_faceNodeMappingCache[f][n]] = xip * std::cos(phi0) - aspectRatio * ethap * std::sin(phi0);
-            m_etaCache[m_faceNodeMappingCache[f][n]] = xip * std::sin(phi0) + aspectRatio * ethap * std::cos(phi0);
-        }
-    }
+    ComputeOptimalAngleForSharedFaces(currentNode, numSharedFaces, thetaSquare, isSquareFace, mu, muSquaredTriangles, muTriangles);
 }
 
 void Smoother::NodeAdministration(UInt currentNode)

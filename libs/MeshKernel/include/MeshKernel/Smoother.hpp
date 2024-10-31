@@ -74,6 +74,44 @@ namespace meshkernel
         }
 
     private:
+        /// @brief Contains internal edge angle information
+        struct InternalAngleData
+        {
+            UInt numSquaredTriangles = 0;     ///< Number of  squared triangles
+            UInt numTriangles = 0;            ///< Number of triangles sharing node
+            double phiSquaredTriangles = 0.0; ///< Sum of optimal edge angles for squared triangles
+            double phiQuads = 0.0;            ///< Sum of optimal edge angles for quadrilaterals
+            double phiTriangles = 0.0;        ///< Sum of optimal edge angles for triangles
+            double phiTot = 0.0;              ///< Sum of optimal edge angles for all element shapes
+        };
+
+        /// @brief Compute number and sum of all angles interior angles
+        void ComputeInternalAngle(const UInt currentNode,
+                                  const UInt numSharedFaces,
+                                  const std::vector<double>& thetaSquare,
+                                  const std::vector<bool>& isSquareFace,
+                                  InternalAngleData& internalAngleData,
+                                  UInt& numNonStencilQuad);
+
+        /// @brief Update theta squared for interior faces.
+        void UpdateThetaForInteriorFaces(const UInt numSharedFaces, std::vector<double>& thetaSquare);
+
+        /// @bref Updata xi- and eta-caches for shared faces of a node.
+        void UpdateXiEtaForSharedFace(const UInt currentNode,
+                                      const UInt currentFace,
+                                      const UInt numFaceNodes,
+                                      const double dPhi,
+                                      const double phi0);
+
+        /// @brief Compute the optimal angle for all theshared faces attached to a node.
+        void ComputeOptimalAngleForSharedFaces(const UInt currentNode,
+                                               const UInt numSharedFaces,
+                                               const std::vector<double>& thetaSquare,
+                                               const std::vector<bool>& isSquareFace,
+                                               const double mu,
+                                               const double muSquaredTriangles,
+                                               const double muTriangles);
+
         /// @brief Initialize smoother topologies. A topology is determined by how many nodes are connected to the current node.
         ///        There are at maximum mesh.m_numNodes topologies, most likely much less
         void Initialize();
@@ -127,6 +165,13 @@ namespace meshkernel
         /// @param[in] currentNode
         /// @param[out] J
         void ComputeJacobian(UInt currentNode, std::vector<double>& J) const;
+
+        /// @brief Compute the coefficients to estimate values at cell circumcenters, filling m_Az.
+        void ComputeCellCircumcentreCoefficients(const UInt currentNode, const UInt currentTopology);
+
+        void ComputeNodeToNodeGradients(const UInt currentNode, const UInt currentTopology);
+
+        void ComputeLaplacianSmootherWeights(const UInt currentNode, const UInt currentTopology);
 
         // The mesh to smooth
         const Mesh2D& m_mesh; ///< A reference to mesh
