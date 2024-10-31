@@ -203,6 +203,7 @@ namespace meshkernel
         /// @brief Set the face mask to true if an edge is close to land boundary
         void MaskFacesCloseToBoundary(const UInt landBoundaryIndex);
 
+        //// @brief Get the node on the land boundary for points close to the boundary
         void GetLandBoundaryNode(const double closeDistance,
                                  const Point& firstMeshNode,
                                  const Point& secondMeshNode,

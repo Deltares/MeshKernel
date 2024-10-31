@@ -96,7 +96,7 @@ namespace meshkernel
         /// @brief Update theta squared for interior faces.
         void UpdateThetaForInteriorFaces(const UInt numSharedFaces, std::vector<double>& thetaSquare);
 
-        /// @bref Updata xi- and eta-caches for shared faces of a node.
+        /// @brief Updata xi- and eta-caches for shared faces of a node.
         void UpdateXiEtaForSharedFace(const UInt currentNode,
                                       const UInt currentFace,
                                       const UInt numFaceNodes,
@@ -169,8 +169,10 @@ namespace meshkernel
         /// @brief Compute the coefficients to estimate values at cell circumcenters, filling m_Az.
         void ComputeCellCircumcentreCoefficients(const UInt currentNode, const UInt currentTopology);
 
+        /// @brief Compute the segment gradients
         void ComputeNodeToNodeGradients(const UInt currentNode, const UInt currentTopology);
 
+        /// @brief Compute the weights for the Laplacian smoother
         void ComputeLaplacianSmootherWeights(const UInt currentNode, const UInt currentTopology);
 
         // The mesh to smooth
