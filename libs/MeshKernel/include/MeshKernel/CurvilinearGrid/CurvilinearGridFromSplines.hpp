@@ -375,7 +375,6 @@ namespace meshkernel
         lin_alg::Matrix<UInt> m_numPerpendicularFacesOnSubintervalAndEdge; ///< Perpendicular faces on subinterval and edge
         lin_alg::Matrix<double> m_growFactorOnSubintervalAndEdge;          ///< Grow factor on subinterval and edge
 
-    private:
         /// @brief Move any grid nodes
         /// @returns Number of grid nodes moved.
         UInt MoveGridNodes(const UInt i, const UInt j, const UInt firstLeftIndex, const UInt firstRightIndex);

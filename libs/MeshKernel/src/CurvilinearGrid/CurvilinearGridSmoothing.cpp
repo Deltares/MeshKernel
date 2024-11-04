@@ -174,7 +174,6 @@ void CurvilinearGridSmoothing::SolveDirectional()
     };
 
     // Apply smoothing
-    // const double smoothingFactor = 0.5;
     for (auto n = m_lowerLeft.m_n; n <= m_upperRight.m_n; ++n)
     {
         for (auto m = m_lowerLeft.m_m; m <= m_upperRight.m_m; ++m)

@@ -220,7 +220,7 @@ meshkernel::UInt LandBoundaries::GetSegmentIndex(const UInt nearestLandBoundaryN
     return landboundarySegmentIndex;
 }
 
-void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex, bool initialize, std::vector<UInt>& nodes, UInt numNodes)
+void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex, bool initialize, const std::vector<UInt>& nodes, UInt numNodes)
 {
     if (m_landBoundary.IsEmpty())
     {
@@ -444,9 +444,7 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::MakePath(UInt lan
 
     while (true)
     {
-        bool stopPathSearch = StopPathSearch(landBoundaryIndex, currentNode);
-
-        if (stopPathSearch)
+        if (StopPathSearch(landBoundaryIndex, currentNode))
         {
             if (numConnectedNodes == 1 && lastSegment != constants::missing::uintValue)
             {

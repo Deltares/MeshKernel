@@ -754,49 +754,6 @@ void Mesh2D::ClassifyNodes()
         if (m_nodesTypes[n] == 1 || m_nodesTypes[n] == 2)
         {
             ClassifyNode(n);
-
-            // if (m_nodesNumEdges[n] == 2)
-            // {
-            //     // corner point
-            //     m_nodesTypes[n] = 3;
-            // }
-            // else
-            // {
-            //     UInt firstNode = constants::missing::uintValue;
-            //     UInt secondNode = constants::missing::uintValue;
-            //     for (UInt i = 0; i < m_nodesNumEdges[n]; ++i)
-            //     {
-            //         const auto edgeIndex = m_nodesEdges[n][i];
-            //         if (!IsEdgeOnBoundary(edgeIndex))
-            //         {
-            //             continue;
-            //         }
-            //         if (firstNode == 0)
-            //         {
-            //             firstNode = OtherNodeOfEdge(m_edges[edgeIndex], n);
-            //         }
-            //         else
-            //         {
-            //             secondNode = OtherNodeOfEdge(m_edges[edgeIndex], n);
-            //             break;
-            //         }
-            //     }
-
-            //     // point at the border
-            //     m_nodesTypes[n] = 2;
-            //     if (firstNode != constants::missing::uintValue && secondNode != constants::missing::uintValue)
-            //     {
-            //         const double cosPhi = NormalizedInnerProductTwoSegments(m_nodes[n], m_nodes[firstNode], m_nodes[n], m_nodes[secondNode], m_projection);
-
-            //         // threshold for corner points
-            //         const double cornerCosine = 0.25;
-            //         if (cosPhi > -cornerCosine)
-            //         {
-            //             // void angle
-            //             m_nodesTypes[n] = 3;
-            //         }
-            //     }
-            // }
         }
         else if (m_nodesTypes[n] > 2)
         {
@@ -963,9 +920,6 @@ meshkernel::Point Mesh2D::ComputeCircumCentre(const Point& centerOfMass,
 meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
                                                  const std::vector<UInt>& edgesNumFaces) const
 {
-    // const UInt maximumNumberCircumcenterIterations = 100;
-    // const double eps = m_projection == Projection::cartesian ? 1e-3 : 9e-10; // 111km = 0-e digit.
-
     std::array<Point, m_maximumNumberOfNodesPerFace> middlePoints;
     std::array<Point, m_maximumNumberOfNodesPerFace> normals;
     UInt pointCount = 0;

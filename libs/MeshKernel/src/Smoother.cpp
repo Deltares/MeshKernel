@@ -471,13 +471,6 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
 
         if (m_mesh.IsEdgeOnBoundary(edgeIndex))
         {
-
-            // // Swap left and right if the boundary is at the left
-            // if (f != faceLeftIndex)
-            // {
-            //     leftRightSwap = -1.0;
-            // }
-
             std::tie(leftXi, leftEta) = ComputeOperatorsForBoundaryNode(f, faceLeftIndex, currentTopology);
 
             double alpha = leftXi * xiOne + leftEta * etaOne;
@@ -673,7 +666,7 @@ void Smoother::UpdateXiEtaForSharedFace(const UInt currentNode,
     double dTheta = 2.0 * M_PI / static_cast<double>(numFaceNodes);
 
     // determine the index of the current stencil node
-    const UInt nodeIndex = FindIndex(m_mesh.m_facesNodes[m_sharedFacesCache[currentFace]], static_cast<UInt>(currentNode));
+    const UInt nodeIndex = FindIndex(m_mesh.m_facesNodes[m_sharedFacesCache[currentFace]], currentNode);
 
     // orientation of the face (necessary for folded cells)
     const auto previousNode = NextCircularForwardIndex(nodeIndex, numFaceNodes);

@@ -133,11 +133,6 @@ namespace meshkernel::impl
             }
         }
 
-        // if (inside == 1)
-        // {
-        //     isInPolygon = true;
-        // }
-
         return inside == 1;
     }
 

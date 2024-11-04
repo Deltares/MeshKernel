@@ -432,23 +432,25 @@ void CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
 
 meshkernel::NodeType CurvilinearGrid::GetBottomNodeType(const UInt n) const
 {
-    NodeType result = NodeType::Bottom;
+    using enum NodeType;
+
+    NodeType result = Bottom;
 
     if (n == 0)
     {
-        result = NodeType::BottomLeft;
+        result = BottomLeft;
     }
     else if (n == NumN() - 1)
     {
-        result = NodeType::BottomRight;
+        result = BottomRight;
     }
     else if (!GetNode(n - 1, 0).IsValid())
     {
-        result = NodeType::BottomLeft;
+        result = BottomLeft;
     }
     else if (!GetNode(n + 1, 0).IsValid())
     {
-        result = NodeType::BottomRight;
+        result = BottomRight;
     }
 
     return result;
@@ -456,24 +458,26 @@ meshkernel::NodeType CurvilinearGrid::GetBottomNodeType(const UInt n) const
 
 meshkernel::NodeType CurvilinearGrid::GetTopNodeType(const UInt n) const
 {
-    NodeType result = NodeType::Up;
+    using enum NodeType;
+
+    NodeType result = Up;
     UInt m = NumM() - 1;
 
     if (n == 0)
     {
-        result = NodeType::UpperLeft;
+        result = UpperLeft;
     }
     else if (n == NumN() - 1)
     {
-        result = NodeType::UpperRight;
+        result = UpperRight;
     }
     else if (!GetNode(n - 1, m).IsValid())
     {
-        result = NodeType::UpperLeft;
+        result = UpperLeft;
     }
     else if (!GetNode(n + 1, m).IsValid())
     {
-        result = NodeType::UpperRight;
+        result = UpperRight;
     }
 
     return result;
@@ -481,16 +485,18 @@ meshkernel::NodeType CurvilinearGrid::GetTopNodeType(const UInt n) const
 
 meshkernel::NodeType CurvilinearGrid::GetLeftNodeType(const UInt m) const
 {
-    NodeType result = NodeType::Left;
+    using enum NodeType;
+
+    NodeType result = Left;
 
     if (!GetNode(0, m - 1).IsValid())
     {
-        result = NodeType::BottomLeft;
+        result = BottomLeft;
     }
     else if (!GetNode(0, m + 1).IsValid())
     {
-        // TODO SHould this be NodeType::UpperLeft
-        result = NodeType::UpperLeft; // UpperRight;
+        // Should this be UpperLeft or UpperRight
+        result = UpperLeft; // was UpperRight
     }
 
     return result;
@@ -498,16 +504,17 @@ meshkernel::NodeType CurvilinearGrid::GetLeftNodeType(const UInt m) const
 
 meshkernel::NodeType CurvilinearGrid::GetRightNodeType(const UInt m) const
 {
-    NodeType result = NodeType::Right;
-    UInt n = NumN() - 1;
+    using enum NodeType;
 
-    if (!GetNode(n, m - 1).IsValid())
+    NodeType result = Right;
+
+    if (const UInt n = NumN() - 1; !GetNode(n, m - 1).IsValid())
     {
-        result = NodeType::BottomRight;
+        result = BottomRight;
     }
     else if (!GetNode(n, m + 1).IsValid())
     {
-        result = NodeType::UpperRight;
+        result = UpperRight;
     }
 
     return result;
@@ -515,25 +522,26 @@ meshkernel::NodeType CurvilinearGrid::GetRightNodeType(const UInt m) const
 
 meshkernel::CurvilinearGrid::NodeTypeArray4D CurvilinearGrid::InitialiseInteriorNodeType()
 {
+    using enum NodeType;
 
     NodeTypeArray4D result;
 
-    result[0][0][0][0] = NodeType::Invalid;
-    result[0][0][0][1] = NodeType::UpperLeft;
-    result[0][0][1][0] = NodeType::UpperRight;
-    result[0][0][1][1] = NodeType::Up;
-    result[0][1][0][0] = NodeType::BottomRight;
-    result[0][1][0][1] = NodeType::Invalid;
-    result[0][1][1][0] = NodeType::Right;
-    result[0][1][1][1] = NodeType::BottomLeft;
-    result[1][0][0][0] = NodeType::BottomLeft;
-    result[1][0][0][1] = NodeType::Left;
-    result[1][0][1][0] = NodeType::Invalid;
-    result[1][0][1][1] = NodeType::BottomRight;
-    result[1][1][0][0] = NodeType::Bottom;
-    result[1][1][0][1] = NodeType::UpperRight;
-    result[1][1][1][0] = NodeType::UpperLeft;
-    result[1][1][1][1] = NodeType::InternalValid;
+    result[0][0][0][0] = Invalid;
+    result[0][0][0][1] = UpperLeft;
+    result[0][0][1][0] = UpperRight;
+    result[0][0][1][1] = Up;
+    result[0][1][0][0] = BottomRight;
+    result[0][1][0][1] = Invalid;
+    result[0][1][1][0] = Right;
+    result[0][1][1][1] = BottomLeft;
+    result[1][0][0][0] = BottomLeft;
+    result[1][0][0][1] = Left;
+    result[1][0][1][0] = Invalid;
+    result[1][0][1][1] = BottomRight;
+    result[1][1][0][0] = Bottom;
+    result[1][1][0][1] = UpperRight;
+    result[1][1][1][0] = UpperLeft;
+    result[1][1][1][1] = InternalValid;
 
     return result;
 }

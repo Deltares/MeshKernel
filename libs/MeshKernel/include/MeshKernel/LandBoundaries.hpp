@@ -100,7 +100,7 @@ namespace meshkernel
         /// @param[in] numNodes
         void AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex,
                                                    bool initialize,
-                                                   std::vector<UInt>& nodes,
+                                                   const std::vector<UInt>& nodes,
                                                    UInt numNodes);
 
         /// @brief Add new land boundary segment that connects two others (add_land)

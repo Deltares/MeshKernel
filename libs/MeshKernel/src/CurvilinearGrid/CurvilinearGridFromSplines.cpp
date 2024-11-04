@@ -346,45 +346,8 @@ namespace meshkernel
             // construct the cross splines through the edges, along m discretization
             for (auto i = m_leftGridLineIndex[s]; i < m_leftGridLineIndex[s] + m_numMSplines[s]; ++i)
             {
-                // const auto normal = NormalVectorOutside(m_gridLine[i], m_gridLine[i + 1], m_splines->m_projection);
-
-                // const double xMiddle = (m_gridLine[i].x + m_gridLine[i + 1].x) * 0.5;
-                // const double yMiddle = (m_gridLine[i].y + m_gridLine[i + 1].y) * 0.5;
-
-                // Point middle = 0.5 * (m_gridLine[i] + m_gridLine[i + 1]);
-                // Point x1{constants::missing::doubleValue, constants::missing::doubleValue};
-                // Point x2{constants::missing::doubleValue, constants::missing::doubleValue};
-
-                // double xs1 = constants::missing::doubleValue;
-                // double xs2 = constants::missing::doubleValue;
-                // double ys1 = constants::missing::doubleValue;
-                // double ys2 = constants::missing::doubleValue;
-
                 std::tie(newCrossSpline[0], newCrossSpline[1]) = GetCrossSplinePoints(s, i);
 
-                // if (m_splines->m_projection == Projection::cartesian)
-                // {
-                //     x1 = middle - 2.0 * m_maximumGridHeights[s] * normal;
-                //     // xs1 = xMiddle + 2.0 * m_maximumGridHeights[s] * -normal.x;
-                //     // ys1 = yMiddle + 2.0 * m_maximumGridHeights[s] * -normal.y;
-                //     x2 = middle + 2.0 * m_maximumGridHeights[s] * normal;
-
-                //     // xs2 = xMiddle + 2.0 * m_maximumGridHeights[s] * normal.x;
-                //     // ys2 = yMiddle + 2.0 * m_maximumGridHeights[s] * normal.y;
-                // }
-
-                // if (m_splines->m_projection == Projection::spherical)
-                // {
-                //     const double factor = 1.0 / (constants::geometric::earth_radius * constants::conversion::degToRad);
-                //     xs1 = xMiddle + 2.0 * m_maximumGridHeights[s] * -normal.x * factor;
-                //     ys1 = yMiddle + 2.0 * m_maximumGridHeights[s] * -normal.y * factor;
-
-                //     xs2 = xMiddle + 2.0 * m_maximumGridHeights[s] * normal.x * factor;
-                //     ys2 = yMiddle + 2.0 * m_maximumGridHeights[s] * normal.y * factor;
-                // }
-
-                // newCrossSpline[0] = {xs1, ys1};
-                // newCrossSpline[1] = {xs2, ys2};
                 m_splines->AddSpline(newCrossSpline);
                 // flag the cross spline as artificially added
                 m_type.emplace_back(SplineTypes::artificial);
