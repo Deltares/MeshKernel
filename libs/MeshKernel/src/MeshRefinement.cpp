@@ -1524,22 +1524,6 @@ void MeshRefinement::ComputeIfFaceShouldBeSplit()
                 }
 
                 num += UpdateEdgeMaskForNonHangingEdge(f, numFaceNodes, iter, maxiter);
-
-                // for (UInt n = 0; n < numFaceNodes; n++)
-                // {
-                //     const auto edgeIndex = m_mesh.m_facesEdges[f][n];
-
-                //     if (!m_isHangingEdgeCache[n] && m_edgeMask[edgeIndex] == 0)
-                //     {
-                //         m_edgeMask[edgeIndex] = 1;
-                //         num++;
-                //     }
-
-                //     if (iter == maxiter)
-                //     {
-                //         throw AlgorithmError("Message.");
-                //     }
-                // }
             }
         }
     }
