@@ -81,7 +81,6 @@ void Smoother::ComputeOperators()
     m_ww2.resize(m_topologyConnectedNodes.size());
 
     // allocate caches
-    m_boundaryEdgesCache.resize(2, constants::missing::uintValue);
     m_leftXFaceCenterCache.resize(Mesh::m_maximumNumberOfEdgesPerNode, 0.0);
     m_leftYFaceCenterCache.resize(Mesh::m_maximumNumberOfEdgesPerNode, 0.0);
     m_rightXFaceCenterCache.resize(Mesh::m_maximumNumberOfEdgesPerNode, 0.0);
@@ -345,6 +344,85 @@ void Smoother::ComputeNodeToNodeGradients(const UInt currentNode, const UInt cur
     }
 }
 
+void Smoother::ComputeNodeEdgeDerivative(const UInt f,
+                                         const UInt edgeIndex,
+                                         const UInt currentTopology,
+                                         const UInt faceLeftIndex,
+                                         const UInt faceRightIndex,
+                                         const double facxiL,
+                                         const double facetaL,
+                                         const double facxiR,
+                                         const double facetaR)
+{
+
+    for (UInt i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
+    {
+        m_Gxi[currentTopology][f][i] = facxiL * m_Az[currentTopology][faceLeftIndex][i];
+        m_Geta[currentTopology][f][i] = facetaL * m_Az[currentTopology][faceLeftIndex][i];
+
+        if (!m_mesh.IsEdgeOnBoundary(edgeIndex))
+        {
+            m_Gxi[currentTopology][f][i] += facxiR * m_Az[currentTopology][faceRightIndex][i];
+            m_Geta[currentTopology][f][i] += facetaR * m_Az[currentTopology][faceRightIndex][i];
+        }
+    }
+}
+
+std::tuple<double, double> Smoother::ComputeOperatorsForBoundaryNode(const UInt f, const UInt faceLeftIndex, const UInt currentTopology)
+{
+
+    double leftXi = 0.0;
+    double leftEta = 0.0;
+
+    // Compute the face circumcenter
+    for (UInt i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
+    {
+        leftXi += m_topologyXi[currentTopology][i] * m_Az[currentTopology][faceLeftIndex][i];
+        leftEta += m_topologyEta[currentTopology][i] * m_Az[currentTopology][faceLeftIndex][i];
+        m_leftXFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).x * m_Az[currentTopology][faceLeftIndex][i];
+        m_leftYFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).y * m_Az[currentTopology][faceLeftIndex][i];
+    }
+
+    return {leftXi, leftEta};
+}
+
+std::tuple<double, double, double, double> Smoother::ComputeOperatorsForInteriorNode(const UInt f,
+                                                                                     const UInt edgeIndex,
+                                                                                     const UInt faceLeftIndex,
+                                                                                     const UInt faceRightIndex,
+                                                                                     const UInt currentTopology)
+{
+
+    const auto faceLeft = m_topologySharedFaces[currentTopology][faceLeftIndex];
+    const auto faceRight = m_topologySharedFaces[currentTopology][faceRightIndex];
+
+    double leftXi = 0.0;
+    double leftEta = 0.0;
+    double rightXi = 0.0;
+    double rightEta = 0.0;
+
+    if ((faceLeft != m_mesh.m_edgesFaces[edgeIndex][0] && faceLeft != m_mesh.m_edgesFaces[edgeIndex][1]) ||
+        (faceRight != m_mesh.m_edgesFaces[edgeIndex][0] && faceRight != m_mesh.m_edgesFaces[edgeIndex][1]))
+    {
+        throw std::invalid_argument("Smoother::ComputeOperatorsNode: Invalid argument.");
+    }
+
+    for (UInt i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
+    {
+        leftXi += m_topologyXi[currentTopology][i] * m_Az[currentTopology][faceLeftIndex][i];
+        leftEta += m_topologyEta[currentTopology][i] * m_Az[currentTopology][faceLeftIndex][i];
+        rightXi += m_topologyXi[currentTopology][i] * m_Az[currentTopology][faceRightIndex][i];
+        rightEta += m_topologyEta[currentTopology][i] * m_Az[currentTopology][faceRightIndex][i];
+
+        m_leftXFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).x * m_Az[currentTopology][faceLeftIndex][i];
+        m_leftYFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).y * m_Az[currentTopology][faceLeftIndex][i];
+        m_rightXFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).x * m_Az[currentTopology][faceRightIndex][i];
+        m_rightYFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).y * m_Az[currentTopology][faceRightIndex][i];
+    }
+
+    return {leftXi, leftEta, rightXi, rightEta};
+}
+
 void Smoother::ComputeOperatorsNode(UInt currentNode)
 {
     // the current topology index
@@ -353,7 +431,6 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
     ComputeCellCircumcentreCoefficients(currentNode, currentTopology);
 
     // Initialize caches
-    std::fill(m_boundaryEdgesCache.begin(), m_boundaryEdgesCache.end(), constants::missing::uintValue);
     std::fill(m_leftXFaceCenterCache.begin(), m_leftXFaceCenterCache.end(), 0.0);
     std::fill(m_leftYFaceCenterCache.begin(), m_leftYFaceCenterCache.end(), 0.0);
     std::fill(m_rightXFaceCenterCache.begin(), m_rightXFaceCenterCache.end(), 0.0);
@@ -384,7 +461,8 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
         double xiOne = m_topologyXi[currentTopology][f + 1];
         double etaOne = m_topologyEta[currentTopology][f + 1];
 
-        double leftRightSwap = 1.0;
+        // Swap left and right if the boundary is at the left
+        double leftRightSwap = (m_mesh.IsEdgeOnBoundary(edgeIndex) && f != faceLeftIndex ? -1.0 : 1.0);
         double leftXi = 0.0;
         double leftEta = 0.0;
         double rightXi = 0.0;
@@ -393,30 +471,14 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
 
         if (m_mesh.IsEdgeOnBoundary(edgeIndex))
         {
-            // Boundary face
-            if (m_boundaryEdgesCache[0] == constants::missing::uintValue)
-            {
-                m_boundaryEdgesCache[0] = f;
-            }
-            else
-            {
-                m_boundaryEdgesCache[1] = f;
-            }
 
-            // Swap left and right if the boundary is at the left
-            if (f != faceLeftIndex)
-            {
-                leftRightSwap = -1.0;
-            }
+            // // Swap left and right if the boundary is at the left
+            // if (f != faceLeftIndex)
+            // {
+            //     leftRightSwap = -1.0;
+            // }
 
-            // Compute the face circumcenter
-            for (UInt i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
-            {
-                leftXi += m_topologyXi[currentTopology][i] * m_Az[currentTopology][faceLeftIndex][i];
-                leftEta += m_topologyEta[currentTopology][i] * m_Az[currentTopology][faceLeftIndex][i];
-                m_leftXFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).x * m_Az[currentTopology][faceLeftIndex][i];
-                m_leftYFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).y * m_Az[currentTopology][faceLeftIndex][i];
-            }
+            std::tie(leftXi, leftEta) = ComputeOperatorsForBoundaryNode(f, faceLeftIndex, currentTopology);
 
             double alpha = leftXi * xiOne + leftEta * etaOne;
             alpha = alpha / (xiOne * xiOne + etaOne * etaOne);
@@ -443,27 +505,7 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
                 continue;
             }
 
-            const auto faceLeft = m_topologySharedFaces[currentTopology][faceLeftIndex];
-            const auto faceRight = m_topologySharedFaces[currentTopology][faceRightIndex];
-
-            if ((faceLeft != m_mesh.m_edgesFaces[edgeIndex][0] && faceLeft != m_mesh.m_edgesFaces[edgeIndex][1]) ||
-                (faceRight != m_mesh.m_edgesFaces[edgeIndex][0] && faceRight != m_mesh.m_edgesFaces[edgeIndex][1]))
-            {
-                throw std::invalid_argument("Smoother::ComputeOperatorsNode: Invalid argument.");
-            }
-
-            for (UInt i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
-            {
-                leftXi += m_topologyXi[currentTopology][i] * m_Az[currentTopology][faceLeftIndex][i];
-                leftEta += m_topologyEta[currentTopology][i] * m_Az[currentTopology][faceLeftIndex][i];
-                rightXi += m_topologyXi[currentTopology][i] * m_Az[currentTopology][faceRightIndex][i];
-                rightEta += m_topologyEta[currentTopology][i] * m_Az[currentTopology][faceRightIndex][i];
-
-                m_leftXFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).x * m_Az[currentTopology][faceLeftIndex][i];
-                m_leftYFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).y * m_Az[currentTopology][faceLeftIndex][i];
-                m_rightXFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).x * m_Az[currentTopology][faceRightIndex][i];
-                m_rightYFaceCenterCache[f] += m_mesh.Node(m_topologyConnectedNodes[currentTopology][i]).y * m_Az[currentTopology][faceRightIndex][i];
-            }
+            std::tie(leftXi, leftEta, rightXi, rightEta) = ComputeOperatorsForInteriorNode(f, edgeIndex, faceLeftIndex, faceRightIndex, currentTopology);
         }
 
         m_xisCache[f] = 0.5 * (leftXi + rightXi);
@@ -497,19 +539,10 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
             facetaL = 2.0 * facetaL;
         }
 
+        ComputeNodeEdgeDerivative(f, edgeIndex, currentTopology, faceLeftIndex, faceRightIndex, facxiL, facetaL, facxiR, facetaR);
+
         UInt node1 = f + 1;
         UInt node0 = 0;
-        for (UInt i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
-        {
-            m_Gxi[currentTopology][f][i] = facxiL * m_Az[currentTopology][faceLeftIndex][i];
-            m_Geta[currentTopology][f][i] = facetaL * m_Az[currentTopology][faceLeftIndex][i];
-
-            if (!m_mesh.IsEdgeOnBoundary(edgeIndex))
-            {
-                m_Gxi[currentTopology][f][i] += facxiR * m_Az[currentTopology][faceRightIndex][i];
-                m_Geta[currentTopology][f][i] += facetaR * m_Az[currentTopology][faceRightIndex][i];
-            }
-        }
 
         m_Gxi[currentTopology][f][node1] += facxi1;
         m_Geta[currentTopology][f][node1] += faceta1;

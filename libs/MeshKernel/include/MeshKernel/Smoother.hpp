@@ -130,6 +130,27 @@ namespace meshkernel
         /// @brief Computes the smoother weights from the operators (orthonet_compweights_smooth)
         void ComputeWeights();
 
+        /// @brief Compute elliptic smoother operators coefficients for boundary nodes
+        std::tuple<double, double> ComputeOperatorsForBoundaryNode(const UInt f, const UInt faceLeftIndex, const UInt currentTopology);
+
+        /// @brief Compute elliptic smoother operators coefficients for interior nodes
+        std::tuple<double, double, double, double> ComputeOperatorsForInteriorNode(const UInt f,
+                                                                                   const UInt edgeIndex,
+                                                                                   const UInt faceLeftIndex,
+                                                                                   const UInt faceRightIndex,
+                                                                                   const UInt currentTopology);
+
+        /// @brief Compute the node to edge derivatives, gxi and geta
+        void ComputeNodeEdgeDerivative(const UInt f,
+                                       const UInt edgeIndex,
+                                       const UInt currentTopology,
+                                       const UInt faceLeftIndex,
+                                       const UInt faceRightIndex,
+                                       const double facxiL,
+                                       const double facetaL,
+                                       const double facxiR,
+                                       const double facetaR);
+
         /// Computes operators of the elliptic smoother by node (orthonet_comp_operators)
         /// @param[in] currentNode
         void ComputeOperatorsNode(UInt currentNode);
@@ -197,7 +218,6 @@ namespace meshkernel
         std::vector<std::vector<UInt>> m_faceNodeMappingCache; ///< Cache for face node mapping
         std::vector<double> m_xiCache;                         ///< Cache for xi
         std::vector<double> m_etaCache;                        ///< Cache for eta
-        std::vector<UInt> m_boundaryEdgesCache;                ///< Cache for boundary edges
         std::vector<double> m_leftXFaceCenterCache;            ///< Cache for left x face center
         std::vector<double> m_leftYFaceCenterCache;            ///< Cache for left y face center
         std::vector<double> m_rightXFaceCenterCache;           ///< Cache for right x face center
