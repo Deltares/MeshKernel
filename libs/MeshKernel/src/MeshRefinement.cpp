@@ -1461,7 +1461,7 @@ meshkernel::UInt MeshRefinement::UpdateEdgeMaskForNonHangingEdge(const UInt face
 
         if (iter == maxiter)
         {
-            throw MeshGeometryError("Problem with vertex and edge");
+            throw AlgorithmError("Problem with vertex and edge");
         }
     }
 
