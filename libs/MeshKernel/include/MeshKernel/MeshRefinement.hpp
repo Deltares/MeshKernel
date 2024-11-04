@@ -248,6 +248,16 @@ namespace meshkernel
         /// @brief Smooth the face and edge refinement masks (smooth_jarefine)
         void SmoothRefinementMasks();
 
+        /// @brief Determine if the face needs to be split.
+        bool IsSplittingIsRequiredForFace(const UInt faceId) const;
+
+        /// @brief Update the edge mask for hanging nodes
+        /// @returns the number of edge mask values updated.
+        UInt UpdateEdgeMaskForNonHangingEdge(const UInt faceId,
+                                             const UInt numFaceNodes,
+                                             const UInt iter,
+                                             const UInt maxiter);
+
         /// @brief Computes m_faceMask, if a face must be split later on (split_cells)
         void ComputeIfFaceShouldBeSplit();
 

@@ -1408,6 +1408,66 @@ void MeshRefinement::ComputeEdgesRefinementMask()
     }
 }
 
+bool MeshRefinement::IsSplittingIsRequiredForFace(const UInt faceId) const
+{
+    const auto numFaceNodes = m_mesh.GetNumFaceEdges(faceId);
+
+    const auto numHangingEdges = CountHangingEdges();
+    const auto numHangingNodes = CountHangingNodes();
+    const auto numEdgesToRefine = CountEdgesToRefine(faceId);
+
+    bool isSplittingRequired = false;
+
+    for (UInt n = 0; n < numFaceNodes; n++)
+    {
+        const auto edgeIndex = m_mesh.m_facesEdges[faceId][n];
+
+        if (m_isHangingEdgeCache[n] && m_edgeMask[edgeIndex] > 0)
+        {
+            isSplittingRequired = true;
+            break;
+        }
+    }
+
+    // compute the effective face type
+    const auto numNodesEffective = numFaceNodes - static_cast<UInt>(static_cast<double>(numHangingEdges) / 2.0);
+
+    if (numFaceNodes + numEdgesToRefine > Mesh::m_maximumNumberOfEdgesPerFace || // would result in unsupported cells after refinement
+        numFaceNodes - numHangingNodes - numEdgesToRefine <= 1 ||                // faces with only one unrefined edge
+        numNodesEffective == numEdgesToRefine)                                   // refine all edges
+    {
+        isSplittingRequired = true;
+    }
+
+    return isSplittingRequired;
+}
+
+meshkernel::UInt MeshRefinement::UpdateEdgeMaskForNonHangingEdge(const UInt faceId,
+                                                                 const UInt numFaceNodes,
+                                                                 const UInt iter,
+                                                                 const UInt maxiter)
+{
+    UInt num = 0;
+
+    for (UInt n = 0; n < numFaceNodes; n++)
+    {
+        const auto edgeIndex = m_mesh.m_facesEdges[faceId][n];
+
+        if (!m_isHangingEdgeCache[n] && m_edgeMask[edgeIndex] == 0)
+        {
+            m_edgeMask[edgeIndex] = 1;
+            num++;
+        }
+
+        if (iter == maxiter)
+        {
+            throw MeshGeometryError("Problem with vertex and edge");
+        }
+    }
+
+    return num;
+}
+
 void MeshRefinement::ComputeIfFaceShouldBeSplit()
 {
     const UInt maxiter = 1000;
@@ -1429,13 +1489,7 @@ void MeshRefinement::ComputeIfFaceShouldBeSplit()
                 continue;
             }
 
-            const auto numEdgesToRefine = CountEdgesToRefine(f);
-
             FindHangingNodes(f);
-            const auto numHangingEdges = CountHangingEdges();
-            const auto numHangingNodes = CountHangingNodes();
-
-            bool isSplittingRequired = false;
 
             // check if the edge has a brother edge and needs to be refined
             const auto numFaceNodes = m_mesh.GetNumFaceEdges(f);
@@ -1445,32 +1499,21 @@ void MeshRefinement::ComputeIfFaceShouldBeSplit()
                 return;
             }
 
-            for (UInt n = 0; n < numFaceNodes; n++)
-            {
-                const auto edgeIndex = m_mesh.m_facesEdges[f][n];
-                if (m_isHangingEdgeCache[n] && m_edgeMask[edgeIndex] > 0)
-                {
-                    isSplittingRequired = true;
-                }
-            }
+            bool isSplittingRequired = IsSplittingIsRequiredForFace(f);
 
             // compute the effective face type
+            const auto numHangingEdges = CountHangingEdges();
             const auto numNodesEffective = numFaceNodes - static_cast<UInt>(static_cast<double>(numHangingEdges) / 2.0);
+
             if (2 * (numFaceNodes - numNodesEffective) != numHangingEdges)
             {
                 // uneven number of brotherlinks
                 // TODO: ADD DOT
             }
 
-            if (numFaceNodes + numEdgesToRefine > Mesh::m_maximumNumberOfEdgesPerFace || // would result in unsupported cells after refinement
-                numFaceNodes - numHangingNodes - numEdgesToRefine <= 1 ||                // faces with only one unrefined edge
-                numNodesEffective == numEdgesToRefine)                                   // refine all edges
-            {
-                isSplittingRequired = true;
-            }
-
             if (isSplittingRequired)
             {
+
                 if (m_faceMask[f] != -1)
                 {
                     m_faceMask[f] = 2;
@@ -1480,19 +1523,23 @@ void MeshRefinement::ComputeIfFaceShouldBeSplit()
                     m_faceMask[f] = -2;
                 }
 
-                for (UInt n = 0; n < numFaceNodes; n++)
-                {
-                    const auto edgeIndex = m_mesh.m_facesEdges[f][n];
-                    if (!m_isHangingEdgeCache[n] && m_edgeMask[edgeIndex] == 0)
-                    {
-                        m_edgeMask[edgeIndex] = 1;
-                        num++;
-                    }
-                    if (iter == maxiter)
-                    {
-                        // TODO: ADD DOT/MESSAGES
-                    }
-                }
+                num += UpdateEdgeMaskForNonHangingEdge(f, numFaceNodes, iter, maxiter);
+
+                // for (UInt n = 0; n < numFaceNodes; n++)
+                // {
+                //     const auto edgeIndex = m_mesh.m_facesEdges[f][n];
+
+                //     if (!m_isHangingEdgeCache[n] && m_edgeMask[edgeIndex] == 0)
+                //     {
+                //         m_edgeMask[edgeIndex] = 1;
+                //         num++;
+                //     }
+
+                //     if (iter == maxiter)
+                //     {
+                //         throw AlgorithmError("Message.");
+                //     }
+                // }
             }
         }
     }
