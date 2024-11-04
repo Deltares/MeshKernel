@@ -258,6 +258,46 @@ void OrthogonalizationAndSmoothing::Solve()
     [[maybe_unused]] auto action = m_landBoundaries->SnapMeshToLandBoundaries();
 }
 
+void OrthogonalizationAndSmoothing::FindNeighbouringBoundaryNodes(const UInt nodeId,
+                                                                  const UInt nearestPointIndex,
+                                                                  UInt& leftNode,
+                                                                  UInt& rightNode) const
+{
+    UInt numNodes = 0;
+    const auto numEdges = m_mesh.m_nodesNumEdges[nearestPointIndex];
+
+    leftNode = constants::missing::uintValue;
+    rightNode = constants::missing::uintValue;
+
+    for (UInt nn = 0; nn < numEdges; nn++)
+    {
+        const auto edgeIndex = m_mesh.m_nodesEdges[nearestPointIndex][nn];
+        if (edgeIndex != constants::missing::uintValue && m_mesh.IsEdgeOnBoundary(edgeIndex))
+        {
+            numNodes++;
+
+            if (numNodes == 1)
+            {
+                leftNode = m_mesh.m_nodesNodes[nodeId][nn];
+
+                if (leftNode == constants::missing::uintValue)
+                {
+                    throw AlgorithmError("The left node is invalid.");
+                }
+            }
+            else if (numNodes == 2)
+            {
+                rightNode = m_mesh.m_nodesNodes[nodeId][nn];
+
+                if (rightNode == constants::missing::uintValue)
+                {
+                    throw AlgorithmError("The right node is invalid.");
+                }
+            }
+        }
+    }
+}
+
 void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
 {
     // in this case the nearest point is the point itself
@@ -275,37 +315,21 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                 continue;
             }
 
-            const auto numEdges = m_mesh.m_nodesNumEdges[nearestPointIndex];
-            UInt numNodes = 0;
             UInt leftNode = constants::missing::uintValue;
             UInt rightNode = constants::missing::uintValue;
             Point secondPoint{constants::missing::doubleValue, constants::missing::doubleValue};
             Point thirdPoint{constants::missing::doubleValue, constants::missing::doubleValue};
-            for (UInt nn = 0; nn < numEdges; nn++)
+
+            FindNeighbouringBoundaryNodes(n, nearestPointIndex, leftNode, rightNode);
+
+            if (leftNode != constants::missing::uintValue)
             {
-                const auto edgeIndex = m_mesh.m_nodesEdges[nearestPointIndex][nn];
-                if (edgeIndex != constants::missing::uintValue && m_mesh.IsEdgeOnBoundary(edgeIndex))
-                {
-                    numNodes++;
-                    if (numNodes == 1)
-                    {
-                        leftNode = m_mesh.m_nodesNodes[n][nn];
-                        if (leftNode == constants::missing::uintValue)
-                        {
-                            throw AlgorithmError("The left node is invalid.");
-                        }
-                        secondPoint = m_originalNodes[leftNode];
-                    }
-                    else if (numNodes == 2)
-                    {
-                        rightNode = m_mesh.m_nodesNodes[n][nn];
-                        if (rightNode == constants::missing::uintValue)
-                        {
-                            throw AlgorithmError("The right node is invalid.");
-                        }
-                        thirdPoint = m_originalNodes[rightNode];
-                    }
-                }
+                secondPoint = m_originalNodes[leftNode];
+            }
+
+            if (rightNode != constants::missing::uintValue)
+            {
+                thirdPoint = m_originalNodes[rightNode];
             }
 
             if (!secondPoint.IsValid() || !thirdPoint.IsValid())

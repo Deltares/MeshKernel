@@ -114,6 +114,12 @@ namespace meshkernel
         void FinalizeOuterIteration();
 
     private:
+        /// @brief Find the id's of the neighbouring boundary nodes.
+        void FindNeighbouringBoundaryNodes(const UInt nodeId,
+                                           const UInt nearestPointIndex,
+                                           UInt& leftNode,
+                                           UInt& rightNode) const;
+
         /// @brief Project mesh nodes back to the original mesh boundary (orthonet_project_on_boundary)
         void SnapMeshToOriginalMeshBoundary();
 
