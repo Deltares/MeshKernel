@@ -1457,3 +1457,30 @@ TEST(Mesh2D, MeshToCurvilinear_OnRealMesh_ShouldConvertCurvilinearPart)
     EXPECT_EQ(result->NumM(), 38);
     EXPECT_EQ(result->NumN(), 45);
 }
+
+TEST(Mesh2D, Mesh2DComputeAspectRatio)
+{
+    const double tolerance = 1.0e-12;
+
+    const auto mesh = MakeRectangularMeshForTestingRand(3,
+                                                        3,
+                                                        10.0,
+                                                        10.0,
+                                                        meshkernel::Projection::cartesian);
+
+    std::vector<double> aspectRatios;
+    // Values calculated by the algorithm, not derived analytically
+    std::vector<double> expectedAspectRatios{0.909799624513058, 1.36963998294878, 1.08331064761803,
+                                             0.896631398796997, 0.839834200634414, 1.15475768474815,
+                                             0.832219560848176, 0.819704195029218, 1.11720404458871,
+                                             0.807269974963293, 0.972997967873087, 1.17917808082661};
+
+    mesh->ComputeAspectRatios(aspectRatios);
+
+    ASSERT_EQ(aspectRatios.size(), expectedAspectRatios.size());
+
+    for (size_t i = 0; i < expectedAspectRatios.size(); ++i)
+    {
+        EXPECT_NEAR(aspectRatios[i], expectedAspectRatios[i], tolerance);
+    }
+}

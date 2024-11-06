@@ -1235,7 +1235,7 @@ std::vector<double> Mesh2D::GetSmoothness() const
 
 void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
 {
-    std::vector<std::vector<double>> averageEdgesLength(GetNumEdges(), std::vector<double>(2, constants::missing::doubleValue));
+    std::vector<std::array<double, 2>> averageEdgesLength(GetNumEdges(), std::array<double, 2>({constants::missing::doubleValue, constants::missing::doubleValue}));
     std::vector<double> averageFlowEdgesLength(GetNumEdges(), constants::missing::doubleValue);
     std::vector<bool> curvilinearGridIndicator(GetNumNodes(), true);
     std::vector<double> edgesLength(GetNumEdges(), 0.0);
@@ -1253,6 +1253,7 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
 
         Point leftCenter;
         Point rightCenter;
+
         if (m_edgesNumFaces[e] > 0)
         {
             leftCenter = m_facesCircumcenters[m_edgesFaces[e][0]];
@@ -1273,10 +1274,8 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
             double dinry = InnerProductTwoSegments(m_nodes[first], m_nodes[second], m_nodes[first], leftCenter, m_projection);
             dinry = dinry / std::max(edgeLength * edgeLength, m_minimumEdgeLength);
 
-            const double x0_bc = (1.0 - dinry) * m_nodes[first].x + dinry * m_nodes[second].x;
-            const double y0_bc = (1.0 - dinry) * m_nodes[first].y + dinry * m_nodes[second].y;
-            rightCenter.x = 2.0 * x0_bc - leftCenter.x;
-            rightCenter.y = 2.0 * y0_bc - leftCenter.y;
+            const Point bc = (1.0 - dinry) * m_nodes[first] + dinry * m_nodes[second];
+            rightCenter = 2.0 * bc - leftCenter;
         }
 
         averageFlowEdgesLength[e] = ComputeDistance(leftCenter, rightCenter, m_projection);
@@ -1319,7 +1318,7 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
                 edgeLength = 0.5 * (edgesLength[edgeIndex] + edgesLength[klinkp2]);
             }
 
-            if (IsEqual(averageEdgesLength[edgeIndex][0], constants::missing::doubleValue))
+            if (averageEdgesLength[edgeIndex][0] == constants::missing::doubleValue)
             {
                 averageEdgesLength[edgeIndex][0] = edgeLength;
             }
@@ -1348,18 +1347,17 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
 
         if (IsEdgeOnBoundary(e))
         {
-            if (averageEdgesLength[e][0] > 0.0 &&
-                IsEqual(averageEdgesLength[e][0], constants::missing::doubleValue))
+            if (averageEdgesLength[e][0] != 0.0 && averageEdgesLength[e][0] != constants::missing::doubleValue)
             {
                 aspectRatios[e] = averageFlowEdgesLength[e] / averageEdgesLength[e][0];
             }
         }
         else
         {
-            if (averageEdgesLength[e][0] > 0.0 &&
-                averageEdgesLength[e][1] > 0.0 &&
-                IsEqual(averageEdgesLength[e][0], constants::missing::doubleValue) &&
-                IsEqual(averageEdgesLength[e][1], constants::missing::doubleValue))
+            if (averageEdgesLength[e][0] != 0.0 &&
+                averageEdgesLength[e][1] != 0.0 &&
+                averageEdgesLength[e][0] != constants::missing::doubleValue &&
+                averageEdgesLength[e][1] != constants::missing::doubleValue)
             {
                 aspectRatios[e] = m_curvilinearToOrthogonalRatio * aspectRatios[e] +
                                   (1.0 - m_curvilinearToOrthogonalRatio) * averageFlowEdgesLength[e] / (0.5 * (averageEdgesLength[e][0] + averageEdgesLength[e][1]));
