@@ -4248,3 +4248,11 @@ TEST(Mesh2D, UndoConnectMeshes)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_EQ(undoMkId, mk_id);
 }
+
+TEST(Mesh2D, SetMeshWithFaceInformation)
+{
+    // Prepare
+    int meshKernelId;
+    const int isGeographic = 0;
+    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+}
