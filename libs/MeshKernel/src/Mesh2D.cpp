@@ -609,8 +609,6 @@ void Mesh2D::FindFacesGivenFaceNodesMapping(const std::vector<std::vector<UInt>>
             m_edgesFaces[e][m_edgesNumFaces[e]] = f;
             m_edgesNumFaces[e] += 1;
         }
-
-        
     }
     ComputeCircumcentersMassCentersAndFaceAreas(true);
 }
