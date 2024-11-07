@@ -610,26 +610,10 @@ void Mesh2D::FindFacesGivenFaceNodesMapping(const std::vector<std::vector<UInt>>
             m_edgesNumFaces[e] += 1;
         }
 
-        local_nodes.emplace_back(local_nodes.front());
-
-        auto [face_area, center_of_mass, direction] = Polygon::FaceAreaAndCenterOfMass(local_nodes, m_projection);
-
-        m_faceArea.emplace_back(face_area);
-        m_facesMassCenters.emplace_back(center_of_mass);
+        
     }
 
-    // compute circumcenters
-    for (UInt f = 0; f < m_facesNodes.size(); ++f)
-    {
-        ComputeFaceClosedPolygon(f, polygonNodesCache);
-        const auto numberOfFaceNodes = GetNumFaceEdges(f);
-        numEdgeFacesCache.clear();
-        for (UInt n = 0; n < numberOfFaceNodes; n++)
-        {
-            numEdgeFacesCache.emplace_back(m_edgesNumFaces[m_facesEdges[f][n]]);
-        }
-        m_facesCircumcenters.emplace_back(ComputeFaceCircumenter(polygonNodesCache, numEdgeFacesCache));
-    }
+    ComputeCircumcentersMassCentersAndFaceAreas(true);
 }
 
 void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters)
