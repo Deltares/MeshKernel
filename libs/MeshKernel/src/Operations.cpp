@@ -1153,13 +1153,9 @@ namespace meshkernel
 
             auto const det = x43 * y21 - y43 * x21;
 
-            double maxValue = std::max(std::max(std::abs(x21), std::abs(y21)),
-                                       std::max(std::abs(x43), std::abs(y43)));
-            const double eps = std::max(0.00001 * maxValue, std::numeric_limits<double>::denorm_min());
-
-            if (std::abs(det) < eps)
+            if (IsEqual(det, 0.0))
             {
-                return {isCrossing, intersectionPoint, crossProduct, ratioFirstSegment, ratioSecondSegment};
+                return {false, intersectionPoint, crossProduct, ratioFirstSegment, ratioSecondSegment};
             }
 
             ratioSecondSegment = (y31 * x21 - x31 * y21) / det;
@@ -1173,7 +1169,7 @@ namespace meshkernel
             crossProduct = -det;
             if (adimensionalCrossProduct)
             {
-                crossProduct = -det / (std::sqrt(x21 * x21 + y21 * y21) * std::sqrt(x43 * x43 + y43 * y43) + 1e-8);
+                crossProduct = -det / (std::sqrt(x21 * x21 + y21 * y21) * std::sqrt(x43 * x43 + y43 * y43));
             }
         }
 

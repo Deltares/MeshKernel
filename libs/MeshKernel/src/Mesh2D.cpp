@@ -557,6 +557,9 @@ void Mesh2D::FindFacesGivenFaceNodesMapping(const std::vector<std::vector<UInt>>
     std::vector<UInt> local_edges;
     std::vector<Point> local_nodes;
     std::vector<UInt> local_node_indices;
+    std::vector<UInt> numEdgeFacesCache;
+    numEdgeFacesCache.reserve(m_maximumNumberOfEdgesPerFace);
+    std::vector<Point> polygonNodesCache;
     for (UInt f = 0; f < m_facesNodes.size(); ++f)
     {
         local_edges.clear();
@@ -596,9 +599,10 @@ void Mesh2D::FindFacesGivenFaceNodesMapping(const std::vector<std::vector<UInt>>
         }
 
         m_facesEdges.emplace_back(local_edges);
+        m_numFacesNodes.emplace_back(static_cast<UInt>(local_edges.size()));
         for (const auto& e : local_edges)
         {
-            if (m_edgesNumFaces[e] > 2)
+            if (m_edgesNumFaces[e] > 2u)
             {
                 throw AlgorithmError("FindFacesGivenMappings: m_edgesNumFaces > 2.");
             }
@@ -612,6 +616,19 @@ void Mesh2D::FindFacesGivenFaceNodesMapping(const std::vector<std::vector<UInt>>
 
         m_faceArea.emplace_back(face_area);
         m_facesMassCenters.emplace_back(center_of_mass);
+    }
+
+    // compute circumcenters
+    for (UInt f = 0; f < m_facesNodes.size(); ++f)
+    {
+        ComputeFaceClosedPolygon(f, polygonNodesCache);
+        const auto numberOfFaceNodes = GetNumFaceEdges(f);
+        numEdgeFacesCache.clear();
+        for (UInt n = 0; n < numberOfFaceNodes; n++)
+        {
+            numEdgeFacesCache.emplace_back(m_edgesNumFaces[m_facesEdges[f][n]]);
+        }
+        m_facesCircumcenters.emplace_back(ComputeFaceCircumenter(polygonNodesCache, numEdgeFacesCache));
     }
 }
 

@@ -177,7 +177,7 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
         const auto maxEdgeLength = m_mesh1d.ComputeMaxLengthSurroundingEdges(firstNode1dMeshEdge);
 
         // compute the nearest 2d face indices
-        rtree.SearchNearestPoint(m_mesh1d.Node(firstNode1dMeshEdge), 1.1 * maxEdgeLength * maxEdgeLength);
+        rtree.SearchPoints(m_mesh1d.Node(firstNode1dMeshEdge), 1.1 * maxEdgeLength * maxEdgeLength);
 
         // for each face determine if it is crossing the current 1d edge
         const auto numNeighbours = rtree.GetQueryResultSize();
