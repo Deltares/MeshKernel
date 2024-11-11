@@ -22,11 +22,13 @@ set(SRC_LIST
     ${SRC_DIR}/Mesh2DRefinmentTests.cpp
     ${SRC_DIR}/Mesh2DTests.cpp
     ${SRC_DIR}/PolygonTests.cpp
+    ${SRC_DIR}/TestMeshGeneration.cpp
     ${SRC_DIR}/UndoTests.cpp
 )
 
 set(INC_LIST
     ${INC_DIR}/CartesianApiTestFixture.hpp
+    ${INC_DIR}/TestMeshGeneration.hpp
 )
 
 # add sources to target

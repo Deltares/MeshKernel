@@ -2,7 +2,6 @@
 #include <gtest/gtest.h>
 #include <random>
 
-#include "CartesianApiTestFixture.hpp"
 #include "MeshKernel/Parameters.hpp"
 #include "MeshKernelApi/BoundingBox.hpp"
 #include "MeshKernelApi/Mesh2D.hpp"
@@ -10,6 +9,8 @@
 #include "TestUtils/MakeMeshes.hpp"
 
 #include "TestUtils/Definitions.hpp"
+
+#include "TestMeshGeneration.hpp"
 
 // namespace aliases
 namespace mk = meshkernel;
@@ -1201,4 +1202,255 @@ TEST(Mesh2D, UndoConnectMeshes)
     errorCode = meshkernelapi::mkernel_redo_state(didUndo, undoMkId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_EQ(undoMkId, mk_id);
+}
+
+TEST(Mesh2D, InsertEdgeThroughApi)
+{
+    int meshkernelId = 0;
+    int errorCode = meshkernelapi::mkernel_allocate_state(0, meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = GenerateUnstructuredMesh(meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Prepare
+    // MakeMesh();
+    // auto const meshkernelId = GetMeshKernelId();
+
+    // Execute
+    int newEdgeIndex;
+    errorCode = meshkernelapi::mkernel_mesh2d_insert_edge(meshkernelId, 0, 4, newEdgeIndex);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(17, newEdgeIndex);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshkernelId, mesh2d);
+
+    // Assert
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(12, mesh2d.num_nodes);
+    ASSERT_EQ(18, mesh2d.num_edges);
+}
+
+TEST(Mesh2D, MergeTwoNodesThroughApi)
+{
+    int meshkernelId = 0;
+    int errorCode = meshkernelapi::mkernel_allocate_state(0, meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = GenerateUnstructuredMesh(meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // // Prepare
+    // MakeMesh();
+    // auto const meshkernelId = GetMeshKernelId();
+
+    // Execute
+    errorCode = meshkernelapi::mkernel_mesh2d_merge_two_nodes(meshkernelId, 0, 4);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshkernelId, mesh2d);
+
+    // Assert
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(11, mesh2d.num_valid_nodes);
+    ASSERT_EQ(15, mesh2d.num_valid_edges);
+}
+
+TEST(Mesh2D, MergeNodesThroughApi)
+{
+    int meshkernelId = 0;
+    int errorCode = meshkernelapi::mkernel_allocate_state(0, meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = GenerateUnstructuredMesh(meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // // Prepare
+    // MakeMesh();
+    // auto const meshkernelId = GetMeshKernelId();
+    meshkernelapi::GeometryList geometry_list{};
+    std::vector xCoordinates{-0.5, 2.5, 2.5, -0.5, -0.5};
+    std::vector yCoordinates{-0.5, -0.5, 2.5, 2.5, -0.5};
+    std::vector zCoordinates{0.0, 0.0, 0.0, 0.5, 0.5};
+
+    geometry_list.geometry_separator = meshkernel::constants::missing::doubleValue;
+    geometry_list.coordinates_x = xCoordinates.data();
+    geometry_list.coordinates_y = yCoordinates.data();
+    geometry_list.values = zCoordinates.data();
+    geometry_list.num_coordinates = static_cast<int>(xCoordinates.size());
+
+    // Execute
+    errorCode = mkernel_mesh2d_merge_nodes(meshkernelId, geometry_list);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshkernelId, mesh2d);
+
+    // Assert (nothing is done, just check that the api communication works)
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(12, mesh2d.num_valid_nodes);
+    ASSERT_EQ(17, mesh2d.num_valid_edges);
+}
+
+TEST(Mesh2D, MergeNodesWithMergingDistanceThroughApi)
+{
+    int meshkernelId = 0;
+    int errorCode = meshkernelapi::mkernel_allocate_state(0, meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = GenerateUnstructuredMesh(meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // // Prepare
+    // MakeMesh(2, 3, 1.0);
+    // auto const meshkernelId = GetMeshKernelId();
+    meshkernelapi::GeometryList geometry_list{};
+
+    // Execute
+    errorCode = mkernel_mesh2d_merge_nodes_with_merging_distance(meshkernelId, geometry_list, 0.001);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshkernelId, mesh2d);
+
+    // Assert (nothing is done, just check that the api communication works)
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(12, mesh2d.num_valid_nodes);
+    ASSERT_EQ(17, mesh2d.num_valid_edges);
+}
+
+TEST(Mesh2D, InsertNodeAndEdge_OnMesh2D_ShouldInsertNodeAndEdge)
+{
+    int meshkernelId = 0;
+    int errorCode = meshkernelapi::mkernel_allocate_state(0, meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = GenerateUnstructuredMesh(meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // // Prepare
+    // MakeMesh();
+    // auto const meshkernelId = GetMeshKernelId();
+
+    // Execute
+    // Isolated nodes are removed by the administration done in mkernel_mesh2d_get_dimensions.
+    // The newly inserted node should be connected to another one to form an edge.
+    // In this manner, the edge will not be removed during the administration
+    int newNodeIndex;
+    errorCode = meshkernelapi::mkernel_mesh2d_insert_node(meshkernelId, -0.5, -0.5, newNodeIndex);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    int newEdgeIndex;
+    errorCode = meshkernelapi::mkernel_mesh2d_insert_edge(meshkernelId, newNodeIndex, 0, newEdgeIndex);
+
+    // Assert
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshkernelId, mesh2d);
+    ASSERT_EQ(mesh2d.num_nodes, 13);
+    ASSERT_EQ(mesh2d.num_edges, 18);
+}
+
+TEST(Mesh2D, MoveNode_OnMesh2D_ShouldMoveNode)
+{
+    int meshkernelId = 0;
+    int errorCode = meshkernelapi::mkernel_allocate_state(0, meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = GenerateUnstructuredMesh(meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // // Prepare
+    // MakeMesh();
+    // auto const meshkernelId = GetMeshKernelId();
+
+    // Execute
+    errorCode = meshkernelapi::mkernel_mesh2d_move_node(meshkernelId, -0.5, -0.5, 0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshkernelId, mesh2d);
+    std::vector<int> edge_nodes(mesh2d.num_edges * 2);
+    std::vector<int> face_nodes(mesh2d.num_face_nodes);
+    std::vector<int> nodes_per_face(mesh2d.num_faces);
+
+    std::vector<double> node_x(mesh2d.num_nodes);
+    std::vector<double> node_y(mesh2d.num_nodes);
+
+    std::vector<double> edge_x(mesh2d.num_edges);
+    std::vector<double> edge_y(mesh2d.num_edges);
+
+    std::vector<double> face_x(mesh2d.num_faces);
+    std::vector<double> face_y(mesh2d.num_faces);
+
+    std::vector<int> edge_faces(mesh2d.num_edges * 2);
+    std::vector<int> face_edges(mesh2d.num_face_nodes * 2);
+
+    mesh2d.edge_faces = edge_faces.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+    mesh2d.face_nodes = face_nodes.data();
+    mesh2d.face_edges = face_edges.data();
+    mesh2d.nodes_per_face = nodes_per_face.data();
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_x = edge_x.data();
+    mesh2d.edge_y = edge_y.data();
+    mesh2d.face_x = face_x.data();
+    mesh2d.face_y = face_y.data();
+    errorCode = mkernel_mesh2d_get_data(meshkernelId, mesh2d);
+
+    // Assert
+    ASSERT_EQ(mesh2d.node_x[0], -0.5);
+    ASSERT_EQ(mesh2d.node_y[0], -0.5);
+}
+
+TEST(Mesh2D, MoveNode_OnMesh2DWithInvalidIndex_ShouldReturnAnErrorCode)
+{
+    int meshkernelId = 0;
+    int errorCode = meshkernelapi::mkernel_allocate_state(0, meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = GenerateUnstructuredMesh(meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // // Prepare
+    // MakeMesh();
+    // auto const meshkernelId = GetMeshKernelId();
+
+    // Execute
+    errorCode = meshkernelapi::mkernel_mesh2d_move_node(meshkernelId, -0.5, -0.5, -1);
+
+    // Assert call was not successful
+    ASSERT_NE(meshkernel::ExitCode::Success, errorCode);
+}
+
+TEST(Mesh2D, GetEdge_OnMesh2D_ShouldGetAnEdgeIndex)
+{
+    int meshkernelId = 0;
+    int errorCode = meshkernelapi::mkernel_allocate_state(0, meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = GenerateUnstructuredMesh(meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // // Prepare
+    // MakeMesh();
+    // auto const meshkernelId = GetMeshKernelId();
+
+    // Execute
+    int edgeIndex;
+    errorCode = meshkernelapi::mkernel_mesh2d_get_edge(meshkernelId, 0.5, -0.5, 0.0, 0.0, 3.0, 3.0, edgeIndex);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(edgeIndex, 0);
+}
+
+TEST(Mesh2D, GetNode_OnMesh2D_ShouldGetANodeIndex)
+{
+    int meshkernelId = 0;
+    int errorCode = meshkernelapi::mkernel_allocate_state(0, meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = GenerateUnstructuredMesh(meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // // Prepare
+    // MakeMesh();
+    // auto const meshkernelId = GetMeshKernelId();
+
+    // Execute
+    int nodeIndex;
+    errorCode = meshkernelapi::mkernel_mesh2d_get_node_index(meshkernelId, 3.0, 3.0, 10.0, 0.0, 0.0, 3.0, 3.0, nodeIndex);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(nodeIndex, 11);
 }
