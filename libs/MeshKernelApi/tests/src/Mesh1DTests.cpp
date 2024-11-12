@@ -103,3 +103,110 @@ TEST(Mesh1D, Mesh1DSetAndAdd)
     errorCode = mkernel_deallocate_state(mk_id);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
+
+TEST_F(CartesianApiTestFixture, GetDimensionsMesh1D_WithMesh1D_ShouldGetDimensionsMesh1D)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    std::vector nodesX{-16.1886410000000,
+                       -16.1464995876014,
+                       -16.1043581752028,
+                       -16.0622167628042,
+                       -15.7539488236928,
+                       -6.86476658679268,
+                       2.02441565010741,
+                       10.9135970000000};
+
+    std::vector nodesY{0.89018900000000,
+                       9.78201442138723,
+                       18.6738398427745,
+                       27.5656652641617,
+                       36.1966603330179,
+                       36.4175095626911,
+                       36.6383587923643,
+                       36.8592080000000};
+
+    std::vector edges{0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7};
+
+    meshkernelapi::Mesh1D mesh1d;
+    mesh1d.edge_nodes = edges.data();
+    mesh1d.node_x = nodesX.data();
+    mesh1d.node_y = nodesY.data();
+    mesh1d.num_nodes = 8;
+    mesh1d.num_edges = 7;
+
+    auto errorCode = mkernel_mesh1d_set(GetMeshKernelId(), mesh1d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    meshkernelapi::Mesh1D mesh1dResults;
+    errorCode = mkernel_mesh1d_get_dimensions(meshKernelId, mesh1dResults);
+
+    // Assert
+    ASSERT_EQ(8, mesh1dResults.num_nodes);
+    ASSERT_EQ(7, mesh1dResults.num_edges);
+}
+
+TEST_F(CartesianApiTestFixture, GetDataMesh1D_WithMesh1D_ShouldGetDataMesh1D)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    std::vector nodesX{-16.1886410000000,
+                       -16.1464995876014,
+                       -16.1043581752028,
+                       -16.0622167628042,
+                       -15.7539488236928,
+                       -6.86476658679268,
+                       2.02441565010741,
+                       10.9135970000000};
+
+    std::vector nodesY{0.89018900000000,
+                       9.78201442138723,
+                       18.6738398427745,
+                       27.5656652641617,
+                       36.1966603330179,
+                       36.4175095626911,
+                       36.6383587923643,
+                       36.8592080000000};
+
+    std::vector edges{0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7};
+
+    meshkernelapi::Mesh1D mesh1d;
+    mesh1d.edge_nodes = edges.data();
+    mesh1d.node_x = nodesX.data();
+    mesh1d.node_y = nodesY.data();
+    mesh1d.num_nodes = 8;
+    mesh1d.num_edges = 7;
+
+    auto errorCode = mkernel_mesh1d_set(GetMeshKernelId(), mesh1d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    meshkernelapi::Mesh1D mesh1dResults;
+    errorCode = mkernel_mesh1d_get_dimensions(meshKernelId, mesh1dResults);
+    std::vector<double> meshNodesX(mesh1dResults.num_nodes);
+    std::vector<double> meshNodesY(mesh1dResults.num_nodes);
+    std::vector<int> meshEdges(mesh1dResults.num_edges * 2);
+
+    mesh1dResults.node_x = meshNodesX.data();
+    mesh1dResults.node_y = meshNodesY.data();
+    mesh1dResults.edge_nodes = meshEdges.data();
+    errorCode = mkernel_mesh1d_get_data(meshKernelId, mesh1dResults);
+
+    // Assert
+    std::vector validMeshNodesX(nodesX.data(), nodesX.data() + mesh1d.num_nodes);
+    std::vector computedMeshNodesX(meshNodesX.data(), meshNodesX.data() + mesh1dResults.num_nodes);
+    ASSERT_THAT(computedMeshNodesX, ::testing::ContainerEq(validMeshNodesX));
+
+    std::vector validMeshNodesY(nodesY.data(), nodesY.data() + mesh1d.num_nodes);
+    std::vector computedMeshNodesY(meshNodesY.data(), meshNodesY.data() + mesh1dResults.num_nodes);
+    ASSERT_THAT(computedMeshNodesY, ::testing::ContainerEq(validMeshNodesY));
+
+    std::vector<double> validEdges(edges.data(), edges.data() + mesh1d.num_edges);
+    std::vector<double> computedEdges(meshEdges.data(), meshEdges.data() + mesh1dResults.num_edges);
+    ASSERT_THAT(computedEdges, ::testing::ContainerEq(validEdges));
+}
