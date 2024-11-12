@@ -130,7 +130,6 @@ TEST_F(CartesianApiTestFixture, OrthogonalizationThroughApi)
     ASSERT_EQ(17, mesh2d.num_edges);
 }
 
-
 TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLinesOrthogonalize_ShouldSetFrozenLines)
 {
     // Setup
