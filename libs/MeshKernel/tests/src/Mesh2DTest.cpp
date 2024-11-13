@@ -1457,3 +1457,50 @@ TEST(Mesh2D, MeshToCurvilinear_OnRealMesh_ShouldConvertCurvilinearPart)
     EXPECT_EQ(result->NumM(), 38);
     EXPECT_EQ(result->NumN(), 45);
 }
+
+TEST(Mesh2D, Mesh2DComputeAspectRatio)
+{
+    const double tolerance = 1.0e-12;
+    const meshkernel::UInt size = 3;
+    const double dimension = 10.0;
+
+    const auto mesh = MakeRectangularMeshForTesting(size,
+                                                    size,
+                                                    dimension,
+                                                    dimension,
+                                                    meshkernel::Projection::cartesian);
+
+    std::vector<meshkernel::Point> displacement{{0.573312665029025, 0.164422234673451},
+                                                {0.848580895925857, 0.273698982765599},
+                                                {0.649270465028434, 1.16836612028342},
+                                                {0.662125241426321, 0.0432151380810593},
+                                                {0.0835527965782094, 0.00962273257699897},
+                                                {1.16304561871212, 0.858465890511307},
+                                                {0.817398702725653, 0.658660972199883},
+                                                {0.952747549998293, 0.876488243123971},
+                                                {0.41029278270001, 0.0593306417328899}};
+
+    for (meshkernel::UInt i = 0; i < mesh->GetNumNodes(); ++i)
+    {
+        mesh->SetNode(i, mesh->Node(i) + displacement[i]);
+    }
+
+    // The grid nodes have been displaced by some amount, the face circumcentres will need to be recomputed.
+    mesh->Administrate();
+
+    std::vector<double> aspectRatios;
+    // Values calculated by the algorithm, not derived analytically
+    std::vector<double> expectedAspectRatios{0.909799624513058, 1.36963998294878, 1.08331064761803,
+                                             0.896631398796997, 0.839834200634414, 1.15475768474815,
+                                             0.832219560848176, 0.819704195029218, 1.11720404458871,
+                                             0.807269974963293, 0.972997967873087, 1.17917808082661};
+
+    mesh->ComputeAspectRatios(aspectRatios);
+
+    ASSERT_EQ(aspectRatios.size(), expectedAspectRatios.size());
+
+    for (size_t i = 0; i < expectedAspectRatios.size(); ++i)
+    {
+        EXPECT_NEAR(aspectRatios[i], expectedAspectRatios[i], tolerance);
+    }
+}

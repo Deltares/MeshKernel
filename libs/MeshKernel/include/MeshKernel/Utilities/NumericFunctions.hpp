@@ -52,7 +52,7 @@ namespace meshkernel
         const T abs_value = std::abs(value);
         const T abs_ref_value = std::abs(ref_value);
 
-        return abs_diff < relative_tol * std::min(abs_value, abs_ref_value);
+        return abs_diff < relative_tol * std::max(abs_value, abs_ref_value);
     }
 
     /// @brief Determine is a value is in the closed interval, bounded by lower- and upper-bound
