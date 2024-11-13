@@ -1153,7 +1153,11 @@ namespace meshkernel
 
             auto const det = x43 * y21 - y43 * x21;
 
-            if (IsEqual(det, 0.0))
+            double maxValue = std::max(std::max(std::abs(x21), std::abs(y21)),
+                                       std::max(std::abs(x43), std::abs(y43)));
+            const double eps = std::max(0.00001 * maxValue, std::numeric_limits<double>::denorm_min());
+
+            if (std::abs(det) < eps)
             {
                 return {false, intersectionPoint, crossProduct, ratioFirstSegment, ratioSecondSegment};
             }

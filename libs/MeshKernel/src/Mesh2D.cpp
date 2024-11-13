@@ -186,7 +186,7 @@ void Mesh2D::DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector
     FindFacesGivenFaceNodesMapping(faceNodes, numFaceNodes);
 
     // find mesh circumcenters
-    ComputeCircumcentersMassCentersAndFaceAreas();
+    ComputeCircumcentersMassCentersAndFaceAreas(true);
 
     // classify node types
     ClassifyNodes();
@@ -610,7 +610,6 @@ void Mesh2D::FindFacesGivenFaceNodesMapping(const std::vector<std::vector<UInt>>
             m_edgesNumFaces[e] += 1;
         }
     }
-    ComputeCircumcentersMassCentersAndFaceAreas(true);
 }
 
 void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters)
