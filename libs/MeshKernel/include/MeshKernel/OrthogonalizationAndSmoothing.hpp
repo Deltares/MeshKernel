@@ -95,7 +95,7 @@ namespace meshkernel
                                       std::unique_ptr<Orthogonalizer> orthogonalizer,
                                       std::unique_ptr<Polygons> polygon,
                                       std::unique_ptr<LandBoundaries> landBoundaries,
-                                      LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
+                                      LandBoundaries::ProjectionsOptions projectToLandBoundaryOption,
                                       const OrthogonalizationParameters& orthogonalizationParameters);
 
         /// @brief Initializes the object
@@ -140,13 +140,13 @@ namespace meshkernel
         /// @brief Compute nodes local coordinates (comp_local_coords)
         void ComputeCoordinates() const;
 
-        Mesh2D& m_mesh;                                                            ///< A reference to mesh
-        std::unique_ptr<Smoother> m_smoother;                                      ///< A pointer to the smoother
-        std::unique_ptr<Orthogonalizer> m_orthogonalizer;                          ///< A pointer to the orthogonalizer
-        std::unique_ptr<Polygons> m_polygons;                                      ///< The polygon pointer where to perform the orthogonalization
-        std::unique_ptr<LandBoundaries> m_landBoundaries;                          ///< The land boundaries pointer
-        LandBoundaries::ProjectToLandBoundaryOption m_projectToLandBoundaryOption; ///< The project to land boundary option
-        OrthogonalizationParameters m_orthogonalizationParameters;                 ///< The orthogonalization parameters
+        Mesh2D& m_mesh;                                            ///< A reference to mesh
+        std::unique_ptr<Smoother> m_smoother;                      ///< A pointer to the smoother
+        std::unique_ptr<Orthogonalizer> m_orthogonalizer;          ///< A pointer to the orthogonalizer
+        std::unique_ptr<Polygons> m_polygons;                      ///< The polygon pointer where to perform the orthogonalization
+        std::unique_ptr<LandBoundaries> m_landBoundaries;          ///< The land boundaries pointer
+        LandBoundaries::ProjectionsOptions m_projectOptions;       ///< The projection options
+        OrthogonalizationParameters m_orthogonalizationParameters; ///< The orthogonalization parameters
 
         std::vector<UInt> m_localCoordinatesIndices; ///< Used in sphericalAccurate projection (iloc)
         std::vector<Point> m_localCoordinates;       ///< Used in sphericalAccurate projection (xloc,yloc)

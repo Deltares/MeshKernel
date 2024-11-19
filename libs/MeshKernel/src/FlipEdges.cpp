@@ -47,7 +47,7 @@ FlipEdges::FlipEdges(Mesh2D& mesh,
 {
     if (m_projectToLandBoundary)
     {
-        m_landBoundaries.FindNearestMeshBoundary(LandBoundaries::ProjectToLandBoundaryOption::WholeMesh);
+        m_landBoundaries.FindNearestMeshBoundary(LandBoundaries::ProjectionsOptions::OuterMeshBoundaryToLandBoundaries);
     }
 }
 

@@ -505,7 +505,7 @@ namespace meshkernelapi
             // Construct all dependencies
             const auto polygon = meshkernel::Polygons(polygonNodes, meshKernelState[meshKernelId].m_projection);
             auto landBoundary = meshkernel::LandBoundaries(landBoundariesPoints, *meshKernelState[meshKernelId].m_mesh2d, polygon);
-            landBoundary.FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption::InnerAndOuterMeshBoundaryToLandBoundary);
+            landBoundary.FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectionsOptions::InnerAndOuterMeshBoundaryToLandboundaries);
 
             // Execute algorithm
             meshKernelUndoStack.Add(landBoundary.SnapMeshToLandBoundaries());
@@ -1274,7 +1274,7 @@ namespace meshkernelapi
                                                                        std::move(orthogonalizer),
                                                                        std::move(polygon),
                                                                        std::move(landBoundary),
-                                                                       static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
+                                                                       static_cast<meshkernel::LandBoundaries::ProjectionsOptions>(projectToLandBoundaryOption),
                                                                        orthogonalizationParameters);
             meshKernelUndoStack.Add(ortogonalization.Initialize(), meshKernelId);
             ortogonalization.Compute();
@@ -1322,7 +1322,7 @@ namespace meshkernelapi
                                                                                                                                 std::move(orthogonalizer),
                                                                                                                                 std::move(polygon),
                                                                                                                                 std::move(landBoundary),
-                                                                                                                                static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
+                                                                                                                                static_cast<meshkernel::LandBoundaries::ProjectionsOptions>(projectToLandBoundaryOption),
                                                                                                                                 orthogonalizationParameters);
             meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_meshOrthogonalization->Initialize(), meshKernelId);
         }

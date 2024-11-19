@@ -44,14 +44,14 @@ OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(Mesh2D& mesh,
                                                              std::unique_ptr<Orthogonalizer> orthogonalizer,
                                                              std::unique_ptr<Polygons> polygon,
                                                              std::unique_ptr<LandBoundaries> landBoundaries,
-                                                             LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
+                                                             LandBoundaries::ProjectionsOptions projectToLandBoundaryOption,
                                                              const OrthogonalizationParameters& orthogonalizationParameters)
     : m_mesh(mesh),
       m_smoother(std::move(smoother)),
       m_orthogonalizer(std::move(orthogonalizer)),
       m_polygons(std::move(polygon)),
       m_landBoundaries(std::move(landBoundaries)),
-      m_projectToLandBoundaryOption(projectToLandBoundaryOption)
+      m_projectOptions(projectToLandBoundaryOption)
 {
     CheckOrthogonalizationParameters(orthogonalizationParameters);
     m_orthogonalizationParameters = orthogonalizationParameters;
@@ -91,8 +91,12 @@ std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initializ
     m_originalNodes = m_mesh.Nodes();
     m_orthogonalCoordinates = m_mesh.Nodes();
 
-    // account for enclosing polygon
-    m_landBoundaries->FindNearestMeshBoundary(m_projectToLandBoundaryOption);
+    // 
+    if (m_projectOptions == LandBoundaries::ProjectionsOptions::OuterMeshBoundaryToLandBoundaries ||
+        m_projectOptions == LandBoundaries::ProjectionsOptions::InnerAndOuterMeshBoundaryToLandboundaries)
+    {
+        m_landBoundaries->FindNearestMeshBoundary(m_projectOptions);
+    }
 
     // for spherical accurate computations we need to call PrapareOuterIteration (orthonet_comp_ops)
     if (m_mesh.m_projection == Projection::sphericalAccurate)
