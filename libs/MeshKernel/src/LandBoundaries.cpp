@@ -98,15 +98,15 @@ void LandBoundaries::Administrate()
     }
 }
 
-void LandBoundaries::FindNearestMeshBoundary(ProjectionsOptions projectToLandBoundaryOption)
+void LandBoundaries::FindNearestMeshBoundary(ProjectionsOptions projectionOption)
 {
     if (m_landBoundary.IsEmpty())
     {
         return;
     }
 
-    if (projectToLandBoundaryOption != ProjectionsOptions::OuterMeshBoundaryToLandBoundaries &&
-        projectToLandBoundaryOption != ProjectionsOptions::InnerAndOuterMeshBoundaryToLandboundaries)
+    if (projectionOption != ProjectionsOptions::OuterMeshBoundaryToLandBoundaries &&
+        projectionOption != ProjectionsOptions::InnerAndOuterMeshBoundariesToLandboundaries)
     {
         return;
     }
@@ -126,7 +126,7 @@ void LandBoundaries::FindNearestMeshBoundary(ProjectionsOptions projectToLandBou
     {
         const auto [_, numRejectedPaths] = MakePath(landBoundarySegment);
 
-        if (numRejectedPaths > 0 && projectToLandBoundaryOption == ProjectionsOptions::InnerAndOuterMeshBoundaryToLandboundaries)
+        if (numRejectedPaths > 0 && projectionOption == ProjectionsOptions::InnerAndOuterMeshBoundariesToLandboundaries)
         {
             m_findOnlyOuterMeshBoundary = false;
             MakePath(landBoundarySegment);

@@ -93,7 +93,7 @@ std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initializ
 
     // 
     if (m_projectOptions == LandBoundaries::ProjectionsOptions::OuterMeshBoundaryToLandBoundaries ||
-        m_projectOptions == LandBoundaries::ProjectionsOptions::InnerAndOuterMeshBoundaryToLandboundaries)
+        m_projectOptions == LandBoundaries::ProjectionsOptions::InnerAndOuterMeshBoundariesToLandboundaries)
     {
         m_landBoundaries->FindNearestMeshBoundary(m_projectOptions);
     }

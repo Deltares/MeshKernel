@@ -505,7 +505,7 @@ namespace meshkernelapi
             // Construct all dependencies
             const auto polygon = meshkernel::Polygons(polygonNodes, meshKernelState[meshKernelId].m_projection);
             auto landBoundary = meshkernel::LandBoundaries(landBoundariesPoints, *meshKernelState[meshKernelId].m_mesh2d, polygon);
-            landBoundary.FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectionsOptions::InnerAndOuterMeshBoundaryToLandboundaries);
+            landBoundary.FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectionsOptions::InnerAndOuterMeshBoundariesToLandboundaries);
 
             // Execute algorithm
             meshKernelUndoStack.Add(landBoundary.SnapMeshToLandBoundaries());
