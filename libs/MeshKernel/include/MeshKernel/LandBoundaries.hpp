@@ -29,7 +29,6 @@
 
 #include <memory>
 
-#include <MeshKernel/Entities.hpp>
 #include <MeshKernel/LandBoundary.hpp>
 #include <MeshKernel/UndoActions/UndoAction.hpp>
 
@@ -89,7 +88,7 @@ namespace meshkernel
         /// @return The number of land boundary nodes.
         auto GetNumNodes() const { return m_landBoundary.GetNumNodes(); }
 
-        /// @brief Gets the land boundary segment index
+        /// @brief Gets the land boundary segment index for each mesh node
         /// @param[in] node The mesh node index
         const UInt& LandBoundarySegment(UInt node) const { return m_meshNodesLandBoundarySegments[node]; }
 
