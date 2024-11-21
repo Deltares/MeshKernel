@@ -201,14 +201,20 @@ double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(const Poi
         auto const sampleIndex = m_samplesRtree->GetQueryResult(i);
         auto const sampleValue = m_samples[sampleIndex].value;
 
-        if (sampleValue <= constants::missing::doubleValue)
+        if (sampleValue == constants::missing::doubleValue)
         {
             continue;
         }
 
         Point samplePoint{m_samples[sampleIndex].x, m_samples[sampleIndex].y};
+        Point polygonCentre{constants::missing::doubleValue, constants::missing::doubleValue};
 
-        if (IsPointInPolygonNodes(samplePoint, searchPolygon, m_mesh.m_projection))
+        if (m_mesh.m_projection == Projection::sphericalAccurate)
+        {
+            polygonCentre = ComputeAverageCoordinate(searchPolygon, m_mesh.m_projection);
+        }
+
+        if (IsPointInPolygonNodes(samplePoint, searchPolygon, m_mesh.m_projection, polygonCentre))
         {
             m_interpolationSampleCache.emplace_back(samplePoint.x, samplePoint.y, sampleValue);
         }
