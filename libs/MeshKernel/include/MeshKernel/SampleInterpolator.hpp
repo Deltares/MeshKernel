@@ -47,7 +47,12 @@ namespace meshkernel
     {
     public:
         template <class VectorType>
-        SampleInterpolator(const VectorType& xNodes, const VectorType& yNodes) : m_triangulation(xNodes, yNodes) {}
+        SampleInterpolator(const VectorType& xNodes, const VectorType& yNodes,
+                           const Projection projection)
+            : m_triangulation(xNodes, yNodes, projection) {}
+
+        /// @brief Get the number of nodes of size of the sample data.
+        UInt Size() const;
 
         /// @brief Set sample data
         template <class VectorType>
@@ -72,6 +77,11 @@ namespace meshkernel
     };
 
 } // namespace meshkernel
+
+inline meshkernel::UInt meshkernel::SampleInterpolator::Size() const
+{
+    return m_triangulation.NumberOfNodes();
+}
 
 inline bool meshkernel::SampleInterpolator::Contains(const std::string& name) const
 {
