@@ -975,7 +975,7 @@ std::tuple<double, meshkernel::Point, meshkernel::UInt, double> SnappingMesh2DTo
     return {minimumDistance, pointOnLandBoundary, nearestLandBoundaryNodeIndex, edgeRatio};
 }
 
-std::unique_ptr<meshkernel::UndoAction> SnappingMesh2DToLandBoundariesCalculator::SnapMeshToLandBoundaries() const
+std::unique_ptr<meshkernel::UndoAction> SnappingMesh2DToLandBoundariesCalculator::ComputeSnapping() const
 {
     if (m_landBoundary.IsEmpty() || m_meshNodesLandBoundarySegments.empty())
     {

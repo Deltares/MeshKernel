@@ -69,20 +69,12 @@ namespace meshkernel
                                                  Mesh2D& mesh,
                                                  const Polygons& polygons);
 
-        /// @brief The portion of the boundary segments close enough to the mesh boundary are flagged (admin_landboundary_segments)
-        ///
-        /// This method uses a Point vector member variable and identifies
-        /// the start-end points of each land boundary polyline with the requirement
-        /// that all polyline nodes are close enough to the mesh boundary and are inside the polygon.
-        /// \image html LandBoundarySegmentation_step1.jpg  "Land boundary segmentation"
-        void Administrate();
-
         /// @brief Find the mesh boundary line closest to the land boundary (find_nearest_meshline).
         /// @param[in] projectionOption The option describing the projection to the land boundary.
         void FindNearestMeshBoundary(ProjectionsOptions projectionOption);
 
         /// @brief Snap the mesh nodes to land boundaries (snap_to_landboundary)
-        [[nodiscard]] std::unique_ptr<UndoAction> SnapMeshToLandBoundaries() const;
+        [[nodiscard]] std::unique_ptr<UndoAction> ComputeSnapping() const;
 
         /// @brief Gets the land boundary segment index for each mesh node
         /// @param[in] node The mesh node index
@@ -94,6 +86,14 @@ namespace meshkernel
         const LandBoundary& LandBoundary() const { return m_landBoundary; }
 
     private:
+        /// @brief The portion of the boundary segments close enough to the mesh boundary are flagged (admin_landboundary_segments)
+        ///
+        /// This method uses a Point vector member variable and identifies
+        /// the start-end points of each land boundary polyline with the requirement
+        /// that all polyline nodes are close enough to the mesh boundary and are inside the polygon.
+        /// \image html LandBoundarySegmentation_step1.jpg  "Land boundary segmentation"
+        void Administrate();
+
         /// @brief Build an additional boundary for not assigned nodes (connect_boundary_paths)
         /// @param[in] edgeIndex
         /// @param[in] initialize

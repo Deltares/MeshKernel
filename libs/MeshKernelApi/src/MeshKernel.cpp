@@ -508,7 +508,7 @@ namespace meshkernelapi
             landBoundary.FindNearestMeshBoundary(meshkernel::SnappingMesh2DToLandBoundariesCalculator::ProjectionsOptions::InnerAndOuterMeshBoundariesToLandboundaries);
 
             // Execute algorithm
-            meshKernelUndoStack.Add(landBoundary.SnapMeshToLandBoundaries());
+            meshKernelUndoStack.Add(landBoundary.ComputeSnapping());
         }
         catch (...)
         {

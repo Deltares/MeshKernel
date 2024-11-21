@@ -262,7 +262,7 @@ void OrthogonalizationAndSmoothing::Solve()
         m_projectOptions == SnappingMesh2DToLandBoundariesCalculator::ProjectionsOptions::InnerAndOuterMeshBoundariesToLandboundaries)
     {
         // project on land boundary
-        [[maybe_unused]] auto action = m_snappingToLandBoundariesCalculator->SnapMeshToLandBoundaries();
+        [[maybe_unused]] auto action = m_snappingToLandBoundariesCalculator->ComputeSnapping();
     }
 }
 
