@@ -226,22 +226,6 @@ namespace meshkernel
             return m_edgesFaces[edgeIndex][faceIndex];
         }
 
-        /// @brief Retrieves the x coordinate of a triangulated node
-        /// @param nodeIndex The index of the node to retrieve
-        /// @return const reference to the x coordinate
-        [[nodiscard]] double GetXCoord(const UInt nodeIndex) const
-        {
-            return m_xCoordFlat[nodeIndex];
-        }
-
-        /// @brief Retrieves the y coordinate of a triangulated node
-        /// @param nodeIndex The index of the node to retrieve
-        /// @return const reference to the y coordinate
-        [[nodiscard]] double GetYCoord(const UInt nodeIndex) const
-        {
-            return m_yCoordFlat[nodeIndex];
-        }
-
         /// @brief Retrieves the (x,y) coordinate of a triangulated node
         /// @param nodeIndex The index of the node to retrieve
         /// @return Point
