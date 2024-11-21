@@ -36,7 +36,7 @@ namespace meshkernel
 {
     // Forward declarations
     class Mesh2D;
-    class SnappingToLandBoundariesCalculator;
+    class SnappingMesh2DToLandBoundariesCalculator;
 
     /// @brief A class used to improve mesh connectivity.
     ///
@@ -53,7 +53,7 @@ namespace meshkernel
         /// @param[in] triangulateFaces      Whether to triangulate all faces or not
         /// @param[in] projectToLandBoundary Whether to project to land boundaries or not
         FlipEdges(Mesh2D& mesh,
-                  SnappingToLandBoundariesCalculator& landBoundary,
+                  SnappingMesh2DToLandBoundariesCalculator& landBoundary,
                   bool triangulateFaces,
                   bool projectToLandBoundary);
 
@@ -86,7 +86,7 @@ namespace meshkernel
         void DeleteEdgeFromNode(UInt edgeIndex, UInt nodeIndex) const;
 
         Mesh2D& m_mesh;                   ///< A pointer to the 2D mesh
-        SnappingToLandBoundariesCalculator& m_landBoundaries; ///< A pointer to the land boundaries
+        SnappingMesh2DToLandBoundariesCalculator& m_landBoundaries; ///< A pointer to the land boundaries
 
         bool m_triangulateFaces = false;      ///< Whether to triangulate faces
         bool m_projectToLandBoundary = false; ///< Whether to project to land boundary

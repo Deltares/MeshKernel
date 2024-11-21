@@ -31,7 +31,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
-#include <MeshKernel/SnappingToLandBoundariesCalculator.hpp>
+#include <MeshKernel/SnappingMesh2DToLandBoundariesCalculator.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/SplineAlgorithms.hpp>
 #include <MeshKernel/Splines.hpp>

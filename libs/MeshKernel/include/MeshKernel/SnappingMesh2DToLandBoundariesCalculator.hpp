@@ -39,13 +39,13 @@ namespace meshkernel
     class Polygons;
     class Mesh2D;
 
-    /// @brief A class describing land boundaries.
+    /// @brief A class implementing the snapping mesh to land boundaries algorithm
     /// These are used to visualise the land-water interface.
     ///
     /// The main responsibility of this class is to store the land boundary polygons,
     /// categorize them based on their proximity to a mesh
     /// and provide the functionality to assign each mesh node to the appropriate land boundary polyline.
-    class SnappingToLandBoundariesCalculator
+    class SnappingMesh2DToLandBoundariesCalculator
     {
 
     public:
@@ -59,13 +59,13 @@ namespace meshkernel
         };
 
         /// @brief Default constructor
-        SnappingToLandBoundariesCalculator() = default;
+        SnappingMesh2DToLandBoundariesCalculator() = default;
 
         /// @brief Default constructor
         /// @param[in] landBoundary A vector of points defining the land boundary.
         /// @param[in] mesh         The current 2d mesh.
         /// @param[in] polygons     A polygon for selecting part of the land boundaries.
-        SnappingToLandBoundariesCalculator(const std::vector<Point>& landBoundary,
+        SnappingMesh2DToLandBoundariesCalculator(const std::vector<Point>& landBoundary,
                                            Mesh2D& mesh,
                                            const Polygons& polygons);
 

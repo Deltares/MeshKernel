@@ -29,7 +29,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
-#include <MeshKernel/SnappingToLandBoundariesCalculator.hpp>
+#include <MeshKernel/SnappingMesh2DToLandBoundariesCalculator.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
@@ -38,7 +38,7 @@ using meshkernel::FlipEdges;
 using meshkernel::Mesh2D;
 
 FlipEdges::FlipEdges(Mesh2D& mesh,
-                     SnappingToLandBoundariesCalculator& landBoundary,
+                     SnappingMesh2DToLandBoundariesCalculator& landBoundary,
                      bool triangulateFaces,
                      bool projectToLandBoundary) : m_mesh(mesh),
                                                    m_landBoundaries(landBoundary),
@@ -47,7 +47,7 @@ FlipEdges::FlipEdges(Mesh2D& mesh,
 {
     if (m_projectToLandBoundary)
     {
-        m_landBoundaries.FindNearestMeshBoundary(SnappingToLandBoundariesCalculator::ProjectionsOptions::OuterMeshBoundaryToLandBoundaries);
+        m_landBoundaries.FindNearestMeshBoundary(SnappingMesh2DToLandBoundariesCalculator::ProjectionsOptions::OuterMeshBoundaryToLandBoundaries);
     }
 }
 

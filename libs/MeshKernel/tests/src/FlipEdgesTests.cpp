@@ -3,7 +3,7 @@
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/FlipEdges.hpp>
-#include <MeshKernel/SnappingToLandBoundariesCalculator.hpp>
+#include <MeshKernel/SnappingMesh2DToLandBoundariesCalculator.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <TestUtils/Definitions.hpp>
@@ -23,7 +23,7 @@ TEST(FlipEdges, FlipEdgesWithLandBoundary)
                                                 {20.885406, 21.539995},
                                                 {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
 
-    auto landBoundaries = meshkernel::SnappingToLandBoundariesCalculator(landBoundary, *mesh, polygon);
+    auto landBoundaries = meshkernel::SnappingMesh2DToLandBoundariesCalculator(landBoundary, *mesh, polygon);
 
     // execute flipedges
     meshkernel::FlipEdges flipEdges(*mesh, landBoundaries, true, true);
@@ -79,7 +79,7 @@ TEST(FlipEdges, FlipEdgesMediumTriangularMesh)
     auto polygon = meshkernel::Polygons();
 
     std::vector<meshkernel::Point> landBoundary;
-    auto landBoundaries = meshkernel::SnappingToLandBoundariesCalculator(landBoundary, *mesh, polygon);
+    auto landBoundaries = meshkernel::SnappingMesh2DToLandBoundariesCalculator(landBoundary, *mesh, polygon);
 
     // execute flipedges
     meshkernel::FlipEdges flipEdges(*mesh, landBoundaries, true, false);

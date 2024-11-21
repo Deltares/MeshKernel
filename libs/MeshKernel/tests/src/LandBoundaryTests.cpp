@@ -2,7 +2,7 @@
 
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/SnappingToLandBoundariesCalculator.hpp>
+#include <MeshKernel/SnappingMesh2DToLandBoundariesCalculator.hpp>
 #include <MeshKernel/LandBoundary.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
@@ -24,8 +24,8 @@ TEST(LandBoundaries, OneLandBoundary)
     auto polygons = meshkernel::Polygons();
 
     // Execute
-    auto landboundaries = meshkernel::SnappingToLandBoundariesCalculator(landBoundaryPolygon, *mesh, polygons);
-    landboundaries.FindNearestMeshBoundary(meshkernel::SnappingToLandBoundariesCalculator::ProjectionsOptions ::OuterMeshBoundaryToLandBoundaries);
+    auto landboundaries = meshkernel::SnappingMesh2DToLandBoundariesCalculator(landBoundaryPolygon, *mesh, polygons);
+    landboundaries.FindNearestMeshBoundary(meshkernel::SnappingMesh2DToLandBoundariesCalculator::ProjectionsOptions ::OuterMeshBoundaryToLandBoundaries);
 
     // Checks
     EXPECT_EQ(1, landboundaries.LandBoundarySegmentIndex(0));
@@ -61,8 +61,8 @@ TEST(LandBoundaries, TwoLandBoundaries)
     auto polygons = meshkernel::Polygons();
 
     // Execute
-    auto landboundaries = meshkernel::SnappingToLandBoundariesCalculator(landBoundaryPolygon, *mesh, polygons);
-    landboundaries.FindNearestMeshBoundary(meshkernel::SnappingToLandBoundariesCalculator::ProjectionsOptions::OuterMeshBoundaryToLandBoundaries);
+    auto landboundaries = meshkernel::SnappingMesh2DToLandBoundariesCalculator(landBoundaryPolygon, *mesh, polygons);
+    landboundaries.FindNearestMeshBoundary(meshkernel::SnappingMesh2DToLandBoundariesCalculator::ProjectionsOptions::OuterMeshBoundaryToLandBoundaries);
 
     // Checks
     EXPECT_EQ(2, landboundaries.LandBoundarySegmentIndex(0));
@@ -93,8 +93,8 @@ TEST(LandBoundaries, OneCrossingLandBoundary)
     auto polygons = meshkernel::Polygons();
 
     // Execute
-    auto landboundaries = meshkernel::SnappingToLandBoundariesCalculator(landBoundaryPolygon, *mesh, polygons);
-    landboundaries.FindNearestMeshBoundary(meshkernel::SnappingToLandBoundariesCalculator::ProjectionsOptions ::OuterMeshBoundaryToLandBoundaries);
+    auto landboundaries = meshkernel::SnappingMesh2DToLandBoundariesCalculator(landBoundaryPolygon, *mesh, polygons);
+    landboundaries.FindNearestMeshBoundary(meshkernel::SnappingMesh2DToLandBoundariesCalculator::ProjectionsOptions ::OuterMeshBoundaryToLandBoundaries);
 
     // Checks
     EXPECT_EQ(0, landboundaries.LandBoundarySegmentIndex(0));
@@ -129,8 +129,8 @@ TEST(LandBoundaries, TwoCrossingLandBoundary)
     auto polygons = meshkernel::Polygons();
 
     // Execute
-    auto landboundaries = meshkernel::SnappingToLandBoundariesCalculator(landBoundaryPolygon, *mesh, polygons);
-    landboundaries.FindNearestMeshBoundary(meshkernel::SnappingToLandBoundariesCalculator::ProjectionsOptions ::OuterMeshBoundaryToLandBoundaries);
+    auto landboundaries = meshkernel::SnappingMesh2DToLandBoundariesCalculator(landBoundaryPolygon, *mesh, polygons);
+    landboundaries.FindNearestMeshBoundary(meshkernel::SnappingMesh2DToLandBoundariesCalculator::ProjectionsOptions ::OuterMeshBoundaryToLandBoundaries);
 
     // Checks
     EXPECT_EQ(2, landboundaries.LandBoundarySegmentIndex(0));
