@@ -91,7 +91,7 @@ std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initializ
     m_originalNodes = m_mesh.Nodes();
     m_orthogonalCoordinates = m_mesh.Nodes();
 
-    // 
+    // compute land boundary segments if required
     if (m_projectOptions == LandBoundaries::ProjectionsOptions::OuterMeshBoundaryToLandBoundaries ||
         m_projectOptions == LandBoundaries::ProjectionsOptions::InnerAndOuterMeshBoundariesToLandboundaries)
     {
@@ -258,8 +258,12 @@ void OrthogonalizationAndSmoothing::Solve()
     // compute local coordinates
     // TODO: Not implemented yet ComputeCoordinates();
 
-    // project on land boundary
-    [[maybe_unused]] auto action = m_landBoundaries->SnapMeshToLandBoundaries();
+    if (m_projectOptions == LandBoundaries::ProjectionsOptions::OuterMeshBoundaryToLandBoundaries ||
+        m_projectOptions == LandBoundaries::ProjectionsOptions::InnerAndOuterMeshBoundariesToLandboundaries)
+    {
+        // project on land boundary
+        [[maybe_unused]] auto action = m_landBoundaries->SnapMeshToLandBoundaries();
+    }
 }
 
 void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
