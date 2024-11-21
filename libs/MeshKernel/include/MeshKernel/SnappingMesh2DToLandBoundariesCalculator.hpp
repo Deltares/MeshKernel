@@ -29,7 +29,6 @@
 
 #include <memory>
 
-#include <MeshKernel/Entities.hpp>
 #include <MeshKernel/LandBoundary.hpp>
 #include <MeshKernel/UndoActions/UndoAction.hpp>
 
@@ -40,37 +39,53 @@ namespace meshkernel
     class Polygons;
     class Mesh2D;
 
-    /// @brief A class describing land boundaries.
+    /// @brief A class implementing the snapping mesh to land boundaries algorithm
     /// These are used to visualise the land-water interface.
     ///
     /// The main responsibility of this class is to store the land boundary polygons,
     /// categorize them based on their proximity to a mesh
     /// and provide the functionality to assign each mesh node to the appropriate land boundary polyline.
-    class LandBoundaries
+    class SnappingMesh2DToLandBoundariesCalculator
     {
 
     public:
-        /// Enumerator describing the options how to project to the land boundary
-        enum class ProjectToLandBoundaryOption
+        /// Enumerator describing the options how to project
+        enum class ProjectionsOptions
         {
-            DoNotProjectToLandBoundary = 0,
-            ToOriginalNetBoundary = 1,
-            OuterMeshBoundaryToLandBoundary = 2,
-            InnerAndOuterMeshBoundaryToLandBoundary = 3,
-            WholeMesh = 4
+            DoNotProject = 0,
+            ToOriginalMeshBoundary = 1,
+            OuterMeshBoundaryToLandBoundaries = 2,
+            InnerAndOuterMeshBoundariesToLandboundaries = 3
         };
 
         /// @brief Default constructor
-        LandBoundaries() = default;
+        SnappingMesh2DToLandBoundariesCalculator() = default;
 
         /// @brief Default constructor
         /// @param[in] landBoundary A vector of points defining the land boundary.
         /// @param[in] mesh         The current 2d mesh.
         /// @param[in] polygons     A polygon for selecting part of the land boundaries.
-        LandBoundaries(const std::vector<Point>& landBoundary,
-                       Mesh2D& mesh,
-                       const Polygons& polygons);
+        SnappingMesh2DToLandBoundariesCalculator(const std::vector<Point>& landBoundary,
+                                                 Mesh2D& mesh,
+                                                 const Polygons& polygons);
 
+        /// @brief Find the mesh boundary line closest to the land boundary (find_nearest_meshline).
+        /// @param[in] projectionOption The option describing the projection to the land boundary.
+        void FindNearestMeshBoundary(ProjectionsOptions projectionOption);
+
+        /// @brief Snap the mesh nodes to land boundaries (snap_to_landboundary)
+        [[nodiscard]] std::unique_ptr<UndoAction> ComputeSnapping() const;
+
+        /// @brief Gets the land boundary segment index for each mesh node
+        /// @param[in] node The mesh node index
+        /// @returns The land boundary segment index
+        UInt LandBoundarySegmentIndex(UInt node) const { return m_meshNodesLandBoundarySegments[node]; }
+
+        /// @brief Get the land boundary used by the calculator
+        /// @returns A reference to the land boundary used by the calculator
+        const LandBoundary& LandBoundary() const { return m_landBoundary; }
+
+    private:
         /// @brief The portion of the boundary segments close enough to the mesh boundary are flagged (admin_landboundary_segments)
         ///
         /// This method uses a Point vector member variable and identifies
@@ -79,20 +94,6 @@ namespace meshkernel
         /// \image html LandBoundarySegmentation_step1.jpg  "Land boundary segmentation"
         void Administrate();
 
-        /// @brief Find the mesh boundary line closest to the land boundary (find_nearest_meshline).
-        /// @param[in] projectToLandBoundaryOption The option describing the projection to the land boundary.
-        void FindNearestMeshBoundary(ProjectToLandBoundaryOption projectToLandBoundaryOption);
-
-        /// @brief Snap the mesh nodes to land boundaries (snap_to_landboundary)
-        [[nodiscard]] std::unique_ptr<UndoAction> SnapMeshToLandBoundaries() const;
-
-        /// @brief Gets the number of land boundary nodes.
-        /// @return The number of land boundary nodes.
-        auto GetNumNodes() const { return m_landBoundary.GetNumNodes(); }
-
-        std::vector<UInt> m_meshNodesLandBoundarySegments; ///< Mesh nodes to land boundary mapping (lanseg_map)
-
-    private:
         /// @brief Build an additional boundary for not assigned nodes (connect_boundary_paths)
         /// @param[in] edgeIndex
         /// @param[in] initialize
@@ -121,26 +122,6 @@ namespace meshkernel
         /// @brief Mask the mesh nodes to be considered in the shortest path algorithm for the current land boundary polyline (masknodes).
         /// @param[in] landBoundaryIndex The land boundary polyline index
         void ComputeMeshNodeMask(UInt landBoundaryIndex);
-
-        /// @brief Mask the mesh nodes to be considered in the shortest path algorithm for the current segmentIndex.
-        /// It is setting leftIndex, rightIndex, leftEdgeRatio, rightEdgeRatio (masknodes).
-        //// \image html LandBoundaryNodeFlagging_step2.jpg  "Flag the mesh node close to the land boundary"
-        /// @param[in]  segmentIndex
-        /// @param[in]  meshBoundOnly
-        /// @param[in]  startLandBoundaryIndex
-        /// @param[in]  endLandBoundaryIndex
-        /// @param[out] leftIndex
-        /// @param[out] rightIndex
-        /// @param[out] leftEdgeRatio
-        /// @param[out] rightEdgeRatio
-        void ComputeMask(UInt segmentIndex,
-                         bool meshBoundOnly,
-                         UInt startLandBoundaryIndex,
-                         UInt endLandBoundaryIndex,
-                         UInt& leftIndex,
-                         UInt& rightIndex,
-                         double& leftEdgeRatio,
-                         double& rightEdgeRatio);
 
         /// @brief Mask all face close to a land boundary, starting from a seed of others and growing from there (maskcells)
         /// @param[in] landBoundaryIndex The land boundary polyline index
@@ -183,7 +164,8 @@ namespace meshkernel
 
         Mesh2D& m_mesh;                                           ///< A reference to mesh
         const Polygons m_polygons;                                ///< A copy of the polygons
-        LandBoundary m_landBoundary;                              ///< The nodes on the land boundary
+        meshkernel::LandBoundary m_landBoundary;                  ///< A copy of the land boundary
+        std::vector<UInt> m_meshNodesLandBoundarySegments;        ///< Mesh nodes to land boundary segments (lanseg_map)
         std::vector<Point> m_polygonNodesCache;                   ///< Array of points (e.g. points of a face)
         std::vector<std::pair<UInt, UInt>> m_validLandBoundaries; ///< Start and end indices of valid land boundaries (lanseg_startend)
         std::vector<UInt> m_nodeFaceIndices;                      ///< For each node, the indices of the faces including them

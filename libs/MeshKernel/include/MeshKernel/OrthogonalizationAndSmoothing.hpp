@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/SnappingMesh2DToLandBoundariesCalculator.hpp>
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/UndoActions/UndoAction.hpp>
 
@@ -55,7 +55,7 @@ namespace meshkernel
     ///
     /// -   An initialization step: The original mesh boundaries are saved. In
     ///     case the mesh needs to be snapped to the land boundaries, the indices of the land boundaries
-    ///     are mapped to the boundary mesh edges (`LandBoundaries::FindNearestMeshBoundary`).
+    ///     are mapped to the boundary mesh edges (`SnappingMesh2DToLandBoundariesCalculator::FindNearestMeshBoundary`).
     ///
     /// -   An outer loop, which itself is composed of the following parts:
     ///
@@ -94,8 +94,8 @@ namespace meshkernel
                                       std::unique_ptr<Smoother> smoother,
                                       std::unique_ptr<Orthogonalizer> orthogonalizer,
                                       std::unique_ptr<Polygons> polygon,
-                                      std::unique_ptr<LandBoundaries> landBoundaries,
-                                      LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
+                                      std::unique_ptr<SnappingMesh2DToLandBoundariesCalculator> landBoundaries,
+                                      SnappingMesh2DToLandBoundariesCalculator::ProjectionsOptions projectToLandBoundaryOption,
                                       const OrthogonalizationParameters& orthogonalizationParameters);
 
         /// @brief Initializes the object
@@ -140,13 +140,13 @@ namespace meshkernel
         /// @brief Compute nodes local coordinates (comp_local_coords)
         void ComputeCoordinates() const;
 
-        Mesh2D& m_mesh;                                                            ///< A reference to mesh
-        std::unique_ptr<Smoother> m_smoother;                                      ///< A pointer to the smoother
-        std::unique_ptr<Orthogonalizer> m_orthogonalizer;                          ///< A pointer to the orthogonalizer
-        std::unique_ptr<Polygons> m_polygons;                                      ///< The polygon pointer where to perform the orthogonalization
-        std::unique_ptr<LandBoundaries> m_landBoundaries;                          ///< The land boundaries pointer
-        LandBoundaries::ProjectToLandBoundaryOption m_projectToLandBoundaryOption; ///< The project to land boundary option
-        OrthogonalizationParameters m_orthogonalizationParameters;                 ///< The orthogonalization parameters
+        Mesh2D& m_mesh;                                            ///< A reference to mesh
+        std::unique_ptr<Smoother> m_smoother;                      ///< A pointer to the smoother
+        std::unique_ptr<Orthogonalizer> m_orthogonalizer;          ///< A pointer to the orthogonalizer
+        std::unique_ptr<Polygons> m_polygons;                      ///< The polygon pointer where to perform the orthogonalization
+        std::unique_ptr<SnappingMesh2DToLandBoundariesCalculator> m_snappingToLandBoundariesCalculator; ///< The land boundaries pointer
+        SnappingMesh2DToLandBoundariesCalculator::ProjectionsOptions m_projectOptions;       ///< The projection options
+        OrthogonalizationParameters m_orthogonalizationParameters; ///< The orthogonalization parameters
 
         std::vector<UInt> m_localCoordinatesIndices; ///< Used in sphericalAccurate projection (iloc)
         std::vector<Point> m_localCoordinates;       ///< Used in sphericalAccurate projection (xloc,yloc)

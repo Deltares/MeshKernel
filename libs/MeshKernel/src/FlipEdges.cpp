@@ -29,7 +29,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
-#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/SnappingMesh2DToLandBoundariesCalculator.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
@@ -38,16 +38,16 @@ using meshkernel::FlipEdges;
 using meshkernel::Mesh2D;
 
 FlipEdges::FlipEdges(Mesh2D& mesh,
-                     LandBoundaries& landBoundary,
+                     SnappingMesh2DToLandBoundariesCalculator& landBoundary,
                      bool triangulateFaces,
                      bool projectToLandBoundary) : m_mesh(mesh),
-                                                   m_landBoundaries(landBoundary),
+                                                   m_snappingToLandBoundariesCalculator(landBoundary),
                                                    m_triangulateFaces(triangulateFaces),
                                                    m_projectToLandBoundary(projectToLandBoundary)
 {
     if (m_projectToLandBoundary)
     {
-        m_landBoundaries.FindNearestMeshBoundary(LandBoundaries::ProjectToLandBoundaryOption::WholeMesh);
+        m_snappingToLandBoundariesCalculator.FindNearestMeshBoundary(SnappingMesh2DToLandBoundariesCalculator::ProjectionsOptions::OuterMeshBoundaryToLandBoundaries);
     }
 }
 
@@ -353,9 +353,9 @@ int FlipEdges::ComputeTopologyFunctional(UInt edge,
     auto nL = static_cast<int>(m_mesh.m_nodesNumEdges[nodeLeft]) - static_cast<int>(OptimalNumberOfConnectedNodes(nodeLeft));
     auto nR = static_cast<int>(m_mesh.m_nodesNumEdges[nodeRight]) - static_cast<int>(OptimalNumberOfConnectedNodes(nodeRight));
 
-    if (m_projectToLandBoundary && m_landBoundaries.GetNumNodes() > 0)
+    if (m_projectToLandBoundary && m_snappingToLandBoundariesCalculator.LandBoundary().GetNumNodes() > 0)
     {
-        if (m_landBoundaries.m_meshNodesLandBoundarySegments[firstNode] != constants::missing::uintValue && m_landBoundaries.m_meshNodesLandBoundarySegments[secondNode] != constants::missing::uintValue)
+        if (m_snappingToLandBoundariesCalculator.LandBoundarySegmentIndex(firstNode) != constants::missing::uintValue && m_snappingToLandBoundariesCalculator.LandBoundarySegmentIndex(secondNode) != constants::missing::uintValue)
         {
             // Edge is associated with a land boundary -> keep the edge
             return largeTopologyFunctionalValue;
@@ -390,7 +390,7 @@ int FlipEdges::ComputeTopologyFunctional(UInt edge,
 
 int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt secondNode) const
 {
-    if (m_landBoundaries.m_meshNodesLandBoundarySegments[nodeIndex] == constants::missing::uintValue)
+    if (m_snappingToLandBoundariesCalculator.LandBoundarySegmentIndex(nodeIndex) == constants::missing::uintValue)
     {
         return static_cast<int>(m_mesh.m_nodesNumEdges[nodeIndex]) - static_cast<int>(OptimalNumberOfConnectedNodes(nodeIndex));
     }
@@ -448,7 +448,7 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
     auto otherNode = OtherNodeOfEdge(m_mesh.GetEdge(edgeIndex), nodeIndex);
 
     UInt num = 1;
-    while (m_landBoundaries.m_meshNodesLandBoundarySegments[otherNode] == constants::missing::uintValue &&
+    while (m_snappingToLandBoundariesCalculator.LandBoundarySegmentIndex(otherNode) == constants::missing::uintValue &&
            !m_mesh.IsEdgeOnBoundary(edgeIndex) &&
            currentEdgeIndexInNodeEdges != edgeIndexConnectingSecondNode)
     {
@@ -459,7 +459,7 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
     }
 
     UInt firstEdgeInPathIndex = constants::missing::uintValue;
-    if (m_landBoundaries.m_meshNodesLandBoundarySegments[otherNode] != constants::missing::uintValue ||
+    if (m_snappingToLandBoundariesCalculator.LandBoundarySegmentIndex(otherNode) != constants::missing::uintValue ||
         m_mesh.IsEdgeOnBoundary(edgeIndex))
     {
         firstEdgeInPathIndex = edgeIndex;
@@ -473,7 +473,7 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
         edgeIndex = m_mesh.m_nodesEdges[nodeIndex][currentEdgeIndexInNodeEdges];
         otherNode = OtherNodeOfEdge(m_mesh.GetEdge(edgeIndex), nodeIndex);
         num = num + 1;
-        while (m_landBoundaries.m_meshNodesLandBoundarySegments[otherNode] == constants::missing::uintValue &&
+        while (m_snappingToLandBoundariesCalculator.LandBoundarySegmentIndex(otherNode) == constants::missing::uintValue &&
                !m_mesh.IsEdgeOnBoundary(edgeIndex) &&
                currentEdgeIndexInNodeEdges != edgeIndexConnectingFirstNode &&
                edgeIndex != firstEdgeInPathIndex)
@@ -488,7 +488,7 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
             }
         }
 
-        if ((m_landBoundaries.m_meshNodesLandBoundarySegments[otherNode] != constants::missing::uintValue ||
+        if ((m_snappingToLandBoundariesCalculator.LandBoundarySegmentIndex(otherNode) != constants::missing::uintValue ||
              m_mesh.IsEdgeOnBoundary(edgeIndex)) &&
             edgeIndex != firstEdgeInPathIndex)
         {
