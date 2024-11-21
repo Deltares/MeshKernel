@@ -50,14 +50,16 @@ namespace meshkernel
     class MeshTriangulation
     {
     public:
-        /// @brief Constructor
+        /// @brief Constructor with array of points
         template <class PointVector>
-        MeshTriangulation(const PointVector& nodes);
+        MeshTriangulation(const PointVector& nodes,
+                          const Projection projection);
 
-        /// @brief Constructor
+        /// @brief Constructor with separate arrays of x- and y-coordinates
         template <class VectorType>
         MeshTriangulation(const VectorType& xNodes,
-                          const VectorType& yNodes);
+                          const VectorType& yNodes,
+                          const Projection projection);
 
         /// @brief Get the projection type used in the triangulation
         Projection GetProjection() const;
@@ -119,10 +121,12 @@ inline meshkernel::Projection meshkernel::MeshTriangulation::GetProjection() con
 }
 
 template <class PointVector>
-meshkernel::MeshTriangulation::MeshTriangulation(const PointVector& nodes)
-    : m_nodes(nodes.begin(), nodes.end())
+meshkernel::MeshTriangulation::MeshTriangulation(const PointVector& nodes,
+                                                 const Projection projection)
+    : m_nodes(nodes.begin(), nodes.end()),
+      m_projection(projection)
 {
-    if (nodes.size() < constants::gemetric::numNodesInTriangle)
+    if (nodes.size() < constants::geometric::numNodesInTriangle)
     {
         throw ConstraintError("Not enough nodes for a single triangle: {}", nodes.size());
     }
@@ -145,10 +149,12 @@ meshkernel::MeshTriangulation::MeshTriangulation(const PointVector& nodes)
 
 template <class VectorType>
 inline meshkernel::MeshTriangulation::MeshTriangulation(const VectorType& xNodes,
-                                                        const VectorType& yNodes)
-    : m_nodes(xNodes.size())
+                                                        const VectorType& yNodes,
+                                                        const Projection projection)
+    : m_nodes(xNodes.size()),
+      m_projection(projection)
 {
-    if (xNodes.size() < constants::gemetric::numNodesInTriangle)
+    if (xNodes.size() < constants::geometric::numNodesInTriangle)
     {
         throw ConstraintError("Not enough nodes for a single triangle: {}", xNodes.size());
     }
