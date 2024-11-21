@@ -1152,6 +1152,18 @@ namespace meshkernelapi
                                                   const GeometryList& selectingPolygon,
                                                   const GeometryList& landBoundaries);
 
+        /// @brief Get the bathymetry data
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[out] sampleData  The mesh2d bathymetry data
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_bathymetry_data(int meshKernelId, GeometryList& sampleData);
+
+        /// @brief get the bathymetry data size
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[out] sampleDataSize   The mesh2d bathymetry data size
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_bathymetry_dimension(int meshKernelId, int& sampleDataSize);
+
         /// @brief Gets the closest mesh2d node coordinates to a point, searching within a radius.
         /// @param[in]  meshKernelId    Id of the grid state
         /// @param[in]  xCoordinateIn   The x coordinate of the node to insert
@@ -1606,6 +1618,12 @@ namespace meshkernelapi
         /// @param[in] mesh2d       The Mesh2D data
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_set(int meshKernelId, const Mesh2D& mesh2d);
+
+        /// @brief Sets the bathymetry data for the mesh
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] sampleData   The mesh2d bathymetry data
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_set_bathymetry_data(int meshKernelId, const GeometryList& sampleData);
 
         /// @brief Snaps a mesh to a land boundary.
         /// @param[in] meshKernelId The id of the mesh state

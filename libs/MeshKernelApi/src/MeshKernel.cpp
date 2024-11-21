@@ -105,6 +105,7 @@
 #include <Version/Version.hpp>
 
 #include <cstring>
+#include <span>
 #include <unordered_map>
 #include <vector>
 
@@ -476,6 +477,102 @@ namespace meshkernelapi
             }
 
             meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_set_bathymetry_data(int meshKernelId, const GeometryList& sampleData)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_mesh2d == nullptr)
+            {
+                throw meshkernel::MeshKernelError("The selected mesh not exist.");
+            }
+
+            std::span<const double> xNodes(sampleData.coordinates_x, sampleData.num_coordinates);
+            std::span<const double> yNodes(sampleData.coordinates_y, sampleData.num_coordinates);
+            meshKernelState[meshKernelId].m_sampleInterpolator = std::make_shared<meshkernel::SampleInterpolator>(xNodes, yNodes, meshKernelState[meshKernelId].m_projection);
+
+            std::span<const double> bathymetryData(sampleData.values, sampleData.num_coordinates);
+            meshKernelState[meshKernelId].m_sampleInterpolator->SetData("depth", bathymetryData);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_get_bathymetry_data(int meshKernelId, GeometryList& sampleData)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_mesh2d == nullptr)
+            {
+                throw meshkernel::MeshKernelError("The selected mesh2d does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_sampleInterpolator == nullptr)
+            {
+                throw meshkernel::MeshKernelError("The selected sample interpolator does not exist.");
+            }
+
+            if (sampleData.num_coordinates != static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumNodes()))
+            {
+                throw meshkernel::MeshKernelError("GeometryList has wrong dimensions {} /= {}",
+                                                  sampleData.num_coordinates,
+                                                  meshKernelState[meshKernelId].m_mesh2d->GetNumNodes());
+            }
+
+            std::span<double> interpolatedSampleData(sampleData.values, sampleData.num_coordinates);
+            meshKernelState[meshKernelId].m_sampleInterpolator->Interpolate("depth", meshKernelState[meshKernelId].m_mesh2d->Nodes(), interpolatedSampleData);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_get_bathymetry_dimension(int meshKernelId, int& sampleDataSize)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        sampleDataSize = -1;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_sampleInterpolator == nullptr)
+            {
+                throw meshkernel::MeshKernelError("The sample interpolator does not exist.");
+            }
+
+            if (!meshKernelState[meshKernelId].m_sampleInterpolator->Contains("depth"))
+            {
+                throw meshkernel::MeshKernelError("The sample interpolator does not contains depth values.");
+            }
+
+            sampleDataSize = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumNodes());
         }
         catch (...)
         {
