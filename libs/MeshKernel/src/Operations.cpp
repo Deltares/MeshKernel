@@ -1528,43 +1528,6 @@ namespace meshkernel
         return result;
     }
 
-    Point ComputeAverageCoordinate(const std::vector<Point>& points, const Projection& projection)
-    {
-        std::vector<Point> validPoints;
-        validPoints.reserve(points.size());
-        for (const auto& point : points)
-        {
-            if (!point.IsValid())
-            {
-                continue;
-            }
-            validPoints.emplace_back(point);
-        }
-
-        if (projection == Projection::sphericalAccurate)
-        {
-
-            Cartesian3DPoint averagePoint3D{0.0, 0.0, 0.0};
-            for (const auto& point : validPoints)
-            {
-                const Cartesian3DPoint point3D{SphericalToCartesian3D(point)};
-                averagePoint3D.x += point3D.x;
-                averagePoint3D.y += point3D.y;
-                averagePoint3D.z += point3D.z;
-            }
-            averagePoint3D.x = averagePoint3D.x / static_cast<double>(validPoints.size());
-            averagePoint3D.y = averagePoint3D.y / static_cast<double>(validPoints.size());
-            averagePoint3D.z = averagePoint3D.z / static_cast<double>(validPoints.size());
-
-            return Cartesian3DToSpherical(averagePoint3D, points[0].x);
-        }
-
-        auto result = std::accumulate(validPoints.begin(), validPoints.end(), Point{0.0, 0.0});
-        result.x = result.x / static_cast<double>(validPoints.size());
-        result.y = result.y / static_cast<double>(validPoints.size());
-        return result;
-    }
-
     std::tuple<Point, double, bool> OrthogonalProjectionOnSegment(Point const& firstNode,
                                                                   Point const& secondNode,
                                                                   Point const& pointToProject)
