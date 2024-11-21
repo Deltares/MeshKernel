@@ -3,7 +3,7 @@
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/FlipEdges.hpp>
-#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/SnappingToLandBoundariesCalculator.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Operations.hpp>
@@ -33,7 +33,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
                             {3, 2},
                             {3, 1}};
 
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectionsOptions::DoNotProject;
+    const auto projectToLandBoundaryOption = SnappingToLandBoundariesCalculator::ProjectionsOptions::DoNotProject;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.inner_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -49,7 +49,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
     auto polygon = std::make_unique<Polygons>();
 
     std::vector<Point> landBoundary{};
-    auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, mesh, *polygon);
+    auto landboundaries = std::make_unique<SnappingToLandBoundariesCalculator>(landBoundary, mesh, *polygon);
 
     OrthogonalizationAndSmoothing orthogonalization(mesh,
                                                     std::move(smoother),
@@ -82,7 +82,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
 
     // now build node-edge mapping
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/SmallTriangularGrid_net.nc");
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectionsOptions::DoNotProject;
+    const auto projectToLandBoundaryOption = SnappingToLandBoundariesCalculator::ProjectionsOptions::DoNotProject;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -96,7 +96,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
     auto polygon = std::make_unique<Polygons>();
 
     std::vector<Point> landBoundary;
-    auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
+    auto landboundaries = std::make_unique<SnappingToLandBoundariesCalculator>(landBoundary, *mesh, *polygon);
 
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
                                                     std::move(smoother),
@@ -140,7 +140,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile
     // now build node-edge mapping
     auto mesh = MakeSmallSizeTriangularMeshForTestingAsNcFile();
 
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectionsOptions::DoNotProject;
+    const auto projectToLandBoundaryOption = SnappingToLandBoundariesCalculator::ProjectionsOptions::DoNotProject;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -154,7 +154,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile
     auto polygon = std::make_unique<Polygons>();
 
     std::vector<Point> landBoundary;
-    auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
+    auto landboundaries = std::make_unique<SnappingToLandBoundariesCalculator>(landBoundary, *mesh, *polygon);
 
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
                                                     std::move(smoother),
@@ -200,7 +200,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
     // The original mesh nodes
     const std::vector<meshkernel::Point> meshNodes(mesh->Nodes());
 
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectionsOptions::DoNotProject;
+    const auto projectToLandBoundaryOption = SnappingToLandBoundariesCalculator::ProjectionsOptions::DoNotProject;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -224,7 +224,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
 
     std::vector<Point> landBoundary;
     auto polygon = std::make_unique<Polygons>(nodes, Projection::cartesian);
-    auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
+    auto landboundaries = std::make_unique<SnappingToLandBoundariesCalculator>(landBoundary, *mesh, *polygon);
 
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
                                                     std::move(smoother),
@@ -278,7 +278,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithUnd
     // now build node-edge mapping
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
 
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectionsOptions::DoNotProject;
+    const auto projectToLandBoundaryOption = SnappingToLandBoundariesCalculator::ProjectionsOptions::DoNotProject;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -291,7 +291,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithUnd
     auto smoother = std::make_unique<Smoother>(*mesh);
     auto polygon = std::make_unique<Polygons>();
     std::vector<Point> landBoundary;
-    auto landBoundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
+    auto landBoundaries = std::make_unique<SnappingToLandBoundariesCalculator>(landBoundary, *mesh, *polygon);
 
     const std::vector<meshkernel::Point> meshNodes = mesh->Nodes();
 
@@ -346,7 +346,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
 {
     auto mesh = MakeRectangularMeshForTesting(3, 3, 1.0, Projection::cartesian);
 
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectionsOptions::DoNotProject;
+    const auto projectToLandBoundaryOption = SnappingToLandBoundariesCalculator::ProjectionsOptions::DoNotProject;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.inner_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -357,7 +357,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
 
     auto polygon = std::make_unique<Polygons>();
     std::vector<Point> landBoundary{};
-    auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
+    auto landboundaries = std::make_unique<SnappingToLandBoundariesCalculator>(landBoundary, *mesh, *polygon);
 
     auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
     auto smoother = std::make_unique<Smoother>(*mesh);
@@ -393,7 +393,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
                                     {missing::doubleValue, missing::doubleValue}};
 
     // snap to land boundaries
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectionsOptions::OuterMeshBoundaryToLandBoundaries;
+    const auto projectToLandBoundaryOption = SnappingToLandBoundariesCalculator::ProjectionsOptions::OuterMeshBoundaryToLandBoundaries;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -404,7 +404,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
 
     // no enclosing polygon
     auto polygon = std::make_unique<Polygons>();
-    auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
+    auto landboundaries = std::make_unique<SnappingToLandBoundariesCalculator>(landBoundary, *mesh, *polygon);
 
     auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
     auto smoother = std::make_unique<Smoother>(*mesh);
@@ -449,7 +449,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
     // 1 Setup
     auto mesh = MakeRectangularMeshForTesting(4, 4, 0.003, Projection::spherical, {41.1, 41.1});
 
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectionsOptions::DoNotProject;
+    const auto projectToLandBoundaryOption = SnappingToLandBoundariesCalculator::ProjectionsOptions::DoNotProject;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -463,7 +463,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
 
     auto polygon = std::make_unique<Polygons>();
     std::vector<Point> landBoundary{};
-    auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
+    auto landboundaries = std::make_unique<SnappingToLandBoundariesCalculator>(landBoundary, *mesh, *polygon);
 
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
                                                     std::move(smoother),
@@ -537,7 +537,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
 
     auto mesh = std::make_shared<Mesh2D>(edges, nodes, Projection::spherical);
 
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectionsOptions::DoNotProject;
+    const auto projectToLandBoundaryOption = SnappingToLandBoundariesCalculator::ProjectionsOptions::DoNotProject;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -549,7 +549,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
     // no enclosing polygon
     auto polygon = std::make_unique<Polygons>();
     std::vector<Point> landBoundary{};
-    auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
+    auto landboundaries = std::make_unique<SnappingToLandBoundariesCalculator>(landBoundary, *mesh, *polygon);
 
     auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
     auto smoother = std::make_unique<Smoother>(*mesh);
@@ -598,7 +598,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
 
     auto mesh = std::make_shared<Mesh2D>(edges, nodes, Projection::spherical);
 
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectionsOptions::DoNotProject;
+    const auto projectToLandBoundaryOption = SnappingToLandBoundariesCalculator::ProjectionsOptions::DoNotProject;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -610,7 +610,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
     // no enclosing polygon
     auto polygon = std::make_unique<Polygons>();
     std::vector<Point> landBoundary{};
-    auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
+    auto landboundaries = std::make_unique<SnappingToLandBoundariesCalculator>(landBoundary, *mesh, *polygon);
 
     auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
     auto smoother = std::make_unique<Smoother>(*mesh);
@@ -692,7 +692,7 @@ TEST(OrthogonalizationAndSmoothing, RefineUndoThenOrthogonalise)
     auto refinementUndoAction = meshRefinement.Compute();
     refinementUndoAction->Restore();
 
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectionsOptions::DoNotProject;
+    const auto projectToLandBoundaryOption = SnappingToLandBoundariesCalculator::ProjectionsOptions::DoNotProject;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.inner_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;
@@ -706,7 +706,7 @@ TEST(OrthogonalizationAndSmoothing, RefineUndoThenOrthogonalise)
     auto polygon = std::make_unique<Polygons>(polygonNodes, Projection::cartesian);
     auto orthogonalisationPolygon = std::make_unique<Polygons>(polygonNodes, Projection::cartesian);
     std::vector<Point> landBoundary{};
-    auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
+    auto landboundaries = std::make_unique<SnappingToLandBoundariesCalculator>(landBoundary, *mesh, *polygon);
 
     auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
     auto smoother = std::make_unique<Smoother>(*mesh);
@@ -774,11 +774,11 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
     [[maybe_unused]] auto nodeRemovaUndo = mesh.DeleteNode(nodeId);
     mesh.Administrate();
 
-    std::unique_ptr<LandBoundaries> boundary = std::make_unique<LandBoundaries>(refinedPolygonPoints, mesh, *refinedPolygon);
+    std::unique_ptr<SnappingToLandBoundariesCalculator> boundary = std::make_unique<SnappingToLandBoundariesCalculator>(refinedPolygonPoints, mesh, *refinedPolygon);
 
     FlipEdges flipEdges1(mesh, *boundary, true, false);
 
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectionsOptions::DoNotProject;
+    const auto projectToLandBoundaryOption = SnappingToLandBoundariesCalculator::ProjectionsOptions::DoNotProject;
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 2;
     orthogonalizationParameters.boundary_iterations = 25;

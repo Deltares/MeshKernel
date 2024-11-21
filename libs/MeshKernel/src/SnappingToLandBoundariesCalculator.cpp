@@ -28,16 +28,16 @@
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
-#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/SnappingToLandBoundariesCalculator.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
 
-using meshkernel::LandBoundaries;
+using meshkernel::SnappingToLandBoundariesCalculator;
 using meshkernel::Mesh2D;
 
-LandBoundaries::LandBoundaries(const std::vector<Point>& boundaryNodes,
+SnappingToLandBoundariesCalculator::SnappingToLandBoundariesCalculator(const std::vector<Point>& boundaryNodes,
                                Mesh2D& mesh,
                                const Polygons& polygons) : m_mesh(mesh),
                                                            m_polygons(polygons),
@@ -49,7 +49,7 @@ LandBoundaries::LandBoundaries(const std::vector<Point>& boundaryNodes,
     }
 }
 
-void LandBoundaries::Administrate()
+void SnappingToLandBoundariesCalculator::Administrate()
 {
     if (m_landBoundary.IsEmpty())
     {
@@ -98,7 +98,7 @@ void LandBoundaries::Administrate()
     }
 }
 
-void LandBoundaries::FindNearestMeshBoundary(ProjectionsOptions projectionOption)
+void SnappingToLandBoundariesCalculator::FindNearestMeshBoundary(ProjectionsOptions projectionOption)
 {
     if (m_landBoundary.IsEmpty())
     {
@@ -150,7 +150,7 @@ void LandBoundaries::FindNearestMeshBoundary(ProjectionsOptions projectionOption
     }
 }
 
-void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex, bool initialize, std::vector<UInt>& nodes, UInt numNodes)
+void SnappingToLandBoundariesCalculator::AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex, bool initialize, std::vector<UInt>& nodes, UInt numNodes)
 {
     if (m_landBoundary.IsEmpty())
     {
@@ -163,7 +163,7 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex, bool 
     if (initialize)
     {
         if (!m_mesh.IsEdgeOnBoundary(edgeIndex) || m_mesh.GetEdge(edgeIndex).first == constants::missing::uintValue || m_mesh.GetEdge(edgeIndex).second == constants::missing::uintValue)
-            throw std::invalid_argument("LandBoundaries::AssignLandBoundaryPolylineToMeshNodes: Cannot not assign segment to mesh nodes.");
+            throw std::invalid_argument("SnappingToLandBoundariesCalculator::AssignLandBoundaryPolylineToMeshNodes: Cannot not assign segment to mesh nodes.");
 
         const auto firstMeshNode = m_mesh.GetEdge(edgeIndex).first;
         const auto secondMeshNode = m_mesh.GetEdge(edgeIndex).second;
@@ -289,7 +289,7 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex, bool 
     }
 }
 
-void LandBoundaries::AddLandBoundary(const std::vector<UInt>& nodesLoc, UInt numNodesLoc, UInt nodeIndex)
+void SnappingToLandBoundariesCalculator::AddLandBoundary(const std::vector<UInt>& nodesLoc, UInt numNodesLoc, UInt nodeIndex)
 {
     if (m_landBoundary.IsEmpty())
     {
@@ -302,7 +302,7 @@ void LandBoundaries::AddLandBoundary(const std::vector<UInt>& nodesLoc, UInt num
     if (startSegmentIndex == constants::missing::uintValue || startSegmentIndex >= m_validLandBoundaries.size() ||
         endSegmentIndex == constants::missing::uintValue || endSegmentIndex >= m_validLandBoundaries.size())
     {
-        throw std::invalid_argument("LandBoundaries::AddLandBoundary: Invalid segment index.");
+        throw std::invalid_argument("SnappingToLandBoundariesCalculator::AddLandBoundary: Invalid segment index.");
     }
 
     // find start/end
@@ -331,7 +331,7 @@ void LandBoundaries::AddLandBoundary(const std::vector<UInt>& nodesLoc, UInt num
     m_validLandBoundaries.emplace_back(std::make_pair<UInt, UInt>(static_cast<UInt>(m_landBoundary.GetNumNodes()) - 3, static_cast<UInt>(m_landBoundary.GetNumNodes()) - 2));
 }
 
-std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::MakePath(UInt landBoundaryIndex)
+std::tuple<meshkernel::UInt, meshkernel::UInt> SnappingToLandBoundariesCalculator::MakePath(UInt landBoundaryIndex)
 {
     if (m_landBoundary.IsEmpty())
     {
@@ -341,7 +341,7 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::MakePath(UInt lan
     const auto& [startIndex, endIndex] = m_validLandBoundaries[landBoundaryIndex];
     if (startIndex >= m_landBoundary.GetNumNodes() || startIndex >= endIndex)
     {
-        throw std::invalid_argument("LandBoundaries::MakePath: Invalid boundary index.");
+        throw std::invalid_argument("SnappingToLandBoundariesCalculator::MakePath: Invalid boundary index.");
     }
 
     // Fractional location of the projected outer nodes(min and max) on the land boundary segment
@@ -460,7 +460,7 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::MakePath(UInt lan
     return {numNodesInPath, numRejectedNodesInPath};
 }
 
-void LandBoundaries::ComputeMeshNodeMask(UInt landBoundaryIndex)
+void SnappingToLandBoundariesCalculator::ComputeMeshNodeMask(UInt landBoundaryIndex)
 {
     if (m_landBoundary.IsEmpty())
     {
@@ -536,7 +536,7 @@ void LandBoundaries::ComputeMeshNodeMask(UInt landBoundaryIndex)
     }
 }
 
-void LandBoundaries::MaskMeshFaceMask(UInt landBoundaryIndex, const std::vector<UInt>& initialFaces)
+void SnappingToLandBoundariesCalculator::MaskMeshFaceMask(UInt landBoundaryIndex, const std::vector<UInt>& initialFaces)
 {
     if (m_landBoundary.IsEmpty())
     {
@@ -642,7 +642,7 @@ void LandBoundaries::MaskMeshFaceMask(UInt landBoundaryIndex, const std::vector<
     }
 }
 
-meshkernel::UInt LandBoundaries::IsMeshEdgeCloseToLandBoundaries(UInt landBoundaryIndex, UInt edge)
+meshkernel::UInt SnappingToLandBoundariesCalculator::IsMeshEdgeCloseToLandBoundaries(UInt landBoundaryIndex, UInt edge)
 {
     UInt landBoundaryNode = constants::missing::uintValue;
     if (m_landBoundary.IsEmpty())
@@ -732,7 +732,7 @@ meshkernel::UInt LandBoundaries::IsMeshEdgeCloseToLandBoundaries(UInt landBounda
     return landBoundaryNode;
 }
 
-std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::FindStartEndMeshNodesDijkstraAlgorithm(UInt landBoundaryIndex)
+std::tuple<meshkernel::UInt, meshkernel::UInt> SnappingToLandBoundariesCalculator::FindStartEndMeshNodesDijkstraAlgorithm(UInt landBoundaryIndex)
 {
     if (m_landBoundary.IsEmpty())
     {
@@ -793,7 +793,7 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::FindStartEndMeshN
 
     if (startEdge == constants::missing::uintValue || endEdge == constants::missing::uintValue)
     {
-        throw std::invalid_argument("LandBoundaries::FindStartEndMeshNodesDijkstraAlgorithm: Cannot find startMeshNode or endMeshNode.");
+        throw std::invalid_argument("SnappingToLandBoundariesCalculator::FindStartEndMeshNodesDijkstraAlgorithm: Cannot find startMeshNode or endMeshNode.");
     }
 
     const auto startMeshNode = FindStartEndMeshNodesFromEdges(startEdge, startPoint);
@@ -802,7 +802,7 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::FindStartEndMeshN
     return {startMeshNode, endMeshNode};
 }
 
-meshkernel::UInt LandBoundaries::FindStartEndMeshNodesFromEdges(UInt edge, Point point) const
+meshkernel::UInt SnappingToLandBoundariesCalculator::FindStartEndMeshNodesFromEdges(UInt edge, Point point) const
 {
     if (m_landBoundary.IsEmpty())
     {
@@ -821,7 +821,7 @@ meshkernel::UInt LandBoundaries::FindStartEndMeshNodesFromEdges(UInt edge, Point
     return secondMeshNodeIndex;
 }
 
-std::vector<meshkernel::UInt> LandBoundaries::ShortestPath(UInt landBoundaryIndex,
+std::vector<meshkernel::UInt> SnappingToLandBoundariesCalculator::ShortestPath(UInt landBoundaryIndex,
                                                            UInt startMeshNode)
 {
     std::vector<UInt> connectedNodeEdges;
@@ -939,7 +939,7 @@ std::vector<meshkernel::UInt> LandBoundaries::ShortestPath(UInt landBoundaryInde
     return connectedNodeEdges;
 }
 
-std::tuple<double, meshkernel::Point, meshkernel::UInt, double> LandBoundaries::NearestLandBoundarySegment(UInt segmentIndex, const Point& node) const
+std::tuple<double, meshkernel::Point, meshkernel::UInt, double> SnappingToLandBoundariesCalculator::NearestLandBoundarySegment(UInt segmentIndex, const Point& node) const
 {
     double minimumDistance = std::numeric_limits<double>::max();
     Point pointOnLandBoundary = node;
@@ -975,7 +975,7 @@ std::tuple<double, meshkernel::Point, meshkernel::UInt, double> LandBoundaries::
     return {minimumDistance, pointOnLandBoundary, nearestLandBoundaryNodeIndex, edgeRatio};
 }
 
-std::unique_ptr<meshkernel::UndoAction> LandBoundaries::SnapMeshToLandBoundaries() const
+std::unique_ptr<meshkernel::UndoAction> SnappingToLandBoundariesCalculator::SnapMeshToLandBoundaries() const
 {
     if (m_landBoundary.IsEmpty() || m_meshNodesLandBoundarySegments.empty())
     {

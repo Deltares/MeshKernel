@@ -62,7 +62,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/FlipEdges.hpp>
-#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/SnappingToLandBoundariesCalculator.hpp>
 #include <MeshKernel/LandBoundary.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Mesh1D.hpp>
@@ -504,8 +504,8 @@ namespace meshkernelapi
 
             // Construct all dependencies
             const auto polygon = meshkernel::Polygons(polygonNodes, meshKernelState[meshKernelId].m_projection);
-            auto landBoundary = meshkernel::LandBoundaries(landBoundariesPoints, *meshKernelState[meshKernelId].m_mesh2d, polygon);
-            landBoundary.FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectionsOptions::InnerAndOuterMeshBoundariesToLandboundaries);
+            auto landBoundary = meshkernel::SnappingToLandBoundariesCalculator(landBoundariesPoints, *meshKernelState[meshKernelId].m_mesh2d, polygon);
+            landBoundary.FindNearestMeshBoundary(meshkernel::SnappingToLandBoundariesCalculator::ProjectionsOptions::InnerAndOuterMeshBoundariesToLandboundaries);
 
             // Execute algorithm
             meshKernelUndoStack.Add(landBoundary.SnapMeshToLandBoundaries());
@@ -1267,14 +1267,14 @@ namespace meshkernelapi
             auto smoother = std::make_unique<meshkernel::Smoother>(*meshKernelState[meshKernelId].m_mesh2d);
             auto orthogonalizer = std::make_unique<meshkernel::Orthogonalizer>(*meshKernelState[meshKernelId].m_mesh2d);
             auto polygon = std::make_unique<meshkernel::Polygons>(polygonNodes, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            auto landBoundary = std::make_unique<meshkernel::LandBoundaries>(landBoundariesPoints, *meshKernelState[meshKernelId].m_mesh2d, *polygon);
+            auto landBoundary = std::make_unique<meshkernel::SnappingToLandBoundariesCalculator>(landBoundariesPoints, *meshKernelState[meshKernelId].m_mesh2d, *polygon);
 
             meshkernel::OrthogonalizationAndSmoothing ortogonalization(*meshKernelState[meshKernelId].m_mesh2d,
                                                                        std::move(smoother),
                                                                        std::move(orthogonalizer),
                                                                        std::move(polygon),
                                                                        std::move(landBoundary),
-                                                                       static_cast<meshkernel::LandBoundaries::ProjectionsOptions>(projectToLandBoundaryOption),
+                                                                       static_cast<meshkernel::SnappingToLandBoundariesCalculator::ProjectionsOptions>(projectToLandBoundaryOption),
                                                                        orthogonalizationParameters);
             meshKernelUndoStack.Add(ortogonalization.Initialize(), meshKernelId);
             ortogonalization.Compute();
@@ -1315,14 +1315,14 @@ namespace meshkernelapi
             auto smoother = std::make_unique<meshkernel::Smoother>(*meshKernelState[meshKernelId].m_mesh2d);
             auto orthogonalizer = std::make_unique<meshkernel::Orthogonalizer>(*meshKernelState[meshKernelId].m_mesh2d);
             auto polygon = std::make_unique<meshkernel::Polygons>(polygonNodesVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            auto landBoundary = std::make_unique<meshkernel::LandBoundaries>(landBoundariesNodeVector, *meshKernelState[meshKernelId].m_mesh2d, *polygon);
+            auto landBoundary = std::make_unique<meshkernel::SnappingToLandBoundariesCalculator>(landBoundariesNodeVector, *meshKernelState[meshKernelId].m_mesh2d, *polygon);
 
             meshKernelState[meshKernelId].m_meshOrthogonalization = std::make_unique<meshkernel::OrthogonalizationAndSmoothing>(*meshKernelState[meshKernelId].m_mesh2d,
                                                                                                                                 std::move(smoother),
                                                                                                                                 std::move(orthogonalizer),
                                                                                                                                 std::move(polygon),
                                                                                                                                 std::move(landBoundary),
-                                                                                                                                static_cast<meshkernel::LandBoundaries::ProjectionsOptions>(projectToLandBoundaryOption),
+                                                                                                                                static_cast<meshkernel::SnappingToLandBoundariesCalculator::ProjectionsOptions>(projectToLandBoundaryOption),
                                                                                                                                 orthogonalizationParameters);
             meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_meshOrthogonalization->Initialize(), meshKernelId);
         }
@@ -3416,7 +3416,7 @@ namespace meshkernelapi
 
             // construct all dependencies
             auto const polygon = meshkernel::Polygons(polygonNodesVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            auto landBoundary = meshkernel::LandBoundaries(landBoundariesNodeVector, *meshKernelState[meshKernelId].m_mesh2d, polygon);
+            auto landBoundary = meshkernel::SnappingToLandBoundariesCalculator(landBoundariesNodeVector, *meshKernelState[meshKernelId].m_mesh2d, polygon);
             bool const triangulateFaces = isTriangulationRequired == 0 ? false : true;
             bool const projectToLandBoundary = projectToLandBoundaryRequired == 0 ? false : true;
 

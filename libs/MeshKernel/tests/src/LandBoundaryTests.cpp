@@ -2,7 +2,7 @@
 
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/SnappingToLandBoundariesCalculator.hpp>
 #include <MeshKernel/LandBoundary.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
@@ -24,20 +24,20 @@ TEST(LandBoundaries, OneLandBoundary)
     auto polygons = meshkernel::Polygons();
 
     // Execute
-    auto landboundaries = meshkernel::LandBoundaries(landBoundaryPolygon, *mesh, polygons);
-    landboundaries.FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectionsOptions ::OuterMeshBoundaryToLandBoundaries);
+    auto landboundaries = meshkernel::SnappingToLandBoundariesCalculator(landBoundaryPolygon, *mesh, polygons);
+    landboundaries.FindNearestMeshBoundary(meshkernel::SnappingToLandBoundariesCalculator::ProjectionsOptions ::OuterMeshBoundaryToLandBoundaries);
 
     // Checks
-    EXPECT_EQ(1, landboundaries.LandBoundarySegment(0));
-    EXPECT_EQ(0, landboundaries.LandBoundarySegment(1));
-    EXPECT_EQ(2, landboundaries.LandBoundarySegment(2));
-    EXPECT_EQ(2, landboundaries.LandBoundarySegment(3));
-    EXPECT_EQ(3, landboundaries.LandBoundarySegment(4));
-    EXPECT_EQ(1, landboundaries.LandBoundarySegment(5));
-    EXPECT_EQ(1, landboundaries.LandBoundarySegment(6));
-    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegment(7));
-    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegment(8));
-    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegment(9));
+    EXPECT_EQ(1, landboundaries.LandBoundarySegmentIndex(0));
+    EXPECT_EQ(0, landboundaries.LandBoundarySegmentIndex(1));
+    EXPECT_EQ(2, landboundaries.LandBoundarySegmentIndex(2));
+    EXPECT_EQ(2, landboundaries.LandBoundarySegmentIndex(3));
+    EXPECT_EQ(3, landboundaries.LandBoundarySegmentIndex(4));
+    EXPECT_EQ(1, landboundaries.LandBoundarySegmentIndex(5));
+    EXPECT_EQ(1, landboundaries.LandBoundarySegmentIndex(6));
+    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegmentIndex(7));
+    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegmentIndex(8));
+    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegmentIndex(9));
 }
 
 TEST(LandBoundaries, TwoLandBoundaries)
@@ -61,20 +61,20 @@ TEST(LandBoundaries, TwoLandBoundaries)
     auto polygons = meshkernel::Polygons();
 
     // Execute
-    auto landboundaries = meshkernel::LandBoundaries(landBoundaryPolygon, *mesh, polygons);
-    landboundaries.FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectionsOptions::OuterMeshBoundaryToLandBoundaries);
+    auto landboundaries = meshkernel::SnappingToLandBoundariesCalculator(landBoundaryPolygon, *mesh, polygons);
+    landboundaries.FindNearestMeshBoundary(meshkernel::SnappingToLandBoundariesCalculator::ProjectionsOptions::OuterMeshBoundaryToLandBoundaries);
 
     // Checks
-    EXPECT_EQ(2, landboundaries.LandBoundarySegment(0));
-    EXPECT_EQ(1, landboundaries.LandBoundarySegment(1));
-    EXPECT_EQ(1, landboundaries.LandBoundarySegment(2));
-    EXPECT_EQ(3, landboundaries.LandBoundarySegment(3));
-    EXPECT_EQ(3, landboundaries.LandBoundarySegment(4));
-    EXPECT_EQ(2, landboundaries.LandBoundarySegment(5));
-    EXPECT_EQ(2, landboundaries.LandBoundarySegment(6));
-    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegment(7));
-    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegment(8));
-    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegment(9));
+    EXPECT_EQ(2, landboundaries.LandBoundarySegmentIndex(0));
+    EXPECT_EQ(1, landboundaries.LandBoundarySegmentIndex(1));
+    EXPECT_EQ(1, landboundaries.LandBoundarySegmentIndex(2));
+    EXPECT_EQ(3, landboundaries.LandBoundarySegmentIndex(3));
+    EXPECT_EQ(3, landboundaries.LandBoundarySegmentIndex(4));
+    EXPECT_EQ(2, landboundaries.LandBoundarySegmentIndex(5));
+    EXPECT_EQ(2, landboundaries.LandBoundarySegmentIndex(6));
+    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegmentIndex(7));
+    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegmentIndex(8));
+    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegmentIndex(9));
 }
 
 TEST(LandBoundaries, OneCrossingLandBoundary)
@@ -93,20 +93,20 @@ TEST(LandBoundaries, OneCrossingLandBoundary)
     auto polygons = meshkernel::Polygons();
 
     // Execute
-    auto landboundaries = meshkernel::LandBoundaries(landBoundaryPolygon, *mesh, polygons);
-    landboundaries.FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectionsOptions ::OuterMeshBoundaryToLandBoundaries);
+    auto landboundaries = meshkernel::SnappingToLandBoundariesCalculator(landBoundaryPolygon, *mesh, polygons);
+    landboundaries.FindNearestMeshBoundary(meshkernel::SnappingToLandBoundariesCalculator::ProjectionsOptions ::OuterMeshBoundaryToLandBoundaries);
 
     // Checks
-    EXPECT_EQ(0, landboundaries.LandBoundarySegment(0));
-    EXPECT_EQ(0, landboundaries.LandBoundarySegment(1));
-    EXPECT_EQ(2, landboundaries.LandBoundarySegment(2));
-    EXPECT_EQ(2, landboundaries.LandBoundarySegment(3));
-    EXPECT_EQ(1, landboundaries.LandBoundarySegment(4));
-    EXPECT_EQ(1, landboundaries.LandBoundarySegment(5));
-    EXPECT_EQ(1, landboundaries.LandBoundarySegment(6));
-    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegment(7));
-    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegment(8));
-    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegment(9));
+    EXPECT_EQ(0, landboundaries.LandBoundarySegmentIndex(0));
+    EXPECT_EQ(0, landboundaries.LandBoundarySegmentIndex(1));
+    EXPECT_EQ(2, landboundaries.LandBoundarySegmentIndex(2));
+    EXPECT_EQ(2, landboundaries.LandBoundarySegmentIndex(3));
+    EXPECT_EQ(1, landboundaries.LandBoundarySegmentIndex(4));
+    EXPECT_EQ(1, landboundaries.LandBoundarySegmentIndex(5));
+    EXPECT_EQ(1, landboundaries.LandBoundarySegmentIndex(6));
+    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegmentIndex(7));
+    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegmentIndex(8));
+    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegmentIndex(9));
 }
 
 TEST(LandBoundaries, TwoCrossingLandBoundary)
@@ -129,20 +129,20 @@ TEST(LandBoundaries, TwoCrossingLandBoundary)
     auto polygons = meshkernel::Polygons();
 
     // Execute
-    auto landboundaries = meshkernel::LandBoundaries(landBoundaryPolygon, *mesh, polygons);
-    landboundaries.FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectionsOptions ::OuterMeshBoundaryToLandBoundaries);
+    auto landboundaries = meshkernel::SnappingToLandBoundariesCalculator(landBoundaryPolygon, *mesh, polygons);
+    landboundaries.FindNearestMeshBoundary(meshkernel::SnappingToLandBoundariesCalculator::ProjectionsOptions ::OuterMeshBoundaryToLandBoundaries);
 
     // Checks
-    EXPECT_EQ(2, landboundaries.LandBoundarySegment(0));
-    EXPECT_EQ(0, landboundaries.LandBoundarySegment(1));
-    EXPECT_EQ(1, landboundaries.LandBoundarySegment(2));
-    EXPECT_EQ(3, landboundaries.LandBoundarySegment(3));
-    EXPECT_EQ(3, landboundaries.LandBoundarySegment(4));
-    EXPECT_EQ(2, landboundaries.LandBoundarySegment(5));
-    EXPECT_EQ(2, landboundaries.LandBoundarySegment(6));
-    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegment(7));
-    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegment(8));
-    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegment(9));
+    EXPECT_EQ(2, landboundaries.LandBoundarySegmentIndex(0));
+    EXPECT_EQ(0, landboundaries.LandBoundarySegmentIndex(1));
+    EXPECT_EQ(1, landboundaries.LandBoundarySegmentIndex(2));
+    EXPECT_EQ(3, landboundaries.LandBoundarySegmentIndex(3));
+    EXPECT_EQ(3, landboundaries.LandBoundarySegmentIndex(4));
+    EXPECT_EQ(2, landboundaries.LandBoundarySegmentIndex(5));
+    EXPECT_EQ(2, landboundaries.LandBoundarySegmentIndex(6));
+    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegmentIndex(7));
+    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegmentIndex(8));
+    EXPECT_EQ(meshkernel::constants::missing::uintValue, landboundaries.LandBoundarySegmentIndex(9));
 }
 
 TEST(LandBoundaries, LandBoundaryConstructorTestSinglePolyline)

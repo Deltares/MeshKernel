@@ -45,7 +45,7 @@ namespace meshkernel
     /// The main responsibility of this class is to store the land boundary polygons,
     /// categorize them based on their proximity to a mesh
     /// and provide the functionality to assign each mesh node to the appropriate land boundary polyline.
-    class LandBoundaries
+    class SnappingToLandBoundariesCalculator
     {
 
     public:
@@ -59,15 +59,15 @@ namespace meshkernel
         };
 
         /// @brief Default constructor
-        LandBoundaries() = default;
+        SnappingToLandBoundariesCalculator() = default;
 
         /// @brief Default constructor
         /// @param[in] landBoundary A vector of points defining the land boundary.
         /// @param[in] mesh         The current 2d mesh.
         /// @param[in] polygons     A polygon for selecting part of the land boundaries.
-        LandBoundaries(const std::vector<Point>& landBoundary,
-                       Mesh2D& mesh,
-                       const Polygons& polygons);
+        SnappingToLandBoundariesCalculator(const std::vector<Point>& landBoundary,
+                                           Mesh2D& mesh,
+                                           const Polygons& polygons);
 
         /// @brief The portion of the boundary segments close enough to the mesh boundary are flagged (admin_landboundary_segments)
         ///
@@ -90,7 +90,7 @@ namespace meshkernel
 
         /// @brief Gets the land boundary segment index for each mesh node
         /// @param[in] node The mesh node index
-        const UInt& LandBoundarySegment(UInt node) const { return m_meshNodesLandBoundarySegments[node]; }
+        const UInt& LandBoundarySegmentIndex(UInt node) const { return m_meshNodesLandBoundarySegments[node]; }
 
     private:
         /// @brief Build an additional boundary for not assigned nodes (connect_boundary_paths)
