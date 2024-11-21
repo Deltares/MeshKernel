@@ -22,6 +22,7 @@ set(SRC_LIST
     ${SRC_DIR}/Mesh2DCasulliRefinmentTests.cpp
     ${SRC_DIR}/Mesh2DRefinmentTests.cpp
     ${SRC_DIR}/Mesh2DTests.cpp
+    ${SRC_DIR}/MeshPropertyTests.cpp
     ${SRC_DIR}/PolygonTests.cpp
     ${SRC_DIR}/SmoothnessOrthogonalisationTests.cpp
     ${SRC_DIR}/TestMeshGeneration.cpp
