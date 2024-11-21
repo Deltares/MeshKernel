@@ -66,8 +66,8 @@ namespace meshkernel
         /// @param[in] mesh         The current 2d mesh.
         /// @param[in] polygons     A polygon for selecting part of the land boundaries.
         SnappingMesh2DToLandBoundariesCalculator(const std::vector<Point>& landBoundary,
-                                           Mesh2D& mesh,
-                                           const Polygons& polygons);
+                                                 Mesh2D& mesh,
+                                                 const Polygons& polygons);
 
         /// @brief The portion of the boundary segments close enough to the mesh boundary are flagged (admin_landboundary_segments)
         ///
@@ -84,13 +84,14 @@ namespace meshkernel
         /// @brief Snap the mesh nodes to land boundaries (snap_to_landboundary)
         [[nodiscard]] std::unique_ptr<UndoAction> SnapMeshToLandBoundaries() const;
 
-        /// @brief Gets the number of land boundary nodes.
-        /// @return The number of land boundary nodes.
-        auto GetNumNodes() const { return m_landBoundary.GetNumNodes(); }
-
         /// @brief Gets the land boundary segment index for each mesh node
         /// @param[in] node The mesh node index
-        const UInt& LandBoundarySegmentIndex(UInt node) const { return m_meshNodesLandBoundarySegments[node]; }
+        /// @returns The land boundary segment index
+        UInt LandBoundarySegmentIndex(UInt node) const { return m_meshNodesLandBoundarySegments[node]; }
+
+        /// @brief Get the land boundary used by the calculator
+        /// @returns A reference to the land boundary used by the calculator
+        const LandBoundary& LandBoundary() const { return m_landBoundary; }
 
     private:
         /// @brief Build an additional boundary for not assigned nodes (connect_boundary_paths)
@@ -121,26 +122,6 @@ namespace meshkernel
         /// @brief Mask the mesh nodes to be considered in the shortest path algorithm for the current land boundary polyline (masknodes).
         /// @param[in] landBoundaryIndex The land boundary polyline index
         void ComputeMeshNodeMask(UInt landBoundaryIndex);
-
-        /// @brief Mask the mesh nodes to be considered in the shortest path algorithm for the current segmentIndex.
-        /// It is setting leftIndex, rightIndex, leftEdgeRatio, rightEdgeRatio (masknodes).
-        //// \image html LandBoundaryNodeFlagging_step2.jpg  "Flag the mesh node close to the land boundary"
-        /// @param[in]  segmentIndex
-        /// @param[in]  meshBoundOnly
-        /// @param[in]  startLandBoundaryIndex
-        /// @param[in]  endLandBoundaryIndex
-        /// @param[out] leftIndex
-        /// @param[out] rightIndex
-        /// @param[out] leftEdgeRatio
-        /// @param[out] rightEdgeRatio
-        void ComputeMask(UInt segmentIndex,
-                         bool meshBoundOnly,
-                         UInt startLandBoundaryIndex,
-                         UInt endLandBoundaryIndex,
-                         UInt& leftIndex,
-                         UInt& rightIndex,
-                         double& leftEdgeRatio,
-                         double& rightEdgeRatio);
 
         /// @brief Mask all face close to a land boundary, starting from a seed of others and growing from there (maskcells)
         /// @param[in] landBoundaryIndex The land boundary polyline index
@@ -183,8 +164,8 @@ namespace meshkernel
 
         Mesh2D& m_mesh;                                           ///< A reference to mesh
         const Polygons m_polygons;                                ///< A copy of the polygons
-        LandBoundary m_landBoundary;                              ///< The nodes on the land boundary
-        std::vector<UInt> m_meshNodesLandBoundarySegments;        ///< Mesh nodes to land boundary mapping (lanseg_map)
+        meshkernel::LandBoundary m_landBoundary;                  ///< A copy of the land boundary
+        std::vector<UInt> m_meshNodesLandBoundarySegments;        ///< Mesh nodes to land boundary segments (lanseg_map)
         std::vector<Point> m_polygonNodesCache;                   ///< Array of points (e.g. points of a face)
         std::vector<std::pair<UInt, UInt>> m_validLandBoundaries; ///< Start and end indices of valid land boundaries (lanseg_startend)
         std::vector<UInt> m_nodeFaceIndices;                      ///< For each node, the indices of the faces including them

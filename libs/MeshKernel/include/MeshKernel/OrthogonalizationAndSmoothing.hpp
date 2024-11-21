@@ -144,7 +144,7 @@ namespace meshkernel
         std::unique_ptr<Smoother> m_smoother;                      ///< A pointer to the smoother
         std::unique_ptr<Orthogonalizer> m_orthogonalizer;          ///< A pointer to the orthogonalizer
         std::unique_ptr<Polygons> m_polygons;                      ///< The polygon pointer where to perform the orthogonalization
-        std::unique_ptr<SnappingMesh2DToLandBoundariesCalculator> m_landBoundaries;          ///< The land boundaries pointer
+        std::unique_ptr<SnappingMesh2DToLandBoundariesCalculator> m_snappingToLandBoundariesCalculator; ///< The land boundaries pointer
         SnappingMesh2DToLandBoundariesCalculator::ProjectionsOptions m_projectOptions;       ///< The projection options
         OrthogonalizationParameters m_orthogonalizationParameters; ///< The orthogonalization parameters
 

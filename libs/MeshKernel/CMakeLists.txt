@@ -41,7 +41,6 @@ set(
   ${SRC_DIR}/Entities.cpp
   ${SRC_DIR}/FlipEdges.cpp
   ${SRC_DIR}/Hessian.cpp
-  ${SRC_DIR}/LandBoundaries.cpp
   ${SRC_DIR}/LandBoundary.cpp
   ${SRC_DIR}/Mesh.cpp
   ${SRC_DIR}/Mesh1D.cpp
@@ -60,6 +59,7 @@ set(
   ${SRC_DIR}/RemoveDisconnectedRegions.cpp
   ${SRC_DIR}/SamplesHessianCalculator.cpp
   ${SRC_DIR}/Smoother.cpp
+  ${SRC_DIR}/SnappingMesh2DToLandBoundariesCalculator.cpp
   ${SRC_DIR}/SplineAlgorithms.cpp
   ${SRC_DIR}/Splines.cpp
   ${SRC_DIR}/SplitRowColumnOfMesh.cpp
@@ -158,7 +158,6 @@ set(
   ${DOMAIN_INC_DIR}/FlipEdges.hpp
   ${DOMAIN_INC_DIR}/Formatting.hpp
   ${DOMAIN_INC_DIR}/Hessian.hpp
-  ${DOMAIN_INC_DIR}/LandBoundaries.hpp
   ${DOMAIN_INC_DIR}/LandBoundary.hpp
   ${DOMAIN_INC_DIR}/Mesh.hpp
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
@@ -184,6 +183,7 @@ set(
   ${DOMAIN_INC_DIR}/RemoveDisconnectedRegions.hpp
   ${DOMAIN_INC_DIR}/SamplesHessianCalculator.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
+  ${DOMAIN_INC_DIR}/SnappingMesh2DToLandBoundariesCalculator.hpp
   ${DOMAIN_INC_DIR}/SplineAlgorithms.hpp
   ${DOMAIN_INC_DIR}/Splines.hpp
   ${DOMAIN_INC_DIR}/SplitRowColumnOfMesh.hpp

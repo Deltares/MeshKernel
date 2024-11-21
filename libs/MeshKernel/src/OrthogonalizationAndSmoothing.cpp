@@ -50,7 +50,7 @@ OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(Mesh2D& mesh,
       m_smoother(std::move(smoother)),
       m_orthogonalizer(std::move(orthogonalizer)),
       m_polygons(std::move(polygon)),
-      m_landBoundaries(std::move(landBoundaries)),
+      m_snappingToLandBoundariesCalculator(std::move(landBoundaries)),
       m_projectOptions(projectToLandBoundaryOption)
 {
     CheckOrthogonalizationParameters(orthogonalizationParameters);
@@ -95,7 +95,7 @@ std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initializ
     if (m_projectOptions == SnappingMesh2DToLandBoundariesCalculator::ProjectionsOptions::OuterMeshBoundaryToLandBoundaries ||
         m_projectOptions == SnappingMesh2DToLandBoundariesCalculator::ProjectionsOptions::InnerAndOuterMeshBoundariesToLandboundaries)
     {
-        m_landBoundaries->FindNearestMeshBoundary(m_projectOptions);
+        m_snappingToLandBoundariesCalculator->FindNearestMeshBoundary(m_projectOptions);
     }
 
     // for spherical accurate computations we need to call PrapareOuterIteration (orthonet_comp_ops)
@@ -262,7 +262,7 @@ void OrthogonalizationAndSmoothing::Solve()
         m_projectOptions == SnappingMesh2DToLandBoundariesCalculator::ProjectionsOptions::InnerAndOuterMeshBoundariesToLandboundaries)
     {
         // project on land boundary
-        [[maybe_unused]] auto action = m_landBoundaries->SnapMeshToLandBoundaries();
+        [[maybe_unused]] auto action = m_snappingToLandBoundariesCalculator->SnapMeshToLandBoundaries();
     }
 }
 
