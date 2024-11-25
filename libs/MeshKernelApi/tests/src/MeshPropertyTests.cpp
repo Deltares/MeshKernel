@@ -21,8 +21,8 @@ TEST(MeshPropertyTests, BathymetryTest)
     const int numYCoords = 4;
     const int numberOfCoordinates = numXCoords * numYCoords;
 
-    const int numXBathyCoords = 6;
-    const int numYBathyCoords = 6;
+    const int numXBathyCoords = 5;
+    const int numYBathyCoords = 5;
     const int numberOfBathyCoordinates = numXBathyCoords * numYBathyCoords;
 
     const double origin = 0.0;
@@ -66,20 +66,11 @@ TEST(MeshPropertyTests, BathymetryTest)
     std::vector<double> ys(meshData.num_nodes);
     std::vector<int> edges(meshData.num_edges * 2);
 
-    std::cout << "meshData.num_nodes " << meshData.num_nodes << std::endl;
-
     meshData.node_x = xs.data();
     meshData.node_y = ys.data();
     meshData.edge_nodes = edges.data();
 
     mkapi::mkernel_mesh2d_get_node_edge_data(meshKernelId, meshData);
-
-    for (int i = 0; i < meshData.num_nodes; ++i)
-    {
-        std::cout << "node " << i << " = " << xs[i] << ", " << ys[i] << std::endl;
-    }
-
-    // return;
 
     //--------------------------------
 
@@ -98,6 +89,7 @@ TEST(MeshPropertyTests, BathymetryTest)
         {
             bathymetryXNodes[count] = bathyX;
             bathymetryYNodes[count] = bathyY;
+            bathymetryData[count] = bathyX;
 
             bathyX += delta;
             ++count;
@@ -108,15 +100,10 @@ TEST(MeshPropertyTests, BathymetryTest)
 
     mkapi::GeometryList sampleData{};
 
-    sampleData.num_coordinates = numberOfCoordinates;
+    sampleData.num_coordinates = numberOfBathyCoordinates;
     sampleData.values = bathymetryData.data();
     sampleData.coordinates_x = bathymetryXNodes.data();
     sampleData.coordinates_y = bathymetryYNodes.data();
-
-    // mkapi::GeometryList sampleData{.num_coordinates = numberOfCoordinates,
-    //                                .coordinates_x = bathymetryXNodes.data(),
-    //                                .coordinates_y = bathymetryYNodes.data(),
-    //                                .values = bathymetryData.data()};
 
     errorCode = mkapi::mkernel_mesh2d_set_bathymetry_data(meshKernelId, sampleData);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
@@ -125,20 +112,23 @@ TEST(MeshPropertyTests, BathymetryTest)
     errorCode = mkapi::mkernel_mesh2d_get_bathymetry_dimension(meshKernelId, sampleDataSize);
     ASSERT_EQ(sampleDataSize, numberOfCoordinates);
 
+    mkapi::GeometryList bathyData{};
     std::vector<double> retrievedData(numberOfCoordinates, -1.0);
-    sampleData.values = retrievedData.data();
+    bathyData.num_coordinates = numberOfCoordinates;
+    bathyData.values = retrievedData.data();
 
-    sampleData.coordinates_x = nullptr;
-    sampleData.coordinates_y = nullptr;
+    errorCode = mkapi::mkernel_mesh2d_get_bathymetry_data(meshKernelId, bathyData);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
-    errorCode = mkapi::mkernel_mesh2d_get_bathymetry_data(meshKernelId, sampleData);
+    const double tolerance = 1.0e-13;
 
-    // const double tolerance = 1.0e-13;
+    std::vector<double> expectedInterpolatedData{0.0, 1.0, 2.0, 3.0,
+                                                 0.0, 1.0, 2.0, 3.0,
+                                                 0.0, 1.0, 2.0, 3.0,
+                                                 0.0, 1.0, 2.0, 3.0};
 
     for (size_t i = 0; i < retrievedData.size(); ++i)
     {
-        std::cout << " retrievedData[i] " << i << " = " << retrievedData[i] << std::endl;
-
-        // EXPECT_NEAR(retrievedData[i], 1.0, tolerance);
+        EXPECT_NEAR(retrievedData[i], expectedInterpolatedData[i], tolerance);
     }
 }
