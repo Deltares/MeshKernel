@@ -61,6 +61,7 @@ TEST(MeshPropertyTests, BathymetryTest)
 
     mkapi::Mesh2D meshData{};
     mkapi::mkernel_mesh2d_get_dimensions(meshKernelId, meshData);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     std::vector<double> xs(meshData.num_nodes);
     std::vector<double> ys(meshData.num_nodes);
@@ -71,6 +72,7 @@ TEST(MeshPropertyTests, BathymetryTest)
     meshData.edge_nodes = edges.data();
 
     mkapi::mkernel_mesh2d_get_node_edge_data(meshKernelId, meshData);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     //--------------------------------
 
