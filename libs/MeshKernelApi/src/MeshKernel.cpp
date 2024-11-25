@@ -99,6 +99,7 @@
 #include "MeshKernelApi/ApiCache/SmallFlowEdgeCentreCache.hpp"
 #include "MeshKernelApi/MKStateUndoAction.hpp"
 #include "MeshKernelApi/MeshKernel.hpp"
+#include "MeshKernelApi/PropertyCalculator.hpp"
 #include "MeshKernelApi/State.hpp"
 #include "MeshKernelApi/Utils.hpp"
 
@@ -125,6 +126,21 @@ namespace meshkernelapi
 
     /// @brief Stack of undo actions
     static meshkernel::UndoActionStack meshKernelUndoStack;
+
+    std::map<int, std::unique_ptr<PropertyCalculator>> allocatePropertyCalculators()
+    {
+        std::map<int, std::unique_ptr<PropertyCalculator>> propertyMap;
+
+        int propertyId = static_cast<int>(meshkernel::Mesh2D::Property::Orthogonality);
+        propertyMap.emplace(propertyId, std::make_unique<OrthogonalityPropertyCalculator>());
+
+        propertyId = static_cast<int>(meshkernel::Mesh2D::Property::EdgeLength);
+        propertyMap.emplace(propertyId, std::make_unique<EdgeLengthPropertyCalculator>());
+
+        return propertyMap;
+    }
+
+    static std::map<int, std::unique_ptr<PropertyCalculator>> propertyCalculators = allocatePropertyCalculators();
 
     static meshkernel::ExitCode HandleException(std::exception_ptr exception_ptr = std::current_exception())
     {
@@ -1611,31 +1627,16 @@ namespace meshkernelapi
                 return lastExitCode;
             }
 
-            const auto propertyValueEnum = static_cast<meshkernel::Mesh2D::Property>(propertyValue);
-            switch (propertyValueEnum)
+            if (propertyCalculators.contains(propertyValue) && propertyCalculators[propertyValue] != nullptr)
             {
-            case meshkernel::Mesh2D::Property::Orthogonality:
-            {
-                std::vector<double> values = mesh2d->GetOrthogonality();
-                if (static_cast<size_t>(geometryList.num_coordinates) < values.size())
-                {
-                    throw meshkernel::MeshKernelError("GeometryList with wrong dimensions");
-                }
-                std::copy(values.begin(), values.end(), geometryList.values);
+                propertyCalculators[propertyValue]->Calculate(meshKernelState.at(meshKernelId), geometryList);
             }
-            break;
-            case meshkernel::Mesh2D::Property::EdgeLength:
+            // if (propertyCalculators.contains(propertyValue) && propertyCalculators[propertyValue] != nullptr)
+            // {
+            //     propertyCalculators[propertyValue]->Calculate(meshKernelId, geometryList);
+            // }
+            else
             {
-                mesh2d->ComputeEdgesLengths();
-                std::vector<double> values = mesh2d->m_edgeLengths;
-                if (static_cast<size_t>(geometryList.num_coordinates) < values.size())
-                {
-                    throw meshkernel::MeshKernelError("GeometryList with wrong dimensions");
-                }
-                std::copy(values.begin(), values.end(), geometryList.values);
-            }
-            break;
-            default:
                 throw meshkernel::MeshKernelError("Property not supported");
             }
         }
@@ -1663,19 +1664,14 @@ namespace meshkernelapi
                 return lastExitCode;
             }
 
-            const auto propertyValueEnum = static_cast<meshkernel::Mesh2D::Property>(propertyValue);
             dimension = -1;
-            switch (propertyValueEnum)
-            {
-            case meshkernel::Mesh2D::Property::Orthogonality:
-                dimension = static_cast<int>(mesh2d->GetOrthogonality().size());
-                break;
 
-            case meshkernel::Mesh2D::Property::EdgeLength:
-                mesh2d->ComputeEdgesLengths();
-                dimension = static_cast<int>(mesh2d->m_edgeLengths.size());
-                break;
-            default:
+            if (propertyCalculators.contains(propertyValue) && propertyCalculators[propertyValue] != nullptr)
+            {
+                dimension = propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId));
+            }
+            else
+            {
                 throw meshkernel::MeshKernelError("Property not supported");
             }
         }
