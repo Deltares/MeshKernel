@@ -175,7 +175,7 @@ namespace meshkernel
                                     const UInt index);
 
         /// @brief Find a common edge between elements
-        static std::tuple<UInt, UInt> FindCommonLink(Mesh2D& mesh,
+        static std::tuple<UInt, UInt> FindCommonEdge(Mesh2D& mesh,
                                                      const UInt leftElementId,
                                                      const UInt rightElementId,
                                                      const UInt connectedElementId);

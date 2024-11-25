@@ -590,7 +590,7 @@ meshkernel::UInt meshkernel::CasulliDeRefinement::GetElementIndex(const std::arr
     return kne[index] == constants::missing::intValue || kne[index] < 0 ? constants::missing::uintValue : static_cast<UInt>(kne[index]);
 }
 
-std::tuple<meshkernel::UInt, meshkernel::UInt> meshkernel::CasulliDeRefinement::FindCommonLink(Mesh2D& mesh,
+std::tuple<meshkernel::UInt, meshkernel::UInt> meshkernel::CasulliDeRefinement::FindCommonEdge(Mesh2D& mesh,
                                                                                                const UInt leftElementId,
                                                                                                const UInt rightElementId,
                                                                                                const UInt connectedElementId)
@@ -677,8 +677,8 @@ bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedTriangleElements(Me
             continue;
         }
 
-        // find the common link
-        auto [edgeId, faceEdgeIndex] = FindCommonLink(mesh, leftElementId, rightElementId, connectedElementId);
+        // find the common edge
+        auto [edgeId, faceEdgeIndex] = FindCommonEdge(mesh, leftElementId, rightElementId, connectedElementId);
 
         if (otherEdgeId != constants::missing::uintValue)
         {
