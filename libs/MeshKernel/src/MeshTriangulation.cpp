@@ -27,6 +27,7 @@
 
 #include "MeshKernel/MeshTriangulation.hpp"
 #include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Utilities/Utilities.hpp"
 
 #include <iostream>
 #include <limits>
@@ -208,4 +209,23 @@ bool meshkernel::MeshTriangulation::PointIsInElement(const Point& pnt, const UIn
     }
 
     return IsPointInTriangle(pnt, GetNodes(faceId), m_projection);
+}
+
+void meshkernel::MeshTriangulation::Print(std::ostream& out) const
+{
+
+    std::vector<Point> nodes(NumberOfNodes());
+    std::vector<Edge> edges(NumberOfEdges());
+
+    for (UInt i = 0; i < NumberOfNodes(); ++i)
+    {
+        nodes[i] = GetNode(i);
+    }
+
+    for (UInt i = 0; i < NumberOfEdges(); ++i)
+    {
+        edges[i] = GetEdge(i);
+    }
+
+    meshkernel::Print(nodes, edges, out);
 }
