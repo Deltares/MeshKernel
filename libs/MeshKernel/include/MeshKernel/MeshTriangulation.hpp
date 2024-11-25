@@ -93,6 +93,9 @@ namespace meshkernel
         /// @brief Determine if the point lies within the element
         bool PointIsInElement(const Point& pnt, const UInt faceId) const;
 
+        /// @brief Print the mesh graph
+        void Print(std::ostream& out = std::cout) const;
+
     private:
         double Sign(const Point& p1, const Point& p2, const Point& p3) const;
 
