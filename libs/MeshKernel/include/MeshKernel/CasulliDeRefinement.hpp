@@ -70,11 +70,11 @@ namespace meshkernel
         /// Enumeration values and comments are from the original Fortran code.
         enum class ElementType
         {
-            WasNodeFirst = 1,  //< front, 'A' cell (used to be node, delete it):  1
-            WasEdgeFirst = 2,  //< front, 'B' cell (used to be link, keep it):    2
-            WasCell = 3,       //< 'C' cell (used to be cell, keep it):           3
-            WasNodeAfter = -1, //< not in front, 'A' cell:                       -1
-            WasEdgeAfter = -2, //< not in front, 'B' cell:                       -2
+            WasNodeFirst = 1,  //< front, 'A' face (used to be node, delete it):  1
+            WasEdgeFirst = 2,  //< front, 'B' face (used to be edge, keep it):    2
+            WasFace = 3,       //< 'C' face (used to be face, keep it):           3
+            WasNodeAfter = -1, //< not in front, 'A' face:                       -1
+            WasEdgeAfter = -2, //< not in front, 'B' face:                       -2
             Unassigned = 0     //< not assigned a value                           0
         };
 
@@ -96,64 +96,64 @@ namespace meshkernel
                                          const std::vector<int>& nodeTypes);
 
         /// @brief Find all elements that are connected along edges to elementId.
-        static void FindDirectlyConnectedCells(const Mesh2D& mesh,
+        static void FindDirectlyConnectedFaces(const Mesh2D& mesh,
                                                const UInt elementId,
                                                std::vector<UInt>& connected);
 
         /// @brief Find all elements that are connected by nodes to elementId.
-        static void FindIndirectlyConnectedCells(const Mesh2D& mesh,
+        static void FindIndirectlyConnectedFaces(const Mesh2D& mesh,
                                                  const UInt elementId,
                                                  const std::vector<UInt>& directlyConnected,
                                                  std::vector<UInt>& indirectlyConnected);
 
         /// @brief Assign directly connected element indices
         static void AssignDirectlyConnected(const std::vector<UInt>& directlyConnected,
-                                            std::array<int, 2>& kne,
+                                            std::array<int, 2>& edgeFaces,
                                             UInt& neighbouringElementId);
 
         /// @brief Assign indirectly connected element indices
         static void AssignIndirectlyConnected(const std::vector<UInt>& indirectlyConnected,
-                                              std::array<int, 2>& kne,
+                                              std::array<int, 2>& edgeFaces,
                                               const UInt neighbouringElementId);
 
         /// @brief Find element id's
-        static void FindAdjacentCells(const Mesh2D& mesh,
+        static void FindAdjacentFaces(const Mesh2D& mesh,
                                       const std::vector<UInt>& directlyConnected,
                                       const std::vector<UInt>& indirectlyConnected,
-                                      std::vector<std::array<int, 2>>& kne);
+                                      std::vector<std::array<int, 2>>& edgeFaces);
 
         /// @brief Find the elements that are connected to the elementId.
-        static void FindSurroundingCells(const Mesh2D& mesh,
+        static void FindSurroundingFaces(const Mesh2D& mesh,
                                          const UInt elementId,
                                          std::vector<UInt>& directlyConnected,
                                          std::vector<UInt>& indirectlyConnected,
-                                         std::vector<std::array<int, 2>>& kne);
+                                         std::vector<std::array<int, 2>>& edgeFaces);
 
-        /// @brief Update cell mask for directly connected elements
-        static void UpdateCellMaskDirectlyConnectedNodeFirst(const std::vector<UInt>& directlyConnected,
+        /// @brief Update face mask for directly connected elements
+        static void UpdateFaceMaskDirectlyConnectedNodeFirst(const std::vector<UInt>& directlyConnected,
                                                              const Mesh2D& mesh,
                                                              const std::vector<UInt>& frontIndex,
                                                              std::vector<UInt>& frontIndexCopy,
-                                                             std::vector<ElementType>& cellMask);
+                                                             std::vector<ElementType>& faceMask);
 
-        /// @brief Update cell mask for indirectly connected elements
-        static void UpdateCellMaskIndirectlyConnectedNodeFirst(const std::vector<UInt>& directlyConnected,
+        /// @brief Update face mask for indirectly connected elements
+        static void UpdateFaceMaskIndirectlyConnectedNodeFirst(const std::vector<UInt>& directlyConnected,
                                                                const Mesh2D& mesh,
-                                                               std::vector<ElementType>& cellMask);
+                                                               std::vector<ElementType>& faceMask);
 
-        /// @brief Update cell mask for directly connected elements
-        static void UpdateCellMaskDirectlyConnectedEdgeFirst(const std::vector<UInt>& directlyConnected,
+        /// @brief Update face mask for directly connected elements
+        static void UpdateFaceMaskDirectlyConnectedEdgeFirst(const std::vector<UInt>& directlyConnected,
                                                              const Mesh2D& mesh,
                                                              const std::vector<UInt>& frontIndex,
                                                              std::vector<UInt>& frontIndexCopy,
-                                                             std::vector<ElementType>& cellMask);
+                                                             std::vector<ElementType>& faceMask);
 
-        /// @brief Update cell mask for indirectly connected elements
-        static void UpdateCellMaskIndirectlyConnectedEdgeFirst(const std::vector<UInt>& indirectlyConnected,
+        /// @brief Update face mask for indirectly connected elements
+        static void UpdateFaceMaskIndirectlyConnectedEdgeFirst(const std::vector<UInt>& indirectlyConnected,
                                                                const Mesh2D& mesh,
                                                                const std::vector<UInt>& frontIndex,
                                                                std::vector<UInt>& frontIndexCopy,
-                                                               std::vector<ElementType>& cellMask);
+                                                               std::vector<ElementType>& faceMask);
 
         /// @brief Initialise the element mask.
         static std::vector<ElementType> InitialiseElementType(const Mesh2D& mesh,
@@ -171,7 +171,7 @@ namespace meshkernel
                                                const UInt nodeId);
 
         /// @brief Get the element index
-        static UInt GetElementIndex(const std::array<int, 2>& kne,
+        static UInt GetElementIndex(const std::array<int, 2>& edgeFaces,
                                     const UInt index);
 
         /// @brief Find a common edge between elements
@@ -184,13 +184,13 @@ namespace meshkernel
         [[nodiscard]] static bool UpdateDirectlyConnectedElements(Mesh2D& mesh,
                                                                   const UInt elementId,
                                                                   const std::vector<UInt>& directlyConnected,
-                                                                  const std::vector<std::array<int, 2>>& kne);
+                                                                  const std::vector<std::array<int, 2>>& edgeFaces);
 
         /// @brief Update the mesh members for the mesh description and connectivity for triangle elements
         static bool UpdateDirectlyConnectedTriangleElements(Mesh2D& mesh,
                                                             const UInt index,
                                                             const UInt connectedElementId,
-                                                            const std::vector<std::array<int, 2>>& kne);
+                                                            const std::vector<std::array<int, 2>>& edgeFaces);
 
         /// @brief Update the mesh members for the mesh description and connectivity for non-triangle elements
         ///
@@ -213,7 +213,7 @@ namespace meshkernel
                                      std::vector<UInt>& frontListCopy,
                                      const UInt elementId);
 
-        /// @brief Redirect nodes of connected cells, deactivate polygons of degree smaller than three
+        /// @brief Redirect nodes of connected faces, deactivate polygons of degree smaller than three
         static void RedirectNodesOfConnectedElements(Mesh2D& mesh,
                                                      const UInt elementId,
                                                      const UInt nodeId,
@@ -242,7 +242,7 @@ namespace meshkernel
                                                 const UInt elementId,
                                                 const std::vector<UInt>& directlyConnected,
                                                 const std::vector<UInt>& indirectlyConnected,
-                                                const std::vector<std::array<int, 2>>& kne);
+                                                const std::vector<std::array<int, 2>>& edgeFaces);
 
         /// @brief Clean up the edge
         ///
