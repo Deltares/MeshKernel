@@ -231,12 +231,12 @@ std::unique_ptr&lt; ResetEdgeAction &gt;&#160;</td><td class="memItemRight" vali
 <tr class="memitem:ab2ed1c5cead3d0d000340c0a9650a6eb"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>, std::unique_ptr&lt; AddNodeAction &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ab2ed1c5cead3d0d000340c0a9650a6eb">InsertNode</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;newPoint)</td></tr>
 <tr class="memdesc:ab2ed1c5cead3d0d000340c0a9650a6eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Insert a new node in the mesh (setnewpoint)  <a href="classmeshkernel_1_1_mesh.html#ab2ed1c5cead3d0d000340c0a9650a6eb">More...</a><br /></td></tr>
 <tr class="separator:ab2ed1c5cead3d0d000340c0a9650a6eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1c96e8923f5255b6a8b5569dce959ec"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>, std::unique_ptr&lt; AddEdgeAction &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ac1c96e8923f5255b6a8b5569dce959ec">ConnectNodes</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startNode, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endNode)</td></tr>
-<tr class="memdesc:ac1c96e8923f5255b6a8b5569dce959ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect two existing nodes, checking if the nodes are already connected. If the nodes are not connected a new edge is formed, otherwise UInt invalid value is returned. (connectdbn)  <a href="classmeshkernel_1_1_mesh.html#ac1c96e8923f5255b6a8b5569dce959ec">More...</a><br /></td></tr>
-<tr class="separator:ac1c96e8923f5255b6a8b5569dce959ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aabbae141f2126fd84b0ea35bc8b4818c"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; DeleteNodeAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#aabbae141f2126fd84b0ea35bc8b4818c">DeleteNode</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> node)</td></tr>
-<tr class="memdesc:aabbae141f2126fd84b0ea35bc8b4818c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a node and removes any connected edges.  <a href="classmeshkernel_1_1_mesh.html#aabbae141f2126fd84b0ea35bc8b4818c">More...</a><br /></td></tr>
-<tr class="separator:aabbae141f2126fd84b0ea35bc8b4818c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8bbff1098b9bd67be3da619b55d96c2"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>, std::unique_ptr&lt; AddEdgeAction &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#aa8bbff1098b9bd67be3da619b55d96c2">ConnectNodes</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startNode, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endNode, const bool collectUndo=true)</td></tr>
+<tr class="memdesc:aa8bbff1098b9bd67be3da619b55d96c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect two existing nodes, checking if the nodes are already connected. If the nodes are not connected a new edge is formed, otherwise UInt invalid value is returned. (connectdbn)  <a href="classmeshkernel_1_1_mesh.html#aa8bbff1098b9bd67be3da619b55d96c2">More...</a><br /></td></tr>
+<tr class="separator:aa8bbff1098b9bd67be3da619b55d96c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e22cb46a11c6afdc704dc630c065ab8"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; DeleteNodeAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a5e22cb46a11c6afdc704dc630c065ab8">DeleteNode</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> node, const bool collectUndo=true)</td></tr>
+<tr class="memdesc:a5e22cb46a11c6afdc704dc630c065ab8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a node and removes any connected edges.  <a href="classmeshkernel_1_1_mesh.html#a5e22cb46a11c6afdc704dc630c065ab8">More...</a><br /></td></tr>
+<tr class="separator:a5e22cb46a11c6afdc704dc630c065ab8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adca9e46fe37ed14e5b42ca498c8f9c42"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#adca9e46fe37ed14e5b42ca498c8f9c42">FindEdge</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> firstNodeIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> secondNodeIndex) const</td></tr>
 <tr class="memdesc:adca9e46fe37ed14e5b42ca498c8f9c42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the edge sharing two nodes.  <a href="classmeshkernel_1_1_mesh.html#adca9e46fe37ed14e5b42ca498c8f9c42">More...</a><br /></td></tr>
 <tr class="separator:adca9e46fe37ed14e5b42ca498c8f9c42"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -252,9 +252,9 @@ std::unique_ptr&lt; ResetEdgeAction &gt;&#160;</td><td class="memItemRight" vali
 <tr class="memitem:a42d72c761ca10c957623ab8b7c98e20a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a42d72c761ca10c957623ab8b7c98e20a">FindNodeCloseToAPoint</a> (<a class="el" href="classmeshkernel_1_1_point.html">Point</a> const &amp;point, double searchRadius)</td></tr>
 <tr class="memdesc:a42d72c761ca10c957623ab8b7c98e20a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the index of a node close to a point.  <a href="classmeshkernel_1_1_mesh.html#a42d72c761ca10c957623ab8b7c98e20a">More...</a><br /></td></tr>
 <tr class="separator:a42d72c761ca10c957623ab8b7c98e20a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad738d054aab158c848e5bb2e5cdbb651"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; DeleteEdgeAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#ad738d054aab158c848e5bb2e5cdbb651">DeleteEdge</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> edge)</td></tr>
-<tr class="memdesc:ad738d054aab158c848e5bb2e5cdbb651"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes an edge.  <a href="classmeshkernel_1_1_mesh.html#ad738d054aab158c848e5bb2e5cdbb651">More...</a><br /></td></tr>
-<tr class="separator:ad738d054aab158c848e5bb2e5cdbb651"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e2e44adde7efee79de4fd7d964dcf4c"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; DeleteEdgeAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a0e2e44adde7efee79de4fd7d964dcf4c">DeleteEdge</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> edge, const bool collectUndo=true)</td></tr>
+<tr class="memdesc:a0e2e44adde7efee79de4fd7d964dcf4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes an edge.  <a href="classmeshkernel_1_1_mesh.html#a0e2e44adde7efee79de4fd7d964dcf4c">More...</a><br /></td></tr>
+<tr class="separator:a0e2e44adde7efee79de4fd7d964dcf4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86a3ba1a2f8974d7367680ea71a70b28"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a86a3ba1a2f8974d7367680ea71a70b28">FindCommonNode</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> firstEdgeIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> secondEdgeIndex) const</td></tr>
 <tr class="memdesc:a86a3ba1a2f8974d7367680ea71a70b28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the common node two edges share This method uses return parameters since the success is evaluated in a hot loop.  <a href="classmeshkernel_1_1_mesh.html#a86a3ba1a2f8974d7367680ea71a70b28">More...</a><br /></td></tr>
 <tr class="separator:a86a3ba1a2f8974d7367680ea71a70b28"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -746,8 +746,8 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
 
 </div>
 </div>
-<a id="ac1c96e8923f5255b6a8b5569dce959ec"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac1c96e8923f5255b6a8b5569dce959ec">&#9670;&nbsp;</a></span>ConnectNodes()</h2>
+<a id="aa8bbff1098b9bd67be3da619b55d96c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8bbff1098b9bd67be3da619b55d96c2">&#9670;&nbsp;</a></span>ConnectNodes()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -762,7 +762,13 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
-          <td class="paramname"><em>endNode</em>&#160;</td>
+          <td class="paramname"><em>endNode</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>collectUndo</em> = <code>true</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -777,6 +783,7 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">startNode</td><td>The start node index </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">endNode</td><td>The end node index </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">collectUndo</td><td>Indicate whether or not an undo action should be created, if false then the undo result will be nullptr </td></tr>
   </table>
   </dd>
 </dl>
@@ -784,8 +791,8 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
 
 </div>
 </div>
-<a id="ad738d054aab158c848e5bb2e5cdbb651"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad738d054aab158c848e5bb2e5cdbb651">&#9670;&nbsp;</a></span>DeleteEdge()</h2>
+<a id="a0e2e44adde7efee79de4fd7d964dcf4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e2e44adde7efee79de4fd7d964dcf4c">&#9670;&nbsp;</a></span>DeleteEdge()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -794,8 +801,18 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
           <td class="memname">std::unique_ptr&lt;DeleteEdgeAction&gt; meshkernel::Mesh::DeleteEdge </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
-          <td class="paramname"><em>edge</em></td><td>)</td>
+          <td class="paramname"><em>edge</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>collectUndo</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -804,6 +821,7 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">edge</td><td>The edge index </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">collectUndo</td><td>Indicate whether or not an undo action should be created, if false then the undo result will be nullptr. </td></tr>
   </table>
   </dd>
 </dl>
@@ -811,8 +829,8 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
 
 </div>
 </div>
-<a id="aabbae141f2126fd84b0ea35bc8b4818c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aabbae141f2126fd84b0ea35bc8b4818c">&#9670;&nbsp;</a></span>DeleteNode()</h2>
+<a id="a5e22cb46a11c6afdc704dc630c065ab8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e22cb46a11c6afdc704dc630c065ab8">&#9670;&nbsp;</a></span>DeleteNode()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -821,8 +839,18 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
           <td class="memname">std::unique_ptr&lt;DeleteNodeAction&gt; meshkernel::Mesh::DeleteNode </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
-          <td class="paramname"><em>node</em></td><td>)</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>collectUndo</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -831,6 +859,7 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">node</td><td>The node index </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">collectUndo</td><td>Indicate whether or not an undo action should be created, if false then the undo result will be nullptr. </td></tr>
   </table>
   </dd>
 </dl>

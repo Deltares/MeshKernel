@@ -52,7 +52,7 @@ var searchData=
   ['computesquareddistance_960',['ComputeSquaredDistance',['../namespacemeshkernel.html#a358b556c559ed3109e2e5688794655d5',1,'meshkernel']]],
   ['computethreebasecomponents_961',['ComputeThreeBaseComponents',['../namespacemeshkernel.html#a351c3fd8e9cb0d3e60a79dbdfc43af9a',1,'meshkernel']]],
   ['computetwobasecomponents_962',['ComputeTwoBaseComponents',['../namespacemeshkernel.html#ad08b467bb0943757f7db680c09a98977',1,'meshkernel']]],
-  ['connectnodes_963',['ConnectNodes',['../classmeshkernel_1_1_mesh.html#ac1c96e8923f5255b6a8b5569dce959ec',1,'meshkernel::Mesh']]],
+  ['connectnodes_963',['ConnectNodes',['../classmeshkernel_1_1_mesh.html#aa8bbff1098b9bd67be3da619b55d96c2',1,'meshkernel::Mesh']]],
   ['contacts_964',['Contacts',['../classmeshkernel_1_1_contacts.html#aeaa17c47cdb353019fb441cba2e9bb0b',1,'meshkernel::Contacts']]],
   ['contains_965',['Contains',['../classmeshkernel_1_1_bounding_box.html#a63e16e992de07aef73dc83211cf91692',1,'meshkernel::BoundingBox::Contains()'],['../classmeshkernel_1_1_polygon.html#adf15c310c03080e5a9a155296971752a',1,'meshkernel::Polygon::Contains()'],['../classmeshkernel_1_1_polygonal_enclosure.html#a2ffb886efa18e84ac611676ce4d1a975',1,'meshkernel::PolygonalEnclosure::Contains()']]],
   ['containsregion_966',['ContainsRegion',['../classmeshkernel_1_1_polygonal_enclosure.html#ab58f9c0170b28477ab5f142b8a33bf6a',1,'meshkernel::PolygonalEnclosure']]],

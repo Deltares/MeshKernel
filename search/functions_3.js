@@ -1,11 +1,11 @@
 var searchData=
 [
   ['deletedegeneratedtriangles_979',['DeleteDegeneratedTriangles',['../classmeshkernel_1_1_mesh2_d.html#a893855b697eaa894c585960a265907c8',1,'meshkernel::Mesh2D']]],
-  ['deleteedge_980',['DeleteEdge',['../classmeshkernel_1_1_mesh.html#ad738d054aab158c848e5bb2e5cdbb651',1,'meshkernel::Mesh']]],
+  ['deleteedge_980',['DeleteEdge',['../classmeshkernel_1_1_mesh.html#a0e2e44adde7efee79de4fd7d964dcf4c',1,'meshkernel::Mesh']]],
   ['deletehangingedges_981',['DeleteHangingEdges',['../classmeshkernel_1_1_mesh2_d.html#a74e08244514dfd0cf3a498fa5f8e4921',1,'meshkernel::Mesh2D']]],
   ['deleteinvalidnodesandedges_982',['DeleteInvalidNodesAndEdges',['../classmeshkernel_1_1_mesh.html#adadf16bf95337fec05384a2dc07798fe',1,'meshkernel::Mesh']]],
   ['deletemesh_983',['DeleteMesh',['../classmeshkernel_1_1_mesh2_d.html#a515a1beaf82f73f9d461d2e0f7795cd7',1,'meshkernel::Mesh2D']]],
-  ['deletenode_984',['DeleteNode',['../classmeshkernel_1_1_mesh.html#aabbae141f2126fd84b0ea35bc8b4818c',1,'meshkernel::Mesh']]],
+  ['deletenode_984',['DeleteNode',['../classmeshkernel_1_1_mesh.html#a5e22cb46a11c6afdc704dc630c065ab8',1,'meshkernel::Mesh']]],
   ['deletesmallflowedges_985',['DeleteSmallFlowEdges',['../classmeshkernel_1_1_mesh2_d.html#ac0e19cf1cceaac87805957720cfc2c4f',1,'meshkernel::Mesh2D']]],
   ['deletesmalltrianglesatboundaries_986',['DeleteSmallTrianglesAtBoundaries',['../classmeshkernel_1_1_mesh2_d.html#a2d38828414c38b2e458a83abec9348ab',1,'meshkernel::Mesh2D']]],
   ['delta_987',['Delta',['../classmeshkernel_1_1_bounding_box.html#a8b1c03b754fcf2e2583efff4a891c69c',1,'meshkernel::BoundingBox']]],
