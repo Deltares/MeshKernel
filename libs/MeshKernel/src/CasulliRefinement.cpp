@@ -26,11 +26,11 @@
 //------------------------------------------------------------------------------
 
 #include <algorithm>
+#include <tuple>
 
 #include "MeshKernel/CasulliRefinement.hpp"
 #include "MeshKernel/Exceptions.hpp"
-#include "MeshKernel/UndoActions/AddNodeAction.hpp"
-#include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
+#include "MeshKernel/UndoActions/FullUnstructuredGridUndo.hpp"
 
 std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(Mesh2D& mesh)
 {
@@ -42,15 +42,16 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(M
 {
     std::vector<EdgeNodes> newNodes(mesh.GetNumEdges(), {constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue});
     std::vector<NodeMask> nodeMask(InitialiseNodeMask(mesh, polygon));
-    std::unique_ptr<CompoundUndoAction> refinementAction = CompoundUndoAction::Create();
+
+    std::unique_ptr<FullUnstructuredGridUndo> refinementAction = FullUnstructuredGridUndo::Create(mesh);
 
     const UInt numNodes = mesh.GetNumNodes();
     const UInt numEdges = mesh.GetNumEdges();
     const UInt numFaces = mesh.GetNumFaces();
 
-    refinementAction->Add(ComputeNewNodes(mesh, newNodes, nodeMask));
-    refinementAction->Add(ConnectNewNodes(mesh, newNodes, numNodes, numEdges, numFaces, nodeMask));
-    refinementAction->Add(Administrate(mesh, numNodes, nodeMask));
+    ComputeNewNodes(mesh, newNodes, nodeMask);
+    ConnectNewNodes(mesh, newNodes, numNodes, numEdges, numFaces, nodeMask);
+    Administrate(mesh, numNodes, nodeMask);
     return refinementAction;
 }
 
@@ -203,22 +204,19 @@ std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefineme
     return nodeMask;
 }
 
-std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Administrate(Mesh2D& mesh, const UInt numNodes, const std::vector<NodeMask>& nodeMask)
+void meshkernel::CasulliRefinement::Administrate(Mesh2D& mesh, const UInt numNodes, const std::vector<NodeMask>& nodeMask)
 {
-
-    std::unique_ptr<meshkernel::CompoundUndoAction> administrateAction = CompoundUndoAction::Create();
-
     // Need check only the original nodes in the mesh, hence use of numNodes.
     for (UInt i = 0; i < numNodes; ++i)
     {
         if (nodeMask[i] > NodeMask::Unassigned && nodeMask[i] < NodeMask::CornerNode)
         {
-            administrateAction->Add(mesh.DeleteNode(i));
+            // With passing false for the collectUndo, DeleteNode should return a null pointer
+            [[maybe_unused]] auto undoAction = mesh.DeleteNode(i, false /* collectUndo info */);
         }
     }
 
-    mesh.Administrate(administrateAction.get());
-    return administrateAction;
+    mesh.Administrate();
 }
 
 void meshkernel::CasulliRefinement::FindPatchIds(const Mesh2D& mesh,
@@ -253,10 +251,8 @@ void meshkernel::CasulliRefinement::FindPatchIds(const Mesh2D& mesh,
     mesh.FindNodesSharedByFaces(currentNode, sharedFaces, connectedNodes, faceNodeMapping);
 }
 
-std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ConnectNodes(Mesh2D& mesh, const std::vector<EdgeNodes>& newNodes, const UInt numEdges)
+void meshkernel::CasulliRefinement::ConnectNodes(Mesh2D& mesh, const std::vector<EdgeNodes>& newNodes, const UInt numEdges)
 {
-    std::unique_ptr<meshkernel::CompoundUndoAction> connectNodeAction = CompoundUndoAction::Create();
-
     // make the original-edge based new edges
     for (UInt i = 0; i < numEdges; ++i)
     {
@@ -268,37 +264,31 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ConnectNo
         // Parallel edges, these are the start-end connections
         if (node1 != constants::missing::uintValue && node2 != constants::missing::uintValue && node1 != node2)
         {
-            auto [edgeId, connectionAction] = mesh.ConnectNodes(node1, node2);
-            connectNodeAction->Add(std::move(connectionAction));
+            // With passing false for the collectUndo, ConnectNodes should return a null pointer
+            [[maybe_unused]] auto ignore = mesh.ConnectNodes(node1, node2, false /* collectUndo info */);
         }
 
         if (node3 != constants::missing::uintValue && node4 != constants::missing::uintValue && node3 != node4)
         {
-            auto [edgeId, connectionAction] = mesh.ConnectNodes(node3, node4);
-            connectNodeAction->Add(std::move(connectionAction));
+            [[maybe_unused]] auto ignore = mesh.ConnectNodes(node3, node4, false /* collectUndo info */);
         }
 
         // normal edges, these are the left-right connections
         if (node1 != constants::missing::uintValue && node3 != constants::missing::uintValue && node1 != node3)
         {
-            auto [edgeId, connectionAction] = mesh.ConnectNodes(node1, node3);
-            connectNodeAction->Add(std::move(connectionAction));
+            [[maybe_unused]] auto ignore = mesh.ConnectNodes(node1, node3, false /* collectUndo info */);
         }
 
         if (node2 != constants::missing::uintValue && node4 != constants::missing::uintValue && node2 != node4)
         {
-            auto [edgeId, connectionAction] = mesh.ConnectNodes(node2, node4);
-            connectNodeAction->Add(std::move(connectionAction));
+            [[maybe_unused]] auto ignore = mesh.ConnectNodes(node2, node4, false /* collectUndo info */);
         }
     }
-
-    return connectNodeAction;
 }
 
-std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ConnectFaceNodes(Mesh2D& mesh, const UInt currentFace, const std::vector<EdgeNodes>& newNodes,
-                                                                                        std::vector<NodeMask>& nodeMask)
+void meshkernel::CasulliRefinement::ConnectFaceNodes(Mesh2D& mesh, const UInt currentFace, const std::vector<EdgeNodes>& newNodes,
+                                                     std::vector<NodeMask>& nodeMask)
 {
-    std::unique_ptr<meshkernel::CompoundUndoAction> connectFacesAction = CompoundUndoAction::Create();
 
     // Perhaps change quads to maximum number of edges for any shape
     std::array<UInt, constants::geometric::numNodesInQuadrilateral> oldIndex{constants::missing::uintValue, constants::missing::uintValue,
@@ -351,35 +341,30 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ConnectFa
         // only one new node: new diagonal edge connects new node with one old node
         if (nodeMask[node1] < NodeMask::Unassigned && nodeMask[node2] == NodeMask::Unassigned && nodeMask[node3] == NodeMask::Unassigned && nodeMask[node4] == NodeMask::Unassigned)
         {
-            auto [edgeId, connectionAction] = mesh.ConnectNodes(node1, node4);
-            connectFacesAction->Add(std::move(connectionAction));
+            // With passing false for the collectUndo, ConnectNodes should return a null pointer
+            [[maybe_unused]] auto ignore = mesh.ConnectNodes(node1, node4, false /* collectUndo info */);
             break;
         }
 
         // only one old node: new diagonal edge connects new nodes only (i.e. perpendicular to previous one)
         if (nodeMask[node1] < NodeMask::Unassigned && nodeMask[node2] > NodeMask::Unassigned && nodeMask[node3] > NodeMask::Unassigned && nodeMask[node4] == NodeMask::Unassigned)
         {
-            auto [edgeId, connectionAction] = mesh.ConnectNodes(newIndex[previousIndex], newIndex[nextIndex]);
-            connectFacesAction->Add(std::move(connectionAction));
+            [[maybe_unused]] auto ignore = mesh.ConnectNodes(newIndex[previousIndex], newIndex[nextIndex], false /* collectUndo info */);
             break;
         }
 
         // two new and opposing nodes: new diagonal edge connects the new nodes
         if (nodeMask[node1] < NodeMask::Unassigned && nodeMask[node2] == NodeMask::Unassigned && nodeMask[node3] == NodeMask::Unassigned && nodeMask[node4] == NodeMask::RegisteredNode)
         {
-            auto [edgeId, connectionAction] = mesh.ConnectNodes(node1, newIndex[nextNextIndex]);
-            connectFacesAction->Add(std::move(connectionAction));
+            [[maybe_unused]] auto ignore = mesh.ConnectNodes(node1, newIndex[nextNextIndex], false /* collectUndo info */);
             break;
         }
     }
-
-    return connectFacesAction;
 }
 
-std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ConnectEdges(Mesh2D& mesh, const UInt currentNode, const std::vector<EdgeNodes>& newNodes, UInt& edgeCount, std::vector<UInt>& newEdges)
+void meshkernel::CasulliRefinement::ConnectEdges(Mesh2D& mesh, const UInt currentNode, const std::vector<EdgeNodes>& newNodes, UInt& edgeCount, std::vector<UInt>& newEdges)
 {
-    std::unique_ptr<meshkernel::CompoundUndoAction> connectEdgesAction = CompoundUndoAction::Create();
-    std::fill(newEdges.begin(), newEdges.end(), constants::missing::uintValue);
+    std::ranges::fill(newEdges, constants::missing::uintValue);
     edgeCount = 0;
 
     for (UInt j = 0; j < mesh.m_nodesNumEdges[currentNode]; ++j)
@@ -400,29 +385,21 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ConnectEd
         {
             if (mesh.GetEdge(edgeId).first == currentNode)
             {
-                auto [edgeId1, connectionAction1] = mesh.ConnectNodes(currentNode, newNodes[edgeId][0]);
-                connectEdgesAction->Add(std::move(connectionAction1));
-
-                auto [edgeId2, connectionAction2] = mesh.ConnectNodes(currentNode, newNodes[edgeId][2]);
-                connectEdgesAction->Add(std::move(connectionAction2));
+                // With passing false for the collectUndo, ConnectNodes should return a null pointer
+                [[maybe_unused]] auto ignore1 = mesh.ConnectNodes(currentNode, newNodes[edgeId][0], false /* collectUndo info */);
+                [[maybe_unused]] auto ignore2 = mesh.ConnectNodes(currentNode, newNodes[edgeId][2], false /* collectUndo info */);
             }
             else
             {
-                auto [edgeId1, connectionAction1] = mesh.ConnectNodes(currentNode, newNodes[edgeId][1]);
-                connectEdgesAction->Add(std::move(connectionAction1));
-
-                auto [edgeId2, connectionAction2] = mesh.ConnectNodes(currentNode, newNodes[edgeId][3]);
-                connectEdgesAction->Add(std::move(connectionAction2));
+                [[maybe_unused]] auto ignore1 = mesh.ConnectNodes(currentNode, newNodes[edgeId][1], false /* collectUndo info */);
+                [[maybe_unused]] auto ignore2 = mesh.ConnectNodes(currentNode, newNodes[edgeId][3], false /* collectUndo info */);
             }
         }
     }
-
-    return connectEdgesAction;
 }
 
-std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::CreateMissingBoundaryEdges(Mesh2D& mesh, const UInt numNodes, const std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask)
+void meshkernel::CasulliRefinement::CreateMissingBoundaryEdges(Mesh2D& mesh, const UInt numNodes, const std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask)
 {
-    std::unique_ptr<meshkernel::CompoundUndoAction> missingBoundariesAction = CompoundUndoAction::Create();
     std::vector<UInt> newEdges(InitialEdgeArraySize);
 
     // make the missing boundary edges
@@ -435,7 +412,7 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::CreateMis
         }
 
         UInt edgeCount = 0;
-        missingBoundariesAction->Add(ConnectEdges(mesh, i, newNodes, edgeCount, newEdges));
+        ConnectEdges(mesh, i, newNodes, edgeCount, newEdges);
 
         if (edgeCount == 0)
         {
@@ -477,8 +454,8 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::CreateMis
             {
                 if (nodesToConnect[0] != constants::missing::uintValue && nodesToConnect[1] != constants::missing::uintValue && nodesToConnect[0] != nodesToConnect[1])
                 {
-                    auto [edgeId, connectionAction] = mesh.ConnectNodes(nodesToConnect[0], nodesToConnect[1]);
-                    missingBoundariesAction->Add(std::move(connectionAction));
+                    // With passing false for the collectUndo, ConnectNodes should return a null pointer
+                    [[maybe_unused]] auto ignore = mesh.ConnectNodes(nodesToConnect[0], nodesToConnect[1], false /* collectUndo info */);
                 }
             }
         }
@@ -488,21 +465,16 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::CreateMis
             {
                 if (nodesToConnect[j] != constants::missing::uintValue && nodesToConnect[j] != i)
                 {
-                    auto [edgeId, connectionAction] = mesh.ConnectNodes(i, nodesToConnect[j]);
-                    missingBoundariesAction->Add(std::move(connectionAction));
+                    [[maybe_unused]] auto ignore = mesh.ConnectNodes(i, nodesToConnect[j], false /* collectUndo info */);
                 }
             }
         }
     }
-
-    return missingBoundariesAction;
 }
 
-std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ConnectNewNodes(Mesh2D& mesh, const std::vector<EdgeNodes>& newNodes, const UInt numNodes, const UInt numEdges, const UInt numFaces, std::vector<NodeMask>& nodeMask)
+void meshkernel::CasulliRefinement::ConnectNewNodes(Mesh2D& mesh, const std::vector<EdgeNodes>& newNodes, const UInt numNodes, const UInt numEdges, const UInt numFaces, std::vector<NodeMask>& nodeMask)
 {
-    std::unique_ptr<CompoundUndoAction> connectNodesAction = CompoundUndoAction::Create();
-
-    connectNodesAction->Add(ConnectNodes(mesh, newNodes, numEdges));
+    ConnectNodes(mesh, newNodes, numEdges);
 
     // create the diagonal edges in quads that connect the new mesh with the old mesh
     for (UInt i = 0; i < numFaces; ++i)
@@ -527,11 +499,11 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ConnectNe
         // Check for active nodes
         if (faceIsActive)
         {
-            connectNodesAction->Add(ConnectFaceNodes(mesh, i, newNodes, nodeMask));
+            ConnectFaceNodes(mesh, i, newNodes, nodeMask);
         }
     }
 
-    connectNodesAction->Add(CreateMissingBoundaryEdges(mesh, numNodes, newNodes, nodeMask));
+    CreateMissingBoundaryEdges(mesh, numNodes, newNodes, nodeMask);
 
     for (UInt i = 0; i < numNodes; ++i)
     {
@@ -546,30 +518,21 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ConnectNe
 
             if (mesh.GetEdge(edgeId).first == i)
             {
-                auto [edgeId1, connectionAction1] = mesh.ConnectNodes(i, newNodes[edgeId][0]);
-                connectNodesAction->Add(std::move(connectionAction1));
-
-                auto [edgeId2, connectionAction2] = mesh.ConnectNodes(i, newNodes[edgeId][2]);
-                connectNodesAction->Add(std::move(connectionAction2));
+                // With passing false for the collectUndo, ConnectNodes should return a null pointer
+                [[maybe_unused]] auto ignore1 = mesh.ConnectNodes(i, newNodes[edgeId][0], false /* collectUndo info */);
+                [[maybe_unused]] auto ignore2 = mesh.ConnectNodes(i, newNodes[edgeId][2], false /* collectUndo info */);
             }
             else
             {
-                auto [edgeId1, connectionAction1] = mesh.ConnectNodes(i, newNodes[edgeId][1]);
-                connectNodesAction->Add(std::move(connectionAction1));
-
-                auto [edgeId2, connectionAction2] = mesh.ConnectNodes(i, newNodes[edgeId][3]);
-                connectNodesAction->Add(std::move(connectionAction2));
+                [[maybe_unused]] auto ignore1 = mesh.ConnectNodes(i, newNodes[edgeId][1], false /* collectUndo info */);
+                [[maybe_unused]] auto ignore2 = mesh.ConnectNodes(i, newNodes[edgeId][3], false /* collectUndo info */);
             }
         }
     }
-
-    return connectNodesAction;
 }
 
-std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ComputeNewFaceNodes(Mesh2D& mesh, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask)
+void meshkernel::CasulliRefinement::ComputeNewFaceNodes(Mesh2D& mesh, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask)
 {
-    std::unique_ptr<CompoundUndoAction> newFacesAction = CompoundUndoAction::Create();
-
     for (UInt i = 0; i < mesh.GetNumFaces(); ++i)
     {
         const Point elementCentre = mesh.m_facesCircumcenters[i];
@@ -612,7 +575,6 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ComputeNe
                 Point newNode = 0.5 * (elementCentre + mesh.Node(elementNode));
 
                 std::tie(newNodeId, nodeInsertionAction) = mesh.InsertNode(newNode);
-                newFacesAction->Add(std::move(nodeInsertionAction));
 
                 nodeMask[newNodeId] = NodeMask::NewAssignedNode;
             }
@@ -624,13 +586,10 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ComputeNe
             StoreNewNode(mesh, elementNode, firstEdgeId, secondEdgeId, newNodeId, newNodes);
         }
     }
-
-    return newFacesAction;
 }
 
-std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ComputeNewEdgeNodes(Mesh2D& mesh, const UInt numEdges, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask)
+void meshkernel::CasulliRefinement::ComputeNewEdgeNodes(Mesh2D& mesh, const UInt numEdges, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask)
 {
-    std::unique_ptr<CompoundUndoAction> newEdgeNodesAction = CompoundUndoAction::Create();
 
     for (UInt i = 0; i < numEdges; ++i)
     {
@@ -657,7 +616,6 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ComputeNe
             const Point newNode = 0.5 * (edgeCentre + mesh.Node(node1));
 
             std::tie(newNodeId, nodeInsertionAction) = mesh.InsertNode(newNode);
-            newEdgeNodesAction->Add(std::move(nodeInsertionAction));
             nodeMask[newNodeId] = NodeMask::NewGeneralNode;
         }
         else
@@ -672,7 +630,6 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ComputeNe
             const Point newNode = 0.5 * (edgeCentre + mesh.Node(node2));
 
             std::tie(newNodeId, nodeInsertionAction) = mesh.InsertNode(newNode);
-            newEdgeNodesAction->Add(std::move(nodeInsertionAction));
             nodeMask[newNodeId] = NodeMask::NewGeneralNode;
         }
         else
@@ -682,19 +639,15 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ComputeNe
 
         StoreNewNode(mesh, node2, i, i, newNodeId, newNodes);
     }
-
-    return newEdgeNodesAction;
 }
 
-std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::ComputeNewNodes(Mesh2D& mesh, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask)
+void meshkernel::CasulliRefinement::ComputeNewNodes(Mesh2D& mesh, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask)
 {
-    std::unique_ptr<CompoundUndoAction> newNodesAction = CompoundUndoAction::Create();
     // Keep copy of number of edges in mesh before any nodes are added.
     const UInt numEdges = mesh.GetNumEdges();
 
-    newNodesAction->Add(ComputeNewFaceNodes(mesh, newNodes, nodeMask));
-    newNodesAction->Add(ComputeNewEdgeNodes(mesh, numEdges, newNodes, nodeMask));
-    return newNodesAction;
+    ComputeNewFaceNodes(mesh, newNodes, nodeMask);
+    ComputeNewEdgeNodes(mesh, numEdges, newNodes, nodeMask);
 }
 
 void meshkernel::CasulliRefinement::StoreNewNode(const Mesh2D& mesh, const UInt nodeId, const UInt edge1Index, const UInt edge2Index, const UInt newNodeId, std::vector<EdgeNodes>& newNodes)
