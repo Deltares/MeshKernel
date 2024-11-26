@@ -112,6 +112,7 @@ TEST(MeshPropertyTests, BathymetryTest)
 
     int sampleDataSize = -1;
     errorCode = mkapi::mkernel_mesh2d_get_bathymetry_dimension(meshKernelId, sampleDataSize);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
     ASSERT_EQ(sampleDataSize, numberOfCoordinates);
 
     mkapi::GeometryList bathyData{};

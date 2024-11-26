@@ -32,30 +32,26 @@
 #include <iostream>
 #include <limits>
 
-namespace meshkernel
+
+extern "C"
 {
-
-    extern "C"
-    {
-        /// @brief Function of the Triangle library
-        ///
-        /// \see https://www.cs.cmu.edu/~quake/triangle.html
-        void Triangulation(int jatri,
-                           double const* const xs,
-                           double const* const ys,
-                           int ns,
-                           int* const indx,
-                           int* const numtri,
-                           int* const edgeidx,
-                           int* const numedge,
-                           int* const triedge,
-                           double* const xs3,
-                           double* const ys3,
-                           int* const ns3,
-                           double trisize);
-    }
-
-} // namespace meshkernel
+    /// @brief Function of the Triangle library
+    ///
+    /// \see https://www.cs.cmu.edu/~quake/triangle.html
+    void Triangulation(int jatri,
+                       double const* const xs,
+                       double const* const ys,
+                       int ns,
+                       int* const indx,
+                       int* const numtri,
+                       int* const edgeidx,
+                       int* const numedge,
+                       int* const triedge,
+                       double* const xs3,
+                       double* const ys3,
+                       int* const ns3,
+                       double trisize);
+}
 
 void meshkernel::MeshTriangulation::Compute(const std::span<const double>& xNodes,
                                             const std::span<const double>& yNodes)
