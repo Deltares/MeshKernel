@@ -1696,12 +1696,7 @@ namespace meshkernelapi
 
             const auto result = meshKernelState[meshKernelId].m_mesh2d->GetSmoothness();
 
-            std::copy (result.begin (), result.end (), geometryList.values);
-
-            // for (auto i = 0; i < geometryList.num_coordinates; ++i)
-            // {
-            //     geometryList.values[i] = result[i];
-            // }
+            std::copy(result.begin(), result.end(), geometryList.values);
         }
         catch (...)
         {
