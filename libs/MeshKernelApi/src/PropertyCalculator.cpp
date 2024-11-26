@@ -11,7 +11,7 @@ void meshkernelapi::OrthogonalityPropertyCalculator::Calculate(const MeshKernelS
         throw meshkernel::MeshKernelError("GeometryList with wrong dimensions");
     }
 
-    std::copy(values.begin(), values.end(), geometryList.values);
+    std::ranges::copy(values, geometryList.values);
 }
 
 int meshkernelapi::OrthogonalityPropertyCalculator::Size(const MeshKernelState& state) const
@@ -29,7 +29,7 @@ void meshkernelapi::EdgeLengthPropertyCalculator::Calculate(const MeshKernelStat
         throw meshkernel::MeshKernelError("GeometryList with wrong dimensions");
     }
 
-    std::copy(values.begin(), values.end(), geometryList.values);
+    std::ranges::copy(values, geometryList.values);
 }
 
 int meshkernelapi::EdgeLengthPropertyCalculator::Size(const MeshKernelState& state) const

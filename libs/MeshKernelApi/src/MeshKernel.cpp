@@ -1621,9 +1621,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const auto& mesh2d = meshKernelState.at(meshKernelId).m_mesh2d;
-
-            if (!mesh2d || mesh2d->GetNumNodes() <= 0)
+            if (const auto& mesh2d = meshKernelState.at(meshKernelId).m_mesh2d; !mesh2d || mesh2d->GetNumNodes() <= 0)
             {
                 return lastExitCode;
             }
@@ -1656,9 +1654,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const auto& mesh2d = meshKernelState.at(meshKernelId).m_mesh2d;
-
-            if (!mesh2d || mesh2d->GetNumNodes() <= 0)
+            if (const auto& mesh2d = meshKernelState.at(meshKernelId).m_mesh2d; !mesh2d || mesh2d->GetNumNodes() <= 0)
             {
                 return lastExitCode;
             }
@@ -1696,7 +1692,7 @@ namespace meshkernelapi
 
             const auto result = meshKernelState[meshKernelId].m_mesh2d->GetSmoothness();
 
-            std::copy(result.begin(), result.end(), geometryList.values);
+            std::ranges::copy(result, geometryList.values);
         }
         catch (...)
         {
