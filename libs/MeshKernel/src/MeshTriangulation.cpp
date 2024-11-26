@@ -90,8 +90,6 @@ void meshkernel::MeshTriangulation::Compute(const std::span<const double>& xNode
     std::vector<int> faceEdges;
 
     // If the number of estimated triangles is not sufficient, triangulation must be repeated
-    // TODO handle duplicate points
-    // TODO handle other triangle.c failures
     while (numFaces < 0)
     {
         numFaces = static_cast<int>(estimatedNumberOfTriangles);
