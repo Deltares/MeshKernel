@@ -140,6 +140,7 @@ namespace meshkernelapi
         return propertyMap;
     }
 
+    /// @brief Map of property calculators, from an property identifier to the calculator.
     static std::map<int, std::unique_ptr<PropertyCalculator>> propertyCalculators = allocatePropertyCalculators();
 
     static meshkernel::ExitCode HandleException(std::exception_ptr exception_ptr = std::current_exception())
@@ -1631,10 +1632,6 @@ namespace meshkernelapi
             {
                 propertyCalculators[propertyValue]->Calculate(meshKernelState.at(meshKernelId), geometryList);
             }
-            // if (propertyCalculators.contains(propertyValue) && propertyCalculators[propertyValue] != nullptr)
-            // {
-            //     propertyCalculators[propertyValue]->Calculate(meshKernelId, geometryList);
-            // }
             else
             {
                 throw meshkernel::MeshKernelError("Property not supported");
@@ -1650,6 +1647,8 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_mesh2d_get_property_dimension(int meshKernelId, int propertyValue, int& dimension)
     {
         lastExitCode = meshkernel::ExitCode::Success;
+        dimension = -1;
+
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1663,8 +1662,6 @@ namespace meshkernelapi
             {
                 return lastExitCode;
             }
-
-            dimension = -1;
 
             if (propertyCalculators.contains(propertyValue) && propertyCalculators[propertyValue] != nullptr)
             {
@@ -1699,10 +1696,12 @@ namespace meshkernelapi
 
             const auto result = meshKernelState[meshKernelId].m_mesh2d->GetSmoothness();
 
-            for (auto i = 0; i < geometryList.num_coordinates; ++i)
-            {
-                geometryList.values[i] = result[i];
-            }
+            std::copy (result.begin (), result.end (), geometryList.values);
+
+            // for (auto i = 0; i < geometryList.num_coordinates; ++i)
+            // {
+            //     geometryList.values[i] = result[i];
+            // }
         }
         catch (...)
         {
