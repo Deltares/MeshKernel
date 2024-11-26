@@ -659,49 +659,52 @@ inline meshkernel::Cartesian3DPoint meshkernel::operator*(const Cartesian3DPoint
     return value * p;
 }
 
-template <typename PointVector>
-[[nodiscard]] meshkernel::Point meshkernel::ComputeAverageCoordinate(const PointVector& points, const Projection& projection)
+namespace meshkernel
 {
-    size_t validCount = std::ranges::count_if(points, [](const Point& p)
-                                              { return p.IsValid(); });
-
-    if (projection == Projection::sphericalAccurate)
+    template <typename PointVector>
+    [[nodiscard]] Point ComputeAverageCoordinate(const PointVector& points, const Projection& projection)
     {
+        size_t validCount = std::ranges::count_if(points, [](const Point& p)
+        { return p.IsValid(); });
 
-        UInt firstValidPoint = 0;
-
-        if (validCount != points.size())
+        if (projection == Projection::sphericalAccurate)
         {
-            auto iterator = std::find_if(points.begin(), points.end(), [](const Point& p)
-                                         { return p.IsValid(); });
-            firstValidPoint = iterator - points.begin();
-        }
 
-        Cartesian3DPoint averagePoint3D{0.0, 0.0, 0.0};
-        for (const auto& point : points)
-        {
-            if (!point.IsValid())
+            UInt firstValidPoint = 0;
+
+            if (validCount != points.size())
             {
-                continue;
+                auto iterator = std::find_if(points.begin(), points.end(), [](const Point& p)
+                { return p.IsValid(); });
+                firstValidPoint = iterator - points.begin();
             }
 
-            const Cartesian3DPoint point3D{SphericalToCartesian3D(point)};
-            averagePoint3D.x += point3D.x;
-            averagePoint3D.y += point3D.y;
-            averagePoint3D.z += point3D.z;
+            Cartesian3DPoint averagePoint3D{0.0, 0.0, 0.0};
+            for (const auto& point : points)
+            {
+                if (!point.IsValid())
+                {
+                    continue;
+                }
+
+                const Cartesian3DPoint point3D{SphericalToCartesian3D(point)};
+                averagePoint3D.x += point3D.x;
+                averagePoint3D.y += point3D.y;
+                averagePoint3D.z += point3D.z;
+            }
+            averagePoint3D.x = averagePoint3D.x / static_cast<double>(validCount);
+            averagePoint3D.y = averagePoint3D.y / static_cast<double>(validCount);
+            averagePoint3D.z = averagePoint3D.z / static_cast<double>(validCount);
+
+            return Cartesian3DToSpherical(averagePoint3D, points[firstValidPoint].x);
         }
-        averagePoint3D.x = averagePoint3D.x / static_cast<double>(validCount);
-        averagePoint3D.y = averagePoint3D.y / static_cast<double>(validCount);
-        averagePoint3D.z = averagePoint3D.z / static_cast<double>(validCount);
 
-        return Cartesian3DToSpherical(averagePoint3D, points[firstValidPoint].x);
+        auto result = std::accumulate(points.begin(), points.end(), Point{0.0, 0.0}, [](const Point& sum, const Point& current)
+        { return current.IsValid() ? sum + current : sum; });
+        result.x = result.x / static_cast<double>(validCount);
+        result.y = result.y / static_cast<double>(validCount);
+        return result;
     }
-
-    auto result = std::accumulate(points.begin(), points.end(), Point{0.0, 0.0}, [](const Point& sum, const Point& current)
-                                  { return current.IsValid() ? sum + current : sum; });
-    result.x = result.x / static_cast<double>(validCount);
-    result.y = result.y / static_cast<double>(validCount);
-    return result;
 }
 
 template <class PointVector>
