@@ -13,7 +13,6 @@ namespace mk = meshkernel;
 
 TEST(MeshPropertyTests, TriangulationTest)
 {
-    // const double tolerance = 1.0e-13;
     std::vector<double> xValues{0.0, 1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0};
     std::vector<double> yValues{0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 3.0};
 
@@ -32,30 +31,30 @@ TEST(MeshPropertyTests, TriangulationTest)
 
     for (mk::UInt i = 0; i < triangulation.NumberOfEdges(); ++i)
     {
-        auto edge = triangulation.GetEdge(i);
-        EXPECT_EQ(edge.first, expectedEdgeIds[i].first);
-        EXPECT_EQ(edge.second, expectedEdgeIds[i].second);
+        auto [edgeStart, edgeEnd] = triangulation.GetEdge(i);
+        EXPECT_EQ(edgeStart, expectedEdgeIds[i].first);
+        EXPECT_EQ(edgeEnd, expectedEdgeIds[i].second);
     }
 
     for (mk::UInt i = 0; i < triangulation.NumberOfFaces(); ++i)
     {
-        auto face = triangulation.GetNodeIds(i);
-        EXPECT_EQ(face[0], expectedTriangleNodeIds[i][0]);
-        EXPECT_EQ(face[1], expectedTriangleNodeIds[i][1]);
-        EXPECT_EQ(face[2], expectedTriangleNodeIds[i][2]);
+        auto [id1, id2, id3] = triangulation.GetNodeIds(i);
+        EXPECT_EQ(id1, expectedTriangleNodeIds[i][0]);
+        EXPECT_EQ(id2, expectedTriangleNodeIds[i][1]);
+        EXPECT_EQ(id3, expectedTriangleNodeIds[i][2]);
     }
 
     for (mk::UInt i = 0; i < triangulation.NumberOfFaces(); ++i)
     {
-        auto faceNodes = triangulation.GetNodes(i);
-        EXPECT_EQ(faceNodes[0].x, triangulation.GetNode(expectedTriangleNodeIds[i][0]).x);
-        EXPECT_EQ(faceNodes[0].y, triangulation.GetNode(expectedTriangleNodeIds[i][0]).y);
+        auto [p1, p2, p3] = triangulation.GetNodes(i);
+        EXPECT_EQ(p1.x, triangulation.GetNode(expectedTriangleNodeIds[i][0]).x);
+        EXPECT_EQ(p1.y, triangulation.GetNode(expectedTriangleNodeIds[i][0]).y);
 
-        EXPECT_EQ(faceNodes[1].x, triangulation.GetNode(expectedTriangleNodeIds[i][1]).x);
-        EXPECT_EQ(faceNodes[1].y, triangulation.GetNode(expectedTriangleNodeIds[i][1]).y);
+        EXPECT_EQ(p2.x, triangulation.GetNode(expectedTriangleNodeIds[i][1]).x);
+        EXPECT_EQ(p2.y, triangulation.GetNode(expectedTriangleNodeIds[i][1]).y);
 
-        EXPECT_EQ(faceNodes[2].x, triangulation.GetNode(expectedTriangleNodeIds[i][2]).x);
-        EXPECT_EQ(faceNodes[2].y, triangulation.GetNode(expectedTriangleNodeIds[i][2]).y);
+        EXPECT_EQ(p3.x, triangulation.GetNode(expectedTriangleNodeIds[i][2]).x);
+        EXPECT_EQ(p3.y, triangulation.GetNode(expectedTriangleNodeIds[i][2]).y);
     }
 
     // Origin of mesh is {0, 0}, with delta {1,1} and there are 3x3 nodes

@@ -147,9 +147,9 @@ meshkernel::MeshTriangulation::MeshTriangulation(const PointVector& nodes,
 }
 
 template <class VectorType>
-inline meshkernel::MeshTriangulation::MeshTriangulation(const VectorType& xNodes,
-                                                        const VectorType& yNodes,
-                                                        const Projection projection)
+meshkernel::MeshTriangulation::MeshTriangulation(const VectorType& xNodes,
+                                                 const VectorType& yNodes,
+                                                 const Projection projection)
     : m_nodes(xNodes.size()),
       m_projection(projection)
 {
