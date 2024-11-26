@@ -43,9 +43,15 @@
 namespace meshkernel
 {
 
+    /// @brief Interpolator for sample data on a triangulated grid.
+    ///
+    /// The triangulation does not have to match any mesh.
     class SampleInterpolator
     {
     public:
+        /// @brief Constructor.
+        ///
+        /// The VectorType can be any array type of double precision values, e.g. std::vector, std::span.
         template <class VectorType>
         SampleInterpolator(const VectorType& xNodes, const VectorType& yNodes,
                            const Projection projection)
@@ -130,7 +136,7 @@ void meshkernel::SampleInterpolator::Interpolate(const std::string& name, const 
             continue;
         }
 
-        const UInt elementId = m_triangulation.FindFace(iterpolationNodes[i]);
+        const UInt elementId = m_triangulation.FindNearestFace(iterpolationNodes[i]);
 
         if (elementId == constants::missing::uintValue)
         {
