@@ -104,11 +104,6 @@ void meshkernel::SampleInterpolator::SetData(const std::string& name, const Vect
                               m_triangulation.NumberOfNodes(), sampleData.size());
     }
 
-    if (!Contains(name))
-    {
-        m_sampleData.try_emplace(name, std::vector<double>());
-    }
-
     m_sampleData[name].assign(sampleData.begin(), sampleData.end());
 }
 
