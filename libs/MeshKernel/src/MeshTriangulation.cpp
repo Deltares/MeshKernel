@@ -61,14 +61,14 @@ void meshkernel::MeshTriangulation::Compute(const std::span<const double>& xNode
                                             const std::span<const double>& yNodes)
 {
 
-    if (xNodes.size () != yNodes.size ())
+    if (xNodes.size() != yNodes.size())
     {
-        throw ConstraintError("x- and y-points are not the same size: {} /= {}", xNodes.size (), yNodes.size ());
+        throw ConstraintError("x- and y-points are not the same size: {} /= {}", xNodes.size(), yNodes.size());
     }
 
-    if (xNodes.size () < 3)
+    if (xNodes.size() < 3)
     {
-        throw ConstraintError("There are not enough poits in mesh for a triangulation: {}", xNodes.size ());
+        throw ConstraintError("There are not enough poits in mesh for a triangulation: {}", xNodes.size());
     }
 
     m_numEdges = 0;
