@@ -85,10 +85,8 @@ namespace meshkernel
         /// @brief Get the node id's of the element
         std::array<UInt, 3> GetNodeIds(const UInt faceId) const;
 
-        /// @brief Find the face containing the point
-        ///
-        /// May return the UInt invalid value if face is not found.
-        UInt FindFace(const Point& pnt) const;
+        /// @brief Find the nearest face to the point
+        UInt FindNearestFace(const Point& pnt) const;
 
         /// @brief Determine if the point lies within the element
         bool PointIsInElement(const Point& pnt, const UInt faceId) const;
@@ -97,8 +95,6 @@ namespace meshkernel
         void Print(std::ostream& out = std::cout) const;
 
     private:
-        double Sign(const Point& p1, const Point& p2, const Point& p3) const;
-
         /// @brief Compute the triangulation.
         void Compute(const std::span<const double>& xNodes,
                      const std::span<const double>& yNodes);

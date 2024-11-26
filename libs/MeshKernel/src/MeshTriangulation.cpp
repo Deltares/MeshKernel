@@ -60,6 +60,17 @@ namespace meshkernel
 void meshkernel::MeshTriangulation::Compute(const std::span<const double>& xNodes,
                                             const std::span<const double>& yNodes)
 {
+
+    if (xNodes.size () != yNodes.size ())
+    {
+        throw ConstraintError("x- and y-points are not the same size: {} /= {}", xNodes.size (), yNodes.size ());
+    }
+
+    if (xNodes.size () < 3)
+    {
+        throw ConstraintError("There are not enough poits in mesh for a triangulation: {}", xNodes.size ());
+    }
+
     m_numEdges = 0;
     m_numFaces = 0;
 
@@ -146,9 +157,10 @@ void meshkernel::MeshTriangulation::Compute(const std::span<const double>& xNode
     }
 }
 
-meshkernel::UInt meshkernel::MeshTriangulation::FindFace(const Point& pnt) const
+meshkernel::UInt meshkernel::MeshTriangulation::FindNearestFace(const Point& pnt) const
 {
     m_elementCentreRTree->SearchNearestPoint(pnt);
+
     return m_elementCentreRTree->HasQueryResults() ? m_elementCentreRTree->GetQueryResult(0) : constants::missing::uintValue;
 }
 
@@ -184,11 +196,6 @@ std::array<meshkernel::UInt, 3> meshkernel::MeshTriangulation::GetNodeIds(const 
     UInt faceIndexStart = 3 * faceId;
 
     return {m_faceNodes[faceIndexStart], m_faceNodes[faceIndexStart + 1], m_faceNodes[faceIndexStart + 2]};
-}
-
-double meshkernel::MeshTriangulation::Sign(const Point& p1, const Point& p2, const Point& p3) const
-{
-    return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
 }
 
 bool meshkernel::MeshTriangulation::PointIsInElement(const Point& pnt, const UInt faceId) const
