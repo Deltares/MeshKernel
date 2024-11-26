@@ -68,7 +68,7 @@ void meshkernel::MeshTriangulation::Compute(const std::span<const double>& xNode
 
     if (xNodes.size() < 3)
     {
-        throw ConstraintError("There are not enough poits in mesh for a triangulation: {}", xNodes.size());
+        throw ConstraintError("There are not enough points in mesh for a triangulation: {}", xNodes.size());
     }
 
     m_numEdges = 0;
