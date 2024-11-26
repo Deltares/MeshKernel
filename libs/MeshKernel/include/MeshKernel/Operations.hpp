@@ -674,9 +674,9 @@ namespace meshkernel
 
             if (validCount != points.size())
             {
-                auto iterator = std::find_if(points.begin(), points.end(), [](const Point& p)
+                auto iterator = std::ranges::find_if(points, [](const Point& p)
                                              { return p.IsValid(); });
-                firstValidPoint = iterator - points.begin();
+                firstValidPoint = static_cast<UInt>(iterator - points.begin());
             }
 
             Cartesian3DPoint averagePoint3D{0.0, 0.0, 0.0};

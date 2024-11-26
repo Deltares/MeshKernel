@@ -53,7 +53,8 @@ namespace meshkernel
         ///
         /// The VectorType can be any array type of double precision values, e.g. std::vector, std::span.
         template <class VectorType>
-        SampleInterpolator(const VectorType& xNodes, const VectorType& yNodes,
+        SampleInterpolator(const VectorType& xNodes,
+                           const VectorType& yNodes,
                            const Projection projection)
             : m_triangulation(xNodes, yNodes, projection) {}
 
@@ -105,7 +106,7 @@ void meshkernel::SampleInterpolator::SetData(const std::string& name, const Vect
 
     if (!Contains(name))
     {
-        m_sampleData.emplace(name, std::vector<double>());
+        m_sampleData.try_emplace(name, std::vector<double>());
     }
 
     m_sampleData[name].assign(sampleData.begin(), sampleData.end());
