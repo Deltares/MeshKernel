@@ -665,7 +665,7 @@ namespace meshkernel
     [[nodiscard]] Point ComputeAverageCoordinate(const PointVector& points, const Projection& projection)
     {
         size_t validCount = std::ranges::count_if(points, [](const Point& p)
-        { return p.IsValid(); });
+                                                  { return p.IsValid(); });
 
         if (projection == Projection::sphericalAccurate)
         {
@@ -675,7 +675,7 @@ namespace meshkernel
             if (validCount != points.size())
             {
                 auto iterator = std::find_if(points.begin(), points.end(), [](const Point& p)
-                { return p.IsValid(); });
+                                             { return p.IsValid(); });
                 firstValidPoint = iterator - points.begin();
             }
 
@@ -700,12 +700,12 @@ namespace meshkernel
         }
 
         auto result = std::accumulate(points.begin(), points.end(), Point{0.0, 0.0}, [](const Point& sum, const Point& current)
-        { return current.IsValid() ? sum + current : sum; });
+                                      { return current.IsValid() ? sum + current : sum; });
         result.x = result.x / static_cast<double>(validCount);
         result.y = result.y / static_cast<double>(validCount);
         return result;
     }
-}
+} // namespace meshkernel
 
 template <class PointVector>
 [[nodiscard]] bool meshkernel::IsPointInTriangle(const Point& point,
