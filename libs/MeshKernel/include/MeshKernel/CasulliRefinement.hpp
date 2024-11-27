@@ -114,6 +114,21 @@ namespace meshkernel
         /// @param [in] numEdges Number of edges in original mesh, before refinement.
         static void ConnectNodes(Mesh2D& mesh, const std::vector<EdgeNodes>& newNodes, const UInt numEdges);
 
+        /// @brief Get list of node-ids that should be connected to the nodeIndex
+        static std::vector<UInt> GetNodesToConnect(const Mesh2D& mesh,
+                                                   const std::vector<NodeMask>& nodeMask,
+                                                   const std::vector<UInt>& newEdges,
+                                                   const std::vector<EdgeNodes>& newNodes,
+                                                   const UInt edgeCount,
+                                                   const UInt nodeIndex);
+
+        /// @brief Connect nodes to nodeIndex.
+        static void ConnectNodes(Mesh2D& mesh,
+                                 const NodeMask nodeMask,
+                                 const std::vector<UInt>& nodesToConnect,
+                                 const UInt edgeCount,
+                                 const UInt nodeIndex);
+
         /// @brief Compute new edges required for refinement
         ///
         /// @param [in, out] mesh The mesh being refined

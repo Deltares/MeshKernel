@@ -182,6 +182,12 @@ namespace meshkernel
         std::vector<double> ComputeMaximumEdgeGrowTime(const lin_alg::RowVector<Point>& coordinates,
                                                        const std::vector<Point>& velocities) const;
 
+        /// @brief Check corner nodes
+        bool CheckCornerNodes(const UInt p,
+                              const lin_alg::RowVector<UInt>& indices,
+                              const lin_alg::Matrix<UInt>& gridPointsIndices,
+                              const bool increaseOffset) const;
+
         /// @brief Copy growth velocities to the advancing front, add points at front corners corners (copy_vel_to_front)
         /// @param[in] layerIndex The current grid layerIndex index
         /// @param[in] previousFrontVelocities The previous front velocities
@@ -368,5 +374,33 @@ namespace meshkernel
         std::vector<UInt> m_subLayerGridPoints;                            ///< Sublayer grid points
         lin_alg::Matrix<UInt> m_numPerpendicularFacesOnSubintervalAndEdge; ///< Perpendicular faces on subinterval and edge
         lin_alg::Matrix<double> m_growFactorOnSubintervalAndEdge;          ///< Grow factor on subinterval and edge
+
+        /// @brief Move any grid nodes
+        /// @returns Number of grid nodes moved.
+        UInt MoveGridNodes(const UInt i, const UInt j, const UInt firstLeftIndex, const UInt firstRightIndex);
+
+        /// @brief Compute the end points of the spline crossing the main spline
+        std::tuple<Point, Point> GetCrossSplinePoints(const UInt s, const UInt i) const;
+
+        /// @brief Move active layer points.
+        ///
+        /// The amount of displacement is determined by the time-step size and the velocity
+        void TranslateActiveLayerPoints(const std::vector<Point>& velocityVectorAtGridPoints,
+                                        const double localTimeStep,
+                                        lin_alg::RowVector<Point>& activeLayerPoints) const;
+
+        /// @brief Disable front nodes that do not satisfy the time-step requirements
+        void DisableValidFrontNodes(const std::vector<double>& otherTimeStepMax,
+                                    const double otherTimeStep,
+                                    const double localTimeStep,
+                                    std::vector<UInt>& newValidFrontNodes) const;
+
+        /// @brief Set active layer points to invalid is indicated by validFrontNodes
+        void InvalidateActiveLayerPoints(lin_alg::RowVector<Point>& activeLayerPoints) const;
+
+        /// @brief Invalidate grid nodes that exceed edge angle requirements
+        void InvalidateGridNodes(const UInt layerIndex,
+                                 lin_alg::RowVector<Point>& activeLayerPoints,
+                                 std::vector<UInt>& newValidFrontNodes);
     };
 } // namespace meshkernel

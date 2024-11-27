@@ -160,6 +160,19 @@ namespace meshkernel
                                          const double lastDistance,
                                          std::vector<double>& averageLengths);
 
+        /// @brief Get the node of the polygon from start-index to end-index.
+        void GetPolygonNodes(const UInt startIndex,
+                             const UInt endIndex,
+                             std::vector<Point>& polygonNodes) const;
+
+        /// @brief Compute the cumulative distance, from first node, of the segments of the polygon.
+        std::vector<double> ComputeCumulativeDistances(const std::vector<meshkernel::Point>& polygonNodes) const;
+
+        /// @brief Find the indices of the minimum and maximum average length ratios.
+        std::tuple<meshkernel::UInt, meshkernel::UInt>
+        FindMinMaxRatioIndex(const std::vector<double>& averageLengths,
+                             const std::vector<double>& actualAverageLengths) const;
+
         /// @brief Interpolate at the point on a polyline.
         static meshkernel::Point interpolatePointOnPolyline(const std::vector<meshkernel::Point>& points,
                                                             const std::vector<double>& cumulativeDistances,

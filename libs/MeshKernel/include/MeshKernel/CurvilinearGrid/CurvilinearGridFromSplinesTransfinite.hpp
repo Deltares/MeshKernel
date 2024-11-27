@@ -60,6 +60,15 @@ namespace meshkernel
         /// finds intersections and orders the splines
         void CharacteriseSplines();
 
+        /// @brief Compute spline intersections in n-direction
+        void ComputeNDirectionIntersections();
+
+        /// @brief Compute spline intersections in m-direction
+        void ComputeMDirectionIntersections();
+
+        /// @brief Compute spline intersection start and end points
+        void ComputeSplineStartAndEnd(const UInt outerStart, const UInt outerEnd, const UInt innerStart, const UInt innerEnd);
+
         /// @brief Label each spline and its intersection.
         ///
         /// In which group does it lie (m or n), and spline crossing indices.
@@ -113,6 +122,21 @@ namespace meshkernel
                                     UInt numDiscretizations,
                                     const std::vector<double>& intersectionDistances,
                                     std::vector<double>& distances) const;
+
+        /// @brief Fill side point arrays
+        void FillInterpolationPlaneBlock(const lin_alg::Matrix<Point>& gridNodes,
+                                         const UInt i,
+                                         const UInt j,
+                                         std::vector<Point>& bottomSide,
+                                         std::vector<Point>& upperSide,
+                                         std::vector<Point>& leftSide,
+                                         std::vector<Point>& rightSide) const;
+
+        /// @brief Assign interpolated points to the grid block
+        void AssignInterpolatedNodes(const UInt i,
+                                     const UInt j,
+                                     const lin_alg::Matrix<Point>& interpolationResult,
+                                     lin_alg::Matrix<Point>& gridNodes) const;
 
         std::vector<int> m_splineType;                                           ///< The spline types (1 horizontal, -1 vertical)
         std::vector<std::vector<double>> m_splineIntersectionRatios;             ///< For each spline, stores the intersections in terms of total spline length

@@ -36,7 +36,7 @@
 
 namespace meshkernel
 {
-    /// @brief Compute the Casulli de-refinement for a mesh.
+    /// @brief Compute the Casulli de-refinement for a mesh (derefine_mesh).
     class CasulliDeRefinement
     {
     public:
@@ -78,6 +78,14 @@ namespace meshkernel
             Unassigned = 0     //< not assigned a value                           0
         };
 
+        /// @brief Indicates what should happen
+        enum class ResultIndicator
+        {
+            ReturnFromFunction, //< Return (false) from the current function
+            BreakInnerLoop,     //< Break the inner loop
+            ContinueInnerLoop   //< Continue in the inner loop
+        };
+
         /// @brief Indicate if the element can be a seed element or not.
         static bool ElementIsSeed(const Mesh2D& mesh,
                                   const std::vector<int>& nodeTypes,
@@ -98,6 +106,16 @@ namespace meshkernel
                                                  const std::vector<UInt>& directlyConnected,
                                                  std::vector<UInt>& indirectlyConnected);
 
+        /// @brief Assign directly connected element indices
+        static void AssignDirectlyConnected(const std::vector<UInt>& directlyConnected,
+                                            std::array<int, 2>& kne,
+                                            UInt& neighbouringElementId);
+
+        /// @brief Assign indirectly connected element indices
+        static void AssignIndirectlyConnected(const std::vector<UInt>& indirectlyConnected,
+                                              std::array<int, 2>& kne,
+                                              const UInt neighbouringElementId);
+
         /// @brief Find element id's
         static void FindAdjacentCells(const Mesh2D& mesh,
                                       const std::vector<UInt>& directlyConnected,
@@ -110,6 +128,32 @@ namespace meshkernel
                                          std::vector<UInt>& directlyConnected,
                                          std::vector<UInt>& indirectlyConnected,
                                          std::vector<std::array<int, 2>>& kne);
+
+        /// @brief Update cell mask for directly connected elements
+        static void UpdateCellMaskDirectlyConnectedNodeFirst(const std::vector<UInt>& directlyConnected,
+                                                             const Mesh2D& mesh,
+                                                             const std::vector<UInt>& frontIndex,
+                                                             std::vector<UInt>& frontIndexCopy,
+                                                             std::vector<ElementType>& cellMask);
+
+        /// @brief Update cell mask for indirectly connected elements
+        static void UpdateCellMaskIndirectlyConnectedNodeFirst(const std::vector<UInt>& directlyConnected,
+                                                               const Mesh2D& mesh,
+                                                               std::vector<ElementType>& cellMask);
+
+        /// @brief Update cell mask for directly connected elements
+        static void UpdateCellMaskDirectlyConnectedEdgeFirst(const std::vector<UInt>& directlyConnected,
+                                                             const Mesh2D& mesh,
+                                                             const std::vector<UInt>& frontIndex,
+                                                             std::vector<UInt>& frontIndexCopy,
+                                                             std::vector<ElementType>& cellMask);
+
+        /// @brief Update cell mask for indirectly connected elements
+        static void UpdateCellMaskIndirectlyConnectedEdgeFirst(const std::vector<UInt>& indirectlyConnected,
+                                                               const Mesh2D& mesh,
+                                                               const std::vector<UInt>& frontIndex,
+                                                               std::vector<UInt>& frontIndexCopy,
+                                                               std::vector<ElementType>& cellMask);
 
         /// @brief Initialise the element mask.
         static std::vector<ElementType> InitialiseElementType(const Mesh2D& mesh,
@@ -125,6 +169,16 @@ namespace meshkernel
         static Point ComputeNewNodeCoordinates(const Mesh2D& mesh,
                                                const std::vector<int>& nodeTypes,
                                                const UInt nodeId);
+
+        /// @brief Get the element index
+        static UInt GetElementIndex(const std::array<int, 2>& kne,
+                                    const UInt index);
+
+        /// @brief Find a common edge between elements
+        static std::tuple<UInt, UInt> FindCommonEdge(Mesh2D& mesh,
+                                                     const UInt leftElementId,
+                                                     const UInt rightElementId,
+                                                     const UInt connectedElementId);
 
         /// @brief Update the mesh members for the mesh description and connectivity.
         [[nodiscard]] static bool UpdateDirectlyConnectedElements(Mesh2D& mesh,
@@ -164,6 +218,16 @@ namespace meshkernel
                                                      const UInt elementId,
                                                      const UInt nodeId,
                                                      const std::vector<UInt>& indirectlyConnected);
+
+        /// @brief Remove a boundary node or edge
+        static ResultIndicator RemoveBoundaryNodeAndEdge(Mesh2D& mesh,
+                                                         const Polygons& polygon,
+                                                         const std::vector<int>& nodeTypes,
+                                                         const UInt faceNodeIndex,
+                                                         const UInt connectedElementId,
+                                                         const UInt edgeId,
+                                                         const UInt previousEdgeId,
+                                                         const UInt nodeId);
 
         /// @brief Removes nodes from the boundary that will not be part of the de-refined mesh.
         [[nodiscard]] static bool RemoveUnwantedBoundaryNodes(Mesh2D& mesh,

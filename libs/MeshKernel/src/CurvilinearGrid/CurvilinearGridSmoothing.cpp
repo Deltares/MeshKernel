@@ -103,6 +103,56 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridSmoothing::ComputeDirectional()
     return std::make_unique<CurvilinearGrid>(m_grid);
 }
 
+std::tuple<meshkernel::Point, meshkernel::Point> CurvilinearGridSmoothing::ComputeGridDelta(const UInt n, const UInt m) const
+{
+    Point firstDelta;
+    Point secondDelta;
+
+    if (m_lines[0].IsNGridLine())
+    {
+        firstDelta = m_gridNodesCache(n, m) - m_gridNodesCache(n - 1, m);
+        secondDelta = m_gridNodesCache(n, m) - m_gridNodesCache(n + 1, m);
+    }
+    else
+    {
+        firstDelta = m_gridNodesCache(n, m) - m_gridNodesCache(n, m - 1);
+        secondDelta = m_gridNodesCache(n, m) - m_gridNodesCache(n, m + 1);
+    }
+
+    return {firstDelta, secondDelta};
+}
+
+meshkernel::Point CurvilinearGridSmoothing::ComputeSmoothedGridNode(const UInt n,
+                                                                    const UInt m,
+                                                                    const double firstLengthSquared,
+                                                                    const double secondLengthSquared) const
+{
+    const double smoothingFactor = 0.5;
+
+    const auto maxlength = std::max(firstLengthSquared, secondLengthSquared);
+    const auto characteristicLength = std::abs(secondLengthSquared - firstLengthSquared) * 0.5;
+    const auto [mSmoothing, nSmoothing, mixedSmoothing] = CurvilinearGrid::ComputeDirectionalSmoothingFactors({n, m}, m_lines[0].m_startNode, m_lowerLeft, m_upperRight);
+
+    Point gridNode;
+
+    if (m_lines[0].IsNGridLine())
+    {
+        // smooth along vertical
+        const auto a = maxlength < 1e-8 ? 0.5 : mSmoothing * smoothingFactor * characteristicLength / maxlength;
+        const auto maxDelta = firstLengthSquared > secondLengthSquared ? m_gridNodesCache(n - 1, m) - m_grid.GetNode(n, m) : m_gridNodesCache(n + 1, m) - m_grid.GetNode(n, m);
+        gridNode = m_gridNodesCache(n, m) + maxDelta * a;
+    }
+    else
+    {
+        // smooth along horizontal
+        const auto a = maxlength < 1e-8 ? 0.5 : nSmoothing * smoothingFactor * characteristicLength / maxlength;
+        const auto maxDelta = firstLengthSquared > secondLengthSquared ? m_gridNodesCache(n, m - 1) - m_grid.GetNode(n, m) : m_gridNodesCache(n, m + 1) - m_grid.GetNode(n, m);
+        gridNode = m_gridNodesCache(n, m) + maxDelta * a;
+    }
+
+    return gridNode;
+}
+
 void CurvilinearGridSmoothing::SolveDirectional()
 {
 
@@ -124,7 +174,6 @@ void CurvilinearGridSmoothing::SolveDirectional()
     };
 
     // Apply smoothing
-    const double smoothingFactor = 0.5;
     for (auto n = m_lowerLeft.m_n; n <= m_upperRight.m_n; ++n)
     {
         for (auto m = m_lowerLeft.m_m; m <= m_upperRight.m_m; ++m)
@@ -136,41 +185,12 @@ void CurvilinearGridSmoothing::SolveDirectional()
             }
 
             // Calculate influence radius
-            Point firstDelta;
-            Point secondDelta;
-            if (m_lines[0].IsNGridLine())
-            {
-                firstDelta = m_gridNodesCache(n, m) - m_gridNodesCache(n - 1, m);
-                secondDelta = m_gridNodesCache(n, m) - m_gridNodesCache(n + 1, m);
-            }
-            else
-            {
-                firstDelta = m_gridNodesCache(n, m) - m_gridNodesCache(n, m - 1);
-                secondDelta = m_gridNodesCache(n, m) - m_gridNodesCache(n, m + 1);
-            }
+            auto [firstDelta, secondDelta] = ComputeGridDelta(n, m);
 
-            const auto firstLengthSquared = firstDelta.x * firstDelta.x + firstDelta.y * firstDelta.y;
-            const auto secondLengthSquared = secondDelta.x * secondDelta.x + secondDelta.y * secondDelta.y;
-            const auto maxlength = std::max(firstLengthSquared, secondLengthSquared);
-            const auto characteristicLength = std::abs(secondLengthSquared - firstLengthSquared) * 0.5;
-            const auto [mSmoothing, nSmoothing, mixedSmoothing] = CurvilinearGrid::ComputeDirectionalSmoothingFactors({n, m}, m_lines[0].m_startNode, m_lowerLeft, m_upperRight);
+            const auto firstLengthSquared = lengthSquared(firstDelta);
+            const auto secondLengthSquared = lengthSquared(secondDelta);
 
-            if (m_lines[0].IsNGridLine())
-            {
-                // smooth along vertical
-                const auto a = maxlength < 1e-8 ? 0.5 : mSmoothing * smoothingFactor * characteristicLength / maxlength;
-                const auto maxDelta = firstLengthSquared > secondLengthSquared ? m_gridNodesCache(n - 1, m) - m_grid.GetNode(n, m) : m_gridNodesCache(n + 1, m) - m_grid.GetNode(n, m);
-                const auto val = m_gridNodesCache(n, m) + maxDelta * a;
-                m_grid.GetNode(n, m) = val;
-            }
-            else
-            {
-                // smooth along horizontal
-                const auto a = maxlength < 1e-8 ? 0.5 : nSmoothing * smoothingFactor * characteristicLength / maxlength;
-                const auto maxDelta = firstLengthSquared > secondLengthSquared ? m_gridNodesCache(n, m - 1) - m_grid.GetNode(n, m) : m_gridNodesCache(n, m + 1) - m_grid.GetNode(n, m);
-                const auto val = m_gridNodesCache(n, m) + maxDelta * a;
-                m_grid.GetNode(n, m) = val;
-            }
+            m_grid.GetNode(n, m) = ComputeSmoothedGridNode(n, m, firstLengthSquared, secondLengthSquared);
         }
     }
 }

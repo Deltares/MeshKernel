@@ -430,6 +430,134 @@ void CurvilinearGrid::RemoveInvalidNodes(bool invalidNodesToRemove)
     RemoveInvalidNodes(invalidNodesToRemove);
 }
 
+meshkernel::NodeType CurvilinearGrid::GetBottomNodeType(const UInt n) const
+{
+    using enum NodeType;
+
+    NodeType result = Bottom;
+
+    if (n == 0)
+    {
+        result = BottomLeft;
+    }
+    else if (n == NumN() - 1)
+    {
+        result = BottomRight;
+    }
+    else if (!GetNode(n - 1, 0).IsValid())
+    {
+        result = BottomLeft;
+    }
+    else if (!GetNode(n + 1, 0).IsValid())
+    {
+        result = BottomRight;
+    }
+
+    return result;
+}
+
+meshkernel::NodeType CurvilinearGrid::GetTopNodeType(const UInt n) const
+{
+    using enum NodeType;
+
+    NodeType result = Up;
+    UInt m = NumM() - 1;
+
+    if (n == 0)
+    {
+        result = UpperLeft;
+    }
+    else if (n == NumN() - 1)
+    {
+        result = UpperRight;
+    }
+    else if (!GetNode(n - 1, m).IsValid())
+    {
+        result = UpperLeft;
+    }
+    else if (!GetNode(n + 1, m).IsValid())
+    {
+        result = UpperRight;
+    }
+
+    return result;
+}
+
+meshkernel::NodeType CurvilinearGrid::GetLeftNodeType(const UInt m) const
+{
+    using enum NodeType;
+
+    NodeType result = Left;
+
+    if (!GetNode(0, m - 1).IsValid())
+    {
+        result = BottomLeft;
+    }
+    else if (!GetNode(0, m + 1).IsValid())
+    {
+        // Should this be UpperLeft or UpperRight
+        result = UpperLeft; // was UpperRight
+    }
+
+    return result;
+}
+
+meshkernel::NodeType CurvilinearGrid::GetRightNodeType(const UInt m) const
+{
+    using enum NodeType;
+
+    NodeType result = Right;
+
+    if (const UInt n = NumN() - 1; !GetNode(n, m - 1).IsValid())
+    {
+        result = BottomRight;
+    }
+    else if (!GetNode(n, m + 1).IsValid())
+    {
+        result = UpperRight;
+    }
+
+    return result;
+}
+
+meshkernel::CurvilinearGrid::NodeTypeArray4D CurvilinearGrid::InitialiseInteriorNodeType()
+{
+    using enum NodeType;
+
+    NodeTypeArray4D result;
+
+    result[0][0][0][0] = Invalid;
+    result[0][0][0][1] = UpperLeft;
+    result[0][0][1][0] = UpperRight;
+    result[0][0][1][1] = Up;
+    result[0][1][0][0] = BottomRight;
+    result[0][1][0][1] = Invalid;
+    result[0][1][1][0] = Right;
+    result[0][1][1][1] = BottomLeft;
+    result[1][0][0][0] = BottomLeft;
+    result[1][0][0][1] = Left;
+    result[1][0][1][0] = Invalid;
+    result[1][0][1][1] = BottomRight;
+    result[1][1][0][0] = Bottom;
+    result[1][1][0][1] = UpperRight;
+    result[1][1][1][0] = UpperLeft;
+    result[1][1][1][1] = InternalValid;
+
+    return result;
+}
+
+meshkernel::NodeType CurvilinearGrid::GetInteriorNodeType(const UInt n, const UInt m) const
+{
+    static const NodeTypeArray4D InteriorNodeType = InitialiseInteriorNodeType();
+
+    const size_t isTopRightFaceValid = IsFaceMaskValid(n, m) ? 1u : 0u;
+    const size_t isTopLeftFaceValid = IsFaceMaskValid(n - 1, m) ? 1u : 0u;
+    const size_t isBottomLeftFaceValid = IsFaceMaskValid(n - 1, m - 1) ? 1u : 0u;
+    const size_t isBottomRightFaceValid = IsFaceMaskValid(n, m - 1) ? 1u : 0u;
+
+    return InteriorNodeType[isTopRightFaceValid][isTopLeftFaceValid][isBottomLeftFaceValid][isBottomRightFaceValid];
+}
+
 void CurvilinearGrid::ComputeGridNodeTypes()
 {
     RemoveInvalidNodes(true);
@@ -446,206 +574,36 @@ void CurvilinearGrid::ComputeGridNodeTypes()
                 continue;
             }
 
+            // Get boundary node types
             // Bottom side
-            if (m == 0 && n == 0)
-            {
-                GetNodeType(n, m) = NodeType::BottomLeft;
-                continue;
-            }
-            if (m == 0 && n == NumN() - 1)
-            {
-                GetNodeType(n, m) = NodeType::BottomRight;
-                continue;
-            }
-            if (m == 0 && !GetNode(n - 1, m).IsValid())
-            {
-                GetNodeType(n, m) = NodeType::BottomLeft;
-                continue;
-            }
-            if (m == 0 && !GetNode(n + 1, m).IsValid())
-            {
-                GetNodeType(n, m) = NodeType::BottomRight;
-                continue;
-            }
             if (m == 0)
             {
-                GetNodeType(n, m) = NodeType::Bottom;
+                GetNodeType(n, m) = GetBottomNodeType(n);
                 continue;
             }
+
             // Upper side
-            if (m == NumM() - 1 && n == 0)
-            {
-                GetNodeType(n, m) = NodeType::UpperLeft;
-                continue;
-            }
-            if (m == NumM() - 1 && n == NumN() - 1)
-            {
-                GetNodeType(n, m) = NodeType::UpperRight;
-                continue;
-            }
-            if (m == NumM() - 1 && !GetNode(n - 1, m).IsValid())
-            {
-                GetNodeType(n, m) = NodeType::UpperLeft;
-                continue;
-            }
-            if (m == NumM() - 1 && !GetNode(n + 1, m).IsValid())
-            {
-                GetNodeType(n, m) = NodeType::UpperRight;
-                continue;
-            }
             if (m == NumM() - 1)
             {
-                GetNodeType(n, m) = NodeType::Up;
+                GetNodeType(n, m) = GetTopNodeType(n);
                 continue;
             }
-            // Bottom side
-            if (n == 0 && !GetNode(n, m - 1).IsValid())
-            {
-                GetNodeType(n, m) = NodeType::BottomLeft;
-                continue;
-            }
-            if (n == 0 && !GetNode(n, m + 1).IsValid())
-            {
-                GetNodeType(n, m) = NodeType::UpperRight;
-                continue;
-            }
+
+            // left side
             if (n == 0)
             {
-                GetNodeType(n, m) = NodeType::Left;
+                GetNodeType(n, m) = GetLeftNodeType(m);
                 continue;
             }
-            // Upper side
-            if (n == NumN() - 1 && !GetNode(n, m - 1).IsValid())
-            {
-                GetNodeType(n, m) = NodeType::BottomRight;
-                continue;
-            }
-            if (n == NumN() - 1 && !GetNode(n, m + 1).IsValid())
-            {
-                GetNodeType(n, m) = NodeType::UpperRight;
-                continue;
-            }
+
+            // right side
             if (n == NumN() - 1)
             {
-                GetNodeType(n, m) = NodeType::Right;
+                GetNodeType(n, m) = GetRightNodeType(m);
                 continue;
             }
 
-            auto const isBottomRightFaceValid = IsFaceMaskValid(n, m - 1);
-            auto const isBottomLeftFaceValid = IsFaceMaskValid(n - 1, m - 1);
-            auto const isTopRightFaceValid = IsFaceMaskValid(n, m);
-            auto const isTopLeftFaceValid = IsFaceMaskValid(n - 1, m);
-
-            if (isTopRightFaceValid &&
-                isTopLeftFaceValid &&
-                isBottomLeftFaceValid &&
-                isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::InternalValid;
-                continue;
-            }
-            if (!isTopRightFaceValid &&
-                isTopLeftFaceValid &&
-                isBottomLeftFaceValid &&
-                isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::BottomLeft;
-                continue;
-            }
-            if (isTopRightFaceValid &&
-                !isTopLeftFaceValid &&
-                isBottomLeftFaceValid &&
-                isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::BottomRight;
-                continue;
-            }
-            if (isTopRightFaceValid &&
-                isTopLeftFaceValid &&
-                !isBottomLeftFaceValid &&
-                isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::UpperRight;
-                continue;
-            }
-            if (isTopRightFaceValid &&
-                isTopLeftFaceValid &&
-                isBottomLeftFaceValid &&
-                !isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::UpperLeft;
-                continue;
-            }
-
-            if (isTopRightFaceValid &&
-                isTopLeftFaceValid &&
-                !isBottomLeftFaceValid &&
-                !isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::Bottom;
-                continue;
-            }
-            if (isTopRightFaceValid &&
-                !isTopLeftFaceValid &&
-                !isBottomLeftFaceValid &&
-                isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::Left;
-                continue;
-            }
-
-            if (!isTopRightFaceValid &&
-                !isTopLeftFaceValid &&
-                isBottomLeftFaceValid &&
-                isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::Up;
-                continue;
-            }
-
-            if (!isTopRightFaceValid &&
-                isTopLeftFaceValid &&
-                isBottomLeftFaceValid &&
-                !isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::Right;
-                continue;
-            }
-
-            if (isTopRightFaceValid &&
-                !isTopLeftFaceValid &&
-                !isBottomLeftFaceValid &&
-                !isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::BottomLeft;
-                continue;
-            }
-
-            if (!isTopRightFaceValid &&
-                isTopLeftFaceValid &&
-                !isBottomLeftFaceValid &&
-                !isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::BottomRight;
-                continue;
-            }
-
-            if (!isTopRightFaceValid &&
-                !isTopLeftFaceValid &&
-                isBottomLeftFaceValid &&
-                !isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::UpperRight;
-                continue;
-            }
-
-            if (!isTopRightFaceValid &&
-                !isTopLeftFaceValid &&
-                !isBottomLeftFaceValid &&
-                isBottomRightFaceValid)
-            {
-                GetNodeType(n, m) = NodeType::UpperLeft;
-            }
+            GetNodeType(n, m) = GetInteriorNodeType(n, m);
         }
     }
 }
@@ -674,6 +632,100 @@ meshkernel::UndoActionPtr CurvilinearGrid::InsertFace(Point const& point)
     // Re-compute quantities
     ComputeGridNodeTypes();
     m_gridIndices = ComputeNodeIndices();
+
+    return undoAction;
+}
+
+meshkernel::UndoActionPtr CurvilinearGrid::AddGridLineAtBottom(const CurvilinearGridNodeIndices& firstNode,
+                                                               const CurvilinearGridNodeIndices& secondNode)
+{
+    UndoActionPtr undoAction;
+
+    if (firstNode.m_n == 0 || secondNode.m_n == 0)
+    {
+
+        // n-direction
+        if (m_startOffset.m_n == 0)
+        {
+            lin_alg::InsertRow(m_gridNodes, lin_alg::RowVector<Point>(FullNumM()), 0);
+        }
+        else
+        {
+            m_startOffset.m_n -= 1;
+        }
+
+        undoAction = AddGridLineUndoAction::Create(*this, {1, 0}, {0, 0});
+    }
+
+    return undoAction;
+}
+
+meshkernel::UndoActionPtr CurvilinearGrid::AddGridLineAtTop(const CurvilinearGridNodeIndices& firstNode,
+                                                            const CurvilinearGridNodeIndices& secondNode)
+{
+    UndoActionPtr undoAction;
+
+    if (firstNode.m_n == NumN() - 1 || secondNode.m_n == NumN() - 1)
+    {
+        // n-direction
+        if (m_endOffset.m_n == 0)
+        {
+            lin_alg::InsertRow(m_gridNodes, lin_alg::RowVector<Point>(FullNumM()), FullNumN());
+        }
+        else
+        {
+            m_endOffset.m_n -= 1;
+        }
+
+        undoAction = AddGridLineUndoAction::Create(*this, {0, 0}, {1, 0});
+    }
+
+    return undoAction;
+}
+
+meshkernel::UndoActionPtr CurvilinearGrid::AddGridLineAtLeft(const CurvilinearGridNodeIndices& firstNode,
+                                                             const CurvilinearGridNodeIndices& secondNode)
+{
+    UndoActionPtr undoAction;
+
+    if (firstNode.m_m == 0 || secondNode.m_m == 0)
+    {
+
+        // m-direction
+        if (m_startOffset.m_m == 0)
+        {
+            lin_alg::InsertCol(m_gridNodes, lin_alg::ColVector<Point>(FullNumN()), 0);
+        }
+        else
+        {
+            m_startOffset.m_m -= 1;
+        }
+
+        undoAction = AddGridLineUndoAction::Create(*this, {0, 1}, {0, 0});
+    }
+
+    return undoAction;
+}
+
+meshkernel::UndoActionPtr CurvilinearGrid::AddGridLineAtRight(const CurvilinearGridNodeIndices& firstNode,
+                                                              const CurvilinearGridNodeIndices& secondNode)
+{
+    UndoActionPtr undoAction;
+
+    if (firstNode.m_m == NumM() - 1 || secondNode.m_m == NumM() - 1)
+    {
+        // m-direction
+        if (m_endOffset.m_m == 0)
+        {
+            lin_alg::InsertCol(m_gridNodes, lin_alg::ColVector<Point>(FullNumN()), FullNumM());
+        }
+        else
+        {
+            m_endOffset.m_m -= 1;
+        }
+
+        undoAction = AddGridLineUndoAction::Create(*this, {0, 0}, {0, 1});
+    }
 
     return undoAction;
 }
@@ -710,84 +762,25 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
     if (areNodesValid)
     {
 
-        if (gridLineType == BoundaryGridLineType::Bottom)
+        switch (gridLineType)
         {
-            if (firstNode.m_n == 0 || secondNode.m_n == 0)
-            {
-
-                // n-direction
-                if (m_startOffset.m_n == 0)
-                {
-                    lin_alg::InsertRow(m_gridNodes, lin_alg::RowVector<Point>(FullNumM()), 0);
-                }
-                else
-                {
-                    m_startOffset.m_n -= 1;
-                }
-
-                undoAction = AddGridLineUndoAction::Create(*this, {1, 0}, {0, 0});
-                gridSizeChanged = true;
-            }
+        case BoundaryGridLineType::Bottom:
+            undoAction = AddGridLineAtBottom(firstNode, secondNode);
+            break;
+        case BoundaryGridLineType::Top:
+            undoAction = AddGridLineAtTop(firstNode, secondNode);
+            break;
+        case BoundaryGridLineType::Right:
+            undoAction = AddGridLineAtRight(firstNode, secondNode);
+            break;
+        case BoundaryGridLineType::Left:
+            undoAction = AddGridLineAtLeft(firstNode, secondNode);
+            break;
+        default:
+            throw ConstraintError("Invalid gridLineType");
         }
 
-        if (gridLineType == BoundaryGridLineType::Top)
-        {
-            if (firstNode.m_n == NumN() - 1 || secondNode.m_n == NumN() - 1)
-            {
-                // n-direction
-                if (m_endOffset.m_n == 0)
-                {
-                    lin_alg::InsertRow(m_gridNodes, lin_alg::RowVector<Point>(FullNumM()), FullNumN());
-                }
-                else
-                {
-                    m_endOffset.m_n -= 1;
-                }
-
-                undoAction = AddGridLineUndoAction::Create(*this, {0, 0}, {1, 0});
-                gridSizeChanged = true;
-            }
-        }
-
-        if (gridLineType == BoundaryGridLineType::Right)
-        {
-            if (firstNode.m_m == NumM() - 1 || secondNode.m_m == NumM() - 1)
-            {
-                // m-direction
-                if (m_endOffset.m_m == 0)
-                {
-                    lin_alg::InsertCol(m_gridNodes, lin_alg::ColVector<Point>(FullNumN()), FullNumM());
-                }
-                else
-                {
-                    m_endOffset.m_m -= 1;
-                }
-
-                undoAction = AddGridLineUndoAction::Create(*this, {0, 0}, {0, 1});
-                gridSizeChanged = true;
-            }
-        }
-
-        if (gridLineType == BoundaryGridLineType::Left)
-        {
-
-            if (firstNode.m_m == 0 || secondNode.m_m == 0)
-            {
-
-                // m-direction
-                if (m_startOffset.m_m == 0)
-                {
-                    lin_alg::InsertCol(m_gridNodes, lin_alg::ColVector<Point>(FullNumN()), 0);
-                }
-                else
-                {
-                    m_startOffset.m_m -= 1;
-                }
-
-                undoAction = AddGridLineUndoAction::Create(*this, {0, 1}, {0, 0});
-                gridSizeChanged = true;
-            }
-        }
+        gridSizeChanged = undoAction != nullptr;
     }
 
     return {gridSizeChanged, std::move(undoAction)};

@@ -444,6 +444,82 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const UInt startIndex
     return refinedPolygon;
 }
 
+void meshkernel::Polygon::GetPolygonNodes(const UInt startIndex,
+                                          const UInt endIndex,
+                                          std::vector<Point>& polygonNodes) const
+{
+    if (startIndex < endIndex)
+    {
+        for (UInt i = 0; i < polygonNodes.size(); ++i)
+        {
+            auto polygonNodeIndex = i + startIndex;
+            if (polygonNodeIndex >= m_nodes.size())
+            {
+                polygonNodeIndex = polygonNodeIndex - static_cast<UInt>(m_nodes.size());
+            }
+            polygonNodes[i] = m_nodes[polygonNodeIndex];
+        }
+    }
+    else
+    {
+        UInt count = 0;
+
+        for (UInt i = startIndex; i < m_nodes.size(); ++i)
+        {
+            polygonNodes[count] = m_nodes[i];
+            ++count;
+        }
+
+        // Do not include the start/end point twice.
+        for (UInt i = 1; i <= endIndex; ++i)
+        {
+            polygonNodes[count] = m_nodes[i];
+            ++count;
+        }
+    }
+}
+
+std::vector<double> meshkernel::Polygon::ComputeCumulativeDistances(const std::vector<meshkernel::Point>& polygonNodes) const
+{
+    std::vector<double> cumulativeDistances(polygonNodes.size(), 0.0);
+    cumulativeDistances[0] = 0.0;
+
+    for (UInt i = 1; i < polygonNodes.size(); ++i)
+    {
+        cumulativeDistances[i] = cumulativeDistances[i - 1] + ComputeDistance(polygonNodes[i], polygonNodes[i - 1], m_projection);
+    }
+
+    return cumulativeDistances;
+}
+
+std::tuple<meshkernel::UInt, meshkernel::UInt> meshkernel::Polygon::FindMinMaxRatioIndex(const std::vector<double>& averageLengths,
+                                                                                         const std::vector<double>& actualAverageLengths) const
+{
+    double minRatio = std::numeric_limits<double>::max();
+    UInt minRatioIndex = constants::missing::uintValue;
+    double maxRatio = std::numeric_limits<double>::lowest();
+    UInt maxRatioIndex = constants::missing::uintValue;
+
+    for (UInt i = 0; i < averageLengths.size() - 1; ++i)
+    {
+        const double currentRatio = actualAverageLengths[i] / averageLengths[i];
+
+        if (i > 0 && currentRatio < minRatio)
+        {
+            minRatioIndex = i;
+            minRatio = currentRatio;
+        }
+
+        if (currentRatio > maxRatio)
+        {
+            maxRatioIndex = i;
+            maxRatio = currentRatio;
+        }
+    }
+
+    return {minRatioIndex, maxRatioIndex};
+}
+
 std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const UInt startIndex, const UInt endIndex) const
 {
 
@@ -486,43 +562,9 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const UInt star
     std::vector<double> actualAverageLengths(numPolygonNodes, 0.0);
     std::vector<Point> result(numPolygonNodes);
 
-    if (startIndex < endIndex)
-    {
-        for (UInt i = 0; i < polygonNodes.size(); ++i)
-        {
-            auto polygonNodeIndex = i + startIndex;
-            if (polygonNodeIndex >= m_nodes.size())
-            {
-                polygonNodeIndex = polygonNodeIndex - static_cast<UInt>(m_nodes.size());
-            }
-            polygonNodes[i] = m_nodes[polygonNodeIndex];
-        }
-    }
-    else
-    {
-        UInt count = 0;
+    GetPolygonNodes(startIndex, endIndex, polygonNodes);
 
-        for (UInt i = startIndex; i < m_nodes.size(); ++i)
-        {
-            polygonNodes[count] = m_nodes[i];
-            ++count;
-        }
-
-        // Do not include the start/end point twice.
-        for (UInt i = 1; i <= endIndex; ++i)
-        {
-            polygonNodes[count] = m_nodes[i];
-            ++count;
-        }
-    }
-
-    std::vector<double> cumulativeDistances(numPolygonNodes, 0.0);
-    cumulativeDistances[0] = 0.0;
-    for (UInt i = 1; i < polygonNodes.size(); ++i)
-    {
-        cumulativeDistances[i] = cumulativeDistances[i - 1] + ComputeDistance(polygonNodes[i], polygonNodes[i - 1], m_projection);
-    }
-
+    std::vector<double> cumulativeDistances(ComputeCumulativeDistances(polygonNodes));
     std::vector<double> initialCumulativeDistances(cumulativeDistances);
 
     computeAverageLengths(cumulativeDistances, averageLengths);
@@ -549,29 +591,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const UInt star
                                                                                                                    averageLengths.back());
         }
 
-        double minRatio = std::numeric_limits<double>::max();
-        UInt minRatioIndex = constants::missing::uintValue;
-        double maxRatio = std::numeric_limits<double>::lowest();
-        UInt maxRatioIndex = constants::missing::uintValue;
-        double minLength = std::numeric_limits<double>::max();
-
-        for (UInt i = 0; i < averageLengths.size() - 1; ++i)
-        {
-            minLength = std::min(averageLengths[i], minLength);
-            const double currentRatio = actualAverageLengths[i] / averageLengths[i];
-
-            if (i > 0 && currentRatio < minRatio)
-            {
-                minRatioIndex = i;
-                minRatio = currentRatio;
-            }
-
-            if (currentRatio > maxRatio)
-            {
-                maxRatioIndex = i;
-                maxRatio = currentRatio;
-            }
-        }
+        auto [minRatioIndex, maxRatioIndex] = FindMinMaxRatioIndex(averageLengths, actualAverageLengths);
 
         if (minRatioIndex != constants::missing::uintValue && cumulativeDistanceTarget - 1.5 * averageLengths[minRatioIndex] > initialCumulativeDistances.back())
         {

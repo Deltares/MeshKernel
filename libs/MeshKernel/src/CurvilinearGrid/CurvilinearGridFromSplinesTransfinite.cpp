@@ -43,6 +43,74 @@ CurvilinearGridFromSplinesTransfinite::CurvilinearGridFromSplinesTransfinite(std
     m_numN = curvilinearParameters.n_refinement;
 }
 
+void CurvilinearGridFromSplinesTransfinite::FillInterpolationPlaneBlock(const lin_alg::Matrix<Point>& gridNodes,
+                                                                        const UInt i,
+                                                                        const UInt j,
+                                                                        std::vector<Point>& bottomSide,
+                                                                        std::vector<Point>& upperSide,
+                                                                        std::vector<Point>& leftSide,
+                                                                        std::vector<Point>& rightSide) const
+{
+    // Fill each block of the interpolation plane
+    for (UInt k = 0; k < leftSide.size(); k++)
+    {
+        for (UInt l = 0; l < bottomSide.size(); l++)
+        {
+            const auto m = i * m_numM + l;
+            const auto n = j * m_numN + k;
+            const auto val = gridNodes(n, m);
+
+            // We are at the boundary
+            if (!val.IsValid())
+            {
+                continue;
+            }
+
+            // k : numNPoints
+            if (k == 0)
+            {
+                bottomSide[l] = val;
+            }
+            if (k == m_numN)
+            {
+                upperSide[l] = val;
+            }
+            if (l == 0)
+            {
+                leftSide[k] = val;
+            }
+            if (l == m_numM)
+            {
+                rightSide[k] = val;
+            }
+        }
+    }
+}
+
+void CurvilinearGridFromSplinesTransfinite::AssignInterpolatedNodes(const UInt i,
+                                                                    const UInt j,
+                                                                    const lin_alg::Matrix<Point>& interpolationResult,
+                                                                    lin_alg::Matrix<Point>& gridNodes) const
+{
+    // assign the points
+    for (UInt k = 0; k < interpolationResult.rows(); k++)
+    {
+        for (UInt l = 0; l < interpolationResult.cols(); l++)
+        {
+            const auto n = j * m_numN + k;
+            const auto m = i * m_numM + l;
+
+            if (gridNodes(n, m).IsValid())
+            {
+                continue;
+            }
+            const auto val = interpolationResult(k, l);
+
+            gridNodes(n, m) = val;
+        }
+    }
+}
+
 std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute()
 {
     if (m_numN == 0 || m_numM == 0)
@@ -172,67 +240,18 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromSplinesTransfinite::Compute(
     {
         for (UInt j = 0; j < numMSplines - 1; j++)
         {
-            // Fill each block of the interpolation plane
-            for (UInt k = 0; k < numNPoints; k++)
-            {
-                for (UInt l = 0; l < numMPoints; l++)
-                {
-                    const auto m = i * m_numM + l;
-                    const auto n = j * m_numN + k;
-                    const auto val = gridNodes(n, m);
-
-                    // We are at the boundary
-                    if (!val.IsValid())
-                    {
-                        continue;
-                    }
-
-                    // k : numNPoints
-                    if (k == 0)
-                    {
-                        bottomSide[l] = val;
-                    }
-                    if (k == m_numN)
-                    {
-                        upperSide[l] = val;
-                    }
-                    if (l == 0)
-                    {
-                        leftSide[k] = val;
-                    }
-                    if (l == m_numM)
-                    {
-                        rightSide[k] = val;
-                    }
-                }
-            }
+            FillInterpolationPlaneBlock(gridNodes, i, j, bottomSide, upperSide, leftSide, rightSide);
 
             // call transfinite interpolation
-            auto interpolationResult = DiscretizeTransfinite(bottomSide,
-                                                             upperSide,
-                                                             leftSide,
-                                                             rightSide,
-                                                             m_splines->m_projection,
-                                                             m_numM,
-                                                             m_numN);
+            const auto interpolationResult = DiscretizeTransfinite(bottomSide,
+                                                                   upperSide,
+                                                                   leftSide,
+                                                                   rightSide,
+                                                                   m_splines->m_projection,
+                                                                   m_numM,
+                                                                   m_numN);
 
-            // assign the points
-            for (UInt k = 0; k < interpolationResult.rows(); k++)
-            {
-                for (UInt l = 0; l < interpolationResult.cols(); l++)
-                {
-                    const auto n = j * m_numN + k;
-                    const auto m = i * m_numM + l;
-
-                    if (gridNodes(n, m).IsValid())
-                    {
-                        continue;
-                    }
-                    const auto val = interpolationResult(k, l);
-
-                    gridNodes(n, m) = val;
-                }
-            }
+            AssignInterpolatedNodes(i, j, interpolationResult, gridNodes);
         }
     }
 
@@ -391,20 +410,17 @@ void CurvilinearGridFromSplinesTransfinite::ComputeInteractions()
     }
 }
 
-void CurvilinearGridFromSplinesTransfinite::ClassifySplineIntersections()
+void CurvilinearGridFromSplinesTransfinite::ComputeNDirectionIntersections()
 {
     const auto numSplines = m_splines->GetNumSplines();
 
-    // Now determine the start and end spline corner points for each spline
-    ResizeAndFill2DVector(m_splineGroupIndexAndFromToIntersections, numSplines, 3, true, static_cast<UInt>(0));
-
-    // m_n direction
     for (UInt i = 0; i < m_numMSplines; i++)
     {
         for (auto j = m_numMSplines; j < numSplines; j++)
         {
             UInt maxIndex = 0;
             UInt lastIndex = 0;
+
             for (UInt k = 0; k <= i; k++)
             {
 
@@ -417,7 +433,9 @@ void CurvilinearGridFromSplinesTransfinite::ClassifySplineIntersections()
 
             m_splineGroupIndexAndFromToIntersections[j][1] = maxIndex;
         }
+
         UInt maxIndex = 0;
+
         for (auto j = m_numMSplines; j < numSplines; j++)
         {
             if (std::abs(m_splineIntersectionRatios[j][i]) > 0.0)
@@ -425,16 +443,22 @@ void CurvilinearGridFromSplinesTransfinite::ClassifySplineIntersections()
                 maxIndex = std::max(maxIndex, m_splineGroupIndexAndFromToIntersections[j][1]);
             }
         }
+
         m_splineGroupIndexAndFromToIntersections[i][0] = maxIndex;
     }
+}
 
-    // m_m direction
+void CurvilinearGridFromSplinesTransfinite::ComputeMDirectionIntersections()
+{
+    const auto numSplines = m_splines->GetNumSplines();
+
     for (auto i = m_numMSplines; i < numSplines; i++)
     {
         for (UInt j = 0; j < m_numMSplines; j++)
         {
             UInt maxIndex = 0;
             UInt lastIndex = m_numMSplines;
+
             for (auto k = m_numMSplines; k <= i; k++)
             {
                 if (std::abs(m_splineIntersectionRatios[j][k]) > 0.0)
@@ -459,6 +483,39 @@ void CurvilinearGridFromSplinesTransfinite::ClassifySplineIntersections()
 
         m_splineGroupIndexAndFromToIntersections[i][0] = maxIndex;
     }
+}
+
+void CurvilinearGridFromSplinesTransfinite::ComputeSplineStartAndEnd(const UInt outerStart, const UInt outerEnd, const UInt innerStart, const UInt innerEnd)
+{
+    // m_n constant, spline start end end
+    for (UInt i = outerStart; i < outerEnd; i++)
+    {
+        for (auto j = innerStart; j < innerEnd; j++)
+        {
+            if (std::abs(m_splineIntersectionRatios[i][j]) > 0.0)
+            {
+                if (m_splineGroupIndexAndFromToIntersections[i][1] == 0)
+                {
+                    m_splineGroupIndexAndFromToIntersections[i][1] = m_splineGroupIndexAndFromToIntersections[j][0];
+                }
+
+                m_splineGroupIndexAndFromToIntersections[i][2] = m_splineGroupIndexAndFromToIntersections[j][0];
+            }
+        }
+    }
+}
+
+void CurvilinearGridFromSplinesTransfinite::ClassifySplineIntersections()
+{
+    const auto numSplines = m_splines->GetNumSplines();
+
+    // Now determine the start and end spline corner points for each spline
+    ResizeAndFill2DVector(m_splineGroupIndexAndFromToIntersections, numSplines, 3, true, static_cast<UInt>(0));
+
+    // m_n direction
+    ComputeNDirectionIntersections();
+    // m_m direction
+    ComputeMDirectionIntersections();
 
     for (UInt i = 0; i < numSplines; i++)
     {
@@ -466,39 +523,10 @@ void CurvilinearGridFromSplinesTransfinite::ClassifySplineIntersections()
         m_splineGroupIndexAndFromToIntersections[i][2] = 0;
     }
 
-    // m_n constant, spline start end end
-    for (UInt i = 0; i < m_numMSplines; i++)
-    {
-        for (auto j = m_numMSplines; j < numSplines; j++)
-        {
-            if (std::abs(m_splineIntersectionRatios[i][j]) > 0.0)
-            {
-                if (m_splineGroupIndexAndFromToIntersections[i][1] == 0)
-                {
-                    m_splineGroupIndexAndFromToIntersections[i][1] = m_splineGroupIndexAndFromToIntersections[j][0];
-                }
-
-                m_splineGroupIndexAndFromToIntersections[i][2] = m_splineGroupIndexAndFromToIntersections[j][0];
-            }
-        }
-    }
-
-    // m_m constant, spline start end end
-    for (auto i = m_numMSplines; i < numSplines; i++)
-    {
-        for (UInt j = 0; j < m_numMSplines; j++)
-        {
-            if (std::abs(m_splineIntersectionRatios[i][j]) > 0.0)
-            {
-                if (m_splineGroupIndexAndFromToIntersections[i][1] == 0)
-                {
-                    m_splineGroupIndexAndFromToIntersections[i][1] = m_splineGroupIndexAndFromToIntersections[j][0];
-                }
-
-                m_splineGroupIndexAndFromToIntersections[i][2] = m_splineGroupIndexAndFromToIntersections[j][0];
-            }
-        }
-    }
+    // m_n constant, spline start and end
+    ComputeSplineStartAndEnd(0, m_numMSplines, m_numMSplines, numSplines);
+    // m_m constant, spline start and end
+    ComputeSplineStartAndEnd(m_numMSplines, numSplines, 0, m_numMSplines);
 }
 
 void CurvilinearGridFromSplinesTransfinite::OrganiseSplines()

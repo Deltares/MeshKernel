@@ -100,7 +100,7 @@ namespace meshkernel
         /// @param[in] numNodes
         void AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex,
                                                    bool initialize,
-                                                   std::vector<UInt>& nodes,
+                                                   const std::vector<UInt>& nodes,
                                                    UInt numNodes);
 
         /// @brief Add new land boundary segment that connects two others (add_land)
@@ -180,6 +180,36 @@ namespace meshkernel
         /// @returns A tuple containing the distance of the node from the land boundary, the projected node on the land boundary,
         ///          the closest land boundary node and the length of the segment from the starting point to the projected point expressed as an edge ratio.
         std::tuple<double, Point, UInt, double> NearestLandBoundarySegment(UInt landBoundaryIndex, const Point& node) const;
+
+        /// @brief Initialise the node locations.
+        ///
+        /// @returns true if edge is valid and the nodesLoc was initialised, false otherwise
+        bool InitialiseNodeLocations(const bool initialize,
+                                     const UInt edgeIndex,
+                                     const std::vector<UInt>& nodes,
+                                     const UInt numNodes,
+                                     std::vector<UInt>& nodesLoc,
+                                     UInt& numNodesLoc) const;
+
+        /// @brief Get the nearest land boundary segment index
+        UInt GetSegmentIndex(const UInt nearestLandBoundaryNodeIndex) const;
+
+        /// @brief Determine is the path search should continue or not
+        bool StopPathSearch(const UInt landBoundaryIndex, const UInt currentNode);
+
+        /// @brief Determine if the face crosses the land boundary
+        bool ContainsCrossedFace(const UInt landBoundaryIndex, const UInt otherFace);
+
+        /// @brief Set the face mask to true if an edge is close to land boundary
+        void MaskFacesCloseToBoundary(const UInt landBoundaryIndex);
+
+        /// @brief Get the node on the land boundary for points close to the boundary
+        void GetLandBoundaryNode(const double closeDistance,
+                                 const Point& firstMeshNode,
+                                 const Point& secondMeshNode,
+                                 const UInt currentNode,
+                                 UInt& landBoundaryNode,
+                                 bool& isWithinSegment) const;
 
         Mesh2D& m_mesh;                                           ///< A reference to mesh
         const Polygons m_polygons;                                ///< A copy of the polygons

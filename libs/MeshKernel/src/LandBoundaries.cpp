@@ -148,20 +148,20 @@ void LandBoundaries::FindNearestMeshBoundary(ProjectToLandBoundaryOption project
     }
 }
 
-void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex, bool initialize, std::vector<UInt>& nodes, UInt numNodes)
+bool LandBoundaries::InitialiseNodeLocations(const bool initialize,
+                                             const UInt edgeIndex,
+                                             const std::vector<UInt>& nodes,
+                                             const UInt numNodes,
+                                             std::vector<UInt>& nodesLoc,
+                                             UInt& numNodesLoc) const
 {
-    if (m_landBoundary.IsEmpty())
-    {
-        return;
-    }
-
-    std::vector<UInt> nodesLoc;
-    UInt numNodesLoc;
-
     if (initialize)
     {
+
         if (!m_mesh.IsEdgeOnBoundary(edgeIndex) || m_mesh.GetEdge(edgeIndex).first == constants::missing::uintValue || m_mesh.GetEdge(edgeIndex).second == constants::missing::uintValue)
-            throw std::invalid_argument("LandBoundaries::AssignLandBoundaryPolylineToMeshNodes: Cannot not assign segment to mesh nodes.");
+        {
+            throw AlgorithmError("Cannot not assign segment to mesh nodes.");
+        }
 
         const auto firstMeshNode = m_mesh.GetEdge(edgeIndex).first;
         const auto secondMeshNode = m_mesh.GetEdge(edgeIndex).second;
@@ -189,7 +189,7 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex, bool 
         else
         {
             // not a valid edge
-            return;
+            return false;
         }
     }
     else
@@ -197,6 +197,43 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex, bool 
         nodesLoc.resize(numNodes + 1);
         numNodesLoc = numNodes;
         std::copy(nodes.begin(), nodes.end(), nodesLoc.begin());
+    }
+
+    return true;
+}
+
+meshkernel::UInt LandBoundaries::GetSegmentIndex(const UInt nearestLandBoundaryNodeIndex) const
+{
+    UInt landboundarySegmentIndex = std::numeric_limits<UInt>::max();
+
+    for (UInt s = 0; s < m_validLandBoundaries.size(); s++)
+    {
+        const auto& [startIndex, endIndex] = m_validLandBoundaries[s];
+
+        if (nearestLandBoundaryNodeIndex >= startIndex && nearestLandBoundaryNodeIndex < endIndex)
+        {
+            landboundarySegmentIndex = s;
+            break;
+        }
+    }
+
+    return landboundarySegmentIndex;
+}
+
+void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex, bool initialize, const std::vector<UInt>& nodes, UInt numNodes)
+{
+    if (m_landBoundary.IsEmpty())
+    {
+        return;
+    }
+
+    std::vector<UInt> nodesLoc;
+    UInt numNodesLoc;
+
+    if (!InitialiseNodeLocations(initialize, edgeIndex, nodes, numNodes, nodesLoc, numNodesLoc))
+    {
+        // Invalid edge
+        return;
     }
 
     const auto maxNodes = *std::max_element(nodesLoc.begin(), nodesLoc.end() - 1);
@@ -248,16 +285,7 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex, bool 
                             edgeRatio] = NearestLandBoundarySegment(constants::missing::uintValue, m_mesh.Node(meshNode));
 
                 // find the segment index of the found point
-                UInt landboundarySegmentIndex = std::numeric_limits<UInt>::max();
-                for (UInt s = 0; s < m_validLandBoundaries.size(); s++)
-                {
-                    const auto& [startIndex, endIndex] = m_validLandBoundaries[s];
-                    if (nearestLandBoundaryNodeIndex >= startIndex && nearestLandBoundaryNodeIndex < endIndex)
-                    {
-                        landboundarySegmentIndex = s;
-                        break;
-                    }
-                }
+                UInt landboundarySegmentIndex = GetSegmentIndex(nearestLandBoundaryNodeIndex);
 
                 if (landboundarySegmentIndex == std::numeric_limits<UInt>::max())
                 {
@@ -329,6 +357,60 @@ void LandBoundaries::AddLandBoundary(const std::vector<UInt>& nodesLoc, UInt num
     m_validLandBoundaries.emplace_back(std::make_pair<UInt, UInt>(static_cast<UInt>(m_landBoundary.GetNumNodes()) - 3, static_cast<UInt>(m_landBoundary.GetNumNodes()) - 2));
 }
 
+bool LandBoundaries::StopPathSearch(const UInt landBoundaryIndex, const UInt currentNode)
+{
+    bool stopPathSearch = true;
+
+    if (m_meshNodesLandBoundarySegments[currentNode] != constants::missing::uintValue)
+    {
+        // Multiple boundary segments: take the nearest
+        const auto previousLandBoundarySegment = m_meshNodesLandBoundarySegments[currentNode];
+
+        const auto [previousMinDistance,
+                    nodeOnPreviousLandBoundary,
+                    nodeOnPreviousLandBoundaryNodeIndex,
+                    previousLandBoundaryEdgeRatio] = NearestLandBoundarySegment(previousLandBoundarySegment, m_mesh.Node(currentNode));
+
+        const auto [distanceFromLandBoundary,
+                    nodeOnLandBoundary,
+                    currentNodeLandBoundaryNodeIndex,
+                    currentNodeEdgeRatio] = NearestLandBoundarySegment(landBoundaryIndex, m_mesh.Node(currentNode));
+
+        const auto minDinstanceFromLandBoundaryCurrentNode = m_nodesMinDistances[currentNode];
+
+        if (distanceFromLandBoundary <= previousMinDistance &&
+            distanceFromLandBoundary < m_minDistanceFromLandFactor * minDinstanceFromLandBoundaryCurrentNode)
+        {
+            stopPathSearch = false;
+        }
+    }
+    else
+    {
+        if (IsEqual(m_nodesMinDistances[currentNode], constants::missing::doubleValue))
+        {
+            const auto [minDinstanceFromLandBoundary,
+                        nodeOnLandBoundary,
+                        currentNodeLandBoundaryNodeIndex,
+                        currentNodeEdgeRatio] = NearestLandBoundarySegment(constants::missing::uintValue, m_mesh.Node(currentNode));
+
+            m_nodesMinDistances[currentNode] = minDinstanceFromLandBoundary;
+        }
+
+        const auto [distanceFromLandBoundary,
+                    nodeOnLandBoundary,
+                    currentNodeLandBoundaryNodeIndex,
+                    currentNodeEdgeRatio] = NearestLandBoundarySegment(landBoundaryIndex, m_mesh.Node(currentNode));
+
+        if (distanceFromLandBoundary < m_minDistanceFromLandFactor * m_nodesMinDistances[currentNode] &&
+            (!m_findOnlyOuterMeshBoundary || m_mesh.m_nodesTypes[currentNode] == 2 || m_mesh.m_nodesTypes[currentNode] == 3))
+        {
+            stopPathSearch = false;
+        }
+    }
+
+    return stopPathSearch;
+}
+
 std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::MakePath(UInt landBoundaryIndex)
 {
     if (m_landBoundary.IsEmpty())
@@ -362,56 +444,7 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::MakePath(UInt lan
 
     while (true)
     {
-        bool stopPathSearch = true;
-
-        if (m_meshNodesLandBoundarySegments[currentNode] != constants::missing::uintValue)
-        {
-            // Multiple boundary segments: take the nearest
-            const auto previousLandBoundarySegment = m_meshNodesLandBoundarySegments[currentNode];
-
-            const auto [previousMinDistance,
-                        nodeOnPreviousLandBoundary,
-                        nodeOnPreviousLandBoundaryNodeIndex,
-                        previousLandBoundaryEdgeRatio] = NearestLandBoundarySegment(previousLandBoundarySegment, m_mesh.Node(currentNode));
-
-            const auto [distanceFromLandBoundary,
-                        nodeOnLandBoundary,
-                        currentNodeLandBoundaryNodeIndex,
-                        currentNodeEdgeRatio] = NearestLandBoundarySegment(landBoundaryIndex, m_mesh.Node(currentNode));
-
-            const auto minDinstanceFromLandBoundaryCurrentNode = m_nodesMinDistances[currentNode];
-
-            if (distanceFromLandBoundary <= previousMinDistance &&
-                distanceFromLandBoundary < m_minDistanceFromLandFactor * minDinstanceFromLandBoundaryCurrentNode)
-            {
-                stopPathSearch = false;
-            }
-        }
-        else
-        {
-            if (IsEqual(m_nodesMinDistances[currentNode], constants::missing::doubleValue))
-            {
-                const auto [minDinstanceFromLandBoundary,
-                            nodeOnLandBoundary,
-                            currentNodeLandBoundaryNodeIndex,
-                            currentNodeEdgeRatio] = NearestLandBoundarySegment(constants::missing::uintValue, m_mesh.Node(currentNode));
-
-                m_nodesMinDistances[currentNode] = minDinstanceFromLandBoundary;
-            }
-
-            const auto [distanceFromLandBoundary,
-                        nodeOnLandBoundary,
-                        currentNodeLandBoundaryNodeIndex,
-                        currentNodeEdgeRatio] = NearestLandBoundarySegment(landBoundaryIndex, m_mesh.Node(currentNode));
-
-            if (distanceFromLandBoundary < m_minDistanceFromLandFactor * m_nodesMinDistances[currentNode] &&
-                (!m_findOnlyOuterMeshBoundary || m_mesh.m_nodesTypes[currentNode] == 2 || m_mesh.m_nodesTypes[currentNode] == 3))
-            {
-                stopPathSearch = false;
-            }
-        }
-
-        if (stopPathSearch)
+        if (StopPathSearch(landBoundaryIndex, currentNode))
         {
             if (numConnectedNodes == 1 && lastSegment != constants::missing::uintValue)
             {
@@ -534,6 +567,66 @@ void LandBoundaries::ComputeMeshNodeMask(UInt landBoundaryIndex)
     }
 }
 
+bool LandBoundaries::ContainsCrossedFace(const UInt landBoundaryIndex, const UInt otherFace)
+{
+    bool isFaceFound = false;
+    for (const auto& edge : m_mesh.m_facesEdges[otherFace])
+    {
+        if (m_edgeMask[edge] == 1)
+        {
+            // Previously visited crossed edge
+            isFaceFound = true;
+            continue;
+        }
+        if (m_edgeMask[edge] == 0)
+        {
+            // Previously visited uncrossed edge
+            continue;
+        }
+
+        // Visited edge
+        m_edgeMask[edge] = 0;
+        const auto landBoundaryNode = IsMeshEdgeCloseToLandBoundaries(landBoundaryIndex, edge);
+
+        if (landBoundaryNode != constants::missing::uintValue)
+        {
+            m_edgeMask[edge] = 1;
+            isFaceFound = true;
+        }
+    }
+
+    return isFaceFound;
+}
+
+void LandBoundaries::MaskFacesCloseToBoundary(const UInt landBoundaryIndex)
+{
+    for (UInt e = 0; e < m_mesh.GetNumEdges(); e++)
+    {
+        // only boundary edges are considered
+        if (!m_mesh.IsEdgeOnBoundary(e))
+        {
+            continue;
+        }
+
+        const auto face = m_mesh.m_edgesFaces[e][0];
+        // already masked
+        if (m_faceMask[face])
+        {
+            continue;
+        }
+
+        for (const auto& edge : m_mesh.m_facesEdges[face])
+        {
+            const auto landBoundaryNode = IsMeshEdgeCloseToLandBoundaries(landBoundaryIndex, edge);
+            if (landBoundaryNode != constants::missing::uintValue)
+            {
+                m_faceMask[face] = true;
+                break;
+            }
+        }
+    }
+}
+
 void LandBoundaries::MaskMeshFaceMask(UInt landBoundaryIndex, const std::vector<UInt>& initialFaces)
 {
     if (m_landBoundary.IsEmpty())
@@ -549,31 +642,7 @@ void LandBoundaries::MaskMeshFaceMask(UInt landBoundaryIndex, const std::vector<
         // These are the faces that are close (up to a certain tolerance) by a land boundary
         if (face == constants::missing::uintValue)
         {
-            for (UInt e = 0; e < m_mesh.GetNumEdges(); e++)
-            {
-                // only boundary edges are considered
-                if (!m_mesh.IsEdgeOnBoundary(e))
-                {
-                    continue;
-                }
-
-                const auto face = m_mesh.m_edgesFaces[e][0];
-                // already masked
-                if (m_faceMask[face])
-                {
-                    continue;
-                }
-
-                for (const auto& edge : m_mesh.m_facesEdges[face])
-                {
-                    const auto landBoundaryNode = IsMeshEdgeCloseToLandBoundaries(landBoundaryIndex, edge);
-                    if (landBoundaryNode != constants::missing::uintValue)
-                    {
-                        m_faceMask[face] = true;
-                        break;
-                    }
-                }
-            }
+            MaskFacesCloseToBoundary(landBoundaryIndex);
         }
         else
         {
@@ -599,33 +668,8 @@ void LandBoundaries::MaskMeshFaceMask(UInt landBoundaryIndex, const std::vector<
                     continue;
                 }
 
-                bool isFaceFound = false;
-                for (const auto& edge : m_mesh.m_facesEdges[otherFace])
-                {
-                    if (m_edgeMask[edge] == 1)
-                    {
-                        // Previously visited crossed edge
-                        isFaceFound = true;
-                        continue;
-                    }
-                    if (m_edgeMask[edge] == 0)
-                    {
-                        // Previously visited uncrossed edge
-                        continue;
-                    }
+                m_faceMask[otherFace] = ContainsCrossedFace(landBoundaryIndex, otherFace);
 
-                    // Visited edge
-                    m_edgeMask[edge] = 0;
-                    const auto landBoundaryNode = IsMeshEdgeCloseToLandBoundaries(landBoundaryIndex, edge);
-
-                    if (landBoundaryNode != constants::missing::uintValue)
-                    {
-                        m_edgeMask[edge] = 1;
-                        isFaceFound = true;
-                    }
-                }
-
-                m_faceMask[otherFace] = isFaceFound;
                 if (m_faceMask[otherFace])
                 {
                     nextFaces.emplace_back(otherFace);
@@ -637,6 +681,55 @@ void LandBoundaries::MaskMeshFaceMask(UInt landBoundaryIndex, const std::vector<
     if (!nextFaces.empty())
     {
         MaskMeshFaceMask(landBoundaryIndex, nextFaces);
+    }
+}
+
+void LandBoundaries::GetLandBoundaryNode(const double closeDistance,
+                                         const Point& firstMeshNode,
+                                         const Point& secondMeshNode,
+                                         const UInt currentNode,
+                                         UInt& landBoundaryNode,
+                                         bool& isWithinSegment) const
+{
+    const double landBoundaryLength = ComputeSquaredDistance(m_landBoundary.Node(currentNode), m_landBoundary.Node(currentNode + 1), m_mesh.m_projection);
+
+    isWithinSegment = false;
+
+    if (landBoundaryLength > 0.0)
+    {
+
+        const auto [distanceFromLandBoundaryFirstMeshNode, normalPoint, ratioFirstMeshNode] = DistanceFromLine(firstMeshNode,
+                                                                                                               m_landBoundary.Node(currentNode),
+                                                                                                               m_landBoundary.Node(currentNode + 1),
+                                                                                                               m_mesh.m_projection);
+
+        if (distanceFromLandBoundaryFirstMeshNode < closeDistance)
+        {
+            landBoundaryNode = currentNode;
+            // The projection of firstMeshNode is within the segment currentNode / currentNode + 1
+            if (ratioFirstMeshNode >= 0.0 && ratioFirstMeshNode <= 1.0)
+            {
+                isWithinSegment = true;
+            }
+        }
+        else
+        {
+            // Check the second point
+            const auto [distanceFromLandBoundarySecondMeshNode, normalPoint, ratioSecondMeshNode] = DistanceFromLine(secondMeshNode,
+                                                                                                                     m_landBoundary.Node(currentNode),
+                                                                                                                     m_landBoundary.Node(currentNode + 1),
+                                                                                                                     m_mesh.m_projection);
+
+            if (distanceFromLandBoundarySecondMeshNode < closeDistance)
+            {
+                landBoundaryNode = currentNode;
+                // The projection of secondMeshNode is within the segment currentNode / currentNode + 1
+                if (ratioSecondMeshNode >= 0.0 && ratioSecondMeshNode <= 1.0)
+                {
+                    isWithinSegment = true;
+                }
+            }
+        }
     }
 }
 
@@ -671,43 +764,13 @@ meshkernel::UInt LandBoundaries::IsMeshEdgeCloseToLandBoundaries(UInt landBounda
     const UInt maximumNumberOfIterations = 3;
     while (searchIterations < maximumNumberOfIterations)
     {
-        const double landBoundaryLength = ComputeSquaredDistance(m_landBoundary.Node(currentNode), m_landBoundary.Node(currentNode + 1), m_mesh.m_projection);
+        bool isWithinSegment = false;
 
-        if (landBoundaryLength > 0.0)
+        GetLandBoundaryNode(closeDistance, firstMeshNode, secondMeshNode, currentNode, landBoundaryNode, isWithinSegment);
+
+        if (isWithinSegment)
         {
-
-            const auto [distanceFromLandBoundaryFirstMeshNode, normalPoint, ratioFirstMeshNode] = DistanceFromLine(firstMeshNode,
-                                                                                                                   m_landBoundary.Node(currentNode),
-                                                                                                                   m_landBoundary.Node(currentNode + 1),
-                                                                                                                   m_mesh.m_projection);
-
-            if (distanceFromLandBoundaryFirstMeshNode < closeDistance)
-            {
-                landBoundaryNode = currentNode;
-                // The projection of firstMeshNode is within the segment currentNode / currentNode + 1
-                if (ratioFirstMeshNode >= 0.0 && ratioFirstMeshNode <= 1.0)
-                {
-                    break;
-                }
-            }
-            else
-            {
-                // Check the second point
-                const auto [distanceFromLandBoundarySecondMeshNode, normalPoint, ratioSecondMeshNode] = DistanceFromLine(secondMeshNode,
-                                                                                                                         m_landBoundary.Node(currentNode),
-                                                                                                                         m_landBoundary.Node(currentNode + 1),
-                                                                                                                         m_mesh.m_projection);
-
-                if (distanceFromLandBoundarySecondMeshNode < closeDistance)
-                {
-                    landBoundaryNode = currentNode;
-                    // The projection of secondMeshNode is within the segment currentNode / currentNode + 1
-                    if (ratioSecondMeshNode >= 0.0 && ratioSecondMeshNode <= 1.0)
-                    {
-                        break;
-                    }
-                }
-            }
+            break;
         }
 
         // Search the next land boundary edge if projection is not within is within the segment currentNode / currentNode + 1

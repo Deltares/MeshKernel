@@ -66,6 +66,15 @@ namespace meshkernel
         /// @param[in] m The current m coordinate on the boundary of the curvilinear grid
         void ProjectPointOnClosestGridBoundary(Point const& point, UInt n, UInt m);
 
+        /// @brief Compute the edge lengths around a node (n,m) for n or m-grid line
+        std::tuple<Point, Point> ComputeGridDelta(const UInt n, const UInt m) const;
+
+        /// @brief Compute a new smoothed grid point
+        Point ComputeSmoothedGridNode(const UInt n,
+                                      const UInt m,
+                                      const double firstLengthSquared,
+                                      const double secondLengthSquared) const;
+
         UInt m_smoothingIterations;              ///< The orthogonalization parameters
         lin_alg::Matrix<Point> m_gridNodesCache; ///< A cache for storing current iteration node positions
     };

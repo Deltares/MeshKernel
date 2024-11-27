@@ -28,6 +28,116 @@
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Mesh.hpp"
 
+namespace meshkernel::impl
+{
+
+    /// @brief Checks if a point is in polygonNodes for Cartesian and spherical coordinate systems, using the winding number method
+    bool IsPointInPolygonNodesCartesian(const Point& point,
+                                        const std::vector<Point>& polygonNodes,
+                                        UInt startNode,
+                                        UInt endNode)
+    {
+        int windingNumber = 0;
+        for (auto n = startNode; n < endNode; n++)
+        {
+
+            const auto crossProductValue = crossProduct(polygonNodes[n], polygonNodes[n + 1], polygonNodes[n], point, Projection::cartesian);
+
+            if (IsEqual(crossProductValue, 0.0))
+            {
+                // point on the line
+                return true;
+            }
+
+            if (polygonNodes[n].y <= point.y) // an upward crossing
+            {
+                if (polygonNodes[n + 1].y > point.y && crossProductValue > 0.0)
+
+                {
+                    ++windingNumber; // have  a valid up intersect
+                }
+            }
+            else
+            {
+                if (polygonNodes[n + 1].y <= point.y && crossProductValue < 0.0) // a downward crossing
+                {
+
+                    --windingNumber; // have  a valid down intersect
+                }
+            }
+        }
+
+        return windingNumber != 0;
+    }
+
+    /// @brief Checks if a point is in polygonNodes for accurate spherical coordinate system, using the winding number method
+    bool IsPointInPolygonNodesSphericalAccurate(const Point& point,
+                                                const std::vector<Point>& polygonNodes,
+                                                Point polygonCenter,
+                                                UInt startNode,
+                                                UInt endNode)
+    {
+        const auto currentPolygonSize = endNode - startNode + 1;
+
+        // get 3D polygon coordinates
+        std::vector<Cartesian3DPoint> cartesian3DPoints;
+        cartesian3DPoints.reserve(currentPolygonSize);
+        for (UInt i = 0; i < currentPolygonSize; ++i)
+        {
+            cartesian3DPoints.emplace_back(SphericalToCartesian3D(polygonNodes[startNode + i]));
+        }
+
+        // enlarge around polygon
+        const double enlargementFactor = 1.000001;
+        const Cartesian3DPoint polygonCenterCartesian3D{SphericalToCartesian3D(polygonCenter)};
+        for (UInt i = 0; i < currentPolygonSize; ++i)
+        {
+            cartesian3DPoints[i] = polygonCenterCartesian3D + enlargementFactor * (cartesian3DPoints[i] - polygonCenterCartesian3D);
+        }
+
+        // convert point
+        const Cartesian3DPoint pointCartesian3D{SphericalToCartesian3D(point)};
+
+        // get test direction: e_lambda
+        const double lambda = point.x * constants::conversion::degToRad;
+        const Cartesian3DPoint ee{-std::sin(lambda), std::cos(lambda), 0.0};
+        int inside = 0;
+
+        // loop over the polygon nodes
+        for (UInt i = 0; i < currentPolygonSize - 1; ++i)
+        {
+            const auto nextNode = NextCircularForwardIndex(i, currentPolygonSize);
+            const auto xiXxip1 = VectorProduct(cartesian3DPoints[i], cartesian3DPoints[nextNode]);
+            const auto xpXe = VectorProduct(pointCartesian3D, ee);
+
+            const auto D = InnerProduct(xiXxip1, ee);
+            double zeta = 0.0;
+            double xi = 0.0;
+            double eta = 0.0;
+            if (std::abs(D) > 0.0)
+            {
+
+                xi = -InnerProduct(xpXe, cartesian3DPoints[nextNode]) / D;
+                eta = InnerProduct(xpXe, cartesian3DPoints[i]) / D;
+                zeta = -InnerProduct(xiXxip1, pointCartesian3D) / D;
+            }
+
+            if (IsEqual(zeta, 0.0))
+            {
+                return true;
+            }
+
+            if (xi >= 0.0 && eta >= 0.0 && zeta >= 0.0)
+            {
+                inside = 1 - inside;
+            }
+        }
+
+        return inside == 1;
+    }
+
+} // namespace meshkernel::impl
+
 namespace meshkernel
 {
     Cartesian3DPoint VectorProduct(const Cartesian3DPoint& a, const Cartesian3DPoint& b)
@@ -215,106 +325,14 @@ namespace meshkernel
             return false;
         }
 
-        bool isInPolygon = false;
-
         if (projection == Projection::cartesian || projection == Projection::spherical)
         {
-
-            int windingNumber = 0;
-            for (auto n = startNode; n < endNode; n++)
-            {
-
-                const auto crossProductValue = crossProduct(polygonNodes[n], polygonNodes[n + 1], polygonNodes[n], point, Projection::cartesian);
-
-                if (IsEqual(crossProductValue, 0.0))
-                {
-                    // point on the line
-                    return true;
-                }
-
-                if (polygonNodes[n].y <= point.y) // an upward crossing
-                {
-                    if (polygonNodes[n + 1].y > point.y && crossProductValue > 0.0)
-
-                    {
-                        ++windingNumber; // have  a valid up intersect
-                    }
-                }
-                else
-                {
-                    if (polygonNodes[n + 1].y <= point.y && crossProductValue < 0.0) // a downward crossing
-                    {
-
-                        --windingNumber; // have  a valid down intersect
-                    }
-                }
-            }
-
-            isInPolygon = windingNumber == 0 ? false : true;
+            return impl::IsPointInPolygonNodesCartesian(point, polygonNodes, startNode, endNode);
         }
-
-        if (projection == Projection::sphericalAccurate)
+        else
         {
-            // get 3D polygon coordinates
-            std::vector<Cartesian3DPoint> cartesian3DPoints;
-            cartesian3DPoints.reserve(currentPolygonSize);
-            for (UInt i = 0; i < currentPolygonSize; ++i)
-            {
-                cartesian3DPoints.emplace_back(SphericalToCartesian3D(polygonNodes[startNode + i]));
-            }
-
-            // enlarge around polygon
-            const double enlargementFactor = 1.000001;
-            const Cartesian3DPoint polygonCenterCartesian3D{SphericalToCartesian3D(polygonCenter)};
-            for (UInt i = 0; i < currentPolygonSize; ++i)
-            {
-                cartesian3DPoints[i] = polygonCenterCartesian3D + enlargementFactor * (cartesian3DPoints[i] - polygonCenterCartesian3D);
-            }
-
-            // convert point
-            const Cartesian3DPoint pointCartesian3D{SphericalToCartesian3D(point)};
-
-            // get test direction: e_lambda
-            const double lambda = point.x * constants::conversion::degToRad;
-            const Cartesian3DPoint ee{-std::sin(lambda), std::cos(lambda), 0.0};
-            int inside = 0;
-
-            // loop over the polygon nodes
-            for (UInt i = 0; i < currentPolygonSize - 1; ++i)
-            {
-                const auto nextNode = NextCircularForwardIndex(i, currentPolygonSize);
-                const auto xiXxip1 = VectorProduct(cartesian3DPoints[i], cartesian3DPoints[nextNode]);
-                const auto xpXe = VectorProduct(pointCartesian3D, ee);
-
-                const auto D = InnerProduct(xiXxip1, ee);
-                double zeta = 0.0;
-                double xi = 0.0;
-                double eta = 0.0;
-                if (std::abs(D) > 0.0)
-                {
-
-                    xi = -InnerProduct(xpXe, cartesian3DPoints[nextNode]) / D;
-                    eta = InnerProduct(xpXe, cartesian3DPoints[i]) / D;
-                    zeta = -InnerProduct(xiXxip1, pointCartesian3D) / D;
-                }
-
-                if (IsEqual(zeta, 0.0))
-                {
-                    return true;
-                }
-
-                if (xi >= 0.0 && eta >= 0.0 && zeta >= 0.0)
-                {
-                    inside = 1 - inside;
-                }
-            }
-
-            if (inside == 1)
-            {
-                isInPolygon = true;
-            }
+            return impl::IsPointInPolygonNodesSphericalAccurate(point, polygonNodes, polygonCenter, startNode, endNode);
         }
-        return isInPolygon;
     }
 
     void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp)

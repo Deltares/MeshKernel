@@ -41,7 +41,7 @@ namespace meshkernel
     {
     public:
         /// @param polygon The input polygon
-        CurvilinearGridFromPolygon(const Polygon& polygon);
+        explicit CurvilinearGridFromPolygon(const Polygon& polygon);
 
         /// @brief Compute curvilinear in a polygon (pol2curvi)
         /// @returns The computed curvilinear grid
@@ -52,6 +52,24 @@ namespace meshkernel
         std::unique_ptr<CurvilinearGrid> Compute(UInt firstNode, UInt secondNode, UInt thirdNode) const;
 
     private:
+        /// &brief Fill boundary coordinates
+        void AssignPolygonPointsToSegment(UInt nodeIndex,
+                                          UInt numPointsSide,
+                                          int direction,
+                                          std::vector<Point>& sideToFill) const;
+
+        void ComputeNumberOfMNodes(const UInt firstNode,
+                                   const UInt secondNode,
+                                   const UInt numPolygonNodes,
+                                   int& direction,
+                                   UInt& numMNodes) const;
+
+        void ComputeNumberOfNNodes(const UInt secondNode,
+                                   const UInt thirdNode,
+                                   const UInt numPolygonNodes,
+                                   const int direction,
+                                   UInt& numNNodes) const;
+
         const Polygon& m_polygon; /// Reference to a polygon
     };
 

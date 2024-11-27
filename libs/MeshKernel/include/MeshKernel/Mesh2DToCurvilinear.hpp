@@ -34,8 +34,6 @@
 #include "MeshKernel/Point.hpp"
 #include "Utilities/LinearAlgebra.hpp"
 
-using namespace meshkernel::constants;
-
 namespace meshkernel
 {
     /// @brief Construct a curvilinear grid from an unstructured mesh
@@ -87,7 +85,7 @@ namespace meshkernel
             {
                 const auto jIndex = j - m_minJ;
                 const auto iIndex = i - m_minI;
-                return m_matrix(jIndex, iIndex) != missing::intValue;
+                return m_matrix(jIndex, iIndex) != constants::missing::intValue;
             }
 
             /// @brief Gets the number of rows in the matrix.
@@ -154,7 +152,7 @@ namespace meshkernel
                 const auto newRows = static_cast<int>(m_matrix.rows()) + extraRowsTop + extraRowsBottom;
                 const auto newCols = static_cast<int>(m_matrix.cols()) + extraColsLeft + extraColsRight;
                 lin_alg::Matrix<int> newMatrix(newRows, newCols);
-                newMatrix.setConstant(missing::intValue);
+                newMatrix.setConstant(constants::missing::intValue);
 
                 // Copy the existing matrix into the new one
                 newMatrix.block(extraRowsTop, extraColsLeft, m_matrix.rows(), m_matrix.cols()) = m_matrix;

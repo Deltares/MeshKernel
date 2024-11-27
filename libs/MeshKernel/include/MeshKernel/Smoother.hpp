@@ -74,6 +74,44 @@ namespace meshkernel
         }
 
     private:
+        /// @brief Contains internal edge angle information
+        struct InternalAngleData
+        {
+            UInt numSquaredTriangles = 0;     ///< Number of  squared triangles
+            UInt numTriangles = 0;            ///< Number of triangles sharing node
+            double phiSquaredTriangles = 0.0; ///< Sum of optimal edge angles for squared triangles
+            double phiQuads = 0.0;            ///< Sum of optimal edge angles for quadrilaterals
+            double phiTriangles = 0.0;        ///< Sum of optimal edge angles for triangles
+            double phiTot = 0.0;              ///< Sum of optimal edge angles for all element shapes
+        };
+
+        /// @brief Compute number and sum of all angles interior angles
+        void ComputeInternalAngle(const UInt currentNode,
+                                  const UInt numSharedFaces,
+                                  const std::vector<double>& thetaSquare,
+                                  const std::vector<bool>& isSquareFace,
+                                  InternalAngleData& internalAngleData,
+                                  UInt& numNonStencilQuad);
+
+        /// @brief Update theta squared for interior faces.
+        void UpdateThetaForInteriorFaces(const UInt numSharedFaces, std::vector<double>& thetaSquare);
+
+        /// @brief Updata xi- and eta-caches for shared faces of a node.
+        void UpdateXiEtaForSharedFace(const UInt currentNode,
+                                      const UInt currentFace,
+                                      const UInt numFaceNodes,
+                                      const double dPhi,
+                                      const double phi0);
+
+        /// @brief Compute the optimal angle for all theshared faces attached to a node.
+        void ComputeOptimalAngleForSharedFaces(const UInt currentNode,
+                                               const UInt numSharedFaces,
+                                               const std::vector<double>& thetaSquare,
+                                               const std::vector<bool>& isSquareFace,
+                                               const double mu,
+                                               const double muSquaredTriangles,
+                                               const double muTriangles);
+
         /// @brief Initialize smoother topologies. A topology is determined by how many nodes are connected to the current node.
         ///        There are at maximum mesh.m_numNodes topologies, most likely much less
         void Initialize();
@@ -91,6 +129,27 @@ namespace meshkernel
 
         /// @brief Computes the smoother weights from the operators (orthonet_compweights_smooth)
         void ComputeWeights();
+
+        /// @brief Compute elliptic smoother operators coefficients for boundary nodes
+        std::tuple<double, double> ComputeOperatorsForBoundaryNode(const UInt f, const UInt faceLeftIndex, const UInt currentTopology);
+
+        /// @brief Compute elliptic smoother operators coefficients for interior nodes
+        std::tuple<double, double, double, double> ComputeOperatorsForInteriorNode(const UInt f,
+                                                                                   const UInt edgeIndex,
+                                                                                   const UInt faceLeftIndex,
+                                                                                   const UInt faceRightIndex,
+                                                                                   const UInt currentTopology);
+
+        /// @brief Compute the node to edge derivatives, gxi and geta
+        void ComputeNodeEdgeDerivative(const UInt f,
+                                       const UInt edgeIndex,
+                                       const UInt currentTopology,
+                                       const UInt faceLeftIndex,
+                                       const UInt faceRightIndex,
+                                       const double facxiL,
+                                       const double facetaL,
+                                       const double facxiR,
+                                       const double facetaR);
 
         /// Computes operators of the elliptic smoother by node (orthonet_comp_operators)
         /// @param[in] currentNode
@@ -128,6 +187,15 @@ namespace meshkernel
         /// @param[out] J
         void ComputeJacobian(UInt currentNode, std::vector<double>& J) const;
 
+        /// @brief Compute the coefficients to estimate values at cell circumcenters, filling m_Az.
+        void ComputeCellCircumcentreCoefficients(const UInt currentNode, const UInt currentTopology);
+
+        /// @brief Compute the segment gradients
+        void ComputeNodeToNodeGradients(const UInt currentNode, const UInt currentTopology);
+
+        /// @brief Compute the weights for the Laplacian smoother
+        void ComputeLaplacianSmootherWeights(const UInt currentNode, const UInt currentTopology);
+
         // The mesh to smooth
         const Mesh2D& m_mesh; ///< A reference to mesh
 
@@ -150,7 +218,6 @@ namespace meshkernel
         std::vector<std::vector<UInt>> m_faceNodeMappingCache; ///< Cache for face node mapping
         std::vector<double> m_xiCache;                         ///< Cache for xi
         std::vector<double> m_etaCache;                        ///< Cache for eta
-        std::vector<UInt> m_boundaryEdgesCache;                ///< Cache for boundary edges
         std::vector<double> m_leftXFaceCenterCache;            ///< Cache for left x face center
         std::vector<double> m_leftYFaceCenterCache;            ///< Cache for left y face center
         std::vector<double> m_rightXFaceCenterCache;           ///< Cache for right x face center

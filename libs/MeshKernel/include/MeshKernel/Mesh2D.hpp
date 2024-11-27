@@ -406,6 +406,53 @@ namespace meshkernel
         /// @brief Bounded array for storing hanging node indices.
         using HangingNodeIndexArray = std::array<UInt, m_maximumNumberOfHangingNodesAlongEdge>;
 
+        /// @brief Compute the average area of the neighbouring faces of a triangle element
+        void ComputeAverageAreOfNeighbouringFaces(const UInt faceId, UInt& numNonBoundaryFaces, double& averageOtherFacesArea) const;
+
+        /// @brief Find the smallest angle for the three corners of the triangle
+        void FindSmallestCornerAngle(const UInt faceId,
+                                     double& minCosPhiSmallTriangle,
+                                     UInt& nodeToPreserve,
+                                     UInt& firstNodeToMerge,
+                                     UInt& secondNodeToMerge,
+                                     UInt& thirdEdgeSmallTriangle) const;
+
+        /// @brief Delete the small triangle
+        void DeleteSmallTriangle(const UInt nodeToPreserve,
+                                 const UInt firstNodeToMerge,
+                                 const UInt secondNodeToMerge,
+                                 bool& nodesMerged,
+                                 CompoundUndoAction& undoAction);
+
+        /// @brief Find nodes to be deleted.
+        void FindNodesToDelete(const Polygons& polygon,
+                               const bool invertDeletion,
+                               std::vector<bool>& isNodeInsidePolygon,
+                               std::vector<bool>& deleteNode) const;
+
+        /// @brief Delete node and edges
+        void DeletedMeshNodesAndEdges(const std::function<bool(UInt)>& excludedFace,
+                                      std::vector<bool>& deleteNode,
+                                      CompoundUndoAction& deleteMeshAction);
+
+        /// @brief Find nodes contained within the polygon
+        std::vector<int> ComputeNodeMask(const Polygons& polygons) const;
+
+        /// @brief Find edges that are contained within the polygon
+        std::vector<int> ComputeEdgeMask(const std::vector<int>& nodeMask,
+                                         bool includeIntersected) const;
+
+        /// @brief Remove edges that are intersecting
+        void RemoveIntersected(const std::vector<int>& edgeMask,
+                               std::vector<int>& secondEdgeMask) const;
+
+        /// @brief Invert the selection of edges
+        void InvertSelection(const std::vector<int>& edgeMask,
+                             std::vector<int>& secondEdgeMask) const;
+
+        /// @brief Find the mesh faces that lie entirely within the polygon.
+        std::vector<bool> FindFacesEntirelyInsidePolygon(const std::vector<bool>& isNodeInsidePolygon) const;
+
         /// @brief Deletes the mesh faces inside a polygon
         /// @param[in] polygon        The polygon where to perform the operation
         ///                           If this Polygons instance contains multiple polygons, the first one will be taken.
@@ -460,6 +507,40 @@ namespace meshkernel
         /// @brief Perform complete administration
         /// @param[in,out] undoAction if not null then collect any undo actions generated during the administration.
         void DoAdministration(CompoundUndoAction* undoAction = nullptr);
+
+        /// @brief Initialise the node type array for nodes that lie on the boundary
+        void InitialiseBoundaryNodeClassification();
+
+        /// @brief Classify a single node
+        void ClassifyNode(const UInt nodeId);
+
+        /// @brief Count the number of value edge in list
+        UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, const UInt numNodes) const;
+
+        /// @brief Compute mid point and normal of polygon segment
+        void ComputeMidPointsAndNormals(const std::vector<Point>& polygon,
+                                        const std::vector<UInt>& edgesNumFaces,
+                                        const UInt numNodes,
+                                        std::array<Point, m_maximumNumberOfNodesPerFace>& middlePoints,
+                                        std::array<Point, m_maximumNumberOfNodesPerFace>& normals,
+                                        UInt& pointCount) const;
+
+        /// @brief Compute circumcentre of face
+        Point ComputeCircumCentre(const Point& centerOfMass,
+                                  const UInt pointCount,
+                                  const std::array<Point, m_maximumNumberOfNodesPerFace>& middlePoints,
+                                  const std::array<Point, m_maximumNumberOfNodesPerFace>& normals) const;
+
+        /// @brief Compute edge and average flow length
+        void ComputeAverageFlowEdgesLength(std::vector<double>& edgesLength,
+                                           std::vector<double>& averageFlowEdgesLength) const;
+
+        /// @brief Compute average edge length and aspect ratios
+        void ComputeAverageEdgeLength(const std::vector<double>& edgesLength,
+                                      const std::vector<double>& averageFlowEdgesLength,
+                                      std::vector<bool>& curvilinearGridIndicator,
+                                      std::vector<std::array<double, 2>>& averageEdgesLength,
+                                      std::vector<double>& aspectRatios) const;
     };
 
 } // namespace meshkernel
