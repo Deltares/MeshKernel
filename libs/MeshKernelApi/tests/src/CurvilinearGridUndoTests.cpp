@@ -3,6 +3,7 @@
 #include <random>
 
 #include "MeshKernel/Parameters.hpp"
+#include "MeshKernelApi/BoundingBox.hpp"
 #include "MeshKernelApi/Mesh2D.hpp"
 #include "MeshKernelApi/MeshKernel.hpp"
 
@@ -413,11 +414,10 @@ TEST(CurvilinearGridUndoTests, DeleteInterior)
 
     constexpr double lowerBoundValue = static_cast<double>(lowerBoundIndex);
     constexpr double upperBoundValue = static_cast<double>(upperBoundIndex);
+    meshkernelapi::BoundingBox boundingbox(lowerBoundValue, lowerBoundValue, upperBoundValue, upperBoundValue);
 
     // delete interior block
-    errorCode = meshkernelapi::mkernel_curvilinear_delete_interior(meshKernelId,
-                                                                   lowerBoundValue, lowerBoundValue,
-                                                                   upperBoundValue, upperBoundValue);
+    errorCode = meshkernelapi::mkernel_curvilinear_delete_interior(meshKernelId, boundingbox);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Get the current state of the curvilinear grid
@@ -505,11 +505,10 @@ TEST(CurvilinearGridUndoTests, DeleteExterior)
 
     constexpr double lowerBoundValue = static_cast<double>(lowerBoundIndex);
     constexpr double upperBoundValue = static_cast<double>(upperBoundIndex);
+    meshkernelapi::BoundingBox boundingbox(lowerBoundValue, lowerBoundValue, upperBoundValue, upperBoundValue);
 
     // delete exterior block
-    errorCode = meshkernelapi::mkernel_curvilinear_delete_exterior(meshKernelId,
-                                                                   lowerBoundValue, lowerBoundValue,
-                                                                   upperBoundValue, upperBoundValue);
+    errorCode = meshkernelapi::mkernel_curvilinear_delete_exterior(meshKernelId, boundingbox);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Get the current state of the curvilinear grid
@@ -1654,9 +1653,11 @@ TEST(CurvilinearGridUndoTests, MultiStepUndoTest)
     constexpr double upperBoundValue = static_cast<double>(upperBoundIndex);
 
     // delete interior block
-    errorCode = meshkernelapi::mkernel_curvilinear_delete_interior(meshKernelId,
-                                                                   lowerBoundValue, lowerBoundValue,
-                                                                   upperBoundValue, upperBoundValue);
+    meshkernelapi::BoundingBox boundingBox(lowerBoundValue,
+                                           lowerBoundValue,
+                                           upperBoundValue,
+                                           upperBoundValue);
+    errorCode = meshkernelapi::mkernel_curvilinear_delete_interior(meshKernelId, boundingBox);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     didUndo = false;

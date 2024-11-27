@@ -4930,11 +4930,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_delete_exterior(int meshKernelId,
-                                                        double xFirstPointCoordinate,
-                                                        double yFirstPointCoordinate,
-                                                        double xSecondPointCoordinate,
-                                                        double ySecondPointCoordinate)
+    MKERNEL_API int mkernel_curvilinear_delete_exterior(int meshKernelId, const BoundingBox& boundingBox)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -4955,8 +4951,8 @@ namespace meshkernelapi
             }
             meshkernel::CurvilinearGridDeleteExterior curvilinearDeleteExterior(*meshKernelState[meshKernelId].m_curvilinearGrid);
 
-            curvilinearDeleteExterior.SetBlock({xFirstPointCoordinate, yFirstPointCoordinate},
-                                               {xSecondPointCoordinate, ySecondPointCoordinate});
+            curvilinearDeleteExterior.SetBlock({boundingBox.xLowerLeft, boundingBox.yLowerLeft},
+                                               {boundingBox.xUpperRight, boundingBox.yUpperRight});
 
             meshKernelUndoStack.Add(curvilinearDeleteExterior.Compute(), meshKernelId);
         }
@@ -4968,10 +4964,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_curvilinear_delete_interior(int meshKernelId,
-                                                        double xFirstPointCoordinate,
-                                                        double yFirstPointCoordinate,
-                                                        double xSecondPointCoordinate,
-                                                        double ySecondPointCoordinate)
+                                                        const BoundingBox& boundingBox)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -4992,8 +4985,8 @@ namespace meshkernelapi
             }
             meshkernel::CurvilinearGridDeleteInterior curvilinearDeleteInterior(*meshKernelState[meshKernelId].m_curvilinearGrid);
 
-            curvilinearDeleteInterior.SetBlock({xFirstPointCoordinate, yFirstPointCoordinate},
-                                               {xSecondPointCoordinate, ySecondPointCoordinate});
+            curvilinearDeleteInterior.SetBlock({boundingBox.xLowerLeft, boundingBox.yLowerLeft},
+                                               {boundingBox.xUpperRight, boundingBox.yUpperRight});
 
             meshKernelUndoStack.Add(curvilinearDeleteInterior.Compute(), meshKernelId);
         }

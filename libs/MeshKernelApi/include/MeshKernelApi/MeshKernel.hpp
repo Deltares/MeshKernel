@@ -268,31 +268,19 @@ namespace meshkernelapi
         /// @brief Converts a curvilinear grid to an unstructured mesh
         MKERNEL_API int mkernel_curvilinear_convert_to_mesh2d(int meshKernelId);
 
-        /// @brief Delete the exterior part of a curvilinear gris
+        /// @brief Delete the exterior part of a curvilinear
         /// @param meshKernelId The id of the mesh state
-        /// @param[in] xFirstPointCoordinate The x coordinate of the first point
-        /// @param[in] yFirstPointCoordinate The y coordinate of the first point
-        /// @param[in] xSecondPointCoordinate The x coordinate of the second point
-        /// @param[in] ySecondPointCoordinate The y coordinate of the second point
+        /// @param[in] boundingBox The bounding box defining the block to keep
         /// @return  Error code
         MKERNEL_API int mkernel_curvilinear_delete_exterior(int meshKernelId,
-                                                            double xFirstPointCoordinate,
-                                                            double yFirstPointCoordinate,
-                                                            double xSecondPointCoordinate,
-                                                            double ySecondPointCoordinate);
+                                                            const BoundingBox& boundingBox);
 
         /// @brief Delete the interior part of a curvilinear gris
         /// @param meshKernelId The id of the mesh state
-        /// @param[in] xFirstPointCoordinate The x coordinate of the first point
-        /// @param[in] yFirstPointCoordinate The y coordinate of the first point
-        /// @param[in] xSecondPointCoordinate The x coordinate of the second point
-        /// @param[in] ySecondPointCoordinate The y coordinate of the second point
+        /// @param[in] boundingBox The bounding box defining the block to keep
         /// @return  Error code
         MKERNEL_API int mkernel_curvilinear_delete_interior(int meshKernelId,
-                                                            double xFirstPointCoordinate,
-                                                            double yFirstPointCoordinate,
-                                                            double xSecondPointCoordinate,
-                                                            double ySecondPointCoordinate);
+                                                            const BoundingBox& boundingBox);
 
         /// @brief Delete the node closest to a point
         /// @param meshKernelId The id of the mesh state
