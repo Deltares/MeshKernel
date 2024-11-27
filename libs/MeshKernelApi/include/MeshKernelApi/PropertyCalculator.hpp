@@ -40,6 +40,11 @@ namespace meshkernelapi
         /// @brief Destructor
         virtual ~PropertyCalculator() = default;
 
+        /// @brief Determine is the calculator can compute the desired results correctly.
+        ///
+        /// This has a default implementation returning true.
+        virtual bool IsValid(const MeshKernelState& state) const;
+
         /// @brief Calculate the property
         virtual void Calculate(const MeshKernelState& state, const GeometryList& geometryList) const = 0;
 
@@ -62,6 +67,23 @@ namespace meshkernelapi
     class EdgeLengthPropertyCalculator : public PropertyCalculator
     {
     public:
+        /// @brief Calculate the edge-length for a mesh
+        void Calculate(const MeshKernelState& state, const GeometryList& geometryList) const override;
+
+        /// @brief Determine the size of the edge-length vector required
+        int Size(const MeshKernelState& state) const override;
+    };
+
+    /// @brief Interpolate the depths at the mesh node points.
+    class DepthSamplePropertyCalculator : public PropertyCalculator
+    {
+    public:
+        /// @brief The name of the sample data
+        static const std::string SampleName;
+
+        /// @brief Determine is the calculator can interpolate depth values correctly
+        bool IsValid(const MeshKernelState& state) const override;
+
         /// @brief Calculate the edge-length for a mesh
         void Calculate(const MeshKernelState& state, const GeometryList& geometryList) const override;
 
