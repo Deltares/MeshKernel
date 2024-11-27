@@ -80,7 +80,8 @@ namespace meshkernel
         enum class Property
         {
             Orthogonality = 0,
-            EdgeLength = 1
+            EdgeLength = 1,
+            Bathymetry = 2
         };
 
         /// @brief Default destructor

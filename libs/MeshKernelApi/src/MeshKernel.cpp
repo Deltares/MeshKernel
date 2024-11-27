@@ -137,6 +137,9 @@ namespace meshkernelapi
         propertyId = static_cast<int>(meshkernel::Mesh2D::Property::EdgeLength);
         propertyMap.emplace(propertyId, std::make_unique<EdgeLengthPropertyCalculator>());
 
+        propertyId = static_cast<int>(meshkernel::Mesh2D::Property::Bathymetry);
+        propertyMap.emplace(propertyId, std::make_unique<DepthSamplePropertyCalculator>());
+
         return propertyMap;
     }
 
@@ -523,73 +526,6 @@ namespace meshkernelapi
 
             std::span<const double> bathymetryData(sampleData.values, sampleData.num_coordinates);
             meshKernelState[meshKernelId].m_sampleInterpolator->SetData("depth", bathymetryData);
-        }
-        catch (...)
-        {
-            lastExitCode = HandleException();
-        }
-        return lastExitCode;
-    }
-
-    MKERNEL_API int mkernel_mesh2d_get_bathymetry_data(int meshKernelId, GeometryList& sampleData)
-    {
-        lastExitCode = meshkernel::ExitCode::Success;
-        try
-        {
-            if (!meshKernelState.contains(meshKernelId))
-            {
-                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
-            }
-
-            if (meshKernelState[meshKernelId].m_mesh2d == nullptr)
-            {
-                throw meshkernel::MeshKernelError("The selected mesh2d does not exist.");
-            }
-
-            if (meshKernelState[meshKernelId].m_sampleInterpolator == nullptr)
-            {
-                throw meshkernel::MeshKernelError("The selected sample interpolator does not exist.");
-            }
-
-            if (sampleData.num_coordinates != static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumNodes()))
-            {
-                throw meshkernel::MeshKernelError("GeometryList has wrong dimensions {} /= {}",
-                                                  sampleData.num_coordinates,
-                                                  meshKernelState[meshKernelId].m_mesh2d->GetNumNodes());
-            }
-
-            std::span<double> interpolatedSampleData(sampleData.values, sampleData.num_coordinates);
-            meshKernelState[meshKernelId].m_sampleInterpolator->Interpolate("depth", meshKernelState[meshKernelId].m_mesh2d->Nodes(), interpolatedSampleData);
-        }
-        catch (...)
-        {
-            lastExitCode = HandleException();
-        }
-        return lastExitCode;
-    }
-
-    MKERNEL_API int mkernel_mesh2d_get_bathymetry_dimension(int meshKernelId, int& sampleDataSize)
-    {
-        lastExitCode = meshkernel::ExitCode::Success;
-        sampleDataSize = -1;
-        try
-        {
-            if (!meshKernelState.contains(meshKernelId))
-            {
-                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
-            }
-
-            if (meshKernelState[meshKernelId].m_sampleInterpolator == nullptr)
-            {
-                throw meshkernel::MeshKernelError("The sample interpolator does not exist.");
-            }
-
-            if (!meshKernelState[meshKernelId].m_sampleInterpolator->Contains("depth"))
-            {
-                throw meshkernel::MeshKernelError("The sample interpolator does not contains depth values.");
-            }
-
-            sampleDataSize = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumNodes());
         }
         catch (...)
         {
@@ -1621,12 +1557,12 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            if (const auto& mesh2d = meshKernelState.at(meshKernelId).m_mesh2d; !mesh2d || mesh2d->GetNumNodes() <= 0)
+            if (const auto& mesh2d = meshKernelState.at(meshKernelId).m_mesh2d; mesh2d == nullptr || mesh2d->GetNumNodes() <= 0)
             {
                 return lastExitCode;
             }
 
-            if (propertyCalculators.contains(propertyValue) && propertyCalculators[propertyValue] != nullptr)
+            if (propertyCalculators.contains(propertyValue) && propertyCalculators[propertyValue] != nullptr && propertyCalculators[propertyValue]->IsValid(meshKernelState.at(meshKernelId)))
             {
                 propertyCalculators[propertyValue]->Calculate(meshKernelState.at(meshKernelId), geometryList);
             }
