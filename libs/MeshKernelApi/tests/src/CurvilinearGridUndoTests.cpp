@@ -1649,14 +1649,11 @@ TEST(CurvilinearGridUndoTests, MultiStepUndoTest)
     const int lowerBoundIndex = 10;
     const int upperBoundIndex = 20;
 
-    constexpr double lowerBoundValue = static_cast<double>(lowerBoundIndex);
-    constexpr double upperBoundValue = static_cast<double>(upperBoundIndex);
-
     // delete interior block
-    meshkernelapi::BoundingBox boundingBox(lowerBoundValue,
-                                           lowerBoundValue,
-                                           upperBoundValue,
-                                           upperBoundValue);
+    meshkernelapi::BoundingBox boundingBox(lowerBoundIndex,
+                                           lowerBoundIndex,
+                                           upperBoundIndex,
+                                           upperBoundIndex);
     errorCode = meshkernelapi::mkernel_curvilinear_delete_interior(meshKernelId, boundingBox);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
