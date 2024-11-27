@@ -268,14 +268,14 @@ namespace meshkernelapi
         /// @brief Converts a curvilinear grid to an unstructured mesh
         MKERNEL_API int mkernel_curvilinear_convert_to_mesh2d(int meshKernelId);
 
-        /// @brief Delete the exterior part of a curvilinear
+        /// @brief Delete the exterior part of a curvilinear grid
         /// @param meshKernelId The id of the mesh state
         /// @param[in] boundingBox The bounding box defining the block to keep
         /// @return  Error code
         MKERNEL_API int mkernel_curvilinear_delete_exterior(int meshKernelId,
                                                             const BoundingBox& boundingBox);
 
-        /// @brief Delete the interior part of a curvilinear gris
+        /// @brief Delete the interior part of a curvilinear grid
         /// @param meshKernelId The id of the mesh state
         /// @param[in] boundingBox The bounding box defining the block to keep
         /// @return  Error code
