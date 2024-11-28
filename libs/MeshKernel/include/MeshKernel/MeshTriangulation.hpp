@@ -28,6 +28,7 @@
 #pragma once
 
 #include <array>
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -51,12 +52,12 @@ namespace meshkernel
     {
     public:
         /// @brief Constructor with array of points
-        template <class PointVector>
+        template <ValidConstPointArray PointVector>
         MeshTriangulation(const PointVector& nodes,
                           const Projection projection);
 
         /// @brief Constructor with separate arrays of x- and y-coordinates
-        template <class VectorType>
+        template <ValidConstDoubleArray VectorType>
         MeshTriangulation(const VectorType& xNodes,
                           const VectorType& yNodes,
                           const Projection projection);
@@ -119,7 +120,7 @@ inline meshkernel::Projection meshkernel::MeshTriangulation::GetProjection() con
     return m_projection;
 }
 
-template <class PointVector>
+template <meshkernel::ValidConstPointArray PointVector>
 meshkernel::MeshTriangulation::MeshTriangulation(const PointVector& nodes,
                                                  const Projection projection)
     : m_nodes(nodes.begin(), nodes.end()),
@@ -133,10 +134,10 @@ meshkernel::MeshTriangulation::MeshTriangulation(const PointVector& nodes,
     std::vector<double> xNodes(nodes.size());
     std::vector<double> yNodes(nodes.size());
 
-    std::transform(nodes.begin(), nodes.begin(), xNodes.begin(),
+    std::transform(nodes.begin(), nodes.end(), xNodes.begin(),
                    [](const Point& p)
                    { return p.x; });
-    std::transform(nodes.begin(), nodes.begin(), yNodes.begin(),
+    std::transform(nodes.begin(), nodes.end(), yNodes.begin(),
                    [](const Point& p)
                    { return p.y; });
 
@@ -146,7 +147,7 @@ meshkernel::MeshTriangulation::MeshTriangulation(const PointVector& nodes,
     Compute(xNodesSpan, yNodesSpan);
 }
 
-template <class VectorType>
+template <meshkernel::ValidConstDoubleArray VectorType>
 meshkernel::MeshTriangulation::MeshTriangulation(const VectorType& xNodes,
                                                  const VectorType& yNodes,
                                                  const Projection projection)
