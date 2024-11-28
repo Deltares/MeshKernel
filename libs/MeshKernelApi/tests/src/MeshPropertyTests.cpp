@@ -27,7 +27,7 @@ TEST(MeshPropertyTests, BathymetryTest)
     const double origin = 0.0;
     const double delta = 1.0;
 
-    const int BathymetryPropertyId = 2;
+    const int BathymetryPropertyId = static_cast<int>(meshkernel::Mesh2D::Property::Bathymetry);
 
     int meshKernelId = meshkernel::constants::missing::intValue;
     int errorCode;
@@ -108,7 +108,7 @@ TEST(MeshPropertyTests, BathymetryTest)
     sampleData.coordinates_x = bathymetryXNodes.data();
     sampleData.coordinates_y = bathymetryYNodes.data();
 
-    errorCode = mkapi::mkernel_mesh2d_set_bathymetry_data(meshKernelId, sampleData);
+    errorCode = mkapi::mkernel_mesh2d_set_property(meshKernelId, BathymetryPropertyId, sampleData);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     const double tolerance = 1.0e-13;
@@ -153,7 +153,7 @@ TEST(MeshPropertyTests, PropertyFailureTest)
     const double origin = 0.0;
     const double delta = 1.0;
 
-    const int BathymetryPropertyId = 2;
+    const int BathymetryPropertyId = static_cast<int>(meshkernel::Mesh2D::Property::Bathymetry);
 
     int meshKernelId = meshkernel::constants::missing::intValue;
     int errorCode;
@@ -234,8 +234,18 @@ TEST(MeshPropertyTests, PropertyFailureTest)
     sampleData.coordinates_x = bathymetryXNodes.data();
     sampleData.coordinates_y = bathymetryYNodes.data();
 
-    errorCode = mkapi::mkernel_mesh2d_set_bathymetry_data(meshKernelId, sampleData);
+    bool hasBathymetryData = false;
+
+    errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, BathymetryPropertyId, hasBathymetryData);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    EXPECT_FALSE(hasBathymetryData);
+
+    errorCode = mkapi::mkernel_mesh2d_set_property(meshKernelId, BathymetryPropertyId, sampleData);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, BathymetryPropertyId, hasBathymetryData);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+    EXPECT_TRUE(hasBathymetryData);
 
     //--------------------------------
     // Start test
