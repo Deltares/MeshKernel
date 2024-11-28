@@ -63,7 +63,7 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliDeRefinement::Compute
     return refinementAction;
 }
 
-void meshkernel::CasulliDeRefinement::FindDirectlyConnectedCells(const Mesh2D& mesh,
+void meshkernel::CasulliDeRefinement::FindDirectlyConnectedFaces(const Mesh2D& mesh,
                                                                  const UInt elementId,
                                                                  std::vector<UInt>& connected)
 {
@@ -83,7 +83,7 @@ void meshkernel::CasulliDeRefinement::FindDirectlyConnectedCells(const Mesh2D& m
     }
 }
 
-void meshkernel::CasulliDeRefinement::FindIndirectlyConnectedCells(const Mesh2D& mesh,
+void meshkernel::CasulliDeRefinement::FindIndirectlyConnectedFaces(const Mesh2D& mesh,
                                                                    const UInt elementId,
                                                                    const std::vector<UInt>& directlyConnected,
                                                                    std::vector<UInt>& indirectlyConnected)
@@ -109,7 +109,7 @@ void meshkernel::CasulliDeRefinement::FindIndirectlyConnectedCells(const Mesh2D&
                     continue;
                 }
 
-                // Add new cell
+                // Add new face
                 indirectlyConnected.push_back(otherElementId);
             }
         }
@@ -117,20 +117,20 @@ void meshkernel::CasulliDeRefinement::FindIndirectlyConnectedCells(const Mesh2D&
 }
 
 void meshkernel::CasulliDeRefinement::AssignDirectlyConnected(const std::vector<UInt>& directlyConnected,
-                                                              std::array<int, 2>& kne,
+                                                              std::array<int, 2>& edgeFaces,
                                                               UInt& neighbouringElementId)
 {
     for (UInt k = 0; k < directlyConnected.size(); ++k)
     {
         if (directlyConnected[k] == neighbouringElementId)
         {
-            if (kne[0] == constants::missing::intValue)
+            if (edgeFaces[0] == constants::missing::intValue)
             {
-                kne[0] = -static_cast<int>(neighbouringElementId);
+                edgeFaces[0] = -static_cast<int>(neighbouringElementId);
             }
             else
             {
-                kne[1] = -static_cast<int>(neighbouringElementId);
+                edgeFaces[1] = -static_cast<int>(neighbouringElementId);
             }
 
             neighbouringElementId = constants::missing::uintValue;
@@ -139,7 +139,7 @@ void meshkernel::CasulliDeRefinement::AssignDirectlyConnected(const std::vector<
 }
 
 void meshkernel::CasulliDeRefinement::AssignIndirectlyConnected(const std::vector<UInt>& indirectlyConnected,
-                                                                std::array<int, 2>& kne,
+                                                                std::array<int, 2>& edgeFaces,
                                                                 const UInt neighbouringElementId)
 {
 
@@ -147,24 +147,24 @@ void meshkernel::CasulliDeRefinement::AssignIndirectlyConnected(const std::vecto
     {
         if (indirectlyConnected[k] == neighbouringElementId)
         {
-            if (kne[0] == constants::missing::intValue)
+            if (edgeFaces[0] == constants::missing::intValue)
             {
-                kne[0] = static_cast<int>(neighbouringElementId);
+                edgeFaces[0] = static_cast<int>(neighbouringElementId);
             }
             else
             {
-                kne[1] = static_cast<int>(neighbouringElementId);
+                edgeFaces[1] = static_cast<int>(neighbouringElementId);
             }
         }
     }
 }
 
-void meshkernel::CasulliDeRefinement::FindAdjacentCells(const Mesh2D& mesh,
+void meshkernel::CasulliDeRefinement::FindAdjacentFaces(const Mesh2D& mesh,
                                                         const std::vector<UInt>& directlyConnected,
                                                         const std::vector<UInt>& indirectlyConnected,
-                                                        std::vector<std::array<int, 2>>& kne)
+                                                        std::vector<std::array<int, 2>>& edgeFaces)
 {
-    std::ranges::fill(kne, std::array<int, 2>{constants::missing::intValue, constants::missing::intValue});
+    std::ranges::fill(edgeFaces, std::array<int, 2>{constants::missing::intValue, constants::missing::intValue});
 
     for (UInt i = 0; i < directlyConnected.size(); ++i)
     {
@@ -181,27 +181,27 @@ void meshkernel::CasulliDeRefinement::FindAdjacentCells(const Mesh2D& mesh,
 
             UInt neighbouringElementId = elementId == mesh.m_edgesFaces[edgeId][0] ? mesh.m_edgesFaces[edgeId][1] : mesh.m_edgesFaces[edgeId][0];
 
-            AssignDirectlyConnected(directlyConnected, kne[i], neighbouringElementId);
+            AssignDirectlyConnected(directlyConnected, edgeFaces[i], neighbouringElementId);
 
             if (neighbouringElementId == constants::missing::uintValue)
             {
                 continue;
             }
 
-            AssignIndirectlyConnected(indirectlyConnected, kne[i], neighbouringElementId);
+            AssignIndirectlyConnected(indirectlyConnected, edgeFaces[i], neighbouringElementId);
         }
     }
 }
 
-void meshkernel::CasulliDeRefinement::FindSurroundingCells(const Mesh2D& mesh,
+void meshkernel::CasulliDeRefinement::FindSurroundingFaces(const Mesh2D& mesh,
                                                            const UInt elementId,
                                                            std::vector<UInt>& directlyConnected,
                                                            std::vector<UInt>& indirectlyConnected,
-                                                           std::vector<std::array<int, 2>>& kne)
+                                                           std::vector<std::array<int, 2>>& edgeFaces)
 {
-    FindDirectlyConnectedCells(mesh, elementId, directlyConnected);
-    FindIndirectlyConnectedCells(mesh, elementId, directlyConnected, indirectlyConnected);
-    FindAdjacentCells(mesh, directlyConnected, indirectlyConnected, kne);
+    FindDirectlyConnectedFaces(mesh, elementId, directlyConnected);
+    FindIndirectlyConnectedFaces(mesh, elementId, directlyConnected, indirectlyConnected);
+    FindAdjacentFaces(mesh, directlyConnected, indirectlyConnected, edgeFaces);
 }
 
 bool meshkernel::CasulliDeRefinement::ElementIsSeed(const Mesh2D& mesh,
@@ -301,11 +301,11 @@ void meshkernel::CasulliDeRefinement::AddElementToList(const Mesh& mesh, const s
     }
 }
 
-void meshkernel::CasulliDeRefinement::UpdateCellMaskDirectlyConnectedNodeFirst(const std::vector<UInt>& directlyConnected,
+void meshkernel::CasulliDeRefinement::UpdateFaceMaskDirectlyConnectedNodeFirst(const std::vector<UInt>& directlyConnected,
                                                                                const Mesh2D& mesh,
                                                                                const std::vector<UInt>& frontIndex,
                                                                                std::vector<UInt>& frontIndexCopy,
-                                                                               std::vector<ElementType>& cellMask)
+                                                                               std::vector<ElementType>& faceMask)
 {
     using enum ElementType;
 
@@ -318,18 +318,18 @@ void meshkernel::CasulliDeRefinement::UpdateCellMaskDirectlyConnectedNodeFirst(c
             continue;
         }
 
-        if ((cellMask[connectedElementId] != WasNodeFirst && cellMask[connectedElementId] != WasNodeAfter) &&
-            (cellMask[connectedElementId] != WasEdgeFirst && cellMask[connectedElementId] != WasEdgeAfter))
+        if ((faceMask[connectedElementId] != WasNodeFirst && faceMask[connectedElementId] != WasNodeAfter) &&
+            (faceMask[connectedElementId] != WasEdgeFirst && faceMask[connectedElementId] != WasEdgeAfter))
         {
-            cellMask[connectedElementId] = WasEdgeFirst;
+            faceMask[connectedElementId] = WasEdgeFirst;
             AddElementToList(mesh, frontIndex, frontIndexCopy, connectedElementId);
         }
     }
 }
 
-void meshkernel::CasulliDeRefinement::UpdateCellMaskIndirectlyConnectedNodeFirst(const std::vector<UInt>& indirectlyConnected,
+void meshkernel::CasulliDeRefinement::UpdateFaceMaskIndirectlyConnectedNodeFirst(const std::vector<UInt>& indirectlyConnected,
                                                                                  const Mesh2D& mesh,
-                                                                                 std::vector<ElementType>& cellMask)
+                                                                                 std::vector<ElementType>& faceMask)
 {
     using enum ElementType;
 
@@ -342,18 +342,18 @@ void meshkernel::CasulliDeRefinement::UpdateCellMaskIndirectlyConnectedNodeFirst
             continue;
         }
 
-        if (cellMask[connectedElementId] != WasCell)
+        if (faceMask[connectedElementId] != WasFace)
         {
-            cellMask[connectedElementId] = WasCell;
+            faceMask[connectedElementId] = WasFace;
         }
     }
 }
 
-void meshkernel::CasulliDeRefinement::UpdateCellMaskDirectlyConnectedEdgeFirst(const std::vector<UInt>& directlyConnected,
+void meshkernel::CasulliDeRefinement::UpdateFaceMaskDirectlyConnectedEdgeFirst(const std::vector<UInt>& directlyConnected,
                                                                                const Mesh2D& mesh,
                                                                                const std::vector<UInt>& frontIndex,
                                                                                std::vector<UInt>& frontIndexCopy,
-                                                                               std::vector<ElementType>& cellMask)
+                                                                               std::vector<ElementType>& faceMask)
 {
     using enum ElementType;
 
@@ -366,21 +366,21 @@ void meshkernel::CasulliDeRefinement::UpdateCellMaskDirectlyConnectedEdgeFirst(c
             continue;
         }
 
-        if ((cellMask[connectedElementId] != WasCell) &&
-            (cellMask[connectedElementId] != WasNodeFirst && cellMask[connectedElementId] != WasNodeAfter) &&
-            (cellMask[connectedElementId] != WasEdgeFirst && cellMask[connectedElementId] != WasEdgeAfter))
+        if ((faceMask[connectedElementId] != WasFace) &&
+            (faceMask[connectedElementId] != WasNodeFirst && faceMask[connectedElementId] != WasNodeAfter) &&
+            (faceMask[connectedElementId] != WasEdgeFirst && faceMask[connectedElementId] != WasEdgeAfter))
         {
-            cellMask[connectedElementId] = WasNodeFirst;
+            faceMask[connectedElementId] = WasNodeFirst;
             AddElementToList(mesh, frontIndex, frontIndexCopy, connectedElementId);
         }
     }
 }
 
-void meshkernel::CasulliDeRefinement::UpdateCellMaskIndirectlyConnectedEdgeFirst(const std::vector<UInt>& indirectlyConnected,
+void meshkernel::CasulliDeRefinement::UpdateFaceMaskIndirectlyConnectedEdgeFirst(const std::vector<UInt>& indirectlyConnected,
                                                                                  const Mesh2D& mesh,
                                                                                  const std::vector<UInt>& frontIndex,
                                                                                  std::vector<UInt>& frontIndexCopy,
-                                                                                 std::vector<ElementType>& cellMask)
+                                                                                 std::vector<ElementType>& faceMask)
 {
     using enum ElementType;
 
@@ -393,11 +393,11 @@ void meshkernel::CasulliDeRefinement::UpdateCellMaskIndirectlyConnectedEdgeFirst
             continue;
         }
 
-        if ((cellMask[connectedElementId] != WasEdgeFirst && cellMask[connectedElementId] != WasEdgeAfter) &&
-            (cellMask[connectedElementId] != WasNodeFirst && cellMask[connectedElementId] != WasNodeAfter) &&
-            cellMask[connectedElementId] != WasCell)
+        if ((faceMask[connectedElementId] != WasEdgeFirst && faceMask[connectedElementId] != WasEdgeAfter) &&
+            (faceMask[connectedElementId] != WasNodeFirst && faceMask[connectedElementId] != WasNodeAfter) &&
+            faceMask[connectedElementId] != WasFace)
         {
-            cellMask[connectedElementId] = WasEdgeFirst;
+            faceMask[connectedElementId] = WasEdgeFirst;
             AddElementToList(mesh, frontIndex, frontIndexCopy, connectedElementId);
         }
     }
@@ -411,7 +411,7 @@ std::vector<meshkernel::CasulliDeRefinement::ElementType> meshkernel::CasulliDeR
 
     std::vector<UInt> directlyConnected;
     std::vector<UInt> indirectlyConnected;
-    std::vector<std::array<int, 2>> kne(maximumSize);
+    std::vector<std::array<int, 2>> edgeFaces(maximumSize);
     std::vector<UInt> frontIndex;
     std::vector<UInt> frontIndexCopy;
 
@@ -422,9 +422,9 @@ std::vector<meshkernel::CasulliDeRefinement::ElementType> meshkernel::CasulliDeR
 
     using enum ElementType;
 
-    std::vector<ElementType> cellMask(mesh.GetNumFaces(), Unassigned);
+    std::vector<ElementType> faceMask(mesh.GetNumFaces(), Unassigned);
 
-    cellMask[seedElement] = WasNodeFirst;
+    faceMask[seedElement] = WasNodeFirst;
     frontIndex.push_back(seedElement);
 
     while (frontIndex.size() > 0 && iterationCount < maxIterationCount)
@@ -436,50 +436,50 @@ std::vector<meshkernel::CasulliDeRefinement::ElementType> meshkernel::CasulliDeR
         {
             UInt elementId = frontIndex[i];
 
-            // get the connected cells
-            FindSurroundingCells(mesh, elementId, directlyConnected, indirectlyConnected, kne);
+            // get the connected faces
+            FindSurroundingFaces(mesh, elementId, directlyConnected, indirectlyConnected, edgeFaces);
 
-            if (cellMask[elementId] == WasNodeFirst)
+            if (faceMask[elementId] == WasNodeFirst)
             {
-                UpdateCellMaskDirectlyConnectedNodeFirst(directlyConnected, mesh, frontIndex, frontIndexCopy, cellMask);
-                UpdateCellMaskIndirectlyConnectedNodeFirst(indirectlyConnected, mesh, cellMask);
-                cellMask[elementId] = WasNodeAfter;
+                UpdateFaceMaskDirectlyConnectedNodeFirst(directlyConnected, mesh, frontIndex, frontIndexCopy, faceMask);
+                UpdateFaceMaskIndirectlyConnectedNodeFirst(indirectlyConnected, mesh, faceMask);
+                faceMask[elementId] = WasNodeAfter;
             }
-            else if (cellMask[elementId] == WasEdgeFirst)
+            else if (faceMask[elementId] == WasEdgeFirst)
             {
-                UpdateCellMaskDirectlyConnectedEdgeFirst(directlyConnected, mesh, frontIndex, frontIndexCopy, cellMask);
-                UpdateCellMaskIndirectlyConnectedEdgeFirst(directlyConnected, mesh, frontIndex, frontIndexCopy, cellMask);
-                cellMask[elementId] = WasEdgeAfter;
+                UpdateFaceMaskDirectlyConnectedEdgeFirst(directlyConnected, mesh, frontIndex, frontIndexCopy, faceMask);
+                UpdateFaceMaskIndirectlyConnectedEdgeFirst(directlyConnected, mesh, frontIndex, frontIndexCopy, faceMask);
+                faceMask[elementId] = WasEdgeAfter;
             }
         }
 
         frontIndex = frontIndexCopy;
     }
 
-    return cellMask;
+    return faceMask;
 }
 
 bool meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygons& polygon)
 {
     std::vector<UInt> directlyConnected;
     std::vector<UInt> indirectlyConnected;
-    std::vector<std::array<int, 2>> kne(maximumSize);
+    std::vector<std::array<int, 2>> edgeFaces(maximumSize);
     std::vector<int> nodeTypes(ComputeNodeTypes(mesh, polygon));
     directlyConnected.reserve(maximumSize);
     indirectlyConnected.reserve(maximumSize);
 
-    std::vector<ElementType> cellMask(InitialiseElementType(mesh, nodeTypes));
+    std::vector<ElementType> faceMask(InitialiseElementType(mesh, nodeTypes));
     mesh.ComputeCircumcentersMassCentersAndFaceAreas(true);
 
     using enum ElementType;
 
-    for (UInt k = 0; k < cellMask.size(); ++k)
+    for (UInt k = 0; k < faceMask.size(); ++k)
     {
-        if (cellMask[k] == WasNodeAfter && mesh.m_numFacesNodes[k] > 0)
+        if (faceMask[k] == WasNodeAfter && mesh.m_numFacesNodes[k] > 0)
         {
-            FindSurroundingCells(mesh, k, directlyConnected, indirectlyConnected, kne);
+            FindSurroundingFaces(mesh, k, directlyConnected, indirectlyConnected, edgeFaces);
 
-            if (!DeleteElement(mesh, nodeTypes, polygon, k, directlyConnected, indirectlyConnected, kne))
+            if (!DeleteElement(mesh, nodeTypes, polygon, k, directlyConnected, indirectlyConnected, edgeFaces))
             {
                 return false;
             }
@@ -497,7 +497,7 @@ bool meshkernel::CasulliDeRefinement::ElementCannotBeDeleted(const Mesh2D& mesh,
     bool noGo = false;
 
     // Firstly, check and see if
-    //    the cell to be deleted is not a corner cell, but has a link that
+    //    the face to be deleted is not a corner face, but has a link that
     //       is internal and whose both nodes are marked as non-internal nodes
     // return if so
 
@@ -584,10 +584,10 @@ meshkernel::Point meshkernel::CasulliDeRefinement::ComputeNewNodeCoordinates(con
     return newNode;
 }
 
-meshkernel::UInt meshkernel::CasulliDeRefinement::GetElementIndex(const std::array<int, 2>& kne,
+meshkernel::UInt meshkernel::CasulliDeRefinement::GetElementIndex(const std::array<int, 2>& edgeFaces,
                                                                   const UInt index)
 {
-    return kne[index] == constants::missing::intValue || kne[index] < 0 ? constants::missing::uintValue : static_cast<UInt>(kne[index]);
+    return edgeFaces[index] == constants::missing::intValue || edgeFaces[index] < 0 ? constants::missing::uintValue : static_cast<UInt>(edgeFaces[index]);
 }
 
 std::tuple<meshkernel::UInt, meshkernel::UInt> meshkernel::CasulliDeRefinement::FindCommonEdge(Mesh2D& mesh,
@@ -644,7 +644,7 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> meshkernel::CasulliDeRefinement::
 bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedTriangleElements(Mesh2D& mesh,
                                                                               const UInt index,
                                                                               const UInt connectedElementId,
-                                                                              const std::vector<std::array<int, 2>>& kne)
+                                                                              const std::vector<std::array<int, 2>>& edgeFaces)
 {
 
     for (UInt j = 0; j < mesh.m_numFacesNodes[connectedElementId]; ++j)
@@ -662,7 +662,7 @@ bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedTriangleElements(Me
 
     for (UInt i = 0; i < 2; ++i)
     {
-        UInt leftElementId = GetElementIndex(kne[index], i);
+        UInt leftElementId = GetElementIndex(edgeFaces[index], i);
 
         if (leftElementId == constants::missing::uintValue)
         {
@@ -670,7 +670,7 @@ bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedTriangleElements(Me
         }
 
         UInt oppositeSide = 1 - i;
-        UInt rightElementId = GetElementIndex(kne[index], oppositeSide);
+        UInt rightElementId = GetElementIndex(edgeFaces[index], oppositeSide);
 
         if (leftElementId == constants::missing::uintValue || rightElementId == constants::missing::uintValue)
         {
@@ -693,7 +693,7 @@ bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedTriangleElements(Me
         otherEdgeId = edgeId;
     }
 
-    // deactivate cell
+    // deactivate face
     mesh.m_numFacesNodes[connectedElementId] = 0;
     return true;
 }
@@ -722,7 +722,7 @@ void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedNonTriangleElements
 
             // remove one node per removed link
             // take the first node that has not been removed before, but not the node that is kept,
-            // which is the first of the center cell
+            // which is the first of the center face
 
             UInt i = 0;
 
@@ -751,7 +751,7 @@ void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedNonTriangleElements
 bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& mesh,
                                                                       const UInt elementId,
                                                                       const std::vector<UInt>& directlyConnected,
-                                                                      const std::vector<std::array<int, 2>>& kne)
+                                                                      const std::vector<std::array<int, 2>>& edgeFaces)
 {
     for (UInt k = 0; k < directlyConnected.size(); ++k)
     {
@@ -759,7 +759,7 @@ bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedElements(Mesh2D& me
 
         if (mesh.m_numFacesNodes[connectedElementId] < constants::geometric::numNodesInQuadrilateral)
         {
-            if (!UpdateDirectlyConnectedTriangleElements(mesh, k, connectedElementId, kne))
+            if (!UpdateDirectlyConnectedTriangleElements(mesh, k, connectedElementId, edgeFaces))
             {
                 return false;
             }
@@ -954,7 +954,7 @@ bool meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
                                                     const UInt elementId,
                                                     const std::vector<UInt>& directlyConnected,
                                                     const std::vector<UInt>& indirectlyConnected,
-                                                    const std::vector<std::array<int, 2>>& kne)
+                                                    const std::vector<std::array<int, 2>>& edgeFaces)
 {
     if (directlyConnected.empty() || indirectlyConnected.empty())
     {
@@ -975,7 +975,7 @@ bool meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
 
     UInt N = mesh.m_numFacesNodes[elementId];
 
-    if (!UpdateDirectlyConnectedElements(mesh, elementId, directlyConnected, kne))
+    if (!UpdateDirectlyConnectedElements(mesh, elementId, directlyConnected, edgeFaces))
     {
         return false;
     }
@@ -994,7 +994,7 @@ bool meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
         [[maybe_unused]] auto undoAction = mesh.MergeTwoNodes(mesh.m_facesNodes[elementId][kk], nodeId);
     }
 
-    // redirect nodes of indirectly connected cells, deactivate polygons of degree smaller than three
+    // redirect nodes of indirectly connected faces, deactivate polygons of degree smaller than three
     RedirectNodesOfConnectedElements(mesh, elementId, nodeId, indirectlyConnected);
 
     // remove unwanted boundary node: a non-corner node that is shared by two boundary links
@@ -1002,7 +1002,7 @@ bool meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
     {
         return false;
     }
-    // redirect nodes of directly connected cells and deactivate polygons of degree smaller than three
+    // redirect nodes of directly connected faces and deactivate polygons of degree smaller than three
     RedirectNodesOfConnectedElements(mesh, elementId, nodeId, directlyConnected);
 
     // deactivate links
@@ -1016,7 +1016,7 @@ bool meshkernel::CasulliDeRefinement::DeleteElement(Mesh2D& mesh,
         }
     }
 
-    // deactivate cell
+    // deactivate face
     mesh.m_numFacesNodes[elementId] = 0;
     return true;
 }
@@ -1081,15 +1081,15 @@ std::vector<int> meshkernel::CasulliDeRefinement::ComputeNodeTypes(const Mesh2D&
 std::vector<meshkernel::Point> meshkernel::CasulliDeRefinement::ElementsToDelete(const Mesh2D& mesh, const Polygons& polygon)
 {
     std::vector<int> nodeTypes(ComputeNodeTypes(mesh, polygon));
-    std::vector<ElementType> cellMask(InitialiseElementType(mesh, nodeTypes));
+    std::vector<ElementType> faceMask(InitialiseElementType(mesh, nodeTypes));
     std::vector<Point> elementCentres;
-    elementCentres.reserve(cellMask.size());
+    elementCentres.reserve(faceMask.size());
 
     using enum ElementType;
 
-    for (UInt k = 0; k < cellMask.size(); ++k)
+    for (UInt k = 0; k < faceMask.size(); ++k)
     {
-        if (cellMask[k] == WasNodeAfter && mesh.m_numFacesNodes[k] > 0)
+        if (faceMask[k] == WasNodeAfter && mesh.m_numFacesNodes[k] > 0)
         {
             bool toDelete = false;
 

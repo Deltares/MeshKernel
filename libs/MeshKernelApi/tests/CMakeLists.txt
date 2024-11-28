@@ -17,14 +17,20 @@ set(SRC_LIST
     ${SRC_DIR}/CurvilinearGridTests.cpp
     ${SRC_DIR}/CurvilinearGridUndoTests.cpp
     ${SRC_DIR}/ErrorHandlingTests.cpp
+    ${SRC_DIR}/LandBoundaryTests.cpp
+    ${SRC_DIR}/Mesh1DTests.cpp
+    ${SRC_DIR}/Mesh2DCasulliRefinmentTests.cpp
     ${SRC_DIR}/Mesh2DRefinmentTests.cpp
     ${SRC_DIR}/Mesh2DTests.cpp
     ${SRC_DIR}/PolygonTests.cpp
+    ${SRC_DIR}/SmoothnessOrthogonalisationTests.cpp
+    ${SRC_DIR}/TestMeshGeneration.cpp
     ${SRC_DIR}/UndoTests.cpp
 )
 
 set(INC_LIST
     ${INC_DIR}/CartesianApiTestFixture.hpp
+    ${INC_DIR}/TestMeshGeneration.hpp
 )
 
 # add sources to target

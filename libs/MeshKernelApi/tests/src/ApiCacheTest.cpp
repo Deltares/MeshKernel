@@ -16,25 +16,10 @@
 #include "TestUtils/MakeMeshes.hpp"
 #include "TestUtils/SampleFileReader.hpp"
 
+#include "TestMeshGeneration.hpp"
+
 #include <memory>
 #include <numeric>
-
-// Create mesh and return the meshkernel id
-int MakeUnstructuredMesh(int meshKernelId, meshkernel::UInt numRows = 2, meshkernel::UInt numColumns = 3, double delta = 1.0)
-{
-
-    // Set-up new mesh
-    auto [num_nodes, num_edges, node_x, node_y, edge_nodes] = MakeRectangularMeshForApiTesting(numRows, numColumns, delta);
-    meshkernelapi::Mesh2D mesh2d{};
-    mesh2d.num_edges = static_cast<int>(num_edges);
-    mesh2d.num_nodes = static_cast<int>(num_nodes);
-    mesh2d.node_x = node_x.data();
-    mesh2d.node_y = node_y.data();
-    mesh2d.edge_nodes = edge_nodes.data();
-    int errorCode = meshkernelapi::mkernel_mesh2d_set(meshKernelId, mesh2d);
-
-    return errorCode;
-}
 
 TEST(ApiCacheTest, GetHangingEdgesMesh2D_WithOneHangingEdges_GetOneHangingEdgesFailures)
 {
@@ -44,7 +29,7 @@ TEST(ApiCacheTest, GetHangingEdgesMesh2D_WithOneHangingEdges_GetOneHangingEdgesF
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Prepare
-    errorCode = MakeUnstructuredMesh(meshKernelId);
+    errorCode = GenerateUnstructuredMesh(meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // delete an edge at the lower left corner to create a new hanging edge
@@ -81,7 +66,7 @@ TEST(ApiCacheTest, GetNodesInPolygonMesh2D_OnMesh2D_NodeInPolygonFailures)
     int errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    errorCode = MakeUnstructuredMesh(meshKernelId);
+    errorCode = GenerateUnstructuredMesh(meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // By using an empty list, all nodes will be selected
@@ -137,7 +122,7 @@ TEST(ApiCacheTest, GetSmallFlowEdges_OnMesh2D_GetSmallFlowEdgesFailures)
     int errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    errorCode = MakeUnstructuredMesh(meshKernelId);
+    errorCode = GenerateUnstructuredMesh(meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     std::vector<double> node_x{0.0, 1.0, 1.0, 1.0};

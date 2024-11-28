@@ -11,31 +11,11 @@
 
 #include "TestUtils/MakeMeshes.hpp"
 
+#include "TestMeshGeneration.hpp"
+
 // namespace aliases
 namespace mk = meshkernel;
 namespace mkapi = meshkernelapi;
-
-// Helper function to generate a curvilinear grid for a meshKernelId
-int GenerateCurvilinearMesh(const int meshKernelId,
-                            const int nodesX, const int nodesY,
-                            const double deltaX, const double deltaY,
-                            const double originX, const double originY)
-{
-    meshkernel::MakeGridParameters makeGridParameters;
-
-    // num_columns and num_rows indicate number of elements in each direction, so value = nodes - 1
-    makeGridParameters.num_columns = nodesX - 1;
-    makeGridParameters.num_rows = nodesY - 1;
-    makeGridParameters.angle = 0.0;
-    makeGridParameters.origin_x = originX;
-    makeGridParameters.origin_y = originY;
-    makeGridParameters.block_size_x = deltaX;
-    makeGridParameters.block_size_y = deltaY;
-
-    // Generate curvilinear grid.
-    int errorCode = mkapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
-    return errorCode;
-}
 
 // Helper function to generate a curvilinear grid for a meshKernelId
 int GenerateCurvilinearMesh(const int meshKernelId, const int nodes, const double delta, const double origin)
