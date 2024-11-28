@@ -578,7 +578,7 @@ namespace meshkernel
     /// @param[in] points The point series.
     /// @param[in] projection The projection to use.
     /// @return The average coordinate.
-    template <typename PointVector>
+    template <ValidConstPointArray PointVector>
     [[nodiscard]] Point ComputeAverageCoordinate(const PointVector& points, const Projection& projection);
 
     /// @brief Cartesian projection of a point on a segment defined by other two points
@@ -661,7 +661,7 @@ inline meshkernel::Cartesian3DPoint meshkernel::operator*(const Cartesian3DPoint
 
 namespace meshkernel
 {
-    template <typename PointVector>
+    template <ValidConstPointArray PointVector>
     [[nodiscard]] Point ComputeAverageCoordinate(const PointVector& points, const Projection& projection)
     {
         size_t validCount = std::ranges::count_if(points, [](const Point& p)
@@ -675,7 +675,7 @@ namespace meshkernel
             if (validCount != points.size())
             {
                 auto iterator = std::ranges::find_if(points, [](const Point& p)
-                                             { return p.IsValid(); });
+                                                     { return p.IsValid(); });
                 firstValidPoint = static_cast<UInt>(iterator - points.begin());
             }
 

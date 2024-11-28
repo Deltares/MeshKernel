@@ -52,21 +52,23 @@ namespace meshkernel
         /// @brief Constructor.
         ///
         /// The VectorType can be any array type of double precision values, e.g. std::vector, std::span.
-        template <class VectorType>
+        template <ValidConstDoubleArray VectorType>
         SampleInterpolator(const VectorType& xNodes,
                            const VectorType& yNodes,
                            const Projection projection)
-            : m_triangulation(xNodes, yNodes, projection) {}
+            : m_triangulation(xNodes, yNodes, projection)
+        {
+        }
 
         /// @brief Get the number of nodes of size of the sample data.
         UInt Size() const;
 
         /// @brief Set sample data
-        template <class VectorType>
+        template <ValidConstDoubleArray VectorType>
         void SetData(const std::string& name, const VectorType& sampleData);
 
         /// @brief Interpolate the sample data set at the interpolation nodes.
-        template <class PointVectorType, class ScalarVectorType>
+        template <ValidConstPointArray PointVectorType, ValidConstDoubleArray ScalarVectorType>
         void Interpolate(const std::string& name, const PointVectorType& iterpolationNodes, ScalarVectorType& result) const;
 
         /// @brief Determine if the SampleInterpolator already has this sample set.
@@ -95,7 +97,7 @@ inline bool meshkernel::SampleInterpolator::Contains(const std::string& name) co
     return m_sampleData.contains(name);
 }
 
-template <class VectorType>
+template <meshkernel::ValidConstDoubleArray VectorType>
 void meshkernel::SampleInterpolator::SetData(const std::string& name, const VectorType& sampleData)
 {
     if (m_triangulation.NumberOfNodes() != sampleData.size())
@@ -107,7 +109,7 @@ void meshkernel::SampleInterpolator::SetData(const std::string& name, const Vect
     m_sampleData[name].assign(sampleData.begin(), sampleData.end());
 }
 
-template <class PointVectorType, class ScalarVectorType>
+template <meshkernel::ValidConstPointArray PointVectorType, meshkernel::ValidConstDoubleArray ScalarVectorType>
 void meshkernel::SampleInterpolator::Interpolate(const std::string& name, const PointVectorType& iterpolationNodes, ScalarVectorType& result) const
 {
     if (!Contains(name))

@@ -265,6 +265,12 @@ namespace meshkernel
     /// @brief Get the delta-x and -y in Cartesian coordinate system
     Vector GetDeltaCartesian(const Point& p1, const Point& p2);
 
+    /// @brief A concept that specifies all the functionality required to be usable as an array of points.
+    template <typename ArrayType>
+    concept ValidConstPointArray = ArrayConstAccessConcept<ArrayType, Point> &&
+                                   ArrayConstIteratorsConcept<ArrayType> &&
+                                   ArraySizeConcept<ArrayType>;
+
 } // namespace meshkernel
 
 inline void meshkernel::Point::SetInvalid()
