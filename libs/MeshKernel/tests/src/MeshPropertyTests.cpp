@@ -95,6 +95,9 @@ TEST(MeshPropertyTests, SimpleSampleInterpolationTest)
 {
     const double tolerance = 1.0e-13;
 
+    const int xDepth = 1;
+    const int yDepth = 2;
+
     std::vector<double> xValues{0.0, 1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0};
     std::vector<double> yValues{0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 3.0};
 
@@ -106,17 +109,17 @@ TEST(MeshPropertyTests, SimpleSampleInterpolationTest)
     std::vector<double> expectedXDepths{0.25, 1.25, 2.25, 0.25, 1.25, 2.25, 0.25, 1.25, 2.25};
     std::vector<double> expectedYDepths{0.25, 0.25, 0.25, 1.25, 1.25, 1.25, 2.25, 2.25, 2.25};
 
-    properties.SetData("xdepth", std::vector{0.0, 1.0, 2.0, 3.0,
-                                             0.0, 1.0, 2.0, 3.0,
-                                             0.0, 1.0, 2.0, 3.0,
-                                             0.0, 1.0, 2.0, 3.0});
+    properties.SetData(xDepth, std::vector{0.0, 1.0, 2.0, 3.0,
+                                           0.0, 1.0, 2.0, 3.0,
+                                           0.0, 1.0, 2.0, 3.0,
+                                           0.0, 1.0, 2.0, 3.0});
 
-    properties.SetData("ydepth", std::vector{0.0, 0.0, 0.0, 0.0,
-                                             1.0, 1.0, 1.0, 1.0,
-                                             2.0, 2.0, 2.0, 2.0,
-                                             3.0, 3.0, 3.0, 3.0});
+    properties.SetData(yDepth, std::vector{0.0, 0.0, 0.0, 0.0,
+                                           1.0, 1.0, 1.0, 1.0,
+                                           2.0, 2.0, 2.0, 2.0,
+                                           3.0, 3.0, 3.0, 3.0});
 
-    properties.Interpolate("xdepth", nodes, interpolated);
+    properties.Interpolate(xDepth, nodes, interpolated);
 
     for (size_t i = 0; i < interpolated.size(); ++i)
     {
@@ -125,7 +128,7 @@ TEST(MeshPropertyTests, SimpleSampleInterpolationTest)
 
     std::span interpolatedData(interpolated.data(), interpolated.size());
 
-    properties.Interpolate("ydepth", nodes, interpolatedData);
+    properties.Interpolate(yDepth, nodes, interpolatedData);
 
     for (size_t i = 0; i < interpolated.size(); ++i)
     {
