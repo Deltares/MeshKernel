@@ -32,7 +32,6 @@
 #include <iostream>
 #include <limits>
 
-
 extern "C"
 {
     /// @brief Function of the Triangle library
