@@ -1445,6 +1445,13 @@ namespace meshkernelapi
                                                                   int* faceNumEdges,
                                                                   int* faceEdgeIndex);
 
+        /// @brief Determine if the property data for the mesh can be computed
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] propertyId The id of the property
+        /// @param[out] propertyIsAvailable Indicate (true or false) is the property can be calculated.
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_is_valid_property(int meshKernelId, const int propertyId, bool& propertyIsAvailable);
+
         /// @brief Compute the global mesh with a given number of points along the longitude and latitude directions.
         /// @param[in] meshKernelId           The id of the mesh state
         /// @param [in] numLongitudeNodes The number of points along the longitude.
@@ -1595,11 +1602,12 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_set(int meshKernelId, const Mesh2D& mesh2d);
 
-        /// @brief Sets the bathymetry data for the mesh
+        /// @brief Sets the property data for the mesh, the sample data points do not have to match the mesh2d nodes.
         /// @param[in] meshKernelId The id of the mesh state
-        /// @param[in] sampleData   The mesh2d bathymetry data
+        /// @param[in] propertyId The id of the property
+        /// @param[in] sampleData   The sample data and associated sample data points.
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_set_bathymetry_data(int meshKernelId, const GeometryList& sampleData);
+        MKERNEL_API int mkernel_mesh2d_set_property(int meshKernelId, const int propertyId, const GeometryList& sampleData);
 
         /// @brief Snaps a mesh to a land boundary.
         /// @param[in] meshKernelId The id of the mesh state

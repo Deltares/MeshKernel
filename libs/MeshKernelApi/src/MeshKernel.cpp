@@ -505,7 +505,25 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_set_bathymetry_data(int meshKernelId, const GeometryList& sampleData)
+    MKERNEL_API int mkernel_mesh2d_is_valid_property(int meshKernelId, const int propertyId, bool& propertyIsAvailable)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        propertyIsAvailable = false;
+        try
+        {
+            propertyIsAvailable = meshKernelState.contains(meshKernelId) &&
+                                  propertyCalculators.contains(propertyId) &&
+                                  propertyCalculators[propertyId] != nullptr &&
+                                  propertyCalculators[propertyId]->IsValid(meshKernelState.at(meshKernelId), propertyId);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_set_property(int meshKernelId, const int propertyId, const GeometryList& sampleData)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -520,12 +538,17 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh not exist.");
             }
 
+            if (propertyCalculators[propertyId] != nullptr && propertyCalculators[propertyId]->IsValid(meshKernelState.at(meshKernelId), propertyId))
+            {
+                throw meshkernel::MeshKernelError("The property, {}, has already been defined.", propertyId);
+            }
+
             std::span<const double> xNodes(sampleData.coordinates_x, sampleData.num_coordinates);
             std::span<const double> yNodes(sampleData.coordinates_y, sampleData.num_coordinates);
             meshKernelState[meshKernelId].m_sampleInterpolator = std::make_shared<meshkernel::SampleInterpolator>(xNodes, yNodes, meshKernelState[meshKernelId].m_projection);
 
-            std::span<const double> bathymetryData(sampleData.values, sampleData.num_coordinates);
-            meshKernelState[meshKernelId].m_sampleInterpolator->SetData("depth", bathymetryData);
+            std::span<const double> dataSamples(sampleData.values, sampleData.num_coordinates);
+            meshKernelState[meshKernelId].m_sampleInterpolator->SetData(propertyId, dataSamples);
         }
         catch (...)
         {
@@ -1562,9 +1585,9 @@ namespace meshkernelapi
                 return lastExitCode;
             }
 
-            if (propertyCalculators.contains(propertyValue) && propertyCalculators[propertyValue] != nullptr && propertyCalculators[propertyValue]->IsValid(meshKernelState.at(meshKernelId)))
+            if (propertyCalculators.contains(propertyValue) && propertyCalculators[propertyValue] != nullptr && propertyCalculators[propertyValue]->IsValid(meshKernelState.at(meshKernelId), propertyValue))
             {
-                propertyCalculators[propertyValue]->Calculate(meshKernelState.at(meshKernelId), geometryList);
+                propertyCalculators[propertyValue]->Calculate(meshKernelState.at(meshKernelId), propertyValue, geometryList);
             }
             else
             {

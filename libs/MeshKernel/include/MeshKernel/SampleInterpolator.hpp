@@ -65,14 +65,14 @@ namespace meshkernel
 
         /// @brief Set sample data
         template <ValidConstDoubleArray VectorType>
-        void SetData(const std::string& name, const VectorType& sampleData);
+        void SetData(const int sampleId, const VectorType& sampleData);
 
         /// @brief Interpolate the sample data set at the interpolation nodes.
         template <ValidConstPointArray PointVectorType, ValidConstDoubleArray ScalarVectorType>
-        void Interpolate(const std::string& name, const PointVectorType& iterpolationNodes, ScalarVectorType& result) const;
+        void Interpolate(const int sampleId, const PointVectorType& iterpolationNodes, ScalarVectorType& result) const;
 
         /// @brief Determine if the SampleInterpolator already has this sample set.
-        bool Contains(const std::string& name) const;
+        bool Contains(const int sampleId) const;
 
     private:
         /// @brief Interpolate the sample data on the element at the interpolation point.
@@ -81,8 +81,8 @@ namespace meshkernel
         /// @brief Triangulation of the sample points
         MeshTriangulation m_triangulation;
 
-        /// @brief Map from sample name to sample data.
-        std::map<std::string, std::vector<double>> m_sampleData;
+        /// @brief Map from sample id (int) to sample data.
+        std::map<int, std::vector<double>> m_sampleData;
     };
 
 } // namespace meshkernel
@@ -92,13 +92,13 @@ inline meshkernel::UInt meshkernel::SampleInterpolator::Size() const
     return m_triangulation.NumberOfNodes();
 }
 
-inline bool meshkernel::SampleInterpolator::Contains(const std::string& name) const
+inline bool meshkernel::SampleInterpolator::Contains(const int sampleId) const
 {
-    return m_sampleData.contains(name);
+    return m_sampleData.contains(sampleId);
 }
 
 template <meshkernel::ValidConstDoubleArray VectorType>
-void meshkernel::SampleInterpolator::SetData(const std::string& name, const VectorType& sampleData)
+void meshkernel::SampleInterpolator::SetData(const int sampleId, const VectorType& sampleData)
 {
     if (m_triangulation.NumberOfNodes() != sampleData.size())
     {
@@ -106,15 +106,15 @@ void meshkernel::SampleInterpolator::SetData(const std::string& name, const Vect
                               m_triangulation.NumberOfNodes(), sampleData.size());
     }
 
-    m_sampleData[name].assign(sampleData.begin(), sampleData.end());
+    m_sampleData[sampleId].assign(sampleData.begin(), sampleData.end());
 }
 
 template <meshkernel::ValidConstPointArray PointVectorType, meshkernel::ValidConstDoubleArray ScalarVectorType>
-void meshkernel::SampleInterpolator::Interpolate(const std::string& name, const PointVectorType& iterpolationNodes, ScalarVectorType& result) const
+void meshkernel::SampleInterpolator::Interpolate(const int sampleId, const PointVectorType& iterpolationNodes, ScalarVectorType& result) const
 {
-    if (!Contains(name))
+    if (!Contains(sampleId))
     {
-        throw ConstraintError("Sample interpolator does not contain the name: {}.", name);
+        throw ConstraintError("Sample interpolator does not contain the id: {}.", sampleId);
     }
 
     if (iterpolationNodes.size() != result.size())
@@ -123,7 +123,7 @@ void meshkernel::SampleInterpolator::Interpolate(const std::string& name, const 
                               iterpolationNodes.size(), result.size());
     }
 
-    const std::vector<double>& propertyValues = m_sampleData.at(name);
+    const std::vector<double>& propertyValues = m_sampleData.at(sampleId);
 
     for (size_t i = 0; i < iterpolationNodes.size(); ++i)
     {
