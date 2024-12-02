@@ -16,6 +16,8 @@ namespace mkapi = meshkernelapi;
 
 TEST(MeshPropertyTests, BathymetryTest)
 {
+    const int projectionType = 0;
+
     const int numXCoords = 4;
     const int numYCoords = 4;
     const int numberOfCoordinates = numXCoords * numYCoords;
@@ -27,7 +29,7 @@ TEST(MeshPropertyTests, BathymetryTest)
     const double origin = 0.0;
     const double delta = 1.0;
 
-    const int BathymetryPropertyId = static_cast<int>(meshkernel::Mesh2D::Property::Bathymetry);
+    int bathymetryPropertyId = -1;
 
     int meshKernelId = meshkernel::constants::missing::intValue;
     int errorCode;
@@ -108,7 +110,7 @@ TEST(MeshPropertyTests, BathymetryTest)
     sampleData.coordinates_x = bathymetryXNodes.data();
     sampleData.coordinates_y = bathymetryYNodes.data();
 
-    errorCode = mkapi::mkernel_mesh2d_set_property(meshKernelId, BathymetryPropertyId, sampleData);
+    errorCode = mkapi::mkernel_mesh2d_set_property(projectionType, sampleData, bathymetryPropertyId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     const double tolerance = 1.0e-13;
@@ -119,7 +121,7 @@ TEST(MeshPropertyTests, BathymetryTest)
                                                  0.0, 1.0, 2.0, 3.0};
 
     int sampleDataSize = -1;
-    errorCode = mkapi::mkernel_mesh2d_get_property_dimension(meshKernelId, BathymetryPropertyId, sampleDataSize);
+    errorCode = mkapi::mkernel_mesh2d_get_property_dimension(meshKernelId, bathymetryPropertyId, sampleDataSize);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     ASSERT_EQ(sampleDataSize, numberOfCoordinates);
 
@@ -128,7 +130,7 @@ TEST(MeshPropertyTests, BathymetryTest)
     propertyData.num_coordinates = numberOfCoordinates;
     propertyData.values = retrievedPropertyData.data();
 
-    errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId, BathymetryPropertyId, propertyData);
+    errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId, bathymetryPropertyId, propertyData);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     for (size_t i = 0; i < retrievedPropertyData.size(); ++i)
@@ -136,12 +138,20 @@ TEST(MeshPropertyTests, BathymetryTest)
         EXPECT_NEAR(retrievedPropertyData[i], expectedInterpolatedData[i], tolerance);
     }
 
+    //--------------------------------
+    // Remove kernel and property id from state.
+
     errorCode = mkapi::mkernel_expunge_state(meshKernelId);
+    ASSERT_EQ(mk::ExitCode::Success, errorCode);
+
+    errorCode = mkapi::mkernel_deallocate_property(bathymetryPropertyId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 }
 
 TEST(MeshPropertyTests, PropertyFailureTest)
 {
+    const int projectionType = 0;
+
     const int numXCoords = 4;
     const int numYCoords = 4;
     const int numberOfCoordinates = numXCoords * numYCoords;
@@ -153,7 +163,7 @@ TEST(MeshPropertyTests, PropertyFailureTest)
     const double origin = 0.0;
     const double delta = 1.0;
 
-    const int BathymetryPropertyId = static_cast<int>(meshkernel::Mesh2D::Property::Bathymetry);
+    int bathymetryPropertyId = -1;
 
     int meshKernelId = meshkernel::constants::missing::intValue;
     int errorCode;
@@ -236,14 +246,14 @@ TEST(MeshPropertyTests, PropertyFailureTest)
 
     bool hasBathymetryData = false;
 
-    errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, BathymetryPropertyId, hasBathymetryData);
+    errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, bathymetryPropertyId, hasBathymetryData);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_FALSE(hasBathymetryData);
 
-    errorCode = mkapi::mkernel_mesh2d_set_property(meshKernelId, BathymetryPropertyId, sampleData);
+    errorCode = mkapi::mkernel_mesh2d_set_property(projectionType, sampleData, bathymetryPropertyId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
-    errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, BathymetryPropertyId, hasBathymetryData);
+    errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, bathymetryPropertyId, hasBathymetryData);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_TRUE(hasBathymetryData);
 
@@ -252,51 +262,40 @@ TEST(MeshPropertyTests, PropertyFailureTest)
 
     int sampleDataSize = -1;
 
-    // Invalid meshkernel id
-    errorCode = mkapi::mkernel_mesh2d_get_property_dimension(meshKernelId + 100, BathymetryPropertyId, sampleDataSize);
+    // Expected test failure due to invalid meshkernel id
+    errorCode = mkapi::mkernel_mesh2d_get_property_dimension(meshKernelId + 100, bathymetryPropertyId, sampleDataSize);
     ASSERT_EQ(mk::ExitCode::MeshKernelErrorCode, errorCode);
 
     mkapi::GeometryList propertyData{};
     std::vector<double> retrievedPropertyData(numberOfCoordinates, -1.0);
     propertyData.num_coordinates = numberOfCoordinates;
+
+    // Expected test failure due to values set to null
+    propertyData.values = nullptr;
+    errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId, bathymetryPropertyId, propertyData);
+    ASSERT_EQ(mk::ExitCode::ConstraintErrorCode, errorCode);
+
     propertyData.values = retrievedPropertyData.data();
 
-    // Invalid property id
-    errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId, BathymetryPropertyId + 100, propertyData);
+    // Expected test failure due to invalid property id
+    errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId, bathymetryPropertyId + 100, propertyData);
     ASSERT_EQ(mk::ExitCode::MeshKernelErrorCode, errorCode);
 
     // Expected test failure due to incorrect size
     propertyData.num_coordinates = numberOfCoordinates - 1;
-
-    errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId, BathymetryPropertyId, propertyData);
+    errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId, bathymetryPropertyId, propertyData);
     ASSERT_EQ(mk::ExitCode::ConstraintErrorCode, errorCode);
 
     //--------------------------------
-    // Try with kernel id that has not had data set
+    // Remove kernel and property id from state.
 
-    int meshKernelId2 = meshkernel::constants::missing::intValue;
-
-    errorCode = mkapi::mkernel_allocate_state(0, meshKernelId2);
+    errorCode = mkapi::mkernel_deallocate_property(bathymetryPropertyId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
-    // Generate curvilinear grid.
-    errorCode = mkapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId2, makeGridParameters);
+    errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, bathymetryPropertyId, hasBathymetryData);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
-
-    // Convert the curvilinear grid to an unstructured grid.
-    errorCode = mkapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId2);
-    ASSERT_EQ(mk::ExitCode::Success, errorCode);
-
-    // Try to get properties that have not been initalised
-    errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId2, BathymetryPropertyId, propertyData);
-    ASSERT_EQ(mk::ExitCode::MeshKernelErrorCode, errorCode);
-
-    //--------------------------------
-    // Remove kernel ids from state.
+    EXPECT_FALSE(hasBathymetryData);
 
     errorCode = mkapi::mkernel_expunge_state(meshKernelId);
-    ASSERT_EQ(mk::ExitCode::Success, errorCode);
-
-    errorCode = mkapi::mkernel_expunge_state(meshKernelId2);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 }

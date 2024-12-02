@@ -56,9 +56,7 @@ namespace meshkernel
         SampleInterpolator(const VectorType& xNodes,
                            const VectorType& yNodes,
                            const Projection projection)
-            : m_triangulation(xNodes, yNodes, projection)
-        {
-        }
+            : m_triangulation(xNodes, yNodes, projection) {}
 
         /// @brief Get the number of nodes of size of the sample data.
         UInt Size() const;
