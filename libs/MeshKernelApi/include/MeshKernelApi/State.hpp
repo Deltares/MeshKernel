@@ -37,7 +37,6 @@
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
-#include <MeshKernel/SampleInterpolator.hpp>
 
 #include "MeshKernelApi/ApiCache/BoundariesAsPolygonCache.hpp"
 #include "MeshKernelApi/ApiCache/CachedPointValues.hpp"
@@ -83,8 +82,6 @@ namespace meshkernelapi
 
         // Exclusively owned state
         meshkernel::Projection m_projection{meshkernel::Projection::cartesian}; ///< Projection used by the meshes
-
-        std::shared_ptr<meshkernel::SampleInterpolator> m_sampleInterpolator; ///< Associated samples and interpolator
 
         // Cached values, used when dimensions are computed first, followed by values being retrieved in a separate call
         std::shared_ptr<FacePolygonPropertyCache> m_facePropertyCache;          ///< face property cache

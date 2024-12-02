@@ -1,19 +1,15 @@
 #include "MeshKernelApi/PropertyCalculator.hpp"
 
 #include <algorithm>
+#include <functional>
 
-bool meshkernelapi::PropertyCalculator::IsValid(const MeshKernelState& state, const int propertyId [[maybe_unused]]) const
+bool meshkernelapi::PropertyCalculator::IsValid(const MeshKernelState& state) const
 {
     return state.m_mesh2d != nullptr && state.m_mesh2d->GetNumNodes() > 0;
 }
 
-void meshkernelapi::OrthogonalityPropertyCalculator::Calculate(const MeshKernelState& state, const int propertyId, const GeometryList& geometryList) const
+void meshkernelapi::OrthogonalityPropertyCalculator::Calculate(const MeshKernelState& state, const GeometryList& geometryList) const
 {
-
-    if (propertyId != static_cast<int>(meshkernel::Mesh2D::Property::Orthogonality))
-    {
-        throw meshkernel::ConstraintError("Incorrect property id, expected = {}, actual = {}", static_cast<int>(meshkernel::Mesh2D::Property::Orthogonality), propertyId);
-    }
 
     std::vector<double> values = state.m_mesh2d->GetOrthogonality();
 
@@ -31,13 +27,8 @@ int meshkernelapi::OrthogonalityPropertyCalculator::Size(const MeshKernelState& 
     return static_cast<int>(state.m_mesh2d->GetNumEdges());
 }
 
-void meshkernelapi::EdgeLengthPropertyCalculator::Calculate(const MeshKernelState& state, const int propertyId, const GeometryList& geometryList) const
+void meshkernelapi::EdgeLengthPropertyCalculator::Calculate(const MeshKernelState& state, const GeometryList& geometryList) const
 {
-
-    if (propertyId != static_cast<int>(meshkernel::Mesh2D::Property::EdgeLength))
-    {
-        throw meshkernel::ConstraintError("Incorrect property id, expected = {}, actual = {}", static_cast<int>(meshkernel::Mesh2D::Property::EdgeLength), propertyId);
-    }
 
     state.m_mesh2d->ComputeEdgesLengths();
     std::vector<double> values = state.m_mesh2d->m_edgeLengths;
@@ -56,25 +47,34 @@ int meshkernelapi::EdgeLengthPropertyCalculator::Size(const MeshKernelState& sta
     return static_cast<int>(state.m_mesh2d->GetNumEdges());
 }
 
-bool meshkernelapi::DepthSamplePropertyCalculator::IsValid(const MeshKernelState& state, const int propertyId) const
+meshkernelapi::InterpolatedSamplePropertyCalculator::InterpolatedSamplePropertyCalculator(const GeometryList& sampleData, const meshkernel::Projection projection, const int propertyId)
+    : m_projection(projection),
+      m_propertyId(propertyId)
 {
-    return state.m_mesh2d != nullptr && state.m_mesh2d->GetNumNodes() > 0 && state.m_sampleInterpolator != nullptr && state.m_sampleInterpolator->Contains(propertyId);
+    std::span<const double> xNodes(sampleData.coordinates_x, sampleData.num_coordinates);
+    std::span<const double> yNodes(sampleData.coordinates_y, sampleData.num_coordinates);
+
+    m_sampleInterpolator = std::make_unique<meshkernel::SampleInterpolator>(xNodes, yNodes, m_projection);
+
+    std::span<const double> dataSamples(sampleData.values, sampleData.num_coordinates);
+    m_sampleInterpolator->SetData(m_propertyId, dataSamples);
 }
 
-void meshkernelapi::DepthSamplePropertyCalculator::Calculate(const MeshKernelState& state, const int propertyId, const GeometryList& geometryList) const
+bool meshkernelapi::InterpolatedSamplePropertyCalculator::IsValid(const MeshKernelState& state) const
 {
+    return state.m_mesh2d != nullptr &&
+           state.m_mesh2d->GetNumNodes() > 0 &&
+           m_sampleInterpolator->Contains(m_propertyId) &&
+           m_projection == state.m_projection;
+}
 
-    if (geometryList.num_coordinates < Size(state))
-    {
-        throw meshkernel::ConstraintError("GeometryList with wrong dimensions, {} must be greater than or equal to {}",
-                                          geometryList.num_coordinates, Size(state));
-    }
-
+void meshkernelapi::InterpolatedSamplePropertyCalculator::Calculate(const MeshKernelState& state, const GeometryList& geometryList) const
+{
     std::span<double> interpolatedSampleData(geometryList.values, geometryList.num_coordinates);
-    state.m_sampleInterpolator->Interpolate(propertyId, state.m_mesh2d->Nodes(), interpolatedSampleData);
+    m_sampleInterpolator->Interpolate(m_propertyId, state.m_mesh2d->Nodes(), interpolatedSampleData);
 }
 
-int meshkernelapi::DepthSamplePropertyCalculator::Size(const MeshKernelState& state) const
+int meshkernelapi::InterpolatedSamplePropertyCalculator::Size(const MeshKernelState& state) const
 {
     return static_cast<int>(state.m_mesh2d->GetNumNodes());
 }

@@ -119,6 +119,12 @@ namespace meshkernel
         { array[i] } -> std::convertible_to<ResultType>;
     };
 
+    /// @brief The concept specifies that the array type must have an access operator returning a reference to the array element type
+    template <typename ArrayType, typename ResultType>
+    concept ArrayNonConstAccessConcept = requires(ArrayType& array, const size_t i) {
+        { array[i] } -> std::same_as<ResultType&>;
+    };
+
     /// @brief A concept that specifies that the array must have a size function return the number of elements in the array
     template <typename ArrayType>
     concept ArraySizeConcept = requires(const ArrayType& array) {
@@ -136,10 +142,27 @@ namespace meshkernel
         { array.end() };
     };
 
+    /// @brief A concept that specifies that the array must have a begin and end function.
+    ///
+    /// Would like to also specify the return type here, but span needs some c++23 functionality here.
+    /// Then change all iterator usage to cbegin and cend returning a const_iterator
+    /// std::same_as<typename ArrayType::const_iterator>
+    template <typename ArrayType>
+    concept ArrayNonConstIteratorsConcept = requires(ArrayType& array) {
+        { array.begin() } -> std::same_as<typename ArrayType::iterator>;
+        { array.end() } -> std::same_as<typename ArrayType::iterator>;
+    };
+
     /// @brief A concept that specifies all the functionality required to be usable as a constant array of doubles.
     template <typename ArrayType>
     concept ValidConstDoubleArray = ArrayConstAccessConcept<ArrayType, double> &&
                                     ArrayConstIteratorsConcept<ArrayType> &&
                                     ArraySizeConcept<ArrayType>;
+
+    /// @brief A concept that specifies all the functionality required to be usable as a constant array of doubles.
+    template <typename ArrayType>
+    concept ValidNonConstDoubleArray = ArrayNonConstAccessConcept<ArrayType, double> &&
+                                       ArrayNonConstIteratorsConcept<ArrayType> &&
+                                       ArraySizeConcept<ArrayType>;
 
 } // namespace meshkernel
