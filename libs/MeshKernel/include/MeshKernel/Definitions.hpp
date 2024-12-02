@@ -116,26 +116,26 @@ namespace meshkernel
     /// @brief The concept specifies that the array type must have an access operator returning the array element type or can be converted to one
     template <typename ArrayType, typename ResultType>
     concept ArrayConstAccessConcept = requires(const ArrayType& array, const size_t i) {
-        {
-            array[i]
-        } -> std::convertible_to<ResultType>;
-    };
+                                          {
+                                              array[i]
+                                              } -> std::convertible_to<ResultType>;
+                                      };
 
     /// @brief The concept specifies that the array type must have an access operator returning a reference to the array element type
     template <typename ArrayType, typename ResultType>
     concept ArrayNonConstAccessConcept = requires(ArrayType& array, const size_t i) {
-        {
-            array[i]
-        } -> std::same_as<ResultType&>;
-    };
+                                             {
+                                                 array[i]
+                                                 } -> std::same_as<ResultType&>;
+                                         };
 
     /// @brief A concept that specifies that the array must have a size function return the number of elements in the array
     template <typename ArrayType>
     concept ArraySizeConcept = requires(const ArrayType& array) {
-        {
-            array.size()
-        } -> std::same_as<size_t>;
-    };
+                                   {
+                                       array.size()
+                                       } -> std::same_as<size_t>;
+                               };
 
     /// @brief A concept that specifies that the array must have a begin and end function.
     ///
@@ -144,13 +144,13 @@ namespace meshkernel
     /// std::same_as<typename ArrayType::const_iterator>
     template <typename ArrayType>
     concept ArrayConstIteratorsConcept = requires(const ArrayType& array) {
-        {
-            array.begin()
-        };
-        {
-            array.end()
-        };
-    };
+                                             {
+                                                 array.begin()
+                                             };
+                                             {
+                                                 array.end()
+                                             };
+                                         };
 
     /// @brief A concept that specifies that the array must have a begin and end function.
     ///
@@ -159,13 +159,13 @@ namespace meshkernel
     /// std::same_as<typename ArrayType::const_iterator>
     template <typename ArrayType>
     concept ArrayNonConstIteratorsConcept = requires(ArrayType& array) {
-        {
-            array.begin()
-        } -> std::same_as<typename ArrayType::iterator>;
-        {
-            array.end()
-        } -> std::same_as<typename ArrayType::iterator>;
-    };
+                                                {
+                                                    array.begin()
+                                                    } -> std::same_as<typename ArrayType::iterator>;
+                                                {
+                                                    array.end()
+                                                    } -> std::same_as<typename ArrayType::iterator>;
+                                            };
 
     /// @brief A concept that specifies all the functionality required to be usable as a constant array of doubles.
     template <typename ArrayType>
