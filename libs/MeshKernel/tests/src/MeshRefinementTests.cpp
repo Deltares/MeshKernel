@@ -39,6 +39,7 @@
 #include "MeshKernel/SamplesHessianCalculator.hpp"
 #include "MeshKernel/SplitRowColumnOfMesh.hpp"
 #include "MeshKernel/UndoActions/UndoActionStack.hpp"
+#include "MeshKernel/Utilities/Utilities.hpp"
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 #include "TestUtils/MeshReaders.hpp"
@@ -2673,4 +2674,63 @@ TEST(MeshRefinement, RowSplittingFailureTests)
 
     // Invalid edge id
     EXPECT_THROW([[maybe_unused]] auto undo4 = splitMeshRow.Compute(mesh, edgeId), ConstraintError);
+}
+
+TEST(MeshRefinement, CasulliRefinementBasedOnDepth)
+{
+    // constexpr double tolerance = 1.0e-12;
+
+    const double delta = 10;
+    const size_t nodeCount = 21;
+
+    const double limit = delta * static_cast<double>(nodeCount - 1);
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, delta, delta, nodeCount, nodeCount);
+    const auto edges = curviMesh->ComputeEdges();
+    const auto nodes = curviMesh->ComputeNodes();
+    Mesh2D mesh(edges, nodes, Projection::cartesian);
+    mesh.Administrate();
+    mesh.ComputeEdgesCenters();
+    mesh.ComputeEdgesLengths();
+
+    std::vector<double> depth(mesh.GetNumNodes());
+    mk::Polygons polygon;
+
+    auto frankesFunction = [limit](const double xp, const double yp)
+    {
+        const double x = xp / limit;
+        const double y = yp / limit;
+
+        double result = 0.75 * std::exp(-0.25 * std::pow(9.0 * x - 2.0, 2) - 0.25 * std::pow(9.0 * y - 2.0, 2)) +
+                        0.75 * std::exp(-1.0 / 49.0 * std::pow(9.0 * x - 2.0, 2) - 0.1 * std::pow(9.0 * y - 2.0, 2)) +
+                        0.5 * std::exp(-0.25 * std::pow(9.0 * x - 7.0, 2) - 0.25 * std::pow(9.0 * y - 3.0, 2)) -
+                        0.2 * std::exp(-std::pow(9.0 * x - 4.0, 2) - std::pow(9.0 * y - 7.0, 2));
+
+        return 100.0 * (1.50053 - result + 0.1);
+    };
+
+    double max = -1000000.0;
+    double min = 1000000.0;
+
+    for (mk::UInt i = 0; i < depth.size(); ++i)
+    {
+        const auto pnt = mesh.Node(i);
+        depth[i] = frankesFunction(pnt.x, pnt.y);
+
+        max = std::max(max, depth[i]);
+        min = std::min(min, depth[i]);
+    }
+
+    std::cout << " max = " << max << " " << min << ";" << std::endl;
+
+    mk::SampleInterpolator depthInterpolator(mesh.Nodes(), mesh.m_projection);
+    depthInterpolator.SetData(1, depth);
+
+    MeshRefinementParameters refinementParameters;
+    refinementParameters.min_edge_size = 1.25;
+    refinementParameters.max_courant_time = 5.0;
+
+    auto undo = mk::CasulliRefinement::Compute(mesh, polygon, depthInterpolator, 1, refinementParameters);
+
+    mk::Print(mesh.Nodes(), mesh.Edges());
 }
