@@ -52,12 +52,12 @@ namespace meshkernel
     {
     public:
         /// @brief Constructor with array of points
-        template <ValidConstPointArray PointVector>
+        template <meshkernel::ValidConstPointArray PointVector>
         MeshTriangulation(const PointVector& nodes,
                           const Projection projection);
 
         /// @brief Constructor with separate arrays of x- and y-coordinates
-        template <ValidConstDoubleArray VectorType>
+        template <meshkernel::ValidConstDoubleArray VectorType>
         MeshTriangulation(const VectorType& xNodes,
                           const VectorType& yNodes,
                           const Projection projection);
