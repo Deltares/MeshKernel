@@ -52,7 +52,7 @@ namespace meshkernel
         /// @brief Constructor.
         ///
         /// The VectorType can be any array type of double precision values, e.g. std::vector, std::span.
-        template <ValidConstDoubleArray VectorType>
+        template <meshkernel::ValidConstDoubleArray VectorType>
         SampleInterpolator(const VectorType& xNodes,
                            const VectorType& yNodes,
                            const Projection projection)
@@ -62,11 +62,11 @@ namespace meshkernel
         UInt Size() const;
 
         /// @brief Set sample data
-        template <ValidConstDoubleArray VectorType>
+        template <meshkernel::ValidConstDoubleArray VectorType>
         void SetData(const int sampleId, const VectorType& sampleData);
 
         /// @brief Interpolate the sample data set at the interpolation nodes.
-        template <ValidConstPointArray PointVectorType, ValidConstDoubleArray ScalarVectorType>
+        template <meshkernel::ValidConstPointArray PointVectorType, meshkernel::ValidConstDoubleArray ScalarVectorType>
         void Interpolate(const int sampleId, const PointVectorType& iterpolationNodes, ScalarVectorType& result) const;
 
         /// @brief Determine if the SampleInterpolator already has this sample set.
