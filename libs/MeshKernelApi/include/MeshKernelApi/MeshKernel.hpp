@@ -1349,7 +1349,7 @@ namespace meshkernelapi
         ///
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] propertyValue The value representing the specific property
-        /// @param[in/out] geometrylist A reference to a GeometryList object that will be populated with the values of the requested property
+        /// @param[in,out] geometrylist A reference to a GeometryList object that will be populated with the values of the requested property
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_property(int meshKernelId, int propertyValue, const GeometryList& geometrylist);
 
