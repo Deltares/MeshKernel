@@ -58,6 +58,14 @@ namespace meshkernel
                            const Projection projection)
             : m_triangulation(xNodes, yNodes, projection) {}
 
+        /// @brief Constructor.
+        ///
+        /// The VectorType can be any array type of double precision values, e.g. std::vector, std::span.
+        template <meshkernel::ValidConstPointArray PointVector>
+        SampleInterpolator(const PointVector& nodes,
+                           const Projection projection)
+            : m_triangulation(nodes, projection) {}
+
         /// @brief Get the number of nodes of size of the sample data.
         UInt Size() const;
 
