@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include "MeshKernel/SampleInterpolator.hpp"
+
 #include "MeshKernelApi/GeometryList.hpp"
 #include "MeshKernelApi/State.hpp"
 
@@ -43,10 +45,10 @@ namespace meshkernelapi
         /// @brief Determine is the calculator can compute the desired results correctly.
         ///
         /// This has a default of checking that the mesh2d is not null and the number of nodes is greater than zero.
-        virtual bool IsValid(const MeshKernelState& state, const int propertyId) const;
+        virtual bool IsValid(const MeshKernelState& state) const;
 
         /// @brief Calculate the property
-        virtual void Calculate(const MeshKernelState& state, const int propertyId, const GeometryList& geometryList) const = 0;
+        virtual void Calculate(const MeshKernelState& state, const GeometryList& geometryList) const = 0;
 
         /// @brief Determine the size of the vector required to store the calculated properties
         virtual int Size(const MeshKernelState& state) const = 0;
@@ -57,7 +59,7 @@ namespace meshkernelapi
     {
     public:
         /// @brief Calculate the orthogonality for a mesh
-        void Calculate(const MeshKernelState& state, const int propertyId, const GeometryList& geometryList) const override;
+        void Calculate(const MeshKernelState& state, const GeometryList& geometryList) const override;
 
         /// @brief Determine the size of the orthogonality vector required
         int Size(const MeshKernelState& state) const override;
@@ -68,24 +70,39 @@ namespace meshkernelapi
     {
     public:
         /// @brief Calculate the edge-length for a mesh
-        void Calculate(const MeshKernelState& state, const int propertyId, const GeometryList& geometryList) const override;
+        void Calculate(const MeshKernelState& state, const GeometryList& geometryList) const override;
 
         /// @brief Determine the size of the edge-length vector required
         int Size(const MeshKernelState& state) const override;
     };
 
     /// @brief Interpolate the depths at the mesh node points.
-    class DepthSamplePropertyCalculator : public PropertyCalculator
+    class InterpolatedSamplePropertyCalculator : public PropertyCalculator
     {
     public:
+        /// @brief Constructor
+        InterpolatedSamplePropertyCalculator(const GeometryList& sampleData,
+                                             const meshkernel::Projection projection,
+                                             const int propertyId);
+
         /// @brief Determine is the calculator can interpolate depth values correctly
-        bool IsValid(const MeshKernelState& state, const int propertyId) const override;
+        bool IsValid(const MeshKernelState& state) const override;
 
         /// @brief Calculate the edge-length for a mesh
-        void Calculate(const MeshKernelState& state, const int propertyId, const GeometryList& geometryList) const override;
+        void Calculate(const MeshKernelState& state, const GeometryList& geometryList) const override;
 
         /// @brief Determine the size of the edge-length vector required
         int Size(const MeshKernelState& state) const override;
+
+    private:
+        /// @brief Interpolator for the samples
+        std::unique_ptr<meshkernel::SampleInterpolator> m_sampleInterpolator;
+
+        /// @brief Projection sued for sample data.
+        meshkernel::Projection m_projection;
+
+        /// @brief Property id.
+        int m_propertyId = -1;
     };
 
 } // namespace meshkernelapi
