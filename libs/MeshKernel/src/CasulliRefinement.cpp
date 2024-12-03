@@ -66,15 +66,15 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(M
 
     std::unique_ptr<FullUnstructuredGridUndo> refinementAction = FullUnstructuredGridUndo::Create(mesh);
 
-    bool anyToRefine = true;
+    bool refinementRequested = true;
+    int iterationCount = 0;
 
-    while (anyToRefine)
-    // for (int ref = 1; ref <= 2; ++ref)
+    while (refinementRequested && iterationCount < refinementParameters.max_num_refinement_iterations)
     {
         std::vector<EdgeNodes> newNodes(mesh.GetNumEdges(), {constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue});
-        std::vector<NodeMask> nodeMask(InitialiseDepthBasedNodeMask(mesh, polygon, interpolator, propertyId, refinementParameters, anyToRefine));
+        std::vector<NodeMask> nodeMask(InitialiseDepthBasedNodeMask(mesh, polygon, interpolator, propertyId, refinementParameters, refinementRequested));
 
-        if (!anyToRefine)
+        if (!refinementRequested)
         {
             break;
         }
@@ -88,6 +88,8 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(M
         Administrate(mesh, numNodes, nodeMask);
         mesh.ComputeEdgesCenters();
         mesh.ComputeEdgesLengths();
+        std::cout << "--------------------------------" << std::endl;
+        ++iterationCount;
     }
 
     return refinementAction;
@@ -223,29 +225,36 @@ void meshkernel::CasulliRefinement::RefineNodeMaskBasedOnDepths(const Mesh2D& me
                                                                 const int propertyId,
                                                                 const MeshRefinementParameters& refinementParameters,
                                                                 std::vector<NodeMask>& nodeMask [[maybe_unused]],
-                                                                bool& anyToRefine)
+                                                                bool& refinementRequested)
 {
     std::vector<double> interpolatedDepth(mesh.m_edgesCenters.size());
     interpolator.Interpolate(propertyId, mesh.m_edgesCenters, interpolatedDepth);
     const double maxDtCourant = refinementParameters.max_courant_time;
 
-    anyToRefine = false;
+    refinementRequested = false;
 
     for (size_t i = 0; i < mesh.GetNumNodes(); ++i)
     {
-        [[maybe_unused]] bool refineNode = false;
+        bool refineNode = false;
 
         std::cout << " waveCourant ";
 
         for (size_t j = 0; j < mesh.m_nodesEdges[i].size(); ++j)
         {
             UInt edgeId = mesh.m_nodesEdges[i][j];
+
+            // If the current edge is already shorter than the minimum edge size then do not refine further
+            if (mesh.m_edgeLengths[edgeId] <= refinementParameters.min_edge_size)
+            {
+                continue;
+            }
+
             const double celerity = constants::physical::sqrt_gravity * std::sqrt(std::abs(interpolatedDepth[edgeId]));
             const double waveCourant = celerity * maxDtCourant / mesh.m_edgeLengths[edgeId];
 
             std::cout << waveCourant << "  ";
 
-            if (mesh.m_edgeLengths[edgeId] > refinementParameters.min_edge_size && waveCourant < 29.5)
+            if (waveCourant < 1.0)
             {
                 refineNode = true;
             }
@@ -259,7 +268,7 @@ void meshkernel::CasulliRefinement::RefineNodeMaskBasedOnDepths(const Mesh2D& me
         }
         else if (nodeMask[i] == NodeMask::RegisteredNode)
         {
-            anyToRefine = true;
+            refinementRequested = true;
         }
     }
 }
@@ -284,7 +293,7 @@ std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefineme
                                                                                                                  const SampleInterpolator& interpolator,
                                                                                                                  const int propertyId,
                                                                                                                  const MeshRefinementParameters& refinementParameters,
-                                                                                                                 bool& anyToRefine)
+                                                                                                                 bool& refinementRequested)
 {
     std::vector<NodeMask> nodeMask(10 * mesh.GetNumNodes(), NodeMask::Unassigned);
 
@@ -292,7 +301,7 @@ std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefineme
     // If the polygon is empty then all nodes will be taken into account.
 
     RegisterNodesInsidePolygon(mesh, polygon, nodeMask);
-    RefineNodeMaskBasedOnDepths(mesh, interpolator, propertyId, refinementParameters, nodeMask, anyToRefine);
+    RefineNodeMaskBasedOnDepths(mesh, interpolator, propertyId, refinementParameters, nodeMask, refinementRequested);
     InitialiseBoundaryNodes(mesh, nodeMask);
     InitialiseCornerNodes(mesh, nodeMask);
     InitialiseFaceNodes(mesh, nodeMask);
@@ -327,6 +336,7 @@ void meshkernel::CasulliRefinement::Administrate(Mesh2D& mesh, const UInt numNod
         }
     }
 
+    mesh.DeleteInvalidNodesAndEdges ();
     mesh.Administrate();
 }
 

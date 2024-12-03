@@ -1675,31 +1675,52 @@ TEST(MeshRefinement, CasulliRefinement)
                                                   {12.5, 20},
                                                   {17.5, 20}};
 
-    std::vector<int> expectedEdgesStart = {9, 25, 9, 12, 13,
-                                           10, 13, 16, 27, 14,
-                                           27, 28, 17, 29, 17,
-                                           20, 21, 18, 21, 24,
-                                           31, 22, 31, 32, 33,
-                                           9, 33, 34, 35, 13,
-                                           35, 36, 12, 17, 12,
-                                           11, 16, 21, 16, 15,
-                                           20, 37, 20, 19, 24,
-                                           39, 24, 23, 0, 0,
-                                           34, 2, 2, 26, 28,
-                                           6, 6, 39, 8, 8};
+    // std::vector<int> expectedEdgesStart = {9, 25, 9, 12, 13,
+    //                                        10, 13, 16, 27, 14,
+    //                                        27, 28, 17, 29, 17,
+    //                                        20, 21, 18, 21, 24,
+    //                                        31, 22, 31, 32, 33,
+    //                                        9, 33, 34, 35, 13,
+    //                                        35, 36, 12, 17, 12,
+    //                                        11, 16, 21, 16, 15,
+    //                                        20, 37, 20, 19, 24,
+    //                                        39, 24, 23, 0, 0,
+    //                                        34, 2, 2, 26, 28,
+    //                                        6, 6, 39, 8, 8};
 
-    std::vector<int> expectedEdgesEnd = {12, 26, 25, 26, 16,
-                                         11, 10, 11, 28, 15,
-                                         14, 15, 20, 30, 29,
-                                         30, 24, 19, 18, 19,
-                                         32, 23, 22, 23, 34,
-                                         10, 9, 10, 36, 14,
-                                         13, 14, 11, 18, 17,
-                                         18, 15, 22, 21, 22,
-                                         19, 38, 37, 38, 23,
-                                         40, 39, 40, 25, 33,
-                                         35, 27, 36, 29, 31,
-                                         30, 37, 38, 32, 40};
+
+    // std::vector<int> expectedEdgesEnd = {12, 26, 25, 26, 16,
+    //                                      11, 10, 11, 28, 15,
+    //                                      14, 15, 20, 30, 29,
+    //                                      30, 24, 19, 18, 19,
+    //                                      32, 23, 22, 23, 34,
+    //                                      10, 9, 10, 36, 14,
+    //                                      13, 14, 11, 18, 17,
+    //                                      18, 15, 22, 21, 22,
+    //                                      19, 38, 37, 38, 23,
+    //                                      40, 39, 40, 25, 33,
+    //                                      35, 27, 36, 29, 31,
+                                         // 30, 37, 38, 32, 40};
+
+    std::vector<int> expectedEdgesStart = {4, 20, 4, 7, 8, 5, 8,
+                                           11, 22, 9, 22, 23, 12,
+                                           24, 12, 15, 16, 13, 16,
+                                           19, 26, 17, 26, 27, 28,
+                                           4, 28, 29, 30, 8, 30, 31,
+                                           7, 12, 7, 6, 11, 16, 11,
+                                           10, 15, 32, 15, 14, 19,
+                                           34, 19, 18, 0, 0, 29, 1,
+                                           1, 21, 23, 2, 2, 34, 3, 3};
+
+    std::vector<int> expectedEdgesEnd = {7, 21, 20, 21, 11, 6, 5,
+                                         6, 23, 10, 9, 10, 15, 25,
+                                         24, 25, 19, 14, 13, 14, 27,
+                                         18, 17, 18, 29, 5, 4, 5, 31,
+                                         9, 8, 9, 6, 13, 12, 13, 10,
+                                         17, 16, 17, 14, 33, 32, 33,
+                                         18, 35, 34, 35, 20, 28, 30,
+                                         22, 31, 24, 26, 25, 32, 33,
+                                         27, 35};
 
     auto undoAction = CasulliRefinement::Compute(mesh);
 
@@ -2680,7 +2701,7 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepth)
 {
     // constexpr double tolerance = 1.0e-12;
 
-    const double delta = 10;
+    const double delta = 100.0;
     const size_t nodeCount = 21;
 
     const double limit = delta * static_cast<double>(nodeCount - 1);
@@ -2696,7 +2717,7 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepth)
     std::vector<double> depth(mesh.GetNumNodes());
     mk::Polygons polygon;
 
-    auto frankesFunction = [limit](const double xp, const double yp)
+    [[maybe_unused]]auto frankesFunction = [limit](const double xp, const double yp)
     {
         const double x = xp / limit;
         const double y = yp / limit;
@@ -2706,7 +2727,33 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepth)
                         0.5 * std::exp(-0.25 * std::pow(9.0 * x - 7.0, 2) - 0.25 * std::pow(9.0 * y - 3.0, 2)) -
                         0.2 * std::exp(-std::pow(9.0 * x - 4.0, 2) - std::pow(9.0 * y - 7.0, 2));
 
+        // return result;
         return 100.0 * (1.50053 - result + 0.1);
+    };
+
+    [[maybe_unused]]auto sinShore = [limit](const double x, const double y)
+    {
+        const double seaDepth = 1000.0;
+        const double shoreDepth = 2.0;
+        double range = limit * 0.3;
+        double sx = 0.5 * (std::sin (x / limit * 3.1416 * 4.0) + 1.0);
+        double v = 0.6 * limit + range * sx;
+        double result;
+
+        if (y > v) {
+            result = shoreDepth;
+        } else {
+            double l = (v - y) / v;
+
+            if (l < 0.4) {
+                result = (1.0 - l) * shoreDepth + 0.2 * seaDepth * l;
+            } else {
+                result = (1.0 - l) * shoreDepth + seaDepth * l;
+            }
+
+        }
+
+        return result;
     };
 
     double max = -1000000.0;
@@ -2715,11 +2762,24 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepth)
     for (mk::UInt i = 0; i < depth.size(); ++i)
     {
         const auto pnt = mesh.Node(i);
-        depth[i] = frankesFunction(pnt.x, pnt.y);
+        depth[i] = sinShore(pnt.x, pnt.y);
+        // depth[i] = frankesFunction(pnt.x, pnt.y);
+
+        // std::cout << "xnodes [" << i + 1 << "] = "  << pnt.x << ";" << std::endl;
+        // std::cout << "ynodes [" << i + 1 << "] = "  << pnt.y << ";" << std::endl;
 
         max = std::max(max, depth[i]);
         min = std::min(min, depth[i]);
     }
+
+    // for (mk::UInt i = 0; i < depth.size(); ++i)
+    // {
+    //     // std::cout << "depth [" << i + 1 << "] = "  << depth [i] << ";" << std::endl;
+    //     depth[i] = 1000.0 * ((depth[i] - min) / (max - min) + 0.001);
+    // }
+
+
+    // return;
 
     std::cout << " max = " << max << " " << min << ";" << std::endl;
 
@@ -2727,7 +2787,7 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepth)
     depthInterpolator.SetData(1, depth);
 
     MeshRefinementParameters refinementParameters;
-    refinementParameters.min_edge_size = 1.25;
+    refinementParameters.min_edge_size = 6.5;//12.5;
     refinementParameters.max_courant_time = 5.0;
 
     auto undo = mk::CasulliRefinement::Compute(mesh, polygon, depthInterpolator, 1, refinementParameters);
