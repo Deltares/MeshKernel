@@ -111,14 +111,14 @@ namespace meshkernel
                                                                   const SampleInterpolator& interpolator,
                                                                   const int propertyId,
                                                                   const MeshRefinementParameters& refinementParameters,
-                                                                  bool& anyToRefine);
+                                                                  bool& refinementRequested);
 
         static void RefineNodeMaskBasedOnDepths(const Mesh2D& mesh,
                                                 const SampleInterpolator& interpolator,
                                                 const int propertyId,
                                                 const MeshRefinementParameters& refinementParameters,
                                                 std::vector<NodeMask>& nodeMask,
-                                                bool& anyToRefine);
+                                                bool& refinementRequested);
 
         static void RegisterNodesInsidePolygon(const Mesh2D& mesh,
                                                const Polygons& polygon,
