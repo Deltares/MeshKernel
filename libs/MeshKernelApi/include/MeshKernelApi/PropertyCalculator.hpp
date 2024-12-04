@@ -96,7 +96,7 @@ namespace meshkernelapi
 
     private:
         /// @brief Interpolator for the samples
-        std::unique_ptr<meshkernel::SampleInterpolator> m_sampleInterpolator;
+        std::unique_ptr<meshkernel::SampleTriangulationInterpolator> m_sampleInterpolator;
 
         /// @brief Projection sued for sample data.
         meshkernel::Projection m_projection;
