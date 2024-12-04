@@ -137,6 +137,11 @@ namespace meshkernel
         /// @param[in] node The node
         void SearchNearestPoint(Point const& node) override;
 
+        /// @brief Gets the nearest of all nodes
+        /// @param[in] node The node
+        /// @param[in] count The number of nearest points to find (must be strictly greater than 0)
+        void SearchNearestPointCount(Point const& node, UInt count) override;
+
         /// @brief Deletes a node
         /// @param[in] position The index of the point to remove in m_points
         void DeleteNode(UInt position) override;
@@ -264,6 +269,27 @@ namespace meshkernel
     template <typename projection>
     void RTree<projection>::SearchNearestPoint(Point const& node)
     {
+        SearchNearestPointCount (node, 1);
+        // if (Empty())
+        // {
+        //     throw AlgorithmError("RTree is empty, search cannot be performed");
+        // }
+
+        // m_queryCache.reserve(m_queryVectorCapacity);
+        // m_queryCache.clear();
+        // const Point2D nodeSought = Point2D(node.x, node.y);
+        // m_rtree2D.query(bgi::nearest(nodeSought, 1), std::back_inserter(m_queryCache));
+
+        // if (!m_queryCache.empty())
+        // {
+        //     m_queryIndices.clear();
+        //     m_queryIndices.emplace_back(m_queryCache[0].second);
+        // }
+    }
+
+    template <typename projection>
+    void RTree<projection>::SearchNearestPointCount(Point const& node, UInt count)
+    {
         if (Empty())
         {
             throw AlgorithmError("RTree is empty, search cannot be performed");
@@ -272,7 +298,7 @@ namespace meshkernel
         m_queryCache.reserve(m_queryVectorCapacity);
         m_queryCache.clear();
         const Point2D nodeSought = Point2D(node.x, node.y);
-        m_rtree2D.query(bgi::nearest(nodeSought, 1), std::back_inserter(m_queryCache));
+        m_rtree2D.query(bgi::nearest(nodeSought, count), std::back_inserter(m_queryCache));
 
         if (!m_queryCache.empty())
         {

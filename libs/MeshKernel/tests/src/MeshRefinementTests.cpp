@@ -2794,3 +2794,114 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepth)
 
     mk::Print(mesh.Nodes(), mesh.Edges());
 }
+
+TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
+{
+
+    //--------------------------------
+
+    static const size_t MaxSize = 2550923;
+    std::vector<double> xNodes(MaxSize);
+    std::vector<double> yNodes(MaxSize);
+    std::vector<double> depths(MaxSize);
+
+    std::string fileName = "/home/wcs1/MeshKernel/MeshKernel06/build_deb/stpete.xyz";
+
+    std::ifstream asciiFile;
+    asciiFile.open(fileName.c_str());
+
+    double maxX = -1.0e30;
+    double minX = 1.0e30;
+    double maxY = -1.0e30;
+    double minY = 1.0e30;
+    double maxD = -1.0e30;
+    double minD = 1.0e30;
+
+    for (size_t i = 0; i < MaxSize; ++i)
+    {
+        mk::Point pnt;
+
+        // asciiFile >> xNodes[i];
+        // asciiFile >> yNodes[i];
+        asciiFile >> pnt.x;
+        asciiFile >> pnt.y;
+        asciiFile >> depths[i];
+
+        mk::Cartesian3DPoint cpnt = mk::SphericalToCartesian3D (pnt);
+
+        xNodes[i] = cpnt.x;
+        yNodes[i] = cpnt.y;
+
+        maxX = std::max (maxX, xNodes[i]);
+        minX = std::min (minX, xNodes[i]);
+
+        maxY = std::max (maxY, yNodes[i]);
+        minY = std::min (minY, yNodes[i]);
+
+        maxD = std::max (maxD, depths[i]);
+        minD = std::min (minD, depths[i]);
+
+    }
+
+    // std::cout << "xnodes = zeros (" << xNodes.size () << ", 1);" << std::endl;
+    // std::cout << "ynodes = zeros (" << xNodes.size () << ", 1);" << std::endl;
+    // std::cout << "depths = zeros (" << xNodes.size () << ", 1);" << std::endl;
+
+    // for (size_t i = 0; i < xNodes.size (); ++i)
+    // {
+    //     std::cout << "xnodes (" << i + 1 << ") = " << xNodes [i] << ";" << std::endl;
+    // }
+
+    // for (size_t i = 0; i < xNodes.size (); ++i)
+    // {
+    //     std::cout << "ynodes (" << i + 1 << ") = " << yNodes [i] << ";" << std::endl;
+    // }
+
+    // for (size_t i = 0; i < xNodes.size (); ++i)
+    // {
+    //     std::cout << "depths (" << i + 1 << ") = " << depths [i] << ";" << std::endl;
+    // }
+
+    mk::SampleInterpolator depthInterpolator(xNodes, yNodes, mk::Projection::cartesian);
+    depthInterpolator.SetData(1, depths);
+    mk::Polygons polygon;
+
+
+    const size_t nodeCount = 50;
+    const double deltaX = (maxX - minX) / static_cast<double>(nodeCount - 1);
+    const double deltaY = (maxY - minY) / static_cast<double>(nodeCount - 1);
+    const double delta = std::min (deltaX, deltaY);
+
+
+    auto curviMesh = MakeCurvilinearGrid(minX, minY, delta, delta, nodeCount, nodeCount);
+
+
+    auto edges = curviMesh->ComputeEdges();
+    auto nodes = curviMesh->ComputeNodes();
+
+    std::cout.precision (16);
+
+    for (size_t i = 0; i < nodes.size (); ++i)
+    {
+        if (depthInterpolator.Interpolate (1, nodes [i]) == mk::constants::missing::doubleValue)
+        {
+            nodes [i].SetInvalid ();
+        }
+    }
+
+
+    Mesh2D mesh(edges, nodes, Projection::cartesian);
+    mesh.Administrate();
+    mesh.ComputeEdgesCenters();
+    mesh.ComputeEdgesLengths();
+
+
+    mk::Print (mesh.Nodes (), mesh.Edges ());
+
+
+    // std::cout << "min max x " << minX << "  " << maxX << std::endl;
+    // std::cout << "min max y " << minY << "  " << maxY << std::endl;
+    // std::cout << "min max d " << minD << "  " << maxD << std::endl;
+
+
+}
