@@ -28,9 +28,13 @@
 #pragma once
 
 #include <map>
+#include <span>
 #include <string>
 #include <vector>
 
+#include "MeshKernel/AveragingInterpolation.hpp" //  Only for the enum Method. should move to Definitions.hpp
+#include "MeshKernel/AveragingStrategies/AveragingStrategy.hpp"
+#include "MeshKernel/AveragingStrategies/AveragingStrategyFactory.hpp"
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
@@ -43,48 +47,93 @@
 namespace meshkernel
 {
 
+    class SampleInterpolator
+    {
+    public:
+        virtual ~SampleInterpolator() = default;
+
+        virtual UInt Size() const = 0;
+
+        /// @brief Set sample data
+        template <meshkernel::ValidConstDoubleArray VectorType>
+        void SetData(const int propertyId, const VectorType& sampleData)
+        {
+            const std::span<const double> spanSampleData(sampleData.data(), sampleData.size());
+            SetDataSpan(propertyId, sampleData);
+        }
+
+        virtual void SetDataSpan(const int propertyId, const std::span<const double>& sampleData) = 0;
+
+        /// @brief Interpolate the sample data set at the interpolation nodes.
+        template <meshkernel::ValidConstPointArray PointVectorType, meshkernel::ValidConstDoubleArray ScalarVectorType>
+        void Interpolate(const int propertyId, const PointVectorType& iterpolationNodes, ScalarVectorType& result) const
+        {
+            const std::span<const Point> spanInterpolationNodes(iterpolationNodes.data(), iterpolationNodes.size());
+            std::span<double> spanResult(result.data(), result.size());
+            InterpolateSpan(propertyId, spanInterpolationNodes, spanResult);
+        }
+
+        virtual void InterpolateSpan(const int propertyId, const std::span<const Point>& iterpolationNodes, std::span<double>& result) const = 0;
+
+        /// @brief Interpolate the sample data set at a single interpolation point.
+        ///
+        /// If interpolation at multiple points is required then better performance
+        /// can be obtained using the Interpolate function above.
+        virtual double InterpolateValue(const int propertyId, const Point& evaluationPoint) const = 0;
+
+        /// @brief Determine if the SampleInterpolator already has this sample set.
+        virtual bool Contains(const int propertyId) const = 0;
+
+    private:
+        // TODO the map -> sample-data can be here
+        // with protected members to access the data.
+    };
+
     /// @brief Interpolator for sample data on a triangulated grid.
     ///
     /// The triangulation does not have to match any mesh.
-    class SampleInterpolator
+    class SampleTriangulationInterpolator : public SampleInterpolator
     {
     public:
         /// @brief Constructor.
         ///
         /// The VectorType can be any array type of double precision values, e.g. std::vector, std::span.
         template <meshkernel::ValidConstDoubleArray VectorType>
-        SampleInterpolator(const VectorType& xNodes,
-                           const VectorType& yNodes,
-                           const Projection projection)
+        SampleTriangulationInterpolator(const VectorType& xNodes,
+                                        const VectorType& yNodes,
+                                        const Projection projection)
             : m_triangulation(xNodes, yNodes, projection) {}
 
         /// @brief Constructor.
         ///
         /// The VectorType can be any array type of double precision values, e.g. std::vector, std::span.
         template <meshkernel::ValidConstPointArray PointVector>
-        SampleInterpolator(const PointVector& nodes,
-                           const Projection projection)
+        SampleTriangulationInterpolator(const PointVector& nodes,
+                                        const Projection projection)
             : m_triangulation(nodes, projection) {}
 
         /// @brief Get the number of nodes of size of the sample data.
-        UInt Size() const;
+        UInt Size() const override;
+
+        void SetDataSpan(const int propertyId, const std::span<const double>& sampleData) override;
 
         /// @brief Set sample data
-        template <meshkernel::ValidConstDoubleArray VectorType>
-        void SetData(const int sampleId, const VectorType& sampleData);
+        // template <meshkernel::ValidConstDoubleArray VectorType>
+        // void SetData(const int propertyId, const VectorType& sampleData) override;
 
         /// @brief Interpolate the sample data set at the interpolation nodes.
-        template <meshkernel::ValidConstPointArray PointVectorType, meshkernel::ValidConstDoubleArray ScalarVectorType>
-        void Interpolate(const int sampleId, const PointVectorType& iterpolationNodes, ScalarVectorType& result) const;
+        // template <meshkernel::ValidConstPointArray PointVectorType, meshkernel::ValidConstDoubleArray ScalarVectorType>
+        // void Interpolate(const int propertyId, const PointVectorType& iterpolationNodes, ScalarVectorType& result) const override;
+        void InterpolateSpan(const int propertyId, const std::span<const Point>& iterpolationNodes, std::span<double>& result) const override;
 
         /// @brief Interpolate the sample data set at a single interpolation point.
         ///
         /// If interpolation at multiple points is required then better performance
         /// can be obtained using the Interpolate function above.
-        double Interpolate (const int sampleId, const Point& evaluationPoint) const;
+        double InterpolateValue(const int propertyId, const Point& evaluationPoint) const override;
 
         /// @brief Determine if the SampleInterpolator already has this sample set.
-        bool Contains(const int sampleId) const;
+        bool Contains(const int propertyId) const override;
 
     private:
         /// @brief Interpolate the sample data on the element at the interpolation point.
@@ -97,65 +146,118 @@ namespace meshkernel
         std::map<int, std::vector<double>> m_sampleData;
     };
 
+    struct InterpolationParameters
+    {
+        AveragingInterpolation::Method m_method = AveragingInterpolation::Method::SimpleAveraging;
+        double m_relativeSearchRadius = 0.0;
+        bool m_useClosestIfNoneFound = true;
+        UInt m_minimumNumberOfSamples = 10;
+    };
+
+    /// @brief Interpolator for sample data
+    class SampleAveragingInterpolator : public SampleInterpolator
+    {
+    public:
+        /// @brief Constructor.
+        ///
+        /// The VectorType can be any array type of double precision values, e.g. std::vector, std::span.
+        // TODO need InterpolationParameters
+        // containing e.g.
+        //   - averaging method
+        //   - relative search radius
+        //   - use closest if non found
+        //   - min number of samples
+        template <meshkernel::ValidConstDoubleArray VectorType>
+        SampleAveragingInterpolator(const VectorType& xNodes,
+                                    const VectorType& yNodes,
+                                    const Projection projection,
+                                    const InterpolationParameters& interpolationParameters)
+            : m_samplePoints(CombineCoordinates(xNodes, yNodes)),
+              m_projection(projection),
+              m_interpolationParameters(interpolationParameters),
+              m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(interpolationParameters.m_method,
+                                                                                   interpolationParameters.m_minimumNumberOfSamples,
+                                                                                   projection)) {}
+
+        /// @brief Constructor.
+        ///
+        /// The VectorType can be any array type of double precision values, e.g. std::vector, std::span.
+        template <meshkernel::ValidConstPointArray PointVector>
+        SampleAveragingInterpolator(const PointVector& nodes,
+                                    const Projection projection,
+                                    const InterpolationParameters& interpolationParameters)
+            : m_samplePoints(nodes.begin(), nodes.end()),
+              m_projection(projection),
+              m_interpolationParameters(interpolationParameters),
+              m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(interpolationParameters.m_method,
+                                                                                   interpolationParameters.m_minimumNumberOfSamples,
+                                                                                   projection)) {}
+
+        /// @brief Get the number of nodes of size of the sample data.
+        UInt Size() const override;
+
+        void SetDataSpan(const int propertyId, const std::span<const double>& sampleData) override;
+
+        /// @brief Interpolate the sample data set at the interpolation nodes.
+        void InterpolateSpan(const int propertyId, const std::span<const Point>& iterpolationNodes, std::span<double>& result) const override;
+
+        /// @brief Interpolate the sample data set at a single interpolation point.
+        ///
+        /// If interpolation at multiple points is required then better performance
+        /// can be obtained using the Interpolate function above.
+        double InterpolateValue(const int propertyId, const Point& evaluationPoint) const override;
+
+        /// @brief Determine if the SampleInterpolator already has this sample set.
+        bool Contains(const int propertyId) const override;
+
+    private:
+        template <meshkernel::ValidConstDoubleArray VectorType>
+        static std::vector<Point> CombineCoordinates(const VectorType& xNodes, const VectorType& yNodes)
+        {
+            std::vector<Point> result;
+
+            for (size_t i = 0; i < xNodes.size(); ++i)
+            {
+                result[i].x = xNodes[i];
+                result[i].y = yNodes[i];
+            }
+
+            return result;
+        }
+
+        /// @brief Interpolate the sample data on the element at the interpolation point.
+        double InterpolateOnElement(const UInt elementId, const Point& interpolationPoint, const std::vector<double>& sampleValues) const;
+
+        std::vector<Point> m_samplePoints;
+
+        Projection m_projection = Projection::cartesian; ///< The projection used
+
+        InterpolationParameters m_interpolationParameters;
+
+        std::unique_ptr<averaging::AveragingStrategy> m_strategy; ///< Averaging strategy
+
+        /// @brief Map from sample id (int) to sample data.
+        std::map<int, std::vector<double>> m_sampleData;
+    };
+
 } // namespace meshkernel
 
-inline meshkernel::UInt meshkernel::SampleInterpolator::Size() const
+inline meshkernel::UInt meshkernel::SampleTriangulationInterpolator::Size() const
 {
     return m_triangulation.NumberOfNodes();
 }
 
-inline bool meshkernel::SampleInterpolator::Contains(const int sampleId) const
+inline bool meshkernel::SampleTriangulationInterpolator::Contains(const int propertyId) const
 {
-    return m_sampleData.contains(sampleId);
+    return m_sampleData.contains(propertyId);
 }
 
-template <meshkernel::ValidConstDoubleArray VectorType>
-void meshkernel::SampleInterpolator::SetData(const int sampleId, const VectorType& sampleData)
+inline meshkernel::UInt meshkernel::SampleAveragingInterpolator::Size() const
 {
-    if (m_triangulation.NumberOfNodes() != sampleData.size())
-    {
-        throw ConstraintError("The sample data array does not have the same number of elements as the number of nodes in the triangulation: {} /= {}",
-                              m_triangulation.NumberOfNodes(), sampleData.size());
-    }
-
-    m_sampleData[sampleId].assign(sampleData.begin(), sampleData.end());
+    return static_cast<UInt>(m_samplePoints.size());
 }
 
-template <meshkernel::ValidConstPointArray PointVectorType, meshkernel::ValidConstDoubleArray ScalarVectorType>
-void meshkernel::SampleInterpolator::Interpolate(const int sampleId, const PointVectorType& iterpolationNodes, ScalarVectorType& result) const
+inline bool meshkernel::SampleAveragingInterpolator::Contains(const int propertyId) const
 {
-    if (!Contains(sampleId))
-    {
-        throw ConstraintError("Sample interpolator does not contain the id: {}.", sampleId);
-    }
-
-    if (iterpolationNodes.size() != result.size())
-    {
-        throw ConstraintError("The arrays for interpolation nodes and the results are different sizes: {} /= {}",
-                              iterpolationNodes.size(), result.size());
-    }
-
-    const std::vector<double>& propertyValues = m_sampleData.at(sampleId);
-
-    for (size_t i = 0; i < iterpolationNodes.size(); ++i)
-    {
-        result[i] = constants::missing::doubleValue;
-
-        if (!iterpolationNodes[i].IsValid())
-        {
-            continue;
-        }
-
-        const UInt elementId = m_triangulation.FindNearestFace(iterpolationNodes[i]);
-
-        if (elementId == constants::missing::uintValue)
-        {
-            continue;
-        }
-
-        if (m_triangulation.PointIsInElement(iterpolationNodes[i], elementId))
-        {
-            result[i] = InterpolateOnElement(elementId, iterpolationNodes[i], propertyValues);
-        }
-    }
+    return m_sampleData.contains(propertyId);
 }

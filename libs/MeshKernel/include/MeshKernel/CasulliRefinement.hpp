@@ -60,7 +60,7 @@ namespace meshkernel
         /// @param [in] polygon Area within which the mesh will be refined
         [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh,
                                                                              const Polygons& polygon,
-                                                                             const SampleInterpolator& interpolator,
+                                                                             const SampleTriangulationInterpolator& interpolator,
                                                                              const int propertyId,
                                                                              const MeshRefinementParameters& refinementParameters);
 
@@ -108,13 +108,13 @@ namespace meshkernel
 
         static std::vector<NodeMask> InitialiseDepthBasedNodeMask(const Mesh2D& mesh,
                                                                   const Polygons& polygon,
-                                                                  const SampleInterpolator& interpolator,
+                                                                  const SampleTriangulationInterpolator& interpolator,
                                                                   const int propertyId,
                                                                   const MeshRefinementParameters& refinementParameters,
                                                                   bool& refinementRequested);
 
         static void RefineNodeMaskBasedOnDepths(const Mesh2D& mesh,
-                                                const SampleInterpolator& interpolator,
+                                                const SampleTriangulationInterpolator& interpolator,
                                                 const int propertyId,
                                                 const MeshRefinementParameters& refinementParameters,
                                                 std::vector<NodeMask>& nodeMask,

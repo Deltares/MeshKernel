@@ -28,7 +28,56 @@
 #include "MeshKernel/SampleInterpolator.hpp"
 #include "MeshKernel/Operations.hpp"
 
-double meshkernel::SampleInterpolator::InterpolateOnElement(const UInt elementId, const Point& interpolationPoint, const std::vector<double>& sampleValues) const
+void meshkernel::SampleTriangulationInterpolator::SetDataSpan(const int propertyId, const std::span<const double>& sampleData)
+{
+    if (m_triangulation.NumberOfNodes() != sampleData.size())
+    {
+        throw ConstraintError("The sample data array does not have the same number of elements as the number of nodes in the triangulation: {} /= {}",
+                              m_triangulation.NumberOfNodes(), sampleData.size());
+    }
+
+    m_sampleData[propertyId].assign(sampleData.begin(), sampleData.end());
+}
+
+void meshkernel::SampleTriangulationInterpolator::InterpolateSpan(const int propertyId, const std::span<const Point>& iterpolationNodes, std::span<double>& result) const
+{
+    if (!Contains(propertyId))
+    {
+        throw ConstraintError("Sample interpolator does not contain the id: {}.", propertyId);
+    }
+
+    if (iterpolationNodes.size() != result.size())
+    {
+        throw ConstraintError("The arrays for interpolation nodes and the results are different sizes: {} /= {}",
+                              iterpolationNodes.size(), result.size());
+    }
+
+    const std::vector<double>& propertyValues = m_sampleData.at(propertyId);
+
+    for (size_t i = 0; i < iterpolationNodes.size(); ++i)
+    {
+        result[i] = constants::missing::doubleValue;
+
+        if (!iterpolationNodes[i].IsValid())
+        {
+            continue;
+        }
+
+        const UInt elementId = m_triangulation.FindNearestFace(iterpolationNodes[i]);
+
+        if (elementId == constants::missing::uintValue)
+        {
+            continue;
+        }
+
+        if (m_triangulation.PointIsInElement(iterpolationNodes[i], elementId))
+        {
+            result[i] = InterpolateOnElement(elementId, iterpolationNodes[i], propertyValues);
+        }
+    }
+}
+
+double meshkernel::SampleTriangulationInterpolator::InterpolateOnElement(const UInt elementId, const Point& interpolationPoint, const std::vector<double>& sampleValues) const
 {
     double result = constants::missing::doubleValue;
 
@@ -69,12 +118,12 @@ double meshkernel::SampleInterpolator::InterpolateOnElement(const UInt elementId
     return result;
 }
 
-double meshkernel::SampleInterpolator::Interpolate (const int sampleId, const Point& evaluationPoint) const
+double meshkernel::SampleTriangulationInterpolator::InterpolateValue(const int propertyId, const Point& evaluationPoint) const
 {
 
-    if (!Contains(sampleId))
+    if (!Contains(propertyId))
     {
-        throw ConstraintError("Sample interpolator does not contain the id: {}.", sampleId);
+        throw ConstraintError("Sample interpolator does not contain the id: {}.", propertyId);
     }
 
     double result = constants::missing::doubleValue;
@@ -83,6 +132,13 @@ double meshkernel::SampleInterpolator::Interpolate (const int sampleId, const Po
     {
         std::cout << " invalid point " << std::endl;
         return result;
+    }
+
+    bool printIt = 728900.0 <= evaluationPoint.x && evaluationPoint.x <= 729100.0 && -5.60855e6 <= evaluationPoint.y && evaluationPoint.y <= -5.60845e6;
+
+    if (printIt)
+    {
+        std::cout << "interpolation point: " << evaluationPoint.x << ", " << evaluationPoint.y << std::endl;
     }
 
     const UInt elementId = m_triangulation.FindNearestFace(evaluationPoint);
@@ -95,12 +151,44 @@ double meshkernel::SampleInterpolator::Interpolate (const int sampleId, const Po
 
     if (m_triangulation.PointIsInElement(evaluationPoint, elementId))
     {
-        const std::vector<double>& propertyValues = m_sampleData.at(sampleId);
+        const std::vector<double>& propertyValues = m_sampleData.at(propertyId);
         result = InterpolateOnElement(elementId, evaluationPoint, propertyValues);
-    } else
+
+        if (printIt)
+        {
+            std::cout << "result = " << result << std::endl;
+        }
+    }
+    else
     {
         std::cout << " point not in element " << std::endl;
     }
 
     return result;
+}
+
+void meshkernel::SampleAveragingInterpolator::SetDataSpan(const int propertyId, const std::span<const double>& sampleData)
+{
+    if (m_samplePoints.size() != sampleData.size())
+    {
+        throw ConstraintError("The sample data array does not have the same number of elements as the number of nodes in the triangulation: {} /= {}",
+                              m_samplePoints.size(), sampleData.size());
+    }
+
+    m_sampleData[propertyId].assign(sampleData.begin(), sampleData.end());
+}
+
+void meshkernel::SampleAveragingInterpolator::InterpolateSpan(const int propertyId, const std::span<const Point>& iterpolationNodes, std::span<double>& result) const
+{
+    const std::vector<double>& propertyValues = m_sampleData.at(propertyId);
+
+    for (size_t i = 0; i < iterpolationNodes.size(); ++i)
+    {
+        result[i] = propertyValues[i];
+    }
+}
+
+double meshkernel::SampleAveragingInterpolator::InterpolateValue(const int propertyId [[maybe_unused]], const Point& evaluationPoint [[maybe_unused]]) const
+{
+    return constants::missing::doubleValue;
 }

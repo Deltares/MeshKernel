@@ -71,11 +71,6 @@ namespace meshkernel
         /// @param[in] node The node
         virtual void SearchNearestPoint(Point const& node) = 0;
 
-        /// @brief Gets the nearest of all nodes
-        /// @param[in] node The node
-        /// @param[in] count The number of nearest points to find (must be strictly greater than 0)
-        virtual void SearchNearestPointCount(Point const& node, UInt count) = 0;
-
         /// @brief Deletes a node
         /// @param[in] position The index of the point to remove in m_points
         virtual void DeleteNode(UInt position) = 0;

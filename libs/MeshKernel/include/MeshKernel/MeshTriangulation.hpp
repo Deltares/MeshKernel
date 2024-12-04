@@ -44,6 +44,53 @@
 namespace meshkernel
 {
 
+    template <const UInt Dimension>
+    class BoundedArray
+    {
+    public:
+        UInt size() const
+        {
+            return m_size;
+        }
+
+        void push_back(const UInt index)
+        {
+            m_indices[m_size] = index;
+            ++m_size;
+        }
+
+        UInt operator[](const UInt index) const
+        {
+            return m_indices[index];
+        }
+
+        UInt& operator[](const UInt index)
+        {
+            return m_indices[index];
+        }
+
+        // begin and end (probably const only needed) for stl algos
+
+        std::array<UInt, Dimension>::const_iterator begin() const
+        {
+            return m_indices.begin();
+        }
+
+        std::array<UInt, Dimension>::const_iterator end() const
+        {
+            return m_indices.begin() + m_size;
+        }
+
+        bool contains(const UInt index) const
+        {
+            return std::find(begin(), end(), index) != end();
+        }
+
+    private:
+        std::array<UInt, Dimension> m_indices;
+        UInt m_size = 0;
+    };
+
     /// @brief Contains a mesh triangulated from a set of points.
     ///
     /// Contains the original set of nodes, the edges connecting nodes
@@ -89,7 +136,7 @@ namespace meshkernel
         /// @brief Get the edge id's of the element
         std::array<UInt, 3> GetEdgeIds(const UInt faceId) const;
 
-        const std::array<UInt, 2>& GetFaceIds (const UInt edgeId) const;
+        const std::array<UInt, 2>& GetFaceIds(const UInt edgeId) const;
 
         /// @brief Find the nearest face to the point
         UInt FindNearestFace(const Point& pnt) const;
@@ -101,15 +148,19 @@ namespace meshkernel
         void Print(std::ostream& out = std::cout) const;
 
     private:
+        static constexpr UInt MaximumNumberOfEdgesPerNode = 16; ///< Maximum number of edges per node
+
         /// @brief Compute the triangulation.
         void Compute(const std::span<const double>& xNodes,
                      const std::span<const double>& yNodes);
 
-        std::vector<Point> m_nodes;          ///< x-node values
-        std::vector<UInt> m_faceNodes;       ///< Face nodes flat array passed to the triangulation library
-        std::vector<UInt> m_edgeNodes;       ///< Edge nodes flat array passed to the triangulation library
-        std::vector<UInt> m_faceEdges;       ///< Face edges flat array passed to the triangulation library
-        std::vector<std::array<UInt, 2>> m_edgesFaces;       ///< Face edges flat array passed to the triangulation library
+        std::vector<Point> m_nodes;                                          ///< x-node values
+        std::vector<UInt> m_faceNodes;                                       ///< Face nodes flat array passed to the triangulation library
+        std::vector<UInt> m_edgeNodes;                                       ///< Edge nodes flat array passed to the triangulation library
+        std::vector<UInt> m_faceEdges;                                       ///< Face edges flat array passed to the triangulation library
+        std::vector<std::array<UInt, 2>> m_edgesFaces;                       ///< edge-face connectivity, generated from triangulation data
+        std::vector<BoundedArray<MaximumNumberOfEdgesPerNode>> m_nodesEdges; ///< node-edge connectivity, generated from triangulation data
+
         std::vector<Point> m_elementCentres; ///< Array of the centres of the elements
 
         UInt m_numEdges{0}; ///< number of triangulated edges
@@ -117,6 +168,7 @@ namespace meshkernel
 
         Projection m_projection = Projection::cartesian; ///< The projection used
         std::unique_ptr<RTreeBase> m_elementCentreRTree; ///< RTree of element centres
+        std::unique_ptr<RTreeBase> m_nodeRTree;          ///< RTree of mesh nods
     };
 
 } // namespace meshkernel
@@ -227,7 +279,7 @@ inline meshkernel::Edge meshkernel::MeshTriangulation::GetEdge(const UInt edgeId
     return {m_edgeNodes[2 * edgeId], m_edgeNodes[2 * edgeId + 1]};
 }
 
-inline const std::array<meshkernel::UInt, 2>& meshkernel::MeshTriangulation::GetFaceIds (const UInt edgeId) const
+inline const std::array<meshkernel::UInt, 2>& meshkernel::MeshTriangulation::GetFaceIds(const UInt edgeId) const
 {
     if (edgeId == constants::missing::uintValue)
     {
@@ -239,5 +291,5 @@ inline const std::array<meshkernel::UInt, 2>& meshkernel::MeshTriangulation::Get
         throw ConstraintError("edge id out of range: {} >= {}", edgeId, m_numEdges);
     }
 
-    return m_edgesFaces [edgeId];
+    return m_edgesFaces[edgeId];
 }

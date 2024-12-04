@@ -57,7 +57,7 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(M
 
 std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(Mesh2D& mesh,
                                                                                const Polygons& polygon,
-                                                                               const SampleInterpolator& interpolator,
+                                                                               const SampleTriangulationInterpolator& interpolator,
                                                                                const int propertyId,
                                                                                const MeshRefinementParameters& refinementParameters)
 {
@@ -221,7 +221,7 @@ void meshkernel::CasulliRefinement::InitialiseFaceNodes(const Mesh2D& mesh, std:
 }
 
 void meshkernel::CasulliRefinement::RefineNodeMaskBasedOnDepths(const Mesh2D& mesh,
-                                                                const SampleInterpolator& interpolator,
+                                                                const SampleTriangulationInterpolator& interpolator,
                                                                 const int propertyId,
                                                                 const MeshRefinementParameters& refinementParameters,
                                                                 std::vector<NodeMask>& nodeMask [[maybe_unused]],
@@ -244,7 +244,8 @@ void meshkernel::CasulliRefinement::RefineNodeMaskBasedOnDepths(const Mesh2D& me
             UInt edgeId = mesh.m_nodesEdges[i][j];
             double depth = interpolatedDepth[edgeId];
 
-            if (depth == constants::missing::doubleValue) {
+            if (depth == constants::missing::doubleValue)
+            {
                 continue;
             }
 
@@ -295,7 +296,7 @@ void meshkernel::CasulliRefinement::RegisterNodesInsidePolygon(const Mesh2D& mes
 
 std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefinement::InitialiseDepthBasedNodeMask(const Mesh2D& mesh,
                                                                                                                  const Polygons& polygon,
-                                                                                                                 const SampleInterpolator& interpolator,
+                                                                                                                 const SampleTriangulationInterpolator& interpolator,
                                                                                                                  const int propertyId,
                                                                                                                  const MeshRefinementParameters& refinementParameters,
                                                                                                                  bool& refinementRequested)
@@ -341,7 +342,7 @@ void meshkernel::CasulliRefinement::Administrate(Mesh2D& mesh, const UInt numNod
         }
     }
 
-    mesh.DeleteInvalidNodesAndEdges ();
+    mesh.DeleteInvalidNodesAndEdges();
     mesh.Administrate();
 }
 
