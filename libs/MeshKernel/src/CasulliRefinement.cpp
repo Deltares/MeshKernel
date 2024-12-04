@@ -242,6 +242,11 @@ void meshkernel::CasulliRefinement::RefineNodeMaskBasedOnDepths(const Mesh2D& me
         for (size_t j = 0; j < mesh.m_nodesEdges[i].size(); ++j)
         {
             UInt edgeId = mesh.m_nodesEdges[i][j];
+            double depth = interpolatedDepth[edgeId];
+
+            if (depth == constants::missing::doubleValue) {
+                continue;
+            }
 
             // If the current edge is already shorter than the minimum edge size then do not refine further
             if (mesh.m_edgeLengths[edgeId] <= refinementParameters.min_edge_size)
@@ -249,7 +254,7 @@ void meshkernel::CasulliRefinement::RefineNodeMaskBasedOnDepths(const Mesh2D& me
                 continue;
             }
 
-            const double celerity = constants::physical::sqrt_gravity * std::sqrt(std::abs(interpolatedDepth[edgeId]));
+            const double celerity = constants::physical::sqrt_gravity * std::sqrt(std::abs(depth));
             const double waveCourant = celerity * maxDtCourant / mesh.m_edgeLengths[edgeId];
 
             std::cout << waveCourant << "  ";

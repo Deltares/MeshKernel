@@ -38,6 +38,7 @@ double meshkernel::SampleInterpolator::InterpolateOnElement(const UInt elementId
         sampleValues[id2] == constants::missing::doubleValue ||
         sampleValues[id3] == constants::missing::doubleValue) [[unlikely]]
     {
+        std::cout << " invalid sample " << std::endl;
         return result;
     }
 
@@ -56,6 +57,7 @@ double meshkernel::SampleInterpolator::InterpolateOnElement(const UInt elementId
 
     if (std::abs(det) < 1e-12) [[unlikely]]
     {
+        std::cout << " det = " << det << std::endl;
         return result;
     }
 
@@ -63,6 +65,42 @@ double meshkernel::SampleInterpolator::InterpolateOnElement(const UInt elementId
     const double rmhu = (a11 * b2 - a21 * b1) / det;
 
     result = sampleValues[id1] + rlam * (sampleValues[id2] - sampleValues[id1]) + rmhu * (sampleValues[id3] - sampleValues[id1]);
+
+    return result;
+}
+
+double meshkernel::SampleInterpolator::Interpolate (const int sampleId, const Point& evaluationPoint) const
+{
+
+    if (!Contains(sampleId))
+    {
+        throw ConstraintError("Sample interpolator does not contain the id: {}.", sampleId);
+    }
+
+    double result = constants::missing::doubleValue;
+
+    if (!evaluationPoint.IsValid())
+    {
+        std::cout << " invalid point " << std::endl;
+        return result;
+    }
+
+    const UInt elementId = m_triangulation.FindNearestFace(evaluationPoint);
+
+    if (elementId == constants::missing::uintValue)
+    {
+        std::cout << " element invalid " << std::endl;
+        return result;
+    }
+
+    if (m_triangulation.PointIsInElement(evaluationPoint, elementId))
+    {
+        const std::vector<double>& propertyValues = m_sampleData.at(sampleId);
+        result = InterpolateOnElement(elementId, evaluationPoint, propertyValues);
+    } else
+    {
+        std::cout << " point not in element " << std::endl;
+    }
 
     return result;
 }

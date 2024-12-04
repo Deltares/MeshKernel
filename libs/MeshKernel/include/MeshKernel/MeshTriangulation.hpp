@@ -86,6 +86,11 @@ namespace meshkernel
         /// @brief Get the node id's of the element
         std::array<UInt, 3> GetNodeIds(const UInt faceId) const;
 
+        /// @brief Get the edge id's of the element
+        std::array<UInt, 3> GetEdgeIds(const UInt faceId) const;
+
+        const std::array<UInt, 2>& GetFaceIds (const UInt edgeId) const;
+
         /// @brief Find the nearest face to the point
         UInt FindNearestFace(const Point& pnt) const;
 
@@ -104,6 +109,7 @@ namespace meshkernel
         std::vector<UInt> m_faceNodes;       ///< Face nodes flat array passed to the triangulation library
         std::vector<UInt> m_edgeNodes;       ///< Edge nodes flat array passed to the triangulation library
         std::vector<UInt> m_faceEdges;       ///< Face edges flat array passed to the triangulation library
+        std::vector<std::array<UInt, 2>> m_edgesFaces;       ///< Face edges flat array passed to the triangulation library
         std::vector<Point> m_elementCentres; ///< Array of the centres of the elements
 
         UInt m_numEdges{0}; ///< number of triangulated edges
@@ -219,4 +225,19 @@ inline meshkernel::Edge meshkernel::MeshTriangulation::GetEdge(const UInt edgeId
     }
 
     return {m_edgeNodes[2 * edgeId], m_edgeNodes[2 * edgeId + 1]};
+}
+
+inline const std::array<meshkernel::UInt, 2>& meshkernel::MeshTriangulation::GetFaceIds (const UInt edgeId) const
+{
+    if (edgeId == constants::missing::uintValue)
+    {
+        throw ConstraintError("Invalid edge id");
+    }
+
+    if (edgeId >= m_numEdges)
+    {
+        throw ConstraintError("edge id out of range: {} >= {}", edgeId, m_numEdges);
+    }
+
+    return m_edgesFaces [edgeId];
 }
