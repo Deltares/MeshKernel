@@ -77,6 +77,12 @@ namespace meshkernel
         template <meshkernel::ValidConstPointArray PointVectorType, meshkernel::ValidConstDoubleArray ScalarVectorType>
         void Interpolate(const int sampleId, const PointVectorType& iterpolationNodes, ScalarVectorType& result) const;
 
+        /// @brief Interpolate the sample data set at a single interpolation point.
+        ///
+        /// If interpolation at multiple points is required then better performance
+        /// can be obtained using the Interpolate function above.
+        double Interpolate (const int sampleId, const Point& evaluationPoint) const;
+
         /// @brief Determine if the SampleInterpolator already has this sample set.
         bool Contains(const int sampleId) const;
 
