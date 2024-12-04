@@ -104,7 +104,7 @@ TEST(MeshPropertyTests, SimpleSampleInterpolationTest)
     std::vector<mk::Point> nodes{{0.25, 0.25}, {1.25, 0.25}, {2.25, 0.25}, {0.25, 1.25}, {1.25, 1.25}, {2.25, 1.25}, {0.25, 2.25}, {1.25, 2.25}, {2.25, 2.25}};
     std::vector<double> interpolated(nodes.size(), 0.0);
 
-    mk::SampleInterpolator properties(xValues, yValues, mk::Projection::cartesian);
+    mk::SampleTriangulationInterpolator properties(xValues, yValues, mk::Projection::cartesian);
 
     std::vector<double> expectedXDepths{0.25, 1.25, 2.25, 0.25, 1.25, 2.25, 0.25, 1.25, 2.25};
     std::vector<double> expectedYDepths{0.25, 0.25, 0.25, 1.25, 1.25, 1.25, 2.25, 2.25, 2.25};

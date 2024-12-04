@@ -749,24 +749,17 @@ template <class PointVector>
                     --windingNumber; // have  a valid down intersect
                 }
             }
-
-            std::cout << " crossProductValue " << crossProductValue << "  "
-                      << triangleNodes[n].y << "  "
-                      << triangleNodes[endIndex].y << "  " << point.y << "  "
-                      << "  " << windingNumber << std::endl;
-
         }
 
         isInTriangle = windingNumber == 0 ? false : true;
-        std::cout << " isInTriangle "<< std::boolalpha << isInTriangle << std::endl;
 
-        if (7.11e5 <= point.x && point.x <= 7.125e5 && -5.598e6 <= point.y && point.y <= -5.597e6) {
+        if (7.11e5 <= point.x && point.x <= 7.125e5 && -5.598e6 <= point.y && point.y <= -5.597e6)
+        {
             std::cout << "triangle points: " << point.x << ", " << point.y << std::endl;
             std::cout << triangleNodes[0].x << ", " << triangleNodes[0].y << std::endl;
             std::cout << triangleNodes[1].x << ", " << triangleNodes[1].y << std::endl;
             std::cout << triangleNodes[2].x << ", " << triangleNodes[2].y << std::endl;
         }
-
     }
 
     if (projection == Projection::sphericalAccurate)

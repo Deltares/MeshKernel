@@ -54,7 +54,7 @@ meshkernelapi::InterpolatedSamplePropertyCalculator::InterpolatedSamplePropertyC
     std::span<const double> xNodes(sampleData.coordinates_x, sampleData.num_coordinates);
     std::span<const double> yNodes(sampleData.coordinates_y, sampleData.num_coordinates);
 
-    m_sampleInterpolator = std::make_unique<meshkernel::SampleInterpolator>(xNodes, yNodes, m_projection);
+    m_sampleInterpolator = std::make_unique<meshkernel::SampleTriangulationInterpolator>(xNodes, yNodes, m_projection);
 
     std::span<const double> dataSamples(sampleData.values, sampleData.num_coordinates);
     m_sampleInterpolator->SetData(m_propertyId, dataSamples);
