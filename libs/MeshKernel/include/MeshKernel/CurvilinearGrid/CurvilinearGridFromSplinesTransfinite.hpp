@@ -32,6 +32,8 @@
 
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Parameters.hpp>
+#include <MeshKernel/Point.hpp>
+#include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
 namespace meshkernel
 {
