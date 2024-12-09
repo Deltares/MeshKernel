@@ -57,7 +57,7 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(M
 
 std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(Mesh2D& mesh,
                                                                                const Polygons& polygon,
-                                                                               const SampleTriangulationInterpolator& interpolator,
+                                                                               const SampleInterpolator& interpolator,
                                                                                const int propertyId,
                                                                                const MeshRefinementParameters& refinementParameters)
 {
@@ -221,14 +221,14 @@ void meshkernel::CasulliRefinement::InitialiseFaceNodes(const Mesh2D& mesh, std:
 }
 
 void meshkernel::CasulliRefinement::RefineNodeMaskBasedOnDepths(const Mesh2D& mesh,
-                                                                const SampleTriangulationInterpolator& interpolator,
+                                                                const SampleInterpolator& interpolator,
                                                                 const int propertyId,
                                                                 const MeshRefinementParameters& refinementParameters,
                                                                 std::vector<NodeMask>& nodeMask [[maybe_unused]],
                                                                 bool& refinementRequested)
 {
     std::vector<double> interpolatedDepth(mesh.m_edgesCenters.size());
-    interpolator.Interpolate(propertyId, mesh.m_edgesCenters, interpolatedDepth);
+    interpolator.Interpolate(propertyId, mesh, Location::Nodes, interpolatedDepth);
     const double maxDtCourant = refinementParameters.max_courant_time;
 
     refinementRequested = false;
@@ -296,7 +296,7 @@ void meshkernel::CasulliRefinement::RegisterNodesInsidePolygon(const Mesh2D& mes
 
 std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefinement::InitialiseDepthBasedNodeMask(const Mesh2D& mesh,
                                                                                                                  const Polygons& polygon,
-                                                                                                                 const SampleTriangulationInterpolator& interpolator,
+                                                                                                                 const SampleInterpolator& interpolator,
                                                                                                                  const int propertyId,
                                                                                                                  const MeshRefinementParameters& refinementParameters,
                                                                                                                  bool& refinementRequested)

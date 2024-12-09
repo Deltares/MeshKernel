@@ -2808,7 +2808,7 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
     std::vector<double> yNodes(MaxSize);
     std::vector<double> depths(MaxSize);
 
-    std::string fileName = "/home/wcs1/MeshKernel/MeshKernel/build_deb/stpete.xyz";
+    std::string fileName = "/home/wcs1/MeshKernel/MeshKernel06/build_deb/stpete.xyz";
 
     std::ifstream asciiFile;
     asciiFile.open(fileName.c_str());
@@ -2826,6 +2826,7 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
 
         // asciiFile >> xNodes[i];
         // asciiFile >> yNodes[i];
+
         asciiFile >> pnt.x;
         asciiFile >> pnt.y;
         asciiFile >> depths[i];
@@ -2849,18 +2850,20 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
 
     // 6.959936535738328e+05  -5.595510022644172e+06
 
-    for (size_t i = 0; i < MaxSize; ++i)
-    {
+    // for (size_t i = 0; i < MaxSize; ++i)
+    // {
 
-        if (yNodes[i] >= -5.595510022644172e+06)
-        {
-            std::cout << xNodes[i] << "  " << yNodes[i] << "  " << depths[i] << std::endl;
-        }
-    }
+    //     // if (yNodes[i] >= -5.595510022644172e+06)
+    //     {
+    //         std::cout << i << " -- " << xNodes[i] << "  " << yNodes[i] << "  " << depths[i] << std::endl;
+    //     }
+    // }
 
-    return;
+    std::cout << "range: " << minX << "   " << maxX << "  "<< minY << "   "  << maxY << "  " <<  minD << "   "  << maxD << "  " << std::endl;
 
-    mk::SampleTriangulationInterpolator depthInterpolator(xNodes, yNodes, mk::Projection::cartesian);
+    mk::InterpolationParameters interpolationParameters;
+    mk::SampleAveragingInterpolator depthInterpolator(xNodes, yNodes, mk::Projection::cartesian, interpolationParameters);
+    mk::SampleTriangulationInterpolator depthInterpolatorForMesh(xNodes, yNodes, mk::Projection::cartesian);
     depthInterpolator.SetData(1, depths);
     mk::Polygons polygon;
 
@@ -2879,7 +2882,7 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
     {
         std::cout << "checkint point " << i + 1 << "  of " << nodes.size() << std::endl;
 
-        if (depthInterpolator.InterpolateValue(1, nodes[i]) == mk::constants::missing::doubleValue)
+        if (depthInterpolatorForMesh.InterpolateValue(1, nodes[i]) == mk::constants::missing::doubleValue)
         {
             nodes[i].SetInvalid();
         }

@@ -1506,7 +1506,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::TriangulateFaces()
     return triangulationAction;
 }
 
-void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point>& dualFace)
+void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point>& dualFace) const
 {
     const auto sortedFacesIndices = SortedFacesAroundNode(node);
     const auto numEdges = m_nodesNumEdges[node];
