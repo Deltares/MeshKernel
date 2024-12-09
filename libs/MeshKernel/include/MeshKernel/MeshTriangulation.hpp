@@ -48,6 +48,8 @@ namespace meshkernel
     class BoundedArray
     {
     public:
+        BoundedArray() : m_size(0) {}
+
         UInt size() const
         {
             return m_size;
@@ -55,6 +57,12 @@ namespace meshkernel
 
         void push_back(const UInt index)
         {
+            if (m_size == Dimension - 1)
+            {
+                throw ConstraintError("array already at size limit: {}", Dimension);
+            }
+
+            // m_indices.push_back(index);
             m_indices[m_size] = index;
             ++m_size;
         }
@@ -70,6 +78,16 @@ namespace meshkernel
         }
 
         // begin and end (probably const only needed) for stl algos
+
+        // auto begin() const
+        // {
+        //     return m_indices.begin();
+        // }
+
+        // auto end() const
+        // {
+        //     return m_indices.begin() + m_size;
+        // }
 
         std::array<UInt, Dimension>::const_iterator begin() const
         {
@@ -87,6 +105,7 @@ namespace meshkernel
         }
 
     private:
+        // std::vector<UInt> m_indices;
         std::array<UInt, Dimension> m_indices;
         UInt m_size = 0;
     };
@@ -154,12 +173,13 @@ namespace meshkernel
         void Compute(const std::span<const double>& xNodes,
                      const std::span<const double>& yNodes);
 
-        std::vector<Point> m_nodes;                                          ///< x-node values
-        std::vector<UInt> m_faceNodes;                                       ///< Face nodes flat array passed to the triangulation library
-        std::vector<UInt> m_edgeNodes;                                       ///< Edge nodes flat array passed to the triangulation library
-        std::vector<UInt> m_faceEdges;                                       ///< Face edges flat array passed to the triangulation library
-        std::vector<std::array<UInt, 2>> m_edgesFaces;                       ///< edge-face connectivity, generated from triangulation data
-        std::vector<BoundedArray<MaximumNumberOfEdgesPerNode>> m_nodesEdges; ///< node-edge connectivity, generated from triangulation data
+        std::vector<Point> m_nodes;                    ///< x-node values
+        std::vector<UInt> m_faceNodes;                 ///< Face nodes flat array passed to the triangulation library
+        std::vector<UInt> m_edgeNodes;                 ///< Edge nodes flat array passed to the triangulation library
+        std::vector<UInt> m_faceEdges;                 ///< Face edges flat array passed to the triangulation library
+        std::vector<std::array<UInt, 2>> m_edgesFaces; ///< edge-face connectivity, generated from triangulation data
+        std::vector<std::vector<UInt>> m_nodesEdges;   ///< node-edge connectivity, generated from triangulation data
+        // std::vector<BoundedArray<2 * MaximumNumberOfEdgesPerNode>> m_nodesEdges; ///< node-edge connectivity, generated from triangulation data
 
         std::vector<Point> m_elementCentres; ///< Array of the centres of the elements
 

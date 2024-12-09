@@ -177,7 +177,6 @@ double meshkernel::SampleAveragingInterpolator::GetSearchRadiusSquared(const std
     for (const auto& value : searchPolygon)
     {
         auto const squaredDistance = ComputeSquaredDistance(interpolationPoint, value, projection);
-        std::cout << "search radius: " << value.x << ", " << value.y << "  " << squaredDistance << std::endl;
         result = std::max(result, squaredDistance);
     }
 
