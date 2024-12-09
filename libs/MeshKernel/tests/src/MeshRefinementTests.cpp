@@ -2808,7 +2808,7 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
     std::vector<double> yNodes(MaxSize);
     std::vector<double> depths(MaxSize);
 
-    std::string fileName = "/home/wcs1/MeshKernel/MeshKernel06/build_deb/stpete.xyz";
+    std::string fileName = "/home/wcs1/MeshKernel/MeshKernel/build_deb/stpete.xyz";
 
     std::ifstream asciiFile;
     asciiFile.open(fileName.c_str());
@@ -2824,11 +2824,14 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
     {
         mk::Point pnt;
 
-        // asciiFile >> xNodes[i];
-        // asciiFile >> yNodes[i];
+        asciiFile >> xNodes[i];
+        asciiFile >> yNodes[i];
 
-        asciiFile >> pnt.x;
-        asciiFile >> pnt.y;
+        // asciiFile >> pnt.x;
+        // asciiFile >> pnt.y;
+
+        pnt.x = xNodes[i];
+        pnt.y = yNodes[i];
         asciiFile >> depths[i];
 
         mk::Cartesian3DPoint cpnt = mk::SphericalToCartesian3D(pnt);
@@ -2859,12 +2862,14 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
     //     }
     // }
 
-    std::cout << "range: " << minX << "   " << maxX << "  "<< minY << "   "  << maxY << "  " <<  minD << "   "  << maxD << "  " << std::endl;
+    std::cout << "range: " << minX << "   " << maxX << "  " << minY << "   " << maxY << "  " << minD << "   " << maxD << "  " << std::endl;
 
     mk::InterpolationParameters interpolationParameters;
+    interpolationParameters.m_relativeSearchRadius = 1.0;
     mk::SampleAveragingInterpolator depthInterpolator(xNodes, yNodes, mk::Projection::cartesian, interpolationParameters);
     mk::SampleTriangulationInterpolator depthInterpolatorForMesh(xNodes, yNodes, mk::Projection::cartesian);
     depthInterpolator.SetData(1, depths);
+    depthInterpolatorForMesh.SetData(1, depths);
     mk::Polygons polygon;
 
     const size_t nodeCount = 50;
