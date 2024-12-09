@@ -188,36 +188,13 @@ void meshkernel::MeshTriangulation::Compute(const std::span<const double>& xNode
 meshkernel::UInt meshkernel::MeshTriangulation::FindNearestFace(const Point& pnt) const
 {
     m_elementCentreRTree->SearchNearestPoint(pnt);
-    // return m_elementCentreRTree->HasQueryResults() ? m_elementCentreRTree->GetQueryResult(0) : constants::missing::uintValue;
-
-    bool printIt = 728900.0 <= pnt.x && pnt.x <= 729100.0 && -5.60855e6 <= pnt.y && pnt.y <= -5.60845e6;
 
     if (m_elementCentreRTree->HasQueryResults())
     {
         UInt faceId = m_elementCentreRTree->GetQueryResult(0);
 
-        if (printIt)
-        {
-            std::cout << "face id = " << faceId << std::endl;
-        }
-
         if (PointIsInElement(pnt, faceId))
         {
-
-            if (printIt)
-            {
-                auto nodes = GetNodes(faceId);
-
-                std::cout << "face nodes: {"
-                          << nodes[0].x << ", " << nodes[0].y << "} {"
-                          << nodes[1].x << ", " << nodes[1].y << "} {"
-                          << nodes[2].x << ", " << nodes[2].y << "} " << std::endl;
-
-                auto nodeIds = GetNodeIds(faceId);
-
-                std::cout << "face node ids: " << nodeIds[0] << ", " << nodeIds[1] << ", " << nodeIds[2] << std::endl;
-            }
-
             return faceId;
         }
         else
@@ -227,19 +204,9 @@ meshkernel::UInt meshkernel::MeshTriangulation::FindNearestFace(const Point& pnt
             BoundedArray<3 * MaximumNumberOfEdgesPerNode> elementsChecked;
             elementsChecked.push_back(faceId);
 
-            // TODO collect the 3 neighbour elements ids, so that later
-            // if we have to check the elements that are connected to a
-            // node then we do not have to check those elements we have
-            // checked already
-
             for (UInt i = 0; i < edgeIds.size(); ++i)
             {
                 const auto [neighbour1, neighbour2] = GetFaceIds(edgeIds[i]);
-
-                if (printIt)
-                {
-                    std::cout << "neighbours = " << neighbour1 << "  " << neighbour2 << std::endl;
-                }
 
                 if (neighbour1 != faceId && neighbour1 != constants::missing::uintValue)
                 {
@@ -279,11 +246,6 @@ meshkernel::UInt meshkernel::MeshTriangulation::FindNearestFace(const Point& pnt
                 {
                     const auto faces = GetFaceIds(m_nodesEdges[nodeId][n]);
 
-                    if (printIt)
-                    {
-                        std::cout << "faces = " << faces[0] << "  " << faces[1] << std::endl;
-                    }
-
                     if (faces[0] != constants::missing::uintValue && !elementsChecked.contains(faces[0]))
                     {
 
@@ -310,30 +272,7 @@ meshkernel::UInt meshkernel::MeshTriangulation::FindNearestFace(const Point& pnt
         }
     }
 
-    // else
-    {
-        return constants::missing::uintValue;
-    }
-
-    // if (m_elementCentreRTree->HasQueryResults())
-    // {
-
-    //     for (UInt i = 0; i < m_elementCentreRTree->GetQueryResultSize(); ++i )
-    //     {
-    //         UInt id = m_elementCentreRTree->GetQueryResult(i);
-
-    //         if (id < NumberOfFaces() && PointIsInElement (pnt, id))
-    //         {
-    //             return id;
-    //         }
-
-    //     }
-    // }
-
-    // // else
-    // {
-    //     return constants::missing::uintValue;
-    // }
+    return constants::missing::uintValue;
 }
 
 std::array<meshkernel::Point, 3> meshkernel::MeshTriangulation::GetNodes(const UInt faceId) const

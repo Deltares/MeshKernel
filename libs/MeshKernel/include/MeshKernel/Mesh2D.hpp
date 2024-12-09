@@ -254,7 +254,7 @@ namespace meshkernel
         /// @param[in] node The node index
         /// @param[in] enlargementFactor The factor by which the dual face is enlarged
         /// @param[out] dualFace The dual face to be calculated
-        void MakeDualFace(UInt node, double enlargementFactor, std::vector<Point>& dualFace);
+        void MakeDualFace(UInt node, double enlargementFactor, std::vector<Point>& dualFace) const;
 
         /// @brief Sorts the faces around a node, sorted in counter clock wise order
         /// @param[in] node The node index
