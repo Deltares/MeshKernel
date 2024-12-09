@@ -197,7 +197,11 @@ namespace meshkernel
               m_interpolationParameters(interpolationParameters),
               m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(interpolationParameters.m_method,
                                                                                    interpolationParameters.m_minimumNumberOfSamples,
-                                                                                   projection)) {}
+                                                                                   projection)),
+              m_nodeRTree(RTreeFactory::Create(projection))
+        {
+            m_nodeRTree->BuildTree(m_samplePoints);
+        }
 
         /// @brief Constructor.
         ///
@@ -211,7 +215,11 @@ namespace meshkernel
               m_interpolationParameters(interpolationParameters),
               m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(interpolationParameters.m_method,
                                                                                    interpolationParameters.m_minimumNumberOfSamples,
-                                                                                   projection)) {}
+                                                                                   projection)),
+              m_nodeRTree(RTreeFactory::Create(projection))
+        {
+            m_nodeRTree->BuildTree(m_samplePoints);
+        }
 
         /// @brief Get the number of nodes of size of the sample data.
         UInt Size() const override;
@@ -277,7 +285,6 @@ namespace meshkernel
                                                        const Projection projection,
                                                        std::vector<Sample>& sampleCache) const;
 
-
         std::vector<Point> m_samplePoints;
 
         // SHould use the m_projection from the mesh in the interpolate function or
@@ -293,7 +300,6 @@ namespace meshkernel
 
         ///< RTree of mesh nodes
         std::unique_ptr<RTreeBase> m_nodeRTree;
-
     };
 
 } // namespace meshkernel

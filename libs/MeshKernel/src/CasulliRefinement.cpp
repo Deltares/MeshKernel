@@ -802,6 +802,13 @@ void meshkernel::CasulliRefinement::ComputeNewNodes(Mesh2D& mesh, std::vector<Ed
 
 void meshkernel::CasulliRefinement::StoreNewNode(const Mesh2D& mesh, const UInt nodeId, const UInt edge1Index, const UInt edge2Index, const UInt newNodeId, std::vector<EdgeNodes>& newNodes)
 {
+
+    if (newNodeId == constants::missing::uintValue)
+    {
+        // TODO is this ok to do?
+        return;
+    }
+
     UInt edgeId1 = edge1Index;
     UInt edgeId2 = edge2Index;
 

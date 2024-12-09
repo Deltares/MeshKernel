@@ -2907,7 +2907,7 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
 
     mk::Print(mesh.Nodes(), mesh.Edges());
 
-    // std::cout << "min max x " << minX << "  " << maxX << std::endl;
-    // std::cout << "min max y " << minY << "  " << maxY << std::endl;
-    // std::cout << "min max d " << minD << "  " << maxD << std::endl;
+    std::cout << "min max x " << minX << "  " << maxX << std::endl;
+    std::cout << "min max y " << minY << "  " << maxY << std::endl;
+    std::cout << "min max d " << minD << "  " << maxD << std::endl;
 }

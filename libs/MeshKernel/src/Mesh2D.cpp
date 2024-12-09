@@ -1510,8 +1510,14 @@ void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point
 {
     const auto sortedFacesIndices = SortedFacesAroundNode(node);
     const auto numEdges = m_nodesNumEdges[node];
+
     dualFace.reserve(m_maximumNumberOfEdgesPerNode);
     dualFace.clear();
+
+    if (sortedFacesIndices.size() == 0)
+    {
+        return;
+    }
 
     for (UInt e = 0; e < numEdges; ++e)
     {
