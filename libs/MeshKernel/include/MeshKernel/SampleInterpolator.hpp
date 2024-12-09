@@ -39,6 +39,7 @@
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/MeshTriangulation.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Point.hpp"
@@ -62,6 +63,7 @@ namespace meshkernel
             SetDataSpan(propertyId, sampleData);
         }
 
+        /// @brief Set sample data contained in an std::span object
         virtual void SetDataSpan(const int propertyId, const std::span<const double>& sampleData) = 0;
 
         /// @brief Interpolate the sample data set at the interpolation nodes.
@@ -73,7 +75,20 @@ namespace meshkernel
             InterpolateSpan(propertyId, spanInterpolationNodes, spanResult);
         }
 
+        /// @brief Interpolate the sample data set at the interpolation nodes.
         virtual void InterpolateSpan(const int propertyId, const std::span<const Point>& iterpolationNodes, std::span<double>& result) const = 0;
+
+        /// @brief Interpolate the sample data set at the interpolation nodes.
+        template <meshkernel::ValidConstDoubleArray ScalarVectorType>
+        void Interpolate(const int propertyId, const Mesh2D& mesh, const Location location, ScalarVectorType& result) const
+        {
+            std::span<double> spanResult(result.data(), result.size());
+            InterpolateSpan(propertyId, mesh, location, spanResult);
+        }
+
+        /// @brief Interpolate the sample data.
+        // TODO may need a polygon too: const Polygons& polygon
+        virtual void InterpolateSpan(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double>& result) const = 0;
 
         /// @brief Interpolate the sample data set at a single interpolation point.
         ///
@@ -125,6 +140,11 @@ namespace meshkernel
         // template <meshkernel::ValidConstPointArray PointVectorType, meshkernel::ValidConstDoubleArray ScalarVectorType>
         // void Interpolate(const int propertyId, const PointVectorType& iterpolationNodes, ScalarVectorType& result) const override;
         void InterpolateSpan(const int propertyId, const std::span<const Point>& iterpolationNodes, std::span<double>& result) const override;
+
+        // DOes nothing at the moment.
+        void InterpolateSpan(const int propertyId [[maybe_unused]], const Mesh2D& mesh [[maybe_unused]], const Location location [[maybe_unused]], std::span<double>& result [[maybe_unused]]) const override
+        {
+        }
 
         /// @brief Interpolate the sample data set at a single interpolation point.
         ///
@@ -201,6 +221,8 @@ namespace meshkernel
         /// @brief Interpolate the sample data set at the interpolation nodes.
         void InterpolateSpan(const int propertyId, const std::span<const Point>& iterpolationNodes, std::span<double>& result) const override;
 
+        void InterpolateSpan(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double>& result) const override;
+
         /// @brief Interpolate the sample data set at a single interpolation point.
         ///
         /// If interpolation at multiple points is required then better performance
@@ -211,10 +233,12 @@ namespace meshkernel
         bool Contains(const int propertyId) const override;
 
     private:
+        static constexpr UInt MaximumNumberOfEdgesPerNode = 16; ///< Maximum number of edges per node
+
         template <meshkernel::ValidConstDoubleArray VectorType>
         static std::vector<Point> CombineCoordinates(const VectorType& xNodes, const VectorType& yNodes)
         {
-            std::vector<Point> result;
+            std::vector<Point> result(xNodes.size());
 
             for (size_t i = 0; i < xNodes.size(); ++i)
             {
@@ -228,8 +252,36 @@ namespace meshkernel
         /// @brief Interpolate the sample data on the element at the interpolation point.
         double InterpolateOnElement(const UInt elementId, const Point& interpolationPoint, const std::vector<double>& sampleValues) const;
 
+        double ComputeOnPolygon(const int propertyId,
+                                std::vector<Point>& polygon,
+                                const Point& interpolationPoint,
+                                const double relativeSearchRadius,
+                                const bool useClosestSampleIfNoneAvailable,
+                                const Projection projection,
+                                std::vector<Sample>& sampleCache) const;
+
+        double GetSearchRadiusSquared(const std::vector<Point>& searchPolygon,
+                                      const Point& interpolationPoint,
+                                      const Projection projection) const;
+
+        void GenerateSearchPolygon(const double relativeSearchRadius,
+                                   const Point& interpolationPoint,
+                                   std::vector<Point>& polygon,
+                                   const Projection projection) const;
+
+        double GetSampleValueFromRTree(const int propertyId, const UInt index) const;
+
+        double ComputeInterpolationResultFromNeighbors(const int propertyId,
+                                                       const Point& interpolationPoint,
+                                                       const std::vector<Point>& searchPolygon,
+                                                       const Projection projection,
+                                                       std::vector<Sample>& sampleCache) const;
+
+
         std::vector<Point> m_samplePoints;
 
+        // SHould use the m_projection from the mesh in the interpolate function or
+        // needs to be passed to the interpolate function in the no mesh version
         Projection m_projection = Projection::cartesian; ///< The projection used
 
         InterpolationParameters m_interpolationParameters;
@@ -238,6 +290,10 @@ namespace meshkernel
 
         /// @brief Map from sample id (int) to sample data.
         std::map<int, std::vector<double>> m_sampleData;
+
+        ///< RTree of mesh nodes
+        std::unique_ptr<RTreeBase> m_nodeRTree;
+
     };
 
 } // namespace meshkernel

@@ -87,7 +87,6 @@ double meshkernel::SampleTriangulationInterpolator::InterpolateOnElement(const U
         sampleValues[id2] == constants::missing::doubleValue ||
         sampleValues[id3] == constants::missing::doubleValue) [[unlikely]]
     {
-        std::cout << " invalid sample " << std::endl;
         return result;
     }
 
@@ -106,7 +105,6 @@ double meshkernel::SampleTriangulationInterpolator::InterpolateOnElement(const U
 
     if (std::abs(det) < 1e-12) [[unlikely]]
     {
-        std::cout << " det = " << det << std::endl;
         return result;
     }
 
@@ -130,22 +128,13 @@ double meshkernel::SampleTriangulationInterpolator::InterpolateValue(const int p
 
     if (!evaluationPoint.IsValid())
     {
-        std::cout << " invalid point " << std::endl;
         return result;
-    }
-
-    bool printIt = 728900.0 <= evaluationPoint.x && evaluationPoint.x <= 729100.0 && -5.60855e6 <= evaluationPoint.y && evaluationPoint.y <= -5.60845e6;
-
-    if (printIt)
-    {
-        std::cout << "interpolation point: " << evaluationPoint.x << ", " << evaluationPoint.y << std::endl;
     }
 
     const UInt elementId = m_triangulation.FindNearestFace(evaluationPoint);
 
     if (elementId == constants::missing::uintValue)
     {
-        std::cout << " element invalid " << std::endl;
         return result;
     }
 
@@ -153,15 +142,6 @@ double meshkernel::SampleTriangulationInterpolator::InterpolateValue(const int p
     {
         const std::vector<double>& propertyValues = m_sampleData.at(propertyId);
         result = InterpolateOnElement(elementId, evaluationPoint, propertyValues);
-
-        if (printIt)
-        {
-            std::cout << "result = " << result << std::endl;
-        }
-    }
-    else
-    {
-        std::cout << " point not in element " << std::endl;
     }
 
     return result;
@@ -186,6 +166,173 @@ void meshkernel::SampleAveragingInterpolator::InterpolateSpan(const int property
     {
         result[i] = propertyValues[i];
     }
+}
+
+
+double meshkernel::SampleAveragingInterpolator::GetSearchRadiusSquared(const std::vector<Point>& searchPolygon,
+                                                                       const Point& interpolationPoint,
+                                                                       const Projection projection) const
+{
+    double result = std::numeric_limits<double>::lowest();
+
+    for (const auto& value : searchPolygon)
+    {
+        auto const squaredDistance = ComputeSquaredDistance(interpolationPoint, value, projection);
+        result = std::max(result, squaredDistance);
+    }
+
+    return result;
+}
+
+void meshkernel::SampleAveragingInterpolator::GenerateSearchPolygon(const double relativeSearchRadius,
+                                                                    const Point& interpolationPoint,
+                                                                    std::vector<Point>& polygon,
+                                                                    const Projection projection) const
+{
+    std::ranges::transform(std::begin(polygon),
+                           std::end(polygon),
+                           std::begin(polygon),
+                           [&](const Point& p)
+                           { return p * relativeSearchRadius + interpolationPoint * (1.0 - relativeSearchRadius); });
+
+    if (projection == Projection::spherical)
+    {
+        const auto boundingBox = BoundingBox(polygon);
+        const auto lowerLeft = boundingBox.lowerLeft();
+        const auto upperRight = boundingBox.upperRight();
+
+        if (upperRight.x - lowerLeft.x <= 180.0)
+        {
+            return;
+        }
+
+        auto const x_mean = 0.5 * (upperRight.x + lowerLeft.x);
+
+        for (auto& value : polygon)
+        {
+            if (value.x < x_mean)
+            {
+                value.x = value.x + 360.0;
+            }
+        }
+    }
+
+}
+
+double meshkernel::SampleAveragingInterpolator::GetSampleValueFromRTree(const int propertyId, const UInt index) const
+{
+    UInt sampleIndex = m_nodeRTree->GetQueryResult(index);
+    return m_sampleData.at(propertyId)[sampleIndex];
+}
+
+double meshkernel::SampleAveragingInterpolator::ComputeInterpolationResultFromNeighbors(const int propertyId,
+                                                                                        const Point& interpolationPoint,
+                                                                                        const std::vector<Point>& searchPolygon,
+                                                                                        const Projection projection,
+                                                                                        std::vector<Sample>& sampleCache) const
+{
+    sampleCache.clear();
+
+    const std::vector<double>& propertyData (m_sampleData.at(propertyId));
+
+    Point polygonCentre{constants::missing::doubleValue, constants::missing::doubleValue};
+
+    if (projection == Projection::sphericalAccurate)
+    {
+        polygonCentre = ComputeAverageCoordinate(searchPolygon, projection);
+    }
+
+    for (UInt i = 0; i < m_nodeRTree->GetQueryResultSize(); ++i)
+    {
+        auto const sampleIndex = m_nodeRTree->GetQueryResult(i);
+        auto const sampleValue = propertyData[sampleIndex];
+
+        if (sampleValue == constants::missing::doubleValue)
+        {
+            continue;
+        }
+
+        const Point& samplePoint (m_samplePoints[sampleIndex]);
+
+        if (IsPointInPolygonNodes(samplePoint, searchPolygon, projection, polygonCentre))
+        {
+            sampleCache.emplace_back(samplePoint.x, samplePoint.y, sampleValue);
+        }
+    }
+
+    return m_strategy->Calculate(interpolationPoint, sampleCache);
+}
+
+double meshkernel::SampleAveragingInterpolator::ComputeOnPolygon(const int propertyId,
+                                                                 std::vector<Point>& polygon,
+                                                                 const Point& interpolationPoint,
+                                                                 const double relativeSearchRadius,
+                                                                 const bool useClosestSampleIfNoneAvailable,
+                                                                 const Projection projection,
+                                                                 std::vector<Sample>& sampleCache) const
+{
+
+    if (!interpolationPoint.IsValid())
+    {
+        throw ConstraintError("Invalid interpolation point");
+    }
+
+    GenerateSearchPolygon(relativeSearchRadius, interpolationPoint, polygon, projection);
+
+    double const searchRadiusSquared = GetSearchRadiusSquared(polygon, interpolationPoint, projection);
+
+    if (searchRadiusSquared <= 0.0)
+    {
+        throw ConstraintError("Search radius: {} <= 0", searchRadiusSquared);
+    }
+
+    m_nodeRTree->SearchPoints(interpolationPoint, searchRadiusSquared);
+
+    if (!m_nodeRTree->HasQueryResults() && useClosestSampleIfNoneAvailable)
+    {
+        m_nodeRTree->SearchNearestPoint(interpolationPoint);
+        return m_nodeRTree->HasQueryResults() ? GetSampleValueFromRTree(propertyId, 0) : constants::missing::doubleValue;
+    }
+    else if (m_nodeRTree->HasQueryResults())
+    {
+        return ComputeInterpolationResultFromNeighbors(propertyId, interpolationPoint, polygon, projection, sampleCache);
+    }
+
+    return constants::missing::doubleValue;
+}
+
+
+void meshkernel::SampleAveragingInterpolator::InterpolateSpan(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double>& result) const
+{
+    std::ranges::fill(result, constants::missing::doubleValue);
+
+    std::cout << "SampleAveragingInterpolator::InterpolateSpan " << std::endl;
+
+    if (location == Location::Nodes)
+    {
+        std::cout << " location nodes: " << mesh.GetNumNodes() << std::endl;
+        std::vector<Point> dualFacePolygon;
+        dualFacePolygon.reserve (MaximumNumberOfEdgesPerNode);
+        std::vector<Sample> sampleCache;
+        sampleCache.reserve (100);
+
+        for (UInt n = 0; n < mesh.GetNumNodes(); ++n)
+        {
+            mesh.MakeDualFace(n, m_interpolationParameters.m_relativeSearchRadius, dualFacePolygon);
+            const double resultValue = ComputeOnPolygon(propertyId,
+                                                        dualFacePolygon,
+                                                        mesh.Node(n),
+                                                        m_interpolationParameters.m_relativeSearchRadius,
+                                                        m_interpolationParameters.m_useClosestIfNoneFound,
+                                                        mesh.m_projection,
+                                                        sampleCache);
+            result [n] = resultValue;
+            std::cout << "averaging interpoaltion: " << mesh.Node (n).x << "   " << mesh.Node (n).y << "   " << resultValue << std::endl;
+        }
+
+
+    }
+
 }
 
 double meshkernel::SampleAveragingInterpolator::InterpolateValue(const int propertyId [[maybe_unused]], const Point& evaluationPoint [[maybe_unused]]) const
