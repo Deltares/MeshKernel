@@ -201,7 +201,7 @@ meshkernel::UInt meshkernel::MeshTriangulation::FindNearestFace(const Point& pnt
         {
             const auto edgeIds = GetEdgeIds(faceId);
 
-            BoundedArray<3 * MaximumNumberOfEdgesPerNode> elementsChecked;
+            BoundedArray<4 * MaximumNumberOfEdgesPerNode> elementsChecked;
             elementsChecked.push_back(faceId);
 
             for (UInt i = 0; i < edgeIds.size(); ++i)
@@ -269,6 +269,7 @@ meshkernel::UInt meshkernel::MeshTriangulation::FindNearestFace(const Point& pnt
                     }
                 }
             }
+            std::cout << "elementsChecked.size " << elementsChecked.size() << std::endl;
         }
     }
 
