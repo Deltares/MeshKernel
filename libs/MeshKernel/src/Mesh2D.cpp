@@ -1596,6 +1596,11 @@ std::vector<meshkernel::UInt> Mesh2D::SortedFacesAroundNode(UInt node) const
         const auto secondEdge = m_nodesEdges[node][ee];
         const auto firstFace = m_edgesFaces[firstEdge][0];
 
+        if (firstFace == constants::missing::uintValue)
+        {
+            continue;
+        }
+
         UInt secondFace = constants::missing::uintValue;
         if (m_edgesNumFaces[firstEdge] > 1)
         {
@@ -1620,7 +1625,7 @@ std::vector<meshkernel::UInt> Mesh2D::SortedFacesAroundNode(UInt node) const
         {
             result.emplace_back(firstFace);
         }
-        else
+        else// if (secondFace != constants::missing::uintValue)
         {
             result.emplace_back(secondFace);
         }

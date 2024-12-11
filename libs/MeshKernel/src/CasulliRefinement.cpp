@@ -61,9 +61,6 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(M
                                                                                const int propertyId,
                                                                                const MeshRefinementParameters& refinementParameters)
 {
-    // refinementParameters.max_courant_time
-    // refinementParameters.min_edge_size
-
     std::unique_ptr<FullUnstructuredGridUndo> refinementAction = FullUnstructuredGridUndo::Create(mesh);
 
     bool refinementRequested = true;
@@ -228,7 +225,7 @@ void meshkernel::CasulliRefinement::RefineNodeMaskBasedOnDepths(const Mesh2D& me
                                                                 bool& refinementRequested)
 {
     std::vector<double> interpolatedDepth(mesh.m_edgesCenters.size());
-    interpolator.Interpolate(propertyId, mesh, Location::Nodes, interpolatedDepth);
+    interpolator.Interpolate(propertyId, mesh, Location::Edges, interpolatedDepth);
     const double maxDtCourant = refinementParameters.max_courant_time;
 
     refinementRequested = false;
@@ -260,7 +257,7 @@ void meshkernel::CasulliRefinement::RefineNodeMaskBasedOnDepths(const Mesh2D& me
 
             std::cout << waveCourant << "  ";
 
-            if (waveCourant < 1.0)
+            if (waveCourant < 1.0)// && depth > 0.0)
             {
                 refineNode = true;
             }
@@ -533,6 +530,11 @@ void meshkernel::CasulliRefinement::ConnectEdges(Mesh2D& mesh, const UInt curren
     {
         UInt edgeId = mesh.m_nodesEdges[currentNode][j];
 
+        if(mesh.m_edgesNumFaces[edgeId] == 0)
+        {
+            continue;
+        }
+
         if (mesh.m_edgesNumFaces[edgeId] == 1)
         {
             if (edgeCount >= newEdges.size())
@@ -666,6 +668,11 @@ void meshkernel::CasulliRefinement::ConnectNewNodes(Mesh2D& mesh, const std::vec
         {
             const UInt edgeId = mesh.m_nodesEdges[i][j];
 
+            if(mesh.m_edgesNumFaces[edgeId] == 0)
+            {
+                continue;
+            }
+
             if (mesh.GetEdge(edgeId).first == i)
             {
                 // With passing false for the collectUndo, ConnectNodes should return a null pointer
@@ -733,6 +740,8 @@ void meshkernel::CasulliRefinement::ComputeNewFaceNodes(Mesh2D& mesh, std::vecto
                 newNodeId = elementNode;
             }
 
+            std::cout << "storing new node: " << elementNode << "  "<< firstEdgeId << "  "<< secondEdgeId << "  "<< newNodeId << std::endl;
+
             StoreNewNode(mesh, elementNode, firstEdgeId, secondEdgeId, newNodeId, newNodes);
         }
     }
@@ -754,7 +763,8 @@ void meshkernel::CasulliRefinement::ComputeNewEdgeNodes(Mesh2D& mesh, const UInt
         const UInt node1 = mesh.GetEdge(i).first;
         const UInt node2 = mesh.GetEdge(i).second;
 
-        if (node1 == constants::missing::uintValue && node2 == constants::missing::uintValue)
+        if (node1 == constants::missing::uintValue || node2 == constants::missing::uintValue)
+        // if (node1 == constants::missing::uintValue && node2 == constants::missing::uintValue)
         {
             continue;
         }
@@ -773,6 +783,7 @@ void meshkernel::CasulliRefinement::ComputeNewEdgeNodes(Mesh2D& mesh, const UInt
             newNodeId = node1;
         }
 
+            std::cout << "storing new edge node1: " << node1 << "  "<< i << "  "<< i << "  "<< newNodeId << std::endl;
         StoreNewNode(mesh, node1, i, i, newNodeId, newNodes);
 
         if (nodeMask[node2] != NodeMask::Unassigned)
@@ -787,6 +798,7 @@ void meshkernel::CasulliRefinement::ComputeNewEdgeNodes(Mesh2D& mesh, const UInt
             newNodeId = node2;
         }
 
+            std::cout << "storing new edge node2: " << node2 << "  "<< i << "  "<< i << "  "<< newNodeId << std::endl;
         StoreNewNode(mesh, node2, i, i, newNodeId, newNodes);
     }
 }

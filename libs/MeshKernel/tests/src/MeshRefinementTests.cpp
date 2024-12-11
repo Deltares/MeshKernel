@@ -36,6 +36,7 @@
 #include "MeshKernel/MeshRefinement.hpp"
 #include "MeshKernel/Parameters.hpp"
 #include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/RemoveDisconnectedRegions.hpp"
 #include "MeshKernel/SamplesHessianCalculator.hpp"
 #include "MeshKernel/SplitRowColumnOfMesh.hpp"
 #include "MeshKernel/UndoActions/UndoActionStack.hpp"
@@ -2808,7 +2809,7 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
     std::vector<double> yNodes(MaxSize);
     std::vector<double> depths(MaxSize);
 
-    std::string fileName = "/home/wcs1/MeshKernel/MeshKernel/build_deb/stpete.xyz";
+    std::string fileName = "/home/wcs1/stpete.xyz";
 
     std::ifstream asciiFile;
     asciiFile.open(fileName.c_str());
@@ -2851,28 +2852,19 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
 
     std::cout.precision(16);
 
-    // 6.959936535738328e+05  -5.595510022644172e+06
-
-    // for (size_t i = 0; i < MaxSize; ++i)
-    // {
-
-    //     // if (yNodes[i] >= -5.595510022644172e+06)
-    //     {
-    //         std::cout << i << " -- " << xNodes[i] << "  " << yNodes[i] << "  " << depths[i] << std::endl;
-    //     }
-    // }
-
     std::cout << "range: " << minX << "   " << maxX << "  " << minY << "   " << maxY << "  " << minD << "   " << maxD << "  " << std::endl;
 
     mk::InterpolationParameters interpolationParameters;
     interpolationParameters.m_relativeSearchRadius = 1.0;
+    interpolationParameters.m_useClosestIfNoneFound = true;
+
     mk::SampleAveragingInterpolator depthInterpolator(xNodes, yNodes, mk::Projection::cartesian, interpolationParameters);
     mk::SampleTriangulationInterpolator depthInterpolatorForMesh(xNodes, yNodes, mk::Projection::cartesian);
     depthInterpolator.SetData(1, depths);
     depthInterpolatorForMesh.SetData(1, depths);
     mk::Polygons polygon;
 
-    const size_t nodeCount = 50;
+    const size_t nodeCount = 75;
     const double deltaX = (maxX - minX) / static_cast<double>(nodeCount - 1);
     const double deltaY = (maxY - minY) / static_cast<double>(nodeCount - 1);
     const double delta = std::min(deltaX, deltaY);
@@ -2885,8 +2877,7 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
 
     for (size_t i = 0; i < nodes.size(); ++i)
     {
-        std::cout << "checkint point " << i + 1 << "  of " << nodes.size() << std::endl;
-
+        // if (depthInterpolator.InterpolateValue(1, nodes[i]) == mk::constants::missing::doubleValue)
         if (depthInterpolatorForMesh.InterpolateValue(1, nodes[i]) == mk::constants::missing::doubleValue)
         {
             nodes[i].SetInvalid();
@@ -2895,8 +2886,23 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
 
     Mesh2D mesh(edges, nodes, Projection::cartesian);
     mesh.Administrate();
+
+    mk::Edge edge {mk::constants::missing::uintValue, mk::constants::missing::uintValue};
+
+    for (mk::UInt i = 0; i < mesh.GetNumEdges (); ++i)
+    {
+        if (mesh.m_edgesNumFaces [i] == 0) {
+            [[maybe_unused]] auto undoAction = mesh.ResetEdge (i, edge);
+        }
+    }
+
+    mesh.Administrate();
     mesh.ComputeEdgesCenters();
     mesh.ComputeEdgesLengths();
+
+    RemoveDisconnectedRegions removeDisconnectedRegions;
+
+    [[maybe_unused]] auto undoAction = removeDisconnectedRegions.Compute (mesh);
 
     MeshRefinementParameters refinementParameters;
     refinementParameters.max_num_refinement_iterations = 2;
