@@ -39,40 +39,40 @@ void meshkernel::SampleTriangulationInterpolator::SetDataSpan(const int property
     m_sampleData[propertyId].assign(sampleData.begin(), sampleData.end());
 }
 
-void meshkernel::SampleTriangulationInterpolator::InterpolateSpan(const int propertyId, const std::span<const Point>& iterpolationNodes, std::span<double>& result) const
+void meshkernel::SampleTriangulationInterpolator::InterpolateSpan(const int propertyId, const std::span<const Point>& interpolationNodes, std::span<double>& result) const
 {
     if (!Contains(propertyId))
     {
         throw ConstraintError("Sample interpolator does not contain the id: {}.", propertyId);
     }
 
-    if (iterpolationNodes.size() != result.size())
+    if (interpolationNodes.size() != result.size())
     {
         throw ConstraintError("The arrays for interpolation nodes and the results are different sizes: {} /= {}",
-                              iterpolationNodes.size(), result.size());
+                              interpolationNodes.size(), result.size());
     }
 
     const std::vector<double>& propertyValues = m_sampleData.at(propertyId);
 
-    for (size_t i = 0; i < iterpolationNodes.size(); ++i)
+    for (size_t i = 0; i < interpolationNodes.size(); ++i)
     {
         result[i] = constants::missing::doubleValue;
 
-        if (!iterpolationNodes[i].IsValid())
+        if (!interpolationNodes[i].IsValid())
         {
             continue;
         }
 
-        const UInt elementId = m_triangulation.FindNearestFace(iterpolationNodes[i]);
+        const UInt elementId = m_triangulation.FindNearestFace(interpolationNodes[i]);
 
         if (elementId == constants::missing::uintValue)
         {
             continue;
         }
 
-        if (m_triangulation.PointIsInElement(iterpolationNodes[i], elementId))
+        if (m_triangulation.PointIsInElement(interpolationNodes[i], elementId))
         {
-            result[i] = InterpolateOnElement(elementId, iterpolationNodes[i], propertyValues);
+            result[i] = InterpolateOnElement(elementId, interpolationNodes[i], propertyValues);
         }
     }
 }
@@ -158,13 +158,47 @@ void meshkernel::SampleAveragingInterpolator::SetDataSpan(const int propertyId, 
     m_sampleData[propertyId].assign(sampleData.begin(), sampleData.end());
 }
 
-void meshkernel::SampleAveragingInterpolator::InterpolateSpan(const int propertyId, const std::span<const Point>& iterpolationNodes, std::span<double>& result) const
+void meshkernel::SampleAveragingInterpolator::InterpolateSpan(const int propertyId, const std::span<const Point>& interpolationNodes, std::span<double>& result) const
 {
     const std::vector<double>& propertyValues = m_sampleData.at(propertyId);
+    std::vector<Sample> sampleCache;
+    sampleCache.reserve(100);
 
-    for (size_t i = 0; i < iterpolationNodes.size(); ++i)
+    double searchRadiusSquared = 1.0e5;
+
+    for (size_t i = 0; i < interpolationNodes.size(); ++i)
     {
-        result[i] = propertyValues[i];
+        m_nodeRTree->SearchPoints(interpolationNodes[i], searchRadiusSquared);
+
+        double resultValue = constants::missing::doubleValue;
+
+        if (!m_nodeRTree->HasQueryResults())
+        {
+            resultValue = constants::missing::doubleValue;
+        }
+        else
+        {
+            sampleCache.clear ();
+
+            for (UInt j = 0; j < m_nodeRTree->GetQueryResultSize(); ++j)
+            {
+                auto const sampleIndex = m_nodeRTree->GetQueryResult(j);
+                auto const sampleValue = propertyValues[sampleIndex];
+
+                if (sampleValue == constants::missing::doubleValue)
+                {
+                    continue;
+                }
+
+                const Point& samplePoint(m_samplePoints[sampleIndex]);
+
+                sampleCache.emplace_back(samplePoint.x, samplePoint.y, sampleValue);
+            }
+
+            resultValue = m_strategy->Calculate(interpolationNodes [i], sampleCache);
+        }
+
+        result[i] = resultValue;
     }
 }
 
@@ -281,7 +315,7 @@ double meshkernel::SampleAveragingInterpolator::ComputeOnPolygon(const int prope
 
     if (searchRadiusSquared <= 0.0)
     {
-        std::cout << " interpolationPoint " << interpolationPoint.x << ", " << interpolationPoint.y << "  " << polygon.size() << std::endl;
+        std::cout << "relativeSearchRadius, interpolationPoint " << relativeSearchRadius << " " << interpolationPoint.x << ", " << interpolationPoint.y << std::endl;
         throw ConstraintError("Search radius: {} <= 0", searchRadiusSquared);
     }
 
@@ -304,11 +338,21 @@ void meshkernel::SampleAveragingInterpolator::InterpolateSpan(const int property
 {
     std::ranges::fill(result, constants::missing::doubleValue);
 
-    std::cout << "SampleAveragingInterpolator::InterpolateSpan " << std::endl;
+    std::vector<double> intermediateNodeResult;
+    std::span<double> nodeResult;
 
     if (location == Location::Nodes)
     {
-        std::cout << " location nodes: " << mesh.GetNumNodes() << std::endl;
+        nodeResult = std::span<double>(result.data (), result.size ());
+    }
+    else if (location == Location::Edges)
+    {
+        intermediateNodeResult.resize (mesh.GetNumNodes (), 0.0);
+        nodeResult = std::span<double>(intermediateNodeResult.data (), intermediateNodeResult.size ());
+    }
+
+    if (location == Location::Nodes || location == Location::Edges)
+    {
         std::vector<Point> dualFacePolygon;
         dualFacePolygon.reserve(MaximumNumberOfEdgesPerNode);
         std::vector<Sample> sampleCache;
@@ -331,10 +375,34 @@ void meshkernel::SampleAveragingInterpolator::InterpolateSpan(const int property
                                                sampleCache);
             }
 
-            result[n] = resultValue;
-            std::cout << "averaging interpoaltion: " << mesh.Node(n).x << "   " << mesh.Node(n).y << "   " << resultValue << std::endl;
+            nodeResult[n] = resultValue;
         }
     }
+
+    if (location == Location::Edges)
+    {
+        std::ranges::fill(result, constants::missing::doubleValue);
+
+        for (UInt e = 0; e < mesh.GetNumEdges(); ++e)
+        {
+            const auto& [first, second] = mesh.GetEdge(e);
+
+            if (first == constants::missing::uintValue || second == constants::missing::uintValue)
+            {
+                continue;
+            }
+
+            const double& firstValue = nodeResult[first];
+            const double& secondValue = nodeResult[second];
+
+            if (firstValue != constants::missing::doubleValue && secondValue != constants::missing::doubleValue)
+            {
+                result[e] = 0.5 * (firstValue + secondValue);
+            }
+        }
+    }
+
+
 }
 
 double meshkernel::SampleAveragingInterpolator::InterpolateValue(const int propertyId [[maybe_unused]], const Point& evaluationPoint [[maybe_unused]]) const
