@@ -69,6 +69,9 @@ namespace meshkernel
         ///
         /// @param [in, out] mesh Mesh to be refined
         /// @param [in] polygon Area within which the mesh will be refined
+        /// @param [in] interpolator The interpolator of the values
+        /// @param [in] propertyId The identifier used by the interpolator
+        /// @param [in] refinementParameters Mesh refinement parameters
         [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh,
                                                                              const Polygons& polygon,
                                                                              const SampleInterpolator& interpolator,
