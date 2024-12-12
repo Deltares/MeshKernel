@@ -269,7 +269,6 @@ meshkernel::UInt meshkernel::MeshTriangulation::FindNearestFace(const Point& pnt
                     }
                 }
             }
-            std::cout << "elementsChecked.size " << elementsChecked.size() << std::endl;
         }
     }
 

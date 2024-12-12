@@ -335,6 +335,57 @@ namespace meshkernel
         }
     }
 
+    bool IsPointInPolygonNodes(const Point& point,
+                               const std::vector<Point>& polygonNodes,
+                               const Projection& projection,
+                               const BoundingBox& boundingBox,
+                               Point polygonCenter,
+                               UInt startNode,
+                               UInt endNode)
+    {
+
+        if (polygonNodes.empty())
+        {
+            return true;
+        }
+
+        if (startNode == constants::missing::uintValue && endNode == constants::missing::uintValue)
+        {
+            startNode = 0;
+            endNode = static_cast<UInt>(polygonNodes.size()) - 1; // closed polygon
+        }
+
+        if (endNode <= startNode)
+        {
+            return true;
+        }
+
+        const auto currentPolygonSize = endNode - startNode + 1;
+        if (currentPolygonSize < constants::geometric::numNodesInTriangle || polygonNodes.size() < currentPolygonSize)
+        {
+            return false;
+        }
+
+        if (polygonNodes[startNode] != polygonNodes[endNode])
+        {
+            return false;
+        }
+
+        if (!boundingBox.Contains(point))
+        {
+            return false;
+        }
+
+        if (projection == Projection::cartesian || projection == Projection::spherical)
+        {
+            return impl::IsPointInPolygonNodesCartesian(point, polygonNodes, startNode, endNode);
+        }
+        else
+        {
+            return impl::IsPointInPolygonNodesSphericalAccurate(point, polygonNodes, polygonCenter, startNode, endNode);
+        }
+    }
+
     void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp)
     {
         const double phi0 = point.y * constants::conversion::degToRad;

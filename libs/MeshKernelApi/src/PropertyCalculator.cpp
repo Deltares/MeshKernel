@@ -1,5 +1,8 @@
 #include "MeshKernelApi/PropertyCalculator.hpp"
 
+#include "MeshKernel/SampleAveragingInterpolator.hpp"
+#include "MeshKernel/SampleTriangulationInterpolator.hpp"
+
 #include <algorithm>
 #include <functional>
 

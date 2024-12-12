@@ -310,6 +310,23 @@ namespace meshkernel
                                              UInt startNode = constants::missing::uintValue,
                                              UInt endNode = constants::missing::uintValue);
 
+    /// @brief Checks if a point is in polygonNodes using the winding number method
+    /// @param[in] point The point to check
+    /// @param[in] polygonNodes A series of closed polygons
+    /// @param[in] projection The coordinate system projection.
+    /// @param[in] boundingBox The bounding box of the polygon nodes
+    /// @param[in] startNode The start index in polygonNodes
+    /// @param[in] endNode  The end index in polygonNodes
+    /// @param[in] polygonCenter A coordinate needed in case of sphericalAccurate projection
+    /// @returns If point is inside the designated polygon
+    [[nodiscard]] bool IsPointInPolygonNodes(const Point& point,
+                                             const std::vector<Point>& polygonNodes,
+                                             const Projection& projection,
+                                             const BoundingBox& boundingBox,
+                                             Point polygonCenter = {constants::missing::doubleValue, constants::missing::doubleValue},
+                                             UInt startNode = constants::missing::uintValue,
+                                             UInt endNode = constants::missing::uintValue);
+
     /// @brief Checks if a point is in triangle using the winding number method
     /// @param[in] point The point to check
     /// @param[in] triangleNodes A series of node forming an open triangle
@@ -752,14 +769,6 @@ template <class PointVector>
         }
 
         isInTriangle = windingNumber == 0 ? false : true;
-
-        if (7.11e5 <= point.x && point.x <= 7.125e5 && -5.598e6 <= point.y && point.y <= -5.597e6)
-        {
-            std::cout << "triangle points: " << point.x << ", " << point.y << std::endl;
-            std::cout << triangleNodes[0].x << ", " << triangleNodes[0].y << std::endl;
-            std::cout << triangleNodes[1].x << ", " << triangleNodes[1].y << std::endl;
-            std::cout << triangleNodes[2].x << ", " << triangleNodes[2].y << std::endl;
-        }
     }
 
     if (projection == Projection::sphericalAccurate)
