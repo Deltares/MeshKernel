@@ -2924,7 +2924,7 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
     MeshRefinementParameters refinementParameters;
     refinementParameters.max_num_refinement_iterations = 1;
     refinementParameters.min_edge_size = 6.5; // 12.5;
-    refinementParameters.max_courant_time = 30.0;
+    refinementParameters.max_courant_time = 100.0;
     refinementParameters.minimum_refinement_depth = -2.0;
 
     auto undo = mk::CasulliRefinement::Compute(mesh2, polygon, depthInterpolator, 1, refinementParameters);
