@@ -28,9 +28,11 @@
 #pragma once
 
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Point.hpp"
 
 namespace meshkernel

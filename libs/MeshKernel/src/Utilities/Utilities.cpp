@@ -28,6 +28,9 @@
 #include "MeshKernel/Utilities/Utilities.hpp"
 #include "MeshKernel/Exceptions.hpp"
 
+#include <fstream>
+#include <iomanip>
+
 void meshkernel::Print(const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::ostream& out)
 {
     out << "nullId = " << constants::missing::uintValue << ";" << std::endl;

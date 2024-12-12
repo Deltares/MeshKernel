@@ -25,6 +25,9 @@
 //
 //------------------------------------------------------------------------------
 
+#include <iomanip>
+#include <iostream>
+
 #include <fstream>
 
 #include <gtest/gtest.h>
@@ -34,22 +37,24 @@
 #include "MeshKernel/CasulliRefinement.hpp"
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/MeshRefinement.hpp"
+#include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Parameters.hpp"
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/RemoveDisconnectedRegions.hpp"
+#include "MeshKernel/SampleAveragingInterpolator.hpp"
+#include "MeshKernel/SampleInterpolator.hpp"
+#include "MeshKernel/SampleTriangulationInterpolator.hpp"
 #include "MeshKernel/SamplesHessianCalculator.hpp"
 #include "MeshKernel/SplitRowColumnOfMesh.hpp"
 #include "MeshKernel/UndoActions/UndoActionStack.hpp"
 #include "MeshKernel/Utilities/Utilities.hpp"
+
 #include "TestUtils/Definitions.hpp"
+#include "TestUtils/MakeCurvilinearGrids.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 #include "TestUtils/MeshReaders.hpp"
 #include "TestUtils/SampleFileReader.hpp"
 #include "TestUtils/SampleGenerator.hpp"
-
-#include <MeshKernel/Operations.hpp>
-
-#include <TestUtils/MakeCurvilinearGrids.hpp>
 
 using namespace meshkernel;
 
@@ -2699,7 +2704,6 @@ TEST(MeshRefinement, RowSplittingFailureTests)
 
 TEST(MeshRefinement, CasulliRefinementBasedOnDepth)
 {
-    // constexpr double tolerance = 1.0e-12;
 
     const double delta = 100.0;
     const size_t nodeCount = 21;
@@ -2768,24 +2772,9 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepth)
     {
         const auto pnt = mesh.Node(i);
         depth[i] = sinShore(pnt.x, pnt.y);
-        // depth[i] = frankesFunction(pnt.x, pnt.y);
-
-        // std::cout << "xnodes [" << i + 1 << "] = "  << pnt.x << ";" << std::endl;
-        // std::cout << "ynodes [" << i + 1 << "] = "  << pnt.y << ";" << std::endl;
-
         max = std::max(max, depth[i]);
         min = std::min(min, depth[i]);
     }
-
-    // for (mk::UInt i = 0; i < depth.size(); ++i)
-    // {
-    //     // std::cout << "depth [" << i + 1 << "] = "  << depth [i] << ";" << std::endl;
-    //     depth[i] = 1000.0 * ((depth[i] - min) / (max - min) + 0.001);
-    // }
-
-    // return;
-
-    std::cout << " max = " << max << " " << min << ";" << std::endl;
 
     mk::SampleTriangulationInterpolator depthInterpolator(mesh.Nodes(), mesh.m_projection);
     depthInterpolator.SetData(1, depth);
@@ -2795,12 +2784,11 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepth)
     refinementParameters.max_courant_time = 5.0;
 
     auto undo = mk::CasulliRefinement::Compute(mesh, polygon, depthInterpolator, 1, refinementParameters);
-
-    mk::Print(mesh.Nodes(), mesh.Edges());
 }
 
 TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
 {
+    // return;
 
     //--------------------------------
 
@@ -2809,7 +2797,7 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
     std::vector<double> yNodes(MaxSize);
     std::vector<double> depths(MaxSize);
 
-    std::string fileName = "/home/wcs1/stpete.xyz";
+    std::string fileName = TEST_FOLDER + "/data/CasulliRefinement/stpete.xyz";
 
     std::ifstream asciiFile;
     asciiFile.open(fileName.c_str());
@@ -2852,8 +2840,6 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
 
     std::cout.precision(16);
 
-    std::cout << "range: " << minX << "   " << maxX << "  " << minY << "   " << maxY << "  " << minD << "   " << maxD << "  " << std::endl;
-
     mk::InterpolationParameters interpolationParameters;
     interpolationParameters.m_relativeSearchRadius = 1.0;
     interpolationParameters.m_useClosestIfNoneFound = true;
@@ -2864,7 +2850,7 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
     depthInterpolatorForMesh.SetData(1, depths);
     mk::Polygons polygon;
 
-    const size_t nodeCount = 75;
+    const size_t nodeCount = 72;
     const double deltaX = (maxX - minX) / static_cast<double>(nodeCount - 1);
     const double deltaY = (maxY - minY) / static_cast<double>(nodeCount - 1);
     const double delta = std::min(deltaX, deltaY);
@@ -2887,12 +2873,13 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
     Mesh2D mesh(edges, nodes, Projection::cartesian);
     mesh.Administrate();
 
-    mk::Edge edge {mk::constants::missing::uintValue, mk::constants::missing::uintValue};
+    mk::Edge edge{mk::constants::missing::uintValue, mk::constants::missing::uintValue};
 
-    for (mk::UInt i = 0; i < mesh.GetNumEdges (); ++i)
+    for (mk::UInt i = 0; i < mesh.GetNumEdges(); ++i)
     {
-        if (mesh.m_edgesNumFaces [i] == 0) {
-            [[maybe_unused]] auto undoAction = mesh.ResetEdge (i, edge);
+        if (mesh.m_edgesNumFaces[i] == 0)
+        {
+            [[maybe_unused]] auto undoAction = mesh.ResetEdge(i, edge);
         }
     }
 
@@ -2902,18 +2889,71 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
 
     RemoveDisconnectedRegions removeDisconnectedRegions;
 
-    [[maybe_unused]] auto undoAction = removeDisconnectedRegions.Compute (mesh);
+    [[maybe_unused]] auto undoAction = removeDisconnectedRegions.Compute(mesh);
+    mesh.Administrate();
+    mesh.ComputeEdgesCenters();
+    mesh.ComputeEdgesLengths();
+
+    for (mk::UInt i = 0; i < mesh.GetNumEdges(); ++i)
+    {
+        if (mesh.m_edgesNumFaces[i] == 0)
+        {
+            [[maybe_unused]] auto undoAction = mesh.ResetEdge(i, edge);
+        }
+    }
+    mesh.Administrate();
+    mesh.ComputeEdgesCenters();
+    mesh.ComputeEdgesLengths();
+
+    std::vector<mk::Edge> usedEdges;
+    usedEdges.reserve(mesh.GetNumEdges());
+
+    for (mk::UInt i = 0; i < mesh.GetNumEdges(); ++i)
+    {
+        if (mesh.m_edgesNumFaces[i] != 0)
+        {
+            usedEdges.push_back(mesh.GetEdge(i));
+        }
+    }
+
+    Mesh2D mesh2(usedEdges, mesh.Nodes(), Projection::cartesian);
+    mesh2.Administrate();
+    mesh2.ComputeEdgesCenters();
+    mesh2.ComputeEdgesLengths();
 
     MeshRefinementParameters refinementParameters;
-    refinementParameters.max_num_refinement_iterations = 2;
+    refinementParameters.max_num_refinement_iterations = 1;
     refinementParameters.min_edge_size = 6.5; // 12.5;
-    refinementParameters.max_courant_time = 120.0;
+    refinementParameters.max_courant_time = 30.0;
+    refinementParameters.minimum_refinement_depth = -2.0;
 
-    auto undo = mk::CasulliRefinement::Compute(mesh, polygon, depthInterpolator, 1, refinementParameters);
+    auto undo = mk::CasulliRefinement::Compute(mesh2, polygon, depthInterpolator, 1, refinementParameters);
+    mesh2.Administrate();
+    mesh2.ComputeEdgesCenters();
+    mesh2.ComputeEdgesLengths();
 
-    mk::Print(mesh.Nodes(), mesh.Edges());
+    mk::PrintVtk(mesh2.Nodes(), mesh2.m_facesNodes, "meshdata.vtu");
 
-    std::cout << "min max x " << minX << "  " << maxX << std::endl;
-    std::cout << "min max y " << minY << "  " << maxY << std::endl;
-    std::cout << "min max d " << minD << "  " << maxD << std::endl;
+    // auto ortho = mesh2.GetOrthogonality();
+
+    // double maxOrtho = *std::max_element(ortho.begin(), ortho.end());
+    // double minOrtho = 1000.0;
+
+    // for (size_t i = 0; i < ortho.size(); ++i)
+    // {
+
+    //     std::cout << std::setw(20) << ortho[i] << "  ";
+
+    //     if ((i + 1) % 10 == 0)
+    //     {
+    //         std::cout << std::endl;
+    //     }
+
+    //     if (ortho[i] != mk::constants::missing::doubleValue && ortho[i] > 0.0)
+    //     {
+    //         minOrtho = std::min(minOrtho, ortho[i]);
+    //     }
+    // }
+
+    // std::cout << "orthogonality: " << maxOrtho << "  " << minOrtho << std::endl;
 }
