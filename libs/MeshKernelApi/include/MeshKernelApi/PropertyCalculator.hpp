@@ -48,7 +48,7 @@ namespace meshkernelapi
         virtual bool IsValid(const MeshKernelState& state) const;
 
         /// @brief Calculate the property
-        virtual void Calculate(const MeshKernelState& state, const GeometryList& geometryList) const = 0;
+        virtual void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const = 0;
 
         /// @brief Determine the size of the vector required to store the calculated properties
         virtual int Size(const MeshKernelState& state) const = 0;
@@ -59,7 +59,7 @@ namespace meshkernelapi
     {
     public:
         /// @brief Calculate the orthogonality for a mesh
-        void Calculate(const MeshKernelState& state, const GeometryList& geometryList) const override;
+        void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const override;
 
         /// @brief Determine the size of the orthogonality vector required
         int Size(const MeshKernelState& state) const override;
@@ -70,7 +70,7 @@ namespace meshkernelapi
     {
     public:
         /// @brief Calculate the edge-length for a mesh
-        void Calculate(const MeshKernelState& state, const GeometryList& geometryList) const override;
+        void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const override;
 
         /// @brief Determine the size of the edge-length vector required
         int Size(const MeshKernelState& state) const override;
@@ -89,7 +89,7 @@ namespace meshkernelapi
         bool IsValid(const MeshKernelState& state) const override;
 
         /// @brief Calculate the edge-length for a mesh
-        void Calculate(const MeshKernelState& state, const GeometryList& geometryList) const override;
+        void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const override;
 
         /// @brief Determine the size of the edge-length vector required
         int Size(const MeshKernelState& state) const override;

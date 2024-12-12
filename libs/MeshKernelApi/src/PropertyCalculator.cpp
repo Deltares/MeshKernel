@@ -11,7 +11,7 @@ bool meshkernelapi::PropertyCalculator::IsValid(const MeshKernelState& state) co
     return state.m_mesh2d != nullptr && state.m_mesh2d->GetNumNodes() > 0;
 }
 
-void meshkernelapi::OrthogonalityPropertyCalculator::Calculate(const MeshKernelState& state, const GeometryList& geometryList) const
+void meshkernelapi::OrthogonalityPropertyCalculator::Calculate(const MeshKernelState& state, const meshkernel::Location location [[maybe_unused]], const GeometryList& geometryList) const
 {
 
     std::vector<double> values = state.m_mesh2d->GetOrthogonality();
@@ -30,7 +30,7 @@ int meshkernelapi::OrthogonalityPropertyCalculator::Size(const MeshKernelState& 
     return static_cast<int>(state.m_mesh2d->GetNumEdges());
 }
 
-void meshkernelapi::EdgeLengthPropertyCalculator::Calculate(const MeshKernelState& state, const GeometryList& geometryList) const
+void meshkernelapi::EdgeLengthPropertyCalculator::Calculate(const MeshKernelState& state, const meshkernel::Location location [[maybe_unused]], const GeometryList& geometryList) const
 {
 
     state.m_mesh2d->ComputeEdgesLengths();
@@ -71,10 +71,10 @@ bool meshkernelapi::InterpolatedSamplePropertyCalculator::IsValid(const MeshKern
            m_projection == state.m_projection;
 }
 
-void meshkernelapi::InterpolatedSamplePropertyCalculator::Calculate(const MeshKernelState& state, const GeometryList& geometryList) const
+void meshkernelapi::InterpolatedSamplePropertyCalculator::Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const
 {
     std::span<double> interpolatedSampleData(geometryList.values, geometryList.num_coordinates);
-    m_sampleInterpolator->Interpolate(m_propertyId, state.m_mesh2d->Nodes(), interpolatedSampleData);
+    m_sampleInterpolator->Interpolate(m_propertyId, *state.m_mesh2d, location, interpolatedSampleData);
 }
 
 int meshkernelapi::InterpolatedSamplePropertyCalculator::Size(const MeshKernelState& state) const
