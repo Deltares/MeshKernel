@@ -1624,7 +1624,7 @@ namespace meshkernelapi
 
             if (propertyCalculators[propertyValue]->IsValid(meshKernelState[meshKernelId]))
             {
-                propertyCalculators[propertyValue]->Calculate(meshKernelState[meshKernelId], geometryList);
+                propertyCalculators[propertyValue]->Calculate(meshKernelState[meshKernelId], meshkernel::Location::Edges, geometryList);
             }
             else
             {
@@ -3176,6 +3176,51 @@ namespace meshkernelapi
             meshKernelUndoStack.Add(meshkernel::CasulliRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d,
                                                                            meshKernelPolygons),
                                     meshKernelId);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_casulli_refinement_wrt_depths(int meshKernelId,
+                                                                 const GeometryList& polygons,
+                                                                 int propertyId,
+                                                                 const meshkernel::MeshRefinementParameters& meshRefinementParameters)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            std::vector<double> depthValues(meshKernelState[meshKernelId].m_mesh2d->GetNumEdges());
+            GeometryList depthGeomValues;
+            depthGeomValues.num_coordinates = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumEdges());
+            depthGeomValues.values = depthArray.data();
+
+            // lastExitCode will be set here if there is an exception when computing the property.
+            int error = mkernel_mesh2d_get_property(meshKernelId, propertyId, depthGeomValues);
+
+            if (error != 0)
+            {
+                // Convert polygon date from GeometryList to Polygons
+                auto polygonPoints = ConvertGeometryListToPointVector(polygons);
+                const meshkernel::Polygons meshKernelPolygons(polygonPoints,
+                                                              meshKernelState[meshKernelId].m_mesh2d->m_projection);
+
+                // Compute Casulli refinement based on the interpolated depth values.
+                auto undoAction = meshkernel::CasulliRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d,
+                                                                         meshKernelPolygons,
+                                                                         depthValues,
+                                                                         meshRefinementParameters);
+
+                meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
+            }
         }
         catch (...)
         {
