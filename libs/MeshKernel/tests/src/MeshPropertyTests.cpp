@@ -7,7 +7,7 @@
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/MeshTriangulation.hpp"
-#include "MeshKernel/SampleInterpolator.hpp"
+#include "MeshKernel/SampleTriangulationInterpolator.hpp"
 
 namespace mk = meshkernel;
 

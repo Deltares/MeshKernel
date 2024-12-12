@@ -85,7 +85,6 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(M
         Administrate(mesh, numNodes, nodeMask);
         mesh.ComputeEdgesCenters();
         mesh.ComputeEdgesLengths();
-        std::cout << "--------------------------------" << std::endl;
         ++iterationCount;
     }
 
@@ -234,14 +233,12 @@ void meshkernel::CasulliRefinement::RefineNodeMaskBasedOnDepths(const Mesh2D& me
     {
         bool refineNode = false;
 
-        std::cout << " waveCourant ";
-
         for (size_t j = 0; j < mesh.m_nodesEdges[i].size(); ++j)
         {
             UInt edgeId = mesh.m_nodesEdges[i][j];
             double depth = interpolatedDepth[edgeId];
 
-            if (depth == constants::missing::doubleValue)
+            if (depth == constants::missing::doubleValue || depth < refinementParameters.minimum_refinement_depth)
             {
                 continue;
             }
@@ -255,15 +252,11 @@ void meshkernel::CasulliRefinement::RefineNodeMaskBasedOnDepths(const Mesh2D& me
             const double celerity = constants::physical::sqrt_gravity * std::sqrt(std::abs(depth));
             const double waveCourant = celerity * maxDtCourant / mesh.m_edgeLengths[edgeId];
 
-            std::cout << waveCourant << "  ";
-
-            if (waveCourant < 1.0)// && depth > 0.0)
+            if (waveCourant < 1.0)
             {
                 refineNode = true;
             }
         }
-
-        std::cout << "   " << std::boolalpha << refineNode << std::endl;
 
         if (nodeMask[i] == NodeMask::RegisteredNode && !refineNode)
         {
@@ -530,7 +523,7 @@ void meshkernel::CasulliRefinement::ConnectEdges(Mesh2D& mesh, const UInt curren
     {
         UInt edgeId = mesh.m_nodesEdges[currentNode][j];
 
-        if(mesh.m_edgesNumFaces[edgeId] == 0)
+        if (mesh.m_edgesNumFaces[edgeId] == 0)
         {
             continue;
         }
@@ -668,7 +661,7 @@ void meshkernel::CasulliRefinement::ConnectNewNodes(Mesh2D& mesh, const std::vec
         {
             const UInt edgeId = mesh.m_nodesEdges[i][j];
 
-            if(mesh.m_edgesNumFaces[edgeId] == 0)
+            if (mesh.m_edgesNumFaces[edgeId] == 0)
             {
                 continue;
             }
@@ -740,8 +733,6 @@ void meshkernel::CasulliRefinement::ComputeNewFaceNodes(Mesh2D& mesh, std::vecto
                 newNodeId = elementNode;
             }
 
-            std::cout << "storing new node: " << elementNode << "  "<< firstEdgeId << "  "<< secondEdgeId << "  "<< newNodeId << std::endl;
-
             StoreNewNode(mesh, elementNode, firstEdgeId, secondEdgeId, newNodeId, newNodes);
         }
     }
@@ -783,7 +774,6 @@ void meshkernel::CasulliRefinement::ComputeNewEdgeNodes(Mesh2D& mesh, const UInt
             newNodeId = node1;
         }
 
-            std::cout << "storing new edge node1: " << node1 << "  "<< i << "  "<< i << "  "<< newNodeId << std::endl;
         StoreNewNode(mesh, node1, i, i, newNodeId, newNodes);
 
         if (nodeMask[node2] != NodeMask::Unassigned)
@@ -798,7 +788,6 @@ void meshkernel::CasulliRefinement::ComputeNewEdgeNodes(Mesh2D& mesh, const UInt
             newNodeId = node2;
         }
 
-            std::cout << "storing new edge node2: " << node2 << "  "<< i << "  "<< i << "  "<< newNodeId << std::endl;
         StoreNewNode(mesh, node2, i, i, newNodeId, newNodes);
     }
 }
