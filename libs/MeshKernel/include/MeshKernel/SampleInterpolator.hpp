@@ -53,6 +53,7 @@ namespace meshkernel
     public:
         virtual ~SampleInterpolator() = default;
 
+        /// @brief Get the number of sample points
         virtual UInt Size() const = 0;
 
         /// @brief Set sample data
