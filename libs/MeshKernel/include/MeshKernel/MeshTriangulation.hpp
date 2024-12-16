@@ -52,7 +52,7 @@ namespace meshkernel
         /// @brief Constructor
         BoundedArray() : m_size(0) {}
 
-        /// @brief Number of elements inthe array
+        /// @brief Number of elements in the array
         UInt size() const
         {
             return m_size;
