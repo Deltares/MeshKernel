@@ -1,4 +1,3 @@
-#include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/SampleTriangulationInterpolator.hpp"
 
 void meshkernel::SampleTriangulationInterpolator::SetDataSpan(const int propertyId, const std::span<const double>& sampleData)
@@ -10,6 +9,33 @@ void meshkernel::SampleTriangulationInterpolator::SetDataSpan(const int property
     }
 
     m_sampleData[propertyId].assign(sampleData.begin(), sampleData.end());
+}
+
+void meshkernel::SampleTriangulationInterpolator::InterpolateSpan(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double>& result) const
+{
+    if (!Contains(propertyId))
+    {
+        throw ConstraintError("Sample interpolator does not contain the id: {}.", propertyId);
+    }
+
+    std::span<const Point> meshNodes;
+
+    switch (location)
+    {
+    case Location::Nodes:
+        meshNodes = std::span<const Point>(mesh.Nodes().data(), mesh.Nodes().size());
+        break;
+    case Location::Edges:
+        meshNodes = std::span<const Point>(mesh.m_edgesCenters.data(), mesh.m_edgesCenters.size());
+        break;
+    case Location::Faces:
+        meshNodes = std::span<const Point>(mesh.m_facesMassCenters.data(), mesh.m_facesMassCenters.size());
+        break;
+    default:
+        throw ConstraintError("Unknown location");
+    }
+
+    InterpolateSpan(propertyId, meshNodes, result);
 }
 
 void meshkernel::SampleTriangulationInterpolator::InterpolateSpan(const int propertyId, const std::span<const Point>& interpolationNodes, std::span<double>& result) const

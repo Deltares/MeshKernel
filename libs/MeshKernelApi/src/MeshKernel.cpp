@@ -549,7 +549,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_set_property(int projectionType, const GeometryList& sampleData, int& propertyId)
+    MKERNEL_API int mkernel_mesh2d_set_property(int projectionType, int interpolationType, const GeometryList& sampleData, int& propertyId)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         propertyId = -1;
@@ -559,14 +559,16 @@ namespace meshkernelapi
             meshkernel::range_check::CheckOneOf<int>(projectionType, meshkernel::GetValidProjections(), "Projection");
             auto const projection = static_cast<meshkernel::Projection>(projectionType);
 
+            meshkernel::range_check::CheckOneOf<int>(interpolationType, {0, 1}, "InterpolationType");
+
             int localPropertyId = GeneratePropertyId();
 
             if (propertyCalculators.contains(localPropertyId))
             {
-                throw meshkernel::ConstraintError("The pproperty id already exists: id = {}.", localPropertyId);
+                throw meshkernel::ConstraintError("The property id already exists: id = {}.", localPropertyId);
             }
 
-            propertyCalculators.try_emplace(localPropertyId, std::make_unique<InterpolatedSamplePropertyCalculator>(sampleData, projection, localPropertyId));
+            propertyCalculators.try_emplace(localPropertyId, std::make_unique<InterpolatedSamplePropertyCalculator>(sampleData, projection, interpolationType, localPropertyId));
             propertyId = localPropertyId;
         }
         catch (...)
@@ -1610,11 +1612,11 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The property calculator does not exist.");
             }
 
-            if (geometryList.num_coordinates < propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId)))
+            if (geometryList.num_coordinates < propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), meshkernel::Location::Edges))
             {
                 throw meshkernel::ConstraintError("Array size too small to store property values {} < {}.",
                                                   geometryList.num_coordinates,
-                                                  propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId)));
+                                                  propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), meshkernel::Location::Edges));
             }
 
             if (geometryList.values == nullptr)
@@ -1624,6 +1626,11 @@ namespace meshkernelapi
 
             if (propertyCalculators[propertyValue]->IsValid(meshKernelState[meshKernelId]))
             {
+                if (meshKernelState[meshKernelId].m_mesh2d->m_edgesCenters.size() == 0)
+                {
+                    meshKernelState[meshKernelId].m_mesh2d->ComputeEdgesCenters();
+                }
+
                 propertyCalculators[propertyValue]->Calculate(meshKernelState[meshKernelId], meshkernel::Location::Edges, geometryList);
             }
             else
@@ -1657,7 +1664,7 @@ namespace meshkernelapi
 
             if (propertyCalculators.contains(propertyValue) && propertyCalculators[propertyValue] != nullptr)
             {
-                dimension = propertyCalculators[propertyValue]->Size(meshKernelState[meshKernelId]);
+                dimension = propertyCalculators[propertyValue]->Size(meshKernelState[meshKernelId], meshkernel::Location::Edges);
             }
             else
             {
@@ -3201,7 +3208,7 @@ namespace meshkernelapi
             std::vector<double> depthValues(meshKernelState[meshKernelId].m_mesh2d->GetNumEdges());
             GeometryList depthGeomValues;
             depthGeomValues.num_coordinates = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumEdges());
-            depthGeomValues.values = depthArray.data();
+            depthGeomValues.values = depthValues.data();
 
             // lastExitCode will be set here if there is an exception when computing the property.
             int error = mkernel_mesh2d_get_property(meshKernelId, propertyId, depthGeomValues);
