@@ -44,17 +44,21 @@
 namespace meshkernel
 {
 
+    /// @brief A simple bounded array
     template <const UInt Dimension>
     class BoundedArray
     {
     public:
+        /// @brief Constructor
         BoundedArray() : m_size(0) {}
 
+        /// @brief Number of elements inthe array
         UInt size() const
         {
             return m_size;
         }
 
+        /// @brief Add an element to the end of the array
         void push_back(const UInt index)
         {
             if (m_size == Dimension - 1)
@@ -67,46 +71,41 @@ namespace meshkernel
             ++m_size;
         }
 
+        /// @brief Get the element at the position
         UInt operator[](const UInt index) const
         {
             return m_indices[index];
         }
 
+        /// @brief Get the element at the position
         UInt& operator[](const UInt index)
         {
             return m_indices[index];
         }
 
-        // begin and end (probably const only needed) for stl algos
-
-        // auto begin() const
-        // {
-        //     return m_indices.begin();
-        // }
-
-        // auto end() const
-        // {
-        //     return m_indices.begin() + m_size;
-        // }
-
+        /// @brief The iterator at the start of the array
         std::array<UInt, Dimension>::const_iterator begin() const
         {
             return m_indices.begin();
         }
 
+        /// @brief The iterator at the end of the array
         std::array<UInt, Dimension>::const_iterator end() const
         {
             return m_indices.begin() + m_size;
         }
 
+        /// @brief Does the array contain the element value or not.
         bool contains(const UInt index) const
         {
             return std::find(begin(), end(), index) != end();
         }
 
     private:
-        // std::vector<UInt> m_indices;
+        /// @brief stack based array containing the values.
         std::array<UInt, Dimension> m_indices;
+
+        /// @brief The current number of elements in the array
         UInt m_size = 0;
     };
 
@@ -155,6 +154,9 @@ namespace meshkernel
         /// @brief Get the edge id's of the element
         std::array<UInt, 3> GetEdgeIds(const UInt faceId) const;
 
+        /// @brief Get the id's of faces either side of the edge.
+        ///
+        /// May return invalid identifier in one or both values
         const std::array<UInt, 2>& GetFaceIds(const UInt edgeId) const;
 
         /// @brief Find the nearest face to the point
@@ -179,7 +181,6 @@ namespace meshkernel
         std::vector<UInt> m_faceEdges;                 ///< Face edges flat array passed to the triangulation library
         std::vector<std::array<UInt, 2>> m_edgesFaces; ///< edge-face connectivity, generated from triangulation data
         std::vector<std::vector<UInt>> m_nodesEdges;   ///< node-edge connectivity, generated from triangulation data
-        // std::vector<BoundedArray<2 * MaximumNumberOfEdgesPerNode>> m_nodesEdges; ///< node-edge connectivity, generated from triangulation data
 
         std::vector<Point> m_elementCentres; ///< Array of the centres of the elements
 
