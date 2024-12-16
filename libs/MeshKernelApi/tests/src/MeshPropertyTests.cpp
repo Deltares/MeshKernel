@@ -128,12 +128,14 @@ TEST(MeshPropertyTests, BathymetryTest)
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     ASSERT_EQ(sampleDataSize, numberOfEdges);
 
+    int locationId = static_cast<int>(meshkernel::Location::Edges);
+
     mkapi::GeometryList propertyData{};
     std::vector<double> retrievedPropertyData(numberOfEdges, -1.0);
     propertyData.num_coordinates = numberOfEdges;
     propertyData.values = retrievedPropertyData.data();
 
-    errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId, bathymetryPropertyId, propertyData);
+    errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId, bathymetryPropertyId, locationId, propertyData);
 
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
@@ -248,16 +250,17 @@ TEST(MeshPropertyTests, PropertyFailureTest)
     sampleData.coordinates_x = bathymetryXNodes.data();
     sampleData.coordinates_y = bathymetryYNodes.data();
 
+    int locationId = static_cast<int>(meshkernel::Location::Edges);
     bool hasBathymetryData = false;
 
-    errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, bathymetryPropertyId, hasBathymetryData);
+    errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, bathymetryPropertyId, locationId, hasBathymetryData);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_FALSE(hasBathymetryData);
 
     errorCode = mkapi::mkernel_mesh2d_set_property(projectionType, 0 /*use interpolation based on triangulation*/, sampleData, bathymetryPropertyId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
-    errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, bathymetryPropertyId, hasBathymetryData);
+    errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, bathymetryPropertyId, locationId, hasBathymetryData);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_TRUE(hasBathymetryData);
 
@@ -276,18 +279,18 @@ TEST(MeshPropertyTests, PropertyFailureTest)
 
     // Expected test failure due to values set to null
     propertyData.values = nullptr;
-    errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId, bathymetryPropertyId, propertyData);
+    errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId, bathymetryPropertyId, locationId, propertyData);
     ASSERT_EQ(mk::ExitCode::ConstraintErrorCode, errorCode);
 
     propertyData.values = retrievedPropertyData.data();
 
     // Expected test failure due to invalid property id
-    errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId, bathymetryPropertyId + 100, propertyData);
+    errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId, bathymetryPropertyId + 100, locationId, propertyData);
     ASSERT_EQ(mk::ExitCode::MeshKernelErrorCode, errorCode);
 
     // Expected test failure due to incorrect size
     propertyData.num_coordinates = numberOfCoordinates - 1;
-    errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId, bathymetryPropertyId, propertyData);
+    errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId, bathymetryPropertyId, locationId, propertyData);
     ASSERT_EQ(mk::ExitCode::ConstraintErrorCode, errorCode);
 
     //--------------------------------
@@ -296,7 +299,7 @@ TEST(MeshPropertyTests, PropertyFailureTest)
     errorCode = mkapi::mkernel_deallocate_property(bathymetryPropertyId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
-    errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, bathymetryPropertyId, hasBathymetryData);
+    errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, bathymetryPropertyId, locationId, hasBathymetryData);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_FALSE(hasBathymetryData);
 

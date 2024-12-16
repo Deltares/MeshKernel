@@ -1360,9 +1360,10 @@ namespace meshkernelapi
         ///
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] propertyValue The value representing the specific property
+        /// @param[in] locationId The location (nodes, edge centres or face centres) at which the samples should interpolated.
         /// @param[in,out] geometrylist A reference to a GeometryList object that will be populated with the values of the requested property
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_get_property(int meshKernelId, int propertyValue, const GeometryList& geometrylist);
+        MKERNEL_API int mkernel_mesh2d_get_property(int meshKernelId, int propertyValue, int locationId, const GeometryList& geometrylist);
 
         /// @brief The dimension of a specified property of a 2D mesh.
         ///
@@ -1464,9 +1465,10 @@ namespace meshkernelapi
         /// @brief Determine if the property data for the mesh can be computed
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] propertyId The id of the property
+        /// @param[in] locationId The location (nodes, edge centres or face centres) at which the samples should interpolated.
         /// @param[out] propertyIsAvailable Indicate (true or false) if the property can be calculated.
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_is_valid_property(int meshKernelId, const int propertyId, bool& propertyIsAvailable);
+        MKERNEL_API int mkernel_mesh2d_is_valid_property(int meshKernelId, const int propertyId, const int locationId, bool& propertyIsAvailable);
 
         /// @brief Compute the global mesh with a given number of points along the longitude and latitude directions.
         /// @param[in] meshKernelId           The id of the mesh state

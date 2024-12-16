@@ -64,6 +64,11 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(M
 
     bool refinementRequested = false;
 
+    if (mesh.m_edgeLengths.size() == 0)
+    {
+        mesh.ComputeEdgesLengths();
+    }
+
     std::vector<EdgeNodes> newNodes(mesh.GetNumEdges(), {constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue});
     std::vector<NodeMask> nodeMask(InitialiseDepthBasedNodeMask(mesh, polygon, depthValues, refinementParameters, refinementRequested));
 
@@ -100,6 +105,11 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(M
     {
         std::vector<double> interpolatedDepth(mesh.m_edgesCenters.size());
         interpolator.Interpolate(propertyId, mesh, Location::Edges, interpolatedDepth);
+
+        if (mesh.m_edgeLengths.size() == 0)
+        {
+            mesh.ComputeEdgesLengths();
+        }
 
         std::vector<EdgeNodes> newNodes(mesh.GetNumEdges(), {constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue});
         std::vector<NodeMask> nodeMask(InitialiseDepthBasedNodeMask(mesh, polygon, interpolatedDepth, refinementParameters, refinementRequested));
