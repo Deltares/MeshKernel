@@ -174,12 +174,13 @@ TEST(Mesh2DTests, Mesh2DGetPropertyTest)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Execute
+    int locationId = static_cast<int>(meshkernel::Location::Edges);
     meshkernelapi::GeometryList propertyvalues{};
     propertyvalues.num_coordinates = geometryListDimension;
     propertyvalues.geometry_separator = meshkernel::constants::missing::doubleValue;
     std::vector<double> values(geometryListDimension);
     propertyvalues.values = values.data();
-    errorCode = mkernel_mesh2d_get_property(meshKernelId, 0, propertyvalues);
+    errorCode = mkernel_mesh2d_get_property(meshKernelId, 0, locationId, propertyvalues);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert

@@ -184,7 +184,7 @@ namespace meshkernel
                                       const std::span<double>& nodeResult,
                                       std::span<double>& result) const;
 
-        //// @brief Interpolate at the face centres
+        /// @brief Interpolate at the face centres
         void InterpolateAtFaces(const int propertyId, const Mesh2D& mesh, std::span<double>& result) const;
 
         /// @brief The sample points
