@@ -20,7 +20,7 @@ TEST(MeshPropertyTests, BathymetryTest)
 
     const int numXCoords = 4;
     const int numYCoords = 4;
-    const int numberOfCoordinates = numXCoords * numYCoords;
+    const int numberOfEdges = (numXCoords - 1) * numYCoords + numXCoords * (numYCoords - 1);
 
     const int numXBathyCoords = 5;
     const int numYBathyCoords = 5;
@@ -110,7 +110,7 @@ TEST(MeshPropertyTests, BathymetryTest)
     sampleData.coordinates_x = bathymetryXNodes.data();
     sampleData.coordinates_y = bathymetryYNodes.data();
 
-    errorCode = mkapi::mkernel_mesh2d_set_property(projectionType, sampleData, bathymetryPropertyId);
+    errorCode = mkapi::mkernel_mesh2d_set_property(projectionType, 0 /*use interpolation based on triangulation*/, sampleData, bathymetryPropertyId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     const double tolerance = 1.0e-13;
@@ -118,19 +118,23 @@ TEST(MeshPropertyTests, BathymetryTest)
     std::vector<double> expectedInterpolatedData{0.0, 1.0, 2.0, 3.0,
                                                  0.0, 1.0, 2.0, 3.0,
                                                  0.0, 1.0, 2.0, 3.0,
-                                                 0.0, 1.0, 2.0, 3.0};
+                                                 0.5, 1.5, 2.5, 0.5,
+                                                 1.5, 2.5, 0.5, 1.5,
+                                                 2.5, 0.5, 1.5, 2.5};
 
     int sampleDataSize = -1;
     errorCode = mkapi::mkernel_mesh2d_get_property_dimension(meshKernelId, bathymetryPropertyId, sampleDataSize);
+
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
-    ASSERT_EQ(sampleDataSize, numberOfCoordinates);
+    ASSERT_EQ(sampleDataSize, numberOfEdges);
 
     mkapi::GeometryList propertyData{};
-    std::vector<double> retrievedPropertyData(numberOfCoordinates, -1.0);
-    propertyData.num_coordinates = numberOfCoordinates;
+    std::vector<double> retrievedPropertyData(numberOfEdges, -1.0);
+    propertyData.num_coordinates = numberOfEdges;
     propertyData.values = retrievedPropertyData.data();
 
     errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId, bathymetryPropertyId, propertyData);
+
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     for (size_t i = 0; i < retrievedPropertyData.size(); ++i)
@@ -250,7 +254,7 @@ TEST(MeshPropertyTests, PropertyFailureTest)
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_FALSE(hasBathymetryData);
 
-    errorCode = mkapi::mkernel_mesh2d_set_property(projectionType, sampleData, bathymetryPropertyId);
+    errorCode = mkapi::mkernel_mesh2d_set_property(projectionType, 0 /*use interpolation based on triangulation*/, sampleData, bathymetryPropertyId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, bathymetryPropertyId, hasBathymetryData);

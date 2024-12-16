@@ -987,7 +987,7 @@ namespace meshkernelapi
         /// @brief Refine mesh using the Casulli refinement algorithm based on the depth values
         /// @param[in] meshKernelId  The id of the mesh state
         /// @param[in] polygons The polygon within which the refinement is computed.
-        /// @param[in] propertyId The identifier of the intterpoaltor ot be used
+        /// @param[in] propertyId The identifier of the interpolator to be used
         /// @param[in] meshRefinementParameters Parameters indicating how the mesh is to be refined
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_casulli_refinement_wrt_depths(int meshKernelId,
@@ -1620,10 +1620,11 @@ namespace meshkernelapi
 
         /// @brief Sets the property data for the mesh, the sample data points do not have to match the mesh2d nodes.
         /// @param[in] projectionType The projection type used by the sample data
+        /// @param[in] interpolationType The type of interpolation required, triangulation (0) or averaging (1) (for now)
         /// @param[in] sampleData   The sample data and associated sample data points.
         /// @param[out] propertyId The id of the property
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_set_property(int projectionType, const GeometryList& sampleData, int& propertyId);
+        MKERNEL_API int mkernel_mesh2d_set_property(int projectionType, int interpolationType, const GeometryList& sampleData, int& propertyId);
 
         /// @brief Snaps a mesh to a land boundary.
         /// @param[in] meshKernelId The id of the mesh state

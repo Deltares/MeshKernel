@@ -148,7 +148,7 @@ namespace meshkernel
         /// @brief Interpolate the sample data on the element at the interpolation point.
         double InterpolateOnElement(const UInt elementId, const Point& interpolationPoint, const std::vector<double>& sampleValues) const;
 
-        /// @brief Interpolate at the points from points found withing a polygon
+        /// @brief Interpolate at the points from points found within a polygon
         double ComputeOnPolygon(const int propertyId,
                                 std::vector<Point>& polygon,
                                 const Point& interpolationPoint,
