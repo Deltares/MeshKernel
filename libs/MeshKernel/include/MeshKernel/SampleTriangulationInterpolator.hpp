@@ -87,10 +87,8 @@ namespace meshkernel
         /// @brief Set sample data from std::span object
         void SetDataSpan(const int propertyId, const std::span<const double>& sampleData) override;
 
-        // DOes nothing at the moment.
-        void InterpolateSpan(const int propertyId [[maybe_unused]], const Mesh2D& mesh [[maybe_unused]], const Location location [[maybe_unused]], std::span<double>& result [[maybe_unused]]) const override
-        {
-        }
+        /// @brief Interpolate the sample data at the points for the location (nodes, edges, faces)
+        void InterpolateSpan(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double>& result) const override;
 
         /// @brief Interpolate the sample data set at the interpolation nodes.
         void InterpolateSpan(const int propertyId, const std::span<const Point>& iterpolationNodes, std::span<double>& result) const override;

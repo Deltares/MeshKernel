@@ -51,7 +51,7 @@ namespace meshkernelapi
         virtual void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const = 0;
 
         /// @brief Determine the size of the vector required to store the calculated properties
-        virtual int Size(const MeshKernelState& state) const = 0;
+        virtual int Size(const MeshKernelState& state, const meshkernel::Location location) const = 0;
     };
 
     /// @brief Calculator for orthogonality of a mesh.
@@ -62,7 +62,7 @@ namespace meshkernelapi
         void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const override;
 
         /// @brief Determine the size of the orthogonality vector required
-        int Size(const MeshKernelState& state) const override;
+        int Size(const MeshKernelState& state, const meshkernel::Location location) const override;
     };
 
     /// @brief Calculator for the edge lengths for a mesh
@@ -73,7 +73,7 @@ namespace meshkernelapi
         void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const override;
 
         /// @brief Determine the size of the edge-length vector required
-        int Size(const MeshKernelState& state) const override;
+        int Size(const MeshKernelState& state, const meshkernel::Location location) const override;
     };
 
     /// @brief Interpolate the depths at the mesh node points.
@@ -83,6 +83,7 @@ namespace meshkernelapi
         /// @brief Constructor
         InterpolatedSamplePropertyCalculator(const GeometryList& sampleData,
                                              const meshkernel::Projection projection,
+                                             const int interpolationType,
                                              const int propertyId);
 
         /// @brief Determine is the calculator can interpolate depth values correctly
@@ -92,7 +93,7 @@ namespace meshkernelapi
         void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const override;
 
         /// @brief Determine the size of the edge-length vector required
-        int Size(const MeshKernelState& state) const override;
+        int Size(const MeshKernelState& state, const meshkernel::Location location) const override;
 
     private:
         /// @brief Interpolator for the samples

@@ -921,6 +921,7 @@ void Mesh::Administrate(CompoundUndoAction* undoAction)
 
 void Mesh::AdministrateNodesEdges(CompoundUndoAction* undoAction)
 {
+    m_edgesCenters.clear();
     SetUnConnectedNodesAndEdgesToInvalid(undoAction);
 
     // return if there are no nodes or no edges
