@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/SampleInterpolator.hpp"
 
 #include "MeshKernelApi/GeometryList.hpp"
@@ -43,9 +44,7 @@ namespace meshkernelapi
         virtual ~PropertyCalculator() = default;
 
         /// @brief Determine is the calculator can compute the desired results correctly.
-        ///
-        /// This has a default of checking that the mesh2d is not null and the number of nodes is greater than zero.
-        virtual bool IsValid(const MeshKernelState& state) const;
+        virtual bool IsValid(const MeshKernelState& state, const meshkernel::Location location) const = 0;
 
         /// @brief Calculate the property
         virtual void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const = 0;
@@ -58,6 +57,11 @@ namespace meshkernelapi
     class OrthogonalityPropertyCalculator : public PropertyCalculator
     {
     public:
+        /// @brief Determine is the calculator can compute the desired results correctly.
+        ///
+        /// This has a default of checking that the mesh2d is valid and the location is at edges
+        virtual bool IsValid(const MeshKernelState& state, const meshkernel::Location location) const;
+
         /// @brief Calculate the orthogonality for a mesh
         void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const override;
 
@@ -69,6 +73,11 @@ namespace meshkernelapi
     class EdgeLengthPropertyCalculator : public PropertyCalculator
     {
     public:
+        /// @brief Determine is the calculator can compute the desired results correctly.
+        ///
+        /// This has a default of checking that the mesh2d is valid and the location is at edges
+        virtual bool IsValid(const MeshKernelState& state, const meshkernel::Location location) const;
+
         /// @brief Calculate the edge-length for a mesh
         void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const override;
 
@@ -87,7 +96,7 @@ namespace meshkernelapi
                                              const int propertyId);
 
         /// @brief Determine is the calculator can interpolate depth values correctly
-        bool IsValid(const MeshKernelState& state) const override;
+        bool IsValid(const MeshKernelState& state, const meshkernel::Location location) const override;
 
         /// @brief Calculate the edge-length for a mesh
         void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const override;

@@ -531,16 +531,17 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_is_valid_property(int meshKernelId, const int propertyId, bool& propertyIsAvailable)
+    MKERNEL_API int mkernel_mesh2d_is_valid_property(int meshKernelId, const int propertyId, const int locationId, bool& propertyIsAvailable)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         propertyIsAvailable = false;
         try
         {
+            const meshkernel::Location location = static_cast<meshkernel::Location>(locationId);
             propertyIsAvailable = meshKernelState.contains(meshKernelId) &&
                                   propertyCalculators.contains(propertyId) &&
                                   propertyCalculators[propertyId] != nullptr &&
-                                  propertyCalculators[propertyId]->IsValid(meshKernelState.at(meshKernelId));
+                                  propertyCalculators[propertyId]->IsValid(meshKernelState.at(meshKernelId), location);
         }
         catch (...)
         {
@@ -1591,7 +1592,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_property(int meshKernelId, int propertyValue, const GeometryList& geometryList)
+    MKERNEL_API int mkernel_mesh2d_get_property(int meshKernelId, int propertyValue, int locationId, const GeometryList& geometryList)
     {
         lastExitCode = meshkernel::ExitCode::Success;
 
@@ -1612,11 +1613,13 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The property calculator does not exist.");
             }
 
-            if (geometryList.num_coordinates < propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), meshkernel::Location::Edges))
+            const meshkernel::Location location = static_cast<meshkernel::Location>(locationId);
+
+            if (geometryList.num_coordinates < propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), location))
             {
                 throw meshkernel::ConstraintError("Array size too small to store property values {} < {}.",
                                                   geometryList.num_coordinates,
-                                                  propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), meshkernel::Location::Edges));
+                                                  propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), location));
             }
 
             if (geometryList.values == nullptr)
@@ -1624,18 +1627,19 @@ namespace meshkernelapi
                 throw meshkernel::ConstraintError("The property values are null.");
             }
 
-            if (propertyCalculators[propertyValue]->IsValid(meshKernelState[meshKernelId]))
+            if (propertyCalculators[propertyValue]->IsValid(meshKernelState[meshKernelId], location))
             {
-                if (meshKernelState[meshKernelId].m_mesh2d->m_edgesCenters.size() == 0)
+
+                if (location == meshkernel::Location::Edges && meshKernelState[meshKernelId].m_mesh2d->m_edgesCenters.size() == 0)
                 {
                     meshKernelState[meshKernelId].m_mesh2d->ComputeEdgesCenters();
                 }
 
-                propertyCalculators[propertyValue]->Calculate(meshKernelState[meshKernelId], meshkernel::Location::Edges, geometryList);
+                propertyCalculators[propertyValue]->Calculate(meshKernelState[meshKernelId], location, geometryList);
             }
             else
             {
-                throw meshkernel::MeshKernelError("Property not supported");
+                throw meshkernel::MeshKernelError("Property not supported at this location");
             }
         }
         catch (...)
@@ -3209,11 +3213,12 @@ namespace meshkernelapi
             GeometryList depthGeomValues;
             depthGeomValues.num_coordinates = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumEdges());
             depthGeomValues.values = depthValues.data();
+            const int locationId = static_cast<int>(meshkernel::Location::Edges);
 
             // lastExitCode will be set here if there is an exception when computing the property.
-            int error = mkernel_mesh2d_get_property(meshKernelId, propertyId, depthGeomValues);
+            int error = mkernel_mesh2d_get_property(meshKernelId, propertyId, locationId, depthGeomValues);
 
-            if (error != 0)
+            if (error == 0)
             {
                 // Convert polygon date from GeometryList to Polygons
                 auto polygonPoints = ConvertGeometryListToPointVector(polygons);

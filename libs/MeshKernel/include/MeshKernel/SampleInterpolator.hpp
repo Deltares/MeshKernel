@@ -48,6 +48,7 @@
 namespace meshkernel
 {
 
+    /// @brief Interface for sample interpolation
     class SampleInterpolator
     {
     public:
