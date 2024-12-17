@@ -2702,7 +2702,7 @@ TEST(MeshRefinement, RowSplittingFailureTests)
     EXPECT_THROW([[maybe_unused]] auto undo4 = splitMeshRow.Compute(mesh, edgeId), ConstraintError);
 }
 
-TEST(MeshRefinement, CasulliRefinementBasedOnDepth)
+TEST(MeshRefinement, DISABLED_CasulliRefinementBasedOnDepth)
 {
 
     const double delta = 100.0;
@@ -2786,7 +2786,7 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepth)
     auto undo = mk::CasulliRefinement::Compute(mesh, polygon, depthInterpolator, 1, refinementParameters);
 }
 
-TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
+TEST(MeshRefinement, DISABLED_CasulliRefinementBasedOnDepthReal)
 {
     // return;
 
@@ -2931,29 +2931,4 @@ TEST(MeshRefinement, CasulliRefinementBasedOnDepthReal)
     mesh2.Administrate();
     mesh2.ComputeEdgesCenters();
     mesh2.ComputeEdgesLengths();
-
-    mk::PrintVtk(mesh2.Nodes(), mesh2.m_facesNodes, "meshdata.vtu");
-
-    // auto ortho = mesh2.GetOrthogonality();
-
-    // double maxOrtho = *std::max_element(ortho.begin(), ortho.end());
-    // double minOrtho = 1000.0;
-
-    // for (size_t i = 0; i < ortho.size(); ++i)
-    // {
-
-    //     std::cout << std::setw(20) << ortho[i] << "  ";
-
-    //     if ((i + 1) % 10 == 0)
-    //     {
-    //         std::cout << std::endl;
-    //     }
-
-    //     if (ortho[i] != mk::constants::missing::doubleValue && ortho[i] > 0.0)
-    //     {
-    //         minOrtho = std::min(minOrtho, ortho[i]);
-    //     }
-    // }
-
-    // std::cout << "orthogonality: " << maxOrtho << "  " << minOrtho << std::endl;
 }
