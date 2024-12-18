@@ -33,6 +33,7 @@
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Point.hpp"
+#include "MeshKernel/Utilities/RTreeBase.hpp"
 
 namespace meshkernel
 {
@@ -114,7 +115,8 @@ namespace meshkernel
                                      const UInt edge2,
                                      bool& areAdjacent,
                                      UInt& startNode,
-                                     UInt& endNode);
+                                     UInt& endNode,
+                                     const std::vector<double>& edgeLengths);
 
         /// @brief Find all quadrilateral elements that do no have a neighbour across any of edges.
         ///

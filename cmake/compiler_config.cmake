@@ -11,7 +11,10 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Add compiler-specific options and definitions per supported platform
 if (UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    add_compile_options("-fvisibility=hidden;-Werror;-Wall;-Wextra;-pedantic;-Wno-unused-function")
+    add_compile_options("-fvisibility=hidden;-Werror;-Wall;-Wextra;-pedantic;-Wno-unused-function;-pg")
+
+    add_link_options("-pg")
+
     if(APPLE AND (CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64"))
       # CMake automatically sets -Xarch_arm64 (for clang) but gcc doesn't support it
       unset(_CMAKE_APPLE_ARCHS_DEFAULT)
@@ -20,8 +23,8 @@ if (UNIX)
       # Suppress notes related to ABI changes
       add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-psabi>)
     endif()
-    add_compile_options("$<$<CONFIG:RELEASE>:-O2>")
-    add_compile_options("$<$<CONFIG:DEBUG>:-g>")
+    add_compile_options("$<$<CONFIG:RELEASE>:-O2;-pg>")
+    add_compile_options("$<$<CONFIG:DEBUG>:-g;-pg>")
   else()
     message(FATAL_ERROR "Unsupported compiler. Only GNU is supported under Linux. Found ${CMAKE_CXX_COMPILER_ID}.")
   endif()
@@ -51,7 +54,7 @@ set(USE_LIBFMT 0)
 if(
   (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
     AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13.1)
-  OR 
+  OR
   (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC"
     AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16.11.14)
 )
