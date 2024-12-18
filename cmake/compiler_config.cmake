@@ -11,9 +11,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Add compiler-specific options and definitions per supported platform
 if (UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    add_compile_options("-fvisibility=hidden;-Werror;-Wall;-Wextra;-pedantic;-Wno-unused-function;-pg")
-
-    add_link_options("-pg")
+    add_compile_options("-fvisibility=hidden;-Werror;-Wall;-Wextra;-pedantic;-Wno-unused-function")
 
     if(APPLE AND (CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64"))
       # CMake automatically sets -Xarch_arm64 (for clang) but gcc doesn't support it
@@ -23,8 +21,8 @@ if (UNIX)
       # Suppress notes related to ABI changes
       add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-psabi>)
     endif()
-    add_compile_options("$<$<CONFIG:RELEASE>:-O2;-pg>")
-    add_compile_options("$<$<CONFIG:DEBUG>:-g;-pg>")
+    add_compile_options("$<$<CONFIG:RELEASE>:-O2>")
+    add_compile_options("$<$<CONFIG:DEBUG>:-g>")
   else()
     message(FATAL_ERROR "Unsupported compiler. Only GNU is supported under Linux. Found ${CMAKE_CXX_COMPILER_ID}.")
   endif()

@@ -52,15 +52,8 @@ void meshkernel::ConnectMeshes::AreEdgesAdjacent(const Mesh2D& mesh,
     startNode = constants::missing::uintValue;
     endNode = constants::missing::uintValue;
 
-    if (edge1Start == edge1End || edge2Start == edge2End)
-    {
-        return;
-    }
-
     const double edge1Length = edgeLengths[edge1];
     const double edge2Length = edgeLengths[edge2];
-    // const double edge1Length = ComputeDistance(edge1Start, edge1End, mesh.m_projection);
-    // const double edge2Length = ComputeDistance(edge2Start, edge2End, mesh.m_projection);
     const double minimumLength = separationFraction * std::min(edge1Length, edge2Length);
 
     const Point midPoint1 = 0.5 * (edge1Start + edge1End);
@@ -68,39 +61,24 @@ void meshkernel::ConnectMeshes::AreEdgesAdjacent(const Mesh2D& mesh,
 
     if (edge1Length <= edge2Length)
     {
-
+        // Check that the mid point of edge 1 is inside the box centred at the mid point of the edge 2, with size 2 * edge-length.
         if (midPoint1.x > midPoint2.x - edge2Length && midPoint1.x < midPoint2.x + edge2Length &&
-            midPoint1.y > midPoint2.y - edge2Length && midPoint1.y < midPoint2.y + edge2Length) {
+            midPoint1.y > midPoint2.y - edge2Length && midPoint1.y < midPoint2.y + edge2Length)
+        {
             const auto [distance, intersection, parameterisedDistance] = DistanceFromLine(midPoint1, edge2Start, edge2End, mesh.m_projection);
             areAdjacent = distance != constants::missing::doubleValue && distance < minimumLength;
         }
     }
     else
     {
-
+        // Check that the mid point of edge 2 is inside the box centred at the mid point of the edge 1, with size 2 * edge-length.
         if (midPoint2.x > midPoint1.x - edge1Length && midPoint2.x < midPoint1.x + edge1Length &&
             midPoint2.y > midPoint1.y - edge1Length && midPoint2.y < midPoint1.y + edge1Length)
         {
             const auto [distance, intersection, parameterisedDistance] = DistanceFromLine(midPoint2, edge1Start, edge1End, mesh.m_projection);
             areAdjacent = distance != constants::missing::doubleValue && distance < minimumLength;
         }
-
     }
-
-    // if (edge1Length <= edge2Length)
-    // {
-    //     const Point midPoint = 0.5 * (edge1Start + edge1End);
-
-    //     const auto [distance, intersection, parameterisedDistance] = DistanceFromLine(midPoint, edge2Start, edge2End, mesh.m_projection);
-    //     areAdjacent = distance != constants::missing::doubleValue && distance < minimumLength;
-    // }
-    // else
-    // {
-    //     const Point midPoint = 0.5 * (edge2Start + edge2End);
-
-    //     const auto [distance, intersection, parameterisedDistance] = DistanceFromLine(midPoint, edge1Start, edge1End, mesh.m_projection);
-    //     areAdjacent = distance != constants::missing::doubleValue && distance < minimumLength;
-    // }
 
     if (areAdjacent)
     {
@@ -129,7 +107,8 @@ void meshkernel::ConnectMeshes::AreEdgesAdjacent(const Mesh2D& mesh,
 
 void meshkernel::ConnectMeshes::GetQuadrilateralElementsOnDomainBoundary(const Mesh2D& mesh,
                                                                          std::vector<UInt>& elementsOnDomainBoundary,
-                                                                         std::vector<UInt>& edgesOnDomainBoundary)
+                                                                         std::vector<UInt>& edgesOnDomainBoundary,
+                                                                         std::vector<double>& edgeLengths)
 {
     for (UInt i = 0; i < mesh.GetNumEdges(); ++i)
     {
@@ -140,8 +119,17 @@ void meshkernel::ConnectMeshes::GetQuadrilateralElementsOnDomainBoundary(const M
             // Only store quadrilateral elements
             if (mesh.m_numFacesNodes[faceId] == 4)
             {
-                elementsOnDomainBoundary.push_back(faceId);
-                edgesOnDomainBoundary.push_back(i);
+                double edgeLength = ComputeDistance(mesh.Node(mesh.GetEdge(i).first),
+                                                    mesh.Node(mesh.GetEdge(i).second),
+                                                    mesh.m_projection);
+
+                // Only store edge info for edges that have a size strictly greater than EdgeLengthTolerance
+                if (edgeLength != constants::missing::doubleValue && edgeLength > EdgeLengthTolerance)
+                {
+                    elementsOnDomainBoundary.push_back(faceId);
+                    edgesOnDomainBoundary.push_back(i);
+                    edgeLengths[i] = edgeLength;
+                }
             }
         }
     }
@@ -150,17 +138,9 @@ void meshkernel::ConnectMeshes::GetQuadrilateralElementsOnDomainBoundary(const M
 void meshkernel::ConnectMeshes::GatherHangingNodeIds(const Mesh2D& mesh,
                                                      const double separationFraction,
                                                      const std::vector<UInt>& edgesOnDomainBoundary,
+                                                     const std::vector<double>& edgeLengths,
                                                      IrregularEdgeInfoArray& irregularEdges)
 {
-
-    std::vector<double> edgeLengths (mesh.GetNumEdges (), constants::missing::doubleValue);
-
-    for (UInt i = 0; i < edgesOnDomainBoundary.size(); ++i)
-    {
-        edgeLengths [edgesOnDomainBoundary [i]] = ComputeDistance(mesh.Node(mesh.GetEdge(i).first),
-                                                              mesh.Node(mesh.GetEdge(i).second),
-                                                              mesh.m_projection);
-    }
 
     for (UInt i = 0; i < edgesOnDomainBoundary.size(); ++i)
     {
@@ -263,39 +243,17 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::ConnectMeshes::Compute(Mesh2
     // Edges with no neighbour
     std::vector<UInt> edgesOnDomainBoundary;
     edgesOnDomainBoundary.reserve(numberOfEdges);
+    std::vector<double> edgeLengths(numberOfEdges, constants::missing::doubleValue);
 
-    GetQuadrilateralElementsOnDomainBoundary(mesh, elementsOnDomainBoundary, edgesOnDomainBoundary);
+    GetQuadrilateralElementsOnDomainBoundary(mesh, elementsOnDomainBoundary, edgesOnDomainBoundary, edgeLengths);
 
     std::vector<NodesToMerge> nodesToMerge;
-    // std::vector<Point> nodesOnBoundary;
-    // std::vector<bool> nodesOnBoundaryAdded(mesh.GetNumNodes (), false);
-    // nodesOnBoundary.reserve (mesh.GetNumNodes ());
-
-    // for (UInt i = 0; i < edgesOnDomainBoundary.size(); ++i)
-    // {
-    //     const Edge& edge = mesh.GetEdge (edgesOnDomainBoundary [i]);
-
-    //     if (!nodesOnBoundaryAdded[edge.first])
-    //     {
-    //         nodesOnBoundary.push_back (mesh.Node (edge.first));
-    //         nodesOnBoundaryAdded[edge.first] = true;
-    //     }
-
-    //     if (!nodesOnBoundaryAdded[edge.second])
-    //     {
-    //         nodesOnBoundary.push_back (mesh.Node (edge.second));
-    //         nodesOnBoundaryAdded[edge.second] = true;
-    //     }
-
-    // }
-
 
     IrregularEdgeInfoArray irregularEdges(numberOfEdges);
 
-    GatherHangingNodeIds(mesh, separationFraction, edgesOnDomainBoundary, irregularEdges);
+    GatherHangingNodeIds(mesh, separationFraction, edgesOnDomainBoundary, edgeLengths, irregularEdges);
 
     std::vector<bool> adjacentEdgeIndicator(numberOfEdges, true);
-
 
     // Size of this array needs to be greater than the number of edges
     // The safety margin here is the maximum number of irregular elements along an edge.

@@ -63,6 +63,9 @@ namespace meshkernel
         [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh, const double separationFraction = DefaultMaximumSeparationFraction);
 
     private:
+        /// @brief The edge length tolerance, minimum size for which an edge will be considered.
+        static constexpr double EdgeLengthTolerance = 1.0e-10;
+
         /// @brief The maximum number of hanging nodes along a single element edge
         static constexpr UInt m_maximumNumberOfIrregularElementsAlongEdge = 5;
 
@@ -109,6 +112,7 @@ namespace meshkernel
         /// @param [out] areAdjacent Indicates is edge1 and edge2 are adjacent
         /// @param [out] startNode End point nodes, if not nullvalue then node is hanging node
         /// @param [out] endNode End point nodes, if not nullvalue then node is hanging node
+        /// @param [in] edgeLengths The length of each edge that has been added, indexed by the edge id
         static void AreEdgesAdjacent(const Mesh2D& mesh,
                                      const double separationFraction,
                                      const UInt edge1,
@@ -122,10 +126,12 @@ namespace meshkernel
         ///
         /// @param [in] mesh The mesh
         /// @param [in,out] elementsOnDomainBoundary List of elements that do not have neighbour
-        /// @param [in,out] edgesOnDomainBoundary List of edges that do have elements on one side only
+        /// @param [out] edgesOnDomainBoundary List of edges that do have elements on one side only
+        /// @param [out] edgeLengths The length of each edge that has been added, indexed by the edge id
         static void GetQuadrilateralElementsOnDomainBoundary(const Mesh2D& mesh,
                                                              std::vector<UInt>& elementsOnDomainBoundary,
-                                                             std::vector<UInt>& edgesOnDomainBoundary);
+                                                             std::vector<UInt>& edgesOnDomainBoundary,
+                                                             std::vector<double>& edgeLengths);
 
         /// @brief Get list of node id's ordered with distance from given point.
         ///
@@ -225,10 +231,12 @@ namespace meshkernel
         /// @param [in] mesh The mesh
         /// @param [in] separationFraction The fraction of the shortest edge to use when determining neighbour edge closeness
         /// @param [in] edgesOnDomainBoundary List of edges along domain boundary, more specifically edges with only a single element attached
+        /// @param [in] edgeLengths The length of each edge that has been added, indexed by the edge id
         /// @param [in,out] irregularEdges List of irregular edges with hanging nodes
         static void GatherHangingNodeIds(const Mesh2D& mesh,
                                          const double separationFraction,
                                          const std::vector<UInt>& edgesOnDomainBoundary,
+                                         const std::vector<double>& edgeLengths,
                                          IrregularEdgeInfoArray& irregularEdges);
 
         /// @brief Gather all the nodes that need to be merged.
