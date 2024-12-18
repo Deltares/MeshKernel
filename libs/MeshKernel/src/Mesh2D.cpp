@@ -670,7 +670,7 @@ void Mesh2D::InitialiseBoundaryNodeClassification()
         const auto firstNode = m_edges[e].first;
         const auto secondNode = m_edges[e].second;
 
-        if (firstNode == constants::missing::uintValue || secondNode == constants::missing::uintValue)
+        if (firstNode == constants::missing::uintValue || secondNode == constants::missing::uintValue) [[unlikely]]
         {
             continue;
         }
@@ -714,7 +714,7 @@ void Mesh2D::ClassifyNode(const UInt nodeId)
                 continue;
             }
 
-            if (firstNode == 0)
+            if (firstNode == constants::missing::uintValue)
             {
                 firstNode = OtherNodeOfEdge(m_edges[edgeIndex], nodeId);
             }
@@ -751,6 +751,11 @@ void Mesh2D::ClassifyNodes()
 
     for (UInt n = 0; n < GetNumNodes(); n++)
     {
+        if (!Node(n).IsValid()) [[unlikely]]
+        {
+            continue;
+        }
+
         if (m_nodesTypes[n] == 1 || m_nodesTypes[n] == 2)
         {
             ClassifyNode(n);
