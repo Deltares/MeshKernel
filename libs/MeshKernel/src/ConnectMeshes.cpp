@@ -124,7 +124,7 @@ void meshkernel::ConnectMeshes::GetQuadrilateralElementsOnDomainBoundary(const M
                                                     mesh.m_projection);
 
                 // Only store edge info for edges that have a size strictly greater than EdgeLengthTolerance
-                if (edgeLength != constants::missing::doubleValue && edgeLength > EdgeLengthTolerance)
+                if (edgeLength != constants::missing::doubleValue && edgeLength > EdgeLengthTolerance) [[likely]]
                 {
                     elementsOnDomainBoundary.push_back(faceId);
                     edgesOnDomainBoundary.push_back(i);

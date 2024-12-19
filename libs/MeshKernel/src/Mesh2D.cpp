@@ -2476,10 +2476,10 @@ std::unique_ptr<Mesh2D> Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
                                     mergedMesh.m_projection);
 }
 
-std::unique_ptr<meshkernel::Mesh2D> Mesh2D::Merge(const std::vector<Point>& mesh1Nodes,
-                                                  const std::vector<Edge>& mesh1Edges,
-                                                  const std::vector<Point>& mesh2Nodes,
-                                                  const std::vector<Edge>& mesh2Edges,
+std::unique_ptr<meshkernel::Mesh2D> Mesh2D::Merge(const std::span<const Point>& mesh1Nodes,
+                                                  const std::span<const Edge>& mesh1Edges,
+                                                  const std::span<const Point>& mesh2Nodes,
+                                                  const std::span<const Edge>& mesh2Edges,
                                                   const Projection projection)
 {
     std::vector<Point> mergedNodes(mesh1Nodes.size() + mesh2Nodes.size());
@@ -2504,49 +2504,15 @@ std::unique_ptr<meshkernel::Mesh2D> Mesh2D::Merge(const std::vector<Point>& mesh
 
         if (mesh1Nodes.size() > 0)
         {
-            const UInt edgeOffset = mesh1Edges.size();
             const UInt nodeOffset = mesh1Nodes.size();
 
             // Re-assign the node ids for the second mesh data set
-            for (size_t i = 0; i < mesh2Edges.size(); ++i)
+            for (size_t i = mesh1Edges.size(); i < mergedEdges.size(); ++i)
             {
-                IncrementValidValue(mergedEdges[i + edgeOffset].first, nodeOffset);
-                IncrementValidValue(mergedEdges[i + edgeOffset].second, nodeOffset);
+                IncrementValidValue(mergedEdges[i].first, nodeOffset);
+                IncrementValidValue(mergedEdges[i].second, nodeOffset);
             }
         }
-
-        // // A copy is needed so that the node connectivity ids can be reassigned
-        // // The copy is needed only if mesh1Nodes.size() > 0 (most likelly to be true)
-        // std::vector<Edge> mesh2EdgesCopy;
-        // std::span<const Edge> mesh2EdgesSpan;
-
-        // if (mesh1Nodes.size() > 0)
-        // {
-        //     mesh2EdgesCopy = mesh2Edges;
-
-        //     // Re-assign the node ids for the second mesh data set
-        //     for (size_t i = 0; i < mesh2Edges.size(); ++i)
-        //     {
-        //         if (mesh2EdgesCopy[i].first != constants::missing::uintValue)
-        //         {
-        //             mesh2EdgesCopy[i].first += numberOfMesh1Nodes;
-        //         }
-
-        //         if (mesh2EdgesCopy[i].second != constants::missing::uintValue)
-        //         {
-        //             mesh2EdgesCopy[i].second += numberOfMesh1Nodes;
-        //         }
-        //     }
-
-        //     mesh2EdgesSpan = std::span<const Edge>(mesh2EdgesCopy.data(), mesh2EdgesCopy.size());
-        // }
-        // else
-        // {
-        //     mesh2EdgesSpan = std::span<const Edge>(mesh2Edges.data(), mesh2Edges.size());
-        // }
-
-        // // Merge edge array from mesh2 edges
-        // mergedEdges.insert(mergedEdges.begin() + mesh1Edges.size(), mesh2EdgesSpan.begin(), mesh2EdgesSpan.end());
     }
 
     return std::make_unique<Mesh2D>(mergedEdges, mergedNodes, projection);

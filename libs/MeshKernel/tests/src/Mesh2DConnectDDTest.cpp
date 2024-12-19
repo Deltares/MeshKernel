@@ -254,7 +254,9 @@ TEST(Mesh2DConnectDD, MergeMeshes)
     delta = meshkernel::Vector{2.5, 2.5};
     std::shared_ptr<meshkernel::Mesh2D> mesh2 = generateMesh(origin, delta, 9, 9);
 
-    const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
+    const auto mergedMesh = meshkernel::Mesh2D::Merge(mesh1->Nodes(), mesh1->Edges(),
+                                                      mesh2->Nodes(), mesh2->Edges(),
+                                                      mesh1->m_projection);
 
     const std::vector<meshkernel::Point> originalNodes(mergedMesh->Nodes());
     const std::vector<meshkernel::Edge> originalEdges(mergedMesh->Edges());
@@ -310,13 +312,17 @@ TEST(Mesh2DConnectDD, MergeOneEmptyMesh)
     // The projection needs to be set, as there is no default
     mesh2.m_projection = meshkernel::Projection::cartesian;
 
-    const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, mesh2);
+    const auto mergedMesh = meshkernel::Mesh2D::Merge(mesh1->Nodes(), mesh1->Edges(),
+                                                      mesh2.Nodes(), mesh2.Edges(),
+                                                      mesh1->m_projection);
 
     EXPECT_EQ(mergedMesh->GetNumFaces(), mesh1->GetNumFaces());
     EXPECT_EQ(mergedMesh->GetNumNodes(), mesh1->GetNumNodes());
 
     // This time with the parameters reversed
-    const auto anotherMergedMesh = meshkernel::Mesh2D::Merge(mesh2, *mesh1);
+    const auto anotherMergedMesh = meshkernel::Mesh2D::Merge(mesh2.Nodes(), mesh2.Edges(),
+                                                             mesh1->Nodes(), mesh1->Edges(),
+                                                             mesh1->m_projection);
 
     EXPECT_EQ(anotherMergedMesh->GetNumFaces(), mesh1->GetNumFaces());
     EXPECT_EQ(anotherMergedMesh->GetNumValidNodes(), mesh1->GetNumNodes());
@@ -365,7 +371,9 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallNegativeOffset)
 
     std::shared_ptr<meshkernel::Mesh2D> mesh2 = generateMesh(origin, delta, nx, ny);
 
-    const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
+    const auto mergedMesh = meshkernel::Mesh2D::Merge(mesh1->Nodes(), mesh1->Edges(),
+                                                      mesh2->Nodes(), mesh2->Edges(),
+                                                      mesh1->m_projection);
 
     const std::vector<meshkernel::Point> originalNodes(mergedMesh->Nodes());
     const std::vector<meshkernel::Edge> originalEdges(mergedMesh->Edges());
@@ -445,8 +453,6 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesNoOffset)
                                                       mesh2->Nodes(), mesh2->Edges(),
                                                       mesh1->m_projection);
 
-    // const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
-
     const std::vector<meshkernel::Point> originalNodes(mergedMesh->Nodes());
     const std::vector<meshkernel::Edge> originalEdges(mergedMesh->Edges());
 
@@ -521,7 +527,9 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallPositiveOffset)
 
     std::shared_ptr<meshkernel::Mesh2D> mesh2 = generateMesh(origin, delta, nx, ny);
 
-    const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
+    const auto mergedMesh = meshkernel::Mesh2D::Merge(mesh1->Nodes(), mesh1->Edges(),
+                                                      mesh2->Nodes(), mesh2->Edges(),
+                                                      mesh1->m_projection);
 
     const std::vector<meshkernel::Point> originalNodes(mergedMesh->Nodes());
     const std::vector<meshkernel::Edge> originalEdges(mergedMesh->Edges());
@@ -596,7 +604,9 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallNegativeOffset)
 
     std::shared_ptr<meshkernel::Mesh2D> mesh2 = generateMesh(origin, delta, nx, ny);
 
-    const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
+    const auto mergedMesh = meshkernel::Mesh2D::Merge(mesh1->Nodes(), mesh1->Edges(),
+                                                      mesh2->Nodes(), mesh2->Edges(),
+                                                      mesh1->m_projection);
 
     const std::vector<meshkernel::Point> originalNodes(mergedMesh->Nodes());
     const std::vector<meshkernel::Edge> originalEdges(mergedMesh->Edges());
@@ -801,7 +811,9 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesWithSmallPositiveOffset)
 
     std::shared_ptr<meshkernel::Mesh2D> mesh2 = generateMesh(origin, delta, nx, ny);
 
-    const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
+    const auto mergedMesh = meshkernel::Mesh2D::Merge(mesh1->Nodes(), mesh1->Edges(),
+                                                      mesh2->Nodes(), mesh2->Edges(),
+                                                      mesh1->m_projection);
 
     const std::vector<meshkernel::Point> originalNodes(mergedMesh->Nodes());
     const std::vector<meshkernel::Edge> originalEdges(mergedMesh->Edges());
@@ -1008,7 +1020,9 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesErrorInSeparationFraction)
 
     std::shared_ptr<meshkernel::Mesh2D> mesh2 = generateMesh(origin, delta, nx, ny);
 
-    const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
+    const auto mergedMesh = meshkernel::Mesh2D::Merge(mesh1->Nodes(), mesh1->Edges(),
+                                                      mesh2->Nodes(), mesh2->Edges(),
+                                                      mesh1->m_projection);
 
     EXPECT_THROW([[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh, 0.5), meshkernel::RangeError);
     EXPECT_THROW([[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh, 1.5), meshkernel::RangeError);
