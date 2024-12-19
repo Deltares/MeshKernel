@@ -444,6 +444,7 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesNoOffset)
     const auto mergedMesh = meshkernel::Mesh2D::Merge(mesh1->Nodes(), mesh1->Edges(),
                                                       mesh2->Nodes(), mesh2->Edges(),
                                                       mesh1->m_projection);
+
     // const auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
 
     const std::vector<meshkernel::Point> originalNodes(mergedMesh->Nodes());
