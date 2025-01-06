@@ -158,9 +158,6 @@ namespace meshkernel
         /// @brief Determine if the point lies within the element
         bool PointIsInElement(const Point& pnt, const UInt faceId) const;
 
-        /// @brief Print the mesh graph
-        void Print(std::ostream& out = std::cout) const;
-
     private:
         static constexpr UInt MaximumNumberOfEdgesPerNode = 16; ///< Maximum number of edges per node
 
