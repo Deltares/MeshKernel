@@ -60,6 +60,7 @@ namespace meshkernel
         /// @param [in] polygon Area within which the mesh will be refined
         /// @param [in] depthValues The depth values at nodes
         /// @param [in] refinementParameters Mesh refinement parameters
+        /// @param [in] minimumDepthRefinement Nodes with depth value less than this value will not be marked for refinement
         [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh,
                                                                              const Polygons& polygon,
                                                                              const std::vector<double>& depthValues,
@@ -73,6 +74,7 @@ namespace meshkernel
         /// @param [in] interpolator The interpolator of the values
         /// @param [in] propertyId The identifier used by the interpolator
         /// @param [in] refinementParameters Mesh refinement parameters
+        /// @param [in] minimumDepthRefinement Nodes with depth value less than this value will not be marked for refinement
         [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh,
                                                                              const Polygons& polygon,
                                                                              const SampleInterpolator& interpolator,
