@@ -2783,7 +2783,9 @@ TEST(MeshRefinement, DISABLED_CasulliRefinementBasedOnDepth)
     refinementParameters.min_edge_size = 6.5; // 12.5;
     refinementParameters.max_courant_time = 5.0;
 
-    auto undo = mk::CasulliRefinement::Compute(mesh, polygon, depthInterpolator, 1, refinementParameters);
+    const double minimumRefinementDepth = 0.0;
+
+    auto undo = mk::CasulliRefinement::Compute(mesh, polygon, depthInterpolator, 1, refinementParameters, minimumRefinementDepth);
 }
 
 TEST(MeshRefinement, DISABLED_CasulliRefinementBasedOnDepthReal)
@@ -2925,9 +2927,9 @@ TEST(MeshRefinement, DISABLED_CasulliRefinementBasedOnDepthReal)
     refinementParameters.max_num_refinement_iterations = 1;
     refinementParameters.min_edge_size = 6.5; // 12.5;
     refinementParameters.max_courant_time = 100.0;
-    refinementParameters.minimum_refinement_depth = -2.0;
+    const double minimumRefinementDepth = -2.0;
 
-    auto undo = mk::CasulliRefinement::Compute(mesh2, polygon, depthInterpolator, 1, refinementParameters);
+    auto undo = mk::CasulliRefinement::Compute(mesh2, polygon, depthInterpolator, 1, refinementParameters, minimumRefinementDepth);
     mesh2.Administrate();
     mesh2.ComputeEdgesCenters();
     mesh2.ComputeEdgesLengths();

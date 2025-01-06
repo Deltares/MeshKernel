@@ -245,76 +245,74 @@ meshkernel::UInt meshkernel::MeshTriangulation::FindNearestFace(const Point& pnt
         {
             return faceId;
         }
-        else
+
+        const auto edgeIds = GetEdgeIds(faceId);
+
+        BoundedArray<4 * MaximumNumberOfEdgesPerNode> elementsChecked;
+        elementsChecked.push_back(faceId);
+
+        for (UInt i = 0; i < edgeIds.size(); ++i)
         {
-            const auto edgeIds = GetEdgeIds(faceId);
+            const auto [neighbour1, neighbour2] = GetFaceIds(edgeIds[i]);
 
-            BoundedArray<4 * MaximumNumberOfEdgesPerNode> elementsChecked;
-            elementsChecked.push_back(faceId);
-
-            for (UInt i = 0; i < edgeIds.size(); ++i)
+            if (neighbour1 != faceId && neighbour1 != constants::missing::uintValue)
             {
-                const auto [neighbour1, neighbour2] = GetFaceIds(edgeIds[i]);
-
-                if (neighbour1 != faceId && neighbour1 != constants::missing::uintValue)
+                if (PointIsInElement(pnt, neighbour1))
                 {
-                    if (PointIsInElement(pnt, neighbour1))
-                    {
-                        return neighbour1;
-                    }
-
-                    elementsChecked.push_back(neighbour1);
+                    return neighbour1;
                 }
 
-                if (neighbour2 != faceId && neighbour2 != constants::missing::uintValue)
-                {
-                    if (PointIsInElement(pnt, neighbour2))
-                    {
-                        return neighbour2;
-                    }
-
-                    elementsChecked.push_back(neighbour2);
-                }
+                elementsChecked.push_back(neighbour1);
             }
 
-            // Point not in direct neighbours of the element
-
-            m_nodeRTree->SearchNearestPoint(pnt);
-
-            if (m_nodeRTree->HasQueryResults())
+            if (neighbour2 != faceId && neighbour2 != constants::missing::uintValue)
             {
-                UInt nodeId = m_nodeRTree->GetQueryResult(0);
-
-                if (nodeId == constants::missing::uintValue)
+                if (PointIsInElement(pnt, neighbour2))
                 {
-                    return constants::missing::uintValue;
+                    return neighbour2;
                 }
 
-                for (UInt n = 0; n < m_nodesEdges[nodeId].size(); ++n)
+                elementsChecked.push_back(neighbour2);
+            }
+        }
+
+        // Point not in direct neighbours of the element
+
+        m_nodeRTree->SearchNearestPoint(pnt);
+
+        if (m_nodeRTree->HasQueryResults())
+        {
+            UInt nodeId = m_nodeRTree->GetQueryResult(0);
+
+            if (nodeId == constants::missing::uintValue)
+            {
+                return constants::missing::uintValue;
+            }
+
+            for (UInt n = 0; n < m_nodesEdges[nodeId].size(); ++n)
+            {
+                const auto faces = GetFaceIds(m_nodesEdges[nodeId][n]);
+
+                if (faces[0] != constants::missing::uintValue && !elementsChecked.contains(faces[0]))
                 {
-                    const auto faces = GetFaceIds(m_nodesEdges[nodeId][n]);
 
-                    if (faces[0] != constants::missing::uintValue && !elementsChecked.contains(faces[0]))
+                    if (PointIsInElement(pnt, faces[0]))
                     {
-
-                        if (PointIsInElement(pnt, faces[0]))
-                        {
-                            return faces[0];
-                        }
-
-                        elementsChecked.push_back(faces[0]);
+                        return faces[0];
                     }
 
-                    if (faces[1] != constants::missing::uintValue && !elementsChecked.contains(faces[1]))
+                    elementsChecked.push_back(faces[0]);
+                }
+
+                if (faces[1] != constants::missing::uintValue && !elementsChecked.contains(faces[1]))
+                {
+
+                    if (PointIsInElement(pnt, faces[1]))
                     {
-
-                        if (PointIsInElement(pnt, faces[1]))
-                        {
-                            return faces[1];
-                        }
-
-                        elementsChecked.push_back(faces[1]);
+                        return faces[1];
                     }
+
+                    elementsChecked.push_back(faces[1]);
                 }
             }
         }

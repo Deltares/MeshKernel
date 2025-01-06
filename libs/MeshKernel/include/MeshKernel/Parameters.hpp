@@ -212,11 +212,6 @@ namespace meshkernel
         /// @brief Maximum courant time in seconds
         double max_courant_time = 120.0;
 
-        /// @brief The minimum depth considered when computing refinement based on depths
-        ///
-        /// Only depths greater than this value will be considered.
-        double minimum_refinement_depth = 0.0;
-
         /// @brief Directional refinement, cannot be used when the number of smoothing iterations is larger than 0
         int directional_refinement = 0;
     };

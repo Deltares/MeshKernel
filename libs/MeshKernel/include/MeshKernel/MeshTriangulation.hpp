@@ -28,10 +28,8 @@
 #pragma once
 
 #include <array>
-#include <functional>
 #include <memory>
 #include <span>
-#include <string>
 #include <vector>
 
 #include "MeshKernel/Constants.hpp"

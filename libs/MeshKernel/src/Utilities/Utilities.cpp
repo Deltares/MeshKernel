@@ -94,7 +94,7 @@ void meshkernel::Print(const std::vector<double>& xNodes,
     }
 }
 
-void meshkernel::PrintVtk(const std::vector<Point>& nodes, const std::vector<std::vector<UInt>>& faces, const std::string& fileName)
+void meshkernel::SaveVtk(const std::vector<Point>& nodes, const std::vector<std::vector<UInt>>& faces, const std::string& fileName)
 {
 
     std::ofstream vtkFile(fileName.c_str());
