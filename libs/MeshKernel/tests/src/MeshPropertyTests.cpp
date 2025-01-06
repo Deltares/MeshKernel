@@ -80,9 +80,12 @@ TEST(MeshPropertyTests, TriangulationTest)
 TEST(MeshPropertyTests, TriangulationFailureTest)
 {
     // Not enough points
-    EXPECT_THROW(mk::MeshTriangulation triangulation(std::vector<double>{0.0, 1.0}, std::vector<double>{0.0, 1.0}, mk::Projection::cartesian), mk::ConstraintError);
+    std::vector<double> twoPointsX{0.0, 1.0};
+    std::vector<double> twoPointsY{0.0, 1.0};
+    EXPECT_THROW(mk::MeshTriangulation triangulation(twoPointsX, twoPointsY, mk::Projection::cartesian), mk::ConstraintError);
     // x- and y-points not same size
-    EXPECT_THROW(mk::MeshTriangulation triangulation(std::vector<double>{0.0, 1.0, 2.0}, std::vector<double>{0.0, 1.0}, mk::Projection::cartesian), mk::ConstraintError);
+    std::vector<double> threePointsX{0.0, 1.0, 2.0};
+    EXPECT_THROW(mk::MeshTriangulation triangulation(threePointsX, twoPointsY, mk::Projection::cartesian), mk::ConstraintError);
 
     std::vector<double> xValues{0.0, 1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0};
     std::vector<double> yValues{0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0, 3.0};

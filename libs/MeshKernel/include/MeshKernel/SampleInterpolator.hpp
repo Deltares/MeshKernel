@@ -32,7 +32,7 @@
 #include <string>
 #include <vector>
 
-#include "MeshKernel/AveragingInterpolation.hpp" //  Only for the enum Method. should move to Definitions.hpp
+#include "MeshKernel/AveragingInterpolation.hpp"
 #include "MeshKernel/AveragingStrategies/AveragingStrategy.hpp"
 #include "MeshKernel/AveragingStrategies/AveragingStrategyFactory.hpp"
 #include "MeshKernel/Constants.hpp"
@@ -58,29 +58,14 @@ namespace meshkernel
         virtual UInt Size() const = 0;
 
         /// @brief Set sample data
-        template <meshkernel::ValidConstDoubleArray VectorType>
-        void SetData(const int propertyId, const VectorType& sampleData)
-        {
-            const std::span<const double> spanSampleData(sampleData.data(), sampleData.size());
-            SetDataSpan(propertyId, sampleData);
-        }
+        virtual void SetData(const int propertyId, const std::span<const double> sampleData) = 0;
 
         /// @brief Interpolate the sample data set at the interpolation nodes.
-        template <meshkernel::ValidConstPointArray PointVectorType, meshkernel::ValidConstDoubleArray ScalarVectorType>
-        void Interpolate(const int propertyId, const PointVectorType& iterpolationNodes, ScalarVectorType& result) const
-        {
-            const std::span<const Point> spanInterpolationNodes(iterpolationNodes.data(), iterpolationNodes.size());
-            std::span<double> spanResult(result.data(), result.size());
-            InterpolateSpan(propertyId, spanInterpolationNodes, spanResult);
-        }
+        virtual void Interpolate(const int propertyId, const std::span<const Point> iterpolationNodes, std::span<double> result) const = 0;
 
-        /// @brief Interpolate the sample data set at the interpolation point from a mesh.
-        template <meshkernel::ValidConstDoubleArray ScalarVectorType>
-        void Interpolate(const int propertyId, const Mesh2D& mesh, const Location location, ScalarVectorType& result) const
-        {
-            std::span<double> spanResult(result.data(), result.size());
-            InterpolateSpan(propertyId, mesh, location, spanResult);
-        }
+        /// @brief Interpolate the sample data.
+        // TODO may need a polygon too: const Polygons& polygon
+        virtual void Interpolate(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double> result) const = 0;
 
         /// @brief Interpolate the sample data set at a single interpolation point.
         ///
@@ -92,16 +77,6 @@ namespace meshkernel
         virtual bool Contains(const int propertyId) const = 0;
 
     private:
-        /// @brief Set sample data contained in an std::span object
-        virtual void SetDataSpan(const int propertyId, const std::span<const double>& sampleData) = 0;
-
-        /// @brief Interpolate the sample data set at the interpolation nodes.
-        virtual void InterpolateSpan(const int propertyId, const std::span<const Point>& iterpolationNodes, std::span<double>& result) const = 0;
-
-        /// @brief Interpolate the sample data.
-        // TODO may need a polygon too: const Polygons& polygon
-        virtual void InterpolateSpan(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double>& result) const = 0;
-
         // TODO the map -> sample-data can be here
         // with protected members to access the data.
     };

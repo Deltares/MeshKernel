@@ -70,44 +70,27 @@ namespace meshkernel
     {
     public:
         /// @brief Constructor.
-        ///
-        /// The VectorType can be any array type of double precision values, e.g. std::vector, std::span.
-        template <meshkernel::ValidConstDoubleArray VectorType>
-        SampleAveragingInterpolator(const VectorType& xNodes,
-                                    const VectorType& yNodes,
+        SampleAveragingInterpolator(const std::span<const double> xNodes,
+                                    const std::span<const double> yNodes,
                                     const Projection projection,
-                                    const InterpolationParameters& interpolationParameters)
-            : m_samplePoints(CombineCoordinates(xNodes, yNodes)),
-              m_projection(projection),
-              m_interpolationParameters(interpolationParameters),
-              m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(interpolationParameters.m_method,
-                                                                                   interpolationParameters.m_minimumNumberOfSamples,
-                                                                                   projection)),
-              m_nodeRTree(RTreeFactory::Create(projection))
-        {
-            m_nodeRTree->BuildTree(m_samplePoints);
-        }
+                                    const InterpolationParameters& interpolationParameters);
 
         /// @brief Constructor.
-        ///
-        /// The VectorType can be any array type of double precision values, e.g. std::vector, std::span.
-        template <meshkernel::ValidConstPointArray PointVector>
-        SampleAveragingInterpolator(const PointVector& nodes,
+        SampleAveragingInterpolator(const std::span<const Point> nodes,
                                     const Projection projection,
-                                    const InterpolationParameters& interpolationParameters)
-            : m_samplePoints(nodes.begin(), nodes.end()),
-              m_projection(projection),
-              m_interpolationParameters(interpolationParameters),
-              m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(interpolationParameters.m_method,
-                                                                                   interpolationParameters.m_minimumNumberOfSamples,
-                                                                                   projection)),
-              m_nodeRTree(RTreeFactory::Create(projection))
-        {
-            m_nodeRTree->BuildTree(m_samplePoints);
-        }
+                                    const InterpolationParameters& interpolationParameters);
 
         /// @brief Get the number of nodes of size of the sample data.
         UInt Size() const override;
+
+        /// @brief Set sample data from std::span object
+        void SetData(const int propertyId, const std::span<const double> sampleData) override;
+
+        /// @brief Interpolate the sample data set at the interpolation nodes.
+        void Interpolate(const int propertyId, const std::span<const Point> iterpolationNodes, std::span<double> result) const override;
+
+        /// @brief Interpolate the sample data set at the locationd defined.
+        void Interpolate(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double> result) const override;
 
         /// @brief Interpolate the sample data set at a single interpolation point.
         ///
@@ -122,28 +105,7 @@ namespace meshkernel
         static constexpr UInt MaximumNumberOfEdgesPerNode = 16; ///< Maximum number of edges per node
 
         /// @brief Combine x- and y-coordinate arrays to a point array
-        template <meshkernel::ValidConstDoubleArray VectorType>
-        static std::vector<Point> CombineCoordinates(const VectorType& xNodes, const VectorType& yNodes)
-        {
-            std::vector<Point> result(xNodes.size());
-
-            for (size_t i = 0; i < xNodes.size(); ++i)
-            {
-                result[i].x = xNodes[i];
-                result[i].y = yNodes[i];
-            }
-
-            return result;
-        }
-
-        /// @brief Set sample data from std::span object
-        void SetDataSpan(const int propertyId, const std::span<const double>& sampleData) override;
-
-        /// @brief Interpolate the sample data set at the interpolation nodes.
-        void InterpolateSpan(const int propertyId, const std::span<const Point>& iterpolationNodes, std::span<double>& result) const override;
-
-        /// @brief Interpolate the sample data set at the locationd defined.
-        void InterpolateSpan(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double>& result) const override;
+        static std::vector<Point> CombineCoordinates(const std::span<const double> xNodes, const std::span<const double> yNodes);
 
         /// @brief Interpolate the sample data on the element at the interpolation point.
         double InterpolateOnElement(const UInt elementId, const Point& interpolationPoint, const std::vector<double>& sampleValues) const;
