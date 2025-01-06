@@ -51,28 +51,27 @@ namespace meshkernel
     {
     public:
         /// @brief Constructor.
-        ///
-        /// The VectorType can be any array type of double precision values, e.g. std::vector, std::span.
-        template <meshkernel::ValidConstDoubleArray VectorType>
-        SampleTriangulationInterpolator(const VectorType& xNodes,
-                                        const VectorType& yNodes,
+        SampleTriangulationInterpolator(const std::span<const double> xNodes,
+                                        const std::span<const double> yNodes,
                                         const Projection projection)
             : m_triangulation(xNodes, yNodes, projection) {}
 
         /// @brief Constructor.
-        ///
-        /// The VectorType can be any array type of double precision values, e.g. std::vector, std::span.
-        template <meshkernel::ValidConstPointArray PointVector>
-        SampleTriangulationInterpolator(const PointVector& nodes,
+        SampleTriangulationInterpolator(const std::span<const Point> nodes,
                                         const Projection projection)
             : m_triangulation(nodes, projection) {}
 
         /// @brief Get the number of nodes of size of the sample data.
         UInt Size() const override;
 
-        /// @brief Set sample data
-        // template <meshkernel::ValidConstDoubleArray VectorType>
-        // void SetData(const int propertyId, const VectorType& sampleData) override;
+        /// @brief Set sample data from std::span object
+        void SetData(const int propertyId, const std::span<const double> sampleData) override;
+
+        /// @brief Interpolate the sample data at the points for the location (nodes, edges, faces)
+        void Interpolate(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double> result) const override;
+
+        /// @brief Interpolate the sample data set at the interpolation nodes.
+        void Interpolate(const int propertyId, const std::span<const Point> iterpolationNodes, std::span<double> result) const override;
 
         /// @brief Interpolate the sample data set at a single interpolation point.
         ///
@@ -84,15 +83,6 @@ namespace meshkernel
         bool Contains(const int propertyId) const override;
 
     private:
-        /// @brief Set sample data from std::span object
-        void SetDataSpan(const int propertyId, const std::span<const double>& sampleData) override;
-
-        /// @brief Interpolate the sample data at the points for the location (nodes, edges, faces)
-        void InterpolateSpan(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double>& result) const override;
-
-        /// @brief Interpolate the sample data set at the interpolation nodes.
-        void InterpolateSpan(const int propertyId, const std::span<const Point>& iterpolationNodes, std::span<double>& result) const override;
-
         /// @brief Interpolate the sample data on the element at the interpolation point.
         double InterpolateOnElement(const UInt elementId, const Point& interpolationPoint, const std::vector<double>& sampleValues) const;
 

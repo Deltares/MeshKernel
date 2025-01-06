@@ -332,9 +332,8 @@ namespace meshkernel
     /// @param[in] triangleNodes A series of node forming an open triangle
     /// @param[in] projection The coordinate system projection.
     /// @returns If point is inside the designated triangle
-    template <class PointVector>
     [[nodiscard]] bool IsPointInTriangle(const Point& point,
-                                         const PointVector& triangleNodes,
+                                         const std::span<const Point> triangleNodes,
                                          const Projection& projection);
 
     /// @brief Computes three base components
@@ -595,8 +594,7 @@ namespace meshkernel
     /// @param[in] points The point series.
     /// @param[in] projection The projection to use.
     /// @return The average coordinate.
-    template <ValidConstPointArray PointVector>
-    [[nodiscard]] Point ComputeAverageCoordinate(const PointVector& points, const Projection& projection);
+    [[nodiscard]] Point ComputeAverageCoordinate(const std::span<const Point> points, const Projection& projection);
 
     /// @brief Cartesian projection of a point on a segment defined by other two points
     /// @param firstNode The first node of the segment
@@ -674,121 +672,4 @@ inline meshkernel::Cartesian3DPoint meshkernel::operator*(const double value, co
 inline meshkernel::Cartesian3DPoint meshkernel::operator*(const Cartesian3DPoint& p, const double value)
 {
     return value * p;
-}
-
-namespace meshkernel
-{
-    template <ValidConstPointArray PointVector>
-    [[nodiscard]] Point ComputeAverageCoordinate(const PointVector& points, const Projection& projection)
-    {
-        size_t validCount = std::ranges::count_if(points, [](const Point& p)
-                                                  { return p.IsValid(); });
-
-        if (projection == Projection::sphericalAccurate)
-        {
-
-            UInt firstValidPoint = 0;
-
-            if (validCount != points.size())
-            {
-                auto iterator = std::ranges::find_if(points, [](const Point& p)
-                                                     { return p.IsValid(); });
-                firstValidPoint = static_cast<UInt>(iterator - points.begin());
-            }
-
-            Cartesian3DPoint averagePoint3D{0.0, 0.0, 0.0};
-            for (const auto& point : points)
-            {
-                if (!point.IsValid())
-                {
-                    continue;
-                }
-
-                const Cartesian3DPoint point3D{SphericalToCartesian3D(point)};
-                averagePoint3D.x += point3D.x;
-                averagePoint3D.y += point3D.y;
-                averagePoint3D.z += point3D.z;
-            }
-            averagePoint3D.x = averagePoint3D.x / static_cast<double>(validCount);
-            averagePoint3D.y = averagePoint3D.y / static_cast<double>(validCount);
-            averagePoint3D.z = averagePoint3D.z / static_cast<double>(validCount);
-
-            return Cartesian3DToSpherical(averagePoint3D, points[firstValidPoint].x);
-        }
-
-        auto result = std::accumulate(points.begin(), points.end(), Point{0.0, 0.0}, [](const Point& sum, const Point& current)
-                                      { return current.IsValid() ? sum + current : sum; });
-        result.x = result.x / static_cast<double>(validCount);
-        result.y = result.y / static_cast<double>(validCount);
-        return result;
-    }
-} // namespace meshkernel
-
-template <class PointVector>
-[[nodiscard]] bool meshkernel::IsPointInTriangle(const Point& point,
-                                                 const PointVector& triangleNodes,
-                                                 const Projection& projection)
-{
-    if (triangleNodes.empty())
-    {
-        return true;
-    }
-
-    bool isInTriangle = false;
-
-    if (projection == Projection::cartesian || projection == Projection::spherical)
-    {
-        int windingNumber = 0;
-
-        for (UInt n = 0; n < constants::geometric::numNodesInTriangle; n++)
-        {
-            UInt endIndex = n == 2 ? 0 : n + 1;
-
-            const auto crossProductValue = crossProduct(triangleNodes[n], triangleNodes[endIndex], triangleNodes[n], point, Projection::cartesian);
-
-            if (IsEqual(crossProductValue, 0.0))
-            {
-                // point on the line
-                return true;
-            }
-
-            if (triangleNodes[n].y <= point.y) // an upward crossing
-            {
-                if (triangleNodes[endIndex].y > point.y && crossProductValue > 0.0)
-                {
-                    ++windingNumber; // have  a valid up intersect
-                }
-            }
-            else
-            {
-                if (triangleNodes[endIndex].y <= point.y && crossProductValue < 0.0) // a downward crossing
-                {
-                    --windingNumber; // have  a valid down intersect
-                }
-            }
-        }
-
-        isInTriangle = windingNumber == 0 ? false : true;
-    }
-
-    if (projection == Projection::sphericalAccurate)
-    {
-        std::vector<Point> triangleCopy;
-        triangleCopy.reserve(constants::geometric::numNodesInTriangle + 1);
-        Point centre(0.0, 0.0);
-
-        for (UInt i = 0; i < constants::geometric::numNodesInTriangle; ++i)
-        {
-            centre += triangleNodes[i];
-            triangleCopy.emplace_back(triangleNodes[i]);
-        }
-
-        triangleCopy.emplace_back(triangleNodes[0]);
-
-        centre *= 1.0 / 3.0;
-
-        isInTriangle = IsPointInPolygonNodes(point, triangleCopy, projection, centre);
-    }
-
-    return isInTriangle;
 }
