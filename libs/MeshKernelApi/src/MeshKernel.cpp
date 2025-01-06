@@ -129,7 +129,7 @@ namespace meshkernelapi
 
     int GeneratePropertyId()
     {
-        // The current property id, initialised with a number larger than the Mesh2D:::Property enum values
+        // The current property id, initialised with a value equal to the last enum in Mesh2D:::Property enum values
         static int currentPropertyId = static_cast<int>(meshkernel::Mesh2D::Property::EdgeLength);
 
         // Increment and return the current property id value.
@@ -3198,7 +3198,8 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_mesh2d_casulli_refinement_wrt_depths(int meshKernelId,
                                                                  const GeometryList& polygons,
                                                                  int propertyId,
-                                                                 const meshkernel::MeshRefinementParameters& meshRefinementParameters)
+                                                                 const meshkernel::MeshRefinementParameters& meshRefinementParameters,
+                                                                 const double minimumRefinementDepth)
     {
         lastExitCode = meshkernel::ExitCode::Success;
 
@@ -3229,7 +3230,8 @@ namespace meshkernelapi
                 auto undoAction = meshkernel::CasulliRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d,
                                                                          meshKernelPolygons,
                                                                          depthValues,
-                                                                         meshRefinementParameters);
+                                                                         meshRefinementParameters,
+                                                                         minimumRefinementDepth);
 
                 meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
             }

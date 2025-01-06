@@ -731,7 +731,7 @@ TEST(CasulliRefinement, CurvilinearRefinementBasedOnDepths)
     meshkernel::MeshRefinementParameters refinementParameters;
     refinementParameters.min_edge_size = 0.5 * delta; // 12.5;
     refinementParameters.max_courant_time = 2.0;
-    refinementParameters.minimum_refinement_depth = -2.0 * delta;
+    const double minimumRefinementDepth = -2.0 * delta;
 
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -741,7 +741,7 @@ TEST(CasulliRefinement, CurvilinearRefinementBasedOnDepths)
     EXPECT_EQ(264, mesh2d.num_valid_edges);
 
     // Refine using Casulli algorithm
-    errorCode = meshkernelapi::mkernel_mesh2d_casulli_refinement_wrt_depths(meshKernelId, polygon, propertyId, refinementParameters);
+    errorCode = meshkernelapi::mkernel_mesh2d_casulli_refinement_wrt_depths(meshKernelId, polygon, propertyId, refinementParameters, minimumRefinementDepth);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);

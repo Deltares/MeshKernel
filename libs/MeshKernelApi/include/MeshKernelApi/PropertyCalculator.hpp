@@ -79,6 +79,8 @@ namespace meshkernelapi
         virtual bool IsValid(const MeshKernelState& state, const meshkernel::Location location) const;
 
         /// @brief Calculate the edge-length for a mesh
+        ///
+        /// \note This calculator is for mesh edges only
         void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const override;
 
         /// @brief Determine the size of the edge-length vector required
@@ -99,6 +101,8 @@ namespace meshkernelapi
         bool IsValid(const MeshKernelState& state, const meshkernel::Location location) const override;
 
         /// @brief Calculate the edge-length for a mesh
+        ///
+        /// \note This calculator is for mesh edges only
         void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const override;
 
         /// @brief Determine the size of the edge-length vector required
