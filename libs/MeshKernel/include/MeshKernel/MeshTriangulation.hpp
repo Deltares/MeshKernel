@@ -43,9 +43,9 @@
 namespace meshkernel
 {
 
-    /// @brief A simple bounded array
+    /// @brief A simple bounded stack
     template <const UInt Dimension>
-    class BoundedArray
+    class BoundedStack
     {
     public:
         /// @brief Number of elements in the array

@@ -26,4 +26,26 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernel/SampleInterpolator.hpp"
-#include "MeshKernel/Operations.hpp"
+#include "MeshKernel/Exceptions.hpp"
+
+void meshkernel::SampleInterpolator::SetData(const int propertyId, const std::span<const double> sampleData)
+{
+    if (Size() != sampleData.size())
+    {
+        throw ConstraintError("The sample data array does not have the same number of values as the sample point set: {} /= {}",
+                              Size(), sampleData.size());
+    }
+
+    m_sampleData[propertyId].assign(sampleData.begin(), sampleData.end());
+}
+
+const std::vector<double>& meshkernel::SampleInterpolator::GetSampleData(const int propertyId) const
+{
+
+    if (!Contains(propertyId))
+    {
+        throw ConstraintError("The sample data set for property id {}, has not been defined", propertyId);
+    }
+
+    return m_sampleData.at(propertyId);
+}

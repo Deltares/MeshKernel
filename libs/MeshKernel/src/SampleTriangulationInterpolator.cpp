@@ -1,16 +1,5 @@
 #include "MeshKernel/SampleTriangulationInterpolator.hpp"
 
-void meshkernel::SampleTriangulationInterpolator::SetData(const int propertyId, const std::span<const double> sampleData)
-{
-    if (m_triangulation.NumberOfNodes() != sampleData.size())
-    {
-        throw ConstraintError("The sample data array does not have the same number of elements as the number of nodes in the triangulation: {} /= {}",
-                              m_triangulation.NumberOfNodes(), sampleData.size());
-    }
-
-    m_sampleData[propertyId].assign(sampleData.begin(), sampleData.end());
-}
-
 void meshkernel::SampleTriangulationInterpolator::Interpolate(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double> result) const
 {
     if (!Contains(propertyId))
@@ -23,13 +12,13 @@ void meshkernel::SampleTriangulationInterpolator::Interpolate(const int property
     switch (location)
     {
     case Location::Nodes:
-        meshNodes = std::span<const Point>(mesh.Nodes().data(), mesh.Nodes().size());
+        meshNodes = std::span<const Point>(mesh.Nodes());
         break;
     case Location::Edges:
-        meshNodes = std::span<const Point>(mesh.m_edgesCenters.data(), mesh.m_edgesCenters.size());
+        meshNodes = std::span<const Point>(mesh.m_edgesCenters);
         break;
     case Location::Faces:
-        meshNodes = std::span<const Point>(mesh.m_facesMassCenters.data(), mesh.m_facesMassCenters.size());
+        meshNodes = std::span<const Point>(mesh.m_facesMassCenters);
         break;
     default:
         throw ConstraintError("Unknown location");
@@ -51,7 +40,7 @@ void meshkernel::SampleTriangulationInterpolator::Interpolate(const int property
                               interpolationNodes.size(), result.size());
     }
 
-    const std::vector<double>& propertyValues = m_sampleData.at(propertyId);
+    const std::vector<double>& propertyValues = GetSampleData(propertyId);
 
     for (size_t i = 0; i < interpolationNodes.size(); ++i)
     {
@@ -139,7 +128,7 @@ double meshkernel::SampleTriangulationInterpolator::InterpolateValue(const int p
 
     if (m_triangulation.PointIsInElement(evaluationPoint, elementId))
     {
-        const std::vector<double>& propertyValues = m_sampleData.at(propertyId);
+        const std::vector<double>& propertyValues = GetSampleData(propertyId);
         result = InterpolateOnElement(elementId, evaluationPoint, propertyValues);
     }
 

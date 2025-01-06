@@ -52,19 +52,22 @@ namespace meshkernel
     class SampleInterpolator
     {
     public:
+        /// @brief Destructor
         virtual ~SampleInterpolator() = default;
+
+        /// @brief Set sample data
+        void SetData(const int propertyId, const std::span<const double> sampleData);
 
         /// @brief Get the number of sample points
         virtual UInt Size() const = 0;
 
-        /// @brief Set sample data
-        virtual void SetData(const int propertyId, const std::span<const double> sampleData) = 0;
+        /// @brief Determine if the SampleInterpolator already has this sample set.
+        bool Contains(const int propertyId) const;
 
         /// @brief Interpolate the sample data set at the interpolation nodes.
         virtual void Interpolate(const int propertyId, const std::span<const Point> iterpolationNodes, std::span<double> result) const = 0;
 
         /// @brief Interpolate the sample data.
-        // TODO may need a polygon too: const Polygons& polygon
         virtual void Interpolate(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double> result) const = 0;
 
         /// @brief Interpolate the sample data set at a single interpolation point.
@@ -73,12 +76,18 @@ namespace meshkernel
         /// can be obtained using the Interpolate function above.
         virtual double InterpolateValue(const int propertyId, const Point& evaluationPoint) const = 0;
 
-        /// @brief Determine if the SampleInterpolator already has this sample set.
-        virtual bool Contains(const int propertyId) const = 0;
+    protected:
+        /// @brief Get the sample property data for the id.
+        const std::vector<double>& GetSampleData(const int propertyId) const;
 
     private:
-        // TODO the map -> sample-data can be here
-        // with protected members to access the data.
+        /// @brief Map from sample id (int) to sample data.
+        std::map<int, std::vector<double>> m_sampleData;
     };
 
 } // namespace meshkernel
+
+inline bool meshkernel::SampleInterpolator::Contains(const int propertyId) const
+{
+    return m_sampleData.contains(propertyId);
+}
