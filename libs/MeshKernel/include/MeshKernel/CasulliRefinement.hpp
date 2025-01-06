@@ -63,7 +63,8 @@ namespace meshkernel
         [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh,
                                                                              const Polygons& polygon,
                                                                              const std::vector<double>& depthValues,
-                                                                             const MeshRefinementParameters& refinementParameters);
+                                                                             const MeshRefinementParameters& refinementParameters,
+                                                                             const double minimumDepthRefinement);
 
         /// @brief Compute the Casulli refinement for the part of the mesh inside the polygon
         ///
@@ -76,7 +77,8 @@ namespace meshkernel
                                                                              const Polygons& polygon,
                                                                              const SampleInterpolator& interpolator,
                                                                              const int propertyId,
-                                                                             const MeshRefinementParameters& refinementParameters);
+                                                                             const MeshRefinementParameters& refinementParameters,
+                                                                             const double minimumDepthRefinement);
 
     private:
         ///@brief Indicates status of a node.
@@ -120,17 +122,19 @@ namespace meshkernel
         /// @param [in, out] nodeMask Node mask information
         static void InitialiseFaceNodes(const Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
 
-        /// @brief INitialise the node mask using depth data
+        /// @brief Initialise the node mask using depth data
         static std::vector<NodeMask> InitialiseDepthBasedNodeMask(const Mesh2D& mesh,
                                                                   const Polygons& polygon,
                                                                   const std::vector<double>& depthValues,
                                                                   const MeshRefinementParameters& refinementParameters,
+                                                                  const double minimumDepthRefinement,
                                                                   bool& refinementRequested);
 
         /// @brief Refine the node mask using depth data.
         static void RefineNodeMaskBasedOnDepths(const Mesh2D& mesh,
                                                 const std::vector<double>& depthValues,
                                                 const MeshRefinementParameters& refinementParameters,
+                                                const double minimumDepthRefinement,
                                                 std::vector<NodeMask>& nodeMask,
                                                 bool& refinementRequested);
 

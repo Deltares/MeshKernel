@@ -58,7 +58,8 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(M
 std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(Mesh2D& mesh,
                                                                                const Polygons& polygon,
                                                                                const std::vector<double>& depthValues,
-                                                                               const MeshRefinementParameters& refinementParameters)
+                                                                               const MeshRefinementParameters& refinementParameters,
+                                                                               const double minimumDepthRefinement)
 {
     std::unique_ptr<FullUnstructuredGridUndo> refinementAction;
 
@@ -70,7 +71,7 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(M
     }
 
     std::vector<EdgeNodes> newNodes(mesh.GetNumEdges(), {constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue});
-    std::vector<NodeMask> nodeMask(InitialiseDepthBasedNodeMask(mesh, polygon, depthValues, refinementParameters, refinementRequested));
+    std::vector<NodeMask> nodeMask(InitialiseDepthBasedNodeMask(mesh, polygon, depthValues, refinementParameters, minimumDepthRefinement, refinementRequested));
 
     if (refinementRequested)
     {
@@ -94,7 +95,8 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(M
                                                                                const Polygons& polygon,
                                                                                const SampleInterpolator& interpolator,
                                                                                const int propertyId,
-                                                                               const MeshRefinementParameters& refinementParameters)
+                                                                               const MeshRefinementParameters& refinementParameters,
+                                                                               const double minimumDepthRefinement)
 {
     std::unique_ptr<FullUnstructuredGridUndo> refinementAction = FullUnstructuredGridUndo::Create(mesh);
 
@@ -112,7 +114,7 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::CasulliRefinement::Compute(M
         }
 
         std::vector<EdgeNodes> newNodes(mesh.GetNumEdges(), {constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue, constants::missing::uintValue});
-        std::vector<NodeMask> nodeMask(InitialiseDepthBasedNodeMask(mesh, polygon, interpolatedDepth, refinementParameters, refinementRequested));
+        std::vector<NodeMask> nodeMask(InitialiseDepthBasedNodeMask(mesh, polygon, interpolatedDepth, refinementParameters, minimumDepthRefinement, refinementRequested));
 
         if (!refinementRequested)
         {
@@ -262,6 +264,7 @@ void meshkernel::CasulliRefinement::InitialiseFaceNodes(const Mesh2D& mesh, std:
 void meshkernel::CasulliRefinement::RefineNodeMaskBasedOnDepths(const Mesh2D& mesh,
                                                                 const std::vector<double>& depthValues,
                                                                 const MeshRefinementParameters& refinementParameters,
+                                                                const double minimumDepthRefinement,
                                                                 std::vector<NodeMask>& nodeMask [[maybe_unused]],
                                                                 bool& refinementRequested)
 {
@@ -278,7 +281,7 @@ void meshkernel::CasulliRefinement::RefineNodeMaskBasedOnDepths(const Mesh2D& me
             UInt edgeId = mesh.m_nodesEdges[i][j];
             double depth = depthValues[edgeId];
 
-            if (depth == constants::missing::doubleValue || depth < refinementParameters.minimum_refinement_depth)
+            if (depth == constants::missing::doubleValue || (minimumDepthRefinement != constants::missing::doubleValue && depth < minimumDepthRefinement))
             {
                 continue;
             }
@@ -328,6 +331,7 @@ std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefineme
                                                                                                                  const Polygons& polygon,
                                                                                                                  const std::vector<double>& depthValues,
                                                                                                                  const MeshRefinementParameters& refinementParameters,
+                                                                                                                 const double minimumDepthRefinement,
                                                                                                                  bool& refinementRequested)
 {
     std::vector<NodeMask> nodeMask(10 * mesh.GetNumNodes(), NodeMask::Unassigned);
@@ -336,7 +340,7 @@ std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefineme
     // If the polygon is empty then all nodes will be taken into account.
 
     RegisterNodesInsidePolygon(mesh, polygon, nodeMask);
-    RefineNodeMaskBasedOnDepths(mesh, depthValues, refinementParameters, nodeMask, refinementRequested);
+    RefineNodeMaskBasedOnDepths(mesh, depthValues, refinementParameters, minimumDepthRefinement, nodeMask, refinementRequested);
     InitialiseBoundaryNodes(mesh, nodeMask);
     InitialiseCornerNodes(mesh, nodeMask);
     InitialiseFaceNodes(mesh, nodeMask);
@@ -794,7 +798,6 @@ void meshkernel::CasulliRefinement::ComputeNewEdgeNodes(Mesh2D& mesh, const UInt
         const UInt node2 = mesh.GetEdge(i).second;
 
         if (node1 == constants::missing::uintValue || node2 == constants::missing::uintValue)
-        // if (node1 == constants::missing::uintValue && node2 == constants::missing::uintValue)
         {
             continue;
         }
