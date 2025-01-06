@@ -2485,26 +2485,37 @@ std::unique_ptr<meshkernel::Mesh2D> Mesh2D::Merge(const std::span<const Point>& 
     std::vector<Point> mergedNodes(mesh1Nodes.size() + mesh2Nodes.size());
     std::vector<Edge> mergedEdges(mesh1Edges.size() + mesh2Edges.size());
 
-    if (mesh1Nodes.size() > 0)
+    if (!mesh1Nodes.empty())
     {
         // Merge node array from mesh1 nodes
-        std::copy(mesh1Nodes.begin(), mesh1Nodes.end(), mergedNodes.begin());
+        std::ranges::copy(mesh1Nodes, mergedNodes.begin());
 
         // Merge edge array from mesh1 edges
-        std::copy(mesh1Edges.begin(), mesh1Edges.end(), mergedEdges.begin());
+        std::ranges::copy(mesh1Edges, mergedEdges.begin());
+
+        // std::copy(mesh1Nodes.begin(), mesh1Nodes.end(), mergedNodes.begin());
+
+        // // Merge edge array from mesh1 edges
+        // std::copy(mesh1Edges.begin(), mesh1Edges.end(), mergedEdges.begin());
     }
 
-    if (mesh2Nodes.size() > 0)
+    if (!mesh2Nodes.empty())
     {
         // Merge node array from mesh2 nodes
-        std::copy(mesh2Nodes.begin(), mesh2Nodes.end(), mergedNodes.begin() + mesh1Nodes.size());
+        std::ranges::copy(mesh2Nodes, mergedNodes.begin() + mesh1Nodes.size());
 
         // Merge edge array from mesh2 edges
-        std::copy(mesh2Edges.begin(), mesh2Edges.end(), mergedEdges.begin() + mesh1Edges.size());
+        std::ranges::copy(mesh2Edges, mergedEdges.begin() + mesh1Edges.size());
 
-        if (mesh1Nodes.size() > 0)
+        // // Merge node array from mesh2 nodes
+        // std::copy(mesh2Nodes.begin(), mesh2Nodes.end(), mergedNodes.begin() + mesh1Nodes.size());
+
+        // // Merge edge array from mesh2 edges
+        // std::copy(mesh2Edges.begin(), mesh2Edges.end(), mergedEdges.begin() + mesh1Edges.size());
+
+        if (!mesh1Nodes.empty())
         {
-            const UInt nodeOffset = mesh1Nodes.size();
+            const UInt nodeOffset = static_cast<UInt>(mesh1Nodes.size());
 
             // Re-assign the node ids for the second mesh data set
             for (size_t i = mesh1Edges.size(); i < mergedEdges.size(); ++i)
