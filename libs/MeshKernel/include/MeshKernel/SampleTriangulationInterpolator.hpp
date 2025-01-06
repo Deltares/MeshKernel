@@ -64,9 +64,6 @@ namespace meshkernel
         /// @brief Get the number of nodes of size of the sample data.
         UInt Size() const override;
 
-        /// @brief Set sample data from std::span object
-        void SetData(const int propertyId, const std::span<const double> sampleData) override;
-
         /// @brief Interpolate the sample data at the points for the location (nodes, edges, faces)
         void Interpolate(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double> result) const override;
 
@@ -79,18 +76,12 @@ namespace meshkernel
         /// can be obtained using the Interpolate function above.
         double InterpolateValue(const int propertyId, const Point& evaluationPoint) const override;
 
-        /// @brief Determine if the SampleInterpolator already has this sample set.
-        bool Contains(const int propertyId) const override;
-
     private:
         /// @brief Interpolate the sample data on the element at the interpolation point.
         double InterpolateOnElement(const UInt elementId, const Point& interpolationPoint, const std::vector<double>& sampleValues) const;
 
         /// @brief Triangulation of the sample points
         MeshTriangulation m_triangulation;
-
-        /// @brief Map from sample id (int) to sample data.
-        std::map<int, std::vector<double>> m_sampleData;
     };
 
 } // namespace meshkernel
@@ -98,9 +89,4 @@ namespace meshkernel
 inline meshkernel::UInt meshkernel::SampleTriangulationInterpolator::Size() const
 {
     return m_triangulation.NumberOfNodes();
-}
-
-inline bool meshkernel::SampleTriangulationInterpolator::Contains(const int propertyId) const
-{
-    return m_sampleData.contains(propertyId);
 }

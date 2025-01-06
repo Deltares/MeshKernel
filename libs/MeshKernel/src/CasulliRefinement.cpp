@@ -298,6 +298,7 @@ void meshkernel::CasulliRefinement::RefineNodeMaskBasedOnDepths(const Mesh2D& me
             if (waveCourant < 1.0)
             {
                 refineNode = true;
+                break;
             }
         }
 
