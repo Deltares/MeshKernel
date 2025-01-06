@@ -28,7 +28,50 @@
 #include "MeshKernel/SampleAveragingInterpolator.hpp"
 #include "MeshKernel/Operations.hpp"
 
-void meshkernel::SampleAveragingInterpolator::SetDataSpan(const int propertyId, const std::span<const double>& sampleData)
+std::vector<meshkernel::Point> meshkernel::SampleAveragingInterpolator::CombineCoordinates(const std::span<const double> xNodes,
+                                                                                           const std::span<const double> yNodes)
+{
+    std::vector<Point> result(xNodes.size());
+
+    for (size_t i = 0; i < xNodes.size(); ++i)
+    {
+        result[i].x = xNodes[i];
+        result[i].y = yNodes[i];
+    }
+
+    return result;
+}
+
+meshkernel::SampleAveragingInterpolator::SampleAveragingInterpolator(const std::span<const double> xNodes,
+                                                                     const std::span<const double> yNodes,
+                                                                     const Projection projection,
+                                                                     const InterpolationParameters& interpolationParameters)
+    : m_samplePoints(CombineCoordinates(xNodes, yNodes)),
+      m_projection(projection),
+      m_interpolationParameters(interpolationParameters),
+      m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(interpolationParameters.m_method,
+                                                                           interpolationParameters.m_minimumNumberOfSamples,
+                                                                           projection)),
+      m_nodeRTree(RTreeFactory::Create(projection))
+{
+    m_nodeRTree->BuildTree(m_samplePoints);
+}
+
+meshkernel::SampleAveragingInterpolator::SampleAveragingInterpolator(const std::span<const Point> nodes,
+                                                                     const Projection projection,
+                                                                     const InterpolationParameters& interpolationParameters)
+    : m_samplePoints(nodes.begin(), nodes.end()),
+      m_projection(projection),
+      m_interpolationParameters(interpolationParameters),
+      m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(interpolationParameters.m_method,
+                                                                           interpolationParameters.m_minimumNumberOfSamples,
+                                                                           projection)),
+      m_nodeRTree(RTreeFactory::Create(projection))
+{
+    m_nodeRTree->BuildTree(m_samplePoints);
+}
+
+void meshkernel::SampleAveragingInterpolator::SetData(const int propertyId, const std::span<const double> sampleData)
 {
     if (m_samplePoints.size() != sampleData.size())
     {
@@ -39,7 +82,7 @@ void meshkernel::SampleAveragingInterpolator::SetDataSpan(const int propertyId, 
     m_sampleData[propertyId].assign(sampleData.begin(), sampleData.end());
 }
 
-void meshkernel::SampleAveragingInterpolator::InterpolateSpan(const int propertyId, const std::span<const Point>& interpolationNodes, std::span<double>& result) const
+void meshkernel::SampleAveragingInterpolator::Interpolate(const int propertyId, const std::span<const Point> interpolationNodes, std::span<double> result) const
 {
     const std::vector<double>& propertyValues = m_sampleData.at(propertyId);
     std::vector<Sample> sampleCache;
@@ -293,7 +336,7 @@ void meshkernel::SampleAveragingInterpolator::InterpolateAtFaces(const int prope
     }
 }
 
-void meshkernel::SampleAveragingInterpolator::InterpolateSpan(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double>& result) const
+void meshkernel::SampleAveragingInterpolator::Interpolate(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double> result) const
 {
     std::ranges::fill(result, constants::missing::doubleValue);
 

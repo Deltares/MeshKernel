@@ -1,6 +1,6 @@
 #include "MeshKernel/SampleTriangulationInterpolator.hpp"
 
-void meshkernel::SampleTriangulationInterpolator::SetDataSpan(const int propertyId, const std::span<const double>& sampleData)
+void meshkernel::SampleTriangulationInterpolator::SetData(const int propertyId, const std::span<const double> sampleData)
 {
     if (m_triangulation.NumberOfNodes() != sampleData.size())
     {
@@ -11,7 +11,7 @@ void meshkernel::SampleTriangulationInterpolator::SetDataSpan(const int property
     m_sampleData[propertyId].assign(sampleData.begin(), sampleData.end());
 }
 
-void meshkernel::SampleTriangulationInterpolator::InterpolateSpan(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double>& result) const
+void meshkernel::SampleTriangulationInterpolator::Interpolate(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double> result) const
 {
     if (!Contains(propertyId))
     {
@@ -35,10 +35,10 @@ void meshkernel::SampleTriangulationInterpolator::InterpolateSpan(const int prop
         throw ConstraintError("Unknown location");
     }
 
-    InterpolateSpan(propertyId, meshNodes, result);
+    Interpolate(propertyId, meshNodes, result);
 }
 
-void meshkernel::SampleTriangulationInterpolator::InterpolateSpan(const int propertyId, const std::span<const Point>& interpolationNodes, std::span<double>& result) const
+void meshkernel::SampleTriangulationInterpolator::Interpolate(const int propertyId, const std::span<const Point> interpolationNodes, std::span<double> result) const
 {
     if (!Contains(propertyId))
     {

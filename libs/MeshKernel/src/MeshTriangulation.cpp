@@ -52,6 +52,54 @@ extern "C"
                        double trisize);
 }
 
+meshkernel::MeshTriangulation::MeshTriangulation(const std::span<const Point> nodes,
+                                                 const Projection projection)
+    : m_nodes(nodes.begin(), nodes.end()),
+      m_projection(projection)
+{
+    if (nodes.size() < constants::geometric::numNodesInTriangle)
+    {
+        throw ConstraintError("Not enough nodes for a single triangle: {}", nodes.size());
+    }
+
+    std::vector<double> xNodes(nodes.size());
+    std::vector<double> yNodes(nodes.size());
+
+    std::transform(nodes.begin(), nodes.end(), xNodes.begin(),
+                   [](const Point& p)
+                   { return p.x; });
+    std::transform(nodes.begin(), nodes.end(), yNodes.begin(),
+                   [](const Point& p)
+                   { return p.y; });
+
+    Compute(xNodes, yNodes);
+}
+
+meshkernel::MeshTriangulation::MeshTriangulation(const std::span<const double> xNodes,
+                                                 const std::span<const double> yNodes,
+                                                 const Projection projection)
+    : m_nodes(xNodes.size()),
+      m_projection(projection)
+{
+    if (xNodes.size() < constants::geometric::numNodesInTriangle)
+    {
+        throw ConstraintError("Not enough nodes for a single triangle: {}", xNodes.size());
+    }
+
+    if (xNodes.size() != yNodes.size())
+    {
+        throw ConstraintError("Size mismatch between x- and y-node values: {} /= {}",
+                              xNodes.size(), yNodes.size());
+    }
+
+    for (size_t i = 0; i < xNodes.size(); ++i)
+    {
+        m_nodes[i] = Point{xNodes[i], yNodes[i]};
+    }
+
+    Compute(xNodes, yNodes);
+}
+
 void meshkernel::MeshTriangulation::Compute(const std::span<const double>& xNodes,
                                             const std::span<const double>& yNodes)
 {
