@@ -83,9 +83,6 @@ namespace meshkernel
         /// @brief Get the number of nodes of size of the sample data.
         UInt Size() const override;
 
-        /// @brief Set sample data from std::span object
-        void SetData(const int propertyId, const std::span<const double> sampleData) override;
-
         /// @brief Interpolate the sample data set at the interpolation nodes.
         void Interpolate(const int propertyId, const std::span<const Point> iterpolationNodes, std::span<double> result) const override;
 
@@ -97,9 +94,6 @@ namespace meshkernel
         /// If interpolation at multiple points is required then better performance
         /// can be obtained using the Interpolate function above.
         double InterpolateValue(const int propertyId, const Point& evaluationPoint) const override;
-
-        /// @brief Determine if the SampleInterpolator already has this sample set.
-        bool Contains(const int propertyId) const override;
 
     private:
         static constexpr UInt MaximumNumberOfEdgesPerNode = 16; ///< Maximum number of edges per node
@@ -175,9 +169,4 @@ namespace meshkernel
 inline meshkernel::UInt meshkernel::SampleAveragingInterpolator::Size() const
 {
     return static_cast<UInt>(m_samplePoints.size());
-}
-
-inline bool meshkernel::SampleAveragingInterpolator::Contains(const int propertyId) const
-{
-    return m_sampleData.contains(propertyId);
 }

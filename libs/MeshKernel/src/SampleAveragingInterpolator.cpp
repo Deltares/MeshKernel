@@ -71,20 +71,9 @@ meshkernel::SampleAveragingInterpolator::SampleAveragingInterpolator(const std::
     m_nodeRTree->BuildTree(m_samplePoints);
 }
 
-void meshkernel::SampleAveragingInterpolator::SetData(const int propertyId, const std::span<const double> sampleData)
-{
-    if (m_samplePoints.size() != sampleData.size())
-    {
-        throw ConstraintError("The sample data array does not have the same number of elements as the number of nodes in the triangulation: {} /= {}",
-                              m_samplePoints.size(), sampleData.size());
-    }
-
-    m_sampleData[propertyId].assign(sampleData.begin(), sampleData.end());
-}
-
 void meshkernel::SampleAveragingInterpolator::Interpolate(const int propertyId, const std::span<const Point> interpolationNodes, std::span<double> result) const
 {
-    const std::vector<double>& propertyValues = m_sampleData.at(propertyId);
+    const std::vector<double>& propertyValues = GetSampleData(propertyId);
     std::vector<Sample> sampleCache;
     sampleCache.reserve(100);
 
@@ -178,7 +167,7 @@ void meshkernel::SampleAveragingInterpolator::GenerateSearchPolygon(const double
 double meshkernel::SampleAveragingInterpolator::GetSampleValueFromRTree(const int propertyId, const UInt index) const
 {
     UInt sampleIndex = m_nodeRTree->GetQueryResult(index);
-    return m_sampleData.at(propertyId)[sampleIndex];
+    return GetSampleData(propertyId)[sampleIndex];
 }
 
 double meshkernel::SampleAveragingInterpolator::ComputeInterpolationResultFromNeighbors(const int propertyId,
@@ -189,7 +178,7 @@ double meshkernel::SampleAveragingInterpolator::ComputeInterpolationResultFromNe
 {
     sampleCache.clear();
 
-    const std::vector<double>& propertyData(m_sampleData.at(propertyId));
+    const std::vector<double>& propertyData(GetSampleData(propertyId));
 
     Point polygonCentre{constants::missing::doubleValue, constants::missing::doubleValue};
 
