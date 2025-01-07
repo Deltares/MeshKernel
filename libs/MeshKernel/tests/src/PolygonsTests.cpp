@@ -1114,3 +1114,56 @@ TEST(Polygons, LinearRefinePolygonOutOfBoundsCheck)
     // polygon end node index incorrect
     EXPECT_THROW(auto refinedPolygon = polygons.LinearRefinePolygon(0, 1, 9), meshkernel::ConstraintError);
 }
+
+TEST(Polygons, SnapPolygonWithHoleToLandBoundary)
+{
+    // Test the algorithm for snapping multi-polygons to land boundaries.
+
+    //constexpr double tolerance = 1.0e-8;
+
+    // The land boundary to which the polygon is to be snapped.
+    // This land boundary is made up of two sections
+    std::vector<meshkernel::Point> landBoundaryPoints{{-1.0, -0.2},
+                                                      {11.0, -0.2}};
+
+    meshkernel::LandBoundary landBoundary(landBoundaryPoints);
+
+    // The original polygon points.
+    // The points make up two distinct polygons
+    std::vector<meshkernel::Point> polygonPoints{{0.0, 0.0},
+                                                 {10.0, 0.0},
+                                                 {10.0, 10.0},
+                                                 {0.0, 10.0},
+                                                 {0.0, 0.0},
+                                                 {meshkernel::constants::missing::innerOuterSeparator, meshkernel::constants::missing::innerOuterSeparator},
+                                                 {2.0, 2.0},
+                                                 {7.0, 2.0},
+                                                 {7.0, 7.0},
+                                                 {2.0, 7.0},
+                                                 {2.0, 2.0}};
+
+    meshkernel::Polygons polygon(polygonPoints, meshkernel::Projection::cartesian);
+
+    // Snap the polygon to the land boundary
+    // Only snaps the first polygon
+    polygon.SnapToLandBoundary(landBoundary, 0, 0);
+
+    const meshkernel::Polygon& firstPolygon = polygon.Enclosure(0).Outer();
+    const meshkernel::Polygon& innerPolygon = polygon.Enclosure(0).Inner(0);
+
+    std::cout << "first poly ";
+
+    for (size_t i = 0; i < firstPolygon.Size (); ++i) {
+        std::cout << "{" << firstPolygon.Node (i).x << "  " << firstPolygon.Node (i).y << "} ";
+    }
+
+    std::cout << std::endl;
+
+    std::cout << "inner poly ";
+
+    for (size_t i = 0; i < innerPolygon.Size (); ++i) {
+        std::cout << "{" << innerPolygon.Node (i).x << "  " << innerPolygon.Node (i).y << "} ";
+    }
+
+    std::cout << std::endl;
+}
