@@ -3398,6 +3398,7 @@ namespace meshkernelapi
 
             const std::vector<meshkernel::Point>& snappedPolygonPoints = polygons.Enclosure(enclosureIndex).Outer().Nodes();
 
+            // Copy the snapped polygon points
             for (size_t i = 0; i < snappedPolygonPoints.size(); ++i)
             {
                 polygon.coordinates_x[i + enclosureStartPoint] = snappedPolygonPoints[i].x;
