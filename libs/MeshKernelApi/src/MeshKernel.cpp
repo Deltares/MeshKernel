@@ -3381,11 +3381,12 @@ namespace meshkernelapi
             meshkernel::UInt enclosureCount = 0;
 
             // Find the index of the first point in the polygnal enclosure with index enclosureIndex
-            for (meshkernel::UInt i = 0; i < polygonPoints.size (); ++i)
+            for (meshkernel::UInt i = 0; i < polygonPoints.size(); ++i)
             {
-                if ((polygonPoints [i].x == meshkernel::constants::missing::doubleValue && polygonPoints [i].y == meshkernel::constants::missing::doubleValue) || i == polygonPoints.size () - 1)
+                if ((polygonPoints[i].x == meshkernel::constants::missing::doubleValue && polygonPoints[i].y == meshkernel::constants::missing::doubleValue) || i == polygonPoints.size() - 1)
                 {
-                    if (enclosureCount == enclosureIndex) {
+                    if (enclosureCount == enclosureIndex)
+                    {
                         enclosureStartPoint = enclosurePreviousStartPoint;
                         break;
                     }
@@ -3397,12 +3398,11 @@ namespace meshkernelapi
 
             const std::vector<meshkernel::Point>& snappedPolygonPoints = polygons.Enclosure(enclosureIndex).Outer().Nodes();
 
-            for (size_t i = 0; i < snappedPolygonPoints.size (); ++i)
+            for (size_t i = 0; i < snappedPolygonPoints.size(); ++i)
             {
                 polygon.coordinates_x[i + enclosureStartPoint] = snappedPolygonPoints[i].x;
                 polygon.coordinates_y[i + enclosureStartPoint] = snappedPolygonPoints[i].y;
             }
-
         }
         catch (...)
         {
