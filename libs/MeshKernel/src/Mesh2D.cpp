@@ -2492,11 +2492,6 @@ std::unique_ptr<meshkernel::Mesh2D> Mesh2D::Merge(const std::span<const Point>& 
 
         // Merge edge array from mesh1 edges
         std::ranges::copy(mesh1Edges, mergedEdges.begin());
-
-        // std::copy(mesh1Nodes.begin(), mesh1Nodes.end(), mergedNodes.begin());
-
-        // // Merge edge array from mesh1 edges
-        // std::copy(mesh1Edges.begin(), mesh1Edges.end(), mergedEdges.begin());
     }
 
     if (!mesh2Nodes.empty())
@@ -2506,12 +2501,6 @@ std::unique_ptr<meshkernel::Mesh2D> Mesh2D::Merge(const std::span<const Point>& 
 
         // Merge edge array from mesh2 edges
         std::ranges::copy(mesh2Edges, mergedEdges.begin() + mesh1Edges.size());
-
-        // // Merge node array from mesh2 nodes
-        // std::copy(mesh2Nodes.begin(), mesh2Nodes.end(), mergedNodes.begin() + mesh1Nodes.size());
-
-        // // Merge edge array from mesh2 edges
-        // std::copy(mesh2Edges.begin(), mesh2Edges.end(), mergedEdges.begin() + mesh1Edges.size());
 
         if (!mesh1Nodes.empty())
         {
