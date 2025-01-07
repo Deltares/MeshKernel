@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernel/ConnectMeshes.hpp"
+#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/RangeCheck.hpp"
@@ -59,11 +60,16 @@ void meshkernel::ConnectMeshes::AreEdgesAdjacent(const Mesh2D& mesh,
     const Point midPoint1 = 0.5 * (edge1Start + edge1End);
     const Point midPoint2 = 0.5 * (edge2Start + edge2End);
 
+    auto IsContainedInBoundingBox = [](const Point& pnt, const Point& boxMidPoint, const double boxHalfLength)
+    {
+        return (pnt.x > boxMidPoint.x - boxHalfLength && pnt.x < boxMidPoint.x + boxHalfLength &&
+                pnt.y > boxMidPoint.y - boxHalfLength && pnt.y < boxMidPoint.y + boxHalfLength);
+    };
+
     if (edge1Length <= edge2Length)
     {
         // Check that the mid point of edge 1 is inside the box centred at the mid point of the edge 2, with size 2 * edge-length.
-        if (midPoint1.x > midPoint2.x - edge2Length && midPoint1.x < midPoint2.x + edge2Length &&
-            midPoint1.y > midPoint2.y - edge2Length && midPoint1.y < midPoint2.y + edge2Length)
+        if (IsContainedInBoundingBox(midPoint1, midPoint2, edge2Length))
         {
             const auto [distance, intersection, parameterisedDistance] = DistanceFromLine(midPoint1, edge2Start, edge2End, mesh.m_projection);
             areAdjacent = distance != constants::missing::doubleValue && distance < minimumLength;
@@ -72,8 +78,7 @@ void meshkernel::ConnectMeshes::AreEdgesAdjacent(const Mesh2D& mesh,
     else
     {
         // Check that the mid point of edge 2 is inside the box centred at the mid point of the edge 1, with size 2 * edge-length.
-        if (midPoint2.x > midPoint1.x - edge1Length && midPoint2.x < midPoint1.x + edge1Length &&
-            midPoint2.y > midPoint1.y - edge1Length && midPoint2.y < midPoint1.y + edge1Length)
+        if (IsContainedInBoundingBox(midPoint2, midPoint1, edge1Length))
         {
             const auto [distance, intersection, parameterisedDistance] = DistanceFromLine(midPoint2, edge1Start, edge1End, mesh.m_projection);
             areAdjacent = distance != constants::missing::doubleValue && distance < minimumLength;
@@ -117,7 +122,7 @@ void meshkernel::ConnectMeshes::GetQuadrilateralElementsOnDomainBoundary(const M
             const UInt faceId = mesh.m_edgesFaces[i][0];
 
             // Only store quadrilateral elements
-            if (mesh.m_numFacesNodes[faceId] == 4)
+            if (mesh.m_numFacesNodes[faceId] == constants::geometric::numNodesInQuadrilateral)
             {
                 double edgeLength = ComputeDistance(mesh.Node(mesh.GetEdge(i).first),
                                                     mesh.Node(mesh.GetEdge(i).second),
