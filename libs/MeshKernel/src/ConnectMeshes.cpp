@@ -60,7 +60,7 @@ void meshkernel::ConnectMeshes::AreEdgesAdjacent(const Mesh2D& mesh,
     const Point midPoint1 = 0.5 * (edge1Start + edge1End);
     const Point midPoint2 = 0.5 * (edge2Start + edge2End);
 
-    auto IsContainedInBoundingBox = [](const Point& pnt, const Point& boxMidPoint, const double boxHalfLength)->bool
+    auto IsContainedInBoundingBox = [](const Point& pnt, const Point& boxMidPoint, const double boxHalfLength) -> bool
     {
         return (pnt.x > boxMidPoint.x - boxHalfLength && pnt.x < boxMidPoint.x + boxHalfLength &&
                 pnt.y > boxMidPoint.y - boxHalfLength && pnt.y < boxMidPoint.y + boxHalfLength);
