@@ -259,7 +259,7 @@ void meshkernel::SampleAveragingInterpolator::InterpolateAtNodes(const int prope
 
         double resultValue = constants::missing::doubleValue;
 
-        if (dualFacePolygon.size() > 0)
+        if (!dualFacePolygon.empty())
         {
             resultValue = ComputeOnPolygon(propertyId,
                                            dualFacePolygon,
@@ -333,27 +333,29 @@ void meshkernel::SampleAveragingInterpolator::Interpolate(const int propertyId, 
     std::vector<double> intermediateNodeResult;
     std::span<double> nodeResult;
 
-    if (location == Location::Nodes)
+    using enum Location;
+
+    if (location == Nodes)
     {
         nodeResult = std::span<double>(result.data(), result.size());
     }
-    else if (location == Location::Edges)
+    else if (location == Edges)
     {
         intermediateNodeResult.resize(mesh.GetNumNodes(), 0.0);
         nodeResult = std::span<double>(intermediateNodeResult.data(), intermediateNodeResult.size());
     }
 
-    if (location == Location::Nodes || location == Location::Edges)
+    if (location == Nodes || location == Edges)
     {
         InterpolateAtNodes(propertyId, mesh, nodeResult);
     }
 
-    if (location == Location::Edges)
+    if (location == Edges)
     {
         InterpolateAtEdgeCentres(mesh, nodeResult, result);
     }
 
-    if (location == Location::Faces)
+    if (location == Faces)
     {
         InterpolateAtFaces(propertyId, mesh, result);
     }
