@@ -428,8 +428,7 @@ namespace meshkernel
             return true;
         }
 
-        const auto currentPolygonSize = endNode - startNode + 1;
-        if (currentPolygonSize < constants::geometric::numNodesInTriangle || polygonNodes.size() < currentPolygonSize)
+        if (const auto currentPolygonSize = endNode - startNode + 1; currentPolygonSize < constants::geometric::numNodesInTriangle || polygonNodes.size() < currentPolygonSize)
         {
             return false;
         }

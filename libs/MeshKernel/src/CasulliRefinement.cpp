@@ -695,7 +695,6 @@ void meshkernel::CasulliRefinement::StoreNewNode(const Mesh2D& mesh, const UInt 
 
     if (newNodeId == constants::missing::uintValue)
     {
-        // TODO is this ok to do?
         return;
     }
 

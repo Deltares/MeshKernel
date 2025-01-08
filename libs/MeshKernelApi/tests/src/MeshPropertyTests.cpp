@@ -128,7 +128,7 @@ TEST(MeshPropertyTests, BathymetryTest)
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     ASSERT_EQ(sampleDataSize, numberOfEdges);
 
-    int locationId = static_cast<int>(meshkernel::Location::Edges);
+    auto locationId = static_cast<int>(meshkernel::Location::Edges);
 
     mkapi::GeometryList propertyData{};
     std::vector<double> retrievedPropertyData(numberOfEdges, -1.0);
@@ -250,7 +250,7 @@ TEST(MeshPropertyTests, PropertyFailureTest)
     sampleData.coordinates_x = bathymetryXNodes.data();
     sampleData.coordinates_y = bathymetryYNodes.data();
 
-    int locationId = static_cast<int>(meshkernel::Location::Edges);
+    auto locationId = static_cast<int>(meshkernel::Location::Edges);
     bool hasBathymetryData = false;
 
     errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, bathymetryPropertyId, locationId, hasBathymetryData);

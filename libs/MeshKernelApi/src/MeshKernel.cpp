@@ -1630,7 +1630,7 @@ namespace meshkernelapi
             if (propertyCalculators[propertyValue]->IsValid(meshKernelState[meshKernelId], location))
             {
 
-                if (location == meshkernel::Location::Edges && meshKernelState[meshKernelId].m_mesh2d->m_edgesCenters.size() == 0)
+                if (location == meshkernel::Location::Edges && meshKernelState[meshKernelId].m_mesh2d->m_edgesCenters.empty())
                 {
                     meshKernelState[meshKernelId].m_mesh2d->ComputeEdgesCenters();
                 }

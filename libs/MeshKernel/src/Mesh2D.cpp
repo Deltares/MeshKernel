@@ -1514,7 +1514,7 @@ void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point
     dualFace.reserve(m_maximumNumberOfEdgesPerNode);
     dualFace.clear();
 
-    if (sortedFacesIndices.size() == 0)
+    if (sortedFacesIndices.empty())
     {
         return;
     }
