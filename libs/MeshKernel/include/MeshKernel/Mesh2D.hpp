@@ -348,6 +348,13 @@ namespace meshkernel
         /// it may be required to call Administrate after merging
         static std::unique_ptr<Mesh2D> Merge(const Mesh2D& mesh1, const Mesh2D& mesh2);
 
+        /// @brief Merges mesh node and edge connectivity into a single mesh.
+        static std::unique_ptr<Mesh2D> Merge(const std::span<const Point>& mesh1Nodes,
+                                             const std::span<const Edge>& mesh1Edges,
+                                             const std::span<const Point>& mesh2Nodes,
+                                             const std::span<const Edge>& mesh2Edges,
+                                             const Projection projection);
+
         /// @brief Get the mesh bounding box
         ///
         /// @return The mesh bounding box

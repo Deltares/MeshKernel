@@ -2340,6 +2340,7 @@ meshkernel::UInt Mesh2D::NextFace(const UInt faceId, const UInt edgeId) const
 
 std::unique_ptr<Mesh2D> Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
 {
+
     if (mesh1.m_projection != mesh2.m_projection)
     {
         throw MeshKernelError("The two meshes cannot be merged: they have different projections");
@@ -2473,6 +2474,48 @@ std::unique_ptr<Mesh2D> Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     return std::make_unique<Mesh2D>(mergedMesh.m_edges,
                                     mergedMesh.m_nodes,
                                     mergedMesh.m_projection);
+}
+
+std::unique_ptr<meshkernel::Mesh2D> Mesh2D::Merge(const std::span<const Point>& mesh1Nodes,
+                                                  const std::span<const Edge>& mesh1Edges,
+                                                  const std::span<const Point>& mesh2Nodes,
+                                                  const std::span<const Edge>& mesh2Edges,
+                                                  const Projection projection)
+{
+    std::vector<Point> mergedNodes(mesh1Nodes.size() + mesh2Nodes.size());
+    std::vector<Edge> mergedEdges(mesh1Edges.size() + mesh2Edges.size());
+
+    if (!mesh1Nodes.empty())
+    {
+        // Merge node array from mesh1 nodes
+        std::ranges::copy(mesh1Nodes, mergedNodes.begin());
+
+        // Merge edge array from mesh1 edges
+        std::ranges::copy(mesh1Edges, mergedEdges.begin());
+    }
+
+    if (!mesh2Nodes.empty())
+    {
+        // Merge node array from mesh2 nodes
+        std::ranges::copy(mesh2Nodes, mergedNodes.begin() + mesh1Nodes.size());
+
+        // Merge edge array from mesh2 edges
+        std::ranges::copy(mesh2Edges, mergedEdges.begin() + mesh1Edges.size());
+
+        if (!mesh1Nodes.empty())
+        {
+            const UInt nodeOffset = static_cast<UInt>(mesh1Nodes.size());
+
+            // Re-assign the node ids for the second mesh data set
+            for (size_t i = mesh1Edges.size(); i < mergedEdges.size(); ++i)
+            {
+                IncrementValidValue(mergedEdges[i].first, nodeOffset);
+                IncrementValidValue(mergedEdges[i].second, nodeOffset);
+            }
+        }
+    }
+
+    return std::make_unique<Mesh2D>(mergedEdges, mergedNodes, projection);
 }
 
 meshkernel::BoundingBox Mesh2D::GetBoundingBox() const

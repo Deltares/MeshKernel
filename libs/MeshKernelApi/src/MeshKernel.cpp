@@ -3810,8 +3810,6 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            // Check mesh has been initialised
-
             // convert raw arrays to containers
             const auto edges2d = meshkernel::ConvertToEdgeNodesVector(mesh2d.num_edges,
                                                                       mesh2d.edge_nodes);
@@ -3820,33 +3818,10 @@ namespace meshkernelapi
                                                                   mesh2d.node_x,
                                                                   mesh2d.node_y);
 
-            std::unique_ptr<meshkernel::Mesh2D> meshToConnect;
-
-            if (mesh2d.num_faces > 0 && mesh2d.face_nodes != nullptr && mesh2d.nodes_per_face != nullptr)
-            {
-
-                const auto face_nodes = meshkernel::ConvertToFaceNodesVector(mesh2d.num_faces, mesh2d.face_nodes, mesh2d.nodes_per_face);
-
-                std::vector<meshkernel::UInt> num_face_nodes;
-                num_face_nodes.reserve(mesh2d.num_faces);
-
-                for (auto n = 0; n < mesh2d.num_faces; n++)
-                {
-                    num_face_nodes.emplace_back(static_cast<meshkernel::UInt>(mesh2d.nodes_per_face[n]));
-                }
-
-                meshToConnect = std::make_unique<meshkernel::Mesh2D>(edges2d,
-                                                                     nodes2d,
-                                                                     face_nodes,
-                                                                     num_face_nodes,
-                                                                     meshKernelState[meshKernelId].m_projection);
-            }
-            else
-            {
-                meshToConnect = std::make_unique<meshkernel::Mesh2D>(edges2d, nodes2d, meshKernelState[meshKernelId].m_projection);
-            }
-
-            const auto mergedMeshes = meshkernel::Mesh2D::Merge(*meshKernelState[meshKernelId].m_mesh2d, *meshToConnect);
+            const auto mergedMeshes = meshkernel::Mesh2D::Merge(meshKernelState[meshKernelId].m_mesh2d->Nodes(),
+                                                                meshKernelState[meshKernelId].m_mesh2d->Edges(),
+                                                                nodes2d, edges2d,
+                                                                meshKernelState[meshKernelId].m_projection);
             // Keep existing mesh to restore with undo
             auto undoAction = meshkernel::FullUnstructuredGridUndo::Create(*meshKernelState[meshKernelId].m_mesh2d);
             // The undo information collected from the ConnectMeshes::Compute is not needed here.

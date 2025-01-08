@@ -12,6 +12,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 if (UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     add_compile_options("-fvisibility=hidden;-Werror;-Wall;-Wextra;-pedantic;-Wno-unused-function")
+
     if(APPLE AND (CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64"))
       # CMake automatically sets -Xarch_arm64 (for clang) but gcc doesn't support it
       unset(_CMAKE_APPLE_ARCHS_DEFAULT)
@@ -51,7 +52,7 @@ set(USE_LIBFMT 0)
 if(
   (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"
     AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 13.1)
-  OR 
+  OR
   (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC"
     AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16.11.14)
 )
