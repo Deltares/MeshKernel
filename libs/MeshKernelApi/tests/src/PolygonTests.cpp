@@ -59,8 +59,17 @@ TEST(PolygonTests, PolygonWithHoleSnappingTest)
     polygon.geometry_separator = meshkernel::constants::missing::doubleValue;
     polygon.inner_outer_separator = meshkernel::constants::missing::innerOuterSeparator;
 
-    std::vector xPolygon{0.0, 10.0, 10.0, 0.0, 0.0, meshkernel::constants::missing::innerOuterSeparator, 2.0, 7.0, 7.0, 2.0, 2.0, meshkernel::constants::missing::doubleValue, 20.0, 30.0, 30.0, 20.0, 20.0};
-    std::vector yPolygon{0.0, 0.0, 10.0, 10.0, 0.0, meshkernel::constants::missing::innerOuterSeparator, 2.0, 2.0, 7.0, 7.0, 2.0, meshkernel::constants::missing::doubleValue, 0.0, 0.0, 10.0, 10.0, 0.0};
+    std::vector xPolygon{0.0, 10.0, 10.0, 0.0, 0.0,
+                         meshkernel::constants::missing::innerOuterSeparator,
+                         2.0, 7.0, 7.0, 2.0, 2.0,
+                         meshkernel::constants::missing::doubleValue,
+                         20.0, 30.0, 30.0, 20.0, 20.0};
+
+    std::vector yPolygon{0.0, 0.0, 10.0, 10.0, 0.0,
+                         meshkernel::constants::missing::innerOuterSeparator,
+                         2.0, 2.0, 7.0, 7.0, 2.0,
+                         meshkernel::constants::missing::doubleValue,
+                         0.0, 0.0, 10.0, 10.0, 0.0};
 
     polygon.coordinates_x = xPolygon.data();
     polygon.coordinates_y = yPolygon.data();
@@ -69,8 +78,17 @@ TEST(PolygonTests, PolygonWithHoleSnappingTest)
     errorCode = mkernel_polygon_snap_to_landboundary(meshKernelId, land, polygon, 4, 1);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    const std::vector<double> expectedXAfterFirstSnapping{0.0, 10.0, 10.0, 0.0, 0.0, -998.0, 2.0, 7.0, 7.0, 2.0, 2.0, -999.0, 20.0, 30.0, 30.0, 20.0, 20.0};
-    const std::vector<double> expectedYAfterFirstSnapping{-0.25, -0.25, 10.0, 10.0, -0.25, -998.0, 2.0, 2.0, 7.0, 7.0, 2.0, -999.0, 0.0, 0.0, 10.0, 10.0, 0.0};
+    const std::vector<double> expectedXAfterFirstSnapping{0.0, 10.0, 10.0, 0.0, 0.0,
+                                                          meshkernel::constants::missing::innerOuterSeparator,
+                                                          2.0, 7.0, 7.0, 2.0, 2.0,
+                                                          meshkernel::constants::missing::doubleValue,
+                                                          20.0, 30.0, 30.0, 20.0, 20.0};
+
+    const std::vector<double> expectedYAfterFirstSnapping{-0.25, -0.25, 10.0, 10.0, -0.25,
+                                                          meshkernel::constants::missing::innerOuterSeparator,
+                                                          2.0, 2.0, 7.0, 7.0, 2.0,
+                                                          meshkernel::constants::missing::doubleValue,
+                                                          0.0, 0.0, 10.0, 10.0, 0.0};
 
     ASSERT_EQ(polygon.num_coordinates, static_cast<int>(expectedXAfterFirstSnapping.size()));
 
@@ -83,8 +101,17 @@ TEST(PolygonTests, PolygonWithHoleSnappingTest)
     errorCode = mkernel_polygon_snap_to_landboundary(meshKernelId, land, polygon, 16, 13);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    const std::vector<double> expectedXAfterSecondSnapping{0.0, 10.0, 10.0, 0.0, 0.0, -998.0, 2.0, 7.0, 7.0, 2.0, 2.0, -999.0, 20.0, 30.0, 30.0, 20.0, 20.0};
-    const std::vector<double> expectedYAfterSecondSnapping{-0.25, -0.25, 10.0, 10.0, -0.25, -998.0, 2.0, 2.0, 7.0, 7.0, 2.0, -999.0, -0.25, -0.25, 10.0, 10.0, -0.25};
+    const std::vector<double> expectedXAfterSecondSnapping{0.0, 10.0, 10.0, 0.0, 0.0,
+                                                           meshkernel::constants::missing::innerOuterSeparator,
+                                                           2.0, 7.0, 7.0, 2.0, 2.0,
+                                                           meshkernel::constants::missing::doubleValue,
+                                                           20.0, 30.0, 30.0, 20.0, 20.0};
+
+    const std::vector<double> expectedYAfterSecondSnapping{-0.25, -0.25, 10.0, 10.0, -0.25,
+                                                           meshkernel::constants::missing::innerOuterSeparator,
+                                                           2.0, 2.0, 7.0, 7.0, 2.0,
+                                                           meshkernel::constants::missing::doubleValue,
+                                                           -0.25, -0.25, 10.0, 10.0, -0.25};
 
     for (size_t i = 0; i < expectedXAfterSecondSnapping.size(); ++i)
     {
