@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['orthogonalizationandsmoothing_871',['OrthogonalizationAndSmoothing',['../classmeshkernel_1_1_orthogonalization_and_smoothing.html',1,'meshkernel']]],
-  ['orthogonalizationparameters_872',['OrthogonalizationParameters',['../structmeshkernel_1_1_orthogonalization_parameters.html',1,'meshkernel']]],
-  ['orthogonalizer_873',['Orthogonalizer',['../classmeshkernel_1_1_orthogonalizer.html',1,'meshkernel']]]
+  ['network1d_910',['Network1D',['../classmeshkernel_1_1_network1_d.html',1,'meshkernel']]],
+  ['notimplementederror_911',['NotImplementedError',['../classmeshkernel_1_1_not_implemented_error.html',1,'meshkernel']]]
 ];

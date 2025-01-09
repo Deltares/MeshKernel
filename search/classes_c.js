@@ -1,7 +1,8 @@
 var searchData=
 [
-  ['rangeerror_878',['RangeError',['../classmeshkernel_1_1_range_error.html',1,'meshkernel']]],
-  ['removedisconnectedregions_879',['RemoveDisconnectedRegions',['../classmeshkernel_1_1_remove_disconnected_regions.html',1,'meshkernel']]],
-  ['rigidbodytransformation_880',['RigidBodyTransformation',['../classmeshkernel_1_1_rigid_body_transformation.html',1,'meshkernel']]],
-  ['rotation_881',['Rotation',['../classmeshkernel_1_1_rotation.html',1,'meshkernel']]]
+  ['point_916',['Point',['../classmeshkernel_1_1_point.html',1,'meshkernel']]],
+  ['polygon_917',['Polygon',['../classmeshkernel_1_1_polygon.html',1,'meshkernel']]],
+  ['polygonalenclosure_918',['PolygonalEnclosure',['../classmeshkernel_1_1_polygonal_enclosure.html',1,'meshkernel']]],
+  ['polygons_919',['Polygons',['../classmeshkernel_1_1_polygons.html',1,'meshkernel']]],
+  ['propertycalculator_920',['PropertyCalculator',['../classmeshkernelapi_1_1_property_calculator.html',1,'meshkernelapi']]]
 ];

@@ -137,12 +137,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 <tr class="memitem:a97f4b8c7fe677e8f779d70c13b0d6350"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a97f4b8c7fe677e8f779d70c13b0d6350">GetEdgeFace</a> (const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> edgeIndex, const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> faceIndex) const</td></tr>
 <tr class="memdesc:a97f4b8c7fe677e8f779d70c13b0d6350"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the edge face.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#a97f4b8c7fe677e8f779d70c13b0d6350">More...</a><br /></td></tr>
 <tr class="separator:a97f4b8c7fe677e8f779d70c13b0d6350"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5991c501a127187c4a7413fe5b6233b2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#a5991c501a127187c4a7413fe5b6233b2">GetXCoord</a> (const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> nodeIndex) const</td></tr>
-<tr class="memdesc:a5991c501a127187c4a7413fe5b6233b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the x coordinate of a triangulated node.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#a5991c501a127187c4a7413fe5b6233b2">More...</a><br /></td></tr>
-<tr class="separator:a5991c501a127187c4a7413fe5b6233b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aef58ef9d011de8d7ebc2c0e1698a5918"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#aef58ef9d011de8d7ebc2c0e1698a5918">GetYCoord</a> (const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> nodeIndex) const</td></tr>
-<tr class="memdesc:aef58ef9d011de8d7ebc2c0e1698a5918"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the y coordinate of a triangulated node.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#aef58ef9d011de8d7ebc2c0e1698a5918">More...</a><br /></td></tr>
-<tr class="separator:aef58ef9d011de8d7ebc2c0e1698a5918"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeae570347e7eff8b572c081027a4ce29"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_triangulation_wrapper.html#aeae570347e7eff8b572c081027a4ce29">GetCoord</a> (const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> nodeIndex) const</td></tr>
 <tr class="memdesc:aeae570347e7eff8b572c081027a4ce29"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the (x,y) coordinate of a triangulated node.  <a href="structmeshkernel_1_1_triangulation_wrapper.html#aeae570347e7eff8b572c081027a4ce29">More...</a><br /></td></tr>
 <tr class="separator:aeae570347e7eff8b572c081027a4ce29"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -614,76 +608,6 @@ template&lt;std::derived_from&lt; Point &gt; T&gt; </div>
 
 <p>Gets the number of triangulated nodes. </p>
 <dl class="section return"><dt>Returns</dt><dd>The number of triangulated nodes </dd></dl>
-
-</div>
-</div>
-<a id="a5991c501a127187c4a7413fe5b6233b2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5991c501a127187c4a7413fe5b6233b2">&#9670;&nbsp;</a></span>GetXCoord()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">double meshkernel::TriangulationWrapper::GetXCoord </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
-          <td class="paramname"><em>nodeIndex</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Retrieves the x coordinate of a triangulated node. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">nodeIndex</td><td>The index of the node to retrieve </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>const reference to the x coordinate </dd></dl>
-
-</div>
-</div>
-<a id="aef58ef9d011de8d7ebc2c0e1698a5918"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aef58ef9d011de8d7ebc2c0e1698a5918">&#9670;&nbsp;</a></span>GetYCoord()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">double meshkernel::TriangulationWrapper::GetYCoord </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
-          <td class="paramname"><em>nodeIndex</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Retrieves the y coordinate of a triangulated node. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">nodeIndex</td><td>The index of the node to retrieve </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>const reference to the y coordinate </dd></dl>
 
 </div>
 </div>

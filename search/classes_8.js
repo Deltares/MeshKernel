@@ -1,19 +1,6 @@
 var searchData=
 [
-  ['makegridparameters_853',['MakeGridParameters',['../structmeshkernel_1_1_make_grid_parameters.html',1,'meshkernel']]],
-  ['mesh_854',['Mesh',['../classmeshkernel_1_1_mesh.html',1,'meshkernel']]],
-  ['mesh1d_855',['Mesh1D',['../structmeshkernelapi_1_1_mesh1_d.html',1,'meshkernelapi::Mesh1D'],['../classmeshkernel_1_1_mesh1_d.html',1,'meshkernel::Mesh1D']]],
-  ['mesh2d_856',['Mesh2D',['../structmeshkernelapi_1_1_mesh2_d.html',1,'meshkernelapi::Mesh2D'],['../classmeshkernel_1_1_mesh2_d.html',1,'meshkernel::Mesh2D']]],
-  ['mesh2dgenerateglobal_857',['Mesh2DGenerateGlobal',['../classmeshkernel_1_1_mesh2_d_generate_global.html',1,'meshkernel']]],
-  ['mesh2dintersections_858',['Mesh2DIntersections',['../classmeshkernel_1_1_mesh2_d_intersections.html',1,'meshkernel']]],
-  ['mesh2dtocurvilinear_859',['Mesh2DToCurvilinear',['../classmeshkernel_1_1_mesh2_d_to_curvilinear.html',1,'meshkernel']]],
-  ['meshconversion_860',['MeshConversion',['../classmeshkernel_1_1_mesh_conversion.html',1,'meshkernel']]],
-  ['meshgeometryerror_861',['MeshGeometryError',['../classmeshkernel_1_1_mesh_geometry_error.html',1,'meshkernel']]],
-  ['meshinterpolation_862',['MeshInterpolation',['../classmeshkernel_1_1_mesh_interpolation.html',1,'meshkernel']]],
-  ['meshkernelerror_863',['MeshKernelError',['../classmeshkernel_1_1_mesh_kernel_error.html',1,'meshkernel']]],
-  ['meshkernelstate_864',['MeshKernelState',['../structmeshkernelapi_1_1_mesh_kernel_state.html',1,'meshkernelapi']]],
-  ['meshrefinement_865',['MeshRefinement',['../classmeshkernel_1_1_mesh_refinement.html',1,'meshkernel']]],
-  ['meshrefinementparameters_866',['MeshRefinementParameters',['../structmeshkernel_1_1_mesh_refinement_parameters.html',1,'meshkernel']]],
-  ['meshtransformation_867',['MeshTransformation',['../classmeshkernel_1_1_mesh_transformation.html',1,'meshkernel']]],
-  ['mkstateundoaction_868',['MKStateUndoAction',['../classmeshkernelapi_1_1_m_k_state_undo_action.html',1,'meshkernelapi']]]
+  ['landboundaries_890',['LandBoundaries',['../classmeshkernel_1_1_land_boundaries.html',1,'meshkernel']]],
+  ['landboundary_891',['LandBoundary',['../classmeshkernel_1_1_land_boundary.html',1,'meshkernel']]],
+  ['linearalgebraerror_892',['LinearAlgebraError',['../classmeshkernel_1_1_linear_algebra_error.html',1,'meshkernel']]]
 ];

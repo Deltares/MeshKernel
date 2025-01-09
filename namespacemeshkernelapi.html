@@ -91,11 +91,17 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_curvilinear_grid.html">CurvilinearGrid</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe the values of a curvilinear grid in a C-compatible manner.  <a href="structmeshkernelapi_1_1_curvilinear_grid.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernelapi_1_1_edge_length_property_calculator.html">EdgeLengthPropertyCalculator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculator for the edge lengths for a mesh.  <a href="classmeshkernelapi_1_1_edge_length_property_calculator.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe a list of geometries in a C-compatible manner.  <a href="structmeshkernelapi_1_1_geometry_list.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_gridded_samples.html">GriddedSamples</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct describing gridded samples.  <a href="structmeshkernelapi_1_1_gridded_samples.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernelapi_1_1_interpolated_sample_property_calculator.html">InterpolatedSamplePropertyCalculator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interpolate the depths at the mesh node points.  <a href="classmeshkernelapi_1_1_interpolated_sample_property_calculator.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_mesh1_d.html">Mesh1D</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe the values of a mesh 1d in a C-compatible manner.  <a href="structmeshkernelapi_1_1_mesh1_d.html#details">More...</a><br /></td></tr>
@@ -108,6 +114,12 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernelapi_1_1_m_k_state_undo_action.html">MKStateUndoAction</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Undo action for <a class="el" href="structmeshkernelapi_1_1_mesh_kernel_state.html" title="The class holding the state of the C API library.">MeshKernelState</a>.  <a href="classmeshkernelapi_1_1_m_k_state_undo_action.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernelapi_1_1_orthogonality_property_calculator.html">OrthogonalityPropertyCalculator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculator for orthogonality of a mesh.  <a href="classmeshkernelapi_1_1_orthogonality_property_calculator.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernelapi_1_1_property_calculator.html">PropertyCalculator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for calculating properties for a mesh.  <a href="classmeshkernelapi_1_1_property_calculator.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
@@ -314,6 +326,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a41794e15c663467d71e75c78fa30dd26"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a41794e15c663467d71e75c78fa30dd26">mkernel_curvilinear_snap_to_spline</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;spline, double sectionControlPoint1x, double sectionControlPoint1y, double sectionControlPoint2x, double sectionControlPoint2y, double regionControlPointX=<a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a>(), double regionControlPointY=<a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a>())</td></tr>
 <tr class="memdesc:a41794e15c663467d71e75c78fa30dd26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the curvilinear grid.  <a href="namespacemeshkernelapi.html#a41794e15c663467d71e75c78fa30dd26">More...</a><br /></td></tr>
 <tr class="separator:a41794e15c663467d71e75c78fa30dd26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54655bc724e99cb7447d35743525f12a"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a54655bc724e99cb7447d35743525f12a">mkernel_deallocate_property</a> (int propertyId)</td></tr>
+<tr class="memdesc:a54655bc724e99cb7447d35743525f12a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocate property calculator.  <a href="namespacemeshkernelapi.html#a54655bc724e99cb7447d35743525f12a">More...</a><br /></td></tr>
+<tr class="separator:a54655bc724e99cb7447d35743525f12a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57d1b16ba8121e1f11b1692b755647c3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a57d1b16ba8121e1f11b1692b755647c3">mkernel_deallocate_state</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:a57d1b16ba8121e1f11b1692b755647c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocate mesh state.  <a href="namespacemeshkernelapi.html#a57d1b16ba8121e1f11b1692b755647c3">More...</a><br /></td></tr>
 <tr class="separator:a57d1b16ba8121e1f11b1692b755647c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -562,9 +577,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:aed83472a1ede3effc40d1a052ddf72cb"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aed83472a1ede3effc40d1a052ddf72cb">mkernel_mesh2d_get_orthogonality</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList)</td></tr>
 <tr class="memdesc:aed83472a1ede3effc40d1a052ddf72cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mesh orthogonality, expressed as the ratio between the edges and the segments connecting the face circumcenters.  <a href="namespacemeshkernelapi.html#aed83472a1ede3effc40d1a052ddf72cb">More...</a><br /></td></tr>
 <tr class="separator:aed83472a1ede3effc40d1a052ddf72cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e9662ba22623074a9231f2430ab95c7"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a0e9662ba22623074a9231f2430ab95c7">mkernel_mesh2d_get_property</a> (int meshKernelId, int propertyValue, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometrylist)</td></tr>
-<tr class="memdesc:a0e9662ba22623074a9231f2430ab95c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a specified property of a 2D mesh.  <a href="namespacemeshkernelapi.html#a0e9662ba22623074a9231f2430ab95c7">More...</a><br /></td></tr>
-<tr class="separator:a0e9662ba22623074a9231f2430ab95c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a816644a1b732b8ec3758d3c25f18e3a4"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a816644a1b732b8ec3758d3c25f18e3a4">mkernel_mesh2d_get_property</a> (int meshKernelId, int propertyValue, int locationId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometrylist)</td></tr>
+<tr class="memdesc:a816644a1b732b8ec3758d3c25f18e3a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves a specified property of a 2D mesh.  <a href="namespacemeshkernelapi.html#a816644a1b732b8ec3758d3c25f18e3a4">More...</a><br /></td></tr>
+<tr class="separator:a816644a1b732b8ec3758d3c25f18e3a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b2686e90f73ffacb9c9ee363399337e"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a5b2686e90f73ffacb9c9ee363399337e">mkernel_mesh2d_get_property_dimension</a> (int meshKernelId, int propertyValue, int &amp;dimension)</td></tr>
 <tr class="memdesc:a5b2686e90f73ffacb9c9ee363399337e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The dimension of a specified property of a 2D mesh.  <a href="namespacemeshkernelapi.html#a5b2686e90f73ffacb9c9ee363399337e">More...</a><br /></td></tr>
 <tr class="separator:a5b2686e90f73ffacb9c9ee363399337e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -589,6 +604,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:a43a38a425a4c575cd1de377a5ecad354"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a43a38a425a4c575cd1de377a5ecad354">mkernel_mesh2d_intersections_from_polygon</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;boundaryPolygon, int *edgeNodes, int *edgeIndex, double *edgeDistances, double *segmentDistances, int *segmentIndexes, int *faceIndexes, int *faceNumEdges, int *faceEdgeIndex)</td></tr>
 <tr class="memdesc:a43a38a425a4c575cd1de377a5ecad354"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the edges intersected by a polygon, with additional information on the intersections.  <a href="namespacemeshkernelapi.html#a43a38a425a4c575cd1de377a5ecad354">More...</a><br /></td></tr>
 <tr class="separator:a43a38a425a4c575cd1de377a5ecad354"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8098267db254b7c57afe0ccfffcd18d"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac8098267db254b7c57afe0ccfffcd18d">mkernel_mesh2d_is_valid_property</a> (int meshKernelId, const int propertyId, const int locationId, bool &amp;propertyIsAvailable)</td></tr>
+<tr class="memdesc:ac8098267db254b7c57afe0ccfffcd18d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if the property data for the mesh can be computed.  <a href="namespacemeshkernelapi.html#ac8098267db254b7c57afe0ccfffcd18d">More...</a><br /></td></tr>
+<tr class="separator:ac8098267db254b7c57afe0ccfffcd18d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc659490a272d015ea79215b27419243"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#afc659490a272d015ea79215b27419243">mkernel_mesh2d_make_global</a> (int meshKernelId, int numLongitudeNodes, int numLatitudeNodes)</td></tr>
 <tr class="memdesc:afc659490a272d015ea79215b27419243"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the global mesh with a given number of points along the longitude and latitude directions.  <a href="namespacemeshkernelapi.html#afc659490a272d015ea79215b27419243">More...</a><br /></td></tr>
 <tr class="separator:afc659490a272d015ea79215b27419243"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -640,6 +658,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <tr class="memitem:aa8871161744c899f45413808e2ebbbfb"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa8871161744c899f45413808e2ebbbfb">mkernel_mesh2d_set</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
 <tr class="memdesc:aa8871161744c899f45413808e2ebbbfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">meshkernel::Mesh2D</a> state.  <a href="namespacemeshkernelapi.html#aa8871161744c899f45413808e2ebbbfb">More...</a><br /></td></tr>
 <tr class="separator:aa8871161744c899f45413808e2ebbbfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07556a2e2ed6373cc65d5d2aedf1ebf3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a07556a2e2ed6373cc65d5d2aedf1ebf3">mkernel_mesh2d_set_property</a> (int projectionType, int interpolationType, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;sampleData, int &amp;propertyId)</td></tr>
+<tr class="memdesc:a07556a2e2ed6373cc65d5d2aedf1ebf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the property data for the mesh, the sample data points do not have to match the mesh2d nodes.  <a href="namespacemeshkernelapi.html#a07556a2e2ed6373cc65d5d2aedf1ebf3">More...</a><br /></td></tr>
+<tr class="separator:a07556a2e2ed6373cc65d5d2aedf1ebf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3189a745b36940d51c81b607cf85ee4"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac3189a745b36940d51c81b607cf85ee4">mkernel_mesh2d_snap_to_landboundary</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;selectingPolygon, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;landBoundaries)</td></tr>
 <tr class="memdesc:ac3189a745b36940d51c81b607cf85ee4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snaps a mesh to a land boundary.  <a href="namespacemeshkernelapi.html#ac3189a745b36940d51c81b607cf85ee4">More...</a><br /></td></tr>
 <tr class="separator:ac3189a745b36940d51c81b607cf85ee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -3458,6 +3479,33 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[in]</td><td class="paramname">sectionControlPoint2y</td><td>End point y-coordinate for boundary section </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">regionControlPointX</td><td>X-coordinate of region defining point, if null value then use default region </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">regionControlPointY</td><td>Y-coordinate of region defining point, if null value then use default region </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a54655bc724e99cb7447d35743525f12a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54655bc724e99cb7447d35743525f12a">&#9670;&nbsp;</a></span>mkernel_deallocate_property()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_deallocate_property </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>propertyId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deallocate property calculator. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">propertyId</td><td>The id of the property </td></tr>
   </table>
   </dd>
 </dl>
@@ -6650,8 +6698,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 
 </div>
 </div>
-<a id="a0e9662ba22623074a9231f2430ab95c7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0e9662ba22623074a9231f2430ab95c7">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_property()</h2>
+<a id="a816644a1b732b8ec3758d3c25f18e3a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a816644a1b732b8ec3758d3c25f18e3a4">&#9670;&nbsp;</a></span>mkernel_mesh2d_get_property()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -6667,6 +6715,12 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
           <td></td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>propertyValue</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>locationId</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -6687,7 +6741,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">propertyValue</td><td>The value representing the specific property </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">geometrylist</td><td>A reference to a <a class="el" href="structmeshkernelapi_1_1_geometry_list.html" title="A struct used to describe a list of geometries in a C-compatible manner.">GeometryList</a> object that will be populated with the values of the requested property </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">locationId</td><td>The location (nodes, edge centres or face centres) at which the samples should interpolated. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">geometrylist</td><td>A reference to a <a class="el" href="structmeshkernelapi_1_1_geometry_list.html" title="A struct used to describe a list of geometries in a C-compatible manner.">GeometryList</a> object that will be populated with the values of the requested property </td></tr>
   </table>
   </dd>
 </dl>
@@ -6732,7 +6787,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">propertyValue</td><td>The value representing the specific property </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">dimension</td><td>The dimension of the specified property </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">dimension</td><td>The dimension of the specified property </td></tr>
   </table>
   </dd>
 </dl>
@@ -7153,6 +7208,58 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
     <tr><td class="paramdir">[out]</td><td class="paramname">faceIndexes</td><td>For each intersection, the face index </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">faceNumEdges</td><td>For each intersection, the number of intersections </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">faceEdgeIndex</td><td>For each intersection, the index of the intersected edge </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="ac8098267db254b7c57afe0ccfffcd18d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8098267db254b7c57afe0ccfffcd18d">&#9670;&nbsp;</a></span>mkernel_mesh2d_is_valid_property()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_is_valid_property </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>propertyId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>locationId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool &amp;&#160;</td>
+          <td class="paramname"><em>propertyIsAvailable</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determine if the property data for the mesh can be computed. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">propertyId</td><td>The id of the property </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">locationId</td><td>The location (nodes, edge centres or face centres) at which the samples should interpolated. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">propertyIsAvailable</td><td>Indicate (true or false) if the property can be calculated. </td></tr>
   </table>
   </dd>
 </dl>
@@ -7940,6 +8047,58 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh2d</td><td>The <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> data </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a07556a2e2ed6373cc65d5d2aedf1ebf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07556a2e2ed6373cc65d5d2aedf1ebf3">&#9670;&nbsp;</a></span>mkernel_mesh2d_set_property()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_set_property </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>projectionType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>interpolationType</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>sampleData</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>propertyId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the property data for the mesh, the sample data points do not have to match the mesh2d nodes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">projectionType</td><td>The projection type used by the sample data </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">interpolationType</td><td>The type of interpolation required, triangulation (0) or averaging (1) (for now) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">sampleData</td><td>The sample data and associated sample data points. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">propertyId</td><td>The id of the property </td></tr>
   </table>
   </dd>
 </dl>

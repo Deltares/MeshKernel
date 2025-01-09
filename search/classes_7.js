@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['landboundaries_850',['LandBoundaries',['../classmeshkernel_1_1_land_boundaries.html',1,'meshkernel']]],
-  ['landboundary_851',['LandBoundary',['../classmeshkernel_1_1_land_boundary.html',1,'meshkernel']]],
-  ['linearalgebraerror_852',['LinearAlgebraError',['../classmeshkernel_1_1_linear_algebra_error.html',1,'meshkernel']]]
+  ['interpolatedsamplepropertycalculator_888',['InterpolatedSamplePropertyCalculator',['../classmeshkernelapi_1_1_interpolated_sample_property_calculator.html',1,'meshkernelapi']]],
+  ['interpolationparameters_889',['InterpolationParameters',['../structmeshkernel_1_1_interpolation_parameters.html',1,'meshkernel']]]
 ];
