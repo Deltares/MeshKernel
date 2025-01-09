@@ -43,6 +43,10 @@ namespace meshkernel
 
         /// @brief Compute the orthogonality values overwriting the values in an array
         void Compute(const Mesh2D& mesh, std::span<double> orthogonality) const;
+
+    private:
+        /// @brief Compute the orthogonality value for the edge
+        double ComputeValue(const Mesh2D& mesh, const UInt edgeId) const;
     };
 
 } // namespace meshkernel
