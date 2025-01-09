@@ -36,6 +36,8 @@
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Mesh2DIntersections.hpp"
 #include "MeshKernel/Mesh2DToCurvilinear.hpp"
+#include "MeshKernel/MeshOrthogonality.hpp"
+#include "MeshKernel/MeshSmoothness.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/RemoveDisconnectedRegions.hpp"
@@ -1444,7 +1446,8 @@ TEST(Mesh2D, GetSmoothness_OnTriangularMesh_ShouldgetSmoothnessValues)
     const auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
 
     // Execute
-    const auto smoothness = mesh->GetSmoothness();
+    meshkernel::MeshSmoothness meshSmoothness;
+    const auto smoothness = meshSmoothness.Compute(*mesh); //->GetSmoothness();
 
     // Assert
     const double tolerance = 1e-6;
@@ -1460,7 +1463,9 @@ TEST(Mesh2D, GetOrthogonality_OnTriangularMesh_ShouldGetOrthogonalityValues)
     const auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
 
     // Execute
-    const auto orthogonality = mesh->GetOrthogonality();
+    meshkernel::MeshOrthogonality meshOrthogonality;
+    const auto orthogonality = meshOrthogonality.Compute(*mesh);
+    // const auto orthogonality = mesh->GetOrthogonality();
 
     // Assert
     const double tolerance = 1e-6;

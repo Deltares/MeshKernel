@@ -69,7 +69,9 @@
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Mesh2DGenerateGlobal.hpp>
 #include <MeshKernel/MeshConversion.hpp>
+#include <MeshKernel/MeshOrthogonality.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
+#include <MeshKernel/MeshSmoothness.hpp>
 #include <MeshKernel/MeshTransformation.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
@@ -1573,17 +1575,14 @@ namespace meshkernelapi
                 return lastExitCode;
             }
 
-            const auto result = meshKernelState[meshKernelId].m_mesh2d->GetOrthogonality();
-
-            if (static_cast<size_t>(geometryList.num_coordinates) != result.size())
+            if (static_cast<size_t>(geometryList.num_coordinates) != meshKernelState[meshKernelId].m_mesh2d->GetNumEdges())
             {
                 throw meshkernel::MeshKernelError("The value array has not the same size of the result array storing the orthogonality values at the edges");
             }
 
-            for (auto i = 0; i < geometryList.num_coordinates; ++i)
-            {
-                geometryList.values[i] = result[i];
-            }
+            std::span<double> orthogonality(geometryList.values, geometryList.num_coordinates);
+            meshkernel::MeshOrthogonality meshOrthogonality;
+            meshOrthogonality.Compute(*meshKernelState[meshKernelId].m_mesh2d, orthogonality);
         }
         catch (...)
         {
@@ -1697,9 +1696,9 @@ namespace meshkernelapi
                 return lastExitCode;
             }
 
-            const auto result = meshKernelState[meshKernelId].m_mesh2d->GetSmoothness();
-
-            std::ranges::copy(result, geometryList.values);
+            std::span<double> smoothness(geometryList.values, geometryList.num_coordinates);
+            meshkernel::MeshSmoothness meshSmoothness;
+            meshSmoothness.Compute(*meshKernelState[meshKernelId].m_mesh2d, smoothness);
         }
         catch (...)
         {

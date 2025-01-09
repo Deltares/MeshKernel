@@ -1,0 +1,78 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
+#include "MeshKernel/MeshOrthogonality.hpp"
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/Operations.hpp"
+
+std::vector<double> meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh) const
+{
+    std::vector<double> orthogonality(mesh.GetNumEdges(), constants::missing::doubleValue);
+    Compute(mesh, orthogonality);
+
+    return orthogonality;
+}
+
+void meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh, std::span<double> orthogonality) const
+{
+    if (orthogonality.size() != mesh.GetNumEdges())
+    {
+        throw ConstraintError("array for orthogonality values is not the correct size");
+    }
+
+    const auto numEdges = mesh.GetNumEdges();
+
+    for (UInt e = 0; e < numEdges; e++)
+    {
+        auto val = constants::missing::doubleValue;
+
+        const auto [firstNode, secondNode] = mesh.GetEdge(e);
+
+        const auto firstFaceIndex = mesh.m_edgesFaces[e][0];
+        const auto secondFaceIndex = mesh.m_edgesFaces[e][1];
+
+        if (firstNode != constants::missing::uintValue &&
+            secondNode != constants::missing::uintValue &&
+            firstFaceIndex != constants::missing::uintValue &&
+            secondFaceIndex != constants::missing::uintValue && !mesh.IsEdgeOnBoundary(e))
+        {
+            val = NormalizedInnerProductTwoSegments(mesh.Node(firstNode),
+                                                    mesh.Node(secondNode),
+                                                    mesh.m_facesCircumcenters[firstFaceIndex],
+                                                    mesh.m_facesCircumcenters[secondFaceIndex],
+                                                    mesh.m_projection);
+
+            if (val != constants::missing::doubleValue)
+            {
+                val = std::abs(val);
+            }
+        }
+
+        orthogonality[e] = val;
+    }
+}
