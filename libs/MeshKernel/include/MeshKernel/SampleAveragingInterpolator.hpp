@@ -55,6 +55,9 @@ namespace meshkernel
         /// @brief Which averaging method should be used
         AveragingInterpolation::Method m_method = AveragingInterpolation::Method::SimpleAveraging;
 
+        /// @brief The absolute search radius
+        double m_absoluteSearchRadius = 100.0;
+
         /// @brief The relative search radius
         double m_relativeSearchRadius = 1.0;
 
