@@ -176,14 +176,11 @@ set(
   ${DOMAIN_INC_DIR}/Mesh2DToCurvilinear.hpp
   ${DOMAIN_INC_DIR}/MeshConversion.hpp
   ${DOMAIN_INC_DIR}/MeshInterpolation.hpp
-<<<<<<< HEAD
-  ${DOMAIN_INC_DIR}/MeshTriangulation.hpp
-=======
   ${DOMAIN_INC_DIR}/MeshOrthogonality.hpp
-  ${DOMAIN_INC_DIR}/MeshSmoothness.hpp
->>>>>>> a81e517f (GRIDEDIT-1552 Moved orthogonalisation and smooting calculation to separate calculators)
   ${DOMAIN_INC_DIR}/MeshRefinement.hpp
+  ${DOMAIN_INC_DIR}/MeshSmoothness.hpp
   ${DOMAIN_INC_DIR}/MeshTransformation.hpp
+  ${DOMAIN_INC_DIR}/MeshTriangulation.hpp
   ${DOMAIN_INC_DIR}/Network1D.hpp
   ${DOMAIN_INC_DIR}/Operations.hpp
   ${DOMAIN_INC_DIR}/OrthogonalizationAndSmoothing.hpp
@@ -196,10 +193,10 @@ set(
   ${DOMAIN_INC_DIR}/ProjectionConversions.hpp
   ${DOMAIN_INC_DIR}/RangeCheck.hpp
   ${DOMAIN_INC_DIR}/RemoveDisconnectedRegions.hpp
-  ${DOMAIN_INC_DIR}/SamplesHessianCalculator.hpp
   ${DOMAIN_INC_DIR}/SampleAveragingInterpolator.hpp
   ${DOMAIN_INC_DIR}/SampleInterpolator.hpp
   ${DOMAIN_INC_DIR}/SampleTriangulationInterpolator.hpp
+  ${DOMAIN_INC_DIR}/SamplesHessianCalculator.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
   ${DOMAIN_INC_DIR}/SplineAlgorithms.hpp
   ${DOMAIN_INC_DIR}/Splines.hpp
