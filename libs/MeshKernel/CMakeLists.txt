@@ -50,8 +50,10 @@ set(
   ${SRC_DIR}/Mesh2DGenerateGlobal.cpp
   ${SRC_DIR}/Mesh2DIntersections.cpp
   ${SRC_DIR}/Mesh2DToCurvilinear.cpp
-  ${SRC_DIR}/MeshTriangulation.cpp
+  ${SRC_DIR}/MeshOrthogonality.cpp
   ${SRC_DIR}/MeshRefinement.cpp
+  ${SRC_DIR}/MeshSmoothness.cpp
+  ${SRC_DIR}/MeshTriangulation.cpp
   ${SRC_DIR}/Network1D.cpp
   ${SRC_DIR}/Operations.cpp
   ${SRC_DIR}/OrthogonalizationAndSmoothing.cpp
@@ -60,10 +62,10 @@ set(
   ${SRC_DIR}/PolygonalEnclosure.cpp
   ${SRC_DIR}/Polygons.cpp
   ${SRC_DIR}/RemoveDisconnectedRegions.cpp
-  ${SRC_DIR}/SamplesHessianCalculator.cpp
   ${SRC_DIR}/SampleAveragingInterpolator.cpp
   ${SRC_DIR}/SampleInterpolator.cpp
   ${SRC_DIR}/SampleTriangulationInterpolator.cpp
+  ${SRC_DIR}/SamplesHessianCalculator.cpp
   ${SRC_DIR}/Smoother.cpp
   ${SRC_DIR}/SplineAlgorithms.cpp
   ${SRC_DIR}/Splines.cpp
@@ -174,7 +176,12 @@ set(
   ${DOMAIN_INC_DIR}/Mesh2DToCurvilinear.hpp
   ${DOMAIN_INC_DIR}/MeshConversion.hpp
   ${DOMAIN_INC_DIR}/MeshInterpolation.hpp
+<<<<<<< HEAD
   ${DOMAIN_INC_DIR}/MeshTriangulation.hpp
+=======
+  ${DOMAIN_INC_DIR}/MeshOrthogonality.hpp
+  ${DOMAIN_INC_DIR}/MeshSmoothness.hpp
+>>>>>>> a81e517f (GRIDEDIT-1552 Moved orthogonalisation and smooting calculation to separate calculators)
   ${DOMAIN_INC_DIR}/MeshRefinement.hpp
   ${DOMAIN_INC_DIR}/MeshTransformation.hpp
   ${DOMAIN_INC_DIR}/Network1D.hpp

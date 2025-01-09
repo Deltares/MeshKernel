@@ -31,6 +31,7 @@
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh2DIntersections.hpp"
+#include "MeshKernel/MeshOrthogonality.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygon.hpp"
 #include "MeshKernel/Polygons.hpp"
@@ -1255,73 +1256,6 @@ void Mesh2D::ComputeNodeNeighbours()
     }
 }
 
-std::vector<double> Mesh2D::GetOrthogonality() const
-{
-    std::vector<double> result(GetNumEdges());
-    const auto numEdges = GetNumEdges();
-    for (UInt e = 0; e < numEdges; e++)
-    {
-        auto val = constants::missing::doubleValue;
-        const auto firstNode = m_edges[e].first;
-        const auto secondNode = m_edges[e].second;
-        const auto firstFaceIndex = m_edgesFaces[e][0];
-        const auto secondFaceIndex = m_edgesFaces[e][1];
-
-        if (firstNode != constants::missing::uintValue &&
-            secondNode != constants::missing::uintValue &&
-            firstFaceIndex != constants::missing::uintValue &&
-            secondFaceIndex != constants::missing::uintValue && !IsEdgeOnBoundary(e))
-        {
-            val = NormalizedInnerProductTwoSegments(m_nodes[firstNode],
-                                                    m_nodes[secondNode],
-                                                    m_facesCircumcenters[firstFaceIndex],
-                                                    m_facesCircumcenters[secondFaceIndex],
-                                                    m_projection);
-
-            if (val != constants::missing::doubleValue)
-            {
-                val = std::abs(val);
-            }
-        }
-        result[e] = val;
-    }
-    return result;
-}
-
-std::vector<double> Mesh2D::GetSmoothness() const
-{
-    std::vector<double> result(GetNumEdges());
-    const auto numEdges = GetNumEdges();
-    for (UInt e = 0; e < numEdges; e++)
-    {
-        auto val = constants::missing::doubleValue;
-        const auto firstNode = m_edges[e].first;
-        const auto secondNode = m_edges[e].second;
-        const auto firstFaceIndex = m_edgesFaces[e][0];
-        const auto secondFaceIndex = m_edgesFaces[e][1];
-
-        if (firstNode != constants::missing::uintValue &&
-            secondNode != constants::missing::uintValue &&
-            firstFaceIndex != constants::missing::uintValue &&
-            secondFaceIndex != constants::missing::uintValue && !IsEdgeOnBoundary(e))
-        {
-            const auto leftFaceArea = m_faceArea[firstFaceIndex];
-            const auto rightFaceArea = m_faceArea[secondFaceIndex];
-
-            if (leftFaceArea > m_minimumCellArea && rightFaceArea > m_minimumCellArea)
-            {
-                val = rightFaceArea / leftFaceArea;
-                if (val < 1.0)
-                {
-                    val = 1.0 / val;
-                }
-            }
-        }
-        result[e] = val;
-    }
-    return result;
-}
-
 void Mesh2D::ComputeAverageFlowEdgesLength(std::vector<double>& edgesLength,
                                            std::vector<double>& averageFlowEdgesLength) const
 {
@@ -1789,7 +1723,8 @@ std::vector<bool> Mesh2D::FilterBasedOnMetric(Location location,
     std::vector<bool> result(numFaces, false);
 
     // Retrieve orthogonality values
-    const std::vector<double> metricValues = GetOrthogonality();
+    MeshOrthogonality meshOrthogonality;
+    const std::vector<double> metricValues(meshOrthogonality.Compute(*this));
 
     // Loop through faces and compute how many edges have the metric within the range
     for (UInt f = 0; f < numFaces; ++f)
