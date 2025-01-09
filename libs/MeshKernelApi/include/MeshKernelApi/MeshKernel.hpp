@@ -685,6 +685,11 @@ namespace meshkernelapi
                                                            double regionControlPointX = mkernel_get_separator(),
                                                            double regionControlPointY = mkernel_get_separator());
 
+        /// @brief Deallocate property calculator
+        /// @param[in] propertyId The id of the property
+        /// @returns Error code
+        MKERNEL_API int mkernel_deallocate_property(int propertyId);
+
         /// @brief Deallocate mesh state
         /// @param[in] meshKernelId The id of the mesh state
         /// @returns Error code
@@ -1344,15 +1349,16 @@ namespace meshkernelapi
         ///
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] propertyValue The value representing the specific property
-        /// @param[in] geometrylist A reference to a GeometryList object that will be populated with the values of the requested property
+        /// @param[in] locationId The location (nodes, edge centres or face centres) at which the samples should interpolated.
+        /// @param[in,out] geometrylist A reference to a GeometryList object that will be populated with the values of the requested property
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_get_property(int meshKernelId, int propertyValue, const GeometryList& geometrylist);
+        MKERNEL_API int mkernel_mesh2d_get_property(int meshKernelId, int propertyValue, int locationId, const GeometryList& geometrylist);
 
         /// @brief The dimension of a specified property of a 2D mesh.
         ///
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] propertyValue The value representing the specific property
-        /// @param[in] dimension The dimension of the specified property
+        /// @param[out] dimension The dimension of the specified property
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_property_dimension(int meshKernelId, int propertyValue, int& dimension);
 
@@ -1444,6 +1450,14 @@ namespace meshkernelapi
                                                                   int* faceIndexes,
                                                                   int* faceNumEdges,
                                                                   int* faceEdgeIndex);
+
+        /// @brief Determine if the property data for the mesh can be computed
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] propertyId The id of the property
+        /// @param[in] locationId The location (nodes, edge centres or face centres) at which the samples should interpolated.
+        /// @param[out] propertyIsAvailable Indicate (true or false) if the property can be calculated.
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_is_valid_property(int meshKernelId, const int propertyId, const int locationId, bool& propertyIsAvailable);
 
         /// @brief Compute the global mesh with a given number of points along the longitude and latitude directions.
         /// @param[in] meshKernelId           The id of the mesh state
@@ -1594,6 +1608,14 @@ namespace meshkernelapi
         /// @param[in] mesh2d       The Mesh2D data
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_set(int meshKernelId, const Mesh2D& mesh2d);
+
+        /// @brief Sets the property data for the mesh, the sample data points do not have to match the mesh2d nodes.
+        /// @param[in] projectionType The projection type used by the sample data
+        /// @param[in] interpolationType The type of interpolation required, triangulation (0) or averaging (1) (for now)
+        /// @param[in] sampleData   The sample data and associated sample data points.
+        /// @param[out] propertyId The id of the property
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_set_property(int projectionType, int interpolationType, const GeometryList& sampleData, int& propertyId);
 
         /// @brief Snaps a mesh to a land boundary.
         /// @param[in] meshKernelId The id of the mesh state

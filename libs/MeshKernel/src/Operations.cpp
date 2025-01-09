@@ -286,6 +286,74 @@ namespace meshkernel
         return dx1 * dy2 - dy1 * dx2;
     }
 
+    bool IsPointInTriangle(const Point& point,
+                           const std::span<const Point> triangleNodes,
+                           const Projection& projection)
+    {
+        if (triangleNodes.empty())
+        {
+            return true;
+        }
+
+        bool isInTriangle = false;
+
+        if (projection == Projection::cartesian || projection == Projection::spherical)
+        {
+            int windingNumber = 0;
+
+            for (UInt n = 0; n < constants::geometric::numNodesInTriangle; n++)
+            {
+                UInt endIndex = n == 2 ? 0 : n + 1;
+
+                const auto crossProductValue = crossProduct(triangleNodes[n], triangleNodes[endIndex], triangleNodes[n], point, Projection::cartesian);
+
+                if (IsEqual(crossProductValue, 0.0))
+                {
+                    // point on the line
+                    return true;
+                }
+
+                if (triangleNodes[n].y <= point.y) // an upward crossing
+                {
+                    if (triangleNodes[endIndex].y > point.y && crossProductValue > 0.0)
+                    {
+                        ++windingNumber; // have  a valid up intersect
+                    }
+                }
+                else
+                {
+                    if (triangleNodes[endIndex].y <= point.y && crossProductValue < 0.0) // a downward crossing
+                    {
+                        --windingNumber; // have  a valid down intersect
+                    }
+                }
+            }
+
+            isInTriangle = windingNumber == 0 ? false : true;
+        }
+
+        if (projection == Projection::sphericalAccurate)
+        {
+            std::vector<Point> triangleCopy;
+            triangleCopy.reserve(constants::geometric::numNodesInTriangle + 1);
+            Point centre(0.0, 0.0);
+
+            for (UInt i = 0; i < constants::geometric::numNodesInTriangle; ++i)
+            {
+                centre += triangleNodes[i];
+                triangleCopy.emplace_back(triangleNodes[i]);
+            }
+
+            triangleCopy.emplace_back(triangleNodes[0]);
+
+            centre *= 1.0 / 3.0;
+
+            isInTriangle = IsPointInPolygonNodes(point, triangleCopy, projection, centre);
+        }
+
+        return isInTriangle;
+    }
+
     bool IsPointInPolygonNodes(const Point& point,
                                const std::vector<Point>& polygonNodes,
                                const Projection& projection,
@@ -321,6 +389,56 @@ namespace meshkernel
         }
 
         if (const auto boundingBox = BoundingBox(polygonNodes); !boundingBox.Contains(point))
+        {
+            return false;
+        }
+
+        if (projection == Projection::cartesian || projection == Projection::spherical)
+        {
+            return impl::IsPointInPolygonNodesCartesian(point, polygonNodes, startNode, endNode);
+        }
+        else
+        {
+            return impl::IsPointInPolygonNodesSphericalAccurate(point, polygonNodes, polygonCenter, startNode, endNode);
+        }
+    }
+
+    bool IsPointInPolygonNodes(const Point& point,
+                               const std::vector<Point>& polygonNodes,
+                               const Projection& projection,
+                               const BoundingBox& boundingBox,
+                               Point polygonCenter,
+                               UInt startNode,
+                               UInt endNode)
+    {
+
+        if (polygonNodes.empty())
+        {
+            return true;
+        }
+
+        if (startNode == constants::missing::uintValue && endNode == constants::missing::uintValue)
+        {
+            startNode = 0;
+            endNode = static_cast<UInt>(polygonNodes.size()) - 1; // closed polygon
+        }
+
+        if (endNode <= startNode)
+        {
+            return true;
+        }
+
+        if (const auto currentPolygonSize = endNode - startNode + 1; currentPolygonSize < constants::geometric::numNodesInTriangle || polygonNodes.size() < currentPolygonSize)
+        {
+            return false;
+        }
+
+        if (polygonNodes[startNode] != polygonNodes[endNode])
+        {
+            return false;
+        }
+
+        if (!boundingBox.Contains(point))
         {
             return false;
         }
@@ -1528,40 +1646,47 @@ namespace meshkernel
         return result;
     }
 
-    Point ComputeAverageCoordinate(const std::vector<Point>& points, const Projection& projection)
+    meshkernel::Point ComputeAverageCoordinate(const std::span<const Point> points, const Projection& projection)
     {
-        std::vector<Point> validPoints;
-        validPoints.reserve(points.size());
-        for (const auto& point : points)
-        {
-            if (!point.IsValid())
-            {
-                continue;
-            }
-            validPoints.emplace_back(point);
-        }
+        size_t validCount = std::ranges::count_if(points, [](const Point& p)
+                                                  { return p.IsValid(); });
 
         if (projection == Projection::sphericalAccurate)
         {
 
-            Cartesian3DPoint averagePoint3D{0.0, 0.0, 0.0};
-            for (const auto& point : validPoints)
+            UInt firstValidPoint = 0;
+
+            if (validCount != points.size())
             {
+                auto iterator = std::ranges::find_if(points, [](const Point& p)
+                                                     { return p.IsValid(); });
+                firstValidPoint = static_cast<UInt>(iterator - points.begin());
+            }
+
+            Cartesian3DPoint averagePoint3D{0.0, 0.0, 0.0};
+            for (const auto& point : points)
+            {
+                if (!point.IsValid())
+                {
+                    continue;
+                }
+
                 const Cartesian3DPoint point3D{SphericalToCartesian3D(point)};
                 averagePoint3D.x += point3D.x;
                 averagePoint3D.y += point3D.y;
                 averagePoint3D.z += point3D.z;
             }
-            averagePoint3D.x = averagePoint3D.x / static_cast<double>(validPoints.size());
-            averagePoint3D.y = averagePoint3D.y / static_cast<double>(validPoints.size());
-            averagePoint3D.z = averagePoint3D.z / static_cast<double>(validPoints.size());
+            averagePoint3D.x = averagePoint3D.x / static_cast<double>(validCount);
+            averagePoint3D.y = averagePoint3D.y / static_cast<double>(validCount);
+            averagePoint3D.z = averagePoint3D.z / static_cast<double>(validCount);
 
-            return Cartesian3DToSpherical(averagePoint3D, points[0].x);
+            return Cartesian3DToSpherical(averagePoint3D, points[firstValidPoint].x);
         }
 
-        auto result = std::accumulate(validPoints.begin(), validPoints.end(), Point{0.0, 0.0});
-        result.x = result.x / static_cast<double>(validPoints.size());
-        result.y = result.y / static_cast<double>(validPoints.size());
+        auto result = std::accumulate(points.begin(), points.end(), Point{0.0, 0.0}, [](const Point& sum, const Point& current)
+                                      { return current.IsValid() ? sum + current : sum; });
+        result.x = result.x / static_cast<double>(validCount);
+        result.y = result.y / static_cast<double>(validCount);
         return result;
     }
 

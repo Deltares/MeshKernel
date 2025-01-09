@@ -32,6 +32,7 @@
 #include <vector>
 
 #include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/Parameters.hpp"
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/UndoActions/UndoAction.hpp"
 
@@ -93,6 +94,11 @@ namespace meshkernel
         /// @param [in] mesh The Mesh
         /// @param [in, out] nodeMask Node mask information
         static void InitialiseFaceNodes(const Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
+
+        /// @brief Set the node mask based on point contained in a polygon
+        static void RegisterNodesInsidePolygon(const Mesh2D& mesh,
+                                               const Polygons& polygon,
+                                               std::vector<NodeMask>& nodeMask);
 
         /// @brief Initialise the node mask array.
         ///

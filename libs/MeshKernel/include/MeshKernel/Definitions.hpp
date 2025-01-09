@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <concepts>
 #include <cstdint>
 #include <map>
 #include <string>

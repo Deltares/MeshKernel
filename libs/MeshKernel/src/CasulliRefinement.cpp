@@ -180,13 +180,10 @@ void meshkernel::CasulliRefinement::InitialiseFaceNodes(const Mesh2D& mesh, std:
     }
 }
 
-std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefinement::InitialiseNodeMask(const Mesh2D& mesh, const Polygons& polygon)
+void meshkernel::CasulliRefinement::RegisterNodesInsidePolygon(const Mesh2D& mesh,
+                                                               const Polygons& polygon,
+                                                               std::vector<NodeMask>& nodeMask)
 {
-    std::vector<NodeMask> nodeMask(10 * mesh.GetNumNodes(), NodeMask::Unassigned);
-
-    // Find nodes that are inside the polygon.
-    // If the polygon is empty then all nodes will be taken into account.
-
     for (UInt i = 0; i < mesh.GetNumNodes(); ++i)
     {
         auto [containsPoint, pointIndex] = polygon.IsPointInPolygons(mesh.Node(i));
@@ -196,7 +193,16 @@ std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefineme
             nodeMask[i] = NodeMask::RegisteredNode;
         }
     }
+}
 
+std::vector<meshkernel::CasulliRefinement::NodeMask> meshkernel::CasulliRefinement::InitialiseNodeMask(const Mesh2D& mesh, const Polygons& polygon)
+{
+    std::vector<NodeMask> nodeMask(10 * mesh.GetNumNodes(), NodeMask::Unassigned);
+
+    // Find nodes that are inside the polygon.
+    // If the polygon is empty then all nodes will be taken into account.
+
+    RegisterNodesInsidePolygon(mesh, polygon, nodeMask);
     InitialiseBoundaryNodes(mesh, nodeMask);
     InitialiseCornerNodes(mesh, nodeMask);
     InitialiseFaceNodes(mesh, nodeMask);
@@ -216,6 +222,7 @@ void meshkernel::CasulliRefinement::Administrate(Mesh2D& mesh, const UInt numNod
         }
     }
 
+    mesh.DeleteInvalidNodesAndEdges();
     mesh.Administrate();
 }
 
@@ -406,6 +413,11 @@ void meshkernel::CasulliRefinement::ConnectEdges(Mesh2D& mesh, const UInt curren
     {
         UInt edgeId = mesh.m_nodesEdges[currentNode][j];
 
+        if (mesh.m_edgesNumFaces[edgeId] == 0)
+        {
+            continue;
+        }
+
         if (mesh.m_edgesNumFaces[edgeId] == 1)
         {
             if (edgeCount >= newEdges.size())
@@ -539,6 +551,11 @@ void meshkernel::CasulliRefinement::ConnectNewNodes(Mesh2D& mesh, const std::vec
         {
             const UInt edgeId = mesh.m_nodesEdges[i][j];
 
+            if (mesh.m_edgesNumFaces[edgeId] == 0)
+            {
+                continue;
+            }
+
             if (mesh.GetEdge(edgeId).first == i)
             {
                 // With passing false for the collectUndo, ConnectNodes should return a null pointer
@@ -627,7 +644,7 @@ void meshkernel::CasulliRefinement::ComputeNewEdgeNodes(Mesh2D& mesh, const UInt
         const UInt node1 = mesh.GetEdge(i).first;
         const UInt node2 = mesh.GetEdge(i).second;
 
-        if (node1 == constants::missing::uintValue && node2 == constants::missing::uintValue)
+        if (node1 == constants::missing::uintValue || node2 == constants::missing::uintValue)
         {
             continue;
         }
@@ -675,6 +692,12 @@ void meshkernel::CasulliRefinement::ComputeNewNodes(Mesh2D& mesh, std::vector<Ed
 
 void meshkernel::CasulliRefinement::StoreNewNode(const Mesh2D& mesh, const UInt nodeId, const UInt edge1Index, const UInt edge2Index, const UInt newNodeId, std::vector<EdgeNodes>& newNodes)
 {
+
+    if (newNodeId == constants::missing::uintValue)
+    {
+        return;
+    }
+
     UInt edgeId1 = edge1Index;
     UInt edgeId2 = edge2Index;
 

@@ -29,6 +29,8 @@
 
 #include <iostream>
 #include <numeric>
+#include <span>
+#include <vector>
 
 #include "MeshKernel/BoundingBox.hpp"
 #include "MeshKernel/Constants.hpp"
@@ -300,13 +302,39 @@ namespace meshkernel
     /// @param[in] endNode  The end index in polygonNodes
     /// @param[in] projection The coordinate system projection.
     /// @param[in] polygonCenter A coordinate needed in case of sphericalAccurate projection
-    /// @returns If point is inside the designed polygon
+    /// @returns If point is inside the designated polygon
     [[nodiscard]] bool IsPointInPolygonNodes(const Point& point,
                                              const std::vector<Point>& polygonNodes,
                                              const Projection& projection,
                                              Point polygonCenter = {constants::missing::doubleValue, constants::missing::doubleValue},
                                              UInt startNode = constants::missing::uintValue,
                                              UInt endNode = constants::missing::uintValue);
+
+    /// @brief Checks if a point is in polygonNodes using the winding number method
+    /// @param[in] point The point to check
+    /// @param[in] polygonNodes A series of closed polygons
+    /// @param[in] projection The coordinate system projection.
+    /// @param[in] boundingBox The bounding box of the polygon nodes
+    /// @param[in] startNode The start index in polygonNodes
+    /// @param[in] endNode  The end index in polygonNodes
+    /// @param[in] polygonCenter A coordinate needed in case of sphericalAccurate projection
+    /// @returns If point is inside the designated polygon
+    [[nodiscard]] bool IsPointInPolygonNodes(const Point& point,
+                                             const std::vector<Point>& polygonNodes,
+                                             const Projection& projection,
+                                             const BoundingBox& boundingBox,
+                                             Point polygonCenter = {constants::missing::doubleValue, constants::missing::doubleValue},
+                                             UInt startNode = constants::missing::uintValue,
+                                             UInt endNode = constants::missing::uintValue);
+
+    /// @brief Checks if a point is in triangle using the winding number method
+    /// @param[in] point The point to check
+    /// @param[in] triangleNodes A series of node forming an open triangle
+    /// @param[in] projection The coordinate system projection.
+    /// @returns If point is inside the designated triangle
+    [[nodiscard]] bool IsPointInTriangle(const Point& point,
+                                         const std::span<const Point> triangleNodes,
+                                         const Projection& projection);
 
     /// @brief Computes three base components
     void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp);
@@ -566,7 +594,7 @@ namespace meshkernel
     /// @param[in] points The point series.
     /// @param[in] projection The projection to use.
     /// @return The average coordinate.
-    [[nodiscard]] Point ComputeAverageCoordinate(const std::vector<Point>& points, const Projection& projection);
+    [[nodiscard]] Point ComputeAverageCoordinate(const std::span<const Point> points, const Projection& projection);
 
     /// @brief Cartesian projection of a point on a segment defined by other two points
     /// @param firstNode The first node of the segment

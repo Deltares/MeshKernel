@@ -43,6 +43,7 @@ set(
   ${SRC_DIR}/Mesh2DTest.cpp
   ${SRC_DIR}/MeshConversionTests.cpp
   ${SRC_DIR}/MeshConversionTests.cpp
+  ${SRC_DIR}/MeshPropertyTests.cpp
   ${SRC_DIR}/MeshRefinementTests.cpp
   ${SRC_DIR}/MeshTests.cpp
   ${SRC_DIR}/MeshTransformationTest.cpp
@@ -53,6 +54,7 @@ set(
   ${SRC_DIR}/PolygonalEnclosureTests.cpp
   ${SRC_DIR}/PolygonsTests.cpp
   ${SRC_DIR}/RangeCheckTests.cpp
+  ${SRC_DIR}/SampleInterpolationTests.cpp
   ${SRC_DIR}/SpatialTreesTests.cpp
   ${SRC_DIR}/SplineAlgorithmTests.cpp
   ${SRC_DIR}/SplineTests.cpp

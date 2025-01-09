@@ -196,19 +196,21 @@ double AveragingInterpolation::ComputeInterpolationResultFromNeighbors(const Poi
 {
     m_interpolationSampleCache.clear();
 
+    BoundingBox boundingBox(searchPolygon);
+
     for (UInt i = 0; i < m_samplesRtree->GetQueryResultSize(); ++i)
     {
         auto const sampleIndex = m_samplesRtree->GetQueryResult(i);
         auto const sampleValue = m_samples[sampleIndex].value;
 
-        if (sampleValue <= constants::missing::doubleValue)
+        if (sampleValue == constants::missing::doubleValue)
         {
             continue;
         }
 
         Point samplePoint{m_samples[sampleIndex].x, m_samples[sampleIndex].y};
 
-        if (IsPointInPolygonNodes(samplePoint, searchPolygon, m_mesh.m_projection))
+        if (IsPointInPolygonNodes(samplePoint, searchPolygon, m_mesh.m_projection, boundingBox))
         {
             m_interpolationSampleCache.emplace_back(samplePoint.x, samplePoint.y, sampleValue);
         }
@@ -243,7 +245,6 @@ double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygo
     }
     if (m_samplesRtree->HasQueryResults())
     {
-
         return ComputeInterpolationResultFromNeighbors(interpolationPoint, searchPolygon);
     }
 

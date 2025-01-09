@@ -99,12 +99,14 @@
 #include "MeshKernelApi/ApiCache/SmallFlowEdgeCentreCache.hpp"
 #include "MeshKernelApi/MKStateUndoAction.hpp"
 #include "MeshKernelApi/MeshKernel.hpp"
+#include "MeshKernelApi/PropertyCalculator.hpp"
 #include "MeshKernelApi/State.hpp"
 #include "MeshKernelApi/Utils.hpp"
 
 #include <Version/Version.hpp>
 
 #include <cstring>
+#include <span>
 #include <unordered_map>
 #include <vector>
 
@@ -124,6 +126,31 @@ namespace meshkernelapi
 
     /// @brief Stack of undo actions
     static meshkernel::UndoActionStack meshKernelUndoStack;
+
+    int GeneratePropertyId()
+    {
+        // The current property id, initialised with a value equal to the last enum in Mesh2D:::Property enum values
+        static int currentPropertyId = static_cast<int>(meshkernel::Mesh2D::Property::EdgeLength);
+
+        // Increment and return the current property id value.
+        return ++currentPropertyId;
+    }
+
+    std::map<int, std::unique_ptr<PropertyCalculator>> allocatePropertyCalculators()
+    {
+        std::map<int, std::unique_ptr<PropertyCalculator>> propertyMap;
+
+        int propertyId = static_cast<int>(meshkernel::Mesh2D::Property::Orthogonality);
+        propertyMap.emplace(propertyId, std::make_unique<OrthogonalityPropertyCalculator>());
+
+        propertyId = static_cast<int>(meshkernel::Mesh2D::Property::EdgeLength);
+        propertyMap.emplace(propertyId, std::make_unique<EdgeLengthPropertyCalculator>());
+
+        return propertyMap;
+    }
+
+    /// @brief Map of property calculators, from an property identifier to the calculator.
+    static std::map<int, std::unique_ptr<PropertyCalculator>> propertyCalculators = allocatePropertyCalculators();
 
     static meshkernel::ExitCode HandleException(std::exception_ptr exception_ptr = std::current_exception())
     {
@@ -476,6 +503,74 @@ namespace meshkernelapi
             }
 
             meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_deallocate_property(int propertyId)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+
+            if (!propertyCalculators.contains(propertyId) || propertyCalculators[propertyId] == nullptr)
+            {
+                throw meshkernel::MeshKernelError("The property id does not exist: {}.", propertyId);
+            }
+
+            propertyCalculators.erase(propertyId);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_is_valid_property(int meshKernelId, const int propertyId, const int locationId, bool& propertyIsAvailable)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        propertyIsAvailable = false;
+        try
+        {
+            const meshkernel::Location location = static_cast<meshkernel::Location>(locationId);
+            propertyIsAvailable = meshKernelState.contains(meshKernelId) &&
+                                  propertyCalculators.contains(propertyId) &&
+                                  propertyCalculators[propertyId] != nullptr &&
+                                  propertyCalculators[propertyId]->IsValid(meshKernelState.at(meshKernelId), location);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_set_property(int projectionType, int interpolationType, const GeometryList& sampleData, int& propertyId)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        propertyId = -1;
+
+        try
+        {
+            meshkernel::range_check::CheckOneOf<int>(projectionType, meshkernel::GetValidProjections(), "Projection");
+            auto const projection = static_cast<meshkernel::Projection>(projectionType);
+
+            meshkernel::range_check::CheckOneOf<int>(interpolationType, {0, 1}, "InterpolationType");
+
+            int localPropertyId = GeneratePropertyId();
+
+            if (propertyCalculators.contains(localPropertyId))
+            {
+                throw meshkernel::ConstraintError("The property id already exists: id = {}.", localPropertyId);
+            }
+
+            propertyCalculators.try_emplace(localPropertyId, std::make_unique<InterpolatedSamplePropertyCalculator>(sampleData, projection, interpolationType, localPropertyId));
+            propertyId = localPropertyId;
         }
         catch (...)
         {
@@ -1497,9 +1592,10 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_property(int meshKernelId, int propertyValue, const GeometryList& geometryList)
+    MKERNEL_API int mkernel_mesh2d_get_property(int meshKernelId, int propertyValue, int locationId, const GeometryList& geometryList)
     {
         lastExitCode = meshkernel::ExitCode::Success;
+
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1507,39 +1603,43 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const auto& mesh2d = meshKernelState.at(meshKernelId).m_mesh2d;
-
-            if (!mesh2d || mesh2d->GetNumNodes() <= 0)
+            if (const auto& mesh2d = meshKernelState.at(meshKernelId).m_mesh2d; mesh2d == nullptr || mesh2d->GetNumNodes() <= 0)
             {
                 return lastExitCode;
             }
 
-            const auto propertyValueEnum = static_cast<meshkernel::Mesh2D::Property>(propertyValue);
-            switch (propertyValueEnum)
+            if (!propertyCalculators.contains(propertyValue) || propertyCalculators[propertyValue] == nullptr)
             {
-            case meshkernel::Mesh2D::Property::Orthogonality:
-            {
-                std::vector<double> values = mesh2d->GetOrthogonality();
-                if (static_cast<size_t>(geometryList.num_coordinates) < values.size())
-                {
-                    throw meshkernel::MeshKernelError("GeometryList with wrong dimensions");
-                }
-                std::copy(values.begin(), values.end(), geometryList.values);
+                throw meshkernel::MeshKernelError("The property calculator does not exist.");
             }
-            break;
-            case meshkernel::Mesh2D::Property::EdgeLength:
+
+            const meshkernel::Location location = static_cast<meshkernel::Location>(locationId);
+
+            if (geometryList.num_coordinates < propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), location))
             {
-                mesh2d->ComputeEdgesLengths();
-                std::vector<double> values = mesh2d->m_edgeLengths;
-                if (static_cast<size_t>(geometryList.num_coordinates) < values.size())
-                {
-                    throw meshkernel::MeshKernelError("GeometryList with wrong dimensions");
-                }
-                std::copy(values.begin(), values.end(), geometryList.values);
+                throw meshkernel::ConstraintError("Array size too small to store property values {} < {}.",
+                                                  geometryList.num_coordinates,
+                                                  propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), location));
             }
-            break;
-            default:
-                throw meshkernel::MeshKernelError("Property not supported");
+
+            if (geometryList.values == nullptr)
+            {
+                throw meshkernel::ConstraintError("The property values are null.");
+            }
+
+            if (propertyCalculators[propertyValue]->IsValid(meshKernelState[meshKernelId], location))
+            {
+
+                if (location == meshkernel::Location::Edges && meshKernelState[meshKernelId].m_mesh2d->m_edgesCenters.empty())
+                {
+                    meshKernelState[meshKernelId].m_mesh2d->ComputeEdgesCenters();
+                }
+
+                propertyCalculators[propertyValue]->Calculate(meshKernelState[meshKernelId], location, geometryList);
+            }
+            else
+            {
+                throw meshkernel::MeshKernelError("Property not supported at this location");
             }
         }
         catch (...)
@@ -1552,6 +1652,8 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_mesh2d_get_property_dimension(int meshKernelId, int propertyValue, int& dimension)
     {
         lastExitCode = meshkernel::ExitCode::Success;
+        dimension = -1;
+
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -1559,26 +1661,17 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const auto& mesh2d = meshKernelState.at(meshKernelId).m_mesh2d;
-
-            if (!mesh2d || mesh2d->GetNumNodes() <= 0)
+            if (const auto& mesh2d = meshKernelState.at(meshKernelId).m_mesh2d; !mesh2d || mesh2d->GetNumNodes() <= 0)
             {
                 return lastExitCode;
             }
 
-            const auto propertyValueEnum = static_cast<meshkernel::Mesh2D::Property>(propertyValue);
-            dimension = -1;
-            switch (propertyValueEnum)
+            if (propertyCalculators.contains(propertyValue) && propertyCalculators[propertyValue] != nullptr)
             {
-            case meshkernel::Mesh2D::Property::Orthogonality:
-                dimension = static_cast<int>(mesh2d->GetOrthogonality().size());
-                break;
-
-            case meshkernel::Mesh2D::Property::EdgeLength:
-                mesh2d->ComputeEdgesLengths();
-                dimension = static_cast<int>(mesh2d->m_edgeLengths.size());
-                break;
-            default:
+                dimension = propertyCalculators[propertyValue]->Size(meshKernelState[meshKernelId], meshkernel::Location::Edges);
+            }
+            else
+            {
                 throw meshkernel::MeshKernelError("Property not supported");
             }
         }
@@ -1606,10 +1699,7 @@ namespace meshkernelapi
 
             const auto result = meshKernelState[meshKernelId].m_mesh2d->GetSmoothness();
 
-            for (auto i = 0; i < geometryList.num_coordinates; ++i)
-            {
-                geometryList.values[i] = result[i];
-            }
+            std::ranges::copy(result, geometryList.values);
         }
         catch (...)
         {

@@ -1506,16 +1506,30 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::TriangulateFaces()
     return triangulationAction;
 }
 
-void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point>& dualFace)
+void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point>& dualFace) const
 {
     const auto sortedFacesIndices = SortedFacesAroundNode(node);
     const auto numEdges = m_nodesNumEdges[node];
+
     dualFace.reserve(m_maximumNumberOfEdgesPerNode);
     dualFace.clear();
+
+    if (sortedFacesIndices.empty())
+    {
+        return;
+    }
+
+    UInt sortedFacesCount = 0;
 
     for (UInt e = 0; e < numEdges; ++e)
     {
         const auto edgeIndex = m_nodesEdges[node][e];
+
+        if (m_edgesNumFaces[edgeIndex] == 0)
+        {
+            continue;
+        }
+
         auto edgeCenter = m_edgesCenters[edgeIndex];
 
         if (m_projection == Projection::spherical)
@@ -1539,7 +1553,9 @@ void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point
         }
         dualFace.emplace_back(edgeCenter);
 
-        const auto faceIndex = sortedFacesIndices[e];
+        const auto faceIndex = sortedFacesIndices[sortedFacesCount];
+        ++sortedFacesCount;
+
         if (faceIndex != constants::missing::uintValue)
         {
             dualFace.emplace_back(m_facesMassCenters[faceIndex]);
@@ -1549,6 +1565,7 @@ void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point
             dualFace.emplace_back(m_nodes[node]);
         }
     }
+
     dualFace.emplace_back(dualFace[0]);
 
     // now we can compute the mass center of the dual face
