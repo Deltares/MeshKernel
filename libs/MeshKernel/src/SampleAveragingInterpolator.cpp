@@ -77,7 +77,7 @@ void meshkernel::SampleAveragingInterpolator::Interpolate(const int propertyId, 
     std::vector<Sample> sampleCache;
     sampleCache.reserve(100);
 
-    double searchRadiusSquared = 1.0e5;
+    double searchRadiusSquared = m_interpolationParameters.m_absoluteSearchRadius * m_interpolationParameters.m_absoluteSearchRadius;
 
     for (size_t i = 0; i < interpolationNodes.size(); ++i)
     {
