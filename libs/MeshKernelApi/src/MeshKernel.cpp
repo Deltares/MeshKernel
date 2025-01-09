@@ -3373,18 +3373,36 @@ namespace meshkernelapi
             meshkernel::LandBoundary landBoundary(landBoundaryPoints);
             meshkernel::Polygons polygons(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            polygons.SnapToLandBoundary(landBoundary, startIndex, endIndex);
             const auto [enclosureIndex, polygonStartNode, polygonEndNode] = polygons.PolygonIndex(startIndex, endIndex);
+            polygons.SnapToLandBoundary(landBoundary, startIndex, endIndex);
 
-            //--------------------------------
-            // Now copy back the polygon values
+            meshkernel::UInt enclosureStartPoint = 0;
+            meshkernel::UInt enclosurePreviousStartPoint = 0;
+            meshkernel::UInt enclosureCount = 0;
+
+            // Find the index of the first point in the polygnal enclosure with index enclosureIndex
+            for (meshkernel::UInt i = 0; i < polygonPoints.size(); ++i)
+            {
+                if ((polygonPoints[i].x == meshkernel::constants::missing::doubleValue && polygonPoints[i].y == meshkernel::constants::missing::doubleValue) || i == polygonPoints.size() - 1)
+                {
+                    if (enclosureCount == enclosureIndex)
+                    {
+                        enclosureStartPoint = enclosurePreviousStartPoint;
+                        break;
+                    }
+
+                    enclosurePreviousStartPoint = i + 1;
+                    ++enclosureCount;
+                }
+            }
 
             const std::vector<meshkernel::Point>& snappedPolygonPoints = polygons.Enclosure(enclosureIndex).Outer().Nodes();
 
-            for (int i = 0; i < polygon.num_coordinates; ++i)
+            // Copy the snapped polygon points
+            for (size_t i = 0; i < snappedPolygonPoints.size(); ++i)
             {
-                polygon.coordinates_x[i] = snappedPolygonPoints[i].x;
-                polygon.coordinates_y[i] = snappedPolygonPoints[i].y;
+                polygon.coordinates_x[i + enclosureStartPoint] = snappedPolygonPoints[i].x;
+                polygon.coordinates_y[i + enclosureStartPoint] = snappedPolygonPoints[i].y;
             }
         }
         catch (...)
