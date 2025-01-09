@@ -1465,7 +1465,6 @@ TEST(Mesh2D, GetOrthogonality_OnTriangularMesh_ShouldGetOrthogonalityValues)
     // Execute
     meshkernel::MeshOrthogonality meshOrthogonality;
     const auto orthogonality = meshOrthogonality.Compute(*mesh);
-    // const auto orthogonality = mesh->GetOrthogonality();
 
     // Assert
     const double tolerance = 1e-6;
