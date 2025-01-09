@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "MeshKernel/SampleAveragingInterpolator.hpp"
+#include "MeshKernel/SampleTriangulationInterpolator.hpp"
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 #include "TestUtils/SampleFileReader.hpp"
@@ -45,6 +46,8 @@ TEST(SampleInterpolationTests, AveragingInterpolationWithPoints)
     mk::InterpolationParameters params{.m_absoluteSearchRadius = 3.0 * delta};
     mk::SampleAveragingInterpolator interpolator(xPoints, yPoints, mk::Projection::cartesian, params);
 
+    ASSERT_EQ(static_cast<size_t>(interpolator.Size()), xPoints.size());
+
     int propertyId = 1;
     interpolator.SetData(propertyId, data);
 
@@ -67,6 +70,119 @@ TEST(SampleInterpolationTests, AveragingInterpolationWithPoints)
 }
 
 TEST(SampleInterpolationTests, AveragingInterpolationWithMesh)
+{
+    const mk::UInt numberOfPointsX = 11;
+    const mk::UInt numberOfPointsY = 11;
+    const mk::UInt numberOfPoints = numberOfPointsX * numberOfPointsY;
+
+    std::vector<mk::Point> samplePoints(numberOfPoints);
+    std::vector<double> data(numberOfPoints);
+
+    // Generate sample data points
+    double delta = 1000.0;
+    double x = 0.0;
+    double y = 0.0;
+    size_t count = 0;
+
+    for (size_t i = 0; i < numberOfPointsY; ++i)
+    {
+        x = 0.0;
+
+        for (size_t j = 0; j < numberOfPointsX; ++j)
+        {
+            samplePoints[i].x = x;
+            samplePoints[i].y = y;
+            data[count] = x;
+            x += delta;
+            ++count;
+        }
+
+        y += delta;
+    }
+
+    mk::InterpolationParameters params{.m_absoluteSearchRadius = 3.0 * delta, .m_minimumNumberOfSamples = 1};
+    mk::SampleAveragingInterpolator interpolator(samplePoints, mk::Projection::cartesian, params);
+
+    ASSERT_EQ(static_cast<size_t>(interpolator.Size()), samplePoints.size());
+
+    //--------------------------------
+
+    const mk::UInt meshPointsX = 5;
+    const mk::UInt meshPointsY = 5;
+
+    const auto mesh = MakeRectangularMeshForTesting(meshPointsX,
+                                                    meshPointsY,
+                                                    8.0 * delta,
+                                                    8.0 * delta,
+                                                    mk::Projection::cartesian,
+                                                    {0.5 * delta, 0.5 * delta});
+
+    mesh->ComputeEdgesCenters();
+
+    //--------------------------------
+
+    int propertyId = 1;
+    interpolator.SetData(propertyId, data);
+
+    // Execute
+    ASSERT_EQ(interpolator.Size(), numberOfPoints);
+
+    // Test node data
+
+    const double initialValue = -1.0e20;
+    std::vector<double> interpolationNodeResult(mesh->GetNumNodes(), initialValue);
+    std::vector<double> expectedNodeResult{0.0, 2000.0, 4000.0, 6000.0, 8000.0,
+                                           0.0, 2000.0, 4000.0, 6000.0, 8000.0,
+                                           0.0, 2000.0, 4000.0, 6000.0, 8000.0,
+                                           0.0, 2000.0, 4000.0, 6000.0, 8000.0,
+                                           0.0, 2000.0, 4000.0, 6000.0, 8000.0};
+
+    interpolator.Interpolate(propertyId, *mesh, mk::Location::Nodes, interpolationNodeResult);
+
+    const double tolerance = 1.0e-8;
+
+    for (size_t i = 0; i < interpolationNodeResult.size(); ++i)
+    {
+        EXPECT_NEAR(expectedNodeResult[i], interpolationNodeResult[i], tolerance);
+    }
+
+    // Test edge data
+
+    std::vector<double> interpolationEdgeResult(mesh->GetNumEdges(), initialValue);
+    std::vector<double> expectedEdgeResult{0.0, 2000.0, 4000.0, 6000.0, 8000.0,
+                                           0.0, 2000.0, 4000.0, 6000.0, 8000.0,
+                                           0.0, 2000.0, 4000.0, 6000.0, 8000.0,
+                                           0.0, 2000.0, 4000.0, 6000.0, 8000.0,
+                                           1000.0, 3000.0, 5000.0, 7000.0,
+                                           1000.0, 3000.0, 5000.0, 7000.0,
+                                           1000.0, 3000.0, 5000.0, 7000.0,
+                                           1000.0, 3000.0, 5000.0, 7000.0,
+                                           1000.0, 3000.0, 5000.0, 7000.0};
+
+    interpolator.Interpolate(propertyId, *mesh, mk::Location::Edges, interpolationEdgeResult);
+
+    for (size_t i = 0; i < interpolationEdgeResult.size(); ++i)
+    {
+        EXPECT_NEAR(expectedEdgeResult[i], interpolationEdgeResult[i], tolerance);
+    }
+
+    // Test face data
+
+    std::vector<double> interpolationFaceResult(mesh->GetNumFaces(), initialValue);
+    std::vector<double> expectedFaceResult{1000.0, 3000.0, 5000.0, 7000.0,
+                                           1000.0, 3000.0, 5000.0, 7000.0,
+                                           1000.0, 3000.0, 5000.0, 7000.0,
+                                           1000.0, 3000.0, 5000.0, 7000.0};
+
+    interpolator.Interpolate(propertyId, *mesh, mk::Location::Faces, interpolationFaceResult);
+
+    for (size_t i = 0; i < interpolationFaceResult.size(); ++i)
+    {
+        EXPECT_NEAR(expectedFaceResult[i], interpolationFaceResult[i], tolerance);
+    }
+}
+
+TEST(SampleInterpolationTests, TriangulationInterpolationWithPoints)
 {
     const mk::UInt numberOfPointsX = 11;
     const mk::UInt numberOfPointsY = 11;
@@ -98,24 +214,9 @@ TEST(SampleInterpolationTests, AveragingInterpolationWithMesh)
         y += delta;
     }
 
-    mk::InterpolationParameters params{.m_absoluteSearchRadius = 3.0 * delta, .m_minimumNumberOfSamples = 1};
-    mk::SampleAveragingInterpolator interpolator(xPoints, yPoints, mk::Projection::cartesian, params);
+    mk::SampleTriangulationInterpolator interpolator(xPoints, yPoints, mk::Projection::cartesian);
 
-    //--------------------------------
-
-    const mk::UInt meshPointsX = 3;
-    const mk::UInt meshPointsY = 3;
-
-    const auto mesh = MakeRectangularMeshForTesting(meshPointsX,
-                                                    meshPointsY,
-                                                    3.0 * delta,
-                                                    3.0 * delta,
-                                                    mk::Projection::cartesian,
-                                                    {0.5 * delta, 0.5 * delta});
-
-    mesh->ComputeEdgesCenters();
-
-    //--------------------------------
+    ASSERT_EQ(static_cast<size_t>(interpolator.Size()), xPoints.size());
 
     int propertyId = 1;
     interpolator.SetData(propertyId, data);
@@ -123,15 +224,16 @@ TEST(SampleInterpolationTests, AveragingInterpolationWithMesh)
     // Execute
     ASSERT_EQ(interpolator.Size(), numberOfPoints);
 
+    std::vector<mk::Point> interpolationPoints{{0.5 * delta, 0.5 * delta}, {9.5 * delta, 9.5 * delta}, {11.0 * delta, 11.0 * delta}};
     const double initialValue = -1.0e20;
-    std::vector<double> interpolationResult(mesh->GetNumNodes(), initialValue);
-    std::vector<double> expectedResult{1000.0, 1000.0, 1000.0, 2000.0, 2000.0, 2000.0, 3000.0, 3000.0, 3000.0};
+    std::vector<double> interpolationResult(interpolationPoints.size(), initialValue);
+    std::vector<double> expectedResult{500.0, 9500.0, mk::constants::missing::doubleValue};
 
-    interpolator.Interpolate(propertyId, *mesh, mk::Location::Nodes, interpolationResult);
+    interpolator.Interpolate(propertyId, interpolationPoints, interpolationResult);
 
     const double tolerance = 1.0e-8;
 
-    for (size_t i = 0; i < expectedResult.size(); ++i)
+    for (size_t i = 0; i < interpolationResult.size(); ++i)
     {
         EXPECT_NEAR(expectedResult[i], interpolationResult[i], tolerance);
     }
