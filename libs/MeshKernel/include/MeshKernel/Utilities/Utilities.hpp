@@ -28,9 +28,11 @@
 #pragma once
 
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Point.hpp"
 
 namespace meshkernel
@@ -47,5 +49,10 @@ namespace meshkernel
     void Print(const std::vector<double>& xNodes,
                const std::vector<double>& yNodes,
                const std::vector<int>& edges, std::ostream& out = std::cout);
+
+    /// @brief Save the mesh data in a vtk file format
+    ///
+    /// @note saves only triangle and quadrilateral elements.
+    void SaveVtk(const std::vector<Point>& nodes, const std::vector<std::vector<UInt>>& faces, const std::string& fileName);
 
 } // namespace meshkernel

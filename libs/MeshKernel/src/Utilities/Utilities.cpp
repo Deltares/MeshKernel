@@ -28,6 +28,9 @@
 #include "MeshKernel/Utilities/Utilities.hpp"
 #include "MeshKernel/Exceptions.hpp"
 
+#include <fstream>
+#include <iomanip>
+
 void meshkernel::Print(const std::vector<Point>& nodes, const std::vector<Edge>& edges, std::ostream& out)
 {
     out << "nullId = " << constants::missing::uintValue << ";" << std::endl;
@@ -89,4 +92,143 @@ void meshkernel::Print(const std::vector<double>& xNodes,
         out << "edges ( " << i + 1 << ", 1 ) = " << edges[2 * i] + 1 << ";" << std::endl;
         out << "edges ( " << i + 1 << ", 2 ) = " << edges[2 * i + 1] + 1 << ";" << std::endl;
     }
+}
+
+void meshkernel::SaveVtk(const std::vector<Point>& nodes, const std::vector<std::vector<UInt>>& faces, const std::string& fileName)
+{
+
+    std::ofstream vtkFile(fileName.c_str());
+
+    vtkFile.precision(18);
+
+    std::string meshType = "UnstructuredGrid";
+    std::string versionNumber = "1.0";
+
+    UInt numberOfElements = 0;
+
+    for (size_t i = 0; i < faces.size(); ++i)
+    {
+        if (faces[i].size() == 3 || faces[i].size() == 4)
+        {
+            ++numberOfElements;
+        }
+    }
+
+    vtkFile << "<VTKFile type=\""
+            << meshType
+            << "\" version=\""
+            << versionNumber
+            << "\" byte_order=\"LittleEndian\" header_type=\"UInt64\">"
+            << std::endl;
+    vtkFile << "  <UnstructuredGrid>" << std::endl;
+
+    vtkFile << "    <Piece"
+            << "  NumberOfPoints=\""
+            << nodes.size() << "\""
+            << "  NumberOfCells=\""
+            << numberOfElements
+            << "\">"
+            << std::endl;
+
+    vtkFile << "      <Points>" << std::endl;
+    vtkFile << "        <DataArray type=\"Float64\" Name=\"Points\" NumberOfComponents=\"3\" format=\"ascii\">" << std::endl;
+
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        vtkFile << std::setw(8) << " " << nodes[i].x << "  " << std::setw(8) << nodes[i].y << "      " << 0.0 << std::endl;
+    }
+
+    vtkFile << "        </DataArray>" << std::endl;
+    vtkFile << "      </Points>" << std::endl;
+
+    //--------------------------------
+    vtkFile << "      <Cells>" << std::endl;
+    vtkFile << "        <DataArray type=\""
+            << "Int64"
+            << "\" Name=\""
+            << "connectivity"
+            << "\" format=\""
+            << "ascii"
+            << "\">"
+            << std::endl;
+
+    for (size_t i = 0; i < faces.size(); ++i)
+    {
+
+        if (faces[i].size() == 3 || faces[i].size() == 4)
+        {
+            for (size_t j = 0; j < faces[i].size(); ++j)
+            {
+                vtkFile << " " << std::setw(8) << faces[i][j];
+            }
+
+            vtkFile << std::endl;
+        }
+    }
+
+    vtkFile << std::endl;
+    vtkFile << "        </DataArray>" << std::endl;
+
+    //--------------------------------
+    vtkFile << "        <DataArray type=\""
+            << "Int64"
+            << "\" Name=\""
+            << "offsets"
+            << "\" format=\""
+            << "ascii"
+            << "\">"
+            << std::endl;
+
+    size_t sum = 0;
+
+    for (size_t i = 0; i < faces.size(); ++i)
+    {
+        if (faces[i].size() == 3 || faces[i].size() == 4)
+        {
+            sum += faces[i].size();
+            vtkFile << " " << std::setw(8) << sum;
+        }
+    }
+
+    vtkFile << std::endl;
+    vtkFile << "        </DataArray>" << std::endl;
+
+    //--------------------------------
+    vtkFile << "        <DataArray type=\""
+            << "Int64"
+            << "\" Name=\""
+            << "types"
+            << "\" format=\""
+            << "ascii"
+            << "\">"
+            << std::endl;
+
+    for (size_t i = 0; i < faces.size(); ++i)
+    {
+        UInt type = 0;
+
+        if (faces[i].size() == 3)
+        {
+            type = 69;
+        }
+        else if (faces[i].size() == 4)
+        {
+            type = 70;
+        }
+
+        if (faces[i].size() == 3 || faces[i].size() == 4)
+        {
+            vtkFile << " " << std::setw(8) << type;
+        }
+    }
+
+    vtkFile << std::endl;
+    vtkFile << "        </DataArray>" << std::endl;
+    vtkFile << "      </Cells>" << std::endl;
+
+    vtkFile << "    </Piece>" << std::endl;
+    vtkFile << "  </UnstructuredGrid>" << std::endl;
+    vtkFile << "</VTKFile>" << std::endl;
+
+    vtkFile.close();
 }

@@ -25,6 +25,7 @@ set(VERSION_INC_DIR ${CMAKE_SOURCE_DIR}/tools)
 set(SRC_LIST
   ${SRC_DIR}/MKStateUndoAction.cpp
   ${SRC_DIR}/MeshKernel.cpp
+  ${SRC_DIR}/PropertyCalculator.cpp
 )
 
 set(CACHE_SRC_LIST
@@ -52,6 +53,7 @@ set(
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
   ${DOMAIN_INC_DIR}/MeshKernel.hpp
+  ${DOMAIN_INC_DIR}/PropertyCalculator.hpp
   ${DOMAIN_INC_DIR}/State.hpp
   ${DOMAIN_INC_DIR}/Utils.hpp
   ${VERSION_INC_DIR}/Version/Version.hpp
