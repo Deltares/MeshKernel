@@ -38,6 +38,44 @@ std::vector<double> meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh) c
     return orthogonality;
 }
 
+double meshkernel::MeshOrthogonality::ComputeValue(const Mesh2D& mesh, const UInt edgeId) const
+{
+    const auto [firstNode, secondNode] = mesh.GetEdge(edgeId);
+
+    if (firstNode == constants::missing::uintValue ||
+        secondNode == constants::missing::uintValue)
+    {
+        return constants::missing::doubleValue;
+    }
+
+    const auto firstFaceIndex = mesh.m_edgesFaces[edgeId][0];
+    const auto secondFaceIndex = mesh.m_edgesFaces[edgeId][1];
+
+    if (firstFaceIndex == constants::missing::uintValue ||
+        secondFaceIndex == constants::missing::uintValue)
+    {
+        return constants::missing::doubleValue;
+    }
+
+    double val = constants::missing::doubleValue;
+
+    if (!mesh.IsEdgeOnBoundary(edgeId))
+    {
+        val = NormalizedInnerProductTwoSegments(mesh.Node(firstNode),
+                                                mesh.Node(secondNode),
+                                                mesh.m_facesCircumcenters[firstFaceIndex],
+                                                mesh.m_facesCircumcenters[secondFaceIndex],
+                                                mesh.m_projection);
+
+        if (val != constants::missing::doubleValue)
+        {
+            val = std::abs(val);
+        }
+    }
+
+    return val;
+}
+
 void meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh, std::span<double> orthogonality) const
 {
     if (orthogonality.size() != mesh.GetNumEdges())
@@ -49,30 +87,6 @@ void meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh, std::span<double
 
     for (UInt e = 0; e < numEdges; e++)
     {
-        auto val = constants::missing::doubleValue;
-
-        const auto [firstNode, secondNode] = mesh.GetEdge(e);
-
-        const auto firstFaceIndex = mesh.m_edgesFaces[e][0];
-        const auto secondFaceIndex = mesh.m_edgesFaces[e][1];
-
-        if (firstNode != constants::missing::uintValue &&
-            secondNode != constants::missing::uintValue &&
-            firstFaceIndex != constants::missing::uintValue &&
-            secondFaceIndex != constants::missing::uintValue && !mesh.IsEdgeOnBoundary(e))
-        {
-            val = NormalizedInnerProductTwoSegments(mesh.Node(firstNode),
-                                                    mesh.Node(secondNode),
-                                                    mesh.m_facesCircumcenters[firstFaceIndex],
-                                                    mesh.m_facesCircumcenters[secondFaceIndex],
-                                                    mesh.m_projection);
-
-            if (val != constants::missing::doubleValue)
-            {
-                val = std::abs(val);
-            }
-        }
-
-        orthogonality[e] = val;
+        orthogonality[e] = ComputeValue(mesh, e);
     }
 }
