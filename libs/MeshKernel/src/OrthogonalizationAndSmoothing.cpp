@@ -25,6 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
+#include <MeshKernel/Cartesian3DPoint.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
