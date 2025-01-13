@@ -27,7 +27,9 @@
 
 #include <gtest/gtest.h>
 
-#include <MeshKernel/Entities.hpp>
+#include "MeshKernel/Cartesian3DPoint.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/Point.hpp"
 
 TEST(PointTests, IsEqualTest)
 {
@@ -232,4 +234,117 @@ TEST(PointTests, RotateAboutPointTest)
 
         angle += delta;
     }
+}
+
+TEST(PointTests, ScaleCartesian3DPoint)
+{
+    meshkernel::Cartesian3DPoint p1{1.0, 2.0, 3.0};
+
+    const double factor1 = 2.0;
+    const double factor2 = 5.0;
+
+    meshkernel::Cartesian3DPoint result = factor1 * p1;
+
+    EXPECT_EQ(result.x, factor1 * p1.x);
+    EXPECT_EQ(result.y, factor1 * p1.y);
+    EXPECT_EQ(result.z, factor1 * p1.z);
+
+    result = p1 * factor2;
+
+    EXPECT_EQ(result.x, factor2 * p1.x);
+    EXPECT_EQ(result.y, factor2 * p1.y);
+    EXPECT_EQ(result.z, factor2 * p1.z);
+}
+
+TEST(PointTests, DivideCartesian3DPoint)
+{
+    meshkernel::Cartesian3DPoint p1{10.0, 20.0, 30.0};
+
+    const double factor = 2.0;
+    meshkernel::Cartesian3DPoint result = p1 / factor;
+
+    EXPECT_EQ(result.x, p1.x / factor);
+    EXPECT_EQ(result.y, p1.y / factor);
+    EXPECT_EQ(result.z, p1.z / factor);
+}
+
+TEST(PointTests, AddCartesian3DPoint)
+{
+    meshkernel::Cartesian3DPoint p1{10.0, 20.0, 30.0};
+    meshkernel::Cartesian3DPoint p2{40.0, 50.0, 60.0};
+
+    meshkernel::Cartesian3DPoint result = p1 + p2;
+
+    EXPECT_EQ(result.x, p1.x + p2.x);
+    EXPECT_EQ(result.y, p1.y + p2.y);
+    EXPECT_EQ(result.z, p1.z + p2.z);
+}
+
+TEST(PointTests, SubtractCartesian3DPoint)
+{
+    meshkernel::Cartesian3DPoint p1{40.0, 50.0, 60.0};
+    meshkernel::Cartesian3DPoint p2{10.0, 20.0, 30.0};
+
+    meshkernel::Cartesian3DPoint result = p1 - p2;
+
+    EXPECT_EQ(result.x, p1.x - p2.x);
+    EXPECT_EQ(result.y, p1.y - p2.y);
+    EXPECT_EQ(result.z, p1.z - p2.z);
+}
+
+TEST(PointTests, InnerProductCartesian3DPoint)
+{
+    meshkernel::Cartesian3DPoint p1{40.0, 50.0, 60.0};
+    meshkernel::Cartesian3DPoint p2{10.0, 20.0, 30.0};
+
+    double result = meshkernel::InnerProduct(p1, p2);
+    const double expectedResult = p1.x * p2.x + p1.y * p2.y + p1.z * p2.z;
+
+    EXPECT_EQ(result, expectedResult);
+}
+
+TEST(PointTests, VectorProductCartesian3DPoint)
+{
+    meshkernel::Cartesian3DPoint p1{40.0, 50.0, 60.0};
+    meshkernel::Cartesian3DPoint p2{10.0, 20.0, 30.0};
+
+    meshkernel::Cartesian3DPoint result = meshkernel::VectorProduct(p1, p2);
+    meshkernel::Cartesian3DPoint expectedResult{p1.y * p2.z - p1.z * p2.y,
+                                                p1.z * p2.x - p1.x * p2.z,
+                                                p1.x * p2.y - p1.y * p2.x};
+
+    EXPECT_EQ(result.x, expectedResult.x);
+    EXPECT_EQ(result.y, expectedResult.y);
+    EXPECT_EQ(result.z, expectedResult.z);
+}
+
+TEST(PointTests, SphericalToCartesian3DTest)
+{
+    meshkernel::Point p1{1000.0, 2000.0};
+
+    meshkernel::Cartesian3DPoint result = meshkernel::SphericalToCartesian3D(p1);
+
+    // Result not obtained analytically
+    meshkernel::Cartesian3DPoint expectedResult{-1040758.31651999, 5902433.71909574, -2181451.33089076};
+
+    const double tolerance = 1.0e-7;
+
+    EXPECT_NEAR(result.x, expectedResult.x, tolerance);
+    EXPECT_NEAR(result.y, expectedResult.y, tolerance);
+    EXPECT_NEAR(result.z, expectedResult.z, tolerance);
+}
+
+TEST(PointTests, Cartesian3DToSphericalTest)
+{
+    meshkernel::Cartesian3DPoint p1{-1040758.31651999, 5902433.71909574, -2181451.33089076};
+
+    meshkernel::Point result = meshkernel::Cartesian3DToSpherical(p1, 25.0);
+
+    // Result not obtained analytically
+    meshkernel::Point expectedResult{100.0, -20.0};
+
+    const double tolerance = 1.0e-12;
+
+    EXPECT_NEAR(result.x, expectedResult.x, tolerance);
+    EXPECT_NEAR(result.y, expectedResult.y, tolerance);
 }

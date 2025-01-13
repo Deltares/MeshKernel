@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernel/Operations.hpp"
+#include "MeshKernel/Cartesian3DPoint.hpp"
 #include "MeshKernel/Mesh.hpp"
 
 namespace meshkernel::impl
@@ -140,18 +141,6 @@ namespace meshkernel::impl
 
 namespace meshkernel
 {
-    Cartesian3DPoint VectorProduct(const Cartesian3DPoint& a, const Cartesian3DPoint& b)
-    {
-        return Cartesian3DPoint{
-            a.y * b.z - a.z * b.y,
-            a.z * b.x - a.x * b.z,
-            a.x * b.y - a.y * b.x};
-    }
-
-    double InnerProduct(const Cartesian3DPoint& a, const Cartesian3DPoint& b)
-    {
-        return a.x * b.x + a.y * b.y + a.z * b.z;
-    }
 
     std::vector<std::pair<UInt, UInt>> FindIndices(const std::vector<Point>& vec,
                                                    size_t start,
@@ -256,25 +245,6 @@ namespace meshkernel
     bool IsPointOnPole(const Point& point)
     {
         return std::abs(std::abs(point.y) - 90.0) < constants::geometric::absLatitudeAtPoles;
-    }
-
-    Cartesian3DPoint SphericalToCartesian3D(const Point& sphericalPoint)
-    {
-        Cartesian3DPoint result;
-        result.z = constants::geometric::earth_radius * sin(sphericalPoint.y * constants::conversion::degToRad);
-        const double rr = constants::geometric::earth_radius * cos(sphericalPoint.y * constants::conversion::degToRad);
-        result.x = rr * cos(sphericalPoint.x * constants::conversion::degToRad);
-        result.y = rr * sin(sphericalPoint.x * constants::conversion::degToRad);
-        return result;
-    }
-
-    Point Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude)
-    {
-        Point sphericalPoint;
-        const double angle = atan2(cartesianPoint.y, cartesianPoint.x) * constants::conversion::radToDeg;
-        sphericalPoint.y = atan2(cartesianPoint.z, sqrt(cartesianPoint.x * cartesianPoint.x + cartesianPoint.y * cartesianPoint.y)) * constants::conversion::radToDeg;
-        sphericalPoint.x = angle + static_cast<double>(std::lround((referenceLongitude - angle) / 360.0)) * 360.0;
-        return sphericalPoint;
     }
 
     double crossProduct(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFirstPoint, const Point& secondSegmentSecondPoint, const Projection& projection)
