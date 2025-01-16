@@ -415,7 +415,6 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeTwoNodes(UInt firstNodeIndex,
 
 std::unique_ptr<meshkernel::UndoAction> Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
 {
-
     // first filter the nodes in polygon
     const auto numNodes = GetNumNodes();
     std::vector<Point> filteredNodes(numNodes);
@@ -450,16 +449,20 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeNodesInPolygon(const Polygons
 
     // merge the closest nodes
     auto const mergingDistanceSquared = mergingDistance * mergingDistance;
+
     for (UInt i = 0; i < filteredNodes.size(); ++i)
     {
         nodesRtree->SearchPoints(filteredNodes[i], mergingDistanceSquared);
 
         const auto resultSize = nodesRtree->GetQueryResultSize();
+
         if (resultSize > 1)
         {
+
             for (UInt j = 0; j < nodesRtree->GetQueryResultSize(); j++)
             {
                 const auto nodeIndexInFilteredNodes = nodesRtree->GetQueryResult(j);
+
                 if (nodeIndexInFilteredNodes != i)
                 {
                     undoAction->Add(MergeTwoNodes(originalNodeIndices[i], originalNodeIndices[nodeIndexInFilteredNodes]));
