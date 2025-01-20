@@ -231,7 +231,7 @@ namespace meshkernel
         {
             m_rtree2D.query(bgi::within(box) && bgi::satisfies(pointIsNearby), std::back_inserter(m_queryCache));
         }
-        else if constexpr (std::is_same < projection, bg::cs::geographic<bg::degree>::value)
+        else if constexpr (std::is_same<projection, bg::cs::geographic<bg::degree>>::value)
         {
 
             auto atPoleOrInBox = [&nodeSought, &searchRadiusSquared, &box](Value2D const& v)
@@ -290,7 +290,7 @@ namespace meshkernel
         {
             m_rtree2D.query(bgi::within(box) && bgi::satisfies(pointIsNearby) && bgi::nearest(nodeSought, 1), std::back_inserter(m_queryCache));
         }
-        else if constexpr (std::is_same < projection, bg::cs::geographic<bg::degree>::value)
+        else if constexpr (std::is_same<projection, bg::cs::geographic<bg::degree>>::value)
         {
 
             auto atPoleOrInBox = [&nodeSought, &searchRadiusSquared, &box](Value2D const& v)
