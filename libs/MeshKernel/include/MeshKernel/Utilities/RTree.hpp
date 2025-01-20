@@ -255,7 +255,8 @@ namespace meshkernel
         }
         else
         {
-            static_assert(false, "Searching for points has not been implemented for this projection type");
+            // Would rather use static_assert (false, message) here, but gcc 12 does not handle this yet
+            throw ConstraintError("Searching for points has not been implemented for this projection type");
         }
 
         m_queryIndices.reserve(m_queryCache.size());
@@ -314,7 +315,8 @@ namespace meshkernel
         }
         else
         {
-            static_assert(false, "Searching for points has not been implemented for this projection type");
+            // Would rather use static_assert (false, message) here, but gcc 12 does not handle this yet
+            throw ConstraintError("Searching for points has not been implemented for this projection type");
         }
 
         if (!m_queryCache.empty())
