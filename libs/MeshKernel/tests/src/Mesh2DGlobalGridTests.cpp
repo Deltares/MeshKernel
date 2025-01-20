@@ -41,7 +41,7 @@ TEST(GlobalGridTest, Mesh2DGenerateGlobalCompute_OnInvalidProjection_ShouldThrow
     EXPECT_THROW(meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshkernel::Projection::cartesian), meshkernel::MeshKernelError);
 }
 
-TEST(GlobalGridTest, DISABLE_WTF)
+TEST(GlobalGridTest, WTF)
 {
     // Execute
 
@@ -49,8 +49,19 @@ TEST(GlobalGridTest, DISABLE_WTF)
     constexpr meshkernel::UInt numLatitudeNodes = 20;
     const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshkernel::Projection::spherical);
 
-    // auto mesh = ReadLegacyMesh2DFromFile("global_mesh_20_20.nc");
-    // // auto mesh = ReadLegacyMesh2DFromFile("globalmesh.nc");
+    const meshkernel::UInt northPoleNodeIndex = 690;
+    const meshkernel::UInt southPoleNodeIndex = 691;
 
-    meshkernel::Print(mesh->Nodes(), mesh->Edges());
+    ASSERT_EQ(mesh->GetNumNodes(), 692);
+    ASSERT_EQ(mesh->GetNumEdges(), 1333);
+    ASSERT_EQ(mesh->m_nodesEdges[northPoleNodeIndex].size(), 5);
+    ASSERT_EQ(mesh->m_nodesEdges[southPoleNodeIndex].size(), 5);
+
+    const double tolerance = 1.0e-10;
+
+    ASSERT_NEAR(mesh->Node(northPoleNodeIndex).x, 108.0, tolerance);
+    ASSERT_NEAR(mesh->Node(northPoleNodeIndex).y, 90.0, tolerance);
+
+    ASSERT_NEAR(mesh->Node(southPoleNodeIndex).x, 108.0, tolerance);
+    ASSERT_NEAR(mesh->Node(southPoleNodeIndex).y, -90.0, tolerance);
 }
