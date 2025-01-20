@@ -68,7 +68,7 @@ TEST(GlobalGridTest, Mesh2DGenerateGlobalCompute_OnInvalidProjection_ShouldThrow
     EXPECT_THROW(meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshkernel::Projection::cartesian), meshkernel::MeshKernelError);
 }
 
-TEST(GlobalGridTest, WTF)
+TEST(GlobalGridTest, GlobalMeshWithPoles)
 {
     // Execute
 
