@@ -1446,8 +1446,7 @@ TEST(Mesh2D, GetSmoothness_OnTriangularMesh_ShouldgetSmoothnessValues)
     const auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
 
     // Execute
-    meshkernel::MeshSmoothness meshSmoothness;
-    const auto smoothness = meshSmoothness.Compute(*mesh); //->GetSmoothness();
+    const auto smoothness = meshkernel::MeshSmoothness::Compute(*mesh);
 
     // Assert
     const double tolerance = 1e-6;
@@ -1463,8 +1462,7 @@ TEST(Mesh2D, GetOrthogonality_OnTriangularMesh_ShouldGetOrthogonalityValues)
     const auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
 
     // Execute
-    meshkernel::MeshOrthogonality meshOrthogonality;
-    const auto orthogonality = meshOrthogonality.Compute(*mesh);
+    const auto orthogonality = meshkernel::MeshOrthogonality::Compute(*mesh);
 
     // Assert
     const double tolerance = 1e-6;

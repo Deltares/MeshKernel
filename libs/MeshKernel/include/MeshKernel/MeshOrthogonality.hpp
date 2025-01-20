@@ -39,14 +39,14 @@ namespace meshkernel
     {
     public:
         /// @brief Compute the orthogonality values returning values in a vector
-        std::vector<double> Compute(const Mesh2D& mesh) const;
+        static std::vector<double> Compute(const Mesh2D& mesh);
 
         /// @brief Compute the orthogonality values overwriting the values in an array
-        void Compute(const Mesh2D& mesh, std::span<double> orthogonality) const;
+        static void Compute(const Mesh2D& mesh, std::span<double> orthogonality);
 
     private:
         /// @brief Compute the orthogonality value for the edge
-        double ComputeValue(const Mesh2D& mesh, const UInt edgeId) const;
+        static double ComputeValue(const Mesh2D& mesh, const UInt edgeId);
     };
 
 } // namespace meshkernel

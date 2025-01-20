@@ -1581,8 +1581,7 @@ namespace meshkernelapi
             }
 
             std::span<double> orthogonality(geometryList.values, geometryList.num_coordinates);
-            meshkernel::MeshOrthogonality meshOrthogonality;
-            meshOrthogonality.Compute(*meshKernelState[meshKernelId].m_mesh2d, orthogonality);
+            meshkernel::MeshOrthogonality::Compute(*meshKernelState[meshKernelId].m_mesh2d, orthogonality);
         }
         catch (...)
         {
@@ -1697,8 +1696,7 @@ namespace meshkernelapi
             }
 
             std::span<double> smoothness(geometryList.values, geometryList.num_coordinates);
-            meshkernel::MeshSmoothness meshSmoothness;
-            meshSmoothness.Compute(*meshKernelState[meshKernelId].m_mesh2d, smoothness);
+            meshkernel::MeshSmoothness::Compute(*meshKernelState[meshKernelId].m_mesh2d, smoothness);
         }
         catch (...)
         {

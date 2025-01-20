@@ -49,8 +49,7 @@ void meshkernelapi::OrthogonalityPropertyCalculator::Calculate(const MeshKernelS
     }
 
     std::span<double> orthogonality(geometryList.values, geometryList.num_coordinates);
-    meshkernel::MeshOrthogonality meshOrthogonality;
-    meshOrthogonality.Compute(*state.m_mesh2d, orthogonality);
+    meshkernel::MeshOrthogonality::Compute(*state.m_mesh2d, orthogonality);
 }
 
 int meshkernelapi::OrthogonalityPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location [[maybe_unused]]) const

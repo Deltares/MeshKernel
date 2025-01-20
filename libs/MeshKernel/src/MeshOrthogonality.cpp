@@ -30,7 +30,7 @@
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Operations.hpp"
 
-std::vector<double> meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh) const
+std::vector<double> meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh)
 {
     std::vector<double> orthogonality(mesh.GetNumEdges(), constants::missing::doubleValue);
     Compute(mesh, orthogonality);
@@ -38,7 +38,7 @@ std::vector<double> meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh) c
     return orthogonality;
 }
 
-double meshkernel::MeshOrthogonality::ComputeValue(const Mesh2D& mesh, const UInt edgeId) const
+double meshkernel::MeshOrthogonality::ComputeValue(const Mesh2D& mesh, const UInt edgeId)
 {
     const auto [firstNode, secondNode] = mesh.GetEdge(edgeId);
 
@@ -76,7 +76,7 @@ double meshkernel::MeshOrthogonality::ComputeValue(const Mesh2D& mesh, const UIn
     return val;
 }
 
-void meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh, std::span<double> orthogonality) const
+void meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh, std::span<double> orthogonality)
 {
     if (orthogonality.size() != mesh.GetNumEdges())
     {
