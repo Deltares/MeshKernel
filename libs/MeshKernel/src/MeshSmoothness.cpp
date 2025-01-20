@@ -29,7 +29,7 @@
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Exceptions.hpp"
 
-std::vector<double> meshkernel::MeshSmoothness::Compute(const Mesh2D& mesh) const
+std::vector<double> meshkernel::MeshSmoothness::Compute(const Mesh2D& mesh)
 {
 
     std::vector<double> smoothness(mesh.GetNumEdges(), constants::missing::doubleValue);
@@ -38,7 +38,7 @@ std::vector<double> meshkernel::MeshSmoothness::Compute(const Mesh2D& mesh) cons
     return smoothness;
 }
 
-void meshkernel::MeshSmoothness::Compute(const Mesh2D& mesh, std::span<double> smoothness) const
+void meshkernel::MeshSmoothness::Compute(const Mesh2D& mesh, std::span<double> smoothness)
 {
 
     if (smoothness.size() != mesh.GetNumEdges())

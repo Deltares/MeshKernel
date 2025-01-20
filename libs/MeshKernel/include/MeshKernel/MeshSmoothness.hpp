@@ -39,10 +39,10 @@ namespace meshkernel
     {
     public:
         /// @brief Compute the smoothness values returning values in a vector
-        std::vector<double> Compute(const Mesh2D& mesh) const;
+        static std::vector<double> Compute(const Mesh2D& mesh);
 
         /// @brief Compute the smoothness values overwriting the values in an array
-        void Compute(const Mesh2D& mesh, std::span<double> smoothness) const;
+        static void Compute(const Mesh2D& mesh, std::span<double> smoothness);
 
     private:
         static constexpr double m_minimumCellArea = 1e-12; ///< Minimum cell area
