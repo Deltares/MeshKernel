@@ -27,6 +27,7 @@
 
 #include <cmath>
 
+#include "MeshKernel/Cartesian3DPoint.hpp"
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/LandBoundary.hpp"

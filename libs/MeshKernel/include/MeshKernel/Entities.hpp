@@ -97,14 +97,6 @@ namespace meshkernel
         }
     }
 
-    /// @brief A struct describing the three coordinates in a cartesian projection.
-    struct Cartesian3DPoint
-    {
-        double x; ///< X-coordinate
-        double y; ///< Y-coordinate
-        double z; ///< Z-coordinate
-    };
-
     /// @brief A struct describing a sample with two coordinates and a value
     class Sample : public Point
     {
