@@ -550,7 +550,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_set_property(int projectionType, int interpolationType, const GeometryList& sampleData, int& propertyId)
+    MKERNEL_API int mkernel_mesh2d_set_property(int projectionType, const meshkernel::InterpolationParameters& interpolationParameters, const GeometryList& sampleData, int& propertyId)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         propertyId = -1;
@@ -560,7 +560,7 @@ namespace meshkernelapi
             meshkernel::range_check::CheckOneOf<int>(projectionType, meshkernel::GetValidProjections(), "Projection");
             auto const projection = static_cast<meshkernel::Projection>(projectionType);
 
-            meshkernel::range_check::CheckOneOf<int>(interpolationType, {0, 1}, "InterpolationType");
+            meshkernel::range_check::CheckOneOf<int>(interpolationParameters.interpolation_type, {0, 1}, "interpolation_type");
 
             int localPropertyId = GeneratePropertyId();
 
@@ -569,7 +569,7 @@ namespace meshkernelapi
                 throw meshkernel::ConstraintError("The property id already exists: id = {}.", localPropertyId);
             }
 
-            propertyCalculators.try_emplace(localPropertyId, std::make_unique<InterpolatedSamplePropertyCalculator>(sampleData, projection, interpolationType, localPropertyId));
+            propertyCalculators.try_emplace(localPropertyId, std::make_unique<InterpolatedSamplePropertyCalculator>(sampleData, projection, interpolationParameters, localPropertyId));
             propertyId = localPropertyId;
         }
         catch (...)

@@ -49,8 +49,8 @@ meshkernel::SampleAveragingInterpolator::SampleAveragingInterpolator(const std::
     : m_samplePoints(CombineCoordinates(xNodes, yNodes)),
       m_projection(projection),
       m_interpolationParameters(interpolationParameters),
-      m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(interpolationParameters.m_method,
-                                                                           interpolationParameters.m_minimumNumberOfSamples,
+      m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(static_cast<AveragingInterpolation::Method>(interpolationParameters.method),
+                                                                           interpolationParameters.minimum_number_of_samples,
                                                                            projection)),
       m_nodeRTree(RTreeFactory::Create(projection))
 {
@@ -63,8 +63,8 @@ meshkernel::SampleAveragingInterpolator::SampleAveragingInterpolator(const std::
     : m_samplePoints(nodes.begin(), nodes.end()),
       m_projection(projection),
       m_interpolationParameters(interpolationParameters),
-      m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(interpolationParameters.m_method,
-                                                                           interpolationParameters.m_minimumNumberOfSamples,
+      m_strategy(averaging::AveragingStrategyFactory::GetAveragingStrategy(static_cast<AveragingInterpolation::Method>(interpolationParameters.method),
+                                                                           interpolationParameters.minimum_number_of_samples,
                                                                            projection)),
       m_nodeRTree(RTreeFactory::Create(projection))
 {
@@ -77,7 +77,7 @@ void meshkernel::SampleAveragingInterpolator::Interpolate(const int propertyId, 
     std::vector<Sample> sampleCache;
     sampleCache.reserve(100);
 
-    double searchRadiusSquared = m_interpolationParameters.m_absoluteSearchRadius * m_interpolationParameters.m_absoluteSearchRadius;
+    double searchRadiusSquared = m_interpolationParameters.absolute_search_radius * m_interpolationParameters.absolute_search_radius;
 
     for (size_t i = 0; i < interpolationNodes.size(); ++i)
     {
@@ -222,7 +222,7 @@ double meshkernel::SampleAveragingInterpolator::ComputeOnPolygon(const int prope
         throw ConstraintError("Invalid interpolation point");
     }
 
-    GenerateSearchPolygon(m_interpolationParameters.m_relativeSearchRadius, interpolationPoint, polygon, projection);
+    GenerateSearchPolygon(m_interpolationParameters.relative_search_radius, interpolationPoint, polygon, projection);
 
     const double searchRadiusSquared = GetSearchRadiusSquared(polygon, interpolationPoint, projection);
 
@@ -233,7 +233,7 @@ double meshkernel::SampleAveragingInterpolator::ComputeOnPolygon(const int prope
 
     m_nodeRTree->SearchPoints(interpolationPoint, searchRadiusSquared);
 
-    if (!m_nodeRTree->HasQueryResults() && m_interpolationParameters.m_useClosestIfNoneFound)
+    if (!m_nodeRTree->HasQueryResults() && m_interpolationParameters.use_closest_if_none_found)
     {
         m_nodeRTree->SearchNearestPoint(interpolationPoint);
         return m_nodeRTree->HasQueryResults() ? GetSampleValueFromRTree(propertyId, 0) : constants::missing::doubleValue;
@@ -255,7 +255,7 @@ void meshkernel::SampleAveragingInterpolator::InterpolateAtNodes(const int prope
 
     for (UInt n = 0; n < mesh.GetNumNodes(); ++n)
     {
-        mesh.MakeDualFace(n, m_interpolationParameters.m_relativeSearchRadius, dualFacePolygon);
+        mesh.MakeDualFace(n, m_interpolationParameters.relative_search_radius, dualFacePolygon);
 
         double resultValue = constants::missing::doubleValue;
 
@@ -310,7 +310,7 @@ void meshkernel::SampleAveragingInterpolator::InterpolateAtFaces(const int prope
 
         for (UInt n = 0; n < mesh.GetNumFaceEdges(f); ++n)
         {
-            polygonNodesCache.emplace_back(mesh.m_facesMassCenters[f] + (mesh.Node(mesh.m_facesNodes[f][n]) - mesh.m_facesMassCenters[f]) * m_interpolationParameters.m_relativeSearchRadius);
+            polygonNodesCache.emplace_back(mesh.m_facesMassCenters[f] + (mesh.Node(mesh.m_facesNodes[f][n]) - mesh.m_facesMassCenters[f]) * m_interpolationParameters.relative_search_radius);
         }
 
         // Close the polygon

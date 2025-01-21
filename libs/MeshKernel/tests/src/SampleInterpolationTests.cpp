@@ -42,7 +42,7 @@ TEST(SampleInterpolationTests, AveragingInterpolationWithPoints)
         y += delta;
     }
 
-    mk::InterpolationParameters params{.m_absoluteSearchRadius = 3.0 * delta};
+    mk::InterpolationParameters params{.absolute_search_radius = 3.0 * delta};
     mk::SampleAveragingInterpolator interpolator(xPoints, yPoints, mk::Projection::cartesian, params);
 
     int propertyId = 1;
@@ -98,7 +98,7 @@ TEST(SampleInterpolationTests, AveragingInterpolationWithMesh)
         y += delta;
     }
 
-    mk::InterpolationParameters params{.m_absoluteSearchRadius = 3.0 * delta, .m_minimumNumberOfSamples = 1};
+    mk::InterpolationParameters params{.absolute_search_radius = 3.0 * delta, .minimum_number_of_samples = 1};
     mk::SampleAveragingInterpolator interpolator(xPoints, yPoints, mk::Projection::cartesian, params);
 
     //--------------------------------

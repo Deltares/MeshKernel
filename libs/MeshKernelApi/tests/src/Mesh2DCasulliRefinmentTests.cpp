@@ -690,7 +690,7 @@ TEST(CasulliRefinement, CurvilinearRefinementBasedOnDepths)
     std::vector<double> sampleYNodes(static_cast<size_t>(numberOfSamplePoints));
     std::vector<double> sampleDataValues(static_cast<size_t>(numberOfSamplePoints));
 
-    const int interpolationType = 0;
+    meshkernel::InterpolationParameters interpolationParameters{.interpolation_type = 0};
     int propertyId = -1;
     meshkernelapi::GeometryList sampleData;
 
@@ -721,7 +721,7 @@ TEST(CasulliRefinement, CurvilinearRefinementBasedOnDepths)
         yCoord += sampleDelta;
     }
 
-    errorCode = meshkernelapi::mkernel_mesh2d_set_property(projectionType, interpolationType, sampleData, propertyId);
+    errorCode = meshkernelapi::mkernel_mesh2d_set_property(projectionType, interpolationParameters, sampleData, propertyId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     //--------------------------------

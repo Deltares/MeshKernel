@@ -110,7 +110,10 @@ TEST(MeshPropertyTests, BathymetryTest)
     sampleData.coordinates_x = bathymetryXNodes.data();
     sampleData.coordinates_y = bathymetryYNodes.data();
 
-    errorCode = mkapi::mkernel_mesh2d_set_property(projectionType, 0 /*use interpolation based on triangulation*/, sampleData, bathymetryPropertyId);
+
+    meshkernel::InterpolationParameters interpolationParameters{.interpolation_type = 0};
+
+    errorCode = mkapi::mkernel_mesh2d_set_property(projectionType, interpolationParameters, sampleData, bathymetryPropertyId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     const double tolerance = 1.0e-13;
@@ -257,7 +260,9 @@ TEST(MeshPropertyTests, PropertyFailureTest)
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_FALSE(hasBathymetryData);
 
-    errorCode = mkapi::mkernel_mesh2d_set_property(projectionType, 0 /*use interpolation based on triangulation*/, sampleData, bathymetryPropertyId);
+    meshkernel::InterpolationParameters interpolationParameters{.interpolation_type = 0};
+
+    errorCode = mkapi::mkernel_mesh2d_set_property(projectionType, interpolationParameters, sampleData, bathymetryPropertyId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, bathymetryPropertyId, locationId, hasBathymetryData);
