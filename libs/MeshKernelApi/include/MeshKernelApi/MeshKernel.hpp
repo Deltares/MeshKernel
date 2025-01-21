@@ -1628,7 +1628,7 @@ namespace meshkernelapi
         /// @param[in] sampleData   The sample data and associated sample data points.
         /// @param[out] propertyId The id of the property
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_set_property(int projectionType, const meshkernel::InterpolationParameters& interpolationParameters, const GeometryList& sampleData, int& propertyId);
+        MKERNEL_API int mkernel_set_property(int projectionType, const meshkernel::InterpolationParameters& interpolationParameters, const GeometryList& sampleData, int& propertyId);
 
         /// @brief Snaps a mesh to a land boundary.
         /// @param[in] meshKernelId The id of the mesh state

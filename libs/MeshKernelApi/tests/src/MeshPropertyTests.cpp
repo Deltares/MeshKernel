@@ -113,7 +113,7 @@ TEST(MeshPropertyTests, BathymetryTest)
 
     meshkernel::InterpolationParameters interpolationParameters{.interpolation_type = 0};
 
-    errorCode = mkapi::mkernel_mesh2d_set_property(projectionType, interpolationParameters, sampleData, bathymetryPropertyId);
+    errorCode = mkapi::mkernel_set_property(projectionType, interpolationParameters, sampleData, bathymetryPropertyId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     const double tolerance = 1.0e-13;
@@ -262,7 +262,7 @@ TEST(MeshPropertyTests, PropertyFailureTest)
 
     meshkernel::InterpolationParameters interpolationParameters{.interpolation_type = 0};
 
-    errorCode = mkapi::mkernel_mesh2d_set_property(projectionType, interpolationParameters, sampleData, bathymetryPropertyId);
+    errorCode = mkapi::mkernel_set_property(projectionType, interpolationParameters, sampleData, bathymetryPropertyId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, bathymetryPropertyId, locationId, hasBathymetryData);

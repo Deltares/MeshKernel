@@ -550,7 +550,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_set_property(int projectionType, const meshkernel::InterpolationParameters& interpolationParameters, const GeometryList& sampleData, int& propertyId)
+    MKERNEL_API int mkernel_set_property(int projectionType, const meshkernel::InterpolationParameters& interpolationParameters, const GeometryList& sampleData, int& propertyId)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         propertyId = -1;
