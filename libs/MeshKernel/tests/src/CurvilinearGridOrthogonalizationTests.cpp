@@ -70,11 +70,12 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnStronglyNonOrthogonalCurvilinea
 TEST(CurvilinearGridOrthogonalization, Compute_OnOrthogonalCurvilinearGrid_ShouldNotModifyGrid)
 {
     // Set-up
-    lin_alg::Matrix<Point> grid(4, 4);
-    grid << Point{0, 0}, Point{0, 10}, Point{0, 20}, Point{0, 30},
-        Point{10, 0}, Point{10, 10}, Point{10, 20}, Point{10, 30},
-        Point{20, 0}, Point{20, 10}, Point{20, 20}, Point{20, 30},
-        Point{30, 0}, Point{30, 10}, Point{30, 20}, Point{30, 30};
+    lin_alg::Matrix<Point> grid(5, 5);
+    grid << Point{0, 0}, Point{0, 10}, Point{0, 20}, Point{0, 30}, Point{0, 40},
+        Point{10, 0}, Point{10, 10}, Point{10, 20}, Point{10, 30}, Point{10, 40},
+        Point{20, 0}, Point{20, 10}, Point{20, 20}, Point{20, 30}, Point{20, 40},
+        Point{30, 0}, Point{30, 10}, Point{30, 20}, Point{30, 30}, Point{30, 40},
+        Point{40, 0}, Point{40, 10}, Point{40, 20}, Point{40, 30}, Point{40, 40};
 
     meshkernel::CurvilinearGrid curvilinearGrid(grid, meshkernel::Projection::cartesian);
 
@@ -96,41 +97,49 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnOrthogonalCurvilinearGrid_Shoul
     ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 1).x, tolerance);
     ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 2).x, tolerance);
     ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 3).x, tolerance);
+    ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 4).x, tolerance);
 
     ASSERT_NEAR(10.0, curvilinearGrid.GetNode(1, 0).x, tolerance);
     ASSERT_NEAR(10.0, curvilinearGrid.GetNode(1, 1).x, tolerance);
     ASSERT_NEAR(10.0, curvilinearGrid.GetNode(1, 2).x, tolerance);
     ASSERT_NEAR(10.0, curvilinearGrid.GetNode(1, 3).x, tolerance);
+    ASSERT_NEAR(10.0, curvilinearGrid.GetNode(1, 4).x, tolerance);
 
     ASSERT_NEAR(20.0, curvilinearGrid.GetNode(2, 0).x, tolerance);
     ASSERT_NEAR(20.0, curvilinearGrid.GetNode(2, 1).x, tolerance);
     ASSERT_NEAR(20.0, curvilinearGrid.GetNode(2, 2).x, tolerance);
     ASSERT_NEAR(20.0, curvilinearGrid.GetNode(2, 3).x, tolerance);
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(2, 4).x, tolerance);
 
     ASSERT_NEAR(30.0, curvilinearGrid.GetNode(3, 0).x, tolerance);
     ASSERT_NEAR(30.0, curvilinearGrid.GetNode(3, 1).x, tolerance);
     ASSERT_NEAR(30.0, curvilinearGrid.GetNode(3, 2).x, tolerance);
     ASSERT_NEAR(30.0, curvilinearGrid.GetNode(3, 3).x, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(3, 4).x, tolerance);
 
     ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 0).y, tolerance);
     ASSERT_NEAR(10.0, curvilinearGrid.GetNode(0, 1).y, tolerance);
     ASSERT_NEAR(20.0, curvilinearGrid.GetNode(0, 2).y, tolerance);
     ASSERT_NEAR(30.0, curvilinearGrid.GetNode(0, 3).y, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(0, 4).y, tolerance);
 
     ASSERT_NEAR(0.0, curvilinearGrid.GetNode(1, 0).y, tolerance);
     ASSERT_NEAR(10.0, curvilinearGrid.GetNode(1, 1).y, tolerance);
     ASSERT_NEAR(20.0, curvilinearGrid.GetNode(1, 2).y, tolerance);
     ASSERT_NEAR(30.0, curvilinearGrid.GetNode(1, 3).y, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(1, 4).y, tolerance);
 
     ASSERT_NEAR(0.0, curvilinearGrid.GetNode(2, 0).y, tolerance);
     ASSERT_NEAR(10.0, curvilinearGrid.GetNode(2, 1).y, tolerance);
     ASSERT_NEAR(20.0, curvilinearGrid.GetNode(2, 2).y, tolerance);
     ASSERT_NEAR(30.0, curvilinearGrid.GetNode(2, 3).y, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(2, 4).y, tolerance);
 
     ASSERT_NEAR(0.0, curvilinearGrid.GetNode(3, 0).y, tolerance);
     ASSERT_NEAR(10.0, curvilinearGrid.GetNode(3, 1).y, tolerance);
     ASSERT_NEAR(20.0, curvilinearGrid.GetNode(3, 2).y, tolerance);
     ASSERT_NEAR(30.0, curvilinearGrid.GetNode(3, 3).y, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(3, 4).y, tolerance);
 }
 
 TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGrid_ShouldOrthogonalizeGrid)

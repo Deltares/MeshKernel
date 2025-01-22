@@ -318,6 +318,11 @@ void CurvilinearGridOrthogonalization::Solve()
                     m_grid.GetNode(n, m - 1) * m_orthoEqTerms.d(n, m) +
                     m_grid.GetNode(n, m) * m_orthoEqTerms.e(n, m);
 
+                // No update to perform if residual is too small
+                if (IsEqual(residual.x, 0.0) && IsEqual(residual.y, 0.0))
+                {
+                    continue;
+                }
                 m_grid.GetNode(n, m) = m_grid.GetNode(n, m) - residual / m_orthoEqTerms.e(n, m) * omega;
             }
         }
@@ -384,6 +389,7 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
             }
             m_orthoEqTerms.atp(n, m) = m_orthoEqTerms.atp(n, m) * m_orthoEqTerms.a(n, m) / m_orthoEqTerms.c(n, m);
             m_orthoEqTerms.atp(n, m) = m_orthogonalizationParameters.orthogonalization_to_smoothing_factor * m_orthoEqTerms.atp(n, m) + smoothingFactor * m_orthoEqTerms.a(n, m);
+
             m_orthoEqTerms.e(n, m) = m_orthoEqTerms.e(n, m) * m_orthoEqTerms.b(n, m) / m_orthoEqTerms.d(n, m);
             m_orthoEqTerms.e(n, m) = m_orthogonalizationParameters.orthogonalization_to_smoothing_factor * m_orthoEqTerms.e(n, m) + smoothingFactor * m_orthoEqTerms.b(n, m);
 
