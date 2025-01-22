@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <map>
 #include <memory>
 #include <string>
 
@@ -80,11 +81,10 @@ namespace meshkernelapi
         std::shared_ptr<meshkernel::CurvilinearGridFromSplines> m_curvilinearGridFromSplines;             ///< Shared pointer to meshkernel::CurvilinearGridFromSplines instance
         std::shared_ptr<meshkernel::CurvilinearGridOrthogonalization> m_curvilinearGridOrthogonalization; ///< Shared pointer to meshkernel::CurvilinearGridOrthogonalization instance
         std::shared_ptr<meshkernel::CurvilinearGridLineShift> m_curvilinearGridLineShift;                 ///< Shared pointer to meshkernel::CurvilinearGridLineShift instance
+        std::map<int, std::shared_ptr<PropertyCalculator>> m_propertyCalculators;                         ///< Property calculators for the mesh2d
 
         // Exclusively owned state
         meshkernel::Projection m_projection{meshkernel::Projection::cartesian}; ///< Projection used by the meshes
-
-        std::map<int, std::shared_ptr<PropertyCalculator>> m_propertyCalculators;
 
         // Cached values, used when dimensions are computed first, followed by values being retrieved in a separate call
         std::shared_ptr<FacePolygonPropertyCache> m_facePropertyCache;          ///< face property cache

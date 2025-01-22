@@ -1037,6 +1037,7 @@ namespace meshkernelapi
         /// @param[in] projectionType The new projection for the mesh
         /// @param[in] zoneString The UTM zone and information string
         /// @returns Error code
+        /// @note After conversion all non-default property calculators will be deleted.
         MKERNEL_API int mkernel_mesh2d_convert_projection(int meshKernelId, int projectionType, const char* const zoneString);
 
         /// @brief Converts a mesh to a curvilinear mesh
