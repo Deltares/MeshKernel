@@ -86,6 +86,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnOrthogonalCurvilinearGrid_Shoul
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
     meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
     curvilinearGridOrthogonalization.SetBlock({0, 0}, {30, 30});
+    curvilinearGridOrthogonalization.SetLine({20.0, 10.0}, {20.0, 40.0});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridOrthogonalization.Compute();
