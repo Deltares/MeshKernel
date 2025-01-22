@@ -136,21 +136,18 @@ namespace meshkernelapi
         return ++currentPropertyId;
     }
 
-    std::map<int, std::unique_ptr<PropertyCalculator>> allocatePropertyCalculators()
+    std::map<int, std::shared_ptr<PropertyCalculator>> allocateDefaultPropertyCalculators()
     {
-        std::map<int, std::unique_ptr<PropertyCalculator>> propertyMap;
+        std::map<int, std::shared_ptr<PropertyCalculator>> propertyMap;
 
         int propertyId = static_cast<int>(meshkernel::Mesh2D::Property::Orthogonality);
-        propertyMap.emplace(propertyId, std::make_unique<OrthogonalityPropertyCalculator>());
+        propertyMap.emplace(propertyId, std::make_shared<OrthogonalityPropertyCalculator>());
 
         propertyId = static_cast<int>(meshkernel::Mesh2D::Property::EdgeLength);
-        propertyMap.emplace(propertyId, std::make_unique<EdgeLengthPropertyCalculator>());
+        propertyMap.emplace(propertyId, std::make_shared<EdgeLengthPropertyCalculator>());
 
         return propertyMap;
     }
-
-    // /// @brief Map of property calculators, from an property identifier to the calculator.
-    // static std::map<int, std::unique_ptr<PropertyCalculator>> propertyCalculators = allocatePropertyCalculators();
 
     static meshkernel::ExitCode HandleException(std::exception_ptr exception_ptr = std::current_exception())
     {
@@ -191,6 +188,7 @@ namespace meshkernelapi
             meshkernel::range_check::CheckOneOf<int>(projectionType, meshkernel::GetValidProjections(), "Projection");
             auto const projection = static_cast<meshkernel::Projection>(projectionType);
             meshKernelState.insert({meshKernelId, MeshKernelState(projection)});
+            meshKernelState[meshKernelId].m_propertyCalculators = allocateDefaultPropertyCalculators();
         }
         catch (...)
         {
@@ -1245,6 +1243,9 @@ namespace meshkernelapi
                                                       meshkernel::ProjectionToString(sourceProjection),
                                                       meshkernel::ProjectionToString(targetProjection));
                 }
+
+                meshKernelState[meshKernelId].m_propertyCalculators.clear();
+                meshKernelState[meshKernelId].m_propertyCalculators = allocateDefaultPropertyCalculators();
             }
         }
         catch (...)
