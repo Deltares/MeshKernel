@@ -32,6 +32,7 @@
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh.hpp"
+#include "MeshKernel/MeshEdgeLength.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/RangeCheck.hpp"
@@ -602,23 +603,23 @@ std::unique_ptr<meshkernel::DeleteNodeAction> Mesh::DeleteNode(UInt node, const 
     }
 }
 
-void Mesh::ComputeEdgesLengths()
-{
-    auto const numEdges = GetNumEdges();
-    m_edgeLengths.resize(numEdges, constants::missing::doubleValue);
+// void Mesh::ComputeEdgesLengths()
+// {
+//     auto const numEdges = GetNumEdges();
+//     m_edgeLengths.resize(numEdges, constants::missing::doubleValue);
 
-    // TODO could be openmp loop
-    for (UInt e = 0; e < numEdges; e++)
-    {
-        auto const first = m_edges[e].first;
-        auto const second = m_edges[e].second;
+//     // TODO could be openmp loop
+//     for (UInt e = 0; e < numEdges; e++)
+//     {
+//         auto const first = m_edges[e].first;
+//         auto const second = m_edges[e].second;
 
-        if (first != constants::missing::uintValue && second != constants::missing::uintValue) [[likely]]
-        {
-            m_edgeLengths[e] = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
-        }
-    }
-}
+//         if (first != constants::missing::uintValue && second != constants::missing::uintValue) [[likely]]
+//         {
+//             m_edgeLengths[e] = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
+//         }
+//     }
+// }
 
 double Mesh::ComputeMinEdgeLength(const Polygons& polygon) const
 {
@@ -946,20 +947,7 @@ void Mesh::AdministrateNodesEdges(CompoundUndoAction* undoAction)
 
 double Mesh::ComputeMaxLengthSurroundingEdges(UInt node)
 {
-
-    if (m_edgeLengths.empty())
-    {
-        ComputeEdgesLengths();
-    }
-
-    auto maxEdgeLength = std::numeric_limits<double>::lowest();
-    for (UInt ee = 0; ee < m_nodesNumEdges[node]; ++ee)
-    {
-        const auto edge = m_nodesEdges[node][ee];
-        maxEdgeLength = std::max(maxEdgeLength, m_edgeLengths[edge]);
-    }
-
-    return maxEdgeLength;
+    return MeshEdgeLength::MaxLengthSurroundEdges(*this, node);
 }
 
 std::vector<meshkernel::Point> Mesh::ComputeLocations(Location location) const

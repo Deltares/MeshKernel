@@ -2408,7 +2408,6 @@ std::unique_ptr<Mesh2D> Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     mergedMesh.m_nodesTypes.insert(mergedMesh.m_nodesTypes.end(), mesh2.m_nodesTypes.begin(), mesh2.m_nodesTypes.end());
 
     mergedMesh.m_edgesNumFaces.insert(mergedMesh.m_edgesNumFaces.end(), mesh2.m_edgesNumFaces.begin(), mesh2.m_edgesNumFaces.end());
-    mergedMesh.m_edgeLengths.insert(mergedMesh.m_edgeLengths.end(), mesh2.m_edgeLengths.begin(), mesh2.m_edgeLengths.end());
     mergedMesh.m_edgesCenters.insert(mergedMesh.m_edgesCenters.end(), mesh2.m_edgesCenters.begin(), mesh2.m_edgesCenters.end());
 
     mergedMesh.m_numFacesNodes.insert(mergedMesh.m_numFacesNodes.end(), mesh2.m_numFacesNodes.begin(), mesh2.m_numFacesNodes.end());
