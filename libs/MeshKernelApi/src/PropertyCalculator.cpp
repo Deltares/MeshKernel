@@ -2,6 +2,7 @@
 
 #include "MeshKernel/SampleAveragingInterpolator.hpp"
 #include "MeshKernel/SampleTriangulationInterpolator.hpp"
+#include "MeshKernelApi/State.hpp"
 
 #include <algorithm>
 #include <functional>

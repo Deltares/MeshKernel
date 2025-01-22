@@ -46,6 +46,7 @@
 #include "MeshKernelApi/ApiCache/ObtuseTriangleCentreCache.hpp"
 #include "MeshKernelApi/ApiCache/PolygonRefinementCache.hpp"
 #include "MeshKernelApi/ApiCache/SmallFlowEdgeCentreCache.hpp"
+#include "MeshKernelApi/PropertyCalculator.hpp"
 
 namespace meshkernelapi
 {
@@ -82,6 +83,8 @@ namespace meshkernelapi
 
         // Exclusively owned state
         meshkernel::Projection m_projection{meshkernel::Projection::cartesian}; ///< Projection used by the meshes
+
+        std::map<int, std::shared_ptr<PropertyCalculator>> m_propertyCalculators;
 
         // Cached values, used when dimensions are computed first, followed by values being retrieved in a separate call
         std::shared_ptr<FacePolygonPropertyCache> m_facePropertyCache;          ///< face property cache

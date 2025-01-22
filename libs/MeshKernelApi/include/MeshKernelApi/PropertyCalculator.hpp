@@ -29,12 +29,16 @@
 
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/SampleInterpolator.hpp"
+#include "MeshKernel/Parameters.hpp"
 
 #include "MeshKernelApi/GeometryList.hpp"
-#include "MeshKernelApi/State.hpp"
+// #include "MeshKernelApi/State.hpp"
 
 namespace meshkernelapi
 {
+
+    /// @brief Forward declaration of MeshKernelState
+    class MeshKernelState;
 
     /// @brief Base class for calculating properties for a mesh
     class PropertyCalculator

@@ -686,9 +686,10 @@ namespace meshkernelapi
                                                            double regionControlPointY = mkernel_get_separator());
 
         /// @brief Deallocate property calculator
+        /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] propertyId The id of the property
         /// @returns Error code
-        MKERNEL_API int mkernel_deallocate_property(int propertyId);
+        MKERNEL_API int mkernel_deallocate_property(int meshKernelId, int propertyId);
 
         /// @brief Deallocate mesh state
         /// @param[in] meshKernelId The id of the mesh state
@@ -928,15 +929,15 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_mesh2d_rotate(int meshKernelId, double centreX, double centreY, double theta);
 
         /// @brief Sets the property data for the mesh, the sample data points do not have to match the mesh2d nodes.
-        /// @param[in] projectionType The projection type used by the sample data
+        /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] interpolationParameters The parameters required for the interpolation
         /// @param[in] sampleData   The sample data and associated sample data points.
         /// @param[out] propertyId The id of the property
         /// @returns Error code
-        MKERNEL_API int mkernel_set_property(int projectionType,
-                                             const meshkernel::InterpolationParameters& interpolationParameters,
-                                             const GeometryList& sampleData,
-                                             int& propertyId);
+        MKERNEL_API int mkernel_mesh2d_set_property(int meshKernelId,
+                                                    const meshkernel::InterpolationParameters& interpolationParameters,
+                                                    const GeometryList& sampleData,
+                                                    int& propertyId);
 
         /// @brief Snaps the spline (or splines) to the land boundary
         ///

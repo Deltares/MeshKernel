@@ -149,8 +149,8 @@ namespace meshkernelapi
         return propertyMap;
     }
 
-    /// @brief Map of property calculators, from an property identifier to the calculator.
-    static std::map<int, std::unique_ptr<PropertyCalculator>> propertyCalculators = allocatePropertyCalculators();
+    // /// @brief Map of property calculators, from an property identifier to the calculator.
+    // static std::map<int, std::unique_ptr<PropertyCalculator>> propertyCalculators = allocatePropertyCalculators();
 
     static meshkernel::ExitCode HandleException(std::exception_ptr exception_ptr = std::current_exception())
     {
@@ -511,18 +511,23 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_deallocate_property(int propertyId)
+    MKERNEL_API int mkernel_deallocate_property(int meshKernelId, int propertyId)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
 
-            if (!propertyCalculators.contains(propertyId) || propertyCalculators[propertyId] == nullptr)
+            if (!meshKernelState.at(meshKernelId).m_propertyCalculators.contains(propertyId) ||
+                meshKernelState.at(meshKernelId).m_propertyCalculators[propertyId] == nullptr)
             {
                 throw meshkernel::MeshKernelError("The property id does not exist: {}.", propertyId);
             }
 
-            propertyCalculators.erase(propertyId);
+            meshKernelState.at(meshKernelId).m_propertyCalculators.erase(propertyId);
         }
         catch (...)
         {
@@ -539,9 +544,9 @@ namespace meshkernelapi
         {
             const meshkernel::Location location = static_cast<meshkernel::Location>(locationId);
             propertyIsAvailable = meshKernelState.contains(meshKernelId) &&
-                                  propertyCalculators.contains(propertyId) &&
-                                  propertyCalculators[propertyId] != nullptr &&
-                                  propertyCalculators[propertyId]->IsValid(meshKernelState.at(meshKernelId), location);
+                                  meshKernelState.at(meshKernelId).m_propertyCalculators.contains(propertyId) &&
+                                  meshKernelState.at(meshKernelId).m_propertyCalculators[propertyId] != nullptr &&
+                                  meshKernelState.at(meshKernelId).m_propertyCalculators[propertyId]->IsValid(meshKernelState.at(meshKernelId), location);
         }
         catch (...)
         {
@@ -550,26 +555,37 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_set_property(int projectionType, const meshkernel::InterpolationParameters& interpolationParameters, const GeometryList& sampleData, int& propertyId)
+    MKERNEL_API int mkernel_mesh2d_set_property(int meshKernelId, const meshkernel::InterpolationParameters& interpolationParameters, const GeometryList& sampleData, int& propertyId)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         propertyId = -1;
 
         try
         {
-            meshkernel::range_check::CheckOneOf<int>(projectionType, meshkernel::GetValidProjections(), "Projection");
-            auto const projection = static_cast<meshkernel::Projection>(projectionType);
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_mesh2d == nullptr)
+            {
+                throw meshkernel::MeshKernelError("The selected mesh not exist.");
+            }
 
             meshkernel::range_check::CheckOneOf<int>(interpolationParameters.interpolation_type, {0, 1}, "interpolation_type");
 
             int localPropertyId = GeneratePropertyId();
 
-            if (propertyCalculators.contains(localPropertyId))
+            if (meshKernelState[meshKernelId].m_propertyCalculators.contains(localPropertyId))
             {
                 throw meshkernel::ConstraintError("The property id already exists: id = {}.", localPropertyId);
             }
 
-            propertyCalculators.try_emplace(localPropertyId, std::make_unique<InterpolatedSamplePropertyCalculator>(sampleData, projection, interpolationParameters, localPropertyId));
+            meshKernelState[meshKernelId].m_propertyCalculators.try_emplace(localPropertyId,
+                                                                            std::make_unique<InterpolatedSamplePropertyCalculator>(sampleData,
+                                                                                                                                   meshKernelState[meshKernelId].m_projection,
+                                                                                                                                   interpolationParameters,
+                                                                                                                                   localPropertyId));
             propertyId = localPropertyId;
         }
         catch (...)
@@ -1608,18 +1624,19 @@ namespace meshkernelapi
                 return lastExitCode;
             }
 
-            if (!propertyCalculators.contains(propertyValue) || propertyCalculators[propertyValue] == nullptr)
+            if (!meshKernelState[meshKernelId].m_propertyCalculators.contains(propertyValue) ||
+                meshKernelState[meshKernelId].m_propertyCalculators[propertyValue] == nullptr)
             {
                 throw meshkernel::MeshKernelError("The property calculator does not exist.");
             }
 
             const meshkernel::Location location = static_cast<meshkernel::Location>(locationId);
 
-            if (geometryList.num_coordinates < propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), location))
+            if (geometryList.num_coordinates < meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), location))
             {
                 throw meshkernel::ConstraintError("Array size too small to store property values {} < {}.",
                                                   geometryList.num_coordinates,
-                                                  propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), location));
+                                                  meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), location));
             }
 
             if (geometryList.values == nullptr)
@@ -1627,7 +1644,7 @@ namespace meshkernelapi
                 throw meshkernel::ConstraintError("The property values are null.");
             }
 
-            if (propertyCalculators[propertyValue]->IsValid(meshKernelState[meshKernelId], location))
+            if (meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->IsValid(meshKernelState[meshKernelId], location))
             {
 
                 if (location == meshkernel::Location::Edges && meshKernelState[meshKernelId].m_mesh2d->m_edgesCenters.size() == 0)
@@ -1635,7 +1652,7 @@ namespace meshkernelapi
                     meshKernelState[meshKernelId].m_mesh2d->ComputeEdgesCenters();
                 }
 
-                propertyCalculators[propertyValue]->Calculate(meshKernelState[meshKernelId], location, geometryList);
+                meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->Calculate(meshKernelState[meshKernelId], location, geometryList);
             }
             else
             {
@@ -1666,9 +1683,9 @@ namespace meshkernelapi
                 return lastExitCode;
             }
 
-            if (propertyCalculators.contains(propertyValue) && propertyCalculators[propertyValue] != nullptr)
+            if (meshKernelState[meshKernelId].m_propertyCalculators.contains(propertyValue) && meshKernelState[meshKernelId].m_propertyCalculators[propertyValue] != nullptr)
             {
-                dimension = propertyCalculators[propertyValue]->Size(meshKernelState[meshKernelId], meshkernel::Location::Edges);
+                dimension = meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->Size(meshKernelState[meshKernelId], meshkernel::Location::Edges);
             }
             else
             {

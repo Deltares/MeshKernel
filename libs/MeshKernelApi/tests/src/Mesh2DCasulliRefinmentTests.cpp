@@ -721,7 +721,7 @@ TEST(CasulliRefinement, CurvilinearRefinementBasedOnDepths)
         yCoord += sampleDelta;
     }
 
-    errorCode = meshkernelapi::mkernel_set_property(projectionType, interpolationParameters, sampleData, propertyId);
+    errorCode = meshkernelapi::mkernel_mesh2d_set_property(meshKernelId, interpolationParameters, sampleData, propertyId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     //--------------------------------
