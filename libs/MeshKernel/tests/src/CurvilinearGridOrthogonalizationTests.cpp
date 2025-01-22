@@ -86,7 +86,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnOrthogonalCurvilinearGrid_Shoul
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
     meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
     curvilinearGridOrthogonalization.SetBlock({0, 0}, {30, 30});
-    curvilinearGridOrthogonalization.SetLine({20.0, 10.0}, {20.0, 40.0});
+    curvilinearGridOrthogonalization.SetLine({20.0, 0.0}, {20.0, 30.0});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridOrthogonalization.Compute();
@@ -122,25 +122,25 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnOrthogonalCurvilinearGrid_Shoul
     ASSERT_NEAR(10.0, curvilinearGrid.GetNode(0, 1).y, tolerance);
     ASSERT_NEAR(20.0, curvilinearGrid.GetNode(0, 2).y, tolerance);
     ASSERT_NEAR(30.0, curvilinearGrid.GetNode(0, 3).y, tolerance);
-    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(0, 4).y, tolerance);
+    ASSERT_NEAR(40.0, curvilinearGrid.GetNode(0, 4).y, tolerance);
 
     ASSERT_NEAR(0.0, curvilinearGrid.GetNode(1, 0).y, tolerance);
     ASSERT_NEAR(10.0, curvilinearGrid.GetNode(1, 1).y, tolerance);
     ASSERT_NEAR(20.0, curvilinearGrid.GetNode(1, 2).y, tolerance);
     ASSERT_NEAR(30.0, curvilinearGrid.GetNode(1, 3).y, tolerance);
-    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(1, 4).y, tolerance);
+    ASSERT_NEAR(40.0, curvilinearGrid.GetNode(1, 4).y, tolerance);
 
     ASSERT_NEAR(0.0, curvilinearGrid.GetNode(2, 0).y, tolerance);
     ASSERT_NEAR(10.0, curvilinearGrid.GetNode(2, 1).y, tolerance);
     ASSERT_NEAR(20.0, curvilinearGrid.GetNode(2, 2).y, tolerance);
     ASSERT_NEAR(30.0, curvilinearGrid.GetNode(2, 3).y, tolerance);
-    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(2, 4).y, tolerance);
+    ASSERT_NEAR(40.0, curvilinearGrid.GetNode(2, 4).y, tolerance);
 
     ASSERT_NEAR(0.0, curvilinearGrid.GetNode(3, 0).y, tolerance);
     ASSERT_NEAR(10.0, curvilinearGrid.GetNode(3, 1).y, tolerance);
     ASSERT_NEAR(20.0, curvilinearGrid.GetNode(3, 2).y, tolerance);
     ASSERT_NEAR(30.0, curvilinearGrid.GetNode(3, 3).y, tolerance);
-    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(3, 4).y, tolerance);
+    ASSERT_NEAR(40.0, curvilinearGrid.GetNode(3, 4).y, tolerance);
 }
 
 TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGrid_ShouldOrthogonalizeGrid)
