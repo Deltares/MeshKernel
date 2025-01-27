@@ -96,3 +96,24 @@ double meshkernel::MeshEdgeLength::MaxLengthSurroundEdges(const Mesh& mesh, cons
 
     return maxEdgeLength;
 }
+
+double meshkernel::MeshEdgeLength::MinEdgeLength(const Mesh& mesh, const std::span<const double> edgeLengths, const Polygons& polygon)
+{
+
+    auto const numEdges = mesh.GetNumEdges();
+    auto result = std::numeric_limits<double>::max();
+
+    const auto isNodeInPolygon = mesh.IsLocationInPolygon(polygon, Location::Nodes);
+
+    for (UInt e = 0; e < numEdges; e++)
+    {
+        const auto& [firstNode, secondNode] = mesh.GetEdge(e);
+
+        if (isNodeInPolygon[firstNode] || isNodeInPolygon[secondNode])
+        {
+            result = std::min(result, edgeLengths[e]);
+        }
+    }
+
+    return result;
+}

@@ -122,7 +122,6 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::Compute()
 
     // administrate mesh once more
     m_mesh.Administrate(refinementAction.get());
-    m_edgeLengths = MeshEdgeLength::Compute(m_mesh);
 
     // all faces and edges refined
     m_faceMask.resize(m_mesh.GetNumFaces(), 1);
@@ -1107,7 +1106,7 @@ void MeshRefinement::ComputeRefinementMasksForWaveCourant(UInt face,
     for (size_t e = 0; e < m_mesh.GetNumFaceEdges(face); ++e)
     {
         const auto edge = m_mesh.m_facesEdges[face][e];
-        if (m_edgeLengths[edge] < m_mergingDistance)
+        if (m_mesh.m_edgeLengths[edge] < m_mergingDistance)
         {
             numberOfEdgesToRefine++;
             continue;
@@ -1248,13 +1247,14 @@ void MeshRefinement::ComputeFaceLocationTypes()
 
 void MeshRefinement::ComputeEdgeBelowMinSizeAfterRefinement()
 {
-    m_edgeLengths.resize(m_mesh.GetNumEdges());
-    MeshEdgeLength::Compute(m_mesh, m_edgeLengths);
+    m_mesh.ComputeEdgesLengths();
+    // m_edgeLengths.resize(m_mesh.GetNumEdges());
+    // MeshEdgeLength::Compute(m_mesh, m_edgeLengths);
 
     m_isEdgeBelowMinSizeAfterRefinement.resize(m_mesh.GetNumEdges());
     for (UInt e = 0; e < m_mesh.GetNumEdges(); e++)
     {
-        const double newEdgeLength = 0.5 * m_edgeLengths[e];
+        const double newEdgeLength = 0.5 * m_mesh.m_edgeLengths[e];
         m_isEdgeBelowMinSizeAfterRefinement[e] = newEdgeLength < m_meshRefinementParameters.min_edge_size;
     }
 }
@@ -1263,7 +1263,7 @@ bool MeshRefinement::IsRefineNeededBasedOnCourantCriteria(UInt edge, double dept
 {
     const double maxDtCourant = m_meshRefinementParameters.max_courant_time;
     const double celerity = constants::physical::sqrt_gravity * std::sqrt(std::abs(depthValues));
-    const double waveCourant = celerity * maxDtCourant / m_edgeLengths[edge];
+    const double waveCourant = celerity * maxDtCourant / m_mesh.m_edgeLengths[edge];
     return waveCourant < 1.0;
 }
 

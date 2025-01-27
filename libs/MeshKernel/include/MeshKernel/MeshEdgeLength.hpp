@@ -47,6 +47,9 @@ namespace meshkernel
         /// @brief Find the maximum edge length of edges conneted to a node.
         static double MaxLengthSurroundEdges(const Mesh& mesh, const UInt nodeId);
 
+        /// @brief Find the minimum edge length for the edges that lie inside a polygon
+        static double MinEdgeLength(const Mesh& mesh, const std::span<const double> edgeLengths, const Polygons& polygon);
+
     private:
         /// @brief Compute the length for a specific edge
         static double ComputeValue(const Mesh& mesh, const UInt edgeId);
