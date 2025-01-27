@@ -62,6 +62,7 @@ std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initializ
 {
     // Sets the node mask
     m_mesh.Administrate();
+    m_mesh.ComputeNodeNeighbours(m_nodesNodes, m_maxNumNeighbours);
     const auto nodeMask = m_mesh.NodeMaskFromPolygon(*m_polygons, true);
 
     std::vector<UInt> nodeIndices(m_mesh.GetNumNodes(), constants::missing::uintValue);
@@ -118,6 +119,7 @@ std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initializ
 
 void OrthogonalizationAndSmoothing::Compute()
 {
+
     for (auto outerIter = 0; outerIter < m_orthogonalizationParameters.outer_iterations; outerIter++)
     {
         PrepareOuterIteration();
@@ -138,7 +140,7 @@ void OrthogonalizationAndSmoothing::Compute()
 void OrthogonalizationAndSmoothing::PrepareOuterIteration()
 {
     // compute weights and rhs of orthogonalizer
-    m_orthogonalizer->Compute();
+    m_orthogonalizer->Compute(m_nodesNodes, m_maxNumNeighbours);
 
     // computes the smoother weights
     m_smoother->Compute();
@@ -220,7 +222,7 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
             {
                 wwx += atpfLoc * m_orthogonalizer->GetWeight(n, nn - 1);
                 wwy += atpfLoc * m_orthogonalizer->GetWeight(n, nn - 1);
-                m_compressedNodesNodes[cacheIndex] = m_mesh.m_nodesNodes[n][nn - 1];
+                m_compressedNodesNodes[cacheIndex] = m_nodesNodes[n][nn - 1];
             }
             else
             {
@@ -279,7 +281,7 @@ void OrthogonalizationAndSmoothing::FindNeighbouringBoundaryNodes(const UInt nod
 
             if (numNodes == 1)
             {
-                leftNode = m_mesh.m_nodesNodes[nodeId][nn];
+                leftNode = m_nodesNodes[nodeId][nn];
 
                 if (leftNode == constants::missing::uintValue)
                 {
@@ -288,7 +290,7 @@ void OrthogonalizationAndSmoothing::FindNeighbouringBoundaryNodes(const UInt nod
             }
             else if (numNodes == 2)
             {
-                rightNode = m_mesh.m_nodesNodes[nodeId][nn];
+                rightNode = m_nodesNodes[nodeId][nn];
 
                 if (rightNode == constants::missing::uintValue)
                 {
@@ -441,6 +443,12 @@ void OrthogonalizationAndSmoothing::ComputeLocalIncrements(UInt nodeIndex, doubl
         const auto wwx = m_compressedWeightX[cacheIndex];
         const auto wwy = m_compressedWeightY[cacheIndex];
         const auto currentNode = m_compressedNodesNodes[cacheIndex];
+
+        if (currentNode == constants::missing::uintValue)
+        {
+            continue;
+        }
+
         cacheIndex++;
 
         if (m_mesh.m_projection == Projection::cartesian)

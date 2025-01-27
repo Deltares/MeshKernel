@@ -800,7 +800,6 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
     auto originNodeId = mesh.FindNodeCloseToAPoint({0.0, 0.0}, 0.1);
     [[maybe_unused]] auto [edgeId, edgeInsertUndo] = mesh.ConnectNodes(nodeId, originNodeId);
     [[maybe_unused]] auto nodeRemovaUndo = mesh.DeleteNode(nodeId);
-    mesh.Administrate();
 
     std::unique_ptr<LandBoundaries> boundary = std::make_unique<LandBoundaries>(refinedPolygonPoints, mesh, *refinedPolygon);
 
@@ -825,55 +824,25 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
                                                     projectToLandBoundaryOption,
                                                     orthogonalizationParameters);
 
-    const std::vector<double> expectedX{25.0800705723722,
-                                        42.317662650388,
-                                        65.4076069697485,
-                                        90.1058019292434,
-                                        120.558686253752,
-                                        150.0,
-                                        121.059743084289,
-                                        95.1726727500558,
-                                        72.1931604613651,
-                                        47.4190144307411,
-                                        25.2372847856225,
-                                        5.68099647107239,
-                                        -20,
-                                        4.58504074822491,
-                                        14.9038474210351,
-                                        27.1345108996488,
-                                        80.0992228898113,
-                                        99.6419675416531,
-                                        41.6528740558509,
-                                        60.6207362548768,
-                                        54.0359431801395,
-                                        79.4201977834984,
-                                        36.6509101374463,
-                                        -999.0};
+    const std::vector<double> expectedX{24.7895283268139, 45.7888024937107, 69.4689632068913,
+                                        96.4736020240226, 122.66878956318, 150.0,
+                                        123.545257989382, 98.5465046861055, 74.1522156841494,
+                                        49.2936207530967, 25.9677106900603, 5.2013316594027,
+                                        -20.0, 2.53218892861755, 12.3452574015913,
+                                        27.3799136940788, 83.2352865735917, 102.93968551343,
+                                        43.180702910148, 63.1832398435624, 56.8181845074878,
+                                        83.4714717740563, 38.0187512052213,
+                                        meshkernel::constants::missing::doubleValue};
 
-    const std::vector<double> expectedY{5.01601411447445,
-                                        8.4635325300776,
-                                        13.0815213939497,
-                                        18.0211603858487,
-                                        32.3352117522512,
-                                        50.0,
-                                        59.6467523052371,
-                                        68.2757757499814,
-                                        73.6704444290677,
-                                        61.9353226250879,
-                                        51.4281875300317,
-                                        42.164682538929,
-                                        30.0,
-                                        0.917008149644981,
-                                        21.0550841422499,
-                                        34.910733978114,
-                                        51.5236060545154,
-                                        44.9951979924611,
-                                        42.223424366405,
-                                        47.4725501580611,
-                                        27.7287089020759,
-                                        33.7364202545338,
-                                        22.785807215113,
-                                        -999.0};
+    const std::vector<double> expectedY{4.95790566536279, 9.15776049874214, 13.8937926413783,
+                                        19.2947204048045, 33.6428765690891, 50.0,
+                                        58.8182473368728, 67.1511651046315, 74.5984179556497,
+                                        62.8232940409406, 51.7741787479233, 41.937472891296,
+                                        30.0, 0.506437785723511, 20.553817137965,
+                                        35.1352000237072, 51.9690823514521, 45.3186522387509,
+                                        42.7123722985288, 48.1070168114966, 28.3163718773942,
+                                        34.4570490525318, 23.0277951262535,
+                                        meshkernel::constants::missing::doubleValue};
 
     const std::vector<meshkernel::UInt> edgeFirst{13, 14, 12, 13, 0, 22, 0, 0, 20, 18, 22, 15,
                                                   22, 1, 14, 11, 10, 11, 15, 18, 9, 10, 18, 19,
@@ -892,6 +861,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
     for (int i = 1; i <= 10; ++i)
     {
         auto flipUndoAction = flipEdges.Compute();
+        [[maybe_unused]] auto orthogUndoAction = orthogonalization.Initialize();
 
         orthogonalization.Compute();
     }

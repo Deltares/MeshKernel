@@ -466,19 +466,16 @@ namespace meshkernel
         /// @param[in] value The value of the flag
         void SetFacesRTreeRequiresUpdate(bool value) { m_facesRTreeRequiresUpdate = value; }
 
-        void printSize () const;
-
         // nodes
         std::vector<std::vector<UInt>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
         std::vector<UInt> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
-        std::vector<std::vector<UInt>> m_nodesNodes; ///< For each node, its neighbors
         std::vector<int> m_nodesTypes;               ///< The node types (nb)
 
         // edges
         std::vector<std::array<UInt, 2>> m_edgesFaces; ///< For each edge, the shared face index (lne)
         std::vector<UInt> m_edgesNumFaces;             ///< For each edge, the number of shared faces(lnn)
         std::vector<double> m_edgeLengths;             ///< The edge lengths
-        std::vector<Point> m_edgesCenters; ///< The edges centers
+        std::vector<Point> m_edgesCenters;             ///< The edges centers
 
         // faces
         std::vector<std::vector<UInt>> m_facesNodes; ///< The nodes composing the faces, in ccw order (netcell%Nod)

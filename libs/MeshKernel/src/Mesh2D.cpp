@@ -1239,24 +1239,21 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteSmallTrianglesAtBoundaries
     return undoAction;
 }
 
-void Mesh2D::ComputeNodeNeighbours()
+void Mesh2D::ComputeNodeNeighbours(std::vector<std::vector<UInt>>& nodesNodes, UInt& maxNumNeighbours) const
 {
-    m_maxNumNeighbours = *(std::max_element(m_nodesNumEdges.begin(), m_nodesNumEdges.end()));
-    m_maxNumNeighbours += 1;
+    maxNumNeighbours = *(std::max_element(m_nodesNumEdges.begin(), m_nodesNumEdges.end()));
+    maxNumNeighbours += 1;
 
-    ResizeAndFill2DVector(m_nodesNodes, GetNumNodes(), m_maxNumNeighbours, true, constants::missing::uintValue);
+    ResizeAndFill2DVector(nodesNodes, GetNumNodes(), maxNumNeighbours, true, constants::missing::uintValue);
+
     // for each node, determine the neighboring nodes
-
-    // m_nodesNodes.resize (GetNumNodes());
-
     for (UInt n = 0; n < GetNumNodes(); n++)
     {
-        // m_nodesNodes[n].resize (m_nodesNumEdges[n], constants::missing::uintValue);
 
         for (UInt nn = 0; nn < m_nodesNumEdges[n]; nn++)
         {
             const auto edge = m_edges[m_nodesEdges[n][nn]];
-            m_nodesNodes[n][nn] = OtherNodeOfEdge(edge, n);
+            nodesNodes[n][nn] = OtherNodeOfEdge(edge, n);
         }
     }
 }
@@ -2226,6 +2223,7 @@ std::vector<int> Mesh2D::NodeMaskFromPolygon(const Polygons& polygon, bool insid
             nodeMask[i] = 1;
         }
     }
+
     return nodeMask;
 }
 
@@ -2352,19 +2350,6 @@ std::unique_ptr<Mesh2D> Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
         for (UInt j = 0; j < mesh2.m_nodesEdges[i].size(); ++j)
         {
             IncrementValidValue(mergedMesh.m_nodesEdges[i + mesh1NodeOffset][j], mesh1EdgeOffset);
-        }
-    }
-
-    //--------------------------------
-
-    // Merge node-node arrays
-    mergedMesh.m_nodesNodes.insert(mergedMesh.m_nodesNodes.end(), mesh2.m_nodesNodes.begin(), mesh2.m_nodesNodes.end());
-
-    for (UInt i = 0; i < mesh2.m_nodesNodes.size(); ++i)
-    {
-        for (UInt j = 0; j < mesh2.m_nodesNodes[i].size(); ++j)
-        {
-            IncrementValidValue(mergedMesh.m_nodesNodes[i + mesh1NodeOffset][j], mesh1NodeOffset);
         }
     }
 
