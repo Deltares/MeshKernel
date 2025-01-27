@@ -46,7 +46,7 @@ namespace meshkernel
                            double const* const xs,
                            double const* const ys,
                            int ns,
-                           int* const indx,
+                           int* const index,
                            int* const numtri,
                            int* const edgeidx,
                            int* const numedge,

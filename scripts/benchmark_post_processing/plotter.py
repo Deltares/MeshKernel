@@ -174,7 +174,7 @@ class Plotter:
                         "Measurement", fontsize=font_size[self.__LabelSizeIndex.AXIS]
                     )
 
-            # set y-axis label abd its font size
+            # set y-axis label and its font size
             y_label = (
                 self.__json_attributes[attribute]["pretty_name"]
                 + " ["
