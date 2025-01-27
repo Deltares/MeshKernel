@@ -7,6 +7,6 @@ var searchData=
   ['translatesphericalcoordinates_1510',['TranslateSphericalCoordinates',['../namespacemeshkernel.html#acde0b0ca587eded2a5e2167f4a737ca8',1,'meshkernel']]],
   ['translation_1511',['translation',['../classmeshkernel_1_1_rigid_body_transformation.html#ac2949d690d42517ca4baa78c2201f00a',1,'meshkernel::RigidBodyTransformation::translation()'],['../classmeshkernel_1_1_translation.html#a4e7aad0e060b603beb970fc703cc1500',1,'meshkernel::Translation::Translation()=default'],['../classmeshkernel_1_1_translation.html#ac1f10d1fdf2a747956762be887e16b95',1,'meshkernel::Translation::Translation(const Vector &amp;trans)']]],
   ['triangulatefaces_1512',['TriangulateFaces',['../classmeshkernel_1_1_mesh2_d.html#a7fc7d6b768b66089f341be1ba92faebb',1,'meshkernel::Mesh2D']]],
-  ['triangulation_1513',['Triangulation',['../namespacemeshkernel.html#a329282934f3c7bc126cc4e4016307e0f',1,'meshkernel']]],
+  ['triangulation_1513',['Triangulation',['../namespacemeshkernel.html#a3626e0cbac06b3515677f1bed6694dd0',1,'meshkernel']]],
   ['triangulationinterpolation_1514',['TriangulationInterpolation',['../classmeshkernel_1_1_triangulation_interpolation.html#a6b346ed9279976a221de5e4903fffc1c',1,'meshkernel::TriangulationInterpolation']]]
 ];
