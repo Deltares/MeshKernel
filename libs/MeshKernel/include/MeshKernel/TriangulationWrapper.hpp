@@ -132,9 +132,9 @@ namespace meshkernel
                               xLocalPolygon.data(),
                               yLocalPolygon.data(),
                               numInputNodes,
-                              m_faceNodesFlat.data(), // INDX
+                              m_faceNodesFlat.data(), // INDEX
                               &m_numFaces,
-                              m_edgeNodesFlat.data(), // EDGEINDX
+                              m_edgeNodesFlat.data(), // EDGEINDEX
                               &m_numEdges,
                               m_faceEdgesFlat.data(), // TRIEDGE
                               m_xCoordFlat.data(),

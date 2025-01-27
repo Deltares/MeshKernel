@@ -152,9 +152,9 @@ void meshkernel::MeshTriangulation::Compute(const std::span<const double>& xNode
                       xNodes.data(),
                       yNodes.data(),
                       numInputNodes,
-                      faceNodes.data(), // INDX
+                      faceNodes.data(), // INDEX
                       &numFaces,
-                      edgeNodes.data(), // EDGEINDX
+                      edgeNodes.data(), // EDGEINDEX
                       &numEdges,
                       faceEdges.data(), // TRIEDGE
                       nullptr, nullptr, nullptr,
