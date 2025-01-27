@@ -30,7 +30,7 @@
 *             When jatri==1 or 3: all points in grid (output from a previous
 *             tricall).
 * \param[in]  ns Number of input points (in xs/ys).
-* \param[out] indx Array that will be filled with node numbers for each
+* \param[out] index Array that will be filled with node numbers for each
 *             triangle. Nr. of filled elements equals numtri*3.
 * \param[inout] numtri Number of produced triangles (out) and max nr of triangles possible in indx array (in).
 * \param[out] edgeidx (only when jatri==3)
@@ -51,7 +51,7 @@ void Triangulation(int jatri,
                    double const * const xs,
                    double const * const ys,
                    int ns,
-                   int* const indx,
+                   int* const index,
                    int* const numtri,
                    int* const edgeidx,
                    int* const numedge,
@@ -195,12 +195,12 @@ void Triangulation(int jatri,
     *numtri = mid.numberoftriangles;
     if (*numtri > maxnumtri) 
     {
-        printf("Triangulation: unsufficient mem for triangle nodes in indx (%d > %d)\n", *numtri, maxnumtri);
+        printf("Triangulation: unsufficient mem for triangle nodes in index (%d > %d)\n", *numtri, maxnumtri);
         *numtri = -*numtri; // serves as error indicator
     }
     else {
         for (i = 0; i< *numtri * 3; i++) {
-            indx[i] = mid.trianglelist[i];
+            index[i] = mid.trianglelist[i];
         }
     }
 
