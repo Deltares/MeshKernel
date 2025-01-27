@@ -796,9 +796,9 @@ TEST_F(CartesianApiTestFixture, CurvilinearLineAttractionRepulsion_ShouldAttract
     // Assert data
     const double tolerance = 1e-6;
     // Nodes
-    ASSERT_NEAR(17.5, curvilinearGrid.node_x[2], tolerance);
+    ASSERT_NEAR(22.5, curvilinearGrid.node_x[2], tolerance);
     ASSERT_NEAR(0.0, curvilinearGrid.node_y[2], tolerance);
-    ASSERT_NEAR(42.5, curvilinearGrid.node_x[4], tolerance);
+    ASSERT_NEAR(37.5, curvilinearGrid.node_x[4], tolerance);
     ASSERT_NEAR(0.0, curvilinearGrid.node_y[4], tolerance);
 }
 

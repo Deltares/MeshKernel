@@ -540,17 +540,17 @@ TEST(CurvilinearBasicTests, UndoLineAttractor)
     // Asserts
     constexpr double tolerance = 1e-6;
 
-    ASSERT_NEAR(80178.014482303217, grid->GetNode(0, 2).x, tolerance);
-    ASSERT_NEAR(80266.910680413363, grid->GetNode(1, 2).x, tolerance);
-    ASSERT_NEAR(80322.584162464715, grid->GetNode(2, 2).x, tolerance);
-    ASSERT_NEAR(80350.500795549306, grid->GetNode(3, 2).x, tolerance);
-    ASSERT_NEAR(80362.879671417410, grid->GetNode(4, 2).x, tolerance);
+    ASSERT_NEAR(80113.927180594226, grid->GetNode(0, 2).x, tolerance);
+    ASSERT_NEAR(80202.937709587452, grid->GetNode(1, 2).x, tolerance);
+    ASSERT_NEAR(80262.314053574693, grid->GetNode(2, 2).x, tolerance);
+    ASSERT_NEAR(80290.291966405988, grid->GetNode(3, 2).x, tolerance);
+    ASSERT_NEAR(80299.521456868417, grid->GetNode(4, 2).x, tolerance);
 
-    ASSERT_NEAR(367069.60110549850, grid->GetNode(0, 2).y, tolerance);
-    ASSERT_NEAR(366937.57246542675, grid->GetNode(1, 2).y, tolerance);
-    ASSERT_NEAR(366803.23746104678, grid->GetNode(2, 2).y, tolerance);
-    ASSERT_NEAR(366683.98469820933, grid->GetNode(3, 2).y, tolerance);
-    ASSERT_NEAR(366555.11052078847, grid->GetNode(4, 2).y, tolerance);
+    ASSERT_NEAR(367025.12442372262, grid->GetNode(0, 2).y, tolerance);
+    ASSERT_NEAR(366900.80385695840, grid->GetNode(1, 2).y, tolerance);
+    ASSERT_NEAR(366781.77878604224, grid->GetNode(2, 2).y, tolerance);
+    ASSERT_NEAR(366674.26710998092, grid->GetNode(3, 2).y, tolerance);
+    ASSERT_NEAR(366549.70842920581, grid->GetNode(4, 2).y, tolerance);
 
     undoAction->Restore();
 

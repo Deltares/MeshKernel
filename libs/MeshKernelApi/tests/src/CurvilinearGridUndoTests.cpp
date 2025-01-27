@@ -1069,9 +1069,9 @@ TEST(CurvilinearGridUndoTests, LineAttractionRepulsion)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Check some nodes
-    ASSERT_NEAR(17.5, curvilinearGrid.node_x[2], tolerance);
+    ASSERT_NEAR(22.5, curvilinearGrid.node_x[2], tolerance);
     ASSERT_NEAR(0.0, curvilinearGrid.node_y[2], tolerance);
-    ASSERT_NEAR(42.5, curvilinearGrid.node_x[4], tolerance);
+    ASSERT_NEAR(37.5, curvilinearGrid.node_x[4], tolerance);
     ASSERT_NEAR(0.0, curvilinearGrid.node_y[4], tolerance);
 
     bool didUndoOfInsertLine = false;
