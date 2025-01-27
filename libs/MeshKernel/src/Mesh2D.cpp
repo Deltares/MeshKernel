@@ -1246,8 +1246,13 @@ void Mesh2D::ComputeNodeNeighbours()
 
     ResizeAndFill2DVector(m_nodesNodes, GetNumNodes(), m_maxNumNeighbours, true, constants::missing::uintValue);
     // for each node, determine the neighboring nodes
+
+    // m_nodesNodes.resize (GetNumNodes());
+
     for (UInt n = 0; n < GetNumNodes(); n++)
     {
+        // m_nodesNodes[n].resize (m_nodesNumEdges[n], constants::missing::uintValue);
+
         for (UInt nn = 0; nn < m_nodesNumEdges[n]; nn++)
         {
             const auto edge = m_edges[m_nodesEdges[n][nn]];

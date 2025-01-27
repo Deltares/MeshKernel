@@ -301,8 +301,8 @@ namespace meshkernel
         /// @return The shared node (constants::missing::sizetValue if no node is found)
         [[nodiscard]] UInt FindCommonNode(UInt firstEdgeIndex, UInt secondEdgeIndex) const;
 
-        // /// @brief Compute the lengths of all edges in one go
-        // void ComputeEdgesLengths();
+        /// @brief Compute the lengths of all edges in one go
+        void ComputeEdgesLengths();
 
         /// @brief Compute the minimum edge length of the edges included in the polygon.
         /// An edge is considered included if one of the two nodes is inside the polygon.
@@ -466,6 +466,8 @@ namespace meshkernel
         /// @param[in] value The value of the flag
         void SetFacesRTreeRequiresUpdate(bool value) { m_facesRTreeRequiresUpdate = value; }
 
+        void printSize () const;
+
         // nodes
         std::vector<std::vector<UInt>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
         std::vector<UInt> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
@@ -475,7 +477,7 @@ namespace meshkernel
         // edges
         std::vector<std::array<UInt, 2>> m_edgesFaces; ///< For each edge, the shared face index (lne)
         std::vector<UInt> m_edgesNumFaces;             ///< For each edge, the number of shared faces(lnn)
-        // std::vector<double> m_edgeLengths;             ///< The edge lengths
+        std::vector<double> m_edgeLengths;             ///< The edge lengths
         std::vector<Point> m_edgesCenters; ///< The edges centers
 
         // faces

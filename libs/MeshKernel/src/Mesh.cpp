@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <cmath>
 #include <numeric>
+#include <iomanip>
 
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
@@ -603,23 +604,23 @@ std::unique_ptr<meshkernel::DeleteNodeAction> Mesh::DeleteNode(UInt node, const 
     }
 }
 
-// void Mesh::ComputeEdgesLengths()
-// {
-//     auto const numEdges = GetNumEdges();
-//     m_edgeLengths.resize(numEdges, constants::missing::doubleValue);
+void Mesh::ComputeEdgesLengths()
+{
+    auto const numEdges = GetNumEdges();
+    m_edgeLengths.resize(numEdges, constants::missing::doubleValue);
 
-//     // TODO could be openmp loop
-//     for (UInt e = 0; e < numEdges; e++)
-//     {
-//         auto const first = m_edges[e].first;
-//         auto const second = m_edges[e].second;
+    // TODO could be openmp loop
+    for (UInt e = 0; e < numEdges; e++)
+    {
+        auto const first = m_edges[e].first;
+        auto const second = m_edges[e].second;
 
-//         if (first != constants::missing::uintValue && second != constants::missing::uintValue) [[likely]]
-//         {
-//             m_edgeLengths[e] = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
-//         }
-//     }
-// }
+        if (first != constants::missing::uintValue && second != constants::missing::uintValue) [[likely]]
+        {
+            m_edgeLengths[e] = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
+        }
+    }
+}
 
 double Mesh::ComputeMinEdgeLength(const Polygons& polygon) const
 {
@@ -1365,4 +1366,166 @@ void Mesh::RestoreAction(FullUnstructuredGridUndo& undoAction)
     m_edgesRTreeRequiresUpdate = true;
     SetAdministrationRequired(true);
     Administrate();
+}
+
+void Mesh::printSize () const
+{
+    std::cout << "Mesh sizes: " << std::endl;
+
+    size_t bytesTotal = 0;
+    size_t bytes;
+
+    std::vector<UInt> edgeCount (m_maximumNumberOfEdgesPerNode + 1, 0);
+
+    // nodes
+    bytes = sizeof (m_nodesEdges) + m_nodesEdges.capacity () * sizeof (std::vector<std::vector<UInt>>::value_type);
+
+    for (size_t i = 0; i < m_nodesEdges.size (); ++i) {
+        bytes += m_nodesEdges [i].capacity () * sizeof (std::vector<UInt>::value_type);
+
+        if (m_nodesEdges [i].size () > edgeCount.size ()){
+            edgeCount.resize (m_nodesEdges [i].size () + 1, 0);
+        }
+
+        edgeCount [m_nodesEdges [i].size ()]++;
+    }
+
+    bytesTotal += bytes;
+    std::cout << "m_nodesEdges:         " << std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+    bytes = sizeof (m_nodesEdges) + m_nodesEdges.size () * sizeof (std::vector<std::vector<UInt>>::value_type);
+
+    for (size_t i = 0; i < m_nodesEdges.size (); ++i) {
+        bytes += m_nodesEdges [i].size () * sizeof (std::vector<UInt>::value_type);
+    }
+
+    std::cout << "m_nodesEdges (size):  " << std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+    //--------------------------------
+
+    bytes = sizeof (m_nodesNumEdges) + m_nodesNumEdges.capacity () * sizeof (std::vector<UInt>::value_type);
+    bytesTotal += bytes;
+    std::cout << "m_nodesNumEdges:      "<< std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+    //--------------------------------
+
+    bytes = sizeof (m_nodesNodes) + m_nodesNodes.capacity () * sizeof (std::vector<std::vector<UInt>>::value_type);
+
+    for (size_t i = 0; i < m_nodesNodes.size (); ++i) {
+        bytes += m_nodesNodes [i].capacity () * sizeof (std::vector<UInt>::value_type);
+    }
+
+    bytesTotal += bytes;
+    std::cout << "m_nodesNodes:         "<< std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+    bytes = sizeof (m_nodesNodes) + m_nodesNodes.size () * sizeof (std::vector<std::vector<UInt>>::value_type);
+
+    for (size_t i = 0; i < m_nodesNodes.size (); ++i) {
+        bytes += m_nodesNodes [i].size () * sizeof (std::vector<UInt>::value_type);
+    }
+
+    std::cout << "m_nodesNodes (size):  "<< std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+    //--------------------------------
+
+    bytes = sizeof (m_nodesTypes) + m_nodesTypes.capacity () * sizeof (std::vector<int>::value_type);
+    bytesTotal += bytes;
+    std::cout << "m_nodesTypes:         "<< std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+
+    //--------------------------------
+
+    bytes = sizeof (m_edgesFaces) + m_nodesNodes.capacity () * sizeof (std::vector<std::array<UInt, 2>>::value_type);
+    bytesTotal += bytes;
+    std::cout << "m_edgesFaces:         "<< std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+    //--------------------------------
+
+    bytes = sizeof (m_edgesNumFaces) + m_edgesNumFaces.capacity () * sizeof (std::vector<UInt>::value_type);
+    bytesTotal += bytes;
+    std::cout << "m_edgesNumFaces:      "<< std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+    //--------------------------------
+
+    bytes = sizeof (m_edgeLengths) + m_edgeLengths.capacity () * sizeof (std::vector<double>::value_type);
+    bytesTotal += bytes;
+    std::cout << "m_edgeLengths:        "<< std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+    //--------------------------------
+
+    bytes = sizeof (m_edgesCenters) + m_edgesCenters.capacity () * sizeof (std::vector<Point>::value_type);
+    bytesTotal += bytes;
+    std::cout << "m_edgesCenters:       "<< std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+    //--------------------------------
+
+    bytes = sizeof (m_facesNodes) + m_facesNodes.capacity () * sizeof (std::vector<std::vector<UInt>>::value_type);
+
+    for (size_t i = 0; i < m_facesNodes.size (); ++i) {
+        bytes += m_facesNodes [i].capacity () * sizeof (std::vector<UInt>::value_type);
+    }
+
+    bytesTotal += bytes;
+    std::cout << "m_facesNodes:         "<< std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+    //--------------------------------
+
+    bytes = sizeof (m_numFacesNodes) + m_numFacesNodes.capacity () * sizeof (std::vector<UInt>::value_type);
+    bytesTotal += bytes;
+    std::cout << "m_numFacesNodes:      "<< std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+    //--------------------------------
+
+    bytes = sizeof (m_facesEdges) + m_facesEdges.capacity () * sizeof (std::vector<std::vector<UInt>>::value_type);
+
+    for (size_t i = 0; i < m_facesEdges.size (); ++i) {
+        bytes += m_facesEdges [i].capacity () * sizeof (std::vector<UInt>::value_type);
+    }
+
+    bytesTotal += bytes;
+    std::cout << "m_facesNodes:         "<< std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+    //--------------------------------
+
+    bytes = sizeof (m_facesCircumcenters) + m_facesCircumcenters.capacity () * sizeof (std::vector<Point>::value_type);
+    bytesTotal += bytes;
+    std::cout << "m_facesCircumcenters: "<< std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+    //--------------------------------
+
+    bytes = sizeof (m_facesMassCenters) + m_facesMassCenters.capacity () * sizeof (std::vector<Point>::value_type);
+    bytesTotal += bytes;
+    std::cout << "m_facesMassCenters:   "<< std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+    //--------------------------------
+
+    bytes = sizeof (m_faceArea) + m_faceArea.capacity () * sizeof (std::vector<double>::value_type);
+    bytesTotal += bytes;
+    std::cout << "m_faceArea:           "<< std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+    //--------------------------------
+
+    bytes = sizeof (m_nodes) + m_nodes.capacity () * sizeof (std::vector<Point>::value_type);
+    bytesTotal += bytes;
+    std::cout << "m_nodes:              "<< std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+    //--------------------------------
+
+    bytes = sizeof (m_edges) + m_edges.capacity () * sizeof (std::vector<Edge>::value_type);
+    bytesTotal += bytes;
+    std::cout << "m_edges:              "<< std::setw (18) << bytes << "  " << std::setw (18) << bytes / 1024.0 / 1024.0 << std::endl;
+
+
+    for (size_t i = 1; i < edgeCount.size (); ++i) {
+        std::cout << " number of edges: " << i << "   " << edgeCount [i] << std::endl;
+    }
+
+    std::cout << "total usage:          " << std::setw (18) << bytesTotal << "  "
+              << std::setw (18) << bytesTotal / 1024.0 / 1024.0 << "   "
+              << std::setw (18) << bytesTotal / 1024.0 / 1024.0 / 1024.0 << "   " << std::endl;
+
+
+
+
+
 }
