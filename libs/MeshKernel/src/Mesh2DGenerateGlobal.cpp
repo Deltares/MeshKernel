@@ -29,6 +29,7 @@
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
+#include "MeshKernel/Utilities/RTreeFactory.hpp"
 #include <cmath>
 
 using namespace meshkernel;
@@ -76,7 +77,6 @@ void Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
                                    const GridExpansionDirection growingDirection,
                                    const UInt numNodes)
 {
-    std::unique_ptr<CompoundUndoAction> refineFacesAction = CompoundUndoAction::Create();
     std::array<UInt, 5> nodeIndices{};
 
     for (UInt n = 0; n < numNodes; ++n)
@@ -89,7 +89,6 @@ void Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
         {
             auto [edgeId, nodeInsertionAction] = mesh.InsertNode(p);
             nodeIndices[n] = edgeId;
-            refineFacesAction->Add(std::move(nodeInsertionAction));
         }
     }
 
@@ -107,7 +106,6 @@ void Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
         if (mesh.FindEdgeWithLinearSearch(firstNodeIndex, secondNodeIndex) == constants::missing::uintValue)
         {
             auto [edgeId, connectionAction] = mesh.ConnectNodes(firstNodeIndex, secondNodeIndex);
-            refineFacesAction->Add(std::move(connectionAction));
         }
     }
 }
@@ -190,7 +188,8 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
                 numberOfPoints = 5;
             }
 
-            if (points[2].x <= 180.0)
+            // TODO before merging with master is it possible to change which points get deleted in the Mesh::MergePointsInPolygon
+            if (points[2].x < 180.0)
             {
                 pentagonFace = false;
                 AddFace(*mesh2d, points, GridExpansionDirection::Northwards, numberOfPoints);

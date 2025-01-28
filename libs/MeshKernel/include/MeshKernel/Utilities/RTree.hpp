@@ -42,6 +42,7 @@
 #include "MeshKernel/Utilities/RTreeBase.hpp"
 
 #include <concepts>
+#include <utility>
 
 // r-tree
 // https://gist.github.com/logc/10272165
@@ -91,6 +92,9 @@ namespace meshkernel
         using Box2D = bg::model::box<Point2D>;                   ///< Typedef for box of Point2D
         using Value2D = std::pair<Point2D, UInt>;                ///< Typedef of pair of Point2D and UInt
         using RTree2D = bgi::rtree<Value2D, bgi::linear<16>>;    ///< Typedef for a 2D RTree
+
+        /// @brief Ninety degrees
+        static constexpr double NinetyDegrees = 90.0;
 
     public:
         /// @brief Builds the tree from a vector of Points
@@ -219,10 +223,41 @@ namespace meshkernel
 
         m_queryCache.reserve(m_queryVectorCapacity);
         m_queryCache.clear();
-        m_rtree2D.query(bgi::within(box) &&
-                            bgi::satisfies([&nodeSought, &searchRadiusSquared](Value2D const& v)
-                                           { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; }),
-                        std::back_inserter(m_queryCache));
+
+        auto pointIsNearby = [&nodeSought, &searchRadiusSquared](Value2D const& v)
+        { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; };
+
+        if constexpr (std::is_same<projection, bg::cs::cartesian>::value)
+        {
+            m_rtree2D.query(bgi::within(box) && bgi::satisfies(pointIsNearby), std::back_inserter(m_queryCache));
+        }
+        else if constexpr (std::is_same<projection, bg::cs::geographic<bg::degree>>::value)
+        {
+
+            auto atPoleOrInBox = [&nodeSought, &searchRadiusSquared, &box](Value2D const& v)
+            {
+                const Point2D& p(v.first);
+
+                // First check if the point is at either of the poles
+                if ((nodeSought.template get<1>() == NinetyDegrees && p.template get<1>() == NinetyDegrees) ||
+                    (nodeSought.template get<1>() == -NinetyDegrees && p.template get<1>() == -NinetyDegrees))
+                {
+                    return true;
+                }
+                else
+                {
+                    // If point does not lie at either of the poles then check if it is contained within a box
+                    return bg::within(p, box);
+                }
+            };
+
+            m_rtree2D.query(bgi::satisfies(atPoleOrInBox) && bgi::satisfies(pointIsNearby), std::back_inserter(m_queryCache));
+        }
+        else
+        {
+            // Would rather use static_assert (false, message) here, but gcc 12 does not handle this yet
+            throw ConstraintError("Searching for points has not been implemented for this projection type");
+        }
 
         m_queryIndices.reserve(m_queryCache.size());
         m_queryIndices.clear();
@@ -248,11 +283,41 @@ namespace meshkernel
         const auto searchRadius = std::sqrt(searchRadiusSquared);
         Box2D const box(Point2D(node.x - searchRadius, node.y - searchRadius),
                         Point2D(node.x + searchRadius, node.y + searchRadius));
-        m_rtree2D.query(bgi::within(box) &&
-                            bgi::satisfies([&nodeSought, &searchRadiusSquared](Value2D const& v)
-                                           { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; }) &&
-                            bgi::nearest(nodeSought, 1),
-                        std::back_inserter(m_queryCache));
+
+        auto pointIsNearby = [&nodeSought, &searchRadiusSquared](Value2D const& v)
+        { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; };
+
+        if constexpr (std::is_same<projection, bg::cs::cartesian>::value)
+        {
+            m_rtree2D.query(bgi::within(box) && bgi::satisfies(pointIsNearby) && bgi::nearest(nodeSought, 1), std::back_inserter(m_queryCache));
+        }
+        else if constexpr (std::is_same<projection, bg::cs::geographic<bg::degree>>::value)
+        {
+
+            auto atPoleOrInBox = [&nodeSought, &searchRadiusSquared, &box](Value2D const& v)
+            {
+                const Point2D& p(v.first);
+
+                // First check if the point is at either of the poles
+                if ((nodeSought.template get<1>() == NinetyDegrees && p.template get<1>() == NinetyDegrees) ||
+                    (nodeSought.template get<1>() == -NinetyDegrees && p.template get<1>() == -NinetyDegrees))
+                {
+                    return true;
+                }
+                else
+                {
+                    // If point does not lie at either of the poles then check if it is contained within a box
+                    return bg::within(p, box);
+                }
+            };
+
+            m_rtree2D.query(bgi::satisfies(atPoleOrInBox) && bgi::satisfies(pointIsNearby) && bgi::nearest(nodeSought, 1), std::back_inserter(m_queryCache));
+        }
+        else
+        {
+            // Would rather use static_assert (false, message) here, but gcc 12 does not handle this yet
+            throw ConstraintError("Searching for points has not been implemented for this projection type");
+        }
 
         if (!m_queryCache.empty())
         {
