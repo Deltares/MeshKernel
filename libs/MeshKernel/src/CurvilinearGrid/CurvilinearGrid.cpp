@@ -340,7 +340,7 @@ std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices> CurvilinearGr
     auto const secondNodeIndex = FindLocationIndex(secondCornerPoint, Location::Nodes);
 
     // Compute bounding box as node indices from corner points
-    return ComputeBlockFromCornerPoints(m_gridIndices[firstNodeIndex], m_gridIndices[secondNodeIndex]);
+    return ComputeBlockFromCornerPoints(GetCurvilinearGridNodeIndices(firstNodeIndex), GetCurvilinearGridNodeIndices(secondNodeIndex));
 }
 
 std::tuple<CurvilinearGridNodeIndices, CurvilinearGridNodeIndices>
