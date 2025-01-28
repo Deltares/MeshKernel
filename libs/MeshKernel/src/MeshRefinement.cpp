@@ -31,7 +31,6 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/MeshEdgeLength.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
@@ -1248,8 +1247,6 @@ void MeshRefinement::ComputeFaceLocationTypes()
 void MeshRefinement::ComputeEdgeBelowMinSizeAfterRefinement()
 {
     m_mesh.ComputeEdgesLengths();
-    // m_edgeLengths.resize(m_mesh.GetNumEdges());
-    // MeshEdgeLength::Compute(m_mesh, m_edgeLengths);
 
     m_isEdgeBelowMinSizeAfterRefinement.resize(m_mesh.GetNumEdges());
     for (UInt e = 0; e < m_mesh.GetNumEdges(); e++)

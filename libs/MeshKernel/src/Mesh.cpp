@@ -33,7 +33,6 @@
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh.hpp"
-#include "MeshKernel/MeshEdgeLength.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/RangeCheck.hpp"
@@ -948,7 +947,19 @@ void Mesh::AdministrateNodesEdges(CompoundUndoAction* undoAction)
 
 double Mesh::ComputeMaxLengthSurroundingEdges(UInt node)
 {
-    return MeshEdgeLength::MaxLengthSurroundEdges(*this, node);
+    if (m_edgeLengths.empty())
+    {
+        ComputeEdgesLengths();
+    }
+
+    auto maxEdgeLength = std::numeric_limits<double>::lowest();
+    for (UInt ee = 0; ee < m_nodesNumEdges[node]; ++ee)
+    {
+        const auto edge = m_nodesEdges[node][ee];
+        maxEdgeLength = std::max(maxEdgeLength, m_edgeLengths[edge]);
+    }
+
+    return maxEdgeLength;
 }
 
 std::vector<meshkernel::Point> Mesh::ComputeLocations(Location location) const

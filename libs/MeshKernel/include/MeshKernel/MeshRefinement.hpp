@@ -333,7 +333,6 @@ namespace meshkernel
         std::vector<UInt> m_globalEdgeIndicesCache;   ///< Cache for maintaining edge indices
         std::vector<UInt> m_refineEdgeCache;          ///< Cache for the edges to be refined
         std::vector<FaceLocation> m_faceLocationType; ///< Cache for the face location types
-        std::vector<double> m_edgeLengths;            ///< Length of edges in the mesh
 
         RefinementType m_refinementType = RefinementType::WaveCourant; ///< The type of refinement to use
         bool m_directionalRefinement = false;                          ///< Whether there is directional refinement
