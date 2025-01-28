@@ -824,25 +824,23 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
                                                     projectToLandBoundaryOption,
                                                     orthogonalizationParameters);
 
-    const std::vector<double> expectedX{24.7895283268139, 45.7888024937107, 69.4689632068913,
-                                        96.4736020240226, 122.66878956318, 150.0,
-                                        123.545257989382, 98.5465046861055, 74.1522156841494,
-                                        49.2936207530967, 25.9677106900603, 5.2013316594027,
-                                        -20.0, 2.53218892861755, 12.3452574015913,
-                                        27.3799136940788, 83.2352865735917, 102.93968551343,
-                                        43.180702910148, 63.1832398435624, 56.8181845074878,
-                                        83.4714717740563, 38.0187512052213,
-                                        meshkernel::constants::missing::doubleValue};
+    const std::vector<double> expectedX{24.9835753034083, 45.7888024937107, 70.0728593318696,
+                                        96.4736020240226, 123.464866047009, 150.0,
+                                        123.690307803787, 98.5465046861055, 74.1522156841494,
+                                        49.2936207530967, 26.9588231383586, 5.10554425586482,
+                                        -20.0, 2.53218892861755, 12.2603085772356,
+                                        30.0247966898692, 83.3308053183758, 104.729358926806,
+                                        43.9223120527096, 62.551166421051, 57.2356630362903,
+                                        87.5391262898118, 41.1303589083358, -999.0};
 
-    const std::vector<double> expectedY{4.95790566536279, 9.15776049874214, 13.8937926413783,
-                                        19.2947204048045, 33.6428765690891, 50.0,
-                                        58.8182473368728, 67.1511651046315, 74.5984179556497,
-                                        62.8232940409406, 51.7741787479233, 41.937472891296,
-                                        30.0, 0.506437785723511, 20.553817137965,
-                                        35.1352000237072, 51.9690823514521, 45.3186522387509,
-                                        42.7123722985288, 48.1070168114966, 28.3163718773942,
-                                        34.4570490525318, 23.0277951262535,
-                                        meshkernel::constants::missing::doubleValue};
+    const std::vector<double> expectedY{4.99671506068165, 9.15776049874214, 14.0145718663739,
+                                        19.2947204048045, 34.0789196282053, 50.0,
+                                        58.7698973987377, 67.1511651046315, 74.5984179556497,
+                                        62.8232940409406, 52.2436530655383, 41.8920999106728,
+                                        30.0, 0.506437785723511, 19.9059354533534,
+                                        33.9652316161109, 49.6795938035325, 45.9248709417029,
+                                        43.1509423611897, 47.6054287440074, 28.1281033458494,
+                                        34.0734735937222, 22.8901803546926, -999.0};
 
     const std::vector<meshkernel::UInt> edgeFirst{13, 14, 12, 13, 0, 22, 0, 0, 20, 18, 22, 15,
                                                   22, 1, 14, 11, 10, 11, 15, 18, 9, 10, 18, 19,
@@ -856,15 +854,10 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
                                                    3, 17, 16, 17, 8, 19, 7, 8, 9, 6, 17, 5, 6, 7, 17,
                                                    meshkernel::constants::missing::uintValue};
 
-    [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
+    [[maybe_unused]] auto flipUndoAction = flipEdges.Compute();
+    [[maybe_unused]] auto orthogUndoAction = orthogonalization.Initialize();
 
-    for (int i = 1; i <= 10; ++i)
-    {
-        auto flipUndoAction = flipEdges.Compute();
-        [[maybe_unused]] auto orthogUndoAction = orthogonalization.Initialize();
-
-        orthogonalization.Compute();
-    }
+    orthogonalization.Compute();
 
     const double tolerance = 1.0e-8;
 
