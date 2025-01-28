@@ -81,7 +81,7 @@ void CurvilinearGridAlgorithm::SetLine(Point const& firstPoint, Point const& sec
             {
                 if (j == frozenLine.m_constantCoordinate && i == newGridline.m_constantCoordinate)
                 {
-                    throw AlgorithmError("CurvilinearGridOrthogonalization::SetLine the new line is crossing an existing one");
+                    throw AlgorithmError("CurvilinearGridAlgorithm::SetLine the new line is crossing an existing one");
                 }
             }
         }

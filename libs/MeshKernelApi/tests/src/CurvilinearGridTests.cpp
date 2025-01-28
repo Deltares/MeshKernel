@@ -768,6 +768,38 @@ TEST_F(CartesianApiTestFixture, CurvilinearLineMirror_ShouldInsertANewGridLine)
     ASSERT_EQ(curvilinearGrid.num_m * curvilinearGrid.num_n, 30);
 }
 
+TEST_F(CartesianApiTestFixture, CurvilinearLineMirror_ShouldInsertTwoNewGridLines)
+{
+    // Setup
+    MakeRectangularCurvilinearGrid();
+    auto const meshKernelId = GetMeshKernelId();
+
+    // Execute
+    auto errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId,
+                                                                    1.2,
+                                                                    0.0,
+                                                                    0.0,
+                                                                    0.0,
+                                                                    50.0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId,
+                                                               1.2,
+                                                               -10.0,
+                                                               0.0,
+                                                               -10.0,
+                                                               50.0);
+
+    // Assert
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGrid{};
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert that 10 nodes have been inserted on the bottom boundary, so the total count is 35
+    ASSERT_EQ(curvilinearGrid.num_m * curvilinearGrid.num_n, 35);
+}
+
 TEST_F(CartesianApiTestFixture, CurvilinearLineAttractionRepulsion_ShouldAttractGridlines)
 {
     // Prepare
