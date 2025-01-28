@@ -229,14 +229,6 @@ namespace meshkernel
         /// @brief Computes m_nodesNodes, see class members
         void ComputeNodeNeighbours();
 
-        /// @brief Get the orthogonality values, the inner product of edges and segments connecting the face circumcenters
-        /// @return The edge orthogonality
-        [[nodiscard]] std::vector<double> GetOrthogonality() const;
-
-        /// @brief Gets the smoothness values, ratios of the face areas
-        /// @return The smoothness at the edges
-        [[nodiscard]] std::vector<double> GetSmoothness() const;
-
         /// @brief Gets the aspect ratios (the ratios edges lengths to flow edges lengths)
         /// @param[in,out] aspectRatios The aspect ratios (passed as reference to avoid re-allocation)
         void ComputeAspectRatios(std::vector<double>& aspectRatios);
