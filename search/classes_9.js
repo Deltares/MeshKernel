@@ -12,9 +12,11 @@ var searchData=
   ['meshinterpolation_902',['MeshInterpolation',['../classmeshkernel_1_1_mesh_interpolation.html',1,'meshkernel']]],
   ['meshkernelerror_903',['MeshKernelError',['../classmeshkernel_1_1_mesh_kernel_error.html',1,'meshkernel']]],
   ['meshkernelstate_904',['MeshKernelState',['../structmeshkernelapi_1_1_mesh_kernel_state.html',1,'meshkernelapi']]],
-  ['meshrefinement_905',['MeshRefinement',['../classmeshkernel_1_1_mesh_refinement.html',1,'meshkernel']]],
-  ['meshrefinementparameters_906',['MeshRefinementParameters',['../structmeshkernel_1_1_mesh_refinement_parameters.html',1,'meshkernel']]],
-  ['meshtransformation_907',['MeshTransformation',['../classmeshkernel_1_1_mesh_transformation.html',1,'meshkernel']]],
-  ['meshtriangulation_908',['MeshTriangulation',['../classmeshkernel_1_1_mesh_triangulation.html',1,'meshkernel']]],
-  ['mkstateundoaction_909',['MKStateUndoAction',['../classmeshkernelapi_1_1_m_k_state_undo_action.html',1,'meshkernelapi']]]
+  ['meshorthogonality_905',['MeshOrthogonality',['../classmeshkernel_1_1_mesh_orthogonality.html',1,'meshkernel']]],
+  ['meshrefinement_906',['MeshRefinement',['../classmeshkernel_1_1_mesh_refinement.html',1,'meshkernel']]],
+  ['meshrefinementparameters_907',['MeshRefinementParameters',['../structmeshkernel_1_1_mesh_refinement_parameters.html',1,'meshkernel']]],
+  ['meshsmoothness_908',['MeshSmoothness',['../classmeshkernel_1_1_mesh_smoothness.html',1,'meshkernel']]],
+  ['meshtransformation_909',['MeshTransformation',['../classmeshkernel_1_1_mesh_transformation.html',1,'meshkernel']]],
+  ['meshtriangulation_910',['MeshTriangulation',['../classmeshkernel_1_1_mesh_triangulation.html',1,'meshkernel']]],
+  ['mkstateundoaction_911',['MKStateUndoAction',['../classmeshkernelapi_1_1_m_k_state_undo_action.html',1,'meshkernelapi']]]
 ];
