@@ -175,20 +175,22 @@ $(function() {
 <div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;        std::vector&lt;Point&gt; m_localCoordinates;       </div>
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        std::vector&lt;Point&gt; m_orthogonalCoordinates;  </div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        std::vector&lt;Point&gt; m_originalNodes;          </div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160; </div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        <span class="comment">// Linear system terms</span></div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        std::vector&lt;UInt&gt; m_compressedEndNodeIndex;   </div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        std::vector&lt;UInt&gt; m_compressedStartNodeIndex; </div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        std::vector&lt;double&gt; m_compressedWeightX;      </div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        std::vector&lt;double&gt; m_compressedWeightY;      </div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        std::vector&lt;double&gt; m_compressedRhs;          </div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        std::vector&lt;UInt&gt; m_compressedNodesNodes;     </div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160; </div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        <span class="comment">// run-time parameters</span></div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        <span class="keywordtype">double</span> m_mumax = 0.0; </div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        <span class="keywordtype">double</span> m_mu = 0.0;    </div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    };</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;        std::vector&lt;std::vector&lt;UInt&gt;&gt; m_nodesNodes; </div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;        <a class="code" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> m_maxNumNeighbours = 0;                 </div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160; </div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        <span class="comment">// Linear system terms</span></div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        std::vector&lt;UInt&gt; m_compressedEndNodeIndex;   </div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        std::vector&lt;UInt&gt; m_compressedStartNodeIndex; </div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        std::vector&lt;double&gt; m_compressedWeightX;      </div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        std::vector&lt;double&gt; m_compressedWeightY;      </div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;        std::vector&lt;double&gt; m_compressedRhs;          </div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        std::vector&lt;UInt&gt; m_compressedNodesNodes;     </div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160; </div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        <span class="comment">// run-time parameters</span></div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;        <span class="keywordtype">double</span> m_mumax = 0.0; </div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;        <span class="keywordtype">double</span> m_mu = 0.0;    </div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    };</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="anamespacemeshkernel_html_a22d09b6f79c4d1aa55aafadb84908716"><div class="ttname"><a href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">meshkernel::Projection</a></div><div class="ttdeci">Projection</div><div class="ttdoc">Enumerator describing the supported projections.</div><div class="ttdef"><b>Definition:</b> Definitions.hpp:42</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_mesh2_d_html"><div class="ttname"><a href="classmeshkernel_1_1_mesh2_d.html">meshkernel::Mesh2D</a></div><div class="ttdoc">A class derived from Mesh, which describes unstructures 2d meshes.</div><div class="ttdef"><b>Definition:</b> Mesh2D.hpp:55</div></div>
