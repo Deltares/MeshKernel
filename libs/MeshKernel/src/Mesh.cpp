@@ -27,6 +27,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iomanip>
 #include <numeric>
 
 #include "MeshKernel/Entities.hpp"
@@ -946,7 +947,6 @@ void Mesh::AdministrateNodesEdges(CompoundUndoAction* undoAction)
 
 double Mesh::ComputeMaxLengthSurroundingEdges(UInt node)
 {
-
     if (m_edgeLengths.empty())
     {
         ComputeEdgesLengths();

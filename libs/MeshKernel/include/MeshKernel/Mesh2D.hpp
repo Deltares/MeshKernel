@@ -226,8 +226,8 @@ namespace meshkernel
         /// This threshold is the ration of the face area to the average area of neighboring faces.
         [[nodiscard]] std::unique_ptr<UndoAction> DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles);
 
-        /// @brief Computes m_nodesNodes, see class members
-        void ComputeNodeNeighbours();
+        /// @brief Computes node neighbours
+        void ComputeNodeNeighbours(std::vector<std::vector<UInt>>& nodesNodes, UInt& maxNumNeighbours) const;
 
         /// @brief Gets the aspect ratios (the ratios edges lengths to flow edges lengths)
         /// @param[in,out] aspectRatios The aspect ratios (passed as reference to avoid re-allocation)
@@ -330,8 +330,6 @@ namespace meshkernel
         /// @param [in] edgeId The starting edge
         /// @return Id of neighbour face along the edge
         UInt NextFace(const UInt faceId, const UInt edgeId) const;
-
-        UInt m_maxNumNeighbours = 0; ///< Maximum number of neighbours
 
         /// @brief Merges mesh connectivity.
         ///

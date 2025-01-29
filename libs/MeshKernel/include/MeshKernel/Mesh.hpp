@@ -469,7 +469,6 @@ namespace meshkernel
         // nodes
         std::vector<std::vector<UInt>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
         std::vector<UInt> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
-        std::vector<std::vector<UInt>> m_nodesNodes; ///< For each node, its neighbors
         std::vector<int> m_nodesTypes;               ///< The node types (nb)
 
         // edges

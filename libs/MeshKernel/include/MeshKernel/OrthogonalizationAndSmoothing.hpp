@@ -158,6 +158,8 @@ namespace meshkernel
         std::vector<Point> m_localCoordinates;       ///< Used in sphericalAccurate projection (xloc,yloc)
         std::vector<Point> m_orthogonalCoordinates;  ///< A copy of the mesh node, orthogonalized
         std::vector<Point> m_originalNodes;          ///< The original mesh
+        std::vector<std::vector<UInt>> m_nodesNodes; ///< Node to node connectivity
+        UInt m_maxNumNeighbours = 0;                 ///< Maximum number of neighbours
 
         // Linear system terms
         std::vector<UInt> m_compressedEndNodeIndex;   ///< Start index in m_compressedWeightX

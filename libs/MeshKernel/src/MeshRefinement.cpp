@@ -1247,6 +1247,7 @@ void MeshRefinement::ComputeFaceLocationTypes()
 void MeshRefinement::ComputeEdgeBelowMinSizeAfterRefinement()
 {
     m_mesh.ComputeEdgesLengths();
+
     m_isEdgeBelowMinSizeAfterRefinement.resize(m_mesh.GetNumEdges());
     for (UInt e = 0; e < m_mesh.GetNumEdges(); e++)
     {

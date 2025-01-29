@@ -45,8 +45,8 @@ namespace meshkernel
         /// @brief Constructor
         explicit Orthogonalizer(Mesh2D& mesh);
 
-        /// @brief Computes the smoother weights and the right hans side
-        void Compute();
+        /// @brief Computes the smoother weights and the right hand side
+        void Compute(const std::vector<std::vector<UInt>>& nodesNodes, const UInt maxNumNeighbours);
 
         /// @brief Gets the weight for a certain node and connected node
         /// @brief node
