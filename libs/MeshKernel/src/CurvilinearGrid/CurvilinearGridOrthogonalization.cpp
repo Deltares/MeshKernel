@@ -206,6 +206,8 @@ void CurvilinearGridOrthogonalization::ComputePointsForGridLineM(const UInt m,
 
 void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 {
+    using enum NodeType;
+
     // m grid lines (horizontal)
     for (UInt m = 0; m < m_grid.NumM(); ++m)
     {
@@ -214,17 +216,17 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
         for (UInt n = 0; n < m_grid.NumN(); ++n)
         {
             const auto nodeType = m_grid.GetNodeType(n, m);
-            if (nodeType == NodeType::BottomLeft || nodeType == NodeType::UpperLeft)
+            if (nodeType == BottomLeft || nodeType == UpperLeft)
             {
                 startN = n;
                 continue;
             }
-            if (nodeType == NodeType::Bottom)
+            if (nodeType == Bottom)
             {
                 nextVertical = 1;
                 continue;
             }
-            if (nodeType == NodeType::Up)
+            if (nodeType == Up)
             {
                 nextVertical = -1;
                 continue;
@@ -232,9 +234,9 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 
             // Project the nodes at the boundary (Bottom and Up node types) if a valid interval has been found.
             // The interval ranges from startM to the next BottomRight or UpperRight node.
-            if (startN != constants::missing::uintValue &&
-                (nodeType == NodeType::BottomRight || nodeType == NodeType::UpperRight) &&
-                nextVertical != 0)
+            if ((nodeType == BottomRight || nodeType == UpperRight) &&
+                nextVertical != 0 &&
+                startN != constants::missing::uintValue)
             {
                 ComputePointsForGridLineN(m, n, startN, nextVertical);
             }
