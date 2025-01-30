@@ -363,6 +363,14 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
 
 TEST(CurvilinearGridOrthogonalization, SetFrozenLine_ShouldFreezeLines)
 {
+    const std::vector<double> random{-0.368462, -0.0413499, -0.281041, 0.178865, 0.434693, 0.0194164,
+                                     -0.465428, 0.0297002, -0.492302, -0.433158, 0.186773, 0.430436,
+                                     0.0269288, 0.153919, 0.201191, 0.262198, -0.452535, -0.171766,
+                                     0.25641, -0.134661, 0.48255, 0.253356, -0.427314, 0.384707,
+                                     -0.0635886, -0.0222682, -0.225093, -0.333493, 0.397656, -0.439436,
+                                     0.00452289, -0.180967, -0.00602331, -0.409267, -0.426251, -0.115858,
+                                     0.413817, -0.0355542, -0.449916, 0.270205, -0.374635, 0.188455, 0.129543};
+
     double deltaX = 10.0;
     double deltaY = 10.0;
 
@@ -370,7 +378,35 @@ TEST(CurvilinearGridOrthogonalization, SetFrozenLine_ShouldFreezeLines)
     size_t sizeY = 15;
 
     // Set-up
-    const auto curvilinearGrid = MakeCurvilinearGridRand(0.0, 0.0, deltaX, deltaY, sizeX, sizeY, 0.7, true);
+    const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, deltaX, deltaY, sizeX, sizeY);
+
+    // displace grid
+    size_t randomCounter = 0;
+
+    auto randomCount = [random, &randomCounter]() mutable
+    {
+        if (randomCounter == random.size() - 1)
+        {
+            randomCounter = 0;
+        }
+        else
+        {
+            ++randomCounter;
+        }
+
+        return randomCounter;
+    };
+
+    for (UInt i = 0; i < curvilinearGrid->NumN(); ++i)
+    {
+        for (UInt j = 0; j < curvilinearGrid->NumM(); ++j)
+        {
+            double xDisplacement = random[randomCount()] * deltaX;
+            double yDisplacement = random[randomCount()] * deltaY;
+
+            curvilinearGrid->GetNode(i, j) += meshkernel::Vector(xDisplacement, yDisplacement);
+        }
+    }
 
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 5;
@@ -533,6 +569,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_CurvilinearGrid_ShouldOrthogonali
         EXPECT_NEAR(expectedRightLineX[i], p.x, tolerance);
         EXPECT_NEAR(expectedRightLineY[i], p.y, tolerance);
     }
+    std::cout << std::endl;
 
     for (UInt i = 0; i < sizeX; ++i)
     {
@@ -540,4 +577,5 @@ TEST(CurvilinearGridOrthogonalization, Compute_CurvilinearGrid_ShouldOrthogonali
         EXPECT_NEAR(expectedTopLineX[i], p.x, tolerance);
         EXPECT_NEAR(expectedTopLineY[i], p.y, tolerance);
     }
+    std::cout << std::endl;
 }
