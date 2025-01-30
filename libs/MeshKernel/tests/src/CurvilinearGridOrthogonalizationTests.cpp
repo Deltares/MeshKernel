@@ -32,6 +32,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
+#include <MeshKernel/Utilities/Utilities.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
 using namespace meshkernel;
@@ -358,4 +359,77 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
     ASSERT_NEAR(367106.12547266396, curvilinearGrid->GetNode(1, 6).y, tolerance);
     ASSERT_NEAR(367155.26906854485, curvilinearGrid->GetNode(1, 7).y, tolerance);
     ASSERT_NEAR(367205.43327878905, curvilinearGrid->GetNode(1, 8).y, tolerance);
+}
+
+TEST(CurvilinearGridOrthogonalization, SetFrozenLine_ShouldFreezeLines)
+{
+    double deltaX = 10.0;
+    double deltaY = 10.0;
+
+    size_t sizeX = 15;
+    size_t sizeY = 15;
+
+    // Set-up
+    const auto curvilinearGrid = MakeCurvilinearGridRand(0.0, 0.0, deltaX, deltaY, sizeX, sizeY, 0.7, true);
+
+    OrthogonalizationParameters orthogonalizationParameters;
+    orthogonalizationParameters.outer_iterations = 5;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
+
+    meshkernel::CurvilinearGridOrthogonalization orthogonalisation(*curvilinearGrid, orthogonalizationParameters);
+
+    Point blockLL = curvilinearGrid->GetNode(2, 2);
+    Point blockUR = curvilinearGrid->GetNode(12, 12);
+
+    const UInt line1IndexY = 10;
+    const UInt line1StartIndex = 0;
+    const UInt line1EndIndex = 14;
+
+    Point line1Start = curvilinearGrid->GetNode(line1StartIndex, line1IndexY);
+    Point line1End = curvilinearGrid->GetNode(line1EndIndex, line1IndexY);
+
+    const UInt line2IndexY = 10;
+    const UInt line2StartIndex = 4;
+    const UInt line2EndIndex = 7;
+
+    Point line2Start = curvilinearGrid->GetNode(line2StartIndex, line2IndexY);
+    Point line2End = curvilinearGrid->GetNode(line2EndIndex, line2IndexY);
+
+    std::vector<Point> originalLine1Points(line1EndIndex - line1StartIndex + 1);
+    std::vector<Point> originalLine2Points(line2EndIndex - line2StartIndex + 1);
+
+    // Collect line points before orthogonalising
+    for (UInt i = line1StartIndex; i < line1EndIndex + 1; ++i)
+    {
+        Point p = curvilinearGrid->GetNode(i, line1IndexY);
+        originalLine1Points[i - line1StartIndex] = p;
+    }
+
+    for (UInt i = line2StartIndex; i < line2EndIndex + 1; ++i)
+    {
+        Point p = curvilinearGrid->GetNode(i, line2IndexY);
+        originalLine2Points[i - line2StartIndex] = p;
+    }
+
+    orthogonalisation.SetLine(line1Start, line1End);
+    orthogonalisation.SetLine(line2Start, line2End);
+
+    orthogonalisation.SetBlock(blockLL, blockUR);
+    [[maybe_unused]] auto undo = orthogonalisation.Compute();
+
+    const double tolerance = 1.0e-10;
+
+    for (UInt i = line2StartIndex; i < line2EndIndex + 1; ++i)
+    {
+        EXPECT_NEAR(originalLine2Points[i - line2StartIndex].x, curvilinearGrid->GetNode(i, line2IndexY).x, tolerance);
+        EXPECT_NEAR(originalLine2Points[i - line2StartIndex].y, curvilinearGrid->GetNode(i, line2IndexY).y, tolerance);
+    }
+
+    for (UInt i = line1StartIndex; i < line1EndIndex + 1; ++i)
+    {
+        EXPECT_NEAR(originalLine1Points[i].x, curvilinearGrid->GetNode(i, line1IndexY).x, tolerance);
+        EXPECT_NEAR(originalLine1Points[i].y, curvilinearGrid->GetNode(i, line1IndexY).y, tolerance);
+    }
 }
