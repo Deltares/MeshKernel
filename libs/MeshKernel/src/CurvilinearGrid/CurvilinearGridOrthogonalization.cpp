@@ -294,8 +294,8 @@ void CurvilinearGridOrthogonalization::Solve()
     const auto minMInternal = std::max(static_cast<UInt>(1), m_lowerLeft.m_m);
     const auto minNInternal = std::max(static_cast<UInt>(1), m_lowerLeft.m_n);
 
-    const auto maxMInternal = std::min(m_upperRight.m_m, m_grid.NumM() - 1);
-    const auto maxNInternal = std::min(m_upperRight.m_n, m_grid.NumN() - 1);
+    const auto maxMInternal = std::min(m_upperRight.m_m + 1, m_grid.NumM() - 1);
+    const auto maxNInternal = std::min(m_upperRight.m_n + 1, m_grid.NumN() - 1);
 
     for (auto innerIterations = 0; innerIterations < m_orthogonalizationParameters.inner_iterations; ++innerIterations)
     {
