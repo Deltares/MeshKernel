@@ -200,6 +200,10 @@ namespace meshkernel
             m_rtree2D = RTree2D(m_points);
         }
 
+        /// @brief Performs a spatial search within a search radius
+        /// @param[in] node The reference point for the search.
+        /// @param[in] searchRadiusSquared The squared search radius.
+        /// @param[in] findNearest If true, finds the nearest point; otherwise, finds all points within the radius.
         void Search(Point const& node, double searchRadiusSquared, bool findNearest);
 
         RTree2D m_rtree2D;                              ///< The 2D RTree
