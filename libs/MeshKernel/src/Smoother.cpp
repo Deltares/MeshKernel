@@ -439,7 +439,6 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
     std::fill(m_etasCache.begin(), m_etasCache.end(), 0.0);
 
     UInt faceRightIndex = 0;
-    UInt faceLeftIndex = 0;
     double xiBoundary = 0.0;
     double etaBoundary = 0.0;
 
@@ -449,12 +448,12 @@ void Smoother::ComputeOperatorsNode(UInt currentNode)
         const auto otherNode = OtherNodeOfEdge(m_mesh.GetEdge(edgeIndex), currentNode);
 
         const auto leftFace = m_mesh.m_edgesFaces[edgeIndex][0];
-        faceLeftIndex = FindIndex(m_topologySharedFaces[currentTopology], leftFace);
+        UInt faceLeftIndex = FindIndex(m_topologySharedFaces[currentTopology], leftFace);
 
-        if (m_topologySharedFaces[currentTopology][faceLeftIndex] != leftFace)
+        if (faceLeftIndex == constants::missing::uintValue)
         {
             throw std::invalid_argument(std::string("Smoother::ComputeOperatorsNode: Face could not be found,") +
-                                        std::string("this happens when the face is outside of the polygon or maximumNumberOfEdgesPerFace is too low"));
+                                        std::string("this can happen if: the maximumNumberOfEdgesPerFace is too low or the mesh is invalid. Consider merging edges."));
         }
 
         // by construction
