@@ -259,3 +259,192 @@ TEST_F(CartesianApiTestFixture, GetSmoothnessMesh2D_OnMesh2D_ShouldGetSmoothness
     // Assert
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
+
+TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLinesOrthogonalize_ShouldSet2FrozenLines)
+{
+    // Setup
+    const double deltaX = 10.0;
+    const double deltaY = 10.0;
+
+    int sizeX = 15;
+    int sizeY = 15;
+
+    MakeRectangularCurvilinearGrid(sizeX, sizeY, deltaX, deltaY);
+    auto const meshKernelId = GetMeshKernelId();
+
+    const std::vector<double> randomValues{-0.368462, -0.0413499, -0.281041, 0.178865, 0.434693, 0.0194164,
+                                           -0.465428, 0.0297002, -0.492302, -0.433158, 0.186773, 0.430436,
+                                           0.0269288, 0.153919, 0.201191, 0.262198, -0.452535, -0.171766,
+                                           0.25641, -0.134661, 0.48255, 0.253356, -0.427314, 0.384707,
+                                           -0.0635886, -0.0222682, -0.225093, -0.333493, 0.397656, -0.439436,
+                                           0.00452289, -0.180967, -0.00602331, -0.409267, -0.426251, -0.115858,
+                                           0.413817, -0.0355542, -0.449916, 0.270205, -0.374635, 0.188455, 0.129543};
+
+    // displace grid
+    auto random = [randomValues]() mutable
+    {
+        static size_t randomCounter = 0;
+
+        if (randomCounter == randomValues.size() - 1)
+        {
+            randomCounter = 0;
+        }
+        else
+        {
+            ++randomCounter;
+        }
+
+        return randomValues[randomCounter];
+    };
+
+    // Use same indices for x and y for the block
+    const int blockStartIndex = 2;
+    const int blockEndIndex = 12;
+
+    const int line1IndexX = 10;
+    const int line1StartIndex = 0;
+    const int line1EndIndex = 14;
+
+    const int line2IndexX = 6;
+    const int line2StartIndex = 4;
+    const int line2EndIndex = 7;
+
+    double line1StartPointX = -999.0;
+    double line1StartPointY = -999.0;
+    double line1EndPointX = -999.0;
+    double line1EndPointY = -999.0;
+
+    double line2StartPointX = -999.0;
+    double line2StartPointY = -999.0;
+    double line2EndPointX = -999.0;
+    double line2EndPointY = -999.0;
+
+    double blockStartPointX = -999.0;
+    double blockStartPointY = -999.0;
+    double blockEndPointX = -999.0;
+    double blockEndPointY = -999.0;
+
+    std::vector<double> originalLine1X(sizeY + 1);
+    std::vector<double> originalLine1Y(sizeY + 1);
+    std::vector<double> originalLine2X(sizeY + 1);
+    std::vector<double> originalLine2Y(sizeY + 1);
+
+    for (int i = 0; i <= sizeX; ++i)
+    {
+        double xPoint = static_cast<double>(i) * deltaX;
+
+        for (int j = 0; j <= sizeY; ++j)
+        {
+            double yPoint = static_cast<double>(j) * deltaY;
+            double xDisplaced = xPoint + 0.6 * random() * deltaX;
+            double yDisplaced = yPoint + 0.6 * random() * deltaY;
+
+            auto errorCode = meshkernelapi::mkernel_curvilinear_move_node(meshKernelId, xPoint, yPoint, xDisplaced, yDisplaced);
+            ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+            if (i == j && i == blockStartIndex)
+            {
+                blockStartPointX = xDisplaced;
+                blockStartPointY = yDisplaced;
+            }
+
+            if (i == j && i == blockEndIndex)
+            {
+                blockEndPointX = xDisplaced;
+                blockEndPointY = yDisplaced;
+            }
+
+            if (i == line1IndexX)
+            {
+                originalLine1X[j] = xDisplaced;
+                originalLine1Y[j] = yDisplaced;
+            }
+
+            if (i == line2IndexX)
+            {
+                // Collect all points along the line, even though only the points along the selected frozen line section will be compared
+                // just makes the test slightly less complex.
+                originalLine2X[j] = xDisplaced;
+                originalLine2Y[j] = yDisplaced;
+            }
+
+            // While jiggling the mesh, collect the start and end points of the frozen lines
+            if (i == line1IndexX && j == line1StartIndex)
+            {
+                line1StartPointX = xDisplaced;
+                line1StartPointY = yDisplaced;
+            }
+
+            if (i == line1IndexX && j == line1EndIndex)
+            {
+                line1EndPointX = xDisplaced;
+                line1EndPointY = yDisplaced;
+            }
+
+            if (i == line2IndexX && j == line2StartIndex)
+            {
+                line2StartPointX = xDisplaced;
+                line2StartPointY = yDisplaced;
+            }
+
+            if (i == line2IndexX && j == line2EndIndex)
+            {
+                line2EndPointX = xDisplaced;
+                line2EndPointY = yDisplaced;
+            }
+        }
+    }
+
+    // Execute
+    meshkernel::OrthogonalizationParameters const orthogonalizationParameters{};
+
+    auto errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_set_block_orthogonalize(meshKernelId, blockStartPointX, blockStartPointY, blockEndPointX, blockEndPointY);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_set_frozen_lines_orthogonalize(meshKernelId, line1StartPointX, line1StartPointY, line1EndPointX, line1EndPointY);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_set_frozen_lines_orthogonalize(meshKernelId, line2StartPointX, line2StartPointY, line2EndPointX, line2EndPointY);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = meshkernelapi::mkernel_curvilinear_finalize_orthogonalize(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid clgData;
+    errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, clgData);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    std::vector<double> clgPointsX(clgData.num_m * clgData.num_n);
+    std::vector<double> clgPointsY(clgData.num_m * clgData.num_n);
+    clgData.node_x = clgPointsX.data();
+    clgData.node_y = clgPointsY.data();
+
+    errorCode = meshkernelapi::mkernel_curvilinear_get_data(meshKernelId, clgData);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    const double tolerance = 1.0e-10;
+    // The start of the frozen line section for line 1
+    size_t count = 10;
+
+    for (size_t i = 0; i < originalLine1X.size(); ++i)
+    {
+        EXPECT_NEAR(originalLine1X[i], clgPointsX[count], tolerance);
+        EXPECT_NEAR(originalLine1Y[i], clgPointsY[count], tolerance);
+        count += sizeY + 1;
+    }
+
+    // The start of the frozen line section for line 2.
+    count = 6 + line2StartIndex * (sizeY + 1);
+
+    for (int i = line2StartIndex; i <= line2EndIndex; ++i)
+    {
+        EXPECT_NEAR(originalLine2X[i], clgPointsX[count], tolerance);
+        EXPECT_NEAR(originalLine2Y[i], clgPointsY[count], tolerance);
+        count += sizeY + 1;
+    }
+}
