@@ -324,11 +324,6 @@ TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLinesOrthogonalize_ShouldSet
     double blockEndPointX = -999.0;
     double blockEndPointY = -999.0;
 
-    std::vector<double> originalLine1X(sizeY + 1);
-    std::vector<double> originalLine1Y(sizeY + 1);
-    std::vector<double> originalLine2X(sizeY + 1);
-    std::vector<double> originalLine2Y(sizeY + 1);
-
     for (int i = 0; i <= sizeX; ++i)
     {
         double xPoint = static_cast<double>(i) * deltaX;
@@ -352,20 +347,6 @@ TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLinesOrthogonalize_ShouldSet
             {
                 blockEndPointX = xDisplaced;
                 blockEndPointY = yDisplaced;
-            }
-
-            if (i == line1IndexX)
-            {
-                originalLine1X[j] = xDisplaced;
-                originalLine1Y[j] = yDisplaced;
-            }
-
-            if (i == line2IndexX)
-            {
-                // Collect all points along the line, even though only the points along the selected frozen line section will be compared
-                // just makes the test slightly less complex.
-                originalLine2X[j] = xDisplaced;
-                originalLine2Y[j] = yDisplaced;
             }
 
             // While jiggling the mesh, collect the start and end points of the frozen lines
@@ -431,20 +412,31 @@ TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLinesOrthogonalize_ShouldSet
     // The start of the frozen line section for line 1
     size_t count = 10;
 
-    for (size_t i = 0; i < originalLine1X.size(); ++i)
+    std::vector<double> expectedLine1X{1.0289530000e+02, 9.7436116000e+01, 9.9618468400e+01, 9.8649442e+01,
+                                       1.0238593600e+02, 1.0002713734e+02, 9.996386014e+01, 9.7442494000e+01,
+                                       1.0248290200e+02, 9.7300504000e+01, 9.7752190000e+01, 1.0077725800e+02,
+                                       9.9751900600e+01, 1.0107319000e+02, 1.0011649840e+02, 1.0017820120e+02};
+    std::vector<double> expectedLine1Y{1.5201360000e+00, 1.2308242000e+01, 1.9866390800e+01, 2.7999042000e+01,
+                                       3.7363384000e+01, 4.8914198000e+01, 5.7544398000e+01, 6.9304852000e+01,
+                                       7.9786674800e+01, 9.1621230000e+01, 1.0113073000e+02, 1.0778922800e+02,
+                                       1.1831375400e+02, 1.3260815800e+02, 1.3720743200e+02, 1.4704618800e+02};
+    std::vector<double> expectedLine2X{5.7363384000e+01, 5.8914198000e+01, 5.7544398000e+01, 5.9304852000e+01};
+    std::vector<double> expectedLine2Y{4.0027137340e+01, 4.9963860140e+01, 5.7442494000e+01, 7.2482902000e+01};
+
+    for (size_t i = 0; i < expectedLine1X.size(); ++i)
     {
-        EXPECT_NEAR(originalLine1X[i], clgPointsX[count], tolerance);
-        EXPECT_NEAR(originalLine1Y[i], clgPointsY[count], tolerance);
+        EXPECT_NEAR(expectedLine1X[i], clgPointsX[count], tolerance);
+        EXPECT_NEAR(expectedLine1Y[i], clgPointsY[count], tolerance);
         count += sizeY + 1;
     }
 
     // The start of the frozen line section for line 2.
     count = 6 + line2StartIndex * (sizeY + 1);
 
-    for (int i = line2StartIndex; i <= line2EndIndex; ++i)
+    for (size_t i = 0; i < expectedLine2X.size(); ++i)
     {
-        EXPECT_NEAR(originalLine2X[i], clgPointsX[count], tolerance);
-        EXPECT_NEAR(originalLine2Y[i], clgPointsY[count], tolerance);
+        EXPECT_NEAR(expectedLine2X[i], clgPointsX[count], tolerance);
+        EXPECT_NEAR(expectedLine2Y[i], clgPointsY[count], tolerance);
         count += sizeY + 1;
     }
 }
