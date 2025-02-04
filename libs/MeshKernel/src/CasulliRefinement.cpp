@@ -168,7 +168,7 @@ void meshkernel::CasulliRefinement::InitialiseFaceNodes(const Mesh2D& mesh, std:
             nodeMask[i] = NodeMask::Unassigned;
         }
 
-        if (elementCount < mesh.m_nodesNumEdges[i] - 1 && nodeMask[i] == NodeMask::BoundaryNode)
+        if (elementCount < mesh.m_nodesNumEdges[i] - 1u && nodeMask[i] == NodeMask::BoundaryNode)
         {
             nodeMask[i] = NodeMask::CornerNode;
         }
@@ -359,14 +359,14 @@ void meshkernel::CasulliRefinement::ConnectFaceNodes(Mesh2D& mesh, const UInt cu
     for (UInt j = 0; j < mesh.m_numFacesNodes[currentFace]; ++j)
     {
         const UInt previousIndex = (j == 0 ? (mesh.m_numFacesNodes[currentFace] - 1) : (j - 1));
-        const UInt nextIndex = (j == mesh.m_numFacesNodes[currentFace] - 1 ? 0 : (j + 1));
+        const UInt nextIndex = (j == mesh.m_numFacesNodes[currentFace] - 1u ? 0 : (j + 1));
         UInt nextNextIndex;
 
-        if (j == mesh.m_numFacesNodes[currentFace] - 2)
+        if (j == mesh.m_numFacesNodes[currentFace] - 2u)
         {
             nextNextIndex = 0;
         }
-        else if (j == mesh.m_numFacesNodes[currentFace] - 1)
+        else if (j == mesh.m_numFacesNodes[currentFace] - 1u)
         {
             nextNextIndex = 1;
         }

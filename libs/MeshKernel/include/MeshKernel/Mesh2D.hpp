@@ -101,7 +101,7 @@ namespace meshkernel
         Mesh2D(const std::vector<Edge>& edges,
                const std::vector<Point>& nodes,
                const std::vector<std::vector<UInt>>& faceNodes,
-               const std::vector<UInt>& numFaceNodes,
+               const std::vector<std::uint8_t>& numFaceNodes,
                Projection projection);
 
         /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
@@ -123,7 +123,7 @@ namespace meshkernel
         /// @param[in] faceNodes The input face nodes
         /// @param[in] numFaceNodes For each face, the number of nodes
         void FindFacesGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
-                                            const std::vector<UInt>& numFaceNodes);
+                                            const std::vector<std::uint8_t>& numFaceNodes);
 
         /// @brief Offset the x coordinates if m_projection is spherical
         /// @param[in] minx
@@ -500,7 +500,7 @@ namespace meshkernel
         /// @param[in] faceNodes The input face nodes
         /// @param[in] numFaceNodes For each face, the number of nodes
         void DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
-                                                   const std::vector<UInt>& numFaceNodes);
+                                                   const std::vector<std::uint8_t>& numFaceNodes);
 
         /// @brief Perform complete administration
         /// @param[in,out] undoAction if not null then collect any undo actions generated during the administration.

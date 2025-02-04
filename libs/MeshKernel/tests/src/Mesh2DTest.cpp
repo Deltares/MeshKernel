@@ -1534,3 +1534,17 @@ TEST(Mesh2D, Mesh2DComputeAspectRatio)
         EXPECT_NEAR(aspectRatios[i], expectedAspectRatios[i], tolerance);
     }
 }
+
+
+TEST(Mesh2D, WTF)
+{
+    // Prepare
+    [[maybe_unused]] auto mesh = MakeRectangularMeshForTesting(4000,
+                                                              4000,
+                                                              10.0,
+                                                              10.0,
+                                                              meshkernel::Projection::cartesian);
+
+    [[maybe_unused]] int dummy;
+    std::cin >> dummy;
+}
