@@ -495,8 +495,7 @@ meshkernel::NodeType CurvilinearGrid::GetLeftNodeType(const UInt m) const
     }
     else if (!GetNode(0, m + 1).IsValid())
     {
-        // Should this be UpperLeft or UpperRight
-        result = UpperLeft; // was UpperRight
+        result = UpperLeft;
     }
 
     return result;
