@@ -515,11 +515,11 @@ int FlipEdges::DifferenceFromOptimum(UInt nodeIndex, UInt firstNode, UInt second
 meshkernel::UInt FlipEdges::OptimalNumberOfConnectedNodes(UInt index) const
 {
     UInt optimalNumber = 6;
-    if (m_mesh.m_nodesTypes[index] == 2)
+    if (m_mesh.GetNodeType(index) == MeshNodeType::Boundary)
     {
         optimalNumber = 4;
     }
-    if (m_mesh.m_nodesTypes[index] == 3)
+    if (m_mesh.GetNodeType(index) == MeshNodeType::Corner)
     {
         optimalNumber = 3;
     }

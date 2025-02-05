@@ -402,7 +402,7 @@ bool LandBoundaries::StopPathSearch(const UInt landBoundaryIndex, const UInt cur
                     currentNodeEdgeRatio] = NearestLandBoundarySegment(landBoundaryIndex, m_mesh.Node(currentNode));
 
         if (distanceFromLandBoundary < m_minDistanceFromLandFactor * m_nodesMinDistances[currentNode] &&
-            (!m_findOnlyOuterMeshBoundary || m_mesh.m_nodesTypes[currentNode] == 2 || m_mesh.m_nodesTypes[currentNode] == 3))
+            (!m_findOnlyOuterMeshBoundary || m_mesh.GetNodeType(currentNode) == MeshNodeType::Boundary || m_mesh.GetNodeType(currentNode) == MeshNodeType::Corner))
         {
             stopPathSearch = false;
         }
@@ -1048,7 +1048,7 @@ std::unique_ptr<meshkernel::UndoAction> LandBoundaries::SnapMeshToLandBoundaries
     const auto numNodes = m_mesh.GetNumNodes();
     for (UInt n = 0; n < numNodes; ++n)
     {
-        if (m_mesh.m_nodesTypes[n] == 1 || m_mesh.m_nodesTypes[n] == 2 || m_mesh.m_nodesTypes[n] == 3)
+        if (m_mesh.GetNodeType(n) == MeshNodeType::Internal || m_mesh.GetNodeType(n) == MeshNodeType::Boundary || m_mesh.GetNodeType(n) == MeshNodeType::Corner)
         {
             const auto meshNodeToLandBoundarySegment = m_meshNodesLandBoundarySegments[n];
             if (meshNodeToLandBoundarySegment == constants::missing::uintValue)

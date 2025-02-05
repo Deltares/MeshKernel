@@ -27,7 +27,10 @@
 
 #pragma once
 
+#include <vector>
+
 #include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Definitions.hpp"
 
 namespace meshkernel
 {
@@ -45,7 +48,7 @@ namespace meshkernel
         explicit Smoother(const Mesh2D& mesh);
 
         /// @brief Computes the smoother weights
-        void Compute();
+        void Compute(const std::vector<MeshNodeType>& nodeTypes);
 
         /// @brief Gets the weight for a certain node and connected node
         /// @brief node
@@ -106,6 +109,7 @@ namespace meshkernel
         /// @brief Compute the optimal angle for all theshared faces attached to a node.
         void ComputeOptimalAngleForSharedFaces(const UInt currentNode,
                                                const UInt numSharedFaces,
+                                               const MeshNodeType nodeType,
                                                const std::vector<double>& thetaSquare,
                                                const std::vector<bool>& isSquareFace,
                                                const double mu,
@@ -117,18 +121,13 @@ namespace meshkernel
         void Initialize();
 
         /// @brief Computes all topologies of the elliptic smoother
-        void ComputeTopologies();
+        void ComputeTopologies(const std::vector<MeshNodeType>& nodeType);
 
         /// @brief Computes all operators of the elliptic smoother
-        void ComputeOperators();
-
-        /// @brief Compute nodes local coordinates, sice-effects only for sphericalAccurate projection (comp_local_coords)
-        /// @brief mesh
-        /// @returns
-        bool ComputeCoordinates();
+        void ComputeOperators(const std::vector<MeshNodeType>& nodeTypes);
 
         /// @brief Computes the smoother weights from the operators (orthonet_compweights_smooth)
-        void ComputeWeights();
+        void ComputeWeights(const std::vector<MeshNodeType>& nodeTypes);
 
         /// @brief Compute elliptic smoother operators coefficients for boundary nodes
         std::tuple<double, double> ComputeOperatorsForBoundaryNode(const UInt f, const UInt faceLeftIndex, const UInt currentTopology);
@@ -153,7 +152,8 @@ namespace meshkernel
 
         /// Computes operators of the elliptic smoother by node (orthonet_comp_operators)
         /// @param[in] currentNode
-        void ComputeOperatorsNode(UInt currentNode);
+        /// @paran[in] nodeType Node type of current node
+        void ComputeOperatorsNode(UInt currentNode, const MeshNodeType nodeType);
 
         /// @brief Computes m_faceNodeMappingCache, m_sharedFacesCache, m_connectedNodes for the current node, required before computing xi and eta
         /// @param[in] currentNode
@@ -161,7 +161,8 @@ namespace meshkernel
 
         /// @brief Compute compute current node xi and eta (orthonet_assign_xieta)
         /// @param[in] currentNode
-        void ComputeNodeXiEta(UInt currentNode);
+        /// @paran[in] nodeTypes Node type of all nodes
+        void ComputeNodeXiEta(UInt currentNode, const std::vector<MeshNodeType>& nodeTypes);
 
         /// @brief Compute optimal edge angle
         /// @brief numFaceNodes
@@ -188,7 +189,7 @@ namespace meshkernel
         void ComputeJacobian(UInt currentNode, std::vector<double>& J) const;
 
         /// @brief Compute the coefficients to estimate values at cell circumcenters, filling m_Az.
-        void ComputeCellCircumcentreCoefficients(const UInt currentNode, const UInt currentTopology);
+        void ComputeCellCircumcentreCoefficients(const UInt currentNode, const UInt currentTopology, const MeshNodeType nodeType);
 
         /// @brief Compute the segment gradients
         void ComputeNodeToNodeGradients(const UInt currentNode, const UInt currentTopology);

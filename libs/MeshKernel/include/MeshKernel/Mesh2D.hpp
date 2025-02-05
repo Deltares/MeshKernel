@@ -31,6 +31,7 @@
 #include <utility>
 #include <vector>
 
+#include "MeshKernel/Definitions.hpp"
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Polygon.hpp>
@@ -64,16 +65,6 @@ namespace meshkernel
             InsideNotIntersected = 0,
             InsideAndIntersected = 1,
             FacesWithIncludedCircumcenters = 2
-        };
-
-        /// Enumerator describing the different node types
-        enum class NodeTypes
-        {
-            internalNode,
-            onRing,
-            cornerNode,
-            hangingNode,
-            other
         };
 
         /// Enumerator for different properties on a 2D mesh
@@ -235,6 +226,12 @@ namespace meshkernel
 
         ///  @brief Classifies the nodes (makenetnodescoding)
         void ClassifyNodes();
+
+        /// @brief Get the node type
+        MeshNodeType GetNodeType(const UInt nodeId) const { return m_nodesTypes[nodeId]; }
+
+        /// @brief Get the node type
+        void GetNodeTypes(std::vector<MeshNodeType>& nodeTypes) const { nodeTypes = m_nodesTypes; }
 
         /// @brief Deletes coinciding triangles
         [[nodiscard]] std::unique_ptr<UndoAction> DeleteDegeneratedTriangles();
@@ -510,10 +507,10 @@ namespace meshkernel
         void DoAdministration(CompoundUndoAction* undoAction = nullptr);
 
         /// @brief Initialise the node type array for nodes that lie on the boundary
-        void InitialiseBoundaryNodeClassification();
+        void InitialiseBoundaryNodeClassification(std::vector<int>& intNodeType) const;
 
         /// @brief Classify a single node
-        void ClassifyNode(const UInt nodeId);
+        MeshNodeType ClassifyNode(const UInt nodeId) const;
 
         /// @brief Count the number of value edge in list
         UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, const UInt numNodes) const;
@@ -542,6 +539,8 @@ namespace meshkernel
                                       std::vector<bool>& curvilinearGridIndicator,
                                       std::vector<std::array<double, 2>>& averageEdgesLength,
                                       std::vector<double>& aspectRatios) const;
+
+        std::vector<MeshNodeType> m_nodesTypes; ///< The node types (nb)
     };
 
 } // namespace meshkernel

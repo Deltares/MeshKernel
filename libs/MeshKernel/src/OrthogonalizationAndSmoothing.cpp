@@ -64,6 +64,7 @@ std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initializ
     m_mesh.Administrate();
     m_mesh.ComputeNodeNeighbours(m_nodesNodes, m_maxNumNeighbours);
     const auto nodeMask = m_mesh.NodeMaskFromPolygon(*m_polygons, true);
+    m_mesh.GetNodeTypes(m_nodesTypes);
 
     std::vector<UInt> nodeIndices(m_mesh.GetNumNodes(), constants::missing::uintValue);
     UInt nodesMovedCount = 0;
@@ -73,7 +74,7 @@ std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initializ
     {
         if (nodeMask[n] == 0)
         {
-            m_mesh.m_nodesTypes[n] = 3;
+            m_nodesTypes[n] = MeshNodeType::Corner;
         }
         else
         {
@@ -140,10 +141,10 @@ void OrthogonalizationAndSmoothing::Compute()
 void OrthogonalizationAndSmoothing::PrepareOuterIteration()
 {
     // compute weights and rhs of orthogonalizer
-    m_orthogonalizer->Compute(m_nodesNodes, m_maxNumNeighbours);
+    m_orthogonalizer->Compute(m_nodesNodes, m_maxNumNeighbours, m_nodesTypes);
 
     // computes the smoother weights
-    m_smoother->Compute();
+    m_smoother->Compute(m_nodesTypes);
 
     // allocate linear system for smoother and orthogonalizer
     AllocateLinearSystem();
@@ -194,12 +195,12 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 #pragma omp parallel for
     for (int n = 0; n < static_cast<int>(m_mesh.GetNumNodes()); n++)
     {
-        if ((m_mesh.m_nodesTypes[n] != 1 && m_mesh.m_nodesTypes[n] != 2) || m_mesh.m_nodesNumEdges[n] < 2)
+        if ((GetNodeType(n) != MeshNodeType::Internal && GetNodeType(n) != MeshNodeType::Boundary) || m_mesh.m_nodesNumEdges[n] < 2)
         {
             continue;
         }
 
-        const double atpfLoc = m_mesh.m_nodesTypes[n] == 2 ? max_aptf : m_orthogonalizationParameters.orthogonalization_to_smoothing_factor;
+        const double atpfLoc = GetNodeType(n) == MeshNodeType::Boundary ? max_aptf : m_orthogonalizationParameters.orthogonalization_to_smoothing_factor;
         const double atpf1Loc = 1.0 - atpfLoc;
         const auto maxnn = m_compressedStartNodeIndex[n] - m_compressedEndNodeIndex[n];
 
@@ -211,7 +212,7 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
             double wwy = 0.0;
 
             // Smoother
-            if (atpf1Loc > 0.0 && m_mesh.m_nodesTypes[n] == 1)
+            if (atpf1Loc > 0.0 && GetNodeType(n) == MeshNodeType::Internal)
             {
                 wwx = atpf1Loc * m_smoother->GetWeight(n, nn);
                 wwy = atpf1Loc * m_smoother->GetWeight(n, nn);
@@ -310,7 +311,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
         const auto nearestPointIndex = nearestPoints[n];
-        if (m_mesh.m_nodesTypes[n] == 2 && m_mesh.m_nodesNumEdges[n] > 0 && m_mesh.m_nodesNumEdges[nearestPointIndex] > 0)
+        if (GetNodeType(n) == MeshNodeType::Boundary && m_mesh.m_nodesNumEdges[n] > 0 && m_mesh.m_nodesNumEdges[nearestPointIndex] > 0)
         {
             Point firstPoint = m_mesh.Node(n);
             if (!firstPoint.IsValid())
@@ -354,7 +355,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                 // Copy nodes at start, then set all nodes at once (SetNodes, this has no associated action yet).
                 [[maybe_unused]] auto action = m_mesh.ResetNode(n, normalSecondPoint);
 
-                if (ratioSecondPoint > 0.5 && m_mesh.m_nodesTypes[n] != 3)
+                if (ratioSecondPoint > 0.5 && GetNodeType(n) != MeshNodeType::Corner)
                 {
                     nearestPoints[n] = leftNode;
                 }
@@ -364,7 +365,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                 // TODO may need to refactor this (undo action allocation), if performance becomes a problem
                 [[maybe_unused]] auto action = m_mesh.ResetNode(n, normalThirdPoint);
 
-                if (ratioThirdPoint > 0.5 && m_mesh.m_nodesTypes[n] != 3)
+                if (ratioThirdPoint > 0.5 && GetNodeType(n) != MeshNodeType::Corner)
                 {
                     nearestPoints[n] = rightNode;
                 }

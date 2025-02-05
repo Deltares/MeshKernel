@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <MeshKernel/Definitions.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/UndoActions/UndoAction.hpp>
@@ -114,6 +115,9 @@ namespace meshkernel
         void FinalizeOuterIteration();
 
     private:
+        /// @brief Get the node type
+        MeshNodeType GetNodeType(const UInt nodeId) const { return m_nodesTypes[nodeId]; }
+
         /// @brief Find the id's of the neighbouring boundary nodes.
         void FindNeighbouringBoundaryNodes(const UInt nodeId,
                                            const UInt nearestPointIndex,
@@ -159,6 +163,7 @@ namespace meshkernel
         std::vector<Point> m_orthogonalCoordinates;  ///< A copy of the mesh node, orthogonalized
         std::vector<Point> m_originalNodes;          ///< The original mesh
         std::vector<std::vector<UInt>> m_nodesNodes; ///< Node to node connectivity
+        std::vector<MeshNodeType> m_nodesTypes;      ///< The node types
         UInt m_maxNumNeighbours = 0;                 ///< Maximum number of neighbours
 
         // Linear system terms
