@@ -117,7 +117,7 @@ void meshkernel::ConnectMeshes::GetQuadrilateralElementsOnDomainBoundary(const M
 {
     for (UInt i = 0; i < mesh.GetNumEdges(); ++i)
     {
-        if (mesh.m_edgesNumFaces[i] == 1)
+        if (mesh.GetNumEdgesFaces(i) == 1)
         {
             const UInt faceId = mesh.m_edgesFaces[i][0];
 

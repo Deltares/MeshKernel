@@ -151,7 +151,7 @@ void Smoother::ComputeWeights()
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
 
-        if (m_mesh.m_nodesNumEdges[n] < 2)
+        if (m_mesh.GetNumNodesEdges(n) < 2)
             continue;
 
         // Internal nodes and boundary nodes
@@ -302,7 +302,7 @@ void Smoother::ComputeLaplacianSmootherWeights(const UInt currentNode, const UIn
 {
     // compute the weights in the Laplacian smoother
     std::fill(m_ww2[currentTopology].begin(), m_ww2[currentTopology].end(), 0.0);
-    for (UInt n = 0; n < m_mesh.m_nodesNumEdges[currentNode]; n++)
+    for (UInt n = 0; n < m_mesh.GetNumNodesEdges(currentNode); n++)
     {
         for (UInt i = 0; i < m_topologyConnectedNodes[currentTopology].size(); i++)
         {
@@ -321,7 +321,7 @@ void Smoother::ComputeNodeToNodeGradients(const UInt currentNode, const UInt cur
             UInt rightNode;
             if (f == 0)
             {
-                rightNode = f + m_mesh.m_nodesNumEdges[currentNode] - 1;
+                rightNode = f + m_mesh.GetNumNodesEdges(currentNode) - 1;
             }
             else
             {
@@ -555,7 +555,7 @@ void Smoother::ComputeOperatorsNode(UInt currentNode, const MeshNodeType nodeTyp
     }
 
     double volxi = 0.0;
-    for (UInt i = 0; i < m_mesh.m_nodesNumEdges[currentNode]; i++)
+    for (UInt i = 0; i < m_mesh.GetNumNodesEdges(currentNode); i++)
     {
         volxi += 0.5 * (m_Divxi[currentTopology][i] * m_xisCache[i] + m_Diveta[currentTopology][i] * m_etasCache[i]);
     }
@@ -564,7 +564,7 @@ void Smoother::ComputeOperatorsNode(UInt currentNode, const MeshNodeType nodeTyp
         volxi = 1.0;
     }
 
-    for (UInt i = 0; i < m_mesh.m_nodesNumEdges[currentNode]; i++)
+    for (UInt i = 0; i < m_mesh.GetNumNodesEdges(currentNode); i++)
     {
         m_Divxi[currentTopology][i] = m_Divxi[currentTopology][i] / volxi;
         m_Diveta[currentTopology][i] = m_Diveta[currentTopology][i] / volxi;
@@ -672,7 +672,7 @@ void Smoother::UpdateXiEtaForSharedFace(const UInt currentNode,
     const auto nextNode = NextCircularBackwardIndex(nodeIndex, numFaceNodes);
 
     if (m_faceNodeMappingCache[currentFace][nextNode] + 1 == m_faceNodeMappingCache[currentFace][previousNode] ||
-        m_faceNodeMappingCache[currentFace][nextNode] - m_faceNodeMappingCache[currentFace][previousNode] == m_mesh.m_nodesNumEdges[currentNode])
+        m_faceNodeMappingCache[currentFace][nextNode] - m_faceNodeMappingCache[currentFace][previousNode] == m_mesh.GetNumNodesEdges(currentNode))
     {
         dTheta = -dTheta;
     }
@@ -789,10 +789,10 @@ void Smoother::ComputeNodeXiEta(UInt currentNode)
 
         // check if it is a rectangular node (not currentNode itself)
         bool isSquare = true;
-        for (UInt e = 0; e < m_mesh.m_nodesNumEdges[nextNode]; e++)
+        for (UInt e = 0; e < m_mesh.GetNumNodesEdges(nextNode); e++)
         {
             auto edge = m_mesh.m_nodesEdges[nextNode][e];
-            for (UInt ff = 0; ff < m_mesh.m_edgesNumFaces[edge]; ff++)
+            for (UInt ff = 0; ff < m_mesh.GetNumEdgesFaces(edge); ff++)
             {
                 auto face = m_mesh.m_edgesFaces[edge][ff];
                 if (face != faceLeft && face != faceRight)
@@ -822,13 +822,13 @@ void Smoother::ComputeNodeXiEta(UInt currentNode)
             if (m_nodeType[nextNode] == MeshNodeType::Internal)
             {
                 // Inner node
-                numNonStencilQuad = m_mesh.m_nodesNumEdges[nextNode] - 2;
+                numNonStencilQuad = m_mesh.GetNumNodesEdges(nextNode) - 2;
                 thetaSquare[f + 1] = (2.0 - double(numNonStencilQuad) * 0.5) * M_PI;
             }
             if (m_nodeType[nextNode] == MeshNodeType::Boundary)
             {
                 // boundary node
-                numNonStencilQuad = m_mesh.m_nodesNumEdges[nextNode] - 1 - m_mesh.m_edgesNumFaces[edgeIndex];
+                numNonStencilQuad = m_mesh.GetNumNodesEdges(nextNode) - 1 - m_mesh.GetNumEdgesFaces(edgeIndex);
                 thetaSquare[f + 1] = (1.0 - double(numNonStencilQuad) * 0.5) * M_PI;
             }
             if (m_nodeType[nextNode] == MeshNodeType::Corner)
@@ -913,7 +913,7 @@ void Smoother::NodeAdministration(UInt currentNode)
         throw MeshKernelError("Node index out of range");
     }
 
-    if (m_mesh.m_nodesNumEdges[currentNode] < 2)
+    if (m_mesh.GetNumNodesEdges(currentNode) < 2)
     {
         return;
     }

@@ -222,8 +222,8 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
             continue;
         }
 
-        const auto numEdgesFirstNode = mesh2d->m_nodesNumEdges[firstNode];
-        const auto numEdgesSecondNode = mesh2d->m_nodesNumEdges[secondNode];
+        const auto numEdgesFirstNode = mesh2d->GetNumNodesEdges(firstNode);
+        const auto numEdgesSecondNode = mesh2d->GetNumNodesEdges(secondNode);
         if ((numEdgesFirstNode == constants::geometric::numNodesInPentagon ||
              numEdgesFirstNode == constants::geometric::numNodesInhaxagon) &&
             (numEdgesSecondNode == constants::geometric::numNodesInPentagon ||

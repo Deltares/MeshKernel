@@ -422,9 +422,9 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallNegativeOffset)
     EXPECT_NEAR(mergedMesh->Node(10).y, 10.0, tolerance);
     EXPECT_NEAR(mergedMesh->Node(11).y, 20.0, tolerance);
 
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[9], 3);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[10], 4);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[11], 3);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(9), 3);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(10), 4);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(11), 3);
 
     // Test the undo action has been computed correctly
     undoAction->Restore();
@@ -500,9 +500,9 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesNoOffset)
     EXPECT_NEAR(mergedMesh->Node(10).y, 10.0, tolerance);
     EXPECT_NEAR(mergedMesh->Node(11).y, 20.0, tolerance);
 
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[9], 3);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[10], 4);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[11], 3);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(9), 3);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(10), 4);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(11), 3);
 
     // Test the undo action has been computed correctly
     undoAction->Restore();
@@ -578,9 +578,9 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallPositiveOffset)
     EXPECT_NEAR(mergedMesh->Node(10).y, 10.0, tolerance);
     EXPECT_NEAR(mergedMesh->Node(11).y, 20.0, tolerance);
 
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[9], 3);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[10], 4);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[11], 3);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(9), 3);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(10), 4);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(11), 3);
 
     // Test the undo action has been computed correctly
     undoAction->Restore();
