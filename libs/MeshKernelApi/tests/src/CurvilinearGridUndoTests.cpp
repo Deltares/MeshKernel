@@ -262,8 +262,13 @@ TEST(CurvilinearGridUndoTests, Smoothing)
     constexpr double upperBoundValue = static_cast<double>(upperBoundIndex);
 
     // apply smoothing
-    errorCode = meshkernelapi::mkernel_curvilinear_smoothing(meshKernelId, 1 /* smoothingIterations */,
-                                                             lowerBoundValue, lowerBoundValue, upperBoundValue, upperBoundValue);
+    errorCode = meshkernelapi::mkernel_curvilinear_initialize_smoothing(meshKernelId, 1 /* smoothingIterations */);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_smoothing(meshKernelId, lowerBoundValue, lowerBoundValue, upperBoundValue, upperBoundValue);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_finalize_smoothing(meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Get the current state of the curvilinear grid

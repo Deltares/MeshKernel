@@ -4650,8 +4650,60 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_curvilinear_initialize_smoothing(int meshKernelId, int smoothingIterations)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            meshKernelState[meshKernelId].m_curvilinearGridSmoothing = std::make_shared<meshkernel::CurvilinearGridSmoothing>(*meshKernelState[meshKernelId].m_curvilinearGrid,
+                                                                                                                              static_cast<meshkernel::UInt>(smoothingIterations));
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_set_frozen_lines_smoothing(int meshKernelId,
+                                                                   double xFirstGridLineNode,
+                                                                   double yFirstGridLineNode,
+                                                                   double xSecondGridLineNode,
+                                                                   double ySecondGridLineNode)
+
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_curvilinearGridSmoothing == nullptr)
+            {
+                throw meshkernel::MeshKernelError("CurvilinearGridSmoothing not instantiated.");
+            }
+
+            meshkernel::Point const firstPoint{xFirstGridLineNode, yFirstGridLineNode};
+            meshkernel::Point const secondPoint{xSecondGridLineNode, ySecondGridLineNode};
+
+            // Execute
+            meshKernelState[meshKernelId].m_curvilinearGridSmoothing->SetLine(firstPoint, secondPoint);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_curvilinear_smoothing(int meshKernelId,
-                                                  int smoothingIterations,
                                                   double xLowerLeftCorner,
                                                   double yLowerLeftCorner,
                                                   double xUpperRightCorner,
@@ -4670,6 +4722,10 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("Not a valid curvilinear grid instance.");
             }
+            if (meshKernelState[meshKernelId].m_curvilinearGridSmoothing == nullptr)
+            {
+                throw meshkernel::MeshKernelError("CurvilinearGridSmoothing not instantiated.");
+            }
 
             if (!meshKernelState[meshKernelId].m_curvilinearGrid->IsValid())
             {
@@ -4680,11 +4736,32 @@ namespace meshkernelapi
             const meshkernel::Point secondPoint{xUpperRightCorner, yUpperRightCorner};
 
             // Execute
-            meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(*meshKernelState[meshKernelId].m_curvilinearGrid,
-                                                                          static_cast<meshkernel::UInt>(smoothingIterations));
+            meshKernelState[meshKernelId].m_curvilinearGridSmoothing->SetBlock(firstPoint, secondPoint);
+            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_curvilinearGridSmoothing->Compute(), meshKernelId);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
 
-            curvilinearGridSmoothing.SetBlock(firstPoint, secondPoint);
-            meshKernelUndoStack.Add(curvilinearGridSmoothing.Compute(), meshKernelId);
+    MKERNEL_API int mkernel_curvilinear_finalize_smoothing(int meshKernelId)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_curvilinearGridSmoothing == nullptr)
+            {
+                throw meshkernel::MeshKernelError("CurvilinearGridSmoothing not instantiated.");
+            }
+
+            meshKernelState[meshKernelId].m_curvilinearGridSmoothing.reset();
         }
         catch (...)
         {

@@ -28,18 +28,17 @@
 #pragma once
 
 #include <memory>
-#include <string>
 
-#include <MeshKernel/Contacts.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridLineShift.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
-#include <MeshKernel/Mesh1D.hpp>
-#include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
+#include "MeshKernel/Contacts.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridLineShift.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp"
+#include "MeshKernel/Mesh1D.hpp"
+#include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/OrthogonalizationAndSmoothing.hpp"
 
 #include "MeshKernelApi/ApiCache/BoundariesAsPolygonCache.hpp"
-#include "MeshKernelApi/ApiCache/CachedPointValues.hpp"
 #include "MeshKernelApi/ApiCache/FacePolygonPropertyCache.hpp"
 #include "MeshKernelApi/ApiCache/HangingEdgeCache.hpp"
 #include "MeshKernelApi/ApiCache/NodeInPolygonCache.hpp"
@@ -78,6 +77,7 @@ namespace meshkernelapi
         std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing> m_meshOrthogonalization;               ///< Shared pointer to meshkernel::OrthogonalizationAndSmoothing instance
         std::shared_ptr<meshkernel::CurvilinearGridFromSplines> m_curvilinearGridFromSplines;             ///< Shared pointer to meshkernel::CurvilinearGridFromSplines instance
         std::shared_ptr<meshkernel::CurvilinearGridOrthogonalization> m_curvilinearGridOrthogonalization; ///< Shared pointer to meshkernel::CurvilinearGridOrthogonalization instance
+        std::shared_ptr<meshkernel::CurvilinearGridSmoothing> m_curvilinearGridSmoothing;                 ///< Shared pointer to meshkernel::CurvilinearGridSmoothing instance
         std::shared_ptr<meshkernel::CurvilinearGridLineShift> m_curvilinearGridLineShift;                 ///< Shared pointer to meshkernel::CurvilinearGridLineShift instance
 
         // Exclusively owned state

@@ -425,7 +425,15 @@ TEST_F(CartesianApiTestFixture, Smoothing_CurvilinearGrid_ShouldSmooth)
     MakeRectangularCurvilinearGrid();
 
     // Execute
-    auto errorCode = meshkernelapi::mkernel_curvilinear_smoothing(meshKernelId, 10, 10.0, 20.0, 30.0, 20.0);
+    auto errorCode = meshkernelapi::mkernel_curvilinear_initialize_smoothing(meshKernelId, 10 /* smoothingIterations */);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_smoothing(meshKernelId, 10.0, 20.0, 30.0, 20.0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_finalize_smoothing(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
     errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);

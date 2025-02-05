@@ -609,20 +609,42 @@ namespace meshkernelapi
                                                                 double xSecondGridLineNode,
                                                                 double ySecondGridLineNode);
 
-        /// @brief Smooths a curvilinear grid
+        /// @brief Initialize curvilinear smoothing algorithm
         /// @param[in] meshKernelId        The id of the mesh state
         /// @param[in] smoothingIterations The number of smoothing iterations to perform
+        /// @return Error code
+        MKERNEL_API int mkernel_curvilinear_initialize_smoothing(int meshKernelId, int smoothingIterations);
+
+        /// @brief Sets the frozen lines for the curvilinear smoothing algorithm
+        /// @param[in] meshKernelId        The id of the mesh state
+        /// @param[in] xFirstGridLineNode  The x coordinate of the first point of the line to freeze
+        /// @param[in] yFirstGridLineNode  The y coordinate of the first point of the line to freeze
+        /// @param[in] xSecondGridLineNode The x coordinate of the second point of the line to freeze
+        /// @param[in] ySecondGridLineNode The y coordinate of the second point of the line to freeze
+        /// @return Error code
+        MKERNEL_API int mkernel_curvilinear_set_frozen_lines_smoothing(int meshKernelId,
+                                                                       double xFirstGridLineNode,
+                                                                       double yFirstGridLineNode,
+                                                                       double xSecondGridLineNode,
+                                                                       double ySecondGridLineNode);
+
+        /// @brief Smooths a curvilinear grid
+        /// @param[in] meshKernelId        The id of the mesh state
         /// @param[in] xLowerLeftCorner    The x coordinate of the lower left corner of the block to smooth
         /// @param[in] yLowerLeftCorner    The y coordinate of the lower left corner of the block to smooth
         /// @param[in] xUpperRightCorner   The x coordinate of the right corner of the block to smooth
         /// @param[in] yUpperRightCorner   The y coordinate of the upper right corner of the block to smooth
         /// @return Error code
         MKERNEL_API int mkernel_curvilinear_smoothing(int meshKernelId,
-                                                      int smoothingIterations,
                                                       double xLowerLeftCorner,
                                                       double yLowerLeftCorner,
                                                       double xUpperRightCorner,
                                                       double yUpperRightCorner);
+
+        /// @brief Resets the CurvilinearGridSmoothing instance in MeshKernelState
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @return  Error code
+        MKERNEL_API int mkernel_curvilinear_finalize_smoothing(int meshKernelId);
 
         /// @brief Smooths a curvilinear grid along the direction specified by a segment
         /// @param[in] meshKernelId                  The id of the mesh state
