@@ -1535,16 +1535,15 @@ TEST(Mesh2D, Mesh2DComputeAspectRatio)
     }
 }
 
+// TEST(Mesh2D, WTF)
+// {
+//     // Prepare
+//     [[maybe_unused]] auto mesh = MakeRectangularMeshForTesting(4000,
+//                                                               4000,
+//                                                               10.0,
+//                                                               10.0,
+//                                                               meshkernel::Projection::cartesian);
 
-TEST(Mesh2D, WTF)
-{
-    // Prepare
-    [[maybe_unused]] auto mesh = MakeRectangularMeshForTesting(4000,
-                                                              4000,
-                                                              10.0,
-                                                              10.0,
-                                                              meshkernel::Projection::cartesian);
-
-    [[maybe_unused]] int dummy;
-    std::cin >> dummy;
-}
+//     [[maybe_unused]] int dummy;
+//     std::cin >> dummy;
+// }
