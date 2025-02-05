@@ -363,13 +363,13 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
 
 TEST(CurvilinearGridOrthogonalization, SetFrozenLine_ShouldFreezeLines)
 {
-    const std::vector<double> random{-0.368462, -0.0413499, -0.281041, 0.178865, 0.434693, 0.0194164,
-                                     -0.465428, 0.0297002, -0.492302, -0.433158, 0.186773, 0.430436,
-                                     0.0269288, 0.153919, 0.201191, 0.262198, -0.452535, -0.171766,
-                                     0.25641, -0.134661, 0.48255, 0.253356, -0.427314, 0.384707,
-                                     -0.0635886, -0.0222682, -0.225093, -0.333493, 0.397656, -0.439436,
-                                     0.00452289, -0.180967, -0.00602331, -0.409267, -0.426251, -0.115858,
-                                     0.413817, -0.0355542, -0.449916, 0.270205, -0.374635, 0.188455, 0.129543};
+    const std::vector<double> randomValues{-0.368462, -0.0413499, -0.281041, 0.178865, 0.434693, 0.0194164,
+                                           -0.465428, 0.0297002, -0.492302, -0.433158, 0.186773, 0.430436,
+                                           0.0269288, 0.153919, 0.201191, 0.262198, -0.452535, -0.171766,
+                                           0.25641, -0.134661, 0.48255, 0.253356, -0.427314, 0.384707,
+                                           -0.0635886, -0.0222682, -0.225093, -0.333493, 0.397656, -0.439436,
+                                           0.00452289, -0.180967, -0.00602331, -0.409267, -0.426251, -0.115858,
+                                           0.413817, -0.0355542, -0.449916, 0.270205, -0.374635, 0.188455, 0.129543};
 
     double deltaX = 10.0;
     double deltaY = 10.0;
@@ -381,11 +381,11 @@ TEST(CurvilinearGridOrthogonalization, SetFrozenLine_ShouldFreezeLines)
     const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, deltaX, deltaY, sizeX, sizeY);
 
     // displace grid
-    size_t randomCounter = 0;
-
-    auto randomCount = [random, &randomCounter]() mutable
+    auto random = [randomValues]() mutable
     {
-        if (randomCounter == random.size() - 1)
+        static size_t randomCounter = 0;
+
+        if (randomCounter == randomValues.size() - 1)
         {
             randomCounter = 0;
         }
@@ -394,15 +394,15 @@ TEST(CurvilinearGridOrthogonalization, SetFrozenLine_ShouldFreezeLines)
             ++randomCounter;
         }
 
-        return randomCounter;
+        return randomValues[randomCounter];
     };
 
     for (UInt i = 0; i < curvilinearGrid->NumN(); ++i)
     {
         for (UInt j = 0; j < curvilinearGrid->NumM(); ++j)
         {
-            double xDisplacement = random[randomCount()] * deltaX;
-            double yDisplacement = random[randomCount()] * deltaY;
+            double xDisplacement = 0.6 * random() * deltaX;
+            double yDisplacement = 0.6 * random() * deltaY;
 
             curvilinearGrid->GetNode(i, j) += meshkernel::Vector(xDisplacement, yDisplacement);
         }
@@ -419,19 +419,19 @@ TEST(CurvilinearGridOrthogonalization, SetFrozenLine_ShouldFreezeLines)
     Point blockLL = curvilinearGrid->GetNode(2, 2);
     Point blockUR = curvilinearGrid->GetNode(12, 12);
 
-    const UInt line1IndexY = 10;
+    const UInt line1IndexX = 10;
     const UInt line1StartIndex = 0;
     const UInt line1EndIndex = 14;
 
-    Point line1Start = curvilinearGrid->GetNode(line1StartIndex, line1IndexY);
-    Point line1End = curvilinearGrid->GetNode(line1EndIndex, line1IndexY);
+    Point line1Start = curvilinearGrid->GetNode(line1StartIndex, line1IndexX);
+    Point line1End = curvilinearGrid->GetNode(line1EndIndex, line1IndexX);
 
-    const UInt line2IndexY = 10;
+    const UInt line2IndexX = 6;
     const UInt line2StartIndex = 4;
     const UInt line2EndIndex = 7;
 
-    Point line2Start = curvilinearGrid->GetNode(line2StartIndex, line2IndexY);
-    Point line2End = curvilinearGrid->GetNode(line2EndIndex, line2IndexY);
+    Point line2Start = curvilinearGrid->GetNode(line2StartIndex, line2IndexX);
+    Point line2End = curvilinearGrid->GetNode(line2EndIndex, line2IndexX);
 
     std::vector<Point> originalLine1Points(line1EndIndex - line1StartIndex + 1);
     std::vector<Point> originalLine2Points(line2EndIndex - line2StartIndex + 1);
@@ -439,13 +439,13 @@ TEST(CurvilinearGridOrthogonalization, SetFrozenLine_ShouldFreezeLines)
     // Collect line points before orthogonalising
     for (UInt i = line1StartIndex; i < line1EndIndex + 1; ++i)
     {
-        Point p = curvilinearGrid->GetNode(i, line1IndexY);
+        Point p = curvilinearGrid->GetNode(i, line1IndexX);
         originalLine1Points[i - line1StartIndex] = p;
     }
 
     for (UInt i = line2StartIndex; i < line2EndIndex + 1; ++i)
     {
-        Point p = curvilinearGrid->GetNode(i, line2IndexY);
+        Point p = curvilinearGrid->GetNode(i, line2IndexX);
         originalLine2Points[i - line2StartIndex] = p;
     }
 
@@ -459,14 +459,14 @@ TEST(CurvilinearGridOrthogonalization, SetFrozenLine_ShouldFreezeLines)
 
     for (UInt i = line2StartIndex; i < line2EndIndex + 1; ++i)
     {
-        EXPECT_NEAR(originalLine2Points[i - line2StartIndex].x, curvilinearGrid->GetNode(i, line2IndexY).x, tolerance);
-        EXPECT_NEAR(originalLine2Points[i - line2StartIndex].y, curvilinearGrid->GetNode(i, line2IndexY).y, tolerance);
+        EXPECT_NEAR(originalLine2Points[i - line2StartIndex].x, curvilinearGrid->GetNode(i, line2IndexX).x, tolerance);
+        EXPECT_NEAR(originalLine2Points[i - line2StartIndex].y, curvilinearGrid->GetNode(i, line2IndexX).y, tolerance);
     }
 
     for (UInt i = line1StartIndex; i < line1EndIndex + 1; ++i)
     {
-        EXPECT_NEAR(originalLine1Points[i].x, curvilinearGrid->GetNode(i, line1IndexY).x, tolerance);
-        EXPECT_NEAR(originalLine1Points[i].y, curvilinearGrid->GetNode(i, line1IndexY).y, tolerance);
+        EXPECT_NEAR(originalLine1Points[i].x, curvilinearGrid->GetNode(i, line1IndexX).x, tolerance);
+        EXPECT_NEAR(originalLine1Points[i].y, curvilinearGrid->GetNode(i, line1IndexX).y, tolerance);
     }
 }
 
