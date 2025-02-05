@@ -122,7 +122,7 @@ void meshkernel::CasulliRefinement::InitialiseCornerNodes(const Mesh2D& mesh, st
     // Find included corner nodes
     for (UInt i = 0; i < mesh.GetNumNodes(); ++i)
     {
-        if (nodeMask[i] != NodeMask::Unassigned && mesh.m_nodesTypes[i] == 3)
+        if (nodeMask[i] != NodeMask::Unassigned && mesh.GetNodeType(i) == MeshNodeType::Corner)
         {
             nodeMask[i] = NodeMask::CornerNode;
         }

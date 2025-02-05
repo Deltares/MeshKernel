@@ -38,7 +38,9 @@ Orthogonalizer::Orthogonalizer(Mesh2D& mesh) : m_mesh(mesh)
 {
 }
 
-void Orthogonalizer::Compute(const std::vector<std::vector<UInt>>& nodesNodes, const UInt maxNumNeighbours)
+void Orthogonalizer::Compute(const std::vector<std::vector<UInt>>& nodesNodes,
+                             const UInt maxNumNeighbours,
+                             const std::vector<MeshNodeType>& nodeType)
 {
     ResizeAndFill2DVector(m_weights, m_mesh.GetNumNodes(), maxNumNeighbours, true, 0.0);
     ResizeAndFill2DVector(m_rhs, m_mesh.GetNumNodes(), 2, true, 0.0);
@@ -48,7 +50,7 @@ void Orthogonalizer::Compute(const std::vector<std::vector<UInt>>& nodesNodes, c
 
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
-        if (m_mesh.m_nodesTypes[n] != 1 && m_mesh.m_nodesTypes[n] != 2)
+        if (nodeType[n] != MeshNodeType::Internal && nodeType[n] != MeshNodeType::Boundary)
         {
             continue;
         }

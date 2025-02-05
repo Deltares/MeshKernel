@@ -113,4 +113,14 @@ namespace meshkernel
     /// @brief Get the string representation of the CurvilinearDirection enumeration values.
     const std::string& CurvilinearDirectionToString(CurvilinearDirection direction);
 
+    /// @brief Possible node types
+    enum class MeshNodeType : std::int8_t
+    {
+        Hanging = -1, ///< Hanging node
+        Unspecified,  ///< Inital value, unspecified or invalid nodes
+        Internal,     ///< Nodes in interior of domain
+        Boundary,     ///< Nodes on boundary of domain, except corners
+        Corner        ///< Nodes at corners
+    };
+
 } // namespace meshkernel
