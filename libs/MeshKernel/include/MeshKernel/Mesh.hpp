@@ -163,17 +163,17 @@ namespace meshkernel
         /// @brief Get the number of edges for a node
         /// @param[in] nodeIndex The node index
         /// @return The number of valid nodes
-        [[nodiscard]] UInt GetNumNodesEdges(UInt nodeIndex) const { return m_nodesNumEdges[nodeIndex]; }
+        [[nodiscard]] UInt GetNumNodesEdges(UInt nodeIndex) const { return static_cast<UInt>(m_nodesNumEdges[nodeIndex]); }
 
         /// @brief Get the number of edges for a face
         /// @param[in] faceIndex The face index
         /// @return The number of valid faces
-        [[nodiscard]] UInt GetNumFaceEdges(UInt faceIndex) const { return m_numFacesNodes[faceIndex]; }
+        [[nodiscard]] UInt GetNumFaceEdges(UInt faceIndex) const { return static_cast<UInt>(m_numFacesNodes[faceIndex]); }
 
         /// @brief Get the number of faces an edges shares
         /// @param[in] edgeIndex The edge index
         /// @return The number of faces an edges shares
-        [[nodiscard]] UInt GetNumEdgesFaces(UInt edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
+        [[nodiscard]] UInt GetNumEdgesFaces(UInt edgeIndex) const { return static_cast<UInt>(m_edgesNumFaces[edgeIndex]); }
 
         /// @brief Get the local edge number for an element edge.
         // TODO add unit test and with all failing cases
