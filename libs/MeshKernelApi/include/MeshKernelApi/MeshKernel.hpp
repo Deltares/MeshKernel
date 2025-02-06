@@ -620,7 +620,7 @@ namespace meshkernelapi
 
         /// @brief Smooths a curvilinear grid along the direction specified by a segment
         /// @param[in] meshKernelId                  The id of the mesh state
-
+        /// @param[in] smoothingIterations           The number of smoothing iterations
         /// @param[in] xFirstGridlineNode            The x coordinate of the first curvilinear grid node
         /// @param[in] yFirstGridlineNode            The y coordinate of the first curvilinear grid node
         /// @param[in] xSecondGridLineNode           The x coordinate of the second curvilinear grid node
