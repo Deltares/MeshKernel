@@ -79,7 +79,7 @@ namespace meshkernelapi
         std::shared_ptr<meshkernel::CurvilinearGridFromSplines> m_curvilinearGridFromSplines;                ///< Shared pointer to meshkernel::CurvilinearGridFromSplines instance
         std::shared_ptr<meshkernel::CurvilinearGridLineShift> m_curvilinearGridLineShift;                    ///< Shared pointer to meshkernel::CurvilinearGridLineShift instance
         std::unordered_map<meshkernel::UInt, std::pair<meshkernel::Point, meshkernel::Point>> m_frozenLines; ///< Map for string the frozen lines
-        meshkernel::UInt frozenLinesCounter = 0;
+        meshkernel::UInt frozenLinesCounter = 0;                                                             ///< An increasing counter for returning the id of frozen lines to the client
 
         // Exclusively owned state
         meshkernel::Projection m_projection{meshkernel::Projection::cartesian}; ///< Projection used by the meshes
