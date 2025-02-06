@@ -1761,3 +1761,23 @@ TEST(CurvilinearGrid, MakeCircularGrid_CartesianCoordinate_ShouldFail)
     errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
+
+TEST_F(CartesianApiTestFixture, SetAndDeleteFrozenLines_OnACurvilinearGrid_ShouldSetAndDeleteFrozenLines)
+{
+    // Prepare
+    MakeRectangularCurvilinearGrid();
+    auto const meshKernelId = GetMeshKernelId();
+    int frozenLineId = -1;
+
+    // Execute
+    auto errorCode = meshkernelapi::mkernel_curvilinear_set_frozen_lines(meshKernelId, 10.0, 0.0, 10.0, 50.0, frozenLineId);
+    ASSERT_EQ(frozenLineId, 0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_delete_frozen_lines(meshKernelId, frozenLineId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Counter is always increasing
+    errorCode = meshkernelapi::mkernel_curvilinear_set_frozen_lines(meshKernelId, 10.0, 0.0, 10.0, 50.0, frozenLineId);
+    ASSERT_EQ(frozenLineId, 1);
+}

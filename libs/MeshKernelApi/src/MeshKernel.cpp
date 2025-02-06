@@ -4553,6 +4553,32 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_curvilinear_delete_frozen_lines(int meshKernelId,
+                                                            int frozenLineId)
+
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
+            }
+
+            if (!meshKernelState[meshKernelId].m_frozenLines.contains(frozenLineId))
+            {
+                throw meshkernel::MeshKernelError("The frozen line id is not contained.");
+            }
+
+            meshKernelState[meshKernelId].m_frozenLines.erase(frozenLineId);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_curvilinear_set_frozen_lines(int meshKernelId,
                                                          double xFirstGridLineNode,
                                                          double yFirstGridLineNode,

@@ -568,13 +568,20 @@ namespace meshkernelapi
                                                                  double xUpperRightCorner,
                                                                  double yUpperRightCorner);
 
-        /// @brief Freezes a line in the curvilinear orthogonalization process
+        /// @brief Deletes an existing frozen line in the meshkernel state
+        /// @param[in] meshKernelId  The id of the mesh state
+        /// @param[in] frozenLineId  The id of the frozen line to delete
+        /// @return  Error code
+        MKERNEL_API int mkernel_curvilinear_delete_frozen_lines(int meshKernelId,
+                                                                int frozenLineId);
+
+        /// @brief Sets a new frozen line in the meshkernel state
         /// @param[in] meshKernelId        The id of the mesh state
         /// @param[in] xFirstGridLineNode  The x coordinate of the first point of the line to freeze
         /// @param[in] yFirstGridLineNode  The y coordinate of the first point of the line to freeze
         /// @param[in] xSecondGridLineNode The x coordinate of the second point of the line to freeze
         /// @param[in] ySecondGridLineNode The y coordinate of the second point of the line to freeze
-        /// @param[in] frozenLineId The frozen line id
+        /// @param[in] frozenLineId        The frozen line id
         /// @returns  Error code
         MKERNEL_API int mkernel_curvilinear_set_frozen_lines(int meshKernelId,
                                                              double xFirstGridLineNode,
@@ -601,7 +608,7 @@ namespace meshkernelapi
         /// @param[in] smoothingIterations The number of smoothing iterations to perform
         /// @param[in] xLowerLeftCorner    The x coordinate of the lower left corner of the block to smooth
         /// @param[in] yLowerLeftCorner    The y coordinate of the lower left corner of the block to smooth
-        /// @param[in] xUpperRightCorner   The x coordinate of the right corner of the block to smooth
+        /// @param[in] xUpperRightCorner   The x coordinate of the lower left corner of the block to smooth
         /// @param[in] yUpperRightCorner   The y coordinate of the upper right corner of the block to smooth
         /// @return Error code
         MKERNEL_API int mkernel_curvilinear_smoothing(int meshKernelId,

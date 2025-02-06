@@ -157,26 +157,6 @@ TEST_F(CartesianApiTestFixture, OrthogonalizationThroughApi)
     ASSERT_EQ(17, mesh2d.num_edges);
 }
 
-TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLines_ShouldSetFrozenLines)
-{
-    // Setup
-    MakeRectangularCurvilinearGrid();
-    auto const meshKernelId = GetMeshKernelId();
-    int frozenLineId = -1;
-
-    // Execute
-    auto errorCode = meshkernelapi::mkernel_curvilinear_set_frozen_lines(meshKernelId,
-                                                                         20.0,
-                                                                         0.0,
-                                                                         20.0,
-                                                                         10.0,
-                                                                         frozenLineId);
-
-    // Asset
-    ASSERT_EQ(0, frozenLineId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-}
-
 TEST_F(CartesianApiTestFixture, ComputeOrthogonalizationMesh2D_WithOrthogonalMesh2D_ShouldOrthogonalize)
 {
     // Prepare
