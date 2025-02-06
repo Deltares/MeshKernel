@@ -262,13 +262,7 @@ TEST(CurvilinearGridUndoTests, Smoothing)
     constexpr double upperBoundValue = static_cast<double>(upperBoundIndex);
 
     // apply smoothing
-    errorCode = meshkernelapi::mkernel_curvilinear_initialize_smoothing(meshKernelId, 1 /* smoothingIterations */);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    errorCode = meshkernelapi::mkernel_curvilinear_smoothing(meshKernelId, lowerBoundValue, lowerBoundValue, upperBoundValue, upperBoundValue);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    errorCode = meshkernelapi::mkernel_curvilinear_finalize_smoothing(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_smoothing(meshKernelId, 1, lowerBoundValue, lowerBoundValue, upperBoundValue, upperBoundValue);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Get the current state of the curvilinear grid
@@ -1158,20 +1152,13 @@ TEST(CurvilinearGridUndoTests, OrthogonaliseEntireGrid)
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
 
     //--------------------------------
-
-    // set up orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    errorCode = meshkernelapi::mkernel_curvilinear_set_block_orthogonalize(meshKernelId, 0.0, 0.0, 30.0, 30.0);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
     // apply orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // finalise orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_finalize_orthogonalize(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId,
+                                                                 orthogonalizationParameters,
+                                                                 0.0,
+                                                                 0.0,
+                                                                 30.0,
+                                                                 30.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     //--------------------------------
@@ -1290,19 +1277,13 @@ TEST(CurvilinearGridUndoTests, RefineAndOrthogonalise)
     orthogonalizationParameters.inner_iterations = 25;
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
 
-    // set up orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    errorCode = meshkernelapi::mkernel_curvilinear_set_block_orthogonalize(meshKernelId, 0.0, 0.0, 30.0, 30.0);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
     // apply orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // finalise orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_finalize_orthogonalize(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId,
+                                                                 orthogonalizationParameters,
+                                                                 0.0,
+                                                                 0.0,
+                                                                 30.0,
+                                                                 30.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     //--------------------------------
@@ -1427,19 +1408,12 @@ TEST(CurvilinearGridUndoTests, RefineUndoThenOrthogonalise)
     orthogonalizationParameters.inner_iterations = 25;
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
 
-    // set up orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    errorCode = meshkernelapi::mkernel_curvilinear_set_block_orthogonalize(meshKernelId, 0.0, 0.0, 30.0, 30.0);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
     // apply orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // finalise orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_finalize_orthogonalize(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId,
+                                                                 orthogonalizationParameters, 0.0,
+                                                                 0.0,
+                                                                 30.0,
+                                                                 30.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     //--------------------------------

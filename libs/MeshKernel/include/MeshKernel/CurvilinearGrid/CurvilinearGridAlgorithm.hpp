@@ -62,7 +62,7 @@ namespace meshkernel
         virtual ~CurvilinearGridAlgorithm() = default;
 
         CurvilinearGrid& m_grid;                  ///< A reference of the grid, modified by the algorithms
-        std::vector<CurvilinearGridLine> m_lines; ///< Selected grid lines
+        std::vector<CurvilinearGridLine> m_lines; ///< Selected frozen grid lines
         CurvilinearGridNodeIndices m_lowerLeft;   ///< The lower left corner of the block
         CurvilinearGridNodeIndices m_upperRight;  ///< The upper right corner of the block
     };

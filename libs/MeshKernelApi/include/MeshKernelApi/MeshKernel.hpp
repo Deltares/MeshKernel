@@ -316,11 +316,6 @@ namespace meshkernelapi
         /// @return  Error code
         MKERNEL_API int mkernel_curvilinear_finalize_line_shift(int meshKernelId);
 
-        /// @brief Resets the CurvilinearGridOrthogonalization instance in MeshKernelState
-        /// @param[in] meshKernelId The id of the mesh state
-        /// @return  Error code
-        MKERNEL_API int mkernel_curvilinear_finalize_orthogonalize(int meshKernelId);
-
         /// @brief Gets the curvilinear grid data as a CurvilinearGrid struct (converted as set of edges and nodes)
         ///
         /// This function ought to be called after `mkernel_get_curvilinear_dimension` has been called
@@ -394,13 +389,6 @@ namespace meshkernelapi
                                                                                     const GeometryList& geometryList,
                                                                                     const meshkernel::CurvilinearParameters& curvilinearParameters,
                                                                                     const meshkernel::SplinesToCurvilinearParameters& splinesToCurvilinearParameters);
-
-        /// @brief Initializes the orthogonal curvilinear algorithm
-        /// @param[in] meshKernelId                The id of the mesh state
-        /// @param[in] orthogonalizationParameters The orthogonalization parameters to use in the algorithm
-        /// @returns Error code
-        MKERNEL_API int mkernel_curvilinear_initialize_orthogonalize(int meshKernelId,
-                                                                     const meshkernel::OrthogonalizationParameters& orthogonalizationParameters);
 
         /// @brief Inserts a new face on a curvilinear grid. The new face will be inserted on top of the closest edge by linear extrapolation.
         /// @param[in] meshKernelId The id of the mesh state
@@ -514,11 +502,6 @@ namespace meshkernelapi
                                                                  double xToCoordinate,
                                                                  double yToCoordinate);
 
-        /// @brief Orthogonalize a curvilinear grid
-        /// @param[in] meshKernelId       The id of the mesh state
-        /// @returns Error code
-        MKERNEL_API int mkernel_curvilinear_orthogonalize(int meshKernelId);
-
         /// @brief Directional curvilinear grid refinement. Additional gridlines are added perpendicularly to the segment defined by lowerLeftCorner and xUpperRightCorner.
         ///
         /// \p firstPoint and \p secondPoint must lie on the same grid line.
@@ -551,6 +534,21 @@ namespace meshkernelapi
                                                         int mRefinement,
                                                         int nRefinement);
 
+        /// @brief Define a block on the curvilinear grid where to perform orthogonalization
+        /// @param[in] meshKernelId      The id of the mesh state
+        /// @param[in] orthogonalizationParameters The orthogonalization parameters to use in the algorithm
+        /// @param[in] xLowerLeftCorner  The x coordinate of the lower left corner of the block to orthogonalize
+        /// @param[in] yLowerLeftCorner  The y coordinate of the lower left corner of the block to orthogonalize
+        /// @param[in] xUpperRightCorner The x coordinate of the upper right corner of the block to orthogonalize
+        /// @param[in] yUpperRightCorner The y coordinate of the upper right corner of the block to orthogonalize
+        /// @return  Error code
+        MKERNEL_API int mkernel_curvilinear_orthogonalize(int meshKernelId,
+                                                          const meshkernel::OrthogonalizationParameters& orthogonalizationParameters,
+                                                          double xLowerLeftCorner,
+                                                          double yLowerLeftCorner,
+                                                          double xUpperRightCorner,
+                                                          double yUpperRightCorner);
+
         /// @brief Sets the curvilinear grid
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] grid         The curvilinear grid
@@ -570,31 +568,20 @@ namespace meshkernelapi
                                                                  double xUpperRightCorner,
                                                                  double yUpperRightCorner);
 
-        /// @brief Define a block on the curvilinear grid where to perform orthogonalization
-        /// @param[in] meshKernelId      The id of the mesh state
-        /// @param[in] xLowerLeftCorner  The x coordinate of the lower left corner of the block to orthogonalize
-        /// @param[in] yLowerLeftCorner  The y coordinate of the lower left corner of the block to orthogonalize
-        /// @param[in] xUpperRightCorner The x coordinate of the upper right corner of the block to orthogonalize
-        /// @param[in] yUpperRightCorner The y coordinate of the upper right corner of the block to orthogonalize
-        /// @return  Error code
-        MKERNEL_API int mkernel_curvilinear_set_block_orthogonalize(int meshKernelId,
-                                                                    double xLowerLeftCorner,
-                                                                    double yLowerLeftCorner,
-                                                                    double xUpperRightCorner,
-                                                                    double yUpperRightCorner);
-
         /// @brief Freezes a line in the curvilinear orthogonalization process
         /// @param[in] meshKernelId        The id of the mesh state
         /// @param[in] xFirstGridLineNode  The x coordinate of the first point of the line to freeze
         /// @param[in] yFirstGridLineNode  The y coordinate of the first point of the line to freeze
         /// @param[in] xSecondGridLineNode The x coordinate of the second point of the line to freeze
         /// @param[in] ySecondGridLineNode The y coordinate of the second point of the line to freeze
+        /// @param[in] frozenLineId The frozen line id
         /// @returns  Error code
-        MKERNEL_API int mkernel_curvilinear_set_frozen_lines_orthogonalize(int meshKernelId,
-                                                                           double xFirstGridLineNode,
-                                                                           double yFirstGridLineNode,
-                                                                           double xSecondGridLineNode,
-                                                                           double ySecondGridLineNode);
+        MKERNEL_API int mkernel_curvilinear_set_frozen_lines(int meshKernelId,
+                                                             double xFirstGridLineNode,
+                                                             double yFirstGridLineNode,
+                                                             double xSecondGridLineNode,
+                                                             double ySecondGridLineNode,
+                                                             int& frozenLineId);
 
         /// @brief Sets the start and end nodes of the line to shift
         /// @param[in] meshKernelId        The id of the mesh state
@@ -609,46 +596,24 @@ namespace meshkernelapi
                                                                 double xSecondGridLineNode,
                                                                 double ySecondGridLineNode);
 
-        /// @brief Initialize curvilinear smoothing algorithm
-        /// @param[in] meshKernelId        The id of the mesh state
-        /// @param[in] smoothingIterations The number of smoothing iterations to perform
-        /// @return Error code
-        MKERNEL_API int mkernel_curvilinear_initialize_smoothing(int meshKernelId, int smoothingIterations);
-
-        /// @brief Sets the frozen lines for the curvilinear smoothing algorithm
-        /// @param[in] meshKernelId        The id of the mesh state
-        /// @param[in] xFirstGridLineNode  The x coordinate of the first point of the line to freeze
-        /// @param[in] yFirstGridLineNode  The y coordinate of the first point of the line to freeze
-        /// @param[in] xSecondGridLineNode The x coordinate of the second point of the line to freeze
-        /// @param[in] ySecondGridLineNode The y coordinate of the second point of the line to freeze
-        /// @return Error code
-        MKERNEL_API int mkernel_curvilinear_set_frozen_lines_smoothing(int meshKernelId,
-                                                                       double xFirstGridLineNode,
-                                                                       double yFirstGridLineNode,
-                                                                       double xSecondGridLineNode,
-                                                                       double ySecondGridLineNode);
-
         /// @brief Smooths a curvilinear grid
         /// @param[in] meshKernelId        The id of the mesh state
+        /// @param[in] smoothingIterations The number of smoothing iterations to perform
         /// @param[in] xLowerLeftCorner    The x coordinate of the lower left corner of the block to smooth
         /// @param[in] yLowerLeftCorner    The y coordinate of the lower left corner of the block to smooth
         /// @param[in] xUpperRightCorner   The x coordinate of the right corner of the block to smooth
         /// @param[in] yUpperRightCorner   The y coordinate of the upper right corner of the block to smooth
         /// @return Error code
         MKERNEL_API int mkernel_curvilinear_smoothing(int meshKernelId,
+                                                      int smoothingIterations,
                                                       double xLowerLeftCorner,
                                                       double yLowerLeftCorner,
                                                       double xUpperRightCorner,
                                                       double yUpperRightCorner);
 
-        /// @brief Resets the CurvilinearGridSmoothing instance in MeshKernelState
-        /// @param[in] meshKernelId The id of the mesh state
-        /// @return  Error code
-        MKERNEL_API int mkernel_curvilinear_finalize_smoothing(int meshKernelId);
-
         /// @brief Smooths a curvilinear grid along the direction specified by a segment
         /// @param[in] meshKernelId                  The id of the mesh state
-        /// @param[in] smoothingIterations           The number of smoothing iterations to perform
+
         /// @param[in] xFirstGridlineNode            The x coordinate of the first curvilinear grid node
         /// @param[in] yFirstGridlineNode            The y coordinate of the first curvilinear grid node
         /// @param[in] xSecondGridLineNode           The x coordinate of the second curvilinear grid node

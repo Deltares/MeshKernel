@@ -392,11 +392,7 @@ TEST_F(CartesianApiTestFixture, Orthogonalize_CurvilinearGrid_ShouldOrthogonaliz
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
 
     // Execute
-    errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    errorCode = meshkernelapi::mkernel_curvilinear_set_block_orthogonalize(meshKernelId, 0.0, 0.0, 30.0, 30.0);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId, orthogonalizationParameters, 0.0, 0.0, 30.0, 30.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
     errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
@@ -425,13 +421,12 @@ TEST_F(CartesianApiTestFixture, Smoothing_CurvilinearGrid_ShouldSmooth)
     MakeRectangularCurvilinearGrid();
 
     // Execute
-    auto errorCode = meshkernelapi::mkernel_curvilinear_initialize_smoothing(meshKernelId, 10 /* smoothingIterations */);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    errorCode = meshkernelapi::mkernel_curvilinear_smoothing(meshKernelId, 10.0, 20.0, 30.0, 20.0);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    errorCode = meshkernelapi::mkernel_curvilinear_finalize_smoothing(meshKernelId);
+    auto errorCode = meshkernelapi::mkernel_curvilinear_smoothing(meshKernelId,
+                                                                  10,
+                                                                  10.0,
+                                                                  20.0,
+                                                                  30.0,
+                                                                  20.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);

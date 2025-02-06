@@ -39,8 +39,7 @@ TEST_F(CartesianApiTestFixture, RangeError)
     int const meshKernelId = this->GetMeshKernelId();
     meshkernel::OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = -1; // invalid, must be > 0
-    int const errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId,
-                                                                                      orthogonalizationParameters);
+    int const errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId, orthogonalizationParameters, 0.0, 0.0, 10.0, 10.0);
     EXPECT_EQ(meshkernel::ExitCode::RangeErrorCode, errorCode);
 }
 

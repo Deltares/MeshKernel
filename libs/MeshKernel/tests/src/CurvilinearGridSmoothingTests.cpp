@@ -230,11 +230,10 @@ TEST(CurvilinearGridSmoothing, ComputedDirectionalSmooth_OnMDrirection_ShouldSmo
     auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     CurvilinearGridSmoothing curvilinearGridSmoothing(*curvilinearGrid, 10);
-    curvilinearGridSmoothing.SetLine({80143, 367041}, {80333, 366553});
     curvilinearGridSmoothing.SetBlock({80199, 366749}, {80480, 366869});
 
     // Execute
-    [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.ComputeDirectional();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.ComputeDirectional({80143, 367041}, {80333, 366553});
 
     // Assert
     constexpr double tolerance = 1e-6;
@@ -266,11 +265,10 @@ TEST(CurvilinearGridSmoothing, ComputedDirectionalSmooth_OnNDrirection_ShouldSmo
     auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     CurvilinearGridSmoothing curvilinearGridSmoothing(*curvilinearGrid, 10);
-    curvilinearGridSmoothing.SetLine({80199, 366749}, {80480, 366869});
     curvilinearGridSmoothing.SetBlock({80143, 367041}, {80333, 366553});
 
     // Execute
-    [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.ComputeDirectional();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.ComputeDirectional({80199, 366749}, {80480, 366869});
 
     // Assert
     constexpr double tolerance = 1e-6;

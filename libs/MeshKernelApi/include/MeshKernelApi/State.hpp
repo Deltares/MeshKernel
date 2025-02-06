@@ -64,6 +64,7 @@ namespace meshkernelapi
             m_network1d = std::make_shared<meshkernel::Network1D>(projection);
             m_contacts = std::make_shared<meshkernel::Contacts>(*m_mesh1d, *m_mesh2d);
             m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(projection);
+            frozenLinesCounter = 0;
         }
 
         // Geometrical entities instances
@@ -74,11 +75,11 @@ namespace meshkernelapi
         std::shared_ptr<meshkernel::CurvilinearGrid> m_curvilinearGrid; ///< Shared pointer to meshkernel::CurvilinearGrid instance
 
         // Algorithms instances (interactivity)
-        std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing> m_meshOrthogonalization;               ///< Shared pointer to meshkernel::OrthogonalizationAndSmoothing instance
-        std::shared_ptr<meshkernel::CurvilinearGridFromSplines> m_curvilinearGridFromSplines;             ///< Shared pointer to meshkernel::CurvilinearGridFromSplines instance
-        std::shared_ptr<meshkernel::CurvilinearGridOrthogonalization> m_curvilinearGridOrthogonalization; ///< Shared pointer to meshkernel::CurvilinearGridOrthogonalization instance
-        std::shared_ptr<meshkernel::CurvilinearGridSmoothing> m_curvilinearGridSmoothing;                 ///< Shared pointer to meshkernel::CurvilinearGridSmoothing instance
-        std::shared_ptr<meshkernel::CurvilinearGridLineShift> m_curvilinearGridLineShift;                 ///< Shared pointer to meshkernel::CurvilinearGridLineShift instance
+        std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing> m_meshOrthogonalization;                  ///< Shared pointer to meshkernel::OrthogonalizationAndSmoothing instance
+        std::shared_ptr<meshkernel::CurvilinearGridFromSplines> m_curvilinearGridFromSplines;                ///< Shared pointer to meshkernel::CurvilinearGridFromSplines instance
+        std::shared_ptr<meshkernel::CurvilinearGridLineShift> m_curvilinearGridLineShift;                    ///< Shared pointer to meshkernel::CurvilinearGridLineShift instance
+        std::unordered_map<meshkernel::UInt, std::pair<meshkernel::Point, meshkernel::Point>> m_frozenLines; ///< Map for string the frozen lines
+        meshkernel::UInt frozenLinesCounter = 0;
 
         // Exclusively owned state
         meshkernel::Projection m_projection{meshkernel::Projection::cartesian}; ///< Projection used by the meshes
