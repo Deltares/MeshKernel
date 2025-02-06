@@ -351,7 +351,7 @@ namespace meshkernel
         /// @param[in] polygon The input polygon.
         /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return A vector of booleans indicating if a location is in a polygon or not.
-        [[nodiscard]] std::vector<bool> IsLocationInPolygon(const Polygons& polygon, Location location) const;
+        [[nodiscard]] std::vector<Boolean> IsLocationInPolygon(const Polygons& polygon, Location location) const;
 
         /// @brief Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to firstMesh

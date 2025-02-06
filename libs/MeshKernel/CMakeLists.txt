@@ -45,6 +45,7 @@ set(
   ${SRC_DIR}/LandBoundaries.cpp
   ${SRC_DIR}/LandBoundary.cpp
   ${SRC_DIR}/Mesh.cpp
+  ${SRC_DIR}/MeshEdgeLength.cpp
   ${SRC_DIR}/Mesh1D.cpp
   ${SRC_DIR}/Mesh2D.cpp
   ${SRC_DIR}/Mesh2DGenerateGlobal.cpp
@@ -169,6 +170,7 @@ set(
   ${DOMAIN_INC_DIR}/LandBoundaries.hpp
   ${DOMAIN_INC_DIR}/LandBoundary.hpp
   ${DOMAIN_INC_DIR}/Mesh.hpp
+  ${DOMAIN_INC_DIR}/MeshEdgeLength.hpp
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
   ${DOMAIN_INC_DIR}/Mesh2DGenerateGlobal.hpp

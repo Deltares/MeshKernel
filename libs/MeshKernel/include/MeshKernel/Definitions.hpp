@@ -113,4 +113,23 @@ namespace meshkernel
     /// @brief Get the string representation of the CurvilinearDirection enumeration values.
     const std::string& CurvilinearDirectionToString(CurvilinearDirection direction);
 
+    class Boolean
+    {
+    public:
+        Boolean() = default;
+
+        Boolean(const bool val) : m_value(val) {}
+
+        Boolean& operator=(const bool val)
+        {
+            m_value = val;
+            return *this;
+        }
+
+        operator bool() const { return m_value; }
+
+    private:
+        bool m_value = false;
+    };
+
 } // namespace meshkernel
