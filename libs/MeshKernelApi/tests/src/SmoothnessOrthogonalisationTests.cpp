@@ -347,20 +347,20 @@ TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLinesOrthogonalize_ShouldSet
     int frozenLinesId = -1;
 
     auto errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_add(meshKernelId,
-                                                                         line1StartPointX,
-                                                                         line1StartPointY,
-                                                                         line1EndPointX,
-                                                                         line1EndPointY,
-                                                                         frozenLinesId);
+                                                                        line1StartPointX,
+                                                                        line1StartPointY,
+                                                                        line1EndPointX,
+                                                                        line1EndPointY,
+                                                                        frozenLinesId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_EQ(0, frozenLinesId);
 
     errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_add(meshKernelId,
-                                                                    line2StartPointX,
-                                                                    line2StartPointY,
-                                                                    line2EndPointX,
-                                                                    line2EndPointY,
-                                                                    frozenLinesId);
+                                                                   line2StartPointX,
+                                                                   line2StartPointY,
+                                                                   line2EndPointX,
+                                                                   line2EndPointY,
+                                                                   frozenLinesId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_EQ(1, frozenLinesId);
 
