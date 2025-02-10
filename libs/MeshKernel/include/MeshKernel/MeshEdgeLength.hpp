@@ -25,27 +25,26 @@
 #include <span>
 #include <vector>
 
-#include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/Mesh.hpp"
 #include "MeshKernel/Polygons.hpp"
 
-namespace meshkernel
+namespace meshkernel::MeshEdgeLength
 {
-    /// @brief Compute the length value for the edges
-    class MeshEdgeLength
-    {
-    public:
-        /// @brief Compute the length values returning values in a vector
-        static std::vector<double> Compute(const Mesh& mesh);
+    /// @brief Compute the length values returning values in a vector
+    std::vector<double> Compute(const Mesh& mesh);
 
-        /// @brief Compute the length values overwriting the values in an array
-        static void Compute(const Mesh& mesh, std::span<double> length);
+    /// @brief Compute the length values overwriting the values in an array
+    void Compute(const Mesh& mesh, std::span<double> length);
 
-        /// @brief Compute the length values overwriting the values in an array
-        static double MinEdgeLength(const Mesh& mesh, const Polygons& polygon, const std::span<const double> edgeLengths);
+    /// @brief Compute the length values overwriting the values in an array
+    double MinEdgeLength(const Mesh& mesh, const Polygons& polygon,
+                         const std::span<const double> edgeLengths);
 
-    private:
-        /// @brief Compute the length value for the edge
-        static double ComputeValue(const Mesh& mesh, const UInt edgeId);
-    };
+    double MaxLengthSurroundingEdges(const Mesh& mesh,
+                                     const UInt nodeId,
+                                     const std::span<const double> edgeLengths);
 
-} // namespace meshkernel
+    /// @brief Compute the length value for the edge
+    static double ComputeValue(const Mesh& mesh, const UInt edgeId);
+
+} // namespace meshkernel::MeshEdgeLength

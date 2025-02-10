@@ -603,45 +603,6 @@ std::unique_ptr<meshkernel::DeleteNodeAction> Mesh::DeleteNode(UInt node, const 
     }
 }
 
-void Mesh::ComputeEdgesLengths()
-{
-    auto const numEdges = GetNumEdges();
-    m_edgeLengths.resize(numEdges, constants::missing::doubleValue);
-
-    // TODO could be openmp loop
-#pragma omp parallel for
-    for (UInt e = 0; e < numEdges; e++)
-    {
-        auto const first = m_edges[e].first;
-        auto const second = m_edges[e].second;
-
-        if (first != constants::missing::uintValue && second != constants::missing::uintValue) [[likely]]
-        {
-            m_edgeLengths[e] = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
-        }
-    }
-}
-
-double Mesh::ComputeMinEdgeLength(const Polygons& polygon) const
-{
-    auto const numEdges = GetNumEdges();
-
-    const auto isNodeInPolygon = IsLocationInPolygon(polygon, Location::Nodes);
-
-    auto result = std::numeric_limits<double>::max();
-#pragma omp parallel for reduction(min : result)
-
-    for (UInt e = 0; e < numEdges; e++)
-    {
-        const auto& [firstNode, secondNode] = m_edges[e];
-        if (isNodeInPolygon[firstNode] || isNodeInPolygon[secondNode])
-        {
-            result = std::min(result, m_edgeLengths[e]);
-        }
-    }
-    return result;
-}
-
 void Mesh::ComputeEdgesCenters()
 {
     m_edgesCenters = ComputeEdgeCenters(m_nodes, m_edges);
@@ -947,23 +908,6 @@ void Mesh::AdministrateNodesEdges(CompoundUndoAction* undoAction)
     NodeAdministration();
 
     SortEdgesInCounterClockWiseOrder(0, GetNumNodes() - 1);
-}
-
-double Mesh::ComputeMaxLengthSurroundingEdges(UInt node)
-{
-    if (m_edgeLengths.empty())
-    {
-        ComputeEdgesLengths();
-    }
-
-    auto maxEdgeLength = std::numeric_limits<double>::lowest();
-    for (UInt ee = 0; ee < m_nodesNumEdges[node]; ++ee)
-    {
-        const auto edge = m_nodesEdges[node][ee];
-        maxEdgeLength = std::max(maxEdgeLength, m_edgeLengths[edge]);
-    }
-
-    return maxEdgeLength;
 }
 
 std::vector<meshkernel::Point> Mesh::ComputeLocations(Location location) const

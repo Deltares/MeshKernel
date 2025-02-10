@@ -48,30 +48,7 @@ double meshkernel::MeshEdgeLength::ComputeValue(const Mesh& mesh, const UInt edg
         return constants::missing::doubleValue;
     }
 
-    const auto firstFaceIndex = mesh.m_edgesFaces[edgeId][0];
-    const auto secondFaceIndex = mesh.m_edgesFaces[edgeId][1];
-
-    if (firstFaceIndex == constants::missing::uintValue ||
-        secondFaceIndex == constants::missing::uintValue)
-    {
-        return constants::missing::doubleValue;
-    }
-
-    double val = constants::missing::doubleValue;
-
-    if (!mesh.IsEdgeOnBoundary(edgeId))
-    {
-        val = NormalizedInnerProductTwoSegments(mesh.Node(firstNode),
-                                                mesh.Node(secondNode),
-                                                mesh.m_facesCircumcenters[firstFaceIndex],
-                                                mesh.m_facesCircumcenters[secondFaceIndex],
-                                                mesh.m_projection);
-
-        if (val != constants::missing::doubleValue)
-        {
-            val = std::abs(val);
-        }
-    }
+    double val = ComputeDistance(mesh.Node(firstNode), mesh.Node(secondNode), mesh.m_projection);
 
     return val;
 }
@@ -83,25 +60,25 @@ void meshkernel::MeshEdgeLength::Compute(const Mesh& mesh, std::span<double> len
         throw ConstraintError("array for length values is not the correct size");
     }
 
-    const auto numEdges = mesh.GetNumEdges();
+    const auto numEdges = static_cast<int>(mesh.GetNumEdges());
 
 #pragma omp parallel for
-    for (UInt e = 0; e < numEdges; e++)
+    for (int e = 0; e < numEdges; e++)
     {
-        length[e] = ComputeValue(mesh, e);
+        length[e] = ComputeValue(mesh, static_cast<UInt>(e));
     }
 }
 
 double meshkernel::MeshEdgeLength::MinEdgeLength(const Mesh& mesh, const Polygons& polygon, const std::span<const double> edgeLengths)
 {
-    auto const numEdges = mesh.GetNumEdges();
+    const int numEdges = static_cast<int>(mesh.GetNumEdges());
 
     const auto isNodeInPolygon = mesh.IsLocationInPolygon(polygon, Location::Nodes);
     auto result = std::numeric_limits<double>::max();
 #pragma omp parallel for reduction(min : result)
-    for (UInt e = 0; e < numEdges; e++)
+    for (int e = 0; e < numEdges; e++)
     {
-        const auto& [firstNode, secondNode] = mesh.GetEdge(e);
+        const auto& [firstNode, secondNode] = mesh.GetEdge(static_cast<UInt>(e));
 
         if (isNodeInPolygon[firstNode] || isNodeInPolygon[secondNode])
         {
@@ -110,4 +87,19 @@ double meshkernel::MeshEdgeLength::MinEdgeLength(const Mesh& mesh, const Polygon
     }
 
     return result;
+}
+
+double meshkernel::MeshEdgeLength::MaxLengthSurroundingEdges(const Mesh& mesh,
+                                                             const UInt nodeId,
+                                                             const std::span<const double> edgeLengths)
+{
+    double maxEdgeLength = std::numeric_limits<double>::lowest();
+
+    for (UInt e = 0; e < mesh.m_nodesNumEdges[nodeId]; ++e)
+    {
+        const auto edge = mesh.m_nodesEdges[nodeId][e];
+        maxEdgeLength = std::max(maxEdgeLength, edgeLengths[edge]);
+    }
+
+    return maxEdgeLength;
 }
