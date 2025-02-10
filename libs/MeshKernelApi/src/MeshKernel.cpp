@@ -4553,8 +4553,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_frozen_line_valid(int meshKernelId, int frozenLineId, int& isValid)
-
+    MKERNEL_API int mkernel_curvilinear_frozen_line_valid(int meshKernelId, int frozenLineId, bool& isValid)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
