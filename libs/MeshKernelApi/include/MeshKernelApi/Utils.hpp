@@ -33,6 +33,7 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/MeshEdgeCenters.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Splines.hpp>
 
@@ -378,7 +379,8 @@ namespace meshkernelapi
     /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
     static void SetMesh2dApiData(meshkernel::Mesh2D& mesh2d, Mesh2D& mesh2dApi)
     {
-        mesh2d.ComputeEdgesCenters();
+        std::vector<meshkernel::Point> edgeCentres = meshkernel::MeshEdgeCenters::Compute(mesh2d);
+
         for (meshkernel::UInt n = 0; n < mesh2d.GetNumNodes(); n++)
         {
             mesh2dApi.node_x[n] = mesh2d.Node(n).x;
@@ -387,8 +389,8 @@ namespace meshkernelapi
 
         for (meshkernel::UInt edgeIndex = 0; edgeIndex < mesh2d.GetNumEdges(); edgeIndex++)
         {
-            mesh2dApi.edge_x[edgeIndex] = mesh2d.m_edgesCenters[edgeIndex].x;
-            mesh2dApi.edge_y[edgeIndex] = mesh2d.m_edgesCenters[edgeIndex].y;
+            mesh2dApi.edge_x[edgeIndex] = edgeCentres[edgeIndex].x;
+            mesh2dApi.edge_y[edgeIndex] = edgeCentres[edgeIndex].y;
             mesh2dApi.edge_nodes[edgeIndex * 2] = static_cast<int>(mesh2d.GetEdge(edgeIndex).first);
             mesh2dApi.edge_nodes[edgeIndex * 2 + 1] = static_cast<int>(mesh2d.GetEdge(edgeIndex).second);
 

@@ -144,8 +144,6 @@ TEST(SampleInterpolationTests, AveragingInterpolationWithMesh)
                                                     mk::Projection::cartesian,
                                                     {0.5 * delta, 0.5 * delta});
 
-    mesh->ComputeEdgesCenters();
-
     //--------------------------------
 
     int propertyId = 1;
