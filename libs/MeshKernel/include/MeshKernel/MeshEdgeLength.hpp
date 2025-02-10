@@ -40,6 +40,7 @@ namespace meshkernel::MeshEdgeLength
     double MinEdgeLength(const Mesh& mesh, const Polygons& polygon,
                          const std::span<const double> edgeLengths);
 
+    /// @brief Find the maximum edge length of the edges surrounding a node.
     double MaxLengthSurroundingEdges(const Mesh& mesh,
                                      const UInt nodeId,
                                      const std::span<const double> edgeLengths);

@@ -75,7 +75,7 @@ double meshkernel::MeshEdgeLength::MinEdgeLength(const Mesh& mesh, const Polygon
 
     const auto isNodeInPolygon = mesh.IsLocationInPolygon(polygon, Location::Nodes);
     auto result = std::numeric_limits<double>::max();
-#pragma omp parallel for reduction(min : result)
+
     for (int e = 0; e < numEdges; e++)
     {
         const auto& [firstNode, secondNode] = mesh.GetEdge(static_cast<UInt>(e));
