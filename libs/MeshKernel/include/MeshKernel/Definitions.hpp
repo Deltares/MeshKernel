@@ -117,10 +117,10 @@ namespace meshkernel
     class Boolean
     {
     public:
-        /// @brief Default consructor
+        /// @brief Default constructor
         Boolean() = default;
 
-        /// @brief Consructor
+        /// @brief Constructor
         Boolean(const bool val) : m_value(val) {}
 
         /// @brief Assignment operator
