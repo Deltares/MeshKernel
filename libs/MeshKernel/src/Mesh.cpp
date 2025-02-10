@@ -625,9 +625,11 @@ void Mesh::ComputeEdgesLengths()
 double Mesh::ComputeMinEdgeLength(const Polygons& polygon) const
 {
     auto const numEdges = GetNumEdges();
-    auto result = std::numeric_limits<double>::max();
 
     const auto isNodeInPolygon = IsLocationInPolygon(polygon, Location::Nodes);
+
+    auto result = std::numeric_limits<double>::max();
+#pragma omp parallel for reduction(min : result)
 
     for (UInt e = 0; e < numEdges; e++)
     {

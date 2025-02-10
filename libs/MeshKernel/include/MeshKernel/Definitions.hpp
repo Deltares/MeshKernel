@@ -113,22 +113,28 @@ namespace meshkernel
     /// @brief Get the string representation of the CurvilinearDirection enumeration values.
     const std::string& CurvilinearDirectionToString(CurvilinearDirection direction);
 
+    /// @brief Boolean value designed for use in std::vector
     class Boolean
     {
     public:
+        /// @brief Default consructor
         Boolean() = default;
 
+        /// @brief Consructor
         Boolean(const bool val) : m_value(val) {}
 
+        /// @brief Assignment operator
         Boolean& operator=(const bool val)
         {
             m_value = val;
             return *this;
         }
 
+        /// @brief Type conversion operator
         operator bool() const { return m_value; }
 
     private:
+        /// @brief The member Boolean value.
         bool m_value = false;
     };
 
