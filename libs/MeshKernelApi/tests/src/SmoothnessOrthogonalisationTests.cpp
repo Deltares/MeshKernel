@@ -346,7 +346,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLinesOrthogonalize_ShouldSet
     meshkernel::OrthogonalizationParameters const orthogonalizationParameters{};
     int frozenLinesId = -1;
 
-    auto errorCode = meshkernelapi::mkernel_curvilinear_set_frozen_lines(meshKernelId,
+    auto errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_add(meshKernelId,
                                                                          line1StartPointX,
                                                                          line1StartPointY,
                                                                          line1EndPointX,
@@ -355,7 +355,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLinesOrthogonalize_ShouldSet
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_EQ(0, frozenLinesId);
 
-    errorCode = meshkernelapi::mkernel_curvilinear_set_frozen_lines(meshKernelId,
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_add(meshKernelId,
                                                                     line2StartPointX,
                                                                     line2StartPointY,
                                                                     line2EndPointX,

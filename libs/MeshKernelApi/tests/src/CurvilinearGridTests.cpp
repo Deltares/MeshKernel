@@ -1770,14 +1770,14 @@ TEST_F(CartesianApiTestFixture, SetAndDeleteFrozenLines_OnACurvilinearGrid_Shoul
     int frozenLineId = -1;
 
     // Execute
-    auto errorCode = meshkernelapi::mkernel_curvilinear_set_frozen_lines(meshKernelId, 10.0, 0.0, 10.0, 50.0, frozenLineId);
+    auto errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_add(meshKernelId, 10.0, 0.0, 10.0, 50.0, frozenLineId);
     ASSERT_EQ(frozenLineId, 0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_curvilinear_delete_frozen_lines(meshKernelId, frozenLineId);
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_delete(meshKernelId, frozenLineId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Counter is always increasing
-    errorCode = meshkernelapi::mkernel_curvilinear_set_frozen_lines(meshKernelId, 10.0, 0.0, 10.0, 50.0, frozenLineId);
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_add(meshKernelId, 10.0, 0.0, 10.0, 50.0, frozenLineId);
     ASSERT_EQ(frozenLineId, 1);
 }

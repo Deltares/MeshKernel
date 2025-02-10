@@ -568,12 +568,19 @@ namespace meshkernelapi
                                                                  double xUpperRightCorner,
                                                                  double yUpperRightCorner);
 
+        /// @brief Checks if a curvilinear frozen line is valid
+        /// @param[in] meshKernelId  The id of the mesh state
+        /// @param[in] frozenLineId  The id of the frozen line to delete
+        /// @param[out] isValid 0 if valid, 0 otherwise
+        /// @return  Error code
+        MKERNEL_API int mkernel_curvilinear_frozen_line_valid(int meshKernelId, int frozenLineId, bool& isValid);
+
         /// @brief Deletes an existing frozen line in the meshkernel state
         /// @param[in] meshKernelId  The id of the mesh state
         /// @param[in] frozenLineId  The id of the frozen line to delete
         /// @return  Error code
-        MKERNEL_API int mkernel_curvilinear_delete_frozen_lines(int meshKernelId,
-                                                                int frozenLineId);
+        MKERNEL_API int mkernel_curvilinear_frozen_line_delete(int meshKernelId,
+                                                               int frozenLineId);
 
         /// @brief Sets a new frozen line in the meshkernel state
         /// @param[in] meshKernelId        The id of the mesh state
@@ -583,12 +590,41 @@ namespace meshkernelapi
         /// @param[in] ySecondGridLineNode The y coordinate of the second point of the line to freeze
         /// @param[in] frozenLineId        The frozen line id
         /// @returns  Error code
-        MKERNEL_API int mkernel_curvilinear_set_frozen_lines(int meshKernelId,
-                                                             double xFirstGridLineNode,
-                                                             double yFirstGridLineNode,
-                                                             double xSecondGridLineNode,
-                                                             double ySecondGridLineNode,
-                                                             int& frozenLineId);
+        MKERNEL_API int mkernel_curvilinear_frozen_line_add(int meshKernelId,
+                                                            double xFirstGridLineNode,
+                                                            double yFirstGridLineNode,
+                                                            double xSecondGridLineNode,
+                                                            double ySecondGridLineNode,
+                                                            int& frozenLineId);
+
+        /// @brief Sets a new frozen line in the meshkernel state
+        /// @param[in] meshKernelId        The id of the mesh state
+        /// @param[in] frozenLineId        The frozen line id
+        /// @param[out] xFirstFrozenLineCoordinate  The x coordinate of the first point of the frozen line
+        /// @param[out] yFirstFrozenLineCoordinate  The y coordinate of the first point of the frozen line
+        /// @param[out] xSecondFrozenLineCoordinate The x coordinate of the second point of the frozen line
+        /// @param[out] ySecondFrozenLineCoordinate The y coordinate of the second point of the frozen line
+        /// @returns  Error code
+        MKERNEL_API int mkernel_curvilinear_frozen_line_get(int meshKernelId,
+                                                            int frozenLineId,
+                                                            double& xFirstFrozenLineCoordinate,
+                                                            double& yFirstFrozenLineCoordinate,
+                                                            double& xSecondFrozenLineCoordinate,
+                                                            double& ySecondFrozenLineCoordinate);
+
+        /// @brief Gets the number of stored frozen lines in the meshkernel state
+        /// @param[in] meshKernelId        The id of the mesh state
+        /// @param[out] numFrozenLines  The number of stored frozen lines in the meshkernel state
+        /// @returns  Error code
+        MKERNEL_API int mkernel_curvilinear_frozen_lines_get_count(int meshKernelId,
+                                                                   int& numFrozenLines);
+
+        /// @brief Gets the ids of the frozen lines
+        /// @param[in] meshKernelId     The id of the mesh state
+        /// @param[out] frozenLinesIds  The frozen lines ids
+        /// @returns  Error code
+        MKERNEL_API int mkernel_curvilinear_frozen_lines_get_ids(int meshKernelId,
+                                                                 int* frozenLinesIds);
 
         /// @brief Sets the start and end nodes of the line to shift
         /// @param[in] meshKernelId        The id of the mesh state

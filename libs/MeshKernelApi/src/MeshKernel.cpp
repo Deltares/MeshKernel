@@ -4553,8 +4553,35 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_delete_frozen_lines(int meshKernelId,
-                                                            int frozenLineId)
+    MKERNEL_API int mkernel_curvilinear_frozen_line_valid(int meshKernelId, int frozenLineId, int& isValid)
+
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_frozenLines.contains(frozenLineId))
+            {
+                isValid = true;
+            }
+            else
+            {
+                isValid = false;
+            }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_frozen_line_delete(int meshKernelId,
+                                                           int frozenLineId)
 
     {
         lastExitCode = meshkernel::ExitCode::Success;
@@ -4579,12 +4606,12 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_set_frozen_lines(int meshKernelId,
-                                                         double xFirstGridLineNode,
-                                                         double yFirstGridLineNode,
-                                                         double xSecondGridLineNode,
-                                                         double ySecondGridLineNode,
-                                                         int& frozenLineId)
+    MKERNEL_API int mkernel_curvilinear_frozen_line_add(int meshKernelId,
+                                                        double xFirstGridLineNode,
+                                                        double yFirstGridLineNode,
+                                                        double xSecondGridLineNode,
+                                                        double ySecondGridLineNode,
+                                                        int& frozenLineId)
 
     {
         lastExitCode = meshkernel::ExitCode::Success;
@@ -4601,6 +4628,84 @@ namespace meshkernelapi
             frozenLineId = meshKernelState[meshKernelId].frozenLinesCounter;
             meshKernelState[meshKernelId].m_frozenLines[frozenLineId] = std::make_pair(firstPoint, secondPoint);
             meshKernelState[meshKernelId].frozenLinesCounter++;
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_frozen_line_get(int meshKernelId,
+                                                        int frozenLineId,
+                                                        double& xFirstFrozenLineCoordinate,
+                                                        double& yFirstFrozenLineCoordinate,
+                                                        double& xSecondFrozenLineCoordinate,
+                                                        double& ySecondFrozenLineCoordinate)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
+            }
+
+            if (!meshKernelState[meshKernelId].m_frozenLines.contains(frozenLineId))
+            {
+                throw meshkernel::MeshKernelError("The frozen line id is not contained.");
+            }
+            const auto [firstCoordinate, secondCoordinate] = meshKernelState[meshKernelId].m_frozenLines[frozenLineId];
+
+            xFirstFrozenLineCoordinate = firstCoordinate.x;
+            yFirstFrozenLineCoordinate = firstCoordinate.y;
+            xSecondFrozenLineCoordinate = secondCoordinate.x;
+            ySecondFrozenLineCoordinate = secondCoordinate.y;
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_frozen_lines_get_count(int meshKernelId,
+                                                               int& numFrozenLines)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
+            }
+
+            numFrozenLines = static_cast<int>(meshKernelState[meshKernelId].m_frozenLines.size());
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+    MKERNEL_API int mkernel_curvilinear_frozen_lines_get_ids(int meshKernelId,
+                                                             int* frozenLinesIds)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
+            }
+
+            std::vector<int> stateFrozenLinesIds;
+            for (const auto& frozenLineId : meshKernelState[meshKernelId].m_frozenLines | std::views::keys)
+            {
+                stateFrozenLinesIds.push_back(frozenLineId);
+            }
+
+            std::memcpy(frozenLinesIds, stateFrozenLinesIds.data(), stateFrozenLinesIds.size() * sizeof(int));
         }
         catch (...)
         {
