@@ -282,24 +282,6 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
     EXPECT_NEAR(366996.07892524434, curvilinearGrid->GetNode(2, 8).y, tolerance);
 }
 
-TEST(CurvilinearGridOrthogonalization, SetFrozenLine_OnONonOrthogonalGrid_WithCrossingFrozenLines_ShouldThrowAnStdException)
-{
-    // Set-up
-    const auto curvilinearGrid = MakeSmallCurvilinearGrid();
-
-    OrthogonalizationParameters orthogonalizationParameters;
-    orthogonalizationParameters.outer_iterations = 2;
-    orthogonalizationParameters.boundary_iterations = 25;
-    orthogonalizationParameters.inner_iterations = 25;
-    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
-    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(*curvilinearGrid, orthogonalizationParameters);
-    curvilinearGridOrthogonalization.SetBlock({80154, 366530}, {80610, 367407});
-    curvilinearGridOrthogonalization.SetLine({80144, 367046}, {80329, 366550});
-
-    // Execute and assert
-    ASSERT_THROW(curvilinearGridOrthogonalization.SetLine({80052, 366824}, {80774, 367186}), std::exception);
-}
-
 TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWithFrozenLines_ShouldOrthogonalizeGrid)
 {
     // Set-up

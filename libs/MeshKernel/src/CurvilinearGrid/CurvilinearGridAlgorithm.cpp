@@ -71,25 +71,8 @@ void CurvilinearGridAlgorithm::SetLine(Point const& firstPoint, Point const& sec
         throw AlgorithmError("The nodes do not define a grid line");
     }
 
-    CurvilinearGridLine const newGridline{newLineLowerLeft, newLineUpperRight};
-
-    // Frozen lines cannot cross existing frozen lines
-    for (auto const& frozenLine : m_lines)
-    {
-        for (auto i = frozenLine.m_startCoordinate; i <= frozenLine.m_endCoordinate; ++i)
-        {
-            for (auto j = newGridline.m_startCoordinate; j <= newGridline.m_endCoordinate; ++j)
-            {
-                if (j == frozenLine.m_constantCoordinate && i == newGridline.m_constantCoordinate)
-                {
-                    throw AlgorithmError("CurvilinearGridAlgorithm::SetLine the new line is crossing an existing one");
-                }
-            }
-        }
-    }
-
-    // Now a new line can be stored
-    m_lines.emplace_back(newGridline);
+    // Store a new grid line
+    m_lines.emplace_back(newLineLowerLeft, newLineUpperRight);
 }
 
 void CurvilinearGridAlgorithm::ComputeFrozenNodes()
