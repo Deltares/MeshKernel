@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include <memory>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -33,20 +35,14 @@
 
 #include "MeshKernelApi/BoundingBox.hpp"
 #include "MeshKernelApi/GeometryList.hpp"
-#include "MeshKernelApi/Mesh1D.hpp"
 #include "MeshKernelApi/Mesh2D.hpp"
 #include "MeshKernelApi/MeshKernel.hpp"
-#include "Version/Version.hpp"
 
+#include "CartesianApiTestFixture.hpp"
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeCurvilinearGrids.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 #include "TestUtils/SampleFileReader.hpp"
-
-#include <memory>
-#include <numeric>
-
-#include "CartesianApiTestFixture.hpp"
 
 // namespace aliases
 namespace mk = meshkernel;

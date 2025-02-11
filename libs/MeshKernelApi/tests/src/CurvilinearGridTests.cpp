@@ -1791,7 +1791,7 @@ TEST_F(CartesianApiTestFixture, FrozenLineValid_ShouldReturnCorrectValues)
     // Verify an invalid frozen line
     int frozenLineId = 0;
     bool isValid = true;
-    auto errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_valid(meshKernelId, frozenLineId, isValid);
+    auto errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_is_valid(meshKernelId, frozenLineId, isValid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode) << "API call failed.";
     ASSERT_FALSE(isValid) << "Expected frozen line to be invalid.";
 
@@ -1801,7 +1801,7 @@ TEST_F(CartesianApiTestFixture, FrozenLineValid_ShouldReturnCorrectValues)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode) << "Failed to add frozen line.";
 
     isValid = false;
-    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_valid(meshKernelId, frozenLineId, isValid);
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_is_valid(meshKernelId, frozenLineId, isValid);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode) << "Failed to check validity.";
     ASSERT_TRUE(isValid) << "Frozen line should be valid.";
 }

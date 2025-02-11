@@ -573,7 +573,7 @@ namespace meshkernelapi
         /// @param[in] frozenLineId  The id of the frozen line to delete
         /// @param[out] isValid 0 if valid, 0 otherwise
         /// @return  Error code
-        MKERNEL_API int mkernel_curvilinear_frozen_line_valid(int meshKernelId, int frozenLineId, bool& isValid);
+        MKERNEL_API int mkernel_curvilinear_frozen_line_is_valid(int meshKernelId, int frozenLineId, bool& isValid);
 
         /// @brief Deletes an existing frozen line in the meshkernel state
         /// @param[in] meshKernelId  The id of the mesh state
