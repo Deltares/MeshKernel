@@ -36,10 +36,11 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridSmoothing;
 
-CurvilinearGridSmoothing::CurvilinearGridSmoothing(CurvilinearGrid& grid, UInt smoothingIterations) : CurvilinearGridAlgorithm(grid), m_smoothingIterations(smoothingIterations)
+CurvilinearGridSmoothing::CurvilinearGridSmoothing(CurvilinearGrid& grid, UInt smoothingIterations) : CurvilinearGridAlgorithm(grid),
+                                                                                                      m_smoothingIterations(smoothingIterations)
+
 {
     // Allocate cache for storing grid nodes values
-    // ResizeAndFill2DVector(m_gridNodesCache, static_cast<UInt>(m_grid.m_gridNodes.size()), static_cast<UInt>(m_grid.m_gridNodes[0].size()));
     lin_alg::ResizeAndFillMatrix(m_gridNodesCache, m_grid.NumN(), m_grid.NumM(), true);
 
     // Compute the grid node types
@@ -53,6 +54,9 @@ meshkernel::UndoActionPtr CurvilinearGridSmoothing::Compute()
     ++upperLimit.m_m;
 
     std::unique_ptr<CurvilinearGridBlockUndoAction> undoAction = CurvilinearGridBlockUndoAction::Create(m_grid, m_lowerLeft, upperLimit);
+
+    // Compute the frozen nodes
+    ComputeFrozenNodes();
 
     // Perform smoothing iterations
     for (UInt smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
@@ -89,6 +93,9 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridSmoothing::ComputeDirectional(co
     }
     m_lowerLeft = lowerLeftBlock;
     m_upperRight = upperRightBlock;
+
+    // Compute the frozen nodes
+    ComputeFrozenNodes();
 
     // Perform smoothing iterations
     for (UInt smoothingIterations = 0; smoothingIterations < m_smoothingIterations; ++smoothingIterations)
@@ -177,6 +184,12 @@ void CurvilinearGridSmoothing::SolveDirectional(const CurvilinearGridLine& gridL
     {
         for (auto m = m_lowerLeft.m_m; m <= m_upperRight.m_m; ++m)
         {
+            // No update to perform for frozen nodes
+            if (m_isGridNodeFrozen(n, m))
+            {
+                continue;
+            }
+
             // Apply line smoothing only in internal nodes
             if (isInvalidValidNode(n, m))
             {
@@ -207,6 +220,12 @@ void CurvilinearGridSmoothing::Solve()
     {
         for (auto m = m_lowerLeft.m_m; m <= m_upperRight.m_m; ++m)
         {
+            // No update to perform for frozen nodes
+            if (m_isGridNodeFrozen(n, m))
+            {
+                continue;
+            }
+
             // It is invalid or a corner point, skip smoothing
             if (m_grid.GetNodeType(n, m) == NodeType::Invalid ||
                 m_grid.GetNodeType(n, m) == NodeType::BottomLeft ||
