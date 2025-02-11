@@ -237,11 +237,12 @@ namespace meshkernelapi
             mkState.m_network1d = std::make_shared<meshkernel::Network1D>(mkState.m_projection);
             mkState.m_contacts = std::make_shared<meshkernel::Contacts>(*mkState.m_mesh1d, *mkState.m_mesh2d);
             mkState.m_curvilinearGrid = std::make_shared<meshkernel::CurvilinearGrid>(mkState.m_projection);
-            mkState.m_frozenLines.clear();
 
             mkState.m_meshOrthogonalization.reset();
             mkState.m_curvilinearGridFromSplines.reset();
             mkState.m_curvilinearGridLineShift.reset();
+            mkState.m_frozenLines.clear();
+            mkState.m_frozenLinesCounter = 0;
 
             meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
         }
@@ -4624,9 +4625,9 @@ namespace meshkernelapi
             meshkernel::Point const firstPoint{xFirstGridLineNode, yFirstGridLineNode};
             meshkernel::Point const secondPoint{xSecondGridLineNode, ySecondGridLineNode};
 
-            frozenLineId = meshKernelState[meshKernelId].frozenLinesCounter;
+            frozenLineId = meshKernelState[meshKernelId].m_frozenLinesCounter;
             meshKernelState[meshKernelId].m_frozenLines[frozenLineId] = std::make_pair(firstPoint, secondPoint);
-            meshKernelState[meshKernelId].frozenLinesCounter++;
+            meshKernelState[meshKernelId].m_frozenLinesCounter++;
         }
         catch (...)
         {

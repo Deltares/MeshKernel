@@ -644,7 +644,7 @@ namespace meshkernelapi
         /// @param[in] smoothingIterations The number of smoothing iterations to perform
         /// @param[in] xLowerLeftCorner    The x coordinate of the lower left corner of the block to smooth
         /// @param[in] yLowerLeftCorner    The y coordinate of the lower left corner of the block to smooth
-        /// @param[in] xUpperRightCorner   The x coordinate of the lower left corner of the block to smooth
+        /// @param[in] xUpperRightCorner   The x coordinate of the upper right corner of the block to smooth
         /// @param[in] yUpperRightCorner   The y coordinate of the upper right corner of the block to smooth
         /// @return Error code
         MKERNEL_API int mkernel_curvilinear_smoothing(int meshKernelId,
