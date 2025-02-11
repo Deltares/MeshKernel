@@ -77,15 +77,19 @@ namespace meshkernel
         // geometric constants
         namespace geometric
         {
-            constexpr double earth_radius = 6378137.0;                  ///< Earth radius(m)
-            constexpr double inverse_earth_radius = 1.0 / earth_radius; ///< One over constants::geometric::earth_radius(m-1);
-            constexpr double absLatitudeAtPoles = 0.0001;               ///< Pole tolerance in degrees
-            constexpr double refinementTolerance = 1.0e-2;              ///< Relative size of refinement.
-            constexpr UInt numNodesInQuadrilateral = 4;                 ///< Number of nodes in a quadrilateral
-            constexpr UInt numNodesInTriangle = 3;                      ///< Number of nodes in a triangle
-            constexpr UInt numNodesInPentagon = 5;                      ///< Number of nodes in a pentagon
-            constexpr UInt numNodesInhaxagon = 6;                       ///< Number of nodes in a hexagon
-        }                                                               // namespace geometric
+            constexpr double earth_radius = 6378137.0;                                      ///< Earth radius(m)
+            constexpr double inverse_earth_radius = 1.0 / earth_radius;                     ///< One over constants::geometric::earth_radius(m-1);
+            constexpr double absLatitudeAtPoles = 0.0001;                                   ///< Pole tolerance in degrees
+            constexpr double refinementTolerance = 1.0e-2;                                  ///< Relative size of refinement.
+            constexpr UInt numNodesInQuadrilateral = 4;                                     ///< Number of nodes in a quadrilateral
+            constexpr UInt numNodesInTriangle = 3;                                          ///< Number of nodes in a triangle
+            constexpr UInt numNodesInPentagon = 5;                                          ///< Number of nodes in a pentagon
+            constexpr UInt numNodesInHexagon = 6;                                           ///< Number of nodes in a hexagon
+            constexpr UInt maximumNumberOfEdgesPerNode = 16;                                ///< Maximum number of edges per node
+            constexpr UInt maximumNumberOfEdgesPerFace = 6;                                 ///< Maximum number of edges per face
+            constexpr UInt maximumNumberOfNodesPerFace = 6;                                 ///< Maximum number of nodes per face
+            constexpr UInt maximumNumberOfConnectedNodes = maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
+        } // namespace geometric
 
         namespace physical
         {

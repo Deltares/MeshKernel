@@ -33,6 +33,7 @@
 #include "MeshKernel/MeshEdgeLength.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/Utilities/RTreeFactory.hpp"
 
 using meshkernel::Contacts;
@@ -46,6 +47,8 @@ Contacts::Contacts(Mesh1D& mesh1d, Mesh2D& mesh2d)
     {
         throw AlgorithmError("meshkernel::Contacts::Contacts: m_mesh1d and m_mesh2d projections are different");
     }
+
+    m_facesCircumcenters = MeshFaceCenters::ComputeCircumcenters (mesh2d);
 }
 
 void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
@@ -129,7 +132,7 @@ bool Contacts::IsContactIntersectingMesh1d(UInt node,
                     crossProduct,
                     ratioFirstSegment,
                     ratioSecondSegment] = AreSegmentsCrossing(m_mesh1d.Node(node),
-                                                              m_mesh2d.m_facesCircumcenters[face],
+                                                              m_facesCircumcenters[face],
                                                               m_mesh1d.Node(m_mesh1d.GetEdge(e).first),
                                                               m_mesh1d.Node(m_mesh1d.GetEdge(e).second),
                                                               false,
@@ -154,9 +157,9 @@ bool Contacts::IsContactIntersectingContact(UInt node, UInt face) const
                     crossProduct,
                     ratioFirstSegment,
                     ratioSecondSegment] = AreSegmentsCrossing(m_mesh1d.Node(node),
-                                                              m_mesh2d.m_facesCircumcenters[face],
+                                                              m_facesCircumcenters[face],
                                                               m_mesh1d.Node(m_mesh1dIndices[i]),
-                                                              m_mesh2d.m_facesCircumcenters[m_mesh2dIndices[i]],
+                                                              m_facesCircumcenters[m_mesh2dIndices[i]],
                                                               false,
                                                               m_mesh1d.m_projection);
         if (areSegmentCrossing &&
@@ -246,8 +249,8 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
                 }
 
                 // compute the distance between the face circumcenter and the crossed 1d edge nodes.
-                const auto leftDistance = ComputeDistance(m_mesh1d.Node(firstNode1dMeshEdge), m_mesh2d.m_facesCircumcenters[face], m_mesh1d.m_projection);
-                const auto rightDistance = ComputeDistance(m_mesh1d.Node(secondNode1dMeshEdge), m_mesh2d.m_facesCircumcenters[face], m_mesh1d.m_projection);
+                const auto leftDistance = ComputeDistance(m_mesh1d.Node(firstNode1dMeshEdge), m_facesCircumcenters[face], m_mesh1d.m_projection);
+                const auto rightDistance = ComputeDistance(m_mesh1d.Node(secondNode1dMeshEdge), m_facesCircumcenters[face], m_mesh1d.m_projection);
                 const auto nodeToConnect = leftDistance <= rightDistance ? firstNode1dMeshEdge : secondNode1dMeshEdge;
 
                 // if oneDNodeMask is not empty, connect only if the mask value for the current node is true
@@ -413,10 +416,10 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
 
     // build mesh2d face circumcenters r-tree
     const auto faceCircumcentersRTree = RTreeFactory::Create(m_mesh2d.m_projection);
-    faceCircumcentersRTree->BuildTree(m_mesh2d.m_facesCircumcenters);
+    faceCircumcentersRTree->BuildTree(m_facesCircumcenters);
 
     // get the indices
-    const auto facePolygonIndices = polygons.PointsInPolygons(m_mesh2d.m_facesCircumcenters);
+    const auto facePolygonIndices = polygons.PointsInPolygons(m_facesCircumcenters);
 
     bool computeLocalSearchRadius = true;
     double localSearchRadius = 0.0;
@@ -477,10 +480,10 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
             }
 
             const auto currentSquaredDistance = ComputeSquaredDistance(m_mesh1d.Node(n),
-                                                                       m_mesh2d.m_facesCircumcenters[face],
+                                                                       m_facesCircumcenters[face],
                                                                        m_mesh2d.m_projection);
             const auto previousSquaredDistance = ComputeSquaredDistance(m_mesh1d.Node(faceTo1DNode[face]),
-                                                                        m_mesh2d.m_facesCircumcenters[face],
+                                                                        m_facesCircumcenters[face],
                                                                         m_mesh2d.m_projection);
 
             if (currentSquaredDistance < previousSquaredDistance)

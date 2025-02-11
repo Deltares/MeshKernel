@@ -29,6 +29,7 @@
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Operations.hpp"
+#include "MeshKernel/MeshFaceCenters.hpp"
 
 std::vector<double> meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh)
 {
@@ -38,7 +39,7 @@ std::vector<double> meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh)
     return orthogonality;
 }
 
-double meshkernel::MeshOrthogonality::ComputeValue(const Mesh2D& mesh, const UInt edgeId)
+double meshkernel::MeshOrthogonality::ComputeValue(const Mesh2D& mesh, const std::vector<Point>& faceCircumcentres, const UInt edgeId)
 {
     const auto [firstNode, secondNode] = mesh.GetEdge(edgeId);
 
@@ -63,8 +64,8 @@ double meshkernel::MeshOrthogonality::ComputeValue(const Mesh2D& mesh, const UIn
     {
         val = NormalizedInnerProductTwoSegments(mesh.Node(firstNode),
                                                 mesh.Node(secondNode),
-                                                mesh.m_facesCircumcenters[firstFaceIndex],
-                                                mesh.m_facesCircumcenters[secondFaceIndex],
+                                                faceCircumcentres[firstFaceIndex],
+                                                faceCircumcentres[secondFaceIndex],
                                                 mesh.m_projection);
 
         if (val != constants::missing::doubleValue)
@@ -83,10 +84,13 @@ void meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh, std::span<double
         throw ConstraintError("array for orthogonality values is not the correct size");
     }
 
+    std::vector<Point> faceCircumcentres = MeshFaceCenters::ComputeCircumcenters (mesh);
+
+
     const auto numEdges = mesh.GetNumEdges();
 
     for (UInt e = 0; e < numEdges; e++)
     {
-        orthogonality[e] = ComputeValue(mesh, e);
+        orthogonality[e] = ComputeValue(mesh, faceCircumcentres, e);
     }
 }
