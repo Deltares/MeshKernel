@@ -1,8 +1,3 @@
-//---- GPL ---------------------------------------------------------------------
-//
-// Copyright (C)  Stichting Deltares, 2011-2025.
-//
-// This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation version 3.
 //
@@ -30,23 +25,15 @@
 #include <span>
 #include <vector>
 
-#include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/Mesh.hpp"
+#include "MeshKernel/Point.hpp"
 
-namespace meshkernel
+namespace meshkernel::MeshFaceCenters
 {
-    /// @brief Compute the orthogonality value for the edges
-    class MeshOrthogonality
-    {
-    public:
-        /// @brief Compute the orthogonality values returning values in a vector
-        static std::vector<double> Compute(const Mesh2D& mesh);
+    /// @brief Compute the circum-centre point of each of the faces
+    std::vector<Point> ComputeCircumcenters(const Mesh& mesh);
 
-        /// @brief Compute the orthogonality values overwriting the values in an array
-        static void Compute(const Mesh2D& mesh, std::span<double> orthogonality);
+    /// @brief Compute the circum-centre point of each of the faces overwriting the values in an array
+    void ComputeCircumcenters(const Mesh& mesh, std::span<Point> edgeCentres);
 
-    private:
-        /// @brief Compute the orthogonality value for the edge
-        static double ComputeValue(const Mesh2D& mesh, const std::vector<Point>& faceCircumcentres, const UInt edgeId);
-    };
-
-} // namespace meshkernel
+} // namespace meshkernel::MeshEdgeCenters

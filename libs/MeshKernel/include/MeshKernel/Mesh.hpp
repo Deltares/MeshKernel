@@ -454,6 +454,11 @@ namespace meshkernel
         /// @param[in] value The value of the flag
         void SetFacesRTreeRequiresUpdate(bool value) { m_facesRTreeRequiresUpdate = value; }
 
+        /// @brief For a face create a closed polygon
+        /// @param[in]     faceIndex         The face index
+        /// @param[in,out] polygonNodesCache The cache array to be filled with the nodes values
+        void ComputeFaceClosedPolygon(UInt faceIndex, std::vector<Point>& polygonNodesCache) const;
+
         // nodes
         std::vector<std::vector<UInt>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
         std::vector<std::uint8_t> m_nodesNumEdges;   ///< For each node, the number of connected edges (nmk)
@@ -471,12 +476,6 @@ namespace meshkernel
         std::vector<double> m_faceArea;              ///< The face area
 
         Projection m_projection; ///< The projection used
-
-        // constants
-        static constexpr UInt m_maximumNumberOfEdgesPerNode = 16;                                  ///< Maximum number of edges per node
-        static constexpr UInt m_maximumNumberOfEdgesPerFace = 6;                                   ///< Maximum number of edges per face
-        static constexpr UInt m_maximumNumberOfNodesPerFace = 6;                                   ///< Maximum number of nodes per face
-        static constexpr UInt m_maximumNumberOfConnectedNodes = m_maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
 
     protected:
         /// @brief Determine if a administration is required

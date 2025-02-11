@@ -106,7 +106,7 @@ void AveragingInterpolation::Compute()
     if (m_interpolationLocation == Location::Faces)
     {
         std::vector<bool> visitedSamples(m_samples.size(), false); ///< The visited samples
-        std::vector<Point> polygonNodesCache(Mesh::m_maximumNumberOfNodesPerFace + 1);
+        std::vector<Point> polygonNodesCache(constants::geometric::maximumNumberOfNodesPerFace + 1);
         m_faceResults.resize(m_mesh.GetNumFaces(), constants::missing::doubleValue);
         std::ranges::fill(m_faceResults, constants::missing::doubleValue);
 

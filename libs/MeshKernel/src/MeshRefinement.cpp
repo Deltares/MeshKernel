@@ -440,15 +440,15 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::ConnectHangingNodes()
 {
     std::unique_ptr<CompoundUndoAction> hangingNodeAction = CompoundUndoAction::Create();
 
-    std::vector edgeEndNodeCache(Mesh::m_maximumNumberOfNodesPerFace, constants::missing::uintValue);
-    std::vector hangingNodeCache(Mesh::m_maximumNumberOfNodesPerFace, constants::missing::uintValue);
+    std::vector edgeEndNodeCache(constants::geometric::maximumNumberOfNodesPerFace, constants::missing::uintValue);
+    std::vector hangingNodeCache(constants::geometric::maximumNumberOfNodesPerFace, constants::missing::uintValue);
 
     for (UInt f = 0; f < m_mesh.GetNumFaces(); ++f)
     {
         std::ranges::fill(edgeEndNodeCache, constants::missing::uintValue);
         std::ranges::fill(hangingNodeCache, constants::missing::uintValue);
         const auto numEdges = m_mesh.GetNumFaceEdges(f);
-        if (numEdges > Mesh::m_maximumNumberOfNodesPerFace)
+        if (numEdges > constants::geometric::maximumNumberOfNodesPerFace)
         {
             continue;
         }
@@ -467,7 +467,7 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::ConnectHangingNodes()
                 continue;
             }
 
-            if (numNonHangingNodes > Mesh::m_maximumNumberOfNodesPerFace - 1)
+            if (numNonHangingNodes > constants::geometric::maximumNumberOfNodesPerFace - 1)
             {
                 return hangingNodeAction;
             }
@@ -638,7 +638,7 @@ bool MeshRefinement::FindNonHangingNodeEdges(const UInt faceId,
             notHangingFaceNodes.emplace_back(m_edgeMask[edgeIndex]);
         }
 
-        if (notHangingFaceNodes.size() >= Mesh::m_maximumNumberOfNodesPerFace)
+        if (notHangingFaceNodes.size() >= constants::geometric::maximumNumberOfNodesPerFace)
         {
             return true;
         }
@@ -689,8 +689,9 @@ void MeshRefinement::ComputeSplittingNode(const UInt faceId,
         facePolygonWithoutHangingNodes.emplace_back(facePolygonWithoutHangingNodes.front());
         localEdgesNumFaces.emplace_back(localEdgesNumFaces.front());
 
-        splittingNode = m_mesh.ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
-                                                      localEdgesNumFaces);
+        splittingNode = ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
+                                               localEdgesNumFaces,
+                                               m_mesh.m_projection);
 
         if (m_mesh.m_projection == Projection::spherical)
         {
@@ -764,14 +765,14 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::RefineFacesBySplittingEd
 
     // Add new nodes where required
     std::vector<UInt> notHangingFaceNodes;
-    notHangingFaceNodes.reserve(Mesh::m_maximumNumberOfNodesPerFace);
+    notHangingFaceNodes.reserve(constants::geometric::maximumNumberOfNodesPerFace);
     std::vector<UInt> nonHangingEdges;
-    nonHangingEdges.reserve(Mesh::m_maximumNumberOfNodesPerFace);
+    nonHangingEdges.reserve(constants::geometric::maximumNumberOfNodesPerFace);
 
     std::vector<Point> facePolygonWithoutHangingNodes;
-    facePolygonWithoutHangingNodes.reserve(Mesh::m_maximumNumberOfNodesPerFace);
+    facePolygonWithoutHangingNodes.reserve(constants::geometric::maximumNumberOfNodesPerFace);
     std::vector<UInt> localEdgesNumFaces;
-    localEdgesNumFaces.reserve(Mesh::m_maximumNumberOfEdgesPerFace);
+    localEdgesNumFaces.reserve(constants::geometric::maximumNumberOfEdgesPerFace);
 
     for (UInt e = 0; e < m_mesh.GetNumEdges(); e++)
     {
@@ -885,10 +886,10 @@ void MeshRefinement::ComputeRefinementMasksFromSamples()
     std::ranges::fill(m_edgeMask, 0);
     std::ranges::fill(m_faceMask, 0);
 
-    m_polygonNodesCache.resize(Mesh::m_maximumNumberOfNodesPerFace + 1);
-    m_localNodeIndicesCache.resize(Mesh::m_maximumNumberOfNodesPerFace + 1, constants::missing::uintValue);
-    m_globalEdgeIndicesCache.resize(Mesh::m_maximumNumberOfEdgesPerFace + 1, constants::missing::uintValue);
-    m_refineEdgeCache.resize(Mesh::m_maximumNumberOfEdgesPerFace, 0);
+    m_polygonNodesCache.resize(constants::geometric::maximumNumberOfNodesPerFace + 1);
+    m_localNodeIndicesCache.resize(constants::geometric::maximumNumberOfNodesPerFace + 1, constants::missing::uintValue);
+    m_globalEdgeIndicesCache.resize(constants::geometric::maximumNumberOfEdgesPerFace + 1, constants::missing::uintValue);
+    m_refineEdgeCache.resize(constants::geometric::maximumNumberOfEdgesPerFace, 0);
 
     // Compute all interpolated values
     m_interpolant->Compute();
@@ -911,13 +912,13 @@ void MeshRefinement::FindHangingNodes(UInt face)
 {
     const auto numFaceNodes = m_mesh.GetNumFaceEdges(face);
 
-    if (numFaceNodes > Mesh::m_maximumNumberOfEdgesPerNode)
+    if (numFaceNodes > constants::geometric::maximumNumberOfEdgesPerNode)
     {
         throw AlgorithmError("The number of face nodes is greater than the maximum number of edges per node.");
     }
 
-    m_isHangingNodeCache.resize(Mesh::m_maximumNumberOfNodesPerFace);
-    m_isHangingEdgeCache.resize(Mesh::m_maximumNumberOfEdgesPerFace);
+    m_isHangingNodeCache.resize(constants::geometric::maximumNumberOfNodesPerFace);
+    m_isHangingEdgeCache.resize(constants::geometric::maximumNumberOfEdgesPerFace);
     std::fill(m_isHangingNodeCache.begin(), m_isHangingNodeCache.end(), false);
     std::fill(m_isHangingEdgeCache.begin(), m_isHangingEdgeCache.end(), false);
 
@@ -1271,7 +1272,7 @@ void MeshRefinement::ComputeEdgesRefinementMask()
     UInt iter = 0;
     const UInt numMaxIterations = 6;
     std::vector<int> isQuadEdge(constants::geometric::numNodesInQuadrilateral);
-    std::vector<UInt> numOfEdges(Mesh::m_maximumNumberOfEdgesPerFace);
+    std::vector<UInt> numOfEdges(constants::geometric::maximumNumberOfEdgesPerFace);
 
     while (repeat && iter < numMaxIterations)
     {
@@ -1434,7 +1435,7 @@ bool MeshRefinement::IsSplittingIsRequiredForFace(const UInt faceId) const
     // compute the effective face type
     const auto numNodesEffective = numFaceNodes - static_cast<UInt>(static_cast<double>(numHangingEdges) / 2.0);
 
-    if (numFaceNodes + numEdgesToRefine > Mesh::m_maximumNumberOfEdgesPerFace || // would result in unsupported cells after refinement
+    if (numFaceNodes + numEdgesToRefine > constants::geometric::maximumNumberOfEdgesPerFace || // would result in unsupported cells after refinement
         numFaceNodes - numHangingNodes - numEdgesToRefine <= 1 ||                // faces with only one unrefined edge
         numNodesEffective == numEdgesToRefine)                                   // refine all edges
     {
@@ -1496,7 +1497,7 @@ void MeshRefinement::ComputeIfFaceShouldBeSplit()
             // check if the edge has a brother edge and needs to be refined
             const auto numFaceNodes = m_mesh.GetNumFaceEdges(f);
 
-            if (numFaceNodes > Mesh::m_maximumNumberOfEdgesPerFace)
+            if (numFaceNodes > constants::geometric::maximumNumberOfEdgesPerFace)
             {
                 return;
             }

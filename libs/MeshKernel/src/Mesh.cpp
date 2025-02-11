@@ -34,6 +34,7 @@
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh.hpp"
 #include "MeshKernel/MeshEdgeCenters.hpp"
+#include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/RangeCheck.hpp"
@@ -80,7 +81,7 @@ bool Mesh::NodeAdministration()
             continue;
         }
 
-        if (m_nodesNumEdges[firstNode] >= m_maximumNumberOfEdgesPerNode || m_nodesNumEdges[secondNode] >= m_maximumNumberOfEdgesPerNode)
+        if (m_nodesNumEdges[firstNode] >= constants::geometric::maximumNumberOfEdgesPerNode || m_nodesNumEdges[secondNode] >= constants::geometric::maximumNumberOfEdgesPerNode)
         {
             continue;
         }
@@ -361,7 +362,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeTwoNodes(UInt firstNodeIndex,
     }
 
     // add all valid edges starting at secondNode
-    std::vector<UInt> secondNodeEdges(m_maximumNumberOfEdgesPerNode, constants::missing::uintValue);
+    std::vector<UInt> secondNodeEdges(constants::geometric::maximumNumberOfEdgesPerNode, constants::missing::uintValue);
     UInt numSecondNodeEdges = 0;
 
     for (UInt n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
@@ -798,9 +799,9 @@ bool Mesh::IsFaceOnBoundary(UInt face) const
 void Mesh::SortEdgesInCounterClockWiseOrder(UInt startNode, UInt endNode)
 {
 
-    std::vector<double> edgeAngles(m_maximumNumberOfEdgesPerNode);
-    std::vector<UInt> indices(m_maximumNumberOfEdgesPerNode);
-    std::vector<UInt> edgeNodeCopy(m_maximumNumberOfEdgesPerNode);
+    std::vector<double> edgeAngles(constants::geometric::maximumNumberOfEdgesPerNode);
+    std::vector<UInt> indices(constants::geometric::maximumNumberOfEdgesPerNode);
+    std::vector<UInt> edgeNodeCopy(constants::geometric::maximumNumberOfEdgesPerNode);
     for (UInt n = startNode; n <= endNode; n++)
     {
         if (!m_nodes[n].IsValid())
@@ -895,7 +896,7 @@ void Mesh::AdministrateNodesEdges(CompoundUndoAction* undoAction)
     }
 
     m_nodesEdges.resize(m_nodes.size());
-    std::ranges::fill(m_nodesEdges, std::vector(m_maximumNumberOfEdgesPerNode, constants::missing::uintValue));
+    std::ranges::fill(m_nodesEdges, std::vector(constants::geometric::maximumNumberOfEdgesPerNode, constants::missing::uintValue));
 
     m_nodesNumEdges.resize(m_nodes.size());
     std::ranges::fill(m_nodesNumEdges, 0);
@@ -1165,7 +1166,9 @@ void Mesh::BuildTree(Location location, const BoundingBox& boundingBox)
         if (m_facesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
         {
             Administrate();
-            m_RTrees.at(Location::Faces)->BuildTree(m_facesCircumcenters, boundingBox);
+            std::vector<Point> facesCircumcenters = MeshFaceCenters::ComputeCircumcenters(*this);
+
+            m_RTrees.at(Location::Faces)->BuildTree(facesCircumcenters, boundingBox);
             m_facesRTreeRequiresUpdate = false;
             m_boundingBoxCache = boundingBox;
         }
@@ -1322,4 +1325,18 @@ void Mesh::RestoreAction(FullUnstructuredGridUndo& undoAction)
     m_edgesRTreeRequiresUpdate = true;
     SetAdministrationRequired(true);
     Administrate();
+}
+
+void Mesh::ComputeFaceClosedPolygon(UInt faceIndex, std::vector<Point>& polygonNodesCache) const
+{
+    const auto numFaceNodes = GetNumFaceEdges(faceIndex);
+    polygonNodesCache.clear();
+    polygonNodesCache.reserve(numFaceNodes + 1);
+
+    for (UInt n = 0; n < numFaceNodes; n++)
+    {
+        polygonNodesCache.push_back(m_nodes[m_facesNodes[faceIndex][n]]);
+    }
+
+    polygonNodesCache.push_back(polygonNodesCache.front());
 }
