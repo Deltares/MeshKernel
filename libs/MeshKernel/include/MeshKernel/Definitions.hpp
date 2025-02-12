@@ -118,6 +118,7 @@ namespace meshkernel
     /// This is needed to ensure thread safety when writing to an std::vector of
     /// Boolean (bool) values. The template specialisation of std::vector<bool>
     /// has resulted in unsafe multithreaded writes to an object of this type.
+    /// See RM 23.2.2
     class Boolean
     {
     public:
