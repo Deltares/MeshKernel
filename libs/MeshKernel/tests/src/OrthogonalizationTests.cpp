@@ -72,16 +72,12 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
 
     // Execute
     auto mesh = Mesh2D(edges, nodes, Projection::cartesian);
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(mesh);
-    auto smoother = std::make_unique<Smoother>(mesh);
     auto polygon = std::make_unique<Polygons>();
 
     std::vector<Point> landBoundary{};
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, mesh, *polygon);
 
     OrthogonalizationAndSmoothing orthogonalization(mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -119,16 +115,12 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
     orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 1.0;
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
     auto polygon = std::make_unique<Polygons>();
 
     std::vector<Point> landBoundary;
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -177,16 +169,12 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile
     orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 1.0;
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
     auto polygon = std::make_unique<Polygons>();
 
     std::vector<Point> landBoundary;
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -247,16 +235,11 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
                              {343.288422, 471.722809},
                              {342.987518, 471.121002}};
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
-
     std::vector<Point> landBoundary;
     auto polygon = std::make_unique<Polygons>(nodes, Projection::cartesian);
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -315,8 +298,6 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithUnd
     orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 0.5;
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
     auto polygon = std::make_unique<Polygons>();
     std::vector<Point> landBoundary;
     auto landBoundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
@@ -324,8 +305,6 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithUnd
     const std::vector<meshkernel::Point> meshNodes = mesh->Nodes();
 
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landBoundaries),
                                                     projectToLandBoundaryOption,
@@ -387,11 +366,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
     std::vector<Point> landBoundary{};
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -434,11 +409,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
     auto polygon = std::make_unique<Polygons>();
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -486,16 +457,11 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
     orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 1.0;
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
-
     auto polygon = std::make_unique<Polygons>();
     std::vector<Point> landBoundary{};
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -579,12 +545,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
     std::vector<Point> landBoundary{};
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
-
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -640,14 +601,9 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
     std::vector<Point> landBoundary{};
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
-
     const std::vector<meshkernel::Point> meshNodes = mesh->Nodes();
 
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -736,11 +692,7 @@ TEST(OrthogonalizationAndSmoothing, RefineUndoThenOrthogonalise)
     std::vector<Point> landBoundary{};
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(orthogonalisationPolygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -817,8 +769,6 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
     FlipEdges flipEdges(mesh, *boundary, true, false);
 
     OrthogonalizationAndSmoothing orthogonalization(mesh,
-                                                    std::make_unique<Smoother>(mesh),
-                                                    std::make_unique<Orthogonalizer>(mesh),
                                                     std::move(refinedPolygon),
                                                     std::move(boundary),
                                                     projectToLandBoundaryOption,

@@ -44,11 +44,12 @@ namespace meshkernel
 
     public:
         /// @brief Mesh2D constructor
-        /// @brief mesh
-        explicit Smoother(const Mesh2D& mesh);
+        /// @param[in] mesh
+        /// @param[in] nodeType
+        explicit Smoother(const Mesh2D& mesh, const std::vector<MeshNodeType>& nodeType);
 
         /// @brief Computes the smoother weights
-        void Compute(const std::vector<MeshNodeType>& nodeTypes);
+        void Compute();
 
         /// @brief Gets the weight for a certain node and connected node
         /// @brief node
@@ -121,13 +122,13 @@ namespace meshkernel
         void Initialize();
 
         /// @brief Computes all topologies of the elliptic smoother
-        void ComputeTopologies(const std::vector<MeshNodeType>& nodeType);
+        void ComputeTopologies();
 
         /// @brief Computes all operators of the elliptic smoother
-        void ComputeOperators(const std::vector<MeshNodeType>& nodeTypes);
+        void ComputeOperators();
 
         /// @brief Computes the smoother weights from the operators (orthonet_compweights_smooth)
-        void ComputeWeights(const std::vector<MeshNodeType>& nodeTypes);
+        void ComputeWeights();
 
         /// @brief Compute elliptic smoother operators coefficients for boundary nodes
         std::tuple<double, double> ComputeOperatorsForBoundaryNode(const UInt f, const UInt faceLeftIndex, const UInt currentTopology);
@@ -162,7 +163,7 @@ namespace meshkernel
         /// @brief Compute compute current node xi and eta (orthonet_assign_xieta)
         /// @param[in] currentNode
         /// @param[in] nodeTypes Node type of all nodes
-        void ComputeNodeXiEta(UInt currentNode, const std::vector<MeshNodeType>& nodeTypes);
+        void ComputeNodeXiEta(UInt currentNode);
 
         /// @brief Compute optimal edge angle
         /// @brief numFaceNodes
@@ -199,6 +200,8 @@ namespace meshkernel
 
         // The mesh to smooth
         const Mesh2D& m_mesh; ///< A reference to mesh
+
+        const std::vector<MeshNodeType>& m_nodeType; ///< Node types
 
         // Smoother weights
         std::vector<std::vector<double>> m_weights; ///< Weights

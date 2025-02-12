@@ -43,12 +43,12 @@ namespace meshkernel
 
     public:
         /// @brief Constructor
-        explicit Orthogonalizer(Mesh2D& mesh);
+        explicit Orthogonalizer(Mesh2D& mesh,
+                                const std::vector<std::vector<UInt>>& nodesNodes,
+                                const std::vector<MeshNodeType>& nodeTypes);
 
         /// @brief Computes the smoother weights and the right hand side
-        void Compute(const std::vector<std::vector<UInt>>& nodesNodes,
-                     const UInt maxNumNeighbours,
-                     const std::vector<MeshNodeType>& nodeTypes);
+        void Compute();
 
         /// @brief Gets the weight for a certain node and connected node
         /// @brief node
@@ -74,9 +74,11 @@ namespace meshkernel
         /// @returns If the method succeeded
         bool AspectRatio(const Mesh2D& mesh);
 
-        const Mesh2D& m_mesh;                       ///< A reference to mesh
-        std::vector<double> m_aspectRatios;         ///< Aspect ratios
-        std::vector<std::vector<double>> m_weights; ///< Weights
-        std::vector<std::vector<double>> m_rhs;     ///< Right hand side
+        const Mesh2D& m_mesh;                               ///< A reference to mesh
+        const std::vector<std::vector<UInt>>& m_nodesNodes; ///< Node-node connectivity
+        const std::vector<MeshNodeType>& m_nodeType;        ///< Type of each node
+        std::vector<double> m_aspectRatios;                 ///< Aspect ratios
+        std::vector<std::vector<double>> m_weights;         ///< Weights
+        std::vector<std::vector<double>> m_rhs;             ///< Right hand side
     };
 } // namespace meshkernel

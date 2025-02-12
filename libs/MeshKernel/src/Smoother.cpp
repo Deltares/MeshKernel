@@ -35,23 +35,23 @@
 using meshkernel::Mesh2D;
 using meshkernel::Smoother;
 
-Smoother::Smoother(const Mesh2D& mesh) : m_mesh(mesh)
+Smoother::Smoother(const Mesh2D& mesh, const std::vector<MeshNodeType>& nodeType) : m_mesh(mesh), m_nodeType(nodeType)
 {
 }
 
-void Smoother::Compute(const std::vector<MeshNodeType>& nodeType)
+void Smoother::Compute()
 {
     // compute smoother topologies
-    ComputeTopologies(nodeType);
+    ComputeTopologies();
 
     // compute smoother operators
-    ComputeOperators(nodeType);
+    ComputeOperators();
 
     // compute weights
-    ComputeWeights(nodeType);
+    ComputeWeights();
 }
 
-void Smoother::ComputeTopologies(const std::vector<MeshNodeType>& nodeType)
+void Smoother::ComputeTopologies()
 {
     Initialize();
 
@@ -59,7 +59,7 @@ void Smoother::ComputeTopologies(const std::vector<MeshNodeType>& nodeType)
     {
         NodeAdministration(n);
 
-        ComputeNodeXiEta(n, nodeType);
+        ComputeNodeXiEta(n);
 
         SaveNodeTopologyIfNeeded(n);
 
@@ -68,7 +68,7 @@ void Smoother::ComputeTopologies(const std::vector<MeshNodeType>& nodeType)
     }
 }
 
-void Smoother::ComputeOperators(const std::vector<MeshNodeType>& nodeType)
+void Smoother::ComputeOperators()
 {
     // allocate local operators for unique topologies
     m_Az.resize(m_topologyConnectedNodes.size());
@@ -93,7 +93,7 @@ void Smoother::ComputeOperators(const std::vector<MeshNodeType>& nodeType)
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
 
-        if (nodeType[n] != MeshNodeType::Internal && nodeType[n] != MeshNodeType::Boundary && nodeType[n] != MeshNodeType::Corner)
+        if (m_nodeType[n] != MeshNodeType::Internal && m_nodeType[n] != MeshNodeType::Boundary && m_nodeType[n] != MeshNodeType::Corner)
         {
             continue;
         }
@@ -108,19 +108,19 @@ void Smoother::ComputeOperators(const std::vector<MeshNodeType>& nodeType)
             // Compute node operators
 
             AllocateNodeOperators(currentTopology);
-            ComputeOperatorsNode(n, nodeType[n]);
+            ComputeOperatorsNode(n, m_nodeType[n]);
         }
     }
 }
 
-void Smoother::ComputeWeights(const std::vector<MeshNodeType>& nodeType)
+void Smoother::ComputeWeights()
 {
     std::vector<std::vector<double>> J(m_mesh.GetNumNodes(), std::vector<double>(4, 0));    // Jacobian
     std::vector<std::vector<double>> Ginv(m_mesh.GetNumNodes(), std::vector<double>(4, 0)); // Mesh2D monitor matrices
 
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
-        if (nodeType[n] != MeshNodeType::Internal && nodeType[n] != MeshNodeType::Boundary)
+        if (m_nodeType[n] != MeshNodeType::Internal && m_nodeType[n] != MeshNodeType::Boundary)
         {
             continue;
         }
@@ -155,7 +155,7 @@ void Smoother::ComputeWeights(const std::vector<MeshNodeType>& nodeType)
             continue;
 
         // Internal nodes and boundary nodes
-        if (nodeType[n] == MeshNodeType::Internal || nodeType[n] == MeshNodeType::Boundary)
+        if (m_nodeType[n] == MeshNodeType::Internal || m_nodeType[n] == MeshNodeType::Boundary)
         {
             const auto currentTopology = m_nodeTopologyMapping[n];
 
@@ -760,7 +760,7 @@ void Smoother::ComputeOptimalAngleForSharedFaces(const UInt currentNode,
     }
 }
 
-void Smoother::ComputeNodeXiEta(UInt currentNode, const std::vector<MeshNodeType>& nodeType)
+void Smoother::ComputeNodeXiEta(UInt currentNode)
 {
     // set caches to 0
     std::fill(m_xiCache.begin(), m_xiCache.end(), 0.0);
@@ -819,19 +819,19 @@ void Smoother::ComputeNodeXiEta(UInt currentNode, const std::vector<MeshNodeType
 
         if (isSquare)
         {
-            if (nodeType[nextNode] == MeshNodeType::Internal)
+            if (m_nodeType[nextNode] == MeshNodeType::Internal)
             {
                 // Inner node
                 numNonStencilQuad = m_mesh.m_nodesNumEdges[nextNode] - 2;
                 thetaSquare[f + 1] = (2.0 - double(numNonStencilQuad) * 0.5) * M_PI;
             }
-            if (nodeType[nextNode] == MeshNodeType::Boundary)
+            if (m_nodeType[nextNode] == MeshNodeType::Boundary)
             {
                 // boundary node
                 numNonStencilQuad = m_mesh.m_nodesNumEdges[nextNode] - 1 - m_mesh.m_edgesNumFaces[edgeIndex];
                 thetaSquare[f + 1] = (1.0 - double(numNonStencilQuad) * 0.5) * M_PI;
             }
-            if (nodeType[nextNode] == MeshNodeType::Corner)
+            if (m_nodeType[nextNode] == MeshNodeType::Corner)
             {
                 // corner node
                 thetaSquare[f + 1] = 0.5 * M_PI;
@@ -863,12 +863,12 @@ void Smoother::ComputeNodeXiEta(UInt currentNode, const std::vector<MeshNodeType
     ComputeInternalAngle(currentNode, numSharedFaces, thetaSquare, isSquareFace, internalAngleData, numNonStencilQuad);
 
     double factor = 1.0;
-    if (nodeType[currentNode] == MeshNodeType::Boundary)
+    if (m_nodeType[currentNode] == MeshNodeType::Boundary)
     {
         factor = 0.5;
     }
 
-    if (nodeType[currentNode] == MeshNodeType::Corner)
+    if (m_nodeType[currentNode] == MeshNodeType::Corner)
     {
         factor = 0.25;
     }
@@ -899,7 +899,7 @@ void Smoother::ComputeNodeXiEta(UInt currentNode, const std::vector<MeshNodeType
         throw MeshGeometryError(currentNode, Location::Nodes, "Fatal error (phiTot=0)");
     }
 
-    ComputeOptimalAngleForSharedFaces(currentNode, numSharedFaces, nodeType[currentNode], thetaSquare, isSquareFace, mu, muSquaredTriangles, muTriangles);
+    ComputeOptimalAngleForSharedFaces(currentNode, numSharedFaces, m_nodeType[currentNode], thetaSquare, isSquareFace, mu, muSquaredTriangles, muTriangles);
 }
 
 void Smoother::NodeAdministration(UInt currentNode)

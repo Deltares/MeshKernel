@@ -29,7 +29,9 @@
 
 #include <MeshKernel/Definitions.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Parameters.hpp>
+#include <MeshKernel/Smoother.hpp>
 #include <MeshKernel/UndoActions/UndoAction.hpp>
 
 namespace meshkernel
@@ -37,8 +39,6 @@ namespace meshkernel
     // Forward declare everything to reduce compile time dependency
     class Point;
     class Mesh2D;
-    class Smoother;
-    class Orthogonalizer;
     class Polygons;
     enum class Projection;
 
@@ -92,8 +92,6 @@ namespace meshkernel
         /// @param[in] projectToLandBoundaryOption Snap to land boundaries (1) or not (0)
         /// @param[in] orthogonalizationParameters The orthogonalization parameters
         OrthogonalizationAndSmoothing(Mesh2D& mesh,
-                                      std::unique_ptr<Smoother> smoother,
-                                      std::unique_ptr<Orthogonalizer> orthogonalizer,
                                       std::unique_ptr<Polygons> polygon,
                                       std::unique_ptr<LandBoundaries> landBoundaries,
                                       LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
@@ -150,9 +148,12 @@ namespace meshkernel
         /// @brief Compute nodes local coordinates (comp_local_coords)
         void ComputeCoordinates() const;
 
+        std::vector<std::vector<UInt>> m_nodesNodes; ///< Node to node connectivity
+        std::vector<MeshNodeType> m_nodesTypes;      ///< The node types
+
         Mesh2D& m_mesh;                                                            ///< A reference to mesh
-        std::unique_ptr<Smoother> m_smoother;                                      ///< A pointer to the smoother
-        std::unique_ptr<Orthogonalizer> m_orthogonalizer;                          ///< A pointer to the orthogonalizer
+        Smoother m_smoother;                                                       ///< The smoother
+        Orthogonalizer m_orthogonalizer;                                           ///< The orthogonalizer
         std::unique_ptr<Polygons> m_polygons;                                      ///< The polygon pointer where to perform the orthogonalization
         std::unique_ptr<LandBoundaries> m_landBoundaries;                          ///< The land boundaries pointer
         LandBoundaries::ProjectToLandBoundaryOption m_projectToLandBoundaryOption; ///< The project to land boundary option
@@ -162,9 +163,6 @@ namespace meshkernel
         std::vector<Point> m_localCoordinates;       ///< Used in sphericalAccurate projection (xloc,yloc)
         std::vector<Point> m_orthogonalCoordinates;  ///< A copy of the mesh node, orthogonalized
         std::vector<Point> m_originalNodes;          ///< The original mesh
-        std::vector<std::vector<UInt>> m_nodesNodes; ///< Node to node connectivity
-        std::vector<MeshNodeType> m_nodesTypes;      ///< The node types
-        UInt m_maxNumNeighbours = 0;                 ///< Maximum number of neighbours
 
         // Linear system terms
         std::vector<UInt> m_compressedEndNodeIndex;   ///< Start index in m_compressedWeightX
