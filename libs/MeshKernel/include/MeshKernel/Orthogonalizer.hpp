@@ -74,7 +74,7 @@ namespace meshkernel
         /// @returns If the method succeeded
         bool AspectRatio(const Mesh2D& mesh);
 
-        Mesh2D& m_mesh;                             ///< A reference to mesh
+        const Mesh2D& m_mesh;                       ///< A reference to mesh
         std::vector<double> m_aspectRatios;         ///< Aspect ratios
         std::vector<std::vector<double>> m_weights; ///< Weights
         std::vector<std::vector<double>> m_rhs;     ///< Right hand side

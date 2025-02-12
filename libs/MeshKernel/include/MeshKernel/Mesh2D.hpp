@@ -222,7 +222,7 @@ namespace meshkernel
 
         /// @brief Gets the aspect ratios (the ratios edges lengths to flow edges lengths)
         /// @param[in,out] aspectRatios The aspect ratios (passed as reference to avoid re-allocation)
-        void ComputeAspectRatios(std::vector<double>& aspectRatios);
+        void ComputeAspectRatios(std::vector<double>& aspectRatios) const;
 
         ///  @brief Classifies the nodes (makenetnodescoding)
         void ClassifyNodes();
