@@ -114,6 +114,10 @@ namespace meshkernel
     const std::string& CurvilinearDirectionToString(CurvilinearDirection direction);
 
     /// @brief Boolean value designed for use in std::vector
+    ///
+    /// This is needed to ensure thread safety when writing to an std::vector of
+    /// Boolean (bool) values. The template specialisation of std::vector<bool>
+    /// has resulted in unsafe multithreaded writes to an object of this type.
     class Boolean
     {
     public:
