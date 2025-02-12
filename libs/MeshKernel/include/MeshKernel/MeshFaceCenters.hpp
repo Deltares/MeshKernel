@@ -25,6 +25,7 @@
 #include <span>
 #include <vector>
 
+#include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Mesh.hpp"
 #include "MeshKernel/Point.hpp"
 
@@ -36,4 +37,9 @@ namespace meshkernel::MeshFaceCenters
     /// @brief Compute the circum-centre point of each of the faces overwriting the values in an array
     void ComputeCircumcenters(const Mesh& mesh, std::span<Point> edgeCentres);
 
-} // namespace meshkernel::MeshEdgeCenters
+    /// @brief Compute the circumcentre for the face described by the polygon
+    Point ComputeFaceCircumenter(std::vector<Point>& polygon,
+                                 const std::vector<UInt>& edgesNumFaces,
+                                 const Projection& projection);
+
+} // namespace meshkernel::MeshFaceCenters
