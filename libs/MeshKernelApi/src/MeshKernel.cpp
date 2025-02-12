@@ -102,6 +102,8 @@
 #include "MeshKernelApi/ApiCache/SmallFlowEdgeCentreCache.hpp"
 #include "MeshKernelApi/MKStateUndoAction.hpp"
 #include "MeshKernelApi/MeshKernel.hpp"
+
+#include "MeshKernelApi/CurvilinearFrozenLinesAddUndoAction.hpp"
 #include "MeshKernelApi/PropertyCalculator.hpp"
 #include "MeshKernelApi/State.hpp"
 #include "MeshKernelApi/Utils.hpp"
@@ -4625,9 +4627,14 @@ namespace meshkernelapi
             meshkernel::Point const firstPoint{xFirstGridLineNode, yFirstGridLineNode};
             meshkernel::Point const secondPoint{xSecondGridLineNode, ySecondGridLineNode};
 
+            const auto frozenLinePoints = std::make_pair(firstPoint, secondPoint);
             frozenLineId = meshKernelState[meshKernelId].m_frozenLinesCounter;
-            meshKernelState[meshKernelId].m_frozenLines[frozenLineId] = std::make_pair(firstPoint, secondPoint);
+            meshKernelState[meshKernelId].m_frozenLines[frozenLineId] = frozenLinePoints;
             meshKernelState[meshKernelId].m_frozenLinesCounter++;
+
+            meshKernelUndoStack.Add(std::make_unique<CurvilinearFrozenLinesAddUndoAction>(meshKernelState[meshKernelId],
+                                                                                       frozenLineId,
+                                                                                       frozenLinePoints));
         }
         catch (...)
         {

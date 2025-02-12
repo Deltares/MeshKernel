@@ -295,7 +295,7 @@ TEST(CurvilinearGridSmoothing, ComputedDirectionalSmooth_OnNDrirection_ShouldSmo
 
 TEST(CurvilinearGridOrthogonalization, Compute_OnNonSmoothedlCurvilinearGridWithFrozenLine_ShouldSmoothGridExceptFrozenLinePoins)
 {
-    // Set-up a mesh that will be changed by orthogonalization
+    // Set-up a mesh that will be changed by smoothing
     lin_alg::Matrix<Point> grid(5, 5);
     grid << Point{0, 0}, Point{0, 10}, Point{0, 15}, Point{0, 20}, Point{0, 30},
         Point{10, 0}, Point{10, 10}, Point{10, 15}, Point{10, 20}, Point{10, 30},
