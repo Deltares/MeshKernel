@@ -32,6 +32,7 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshEdgeLength.hpp>
+#include <MeshKernel/MeshFaceCenters.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
@@ -689,9 +690,9 @@ void MeshRefinement::ComputeSplittingNode(const UInt faceId,
         facePolygonWithoutHangingNodes.emplace_back(facePolygonWithoutHangingNodes.front());
         localEdgesNumFaces.emplace_back(localEdgesNumFaces.front());
 
-        splittingNode = ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
-                                               localEdgesNumFaces,
-                                               m_mesh.m_projection);
+        splittingNode = MeshFaceCenters::ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
+                                                                localEdgesNumFaces,
+                                                                m_mesh.m_projection);
 
         if (m_mesh.m_projection == Projection::spherical)
         {
@@ -1436,8 +1437,8 @@ bool MeshRefinement::IsSplittingIsRequiredForFace(const UInt faceId) const
     const auto numNodesEffective = numFaceNodes - static_cast<UInt>(static_cast<double>(numHangingEdges) / 2.0);
 
     if (numFaceNodes + numEdgesToRefine > constants::geometric::maximumNumberOfEdgesPerFace || // would result in unsupported cells after refinement
-        numFaceNodes - numHangingNodes - numEdgesToRefine <= 1 ||                // faces with only one unrefined edge
-        numNodesEffective == numEdgesToRefine)                                   // refine all edges
+        numFaceNodes - numHangingNodes - numEdgesToRefine <= 1 ||                              // faces with only one unrefined edge
+        numNodesEffective == numEdgesToRefine)                                                 // refine all edges
     {
         isSplittingRequired = true;
     }

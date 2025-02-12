@@ -1043,7 +1043,7 @@ std::vector<meshkernel::UInt> Mesh2D::GetEdgesCrossingSmallFlowEdges(double smal
     Administrate();
     std::vector<UInt> result;
     result.reserve(GetNumEdges());
-    std::vector<Point> faceCircumcenters = MeshFaceCenters::ComputeCircumcenters (*this);
+    std::vector<Point> faceCircumcenters = MeshFaceCenters::ComputeCircumcenters(*this);
 
     for (UInt e = 0; e < GetNumEdges(); ++e)
     {
@@ -1068,7 +1068,7 @@ std::vector<meshkernel::Point> Mesh2D::GetFlowEdgesCenters(const std::vector<UIn
 {
     std::vector<Point> result;
     result.reserve(GetNumEdges());
-    std::vector<Point> faceCircumcenters = MeshFaceCenters::ComputeCircumcenters (*this);
+    std::vector<Point> faceCircumcenters = MeshFaceCenters::ComputeCircumcenters(*this);
 
     for (const auto& edge : edges)
     {
@@ -1284,7 +1284,7 @@ void Mesh2D::ComputeNodeNeighbours(std::vector<std::vector<UInt>>& nodesNodes, U
 void Mesh2D::ComputeAverageFlowEdgesLength(std::vector<double>& edgesLength,
                                            std::vector<double>& averageFlowEdgesLength) const
 {
-    std::vector<Point> faceCircumcenters = MeshFaceCenters::ComputeCircumcenters (*this);
+    std::vector<Point> faceCircumcenters = MeshFaceCenters::ComputeCircumcenters(*this);
 
     for (UInt e = 0; e < GetNumEdges(); e++)
     {
@@ -1939,7 +1939,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces(const Polygons& 
     std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
 
     Administrate(deleteMeshAction.get());
-    std::vector<Point> faceCircumcenters = MeshFaceCenters::ComputeCircumcenters (*this);
+    std::vector<Point> faceCircumcenters = MeshFaceCenters::ComputeCircumcenters(*this);
 
     for (UInt e = 0u; e < GetNumEdges(); ++e)
     {

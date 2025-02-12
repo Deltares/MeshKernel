@@ -466,10 +466,6 @@ namespace meshkernel
                               const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
                               const Projection& projection);
 
-    Point ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                 const std::vector<UInt>& edgesNumFaces,
-                                 const Projection& projection);
-
     /// @brief Determines if two segments are crossing (cross, cross3D)
     /// @param[in]  firstSegmentFirstPoint   The first point of the first segment
     /// @param[in]  firstSegmentSecondPoint  The second point of the first segment
