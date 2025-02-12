@@ -419,14 +419,12 @@ void Mesh2D::ResizeAndInitializeFaceVectors()
     m_faceArea.clear();
     m_facesNodes.clear();
     m_facesEdges.clear();
-    // m_facesCircumcenters.clear();
     m_numFacesNodes.clear();
 
     m_facesMassCenters.reserve(GetNumNodes());
     m_faceArea.reserve(GetNumNodes());
     m_facesNodes.reserve(GetNumNodes());
     m_facesEdges.reserve(GetNumNodes());
-    // m_facesCircumcenters.reserve(GetNumNodes());
     m_numFacesNodes.reserve(GetNumNodes());
 }
 
@@ -649,12 +647,8 @@ void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters
     }
 
     auto const numFaces = static_cast<int>(GetNumFaces());
-    // m_facesCircumcenters.resize(numFaces);
-    m_faceArea.resize(numFaces);
     m_facesMassCenters.resize(numFaces);
 
-    // std::vector<UInt> numEdgeFacesCache;
-    // numEdgeFacesCache.reserve(m_maximumNumberOfEdgesPerFace);
     std::vector<Point> polygonNodesCache;
 #pragma omp parallel for private(polygonNodesCache)
     for (int f = 0; f < numFaces; f++)
@@ -2434,7 +2428,6 @@ std::unique_ptr<Mesh2D> Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     mergedMesh.m_edgesNumFaces.insert(mergedMesh.m_edgesNumFaces.end(), mesh2.m_edgesNumFaces.begin(), mesh2.m_edgesNumFaces.end());
 
     mergedMesh.m_numFacesNodes.insert(mergedMesh.m_numFacesNodes.end(), mesh2.m_numFacesNodes.begin(), mesh2.m_numFacesNodes.end());
-    // mergedMesh.m_facesCircumcenters.insert(mergedMesh.m_facesCircumcenters.end(), mesh2.m_facesCircumcenters.begin(), mesh2.m_facesCircumcenters.end());
     mergedMesh.m_facesMassCenters.insert(mergedMesh.m_facesMassCenters.end(), mesh2.m_facesMassCenters.begin(), mesh2.m_facesMassCenters.end());
     mergedMesh.m_faceArea.insert(mergedMesh.m_faceArea.end(), mesh2.m_faceArea.begin(), mesh2.m_faceArea.end());
 

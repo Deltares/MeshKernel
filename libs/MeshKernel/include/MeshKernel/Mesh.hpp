@@ -471,7 +471,6 @@ namespace meshkernel
         std::vector<std::vector<UInt>> m_facesNodes; ///< The nodes composing the faces, in ccw order (netcell%Nod)
         std::vector<std::uint8_t> m_numFacesNodes;   ///< The number of nodes composing the face (netcell%N)
         std::vector<std::vector<UInt>> m_facesEdges; ///< The edge indices composing the face (netcell%lin)
-        std::vector<Point> m_facesCircumcenters;     ///< The face circumcenters the face circumcenter (xz, yz)
         std::vector<Point> m_facesMassCenters;       ///< The faces centers of mass (xzw, yzw)
         std::vector<double> m_faceArea;              ///< The face area
 
