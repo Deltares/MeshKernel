@@ -561,3 +561,56 @@ TEST(CurvilinearGridOrthogonalization, Compute_CurvilinearGrid_ShouldOrthogonali
     }
     std::cout << std::endl;
 }
+
+TEST(CurvilinearGridOrthogonalization, Compute_OnNonOrthogonalCurvilinearGridWithFrozenLine_ShouldOrthogonalizeGridExceptFrozenLinePoins)
+{
+    // Set-up a mesh that will be changed by orthogonalization
+    lin_alg::Matrix<Point> grid(5, 5);
+    grid << Point{0, 0}, Point{0, 10}, Point{0, 15}, Point{0, 20}, Point{0, 30},
+        Point{10, 0}, Point{10, 10}, Point{10, 15}, Point{10, 20}, Point{10, 30},
+        Point{20, 0}, Point{20, 10}, Point{20, 15}, Point{20, 20}, Point{20, 30},
+        Point{30, 0}, Point{30, 10}, Point{30, 15}, Point{30, 20}, Point{30, 30},
+        Point{40, 0}, Point{40, 10}, Point{40, 15}, Point{40, 20}, Point{40, 30};
+
+    meshkernel::CurvilinearGrid curvilinearGrid(grid, meshkernel::Projection::cartesian);
+
+    OrthogonalizationParameters orthogonalizationParameters;
+    orthogonalizationParameters.outer_iterations = 20;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
+    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
+    curvilinearGridOrthogonalization.SetBlock({0, 0}, {30, 30});
+    curvilinearGridOrthogonalization.SetLine({10.0, 10.0}, {20.0, 10.0}); // First frozen line
+    curvilinearGridOrthogonalization.SetLine({10.0, 20.0}, {20.0, 20.0}); // Second frozen line
+
+    // Execute
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridOrthogonalization.Compute();
+
+    // Assert nodes stays in place
+    constexpr double tolerance = 1e-6;
+
+    ASSERT_NEAR(10.010362126881590, curvilinearGrid.GetNode(1, 0).x, tolerance);
+    ASSERT_NEAR(10.000000000000000, curvilinearGrid.GetNode(1, 1).x, tolerance); // stays in place
+    ASSERT_NEAR(9.9931319280879141, curvilinearGrid.GetNode(1, 2).x, tolerance);
+    ASSERT_NEAR(10.000000000000000, curvilinearGrid.GetNode(1, 3).x, tolerance); // stays in place
+    ASSERT_NEAR(10.010362126881590, curvilinearGrid.GetNode(1, 4).x, tolerance);
+
+    ASSERT_NEAR(20.000193221170274, curvilinearGrid.GetNode(2, 0).x, tolerance);
+    ASSERT_NEAR(20.000000000000000, curvilinearGrid.GetNode(2, 1).x, tolerance); // stays in place
+    ASSERT_NEAR(20.002161639900610, curvilinearGrid.GetNode(2, 2).x, tolerance);
+    ASSERT_NEAR(20.000000000000000, curvilinearGrid.GetNode(2, 3).x, tolerance); // stays in place
+    ASSERT_NEAR(20.000193221170274, curvilinearGrid.GetNode(2, 4).x, tolerance);
+
+    ASSERT_NEAR(0.0000000000000000, curvilinearGrid.GetNode(1, 0).y, tolerance);
+    ASSERT_NEAR(10.000000000000000, curvilinearGrid.GetNode(1, 1).y, tolerance); // stays in place
+    ASSERT_NEAR(14.999987506886292, curvilinearGrid.GetNode(1, 2).y, tolerance);
+    ASSERT_NEAR(20.000000000000000, curvilinearGrid.GetNode(1, 3).y, tolerance); // stays in place
+    ASSERT_NEAR(30.000000000000000, curvilinearGrid.GetNode(1, 4).y, tolerance);
+
+    ASSERT_NEAR(0.0000000000000000, curvilinearGrid.GetNode(2, 0).y, tolerance);
+    ASSERT_NEAR(10.000000000000000, curvilinearGrid.GetNode(2, 1).y, tolerance); // stays in place
+    ASSERT_NEAR(14.999992348548458, curvilinearGrid.GetNode(2, 2).y, tolerance);
+    ASSERT_NEAR(20.000000000000000, curvilinearGrid.GetNode(2, 3).y, tolerance); // stays in place
+    ASSERT_NEAR(30.000000000000000, curvilinearGrid.GetNode(2, 4).y, tolerance);
+}
