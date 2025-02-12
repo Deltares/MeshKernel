@@ -1377,7 +1377,7 @@ void Mesh2D::ComputeAverageEdgeLength(const std::vector<double>& edgesLength,
     }
 }
 
-void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
+void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios) const
 {
     std::vector<std::array<double, 2>> averageEdgesLength(GetNumEdges(), std::array<double, 2>{constants::missing::doubleValue, constants::missing::doubleValue});
     std::vector<double> averageFlowEdgesLength(GetNumEdges(), constants::missing::doubleValue);
