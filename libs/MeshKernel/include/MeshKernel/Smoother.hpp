@@ -44,17 +44,14 @@ namespace meshkernel
 
     public:
         /// @brief Mesh2D constructor
-        /// @param[in] mesh
-        /// @param[in] nodeType
+        /// @param[in] mesh Mesh
+        /// @param[in] nodeType Type of node in the mesh, may be different from the node type contained in the Mesh.
         explicit Smoother(const Mesh2D& mesh, const std::vector<MeshNodeType>& nodeType);
 
         /// @brief Computes the smoother weights
         void Compute();
 
         /// @brief Gets the weight for a certain node and connected node
-        /// @brief node
-        /// @brief connectedNode
-        /// @returns
         [[nodiscard]] auto GetWeight(UInt node, int connectedNode) const
         {
             return m_weights[node][connectedNode];
@@ -162,7 +159,6 @@ namespace meshkernel
 
         /// @brief Compute compute current node xi and eta (orthonet_assign_xieta)
         /// @param[in] currentNode
-        /// @param[in] nodeTypes Node type of all nodes
         void ComputeNodeXiEta(UInt currentNode);
 
         /// @brief Compute optimal edge angle
