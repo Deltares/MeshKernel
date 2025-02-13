@@ -574,7 +574,7 @@ void meshkernel::CasulliRefinement::ConnectNewNodes(Mesh2D& mesh, const std::vec
 
 void meshkernel::CasulliRefinement::ComputeNewFaceNodes(Mesh2D& mesh, std::vector<EdgeNodes>& newNodes, std::vector<NodeMask>& nodeMask)
 {
-    std::vector<Point> faceCircumcentres = MeshFaceCenters::ComputeCircumcenters (mesh);
+    std::vector<Point> faceCircumcentres = MeshFaceCenters::ComputeCircumcenters(mesh);
 
     for (UInt i = 0; i < mesh.GetNumFaces(); ++i)
     {

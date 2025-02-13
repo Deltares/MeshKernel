@@ -31,9 +31,9 @@
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/MeshEdgeLength.hpp"
+#include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygons.hpp"
-#include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/Utilities/RTreeFactory.hpp"
 
 using meshkernel::Contacts;
@@ -48,7 +48,7 @@ Contacts::Contacts(Mesh1D& mesh1d, Mesh2D& mesh2d)
         throw AlgorithmError("meshkernel::Contacts::Contacts: m_mesh1d and m_mesh2d projections are different");
     }
 
-    m_facesCircumcenters = MeshFaceCenters::ComputeCircumcenters (mesh2d);
+    m_facesCircumcenters = MeshFaceCenters::ComputeCircumcenters(mesh2d);
 }
 
 void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
