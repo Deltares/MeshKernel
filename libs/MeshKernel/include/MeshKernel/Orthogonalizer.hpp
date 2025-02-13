@@ -43,7 +43,7 @@ namespace meshkernel
 
     public:
         /// @brief Constructor
-        explicit Orthogonalizer(Mesh2D& mesh,
+        explicit Orthogonalizer(const Mesh2D& mesh,
                                 const std::vector<std::vector<UInt>>& nodesNodes,
                                 const std::vector<MeshNodeType>& nodeTypes);
 

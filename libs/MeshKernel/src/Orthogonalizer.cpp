@@ -34,7 +34,7 @@
 using meshkernel::Mesh2D;
 using meshkernel::Orthogonalizer;
 
-Orthogonalizer::Orthogonalizer(Mesh2D& mesh,
+Orthogonalizer::Orthogonalizer(const Mesh2D& mesh,
                                const std::vector<std::vector<UInt>>& nodesNodes,
                                const std::vector<MeshNodeType>& nodeType) : m_mesh(mesh), m_nodesNodes(nodesNodes), m_nodeType(nodeType)
 {
