@@ -87,7 +87,6 @@
 #include <MeshKernel/SplitRowColumnOfMesh.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
-#include <MeshKernel/UndoActions/NoActionUndo.hpp>
 #include <MeshKernel/UndoActions/UndoAction.hpp>
 #include <MeshKernel/UndoActions/UndoActionStack.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
@@ -102,11 +101,14 @@
 #include "MeshKernelApi/ApiCache/SmallFlowEdgeCentreCache.hpp"
 #include "MeshKernelApi/MKStateUndoAction.hpp"
 #include "MeshKernelApi/MeshKernel.hpp"
+
+#include "MeshKernelApi/CurvilinearFrozenLinesAddUndoAction.hpp"
+#include "MeshKernelApi/CurvilinearFrozenLinesDeleteUndoAction.hpp"
 #include "MeshKernelApi/PropertyCalculator.hpp"
 #include "MeshKernelApi/State.hpp"
 #include "MeshKernelApi/Utils.hpp"
 
-#include <Version/Version.hpp>
+#include "Version/Version.hpp"
 
 #include <cstring>
 #include <span>
@@ -240,8 +242,9 @@ namespace meshkernelapi
 
             mkState.m_meshOrthogonalization.reset();
             mkState.m_curvilinearGridFromSplines.reset();
-            mkState.m_curvilinearGridOrthogonalization.reset();
             mkState.m_curvilinearGridLineShift.reset();
+            mkState.m_frozenLines.clear();
+            mkState.m_frozenLinesCounter = 0;
 
             meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
         }
@@ -4515,8 +4518,12 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_initialize_orthogonalize(int meshKernelId,
-                                                                 const meshkernel::OrthogonalizationParameters& orthogonalizationParameters)
+    MKERNEL_API int mkernel_curvilinear_orthogonalize(int meshKernelId,
+                                                      const meshkernel::OrthogonalizationParameters& orthogonalizationParameters,
+                                                      double xLowerLeftCorner,
+                                                      double yLowerLeftCorner,
+                                                      double xUpperRightCorner,
+                                                      double yUpperRightCorner)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -4526,40 +4533,21 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization = std::make_unique<meshkernel::CurvilinearGridOrthogonalization>(*meshKernelState[meshKernelId].m_curvilinearGrid,
-                                                                                                                                              orthogonalizationParameters);
-        }
-        catch (...)
-        {
-            lastExitCode = HandleException();
-        }
-        return lastExitCode;
-    }
-
-    MKERNEL_API int mkernel_curvilinear_set_block_orthogonalize(int meshKernelId,
-                                                                double xLowerLeftCorner,
-                                                                double yLowerLeftCorner,
-                                                                double xUpperRightCorner,
-                                                                double yUpperRightCorner)
-    {
-        lastExitCode = meshkernel::ExitCode::Success;
-        try
-        {
-            if (!meshKernelState.contains(meshKernelId))
-            {
-                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
-            }
-
-            if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
-            {
-                throw meshkernel::MeshKernelError("CurvilinearGridOrthogonalization not instantiated.");
-            }
-
+            auto curvilinearOrthogonalization = meshkernel::CurvilinearGridOrthogonalization(*meshKernelState[meshKernelId].m_curvilinearGrid, orthogonalizationParameters);
             meshkernel::Point firstPoint{xLowerLeftCorner, yLowerLeftCorner};
             meshkernel::Point secondPoint{xUpperRightCorner, yUpperRightCorner};
 
-            // Execute
-            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->SetBlock(firstPoint, secondPoint);
+            // Set frozen lines
+            for (const auto& [firstFrozenLineCoordinate, secondFrozenLineCoordinate] : meshKernelState[meshKernelId].m_frozenLines | std::views::values)
+            {
+                curvilinearOrthogonalization.SetLine(firstFrozenLineCoordinate, secondFrozenLineCoordinate);
+            }
+
+            // Set the block to orthogonalize
+            curvilinearOrthogonalization.SetBlock(firstPoint, secondPoint);
+
+            // Compute
+            meshKernelUndoStack.Add(curvilinearOrthogonalization.Compute(), meshKernelId);
         }
         catch (...)
         {
@@ -4568,11 +4556,34 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_set_frozen_lines_orthogonalize(int meshKernelId,
-                                                                       double xFirstGridLineNode,
-                                                                       double yFirstGridLineNode,
-                                                                       double xSecondGridLineNode,
-                                                                       double ySecondGridLineNode)
+    MKERNEL_API int mkernel_curvilinear_frozen_line_is_valid(int meshKernelId, int frozenLineId, bool& isValid)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_frozenLines.contains(frozenLineId))
+            {
+                isValid = true;
+            }
+            else
+            {
+                isValid = false;
+            }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_frozen_line_delete(int meshKernelId,
+                                                           int frozenLineId)
 
     {
         lastExitCode = meshkernel::ExitCode::Success;
@@ -4583,16 +4594,55 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
-            if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
+            if (!meshKernelState[meshKernelId].m_frozenLines.contains(frozenLineId))
             {
-                throw meshkernel::MeshKernelError("CurvilinearGridOrthogonalization not instantiated.");
+                throw meshkernel::MeshKernelError("The frozen line id is not contained.");
+            }
+
+            const auto frozenLinePoints = meshKernelState[meshKernelId].m_frozenLines[frozenLineId];
+
+            meshKernelState[meshKernelId].m_frozenLines.erase(frozenLineId);
+
+            meshKernelUndoStack.Add(std::make_unique<CurvilinearFrozenLinesDeleteUndoAction>(meshKernelState[meshKernelId],
+                                                                                             frozenLineId,
+                                                                                             frozenLinePoints),
+                                    meshKernelId);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_frozen_line_add(int meshKernelId,
+                                                        double xFirstGridLineNode,
+                                                        double yFirstGridLineNode,
+                                                        double xSecondGridLineNode,
+                                                        double ySecondGridLineNode,
+                                                        int& frozenLineId)
+
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
             meshkernel::Point const firstPoint{xFirstGridLineNode, yFirstGridLineNode};
             meshkernel::Point const secondPoint{xSecondGridLineNode, ySecondGridLineNode};
 
-            // Execute
-            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->SetLine(firstPoint, secondPoint);
+            const auto frozenLinePoints = std::make_pair(firstPoint, secondPoint);
+            frozenLineId = meshKernelState[meshKernelId].m_frozenLinesCounter;
+            meshKernelState[meshKernelId].m_frozenLines[frozenLineId] = frozenLinePoints;
+            meshKernelState[meshKernelId].m_frozenLinesCounter++;
+
+            meshKernelUndoStack.Add(std::make_unique<CurvilinearFrozenLinesAddUndoAction>(meshKernelState[meshKernelId],
+                                                                                          frozenLineId,
+                                                                                          frozenLinePoints),
+                                    meshKernelId);
         }
         catch (...)
         {
@@ -4601,7 +4651,12 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_orthogonalize(int meshKernelId)
+    MKERNEL_API int mkernel_curvilinear_frozen_line_get(int meshKernelId,
+                                                        int frozenLineId,
+                                                        double& xFirstFrozenLineCoordinate,
+                                                        double& yFirstFrozenLineCoordinate,
+                                                        double& xSecondFrozenLineCoordinate,
+                                                        double& ySecondFrozenLineCoordinate)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -4611,13 +4666,16 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
-            if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
+            if (!meshKernelState[meshKernelId].m_frozenLines.contains(frozenLineId))
             {
-                throw meshkernel::MeshKernelError("CurvilinearGridOrthogonalization not instantiated.");
+                throw meshkernel::MeshKernelError("The frozen line id is not contained.");
             }
+            const auto [firstCoordinate, secondCoordinate] = meshKernelState[meshKernelId].m_frozenLines[frozenLineId];
 
-            // Execute
-            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->Compute(), meshKernelId);
+            xFirstFrozenLineCoordinate = firstCoordinate.x;
+            yFirstFrozenLineCoordinate = firstCoordinate.y;
+            xSecondFrozenLineCoordinate = secondCoordinate.x;
+            ySecondFrozenLineCoordinate = secondCoordinate.y;
         }
         catch (...)
         {
@@ -4626,7 +4684,8 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_finalize_orthogonalize(int meshKernelId)
+    MKERNEL_API int mkernel_curvilinear_frozen_lines_get_count(int meshKernelId,
+                                                               int& numFrozenLines)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -4636,12 +4695,32 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
-            if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
+            numFrozenLines = static_cast<int>(meshKernelState[meshKernelId].m_frozenLines.size());
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+    MKERNEL_API int mkernel_curvilinear_frozen_lines_get_ids(int meshKernelId,
+                                                             int* frozenLinesIds)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
             {
-                throw meshkernel::MeshKernelError("CurvilinearGridOrthogonalization not instantiated.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
-            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization.reset();
+            std::vector<int> stateFrozenLinesIds;
+            for (const auto& frozenLineId : meshKernelState[meshKernelId].m_frozenLines | std::views::keys)
+            {
+                stateFrozenLinesIds.push_back(frozenLineId);
+            }
+
+            std::memcpy(frozenLinesIds, stateFrozenLinesIds.data(), stateFrozenLinesIds.size() * sizeof(int));
         }
         catch (...)
         {
@@ -4676,14 +4755,19 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
             }
 
+            meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(*meshKernelState[meshKernelId].m_curvilinearGrid, smoothingIterations);
+
+            // Set the frozen line
+            for (const auto& [firstFrozenLineCoordinate, secondFrozenLineCoordinate] : meshKernelState[meshKernelId].m_frozenLines | std::views::values)
+            {
+                curvilinearGridSmoothing.SetLine(firstFrozenLineCoordinate, secondFrozenLineCoordinate);
+            }
+
             const meshkernel::Point firstPoint{xLowerLeftCorner, yLowerLeftCorner};
             const meshkernel::Point secondPoint{xUpperRightCorner, yUpperRightCorner};
+            curvilinearGridSmoothing.SetBlock(firstPoint, secondPoint);
 
             // Execute
-            meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(*meshKernelState[meshKernelId].m_curvilinearGrid,
-                                                                          static_cast<meshkernel::UInt>(smoothingIterations));
-
-            curvilinearGridSmoothing.SetBlock(firstPoint, secondPoint);
             meshKernelUndoStack.Add(curvilinearGridSmoothing.Compute(), meshKernelId);
         }
         catch (...)
@@ -4729,13 +4813,11 @@ namespace meshkernelapi
 
             // Execute
             meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(*meshKernelState[meshKernelId].m_curvilinearGrid, smoothingIterations);
-
-            curvilinearGridSmoothing.SetLine(firstNode, secondNode);
             curvilinearGridSmoothing.SetBlock(lowerLeft, upperRight);
 
             auto undoAction = MKStateUndoAction::Create(meshKernelState[meshKernelId]);
 
-            meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridSmoothing.ComputeDirectional();
+            meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridSmoothing.ComputeDirectional(firstNode, secondNode);
 
             meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
         }

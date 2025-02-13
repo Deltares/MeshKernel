@@ -50,15 +50,17 @@ namespace meshkernel
 
         /// @brief Compute curvilinear grid line smoothing. The algorithm smooths the grid along the direction specified by the line.
         /// The line must be an m or n grid line of the curvilinear grid.
+        /// @param[in] firstPoint The first point of the grid line
+        /// @param[in] secondPoint The second point of the grid line
         /// @return The smoothed grid
-        std::unique_ptr<CurvilinearGrid> ComputeDirectional();
+        std::unique_ptr<CurvilinearGrid> ComputeDirectional(const Point& firstPoint, const Point& secondPoint);
 
     private:
         /// @brief Solve one iteration of block smoothing
         void Solve();
 
         /// @brief Solve one iteration of directional smoothing
-        void SolveDirectional();
+        void SolveDirectional(const CurvilinearGridLine& gridLine);
 
         /// @brief Projects a point on the closest grid boundary
         /// @param[in] point The point to project
@@ -67,11 +69,12 @@ namespace meshkernel
         void ProjectPointOnClosestGridBoundary(Point const& point, UInt n, UInt m);
 
         /// @brief Compute the edge lengths around a node (n,m) for n or m-grid line
-        std::tuple<Point, Point> ComputeGridDelta(const UInt n, const UInt m) const;
+        std::tuple<Point, Point> ComputeGridDelta(const UInt n, const UInt m, const CurvilinearGridLine& gridLine) const;
 
         /// @brief Compute a new smoothed grid point
         Point ComputeSmoothedGridNode(const UInt n,
                                       const UInt m,
+                                      const CurvilinearGridLine& gridLine,
                                       const double firstLengthSquared,
                                       const double secondLengthSquared) const;
 

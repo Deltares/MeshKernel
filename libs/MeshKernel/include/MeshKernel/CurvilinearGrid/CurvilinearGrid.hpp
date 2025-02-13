@@ -436,6 +436,11 @@ namespace meshkernel
         /// @return A number >= 2 for a valid curvilinear grid
         UInt FullNumN() const { return static_cast<UInt>(m_gridNodes.rows()); }
 
+        /// @brief Computes a grid line from two points
+        /// @param[in] firstPoint The point containing the first point of the line
+        /// @param[in] secondPoint The point containing the second point of the line
+        CurvilinearGridLine GetGridLine(const Point& firstPoint, const Point& secondPoint);
+
         /// @brief Restore grid to state before grid line was added
         void RestoreAction(const AddGridLineUndoAction& undoAction);
 

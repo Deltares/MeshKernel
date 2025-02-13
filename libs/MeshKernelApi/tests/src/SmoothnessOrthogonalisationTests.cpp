@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include <memory>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -33,20 +35,14 @@
 
 #include "MeshKernelApi/BoundingBox.hpp"
 #include "MeshKernelApi/GeometryList.hpp"
-#include "MeshKernelApi/Mesh1D.hpp"
 #include "MeshKernelApi/Mesh2D.hpp"
 #include "MeshKernelApi/MeshKernel.hpp"
-#include "Version/Version.hpp"
 
+#include "CartesianApiTestFixture.hpp"
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeCurvilinearGrids.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 #include "TestUtils/SampleFileReader.hpp"
-
-#include <memory>
-#include <numeric>
-
-#include "CartesianApiTestFixture.hpp"
 
 // namespace aliases
 namespace mk = meshkernel;
@@ -155,40 +151,6 @@ TEST_F(CartesianApiTestFixture, OrthogonalizationThroughApi)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_EQ(12, mesh2d.num_nodes);
     ASSERT_EQ(17, mesh2d.num_edges);
-}
-
-TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLinesOrthogonalize_ShouldSetFrozenLines)
-{
-    // Setup
-    MakeRectangularCurvilinearGrid();
-    auto const meshKernelId = GetMeshKernelId();
-    meshkernel::OrthogonalizationParameters const orthogonalizationParameters{};
-
-    auto errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Execute
-    errorCode = meshkernelapi::mkernel_curvilinear_set_frozen_lines_orthogonalize(meshKernelId, 20.0, 0.0, 20.0, 10.0);
-
-    // Asset
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-}
-
-TEST_F(CartesianApiTestFixture, CurvilinearFinalizeOrthogonalize_ShouldFinalize)
-{
-    // Setup
-    MakeRectangularCurvilinearGrid();
-    auto const meshKernelId = GetMeshKernelId();
-    meshkernel::OrthogonalizationParameters const orthogonalizationParameters{};
-
-    auto errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // Execute
-    errorCode = meshkernelapi::mkernel_curvilinear_finalize_orthogonalize(meshKernelId);
-
-    // Assert
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
 TEST_F(CartesianApiTestFixture, ComputeOrthogonalizationMesh2D_WithOrthogonalMesh2D_ShouldOrthogonalize)
@@ -378,22 +340,32 @@ TEST_F(CartesianApiTestFixture, CurvilinearSetFrozenLinesOrthogonalize_ShouldSet
 
     // Execute
     meshkernel::OrthogonalizationParameters const orthogonalizationParameters{};
+    int frozenLinesId = -1;
 
-    auto errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
+    auto errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_add(meshKernelId,
+                                                                        line1StartPointX,
+                                                                        line1StartPointY,
+                                                                        line1EndPointX,
+                                                                        line1EndPointY,
+                                                                        frozenLinesId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(0, frozenLinesId);
 
-    errorCode = meshkernelapi::mkernel_curvilinear_set_block_orthogonalize(meshKernelId, blockStartPointX, blockStartPointY, blockEndPointX, blockEndPointY);
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_add(meshKernelId,
+                                                                   line2StartPointX,
+                                                                   line2StartPointY,
+                                                                   line2EndPointX,
+                                                                   line2EndPointY,
+                                                                   frozenLinesId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(1, frozenLinesId);
 
-    errorCode = meshkernelapi::mkernel_curvilinear_set_frozen_lines_orthogonalize(meshKernelId, line1StartPointX, line1StartPointY, line1EndPointX, line1EndPointY);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    errorCode = meshkernelapi::mkernel_curvilinear_set_frozen_lines_orthogonalize(meshKernelId, line2StartPointX, line2StartPointY, line2EndPointX, line2EndPointY);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    errorCode = meshkernelapi::mkernel_curvilinear_finalize_orthogonalize(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId,
+                                                                 orthogonalizationParameters,
+                                                                 blockStartPointX,
+                                                                 blockStartPointY,
+                                                                 blockEndPointX,
+                                                                 blockEndPointY);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid clgData;

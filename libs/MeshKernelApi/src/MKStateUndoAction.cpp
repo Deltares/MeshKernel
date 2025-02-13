@@ -40,9 +40,7 @@ meshkernelapi::MKStateUndoAction::MKStateUndoAction(MeshKernelState& mkState) : 
     m_mkState.m_mesh2d = mkState.m_mesh2d;
     m_mkState.m_contacts = mkState.m_contacts;
     m_mkState.m_curvilinearGrid = mkState.m_curvilinearGrid;
-    m_mkState.m_meshOrthogonalization = mkState.m_meshOrthogonalization;
     m_mkState.m_curvilinearGridFromSplines = mkState.m_curvilinearGridFromSplines;
-    m_mkState.m_curvilinearGridOrthogonalization = mkState.m_curvilinearGridOrthogonalization;
     m_mkState.m_curvilinearGridLineShift = mkState.m_curvilinearGridLineShift;
     m_mkState.m_projection = mkState.m_projection;
 }

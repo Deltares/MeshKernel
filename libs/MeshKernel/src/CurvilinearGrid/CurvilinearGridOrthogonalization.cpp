@@ -30,8 +30,6 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridUtilities.hpp>
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Splines.hpp>
 
@@ -42,26 +40,10 @@ CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization(CurvilinearGr
                                                                    const OrthogonalizationParameters& orthogonalizationParameters)
     : CurvilinearGridAlgorithm(grid),
       m_orthoEqTerms(m_grid.NumN(), m_grid.NumM()),
-      m_isGridNodeFrozen(m_grid.NumN(), m_grid.NumM()),
       m_splines(Splines(m_grid))
 {
     CheckOrthogonalizationParameters(orthogonalizationParameters);
     m_orthogonalizationParameters = orthogonalizationParameters;
-    m_isGridNodeFrozen.fill(false);
-}
-
-void CurvilinearGridOrthogonalization::ComputeFrozenGridPoints()
-{
-    for (auto const& frozenLine : m_lines)
-    {
-        for (auto n = frozenLine.m_startNode.m_n; n <= frozenLine.m_endNode.m_n; ++n)
-        {
-            for (auto m = frozenLine.m_startNode.m_m; m <= frozenLine.m_endNode.m_m; ++m)
-            {
-                m_isGridNodeFrozen(n, m) = true;
-            }
-        }
-    }
 }
 
 meshkernel::UndoActionPtr CurvilinearGridOrthogonalization::Compute()
@@ -79,8 +61,8 @@ meshkernel::UndoActionPtr CurvilinearGridOrthogonalization::Compute()
     // Compute the grid node types
     m_grid.ComputeGridNodeTypes();
 
-    // Set the frozen node mask
-    ComputeFrozenGridPoints();
+    // Compute the frozen nodes
+    ComputeFrozenNodes();
 
     // Compute the matrix coefficients
     for (auto outerIterations = 0; outerIterations < m_orthogonalizationParameters.outer_iterations; ++outerIterations)
