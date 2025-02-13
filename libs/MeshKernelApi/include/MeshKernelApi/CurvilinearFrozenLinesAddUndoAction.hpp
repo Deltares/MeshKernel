@@ -35,17 +35,13 @@
 namespace meshkernelapi
 {
 
-    /// @brief Undo action for MeshKernelState.
-    ///
-    /// \note This is for creational api functions, such as mesh generation, mesh set, mesh conversion and state deallocate.
-    /// The undo action manages a reference to the active MeshKernelState and keeps a copy of the pointers.
-    /// When the pointer is updated in the mk api, undoing is achieved by swapping the pointers.
+    /// @brief Undo action for adding frozen lines
     class CurvilinearFrozenLinesAddUndoAction : public meshkernel::UndoAction
     {
     public:
         /// @brief Constructor.
         ///
-        /// Keeps a reference to the active MeshKernelState and copies its pointers
+        /// Keeps a reference to the active MeshKernelState, the last used frozenLineId and frozen line points
         explicit CurvilinearFrozenLinesAddUndoAction(MeshKernelState& mkState,
                                                      int frozenLineId,
                                                      const std::pair<meshkernel::Point, meshkernel::Point>& frozenLinePoints) : m_mkStateReference(mkState),

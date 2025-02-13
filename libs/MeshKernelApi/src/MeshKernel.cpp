@@ -4633,8 +4633,8 @@ namespace meshkernelapi
             meshKernelState[meshKernelId].m_frozenLinesCounter++;
 
             meshKernelUndoStack.Add(std::make_unique<CurvilinearFrozenLinesAddUndoAction>(meshKernelState[meshKernelId],
-                                                                                       frozenLineId,
-                                                                                       frozenLinePoints));
+                                                                                          frozenLineId,
+                                                                                          frozenLinePoints));
         }
         catch (...)
         {
