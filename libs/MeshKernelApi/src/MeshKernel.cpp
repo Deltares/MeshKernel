@@ -87,7 +87,6 @@
 #include <MeshKernel/SplitRowColumnOfMesh.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
-#include <MeshKernel/UndoActions/NoActionUndo.hpp>
 #include <MeshKernel/UndoActions/UndoAction.hpp>
 #include <MeshKernel/UndoActions/UndoActionStack.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>

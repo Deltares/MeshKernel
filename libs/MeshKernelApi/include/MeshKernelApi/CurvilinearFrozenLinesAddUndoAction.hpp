@@ -56,7 +56,7 @@ namespace meshkernelapi
         {
             if (m_mkStateReference.m_frozenLines.contains(m_frozenLinesCounter))
             {
-                throw meshkernel::MeshKernelError("Frozen line counter in meshkernel state should not exist when commiting an addition of a frozen line");
+                throw meshkernel::MeshKernelError("Frozen line counter in meshkernel state should not exist when committing an addition of a frozen line");
             }
             m_mkStateReference.m_frozenLines[m_frozenLinesCounter] = m_frozenLinePoints;
         }
