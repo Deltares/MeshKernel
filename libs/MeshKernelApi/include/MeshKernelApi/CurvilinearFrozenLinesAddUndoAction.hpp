@@ -74,7 +74,11 @@ namespace meshkernelapi
 
         /// \brief Reference to the active MeshKernelState.
         MeshKernelState& m_mkStateReference;
+
+        /// \brief A copy of the frozen line counter
         int m_frozenLinesCounter;
+
+        /// \brief A copy of the frozen line points
         std::pair<meshkernel::Point, meshkernel::Point> m_frozenLinePoints;
     };
 

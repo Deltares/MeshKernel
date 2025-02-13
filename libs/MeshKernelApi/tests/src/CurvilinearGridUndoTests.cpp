@@ -1838,7 +1838,7 @@ TEST(CurvilinearGridUndoTests, RemoveFrozenLineUndoTest)
     int numFrozenLines = -1;
     errorCode = meshkernelapi::mkernel_curvilinear_frozen_lines_get_count(meshKernelId, numFrozenLines);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(0, 0);
+    ASSERT_EQ(errorCode, 0);
 
     // Perform undo
     bool didUndo = false;
