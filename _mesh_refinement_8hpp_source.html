@@ -291,19 +291,20 @@ $(function() {
 <div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;        std::vector&lt;UInt&gt; m_globalEdgeIndicesCache;   </div>
 <div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;        std::vector&lt;UInt&gt; m_refineEdgeCache;          </div>
 <div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;        std::vector&lt;FaceLocation&gt; m_faceLocationType; </div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160; </div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;        <a class="code" href="classmeshkernel_1_1_mesh_refinement.html#a4070f77223ce02f79118a4209dcf3c34">RefinementType</a> m_refinementType = RefinementType::WaveCourant; </div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;        <span class="keywordtype">bool</span> m_directionalRefinement = <span class="keyword">false</span>;                          </div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160; </div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        <a class="code" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&amp; m_mesh;                                      </div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;        std::unique_ptr&lt;MeshInterpolation&gt; m_interpolant;    </div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;        <a class="code" href="classmeshkernel_1_1_polygons.html">Polygons</a> m_polygons;                                 </div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;        <a class="code" href="structmeshkernel_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a> m_meshRefinementParameters; </div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;        <span class="keywordtype">bool</span> m_useNodalRefinement = <span class="keyword">false</span>;                   </div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">double</span> m_mergingDistance = 0.001;              </div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;        <span class="keywordtype">bool</span> m_isRefinementBasedOnSamples = <span class="keyword">false</span>;           </div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;    };</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;        std::vector&lt;double&gt; m_edgeLengths;            </div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160; </div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;        <a class="code" href="classmeshkernel_1_1_mesh_refinement.html#a4070f77223ce02f79118a4209dcf3c34">RefinementType</a> m_refinementType = RefinementType::WaveCourant; </div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;        <span class="keywordtype">bool</span> m_directionalRefinement = <span class="keyword">false</span>;                          </div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160; </div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;        <a class="code" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a>&amp; m_mesh;                                      </div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;        std::unique_ptr&lt;MeshInterpolation&gt; m_interpolant;    </div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;        <a class="code" href="classmeshkernel_1_1_polygons.html">Polygons</a> m_polygons;                                 </div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;        <a class="code" href="structmeshkernel_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a> m_meshRefinementParameters; </div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;        <span class="keywordtype">bool</span> m_useNodalRefinement = <span class="keyword">false</span>;                   </div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;        <span class="keyword">const</span> <span class="keywordtype">double</span> m_mergingDistance = 0.001;              </div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;        <span class="keywordtype">bool</span> m_isRefinementBasedOnSamples = <span class="keyword">false</span>;           </div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;    };</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;} <span class="comment">// namespace meshkernel</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <div class="ttc" id="aclassmeshkernel_1_1_mesh_refinement_html"><div class="ttname"><a href="classmeshkernel_1_1_mesh_refinement.html">meshkernel::MeshRefinement</a></div><div class="ttdoc">A class used to refine a Mesh2D instance.</div><div class="ttdef"><b>Definition:</b> MeshRefinement.hpp:74</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_mesh2_d_html"><div class="ttname"><a href="classmeshkernel_1_1_mesh2_d.html">meshkernel::Mesh2D</a></div><div class="ttdoc">A class derived from Mesh, which describes unstructures 2d meshes.</div><div class="ttdef"><b>Definition:</b> Mesh2D.hpp:55</div></div>
