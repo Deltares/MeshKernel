@@ -114,8 +114,12 @@
 
 namespace meshkernelapi
 {
+    std::map<int, std::unique_ptr<PropertyCalculator>> allocatePropertyCalculators();
+
     // The state held by MeshKernel
     static std::unordered_map<int, MeshKernelState> meshKernelState;
+    /// @brief Map of property calculators, from an property identifier to the calculator.
+    static std::map<int, std::unique_ptr<PropertyCalculator>> propertyCalculators = allocatePropertyCalculators();
     static int meshKernelStateCounter = 0;
 
     // Error state
@@ -150,9 +154,6 @@ namespace meshkernelapi
 
         return propertyMap;
     }
-
-    /// @brief Map of property calculators, from an property identifier to the calculator.
-    static std::map<int, std::unique_ptr<PropertyCalculator>> propertyCalculators = allocatePropertyCalculators();
 
     static meshkernel::ExitCode HandleException(std::exception_ptr exception_ptr = std::current_exception())
     {
