@@ -1272,7 +1272,7 @@ TEST(MeshRefinement, RefineElongatedFaces)
     // Assert circumcenters are correctly computed
     constexpr double tolerance = 1e-6;
 
-    std::vector<Point> faceCircumcenters = MeshFaceCenters::ComputeCircumcenters (*mesh);
+    std::vector<Point> faceCircumcenters = MeshFaceCenters::ComputeCircumcenters(*mesh);
 
     // Compare the x-location of the circumcentre.
     ASSERT_NEAR(1673.0860169014584, faceCircumcenters[0].x, tolerance);

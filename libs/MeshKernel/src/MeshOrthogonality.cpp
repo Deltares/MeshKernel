@@ -28,8 +28,8 @@
 #include "MeshKernel/MeshOrthogonality.hpp"
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Exceptions.hpp"
-#include "MeshKernel/Operations.hpp"
 #include "MeshKernel/MeshFaceCenters.hpp"
+#include "MeshKernel/Operations.hpp"
 
 std::vector<double> meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh)
 {
@@ -84,8 +84,7 @@ void meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh, std::span<double
         throw ConstraintError("array for orthogonality values is not the correct size");
     }
 
-    std::vector<Point> faceCircumcentres = MeshFaceCenters::ComputeCircumcenters (mesh);
-
+    std::vector<Point> faceCircumcentres = MeshFaceCenters::ComputeCircumcenters(mesh);
 
     const auto numEdges = mesh.GetNumEdges();
 
