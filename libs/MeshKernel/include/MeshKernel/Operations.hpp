@@ -452,6 +452,7 @@ namespace meshkernel
     /// @brief Count the number of valid edges in list
     UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, const UInt numNodes);
 
+    /// @brief Compute mid point and normal of polygon segment
     void ComputeMidPointsAndNormals(const std::vector<Point>& polygon,
                                     const std::vector<UInt>& edgesNumFaces,
                                     const UInt numNodes,
@@ -460,6 +461,7 @@ namespace meshkernel
                                     UInt& pointCount,
                                     const Projection& projection);
 
+    /// @brief Compute circumcentre of face
     Point ComputeCircumCentre(const Point& centerOfMass,
                               const UInt pointCount,
                               const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
