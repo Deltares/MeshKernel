@@ -603,41 +603,6 @@ std::unique_ptr<meshkernel::DeleteNodeAction> Mesh::DeleteNode(UInt node, const 
     }
 }
 
-void Mesh::ComputeEdgesLengths()
-{
-    auto const numEdges = GetNumEdges();
-    m_edgeLengths.resize(numEdges, constants::missing::doubleValue);
-
-    // TODO could be openmp loop
-    for (UInt e = 0; e < numEdges; e++)
-    {
-        auto const first = m_edges[e].first;
-        auto const second = m_edges[e].second;
-
-        if (first != constants::missing::uintValue && second != constants::missing::uintValue) [[likely]]
-        {
-            m_edgeLengths[e] = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
-        }
-    }
-}
-
-double Mesh::ComputeMinEdgeLength(const Polygons& polygon) const
-{
-    auto const numEdges = GetNumEdges();
-    auto result = std::numeric_limits<double>::max();
-
-    const auto isNodeInPolygon = IsLocationInPolygon(polygon, Location::Nodes);
-    for (UInt e = 0; e < numEdges; e++)
-    {
-        const auto& [firstNode, secondNode] = m_edges[e];
-        if (isNodeInPolygon[firstNode] || isNodeInPolygon[secondNode])
-        {
-            result = std::min(result, m_edgeLengths[e]);
-        }
-    }
-    return result;
-}
-
 void Mesh::ComputeEdgesCenters()
 {
     m_edgesCenters = ComputeEdgeCenters(m_nodes, m_edges);
@@ -945,23 +910,6 @@ void Mesh::AdministrateNodesEdges(CompoundUndoAction* undoAction)
     SortEdgesInCounterClockWiseOrder(0, GetNumNodes() - 1);
 }
 
-double Mesh::ComputeMaxLengthSurroundingEdges(UInt node)
-{
-    if (m_edgeLengths.empty())
-    {
-        ComputeEdgesLengths();
-    }
-
-    auto maxEdgeLength = std::numeric_limits<double>::lowest();
-    for (UInt ee = 0; ee < m_nodesNumEdges[node]; ++ee)
-    {
-        const auto edge = m_nodesEdges[node][ee];
-        maxEdgeLength = std::max(maxEdgeLength, m_edgeLengths[edge]);
-    }
-
-    return maxEdgeLength;
-}
-
 std::vector<meshkernel::Point> Mesh::ComputeLocations(Location location) const
 {
     std::vector<Point> result;
@@ -1018,11 +966,13 @@ meshkernel::UInt Mesh::GetLocalFaceNodeIndex(const UInt faceIndex, const UInt no
     return faceNodeIndex;
 }
 
-std::vector<bool> Mesh::IsLocationInPolygon(const Polygons& polygon, Location location) const
+std::vector<meshkernel::Boolean> Mesh::IsLocationInPolygon(const Polygons& polygon, Location location) const
 {
     const auto locations = ComputeLocations(location);
-    std::vector<bool> result(locations.size(), false);
-    for (UInt i = 0; i < result.size(); ++i)
+    std::vector<Boolean> result(locations.size());
+
+#pragma omp parallel for
+    for (int i = 0; i < static_cast<int>(result.size()); ++i)
     {
         result[i] = polygon.IsPointInPolygon(locations[i], 0);
     }

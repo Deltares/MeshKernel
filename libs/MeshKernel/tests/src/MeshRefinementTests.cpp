@@ -36,6 +36,7 @@
 #include "MeshKernel/CasulliDeRefinement.hpp"
 #include "MeshKernel/CasulliRefinement.hpp"
 #include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/MeshEdgeLength.hpp"
 #include "MeshKernel/MeshRefinement.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Parameters.hpp"
@@ -1195,12 +1196,12 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
     MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
     auto undoAction = meshRefinement.Compute();
 
-    mesh->ComputeEdgesLengths();
+    std::vector<double> edgeLengths(meshkernel::MeshEdgeLength::Compute(*mesh));
 
     // if the circumcenters are wrongly computed, some edges will be smaller than half cell size
     for (meshkernel::UInt i = 0; i < mesh->GetNumEdges(); ++i)
     {
-        ASSERT_GT(mesh->m_edgeLengths[i], 0.4);
+        ASSERT_GT(edgeLengths[i], 0.4);
     }
 
     // Test the undo action has been computed correctly

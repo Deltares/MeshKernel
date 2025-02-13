@@ -31,6 +31,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/MeshEdgeLength.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
@@ -1105,7 +1106,7 @@ void MeshRefinement::ComputeRefinementMasksForWaveCourant(UInt face,
     for (size_t e = 0; e < m_mesh.GetNumFaceEdges(face); ++e)
     {
         const auto edge = m_mesh.m_facesEdges[face][e];
-        if (m_mesh.m_edgeLengths[edge] < m_mergingDistance)
+        if (m_edgeLengths[edge] < m_mergingDistance)
         {
             numberOfEdgesToRefine++;
             continue;
@@ -1246,12 +1247,12 @@ void MeshRefinement::ComputeFaceLocationTypes()
 
 void MeshRefinement::ComputeEdgeBelowMinSizeAfterRefinement()
 {
-    m_mesh.ComputeEdgesLengths();
+    m_edgeLengths = MeshEdgeLength::Compute(m_mesh);
 
     m_isEdgeBelowMinSizeAfterRefinement.resize(m_mesh.GetNumEdges());
     for (UInt e = 0; e < m_mesh.GetNumEdges(); e++)
     {
-        const double newEdgeLength = 0.5 * m_mesh.m_edgeLengths[e];
+        const double newEdgeLength = 0.5 * m_edgeLengths[e];
         m_isEdgeBelowMinSizeAfterRefinement[e] = newEdgeLength < m_meshRefinementParameters.min_edge_size;
     }
 }
@@ -1260,7 +1261,7 @@ bool MeshRefinement::IsRefineNeededBasedOnCourantCriteria(UInt edge, double dept
 {
     const double maxDtCourant = m_meshRefinementParameters.max_courant_time;
     const double celerity = constants::physical::sqrt_gravity * std::sqrt(std::abs(depthValues));
-    const double waveCourant = celerity * maxDtCourant / m_mesh.m_edgeLengths[edge];
+    const double waveCourant = celerity * maxDtCourant / m_edgeLengths[edge];
     return waveCourant < 1.0;
 }
 
