@@ -46,7 +46,8 @@ set(
   INC_LIST
   ${DOMAIN_INC_DIR}/BoundingBox.hpp
   ${DOMAIN_INC_DIR}/Contacts.hpp
-  ${DOMAIN_INC_DIR}/CurvilinearFrozenLinesUndoAction.hpp
+  ${DOMAIN_INC_DIR}/CurvilinearFrozenLinesAddUndoAction.hpp
+  ${DOMAIN_INC_DIR}/CurvilinearFrozenLinesDeleteUndoAction.hpp
   ${DOMAIN_INC_DIR}/CurvilinearGrid.hpp
   ${DOMAIN_INC_DIR}/GeometryList.hpp
   ${DOMAIN_INC_DIR}/GriddedSamples.hpp

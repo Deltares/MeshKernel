@@ -51,22 +51,22 @@ namespace meshkernelapi
         }
 
     private:
-        /// @brief Commit undo action.
+        /// @brief Restoring add
         void DoCommit() override
         {
             if (m_mkStateReference.m_frozenLines.contains(m_frozenLinesCounter))
             {
-                throw meshkernel::MeshKernelError("Counter in meshkernel state should not exist");
+                throw meshkernel::MeshKernelError("Frozen line counter in meshkernel state should not exist when commiting an addition of a frozen line");
             }
             m_mkStateReference.m_frozenLines[m_frozenLinesCounter] = m_frozenLinePoints;
         }
 
-        /// @brief Restore undo action
+        /// @brief Reverting add
         void DoRestore() override
         {
             if (!m_mkStateReference.m_frozenLines.contains(m_frozenLinesCounter))
             {
-                throw meshkernel::MeshKernelError("Counter in meshkernel state should exist");
+                throw meshkernel::MeshKernelError("Frozen line counter in meshkernel state should not exist when restoring an addition of a frozen line");
             }
 
             m_mkStateReference.m_frozenLines.erase(m_frozenLinesCounter);

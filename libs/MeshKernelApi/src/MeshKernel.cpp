@@ -104,6 +104,7 @@
 #include "MeshKernelApi/MeshKernel.hpp"
 
 #include "MeshKernelApi/CurvilinearFrozenLinesAddUndoAction.hpp"
+#include "MeshKernelApi/CurvilinearFrozenLinesDeleteUndoAction.hpp"
 #include "MeshKernelApi/PropertyCalculator.hpp"
 #include "MeshKernelApi/State.hpp"
 #include "MeshKernelApi/Utils.hpp"
@@ -4599,7 +4600,14 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The frozen line id is not contained.");
             }
 
+            const auto frozenLinePoints = meshKernelState[meshKernelId].m_frozenLines[frozenLineId];
+
             meshKernelState[meshKernelId].m_frozenLines.erase(frozenLineId);
+
+            meshKernelUndoStack.Add(std::make_unique<CurvilinearFrozenLinesDeleteUndoAction>(meshKernelState[meshKernelId],
+                                                                                             frozenLineId,
+                                                                                             frozenLinePoints),
+                                    meshKernelId);
         }
         catch (...)
         {
@@ -4634,7 +4642,8 @@ namespace meshkernelapi
 
             meshKernelUndoStack.Add(std::make_unique<CurvilinearFrozenLinesAddUndoAction>(meshKernelState[meshKernelId],
                                                                                           frozenLineId,
-                                                                                          frozenLinePoints));
+                                                                                          frozenLinePoints),
+                                    meshKernelId);
         }
         catch (...)
         {

@@ -1729,10 +1729,10 @@ TEST(CurvilinearGridUndoTests, MultiStepUndoTest)
 
 TEST(CurvilinearGridUndoTests, AddFrozenLineUndoTest)
 {
-    // A multi-step undo test
     // 1. Add curvilinear grid
     // 2. Add frozen line
     // 3. Undo frozen line addition
+    // 4. Redo frozen line addition
 
     int meshKernelId;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
@@ -1777,6 +1777,88 @@ TEST(CurvilinearGridUndoTests, AddFrozenLineUndoTest)
     ASSERT_EQ(meshKernelId, undoId);
 
     int numFrozenLines = -1;
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_lines_get_count(meshKernelId, numFrozenLines);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(0, numFrozenLines);
+
+    // Perform redo
+    bool didRedo = false;
+    errorCode = meshkernelapi::mkernel_redo_state(didRedo, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didRedo);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_lines_get_count(meshKernelId, numFrozenLines);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(1, numFrozenLines);
+}
+
+TEST(CurvilinearGridUndoTests, RemoveFrozenLineUndoTest)
+{
+    // 1. Add curvilinear grid
+    // 2. Add frozen line
+    // 3. Undo frozen line addition
+    // 4. Redo frozen line addition
+
+    int meshKernelId;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    constexpr double delta = 1.0;
+
+    makeGridParameters.num_columns = 30;
+    makeGridParameters.num_rows = 30;
+    makeGridParameters.angle = 0.0;
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = delta;
+    makeGridParameters.block_size_y = delta;
+
+    // Generate curvilinear grid
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Add Frozen line
+    double xFirstGridLineNode = 10;
+    double yFirstGridLineNode = 0;
+    double xSecondGridLineNode = 10;
+    double ySecondGridLineNode = 30;
+    int frozenLineId;
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_add(meshKernelId,
+                                                                   xFirstGridLineNode,
+                                                                   yFirstGridLineNode,
+                                                                   xSecondGridLineNode,
+                                                                   ySecondGridLineNode,
+                                                                   frozenLineId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_delete(meshKernelId, frozenLineId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    int numFrozenLines = -1;
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_lines_get_count(meshKernelId, numFrozenLines);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(0, 0);
+
+    // Perform undo
+    bool didUndo = false;
+    int undoId;
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo, undoId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+    ASSERT_EQ(meshKernelId, undoId);
+
+    numFrozenLines = -1;
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_lines_get_count(meshKernelId, numFrozenLines);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(1, numFrozenLines);
+
+    // Perform redo
+    bool didRedo = false;
+    errorCode = meshkernelapi::mkernel_redo_state(didRedo, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didRedo);
+
     errorCode = meshkernelapi::mkernel_curvilinear_frozen_lines_get_count(meshKernelId, numFrozenLines);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_EQ(0, numFrozenLines);
