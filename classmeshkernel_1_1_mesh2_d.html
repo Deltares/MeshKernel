@@ -218,9 +218,9 @@ std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="b
 std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a7fc7d6b768b66089f341be1ba92faebb">TriangulateFaces</a> ()</td></tr>
 <tr class="memdesc:a7fc7d6b768b66089f341be1ba92faebb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transform non-triangular faces in triangular faces. <br /></td></tr>
 <tr class="separator:a7fc7d6b768b66089f341be1ba92faebb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a113c222523d177e31cb24e4f974088c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a113c222523d177e31cb24e4f974088c2">MakeDualFace</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> node, double enlargementFactor, std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;dualFace) const</td></tr>
-<tr class="memdesc:a113c222523d177e31cb24e4f974088c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make a dual face around the node, enlarged by a factor.  <a href="classmeshkernel_1_1_mesh2_d.html#a113c222523d177e31cb24e4f974088c2">More...</a><br /></td></tr>
-<tr class="separator:a113c222523d177e31cb24e4f974088c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5569ff6833e47a9aeef783f9cccda9f2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a5569ff6833e47a9aeef783f9cccda9f2">MakeDualFace</a> (const std::span&lt; const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; edgeCentres, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> node, double enlargementFactor, std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;dualFace) const</td></tr>
+<tr class="memdesc:a5569ff6833e47a9aeef783f9cccda9f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make a dual face around the node, enlarged by a factor.  <a href="classmeshkernel_1_1_mesh2_d.html#a5569ff6833e47a9aeef783f9cccda9f2">More...</a><br /></td></tr>
+<tr class="separator:a5569ff6833e47a9aeef783f9cccda9f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa1a11d73e8a0c2974e5cd00d628f584"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#afa1a11d73e8a0c2974e5cd00d628f584">SortedFacesAroundNode</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> node) const</td></tr>
 <tr class="memdesc:afa1a11d73e8a0c2974e5cd00d628f584"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sorts the faces around a node, sorted in counter clock wise order.  <a href="classmeshkernel_1_1_mesh2_d.html#afa1a11d73e8a0c2974e5cd00d628f584">More...</a><br /></td></tr>
 <tr class="separator:afa1a11d73e8a0c2974e5cd00d628f584"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -499,10 +499,6 @@ std::unique_ptr&lt; ResetEdgeAction &gt;&#160;</td><td class="memItemRight" vali
 <tr class="memitem:a86a3ba1a2f8974d7367680ea71a70b28 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a86a3ba1a2f8974d7367680ea71a70b28">FindCommonNode</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> firstEdgeIndex, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> secondEdgeIndex) const</td></tr>
 <tr class="memdesc:a86a3ba1a2f8974d7367680ea71a70b28 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Find the common node two edges share This method uses return parameters since the success is evaluated in a hot loop.  <a href="classmeshkernel_1_1_mesh.html#a86a3ba1a2f8974d7367680ea71a70b28">More...</a><br /></td></tr>
 <tr class="separator:a86a3ba1a2f8974d7367680ea71a70b28 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a48b2912121a8b224b96f3f8e15397884 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="a48b2912121a8b224b96f3f8e15397884"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a48b2912121a8b224b96f3f8e15397884">ComputeEdgesCenters</a> ()</td></tr>
-<tr class="memdesc:a48b2912121a8b224b96f3f8e15397884 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the edges centers in one go. <br /></td></tr>
-<tr class="separator:a48b2912121a8b224b96f3f8e15397884 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adacff872b8bcecdedf5e67af403e8fbe inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#adacff872b8bcecdedf5e67af403e8fbe">NodeAdministration</a> ()</td></tr>
 <tr class="memdesc:adacff872b8bcecdedf5e67af403e8fbe inherit pub_methods_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Node administration (setnodadmin)  <a href="classmeshkernel_1_1_mesh.html#adacff872b8bcecdedf5e67af403e8fbe">More...</a><br /></td></tr>
 <tr class="separator:adacff872b8bcecdedf5e67af403e8fbe inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -653,10 +649,6 @@ std::vector&lt; std::array&lt; <a class="el" href="namespacemeshkernel.html#a97c
 std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a0d9b82e327f0e73333cfb51c94cef5a1">m_edgesNumFaces</a></td></tr>
 <tr class="memdesc:a0d9b82e327f0e73333cfb51c94cef5a1 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">For each edge, the number of shared faces(lnn) <br /></td></tr>
 <tr class="separator:a0d9b82e327f0e73333cfb51c94cef5a1 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a231d2889405c66b1b5e4db91d86a6ee8 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="a231d2889405c66b1b5e4db91d86a6ee8"></a>
-std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a231d2889405c66b1b5e4db91d86a6ee8">m_edgesCenters</a></td></tr>
-<tr class="memdesc:a231d2889405c66b1b5e4db91d86a6ee8 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">The edges centers. <br /></td></tr>
-<tr class="separator:a231d2889405c66b1b5e4db91d86a6ee8 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38b44ebfdf5d280a25d566fa5a763c78 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="a38b44ebfdf5d280a25d566fa5a763c78"></a>
 std::vector&lt; std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a38b44ebfdf5d280a25d566fa5a763c78">m_facesNodes</a></td></tr>
 <tr class="memdesc:a38b44ebfdf5d280a25d566fa5a763c78 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">The nodes composing the faces, in ccw order (netcellNod) <br /></td></tr>
@@ -1708,8 +1700,8 @@ Coincide circumcenter</div></div>
 
 </div>
 </div>
-<a id="a113c222523d177e31cb24e4f974088c2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a113c222523d177e31cb24e4f974088c2">&#9670;&nbsp;</a></span>MakeDualFace()</h2>
+<a id="a5569ff6833e47a9aeef783f9cccda9f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5569ff6833e47a9aeef783f9cccda9f2">&#9670;&nbsp;</a></span>MakeDualFace()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1717,6 +1709,12 @@ Coincide circumcenter</div></div>
         <tr>
           <td class="memname">void meshkernel::Mesh2D::MakeDualFace </td>
           <td>(</td>
+          <td class="paramtype">const std::span&lt; const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td>
+          <td class="paramname"><em>edgeCentres</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
           <td class="paramname"><em>node</em>, </td>
         </tr>
@@ -1743,6 +1741,7 @@ Coincide circumcenter</div></div>
 <p>Make a dual face around the node, enlarged by a factor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">edgeCentres</td><td>Centre point of each of the edges. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">node</td><td>The node index </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">enlargementFactor</td><td>The factor by which the dual face is enlarged </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">dualFace</td><td>The dual face to be calculated </td></tr>
