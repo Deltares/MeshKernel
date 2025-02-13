@@ -85,8 +85,6 @@ namespace meshkernel
     public:
         /// Set the parameters
         /// @param[in] mesh The mesh to orthogonalize
-        /// @param[in] smoother The mesh to smoother
-        /// @param[in] orthogonalizer The mesh to orthogonalizer
         /// @param[in] polygon The polygon where orthogonalization should occur
         /// @param[in] landBoundaries The land boundaries
         /// @param[in] projectToLandBoundaryOption Snap to land boundaries (1) or not (0)
