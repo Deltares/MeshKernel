@@ -33,6 +33,7 @@
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh.hpp"
+#include "MeshKernel/MeshEdgeCenters.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/RangeCheck.hpp"
@@ -603,11 +604,6 @@ std::unique_ptr<meshkernel::DeleteNodeAction> Mesh::DeleteNode(UInt node, const 
     }
 }
 
-void Mesh::ComputeEdgesCenters()
-{
-    m_edgesCenters = ComputeEdgeCenters(m_nodes, m_edges);
-}
-
 meshkernel::UInt Mesh::FindCommonNode(UInt firstEdgeIndex, UInt secondEdgeIndex) const
 {
     const auto firstEdgeFirstNode = m_edges[firstEdgeIndex].first;
@@ -890,7 +886,6 @@ void Mesh::Administrate(CompoundUndoAction* undoAction)
 
 void Mesh::AdministrateNodesEdges(CompoundUndoAction* undoAction)
 {
-    m_edgesCenters.clear();
     SetUnConnectedNodesAndEdgesToInvalid(undoAction);
 
     // return if there are no nodes or no edges
@@ -1186,8 +1181,8 @@ void Mesh::BuildTree(Location location, const BoundingBox& boundingBox)
     case Location::Edges:
         if (m_edgesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
         {
-            ComputeEdgesCenters();
-            m_RTrees.at(Location::Edges)->BuildTree(m_edgesCenters, boundingBox);
+            std::vector<Point> edgeCentres = MeshEdgeCenters::Compute(*this);
+            m_RTrees.at(Location::Edges)->BuildTree(edgeCentres, boundingBox);
             m_edgesRTreeRequiresUpdate = false;
             m_boundingBoxCache = boundingBox;
         }

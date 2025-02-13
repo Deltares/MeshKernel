@@ -1628,12 +1628,6 @@ namespace meshkernelapi
 
             if (propertyCalculators[propertyValue]->IsValid(meshKernelState[meshKernelId], location))
             {
-
-                if (location == meshkernel::Location::Edges && meshKernelState[meshKernelId].m_mesh2d->m_edgesCenters.empty())
-                {
-                    meshKernelState[meshKernelId].m_mesh2d->ComputeEdgesCenters();
-                }
-
                 propertyCalculators[propertyValue]->Calculate(meshKernelState[meshKernelId], location, geometryList);
             }
             else

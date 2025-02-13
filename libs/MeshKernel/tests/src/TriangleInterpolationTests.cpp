@@ -29,6 +29,7 @@
 
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/MeshEdgeCenters.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
@@ -116,9 +117,8 @@ TEST(TriangleInterpolation, InterpolateOnEdges)
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TriangleInterpolationTests/simple_grid_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), static_cast<meshkernel::UInt>(0));
 
-    mesh->ComputeEdgesCenters();
-
-    meshkernel::TriangulationInterpolation triangulationInterpolation(mesh->m_edgesCenters, samples, meshkernel::Projection::cartesian);
+    std::vector<meshkernel::Point> edgeCentres = meshkernel::MeshEdgeCenters::Compute(*mesh);
+    meshkernel::TriangulationInterpolation triangulationInterpolation(edgeCentres, samples, meshkernel::Projection::cartesian);
     triangulationInterpolation.Compute();
 
     const auto results = triangulationInterpolation.GetResults();

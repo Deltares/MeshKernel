@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernel/SampleAveragingInterpolator.hpp"
+#include "MeshKernel/MeshEdgeCenters.hpp"
 #include "MeshKernel/Operations.hpp"
 
 std::vector<meshkernel::Point> meshkernel::SampleAveragingInterpolator::CombineCoordinates(const std::span<const double> xNodes,
@@ -253,9 +254,11 @@ void meshkernel::SampleAveragingInterpolator::InterpolateAtNodes(const int prope
     std::vector<Sample> sampleCache;
     sampleCache.reserve(100);
 
+    std::vector<Point> edgeCentres = MeshEdgeCenters::Compute(mesh);
+
     for (UInt n = 0; n < mesh.GetNumNodes(); ++n)
     {
-        mesh.MakeDualFace(n, m_interpolationParameters.m_relativeSearchRadius, dualFacePolygon);
+        mesh.MakeDualFace(edgeCentres, n, m_interpolationParameters.m_relativeSearchRadius, dualFacePolygon);
 
         double resultValue = constants::missing::doubleValue;
 

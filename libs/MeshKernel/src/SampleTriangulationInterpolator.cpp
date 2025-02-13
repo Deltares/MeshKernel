@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernel/SampleTriangulationInterpolator.hpp"
+#include "MeshKernel/MeshEdgeCenters.hpp"
 
 void meshkernel::SampleTriangulationInterpolator::Interpolate(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double> result) const
 {
@@ -34,6 +35,7 @@ void meshkernel::SampleTriangulationInterpolator::Interpolate(const int property
         throw ConstraintError("Sample interpolator does not contain the id: {}.", propertyId);
     }
 
+    std::vector<Point> meshPoints;
     std::span<const Point> meshNodes;
 
     switch (location)
@@ -42,7 +44,8 @@ void meshkernel::SampleTriangulationInterpolator::Interpolate(const int property
         meshNodes = std::span<const Point>(mesh.Nodes());
         break;
     case Location::Edges:
-        meshNodes = std::span<const Point>(mesh.m_edgesCenters);
+        meshPoints = MeshEdgeCenters::Compute(mesh);
+        meshNodes = std::span<const Point>(meshPoints);
         break;
     case Location::Faces:
         meshNodes = std::span<const Point>(mesh.m_facesMassCenters);

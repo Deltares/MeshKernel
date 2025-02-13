@@ -243,10 +243,14 @@ namespace meshkernel
         [[nodiscard]] std::unique_ptr<UndoAction> TriangulateFaces();
 
         /// @brief Make a dual face around the node, enlarged by a factor
+        /// @param[in] edgeCentres Centre point of each of the edges.
         /// @param[in] node The node index
         /// @param[in] enlargementFactor The factor by which the dual face is enlarged
         /// @param[out] dualFace The dual face to be calculated
-        void MakeDualFace(UInt node, double enlargementFactor, std::vector<Point>& dualFace) const;
+        void MakeDualFace(const std::span<const Point> edgeCentres,
+                          UInt node,
+                          double enlargementFactor,
+                          std::vector<Point>& dualFace) const;
 
         /// @brief Sorts the faces around a node, sorted in counter clock wise order
         /// @param[in] node The node index

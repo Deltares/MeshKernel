@@ -301,9 +301,6 @@ namespace meshkernel
         /// @return The shared node (constants::missing::sizetValue if no node is found)
         [[nodiscard]] UInt FindCommonNode(UInt firstEdgeIndex, UInt secondEdgeIndex) const;
 
-        /// @brief Computes the edges centers  in one go
-        void ComputeEdgesCenters();
-
         /// @brief Node administration (setnodadmin)
         /// @return An estimated indicator for a quadrilateral dominated mesh.
         bool NodeAdministration();
@@ -460,7 +457,6 @@ namespace meshkernel
         // edges
         std::vector<std::array<UInt, 2>> m_edgesFaces; ///< For each edge, the shared face index (lne)
         std::vector<UInt> m_edgesNumFaces;             ///< For each edge, the number of shared faces(lnn)
-        std::vector<Point> m_edgesCenters;             ///< The edges centers
 
         // faces
         std::vector<std::vector<UInt>> m_facesNodes; ///< The nodes composing the faces, in ccw order (netcell%Nod)

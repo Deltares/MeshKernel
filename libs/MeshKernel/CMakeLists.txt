@@ -51,6 +51,7 @@ set(
   ${SRC_DIR}/Mesh2DGenerateGlobal.cpp
   ${SRC_DIR}/Mesh2DIntersections.cpp
   ${SRC_DIR}/Mesh2DToCurvilinear.cpp
+  ${SRC_DIR}/MeshEdgeCenters.cpp
   ${SRC_DIR}/MeshOrthogonality.cpp
   ${SRC_DIR}/MeshRefinement.cpp
   ${SRC_DIR}/MeshSmoothness.cpp
@@ -177,6 +178,7 @@ set(
   ${DOMAIN_INC_DIR}/Mesh2DIntersections.hpp
   ${DOMAIN_INC_DIR}/Mesh2DToCurvilinear.hpp
   ${DOMAIN_INC_DIR}/MeshConversion.hpp
+  ${DOMAIN_INC_DIR}/MeshEdgeCenters.hpp
   ${DOMAIN_INC_DIR}/MeshInterpolation.hpp
   ${DOMAIN_INC_DIR}/MeshOrthogonality.hpp
   ${DOMAIN_INC_DIR}/MeshRefinement.hpp
