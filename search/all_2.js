@@ -85,6 +85,8 @@ var searchData=
   ['curvature_5fadapted_5fgrid_5fspacing_114',['curvature_adapted_grid_spacing',['../structmeshkernel_1_1_splines_to_curvilinear_parameters.html#ae6275adeec04bc3424200f0a1353df8c',1,'meshkernel::SplinesToCurvilinearParameters']]],
   ['curvilineardirection_115',['CurvilinearDirection',['../namespacemeshkernel.html#ada45df7d9a6b761430af4dbf350f67cc',1,'meshkernel']]],
   ['curvilineardirectiontostring_116',['CurvilinearDirectionToString',['../namespacemeshkernel.html#aca6e05dec0589bb9b38e7b1f59d8f423',1,'meshkernel']]],
-  ['curvilineargrid_117',['CurvilinearGrid',['../structmeshkernelapi_1_1_curvilinear_grid.html',1,'meshkernelapi']]],
-  ['curvilinearparameters_118',['CurvilinearParameters',['../structmeshkernel_1_1_curvilinear_parameters.html',1,'meshkernel']]]
+  ['curvilinearfrozenlinesaddundoaction_117',['CurvilinearFrozenLinesAddUndoAction',['../classmeshkernelapi_1_1_curvilinear_frozen_lines_add_undo_action.html',1,'meshkernelapi::CurvilinearFrozenLinesAddUndoAction'],['../classmeshkernelapi_1_1_curvilinear_frozen_lines_add_undo_action.html#a584a4bb3eccc91c1614483ea62913b86',1,'meshkernelapi::CurvilinearFrozenLinesAddUndoAction::CurvilinearFrozenLinesAddUndoAction()']]],
+  ['curvilinearfrozenlinesdeleteundoaction_118',['CurvilinearFrozenLinesDeleteUndoAction',['../classmeshkernelapi_1_1_curvilinear_frozen_lines_delete_undo_action.html',1,'meshkernelapi::CurvilinearFrozenLinesDeleteUndoAction'],['../classmeshkernelapi_1_1_curvilinear_frozen_lines_delete_undo_action.html#aa12c44454baecfd985d1f5e31c03d21f',1,'meshkernelapi::CurvilinearFrozenLinesDeleteUndoAction::CurvilinearFrozenLinesDeleteUndoAction()']]],
+  ['curvilineargrid_119',['CurvilinearGrid',['../structmeshkernelapi_1_1_curvilinear_grid.html',1,'meshkernelapi']]],
+  ['curvilinearparameters_120',['CurvilinearParameters',['../structmeshkernel_1_1_curvilinear_parameters.html',1,'meshkernel']]]
 ];
