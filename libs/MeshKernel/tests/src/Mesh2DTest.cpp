@@ -36,6 +36,7 @@
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Mesh2DIntersections.hpp"
 #include "MeshKernel/Mesh2DToCurvilinear.hpp"
+#include "MeshKernel/MeshEdgeLength.hpp"
 #include "MeshKernel/MeshOrthogonality.hpp"
 #include "MeshKernel/MeshSmoothness.hpp"
 #include "MeshKernel/Operations.hpp"

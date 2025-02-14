@@ -1423,6 +1423,26 @@ std::vector<meshkernel::Point> CurvilinearGrid::ComputeBoundaryPolygons(const Cu
     return result;
 }
 
+meshkernel::CurvilinearGridLine CurvilinearGrid::GetGridLine(const Point& firstPoint, const Point& secondPoint)
+{
+    // The selected nodes must be on the vertical or horizontal line
+    const auto [newLineLowerLeft, newLineUpperRight] = ComputeBlockFromCornerPoints(firstPoint, secondPoint);
+
+    // Coinciding nodes, no valid line, nothing to do
+    if (newLineLowerLeft == newLineUpperRight)
+    {
+        throw AlgorithmError("The start and the end points of the line are coinciding");
+    }
+
+    // The points of the line must be on the same grid-line
+    if (!newLineLowerLeft.IsOnTheSameGridLine(newLineUpperRight))
+    {
+        throw AlgorithmError("The nodes do not define a grid line");
+    }
+
+    return {newLineLowerLeft, newLineUpperRight};
+}
+
 std::vector<meshkernel::Point> CurvilinearGrid::ComputeFaceCenters() const
 {
     std::vector<Point> result;

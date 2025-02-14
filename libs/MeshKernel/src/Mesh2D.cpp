@@ -1442,8 +1442,17 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::TriangulateFaces()
     return triangulationAction;
 }
 
-void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point>& dualFace) const
+void Mesh2D::MakeDualFace(const std::span<const Point> edgeCentres,
+                          UInt node,
+                          double enlargementFactor,
+                          std::vector<Point>& dualFace) const
 {
+    if (edgeCentres.size() != GetNumEdges())
+    {
+        throw ConstraintError("edgeCentre array is not the correct size: {} != {}",
+                              edgeCentres.size(), GetNumEdges());
+    }
+
     const auto sortedFacesIndices = SortedFacesAroundNode(node);
     const auto numEdges = m_nodesNumEdges[node];
 
@@ -1466,7 +1475,7 @@ void Mesh2D::MakeDualFace(UInt node, double enlargementFactor, std::vector<Point
             continue;
         }
 
-        auto edgeCenter = m_edgesCenters[edgeIndex];
+        auto edgeCenter = edgeCentres[edgeIndex];
 
         if (m_projection == Projection::spherical)
         {
@@ -2398,7 +2407,6 @@ std::unique_ptr<Mesh2D> Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     mergedMesh.m_nodesTypes.insert(mergedMesh.m_nodesTypes.end(), mesh2.m_nodesTypes.begin(), mesh2.m_nodesTypes.end());
 
     mergedMesh.m_edgesNumFaces.insert(mergedMesh.m_edgesNumFaces.end(), mesh2.m_edgesNumFaces.begin(), mesh2.m_edgesNumFaces.end());
-    mergedMesh.m_edgesCenters.insert(mergedMesh.m_edgesCenters.end(), mesh2.m_edgesCenters.begin(), mesh2.m_edgesCenters.end());
 
     mergedMesh.m_numFacesNodes.insert(mergedMesh.m_numFacesNodes.end(), mesh2.m_numFacesNodes.begin(), mesh2.m_numFacesNodes.end());
     mergedMesh.m_facesCircumcenters.insert(mergedMesh.m_facesCircumcenters.end(), mesh2.m_facesCircumcenters.begin(), mesh2.m_facesCircumcenters.end());

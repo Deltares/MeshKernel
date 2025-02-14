@@ -301,18 +301,6 @@ namespace meshkernel
         /// @return The shared node (constants::missing::sizetValue if no node is found)
         [[nodiscard]] UInt FindCommonNode(UInt firstEdgeIndex, UInt secondEdgeIndex) const;
 
-        /// @brief Compute the lengths of all edges in one go
-        void ComputeEdgesLengths();
-
-        /// @brief Compute the minimum edge length of the edges included in the polygon.
-        /// An edge is considered included if one of the two nodes is inside the polygon.
-        /// @param[in] polygon The polygon for considering an edge included
-        /// @return The minimum edge length
-        [[nodiscard]] double ComputeMinEdgeLength(const Polygons& polygon) const;
-
-        /// @brief Computes the edges centers  in one go
-        void ComputeEdgesCenters();
-
         /// @brief Node administration (setnodadmin)
         /// @return An estimated indicator for a quadrilateral dominated mesh.
         bool NodeAdministration();
@@ -331,11 +319,6 @@ namespace meshkernel
         /// @param[in] endNode   The last node index where to perform edge sorting.
         void SortEdgesInCounterClockWiseOrder(UInt startNode, UInt endNode);
 
-        /// @brief Compute the max length of the edges connected to a node
-        /// @param node The mesh node
-        /// @return The max edge length
-        double ComputeMaxLengthSurroundingEdges(UInt node);
-
         /// @brief Build the rtree for the corresponding location, using only the locations inside the bounding box
         /// @param[in] location The mesh location for which the RTree is build
         /// @param[in] boundingBox The bounding box
@@ -351,7 +334,7 @@ namespace meshkernel
         /// @param[in] polygon The input polygon.
         /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
         /// @return A vector of booleans indicating if a location is in a polygon or not.
-        [[nodiscard]] std::vector<bool> IsLocationInPolygon(const Polygons& polygon, Location location) const;
+        [[nodiscard]] std::vector<Boolean> IsLocationInPolygon(const Polygons& polygon, Location location) const;
 
         /// @brief Add meshes: result is a mesh composed of the additions
         /// firstMesh += secondmesh results in the second mesh being added to firstMesh
@@ -474,8 +457,6 @@ namespace meshkernel
         // edges
         std::vector<std::array<UInt, 2>> m_edgesFaces; ///< For each edge, the shared face index (lne)
         std::vector<UInt> m_edgesNumFaces;             ///< For each edge, the number of shared faces(lnn)
-        std::vector<double> m_edgeLengths;             ///< The edge lengths
-        std::vector<Point> m_edgesCenters;             ///< The edges centers
 
         // faces
         std::vector<std::vector<UInt>> m_facesNodes; ///< The nodes composing the faces, in ccw order (netcell%Nod)

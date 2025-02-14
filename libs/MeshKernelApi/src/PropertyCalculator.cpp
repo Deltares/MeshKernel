@@ -27,6 +27,7 @@
 
 #include "MeshKernelApi/PropertyCalculator.hpp"
 
+#include "MeshKernel/MeshEdgeLength.hpp"
 #include "MeshKernel/MeshOrthogonality.hpp"
 #include "MeshKernel/SampleAveragingInterpolator.hpp"
 #include "MeshKernel/SampleTriangulationInterpolator.hpp"
@@ -65,16 +66,14 @@ bool meshkernelapi::EdgeLengthPropertyCalculator::IsValid(const MeshKernelState&
 void meshkernelapi::EdgeLengthPropertyCalculator::Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const
 {
 
-    state.m_mesh2d->ComputeEdgesLengths();
-    std::vector<double> values = state.m_mesh2d->m_edgeLengths;
-
-    if (static_cast<size_t>(geometryList.num_coordinates) < values.size())
+    if (static_cast<size_t>(geometryList.num_coordinates) < state.m_mesh2d->GetNumEdges())
     {
         throw meshkernel::ConstraintError("GeometryList with wrong dimensions, {} must be greater than or equal to {}",
                                           geometryList.num_coordinates, Size(state, location));
     }
 
-    std::ranges::copy(values, geometryList.values);
+    std::span<double> edgeLengths(geometryList.values, state.m_mesh2d->GetNumEdges());
+    meshkernel::MeshEdgeLength::Compute(*state.m_mesh2d, edgeLengths);
 }
 
 int meshkernelapi::EdgeLengthPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location [[maybe_unused]]) const

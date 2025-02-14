@@ -282,24 +282,6 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
     EXPECT_NEAR(366996.07892524434, curvilinearGrid->GetNode(2, 8).y, tolerance);
 }
 
-TEST(CurvilinearGridOrthogonalization, SetFrozenLine_OnONonOrthogonalGrid_WithCrossingFrozenLines_ShouldThrowAnStdException)
-{
-    // Set-up
-    const auto curvilinearGrid = MakeSmallCurvilinearGrid();
-
-    OrthogonalizationParameters orthogonalizationParameters;
-    orthogonalizationParameters.outer_iterations = 2;
-    orthogonalizationParameters.boundary_iterations = 25;
-    orthogonalizationParameters.inner_iterations = 25;
-    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
-    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(*curvilinearGrid, orthogonalizationParameters);
-    curvilinearGridOrthogonalization.SetBlock({80154, 366530}, {80610, 367407});
-    curvilinearGridOrthogonalization.SetLine({80144, 367046}, {80329, 366550});
-
-    // Execute and assert
-    ASSERT_THROW(curvilinearGridOrthogonalization.SetLine({80052, 366824}, {80774, 367186}), std::exception);
-}
-
 TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWithFrozenLines_ShouldOrthogonalizeGrid)
 {
     // Set-up
@@ -363,13 +345,13 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
 
 TEST(CurvilinearGridOrthogonalization, SetFrozenLine_ShouldFreezeLines)
 {
-    const std::vector<double> random{-0.368462, -0.0413499, -0.281041, 0.178865, 0.434693, 0.0194164,
-                                     -0.465428, 0.0297002, -0.492302, -0.433158, 0.186773, 0.430436,
-                                     0.0269288, 0.153919, 0.201191, 0.262198, -0.452535, -0.171766,
-                                     0.25641, -0.134661, 0.48255, 0.253356, -0.427314, 0.384707,
-                                     -0.0635886, -0.0222682, -0.225093, -0.333493, 0.397656, -0.439436,
-                                     0.00452289, -0.180967, -0.00602331, -0.409267, -0.426251, -0.115858,
-                                     0.413817, -0.0355542, -0.449916, 0.270205, -0.374635, 0.188455, 0.129543};
+    const std::vector<double> randomValues{-0.368462, -0.0413499, -0.281041, 0.178865, 0.434693, 0.0194164,
+                                           -0.465428, 0.0297002, -0.492302, -0.433158, 0.186773, 0.430436,
+                                           0.0269288, 0.153919, 0.201191, 0.262198, -0.452535, -0.171766,
+                                           0.25641, -0.134661, 0.48255, 0.253356, -0.427314, 0.384707,
+                                           -0.0635886, -0.0222682, -0.225093, -0.333493, 0.397656, -0.439436,
+                                           0.00452289, -0.180967, -0.00602331, -0.409267, -0.426251, -0.115858,
+                                           0.413817, -0.0355542, -0.449916, 0.270205, -0.374635, 0.188455, 0.129543};
 
     double deltaX = 10.0;
     double deltaY = 10.0;
@@ -381,11 +363,11 @@ TEST(CurvilinearGridOrthogonalization, SetFrozenLine_ShouldFreezeLines)
     const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, deltaX, deltaY, sizeX, sizeY);
 
     // displace grid
-    size_t randomCounter = 0;
-
-    auto randomCount = [random, &randomCounter]() mutable
+    auto random = [randomValues]() mutable
     {
-        if (randomCounter == random.size() - 1)
+        static size_t randomCounter = 0;
+
+        if (randomCounter == randomValues.size() - 1)
         {
             randomCounter = 0;
         }
@@ -394,15 +376,15 @@ TEST(CurvilinearGridOrthogonalization, SetFrozenLine_ShouldFreezeLines)
             ++randomCounter;
         }
 
-        return randomCounter;
+        return randomValues[randomCounter];
     };
 
     for (UInt i = 0; i < curvilinearGrid->NumN(); ++i)
     {
         for (UInt j = 0; j < curvilinearGrid->NumM(); ++j)
         {
-            double xDisplacement = random[randomCount()] * deltaX;
-            double yDisplacement = random[randomCount()] * deltaY;
+            double xDisplacement = 0.6 * random() * deltaX;
+            double yDisplacement = 0.6 * random() * deltaY;
 
             curvilinearGrid->GetNode(i, j) += meshkernel::Vector(xDisplacement, yDisplacement);
         }
@@ -419,19 +401,19 @@ TEST(CurvilinearGridOrthogonalization, SetFrozenLine_ShouldFreezeLines)
     Point blockLL = curvilinearGrid->GetNode(2, 2);
     Point blockUR = curvilinearGrid->GetNode(12, 12);
 
-    const UInt line1IndexY = 10;
+    const UInt line1IndexX = 10;
     const UInt line1StartIndex = 0;
     const UInt line1EndIndex = 14;
 
-    Point line1Start = curvilinearGrid->GetNode(line1StartIndex, line1IndexY);
-    Point line1End = curvilinearGrid->GetNode(line1EndIndex, line1IndexY);
+    Point line1Start = curvilinearGrid->GetNode(line1StartIndex, line1IndexX);
+    Point line1End = curvilinearGrid->GetNode(line1EndIndex, line1IndexX);
 
-    const UInt line2IndexY = 10;
+    const UInt line2IndexX = 6;
     const UInt line2StartIndex = 4;
     const UInt line2EndIndex = 7;
 
-    Point line2Start = curvilinearGrid->GetNode(line2StartIndex, line2IndexY);
-    Point line2End = curvilinearGrid->GetNode(line2EndIndex, line2IndexY);
+    Point line2Start = curvilinearGrid->GetNode(line2StartIndex, line2IndexX);
+    Point line2End = curvilinearGrid->GetNode(line2EndIndex, line2IndexX);
 
     std::vector<Point> originalLine1Points(line1EndIndex - line1StartIndex + 1);
     std::vector<Point> originalLine2Points(line2EndIndex - line2StartIndex + 1);
@@ -439,13 +421,13 @@ TEST(CurvilinearGridOrthogonalization, SetFrozenLine_ShouldFreezeLines)
     // Collect line points before orthogonalising
     for (UInt i = line1StartIndex; i < line1EndIndex + 1; ++i)
     {
-        Point p = curvilinearGrid->GetNode(i, line1IndexY);
+        Point p = curvilinearGrid->GetNode(i, line1IndexX);
         originalLine1Points[i - line1StartIndex] = p;
     }
 
     for (UInt i = line2StartIndex; i < line2EndIndex + 1; ++i)
     {
-        Point p = curvilinearGrid->GetNode(i, line2IndexY);
+        Point p = curvilinearGrid->GetNode(i, line2IndexX);
         originalLine2Points[i - line2StartIndex] = p;
     }
 
@@ -459,14 +441,14 @@ TEST(CurvilinearGridOrthogonalization, SetFrozenLine_ShouldFreezeLines)
 
     for (UInt i = line2StartIndex; i < line2EndIndex + 1; ++i)
     {
-        EXPECT_NEAR(originalLine2Points[i - line2StartIndex].x, curvilinearGrid->GetNode(i, line2IndexY).x, tolerance);
-        EXPECT_NEAR(originalLine2Points[i - line2StartIndex].y, curvilinearGrid->GetNode(i, line2IndexY).y, tolerance);
+        EXPECT_NEAR(originalLine2Points[i - line2StartIndex].x, curvilinearGrid->GetNode(i, line2IndexX).x, tolerance);
+        EXPECT_NEAR(originalLine2Points[i - line2StartIndex].y, curvilinearGrid->GetNode(i, line2IndexX).y, tolerance);
     }
 
     for (UInt i = line1StartIndex; i < line1EndIndex + 1; ++i)
     {
-        EXPECT_NEAR(originalLine1Points[i].x, curvilinearGrid->GetNode(i, line1IndexY).x, tolerance);
-        EXPECT_NEAR(originalLine1Points[i].y, curvilinearGrid->GetNode(i, line1IndexY).y, tolerance);
+        EXPECT_NEAR(originalLine1Points[i].x, curvilinearGrid->GetNode(i, line1IndexX).x, tolerance);
+        EXPECT_NEAR(originalLine1Points[i].y, curvilinearGrid->GetNode(i, line1IndexX).y, tolerance);
     }
 }
 
@@ -578,4 +560,57 @@ TEST(CurvilinearGridOrthogonalization, Compute_CurvilinearGrid_ShouldOrthogonali
         EXPECT_NEAR(expectedTopLineY[i], p.y, tolerance);
     }
     std::cout << std::endl;
+}
+
+TEST(CurvilinearGridOrthogonalization, Compute_OnNonOrthogonalCurvilinearGridWithFrozenLine_ShouldOrthogonalizeGridExceptFrozenLinePoins)
+{
+    // Set-up a mesh that will be changed by orthogonalization
+    lin_alg::Matrix<Point> grid(5, 5);
+    grid << Point{0, 0}, Point{0, 10}, Point{0, 15}, Point{0, 20}, Point{0, 30},
+        Point{10, 0}, Point{10, 10}, Point{10, 15}, Point{10, 20}, Point{10, 30},
+        Point{20, 0}, Point{20, 10}, Point{20, 15}, Point{20, 20}, Point{20, 30},
+        Point{30, 0}, Point{30, 10}, Point{30, 15}, Point{30, 20}, Point{30, 30},
+        Point{40, 0}, Point{40, 10}, Point{40, 15}, Point{40, 20}, Point{40, 30};
+
+    meshkernel::CurvilinearGrid curvilinearGrid(grid, meshkernel::Projection::cartesian);
+
+    OrthogonalizationParameters orthogonalizationParameters;
+    orthogonalizationParameters.outer_iterations = 20;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
+    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
+    curvilinearGridOrthogonalization.SetBlock({0, 0}, {30, 30});
+    curvilinearGridOrthogonalization.SetLine({10.0, 10.0}, {20.0, 10.0}); // First frozen line
+    curvilinearGridOrthogonalization.SetLine({10.0, 20.0}, {20.0, 20.0}); // Second frozen line
+
+    // Execute
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridOrthogonalization.Compute();
+
+    // Assert nodes stays in place
+    constexpr double tolerance = 1e-6;
+
+    ASSERT_NEAR(10.010362126881590, curvilinearGrid.GetNode(1, 0).x, tolerance);
+    ASSERT_NEAR(10.000000000000000, curvilinearGrid.GetNode(1, 1).x, tolerance); // stays in place
+    ASSERT_NEAR(9.9931319280879141, curvilinearGrid.GetNode(1, 2).x, tolerance);
+    ASSERT_NEAR(10.000000000000000, curvilinearGrid.GetNode(1, 3).x, tolerance); // stays in place
+    ASSERT_NEAR(10.010362126881590, curvilinearGrid.GetNode(1, 4).x, tolerance);
+
+    ASSERT_NEAR(20.000193221170274, curvilinearGrid.GetNode(2, 0).x, tolerance);
+    ASSERT_NEAR(20.000000000000000, curvilinearGrid.GetNode(2, 1).x, tolerance); // stays in place
+    ASSERT_NEAR(20.002161639900610, curvilinearGrid.GetNode(2, 2).x, tolerance);
+    ASSERT_NEAR(20.000000000000000, curvilinearGrid.GetNode(2, 3).x, tolerance); // stays in place
+    ASSERT_NEAR(20.000193221170274, curvilinearGrid.GetNode(2, 4).x, tolerance);
+
+    ASSERT_NEAR(0.0000000000000000, curvilinearGrid.GetNode(1, 0).y, tolerance);
+    ASSERT_NEAR(10.000000000000000, curvilinearGrid.GetNode(1, 1).y, tolerance); // stays in place
+    ASSERT_NEAR(14.999987506886292, curvilinearGrid.GetNode(1, 2).y, tolerance);
+    ASSERT_NEAR(20.000000000000000, curvilinearGrid.GetNode(1, 3).y, tolerance); // stays in place
+    ASSERT_NEAR(30.000000000000000, curvilinearGrid.GetNode(1, 4).y, tolerance);
+
+    ASSERT_NEAR(0.0000000000000000, curvilinearGrid.GetNode(2, 0).y, tolerance);
+    ASSERT_NEAR(10.000000000000000, curvilinearGrid.GetNode(2, 1).y, tolerance); // stays in place
+    ASSERT_NEAR(14.999992348548458, curvilinearGrid.GetNode(2, 2).y, tolerance);
+    ASSERT_NEAR(20.000000000000000, curvilinearGrid.GetNode(2, 3).y, tolerance); // stays in place
+    ASSERT_NEAR(30.000000000000000, curvilinearGrid.GetNode(2, 4).y, tolerance);
 }

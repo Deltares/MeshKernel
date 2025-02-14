@@ -30,6 +30,7 @@
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/MeshEdgeLength.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/Utilities/RTreeFactory.hpp"
@@ -182,6 +183,7 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
 
     // perform mesh1d administration
     m_mesh1d.AdministrateNodesEdges();
+    std::vector<double> mesh1dEdgeLengths = MeshEdgeLength::Compute(m_mesh1d);
 
     Validate();
 
@@ -201,7 +203,7 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
         const auto secondNode1dMeshEdge = m_mesh1d.GetEdge(e).second;
 
         // computes the maximum edge length
-        const auto maxEdgeLength = m_mesh1d.ComputeMaxLengthSurroundingEdges(firstNode1dMeshEdge);
+        const auto maxEdgeLength = MeshEdgeLength::MaxLengthSurroundingEdges(m_mesh1d, firstNode1dMeshEdge, mesh1dEdgeLengths);
 
         // compute the nearest 2d face indices
         rtree.SearchPoints(m_mesh1d.Node(firstNode1dMeshEdge), 1.1 * maxEdgeLength * maxEdgeLength);
@@ -405,6 +407,8 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
     // perform mesh1d administration
     m_mesh1d.AdministrateNodesEdges();
 
+    std::vector<double> mesh1dEdgeLengths = MeshEdgeLength::Compute(m_mesh1d);
+
     Validate();
 
     // build mesh2d face circumcenters r-tree
@@ -435,7 +439,7 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
 
         if (computeLocalSearchRadius)
         {
-            localSearchRadius = m_mesh1d.ComputeMaxLengthSurroundingEdges(n);
+            localSearchRadius = MeshEdgeLength::MaxLengthSurroundingEdges(m_mesh1d, n, mesh1dEdgeLengths);
         }
 
         // compute the nearest 2d face indices
