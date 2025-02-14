@@ -1285,7 +1285,7 @@ TEST(CurvilinearGridFromSplines, GridFromSeventySplines)
     }
 
     EXPECT_EQ(grid.NumN(), 36);
-    EXPECT_EQ(grid.NumM(), 306);
+    EXPECT_EQ(grid.NumM(), 301);
     EXPECT_EQ(validPointCount, 4941);
 }
 

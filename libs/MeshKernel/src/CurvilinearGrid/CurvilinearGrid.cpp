@@ -142,6 +142,7 @@ void CurvilinearGrid::SetGridNodes(const lin_alg::Matrix<Point>& gridNodes)
     }
 
     m_gridNodes = gridNodes;
+    TrimGridNodes();
 
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
@@ -158,12 +159,129 @@ void CurvilinearGrid::SetGridNodes(lin_alg::Matrix<Point>&& gridNodes)
     }
 
     m_gridNodes = std::move(gridNodes);
+    TrimGridNodes();
 
     m_nodesRTreeRequiresUpdate = true;
     m_edgesRTreeRequiresUpdate = true;
     m_facesRTreeRequiresUpdate = true;
 
     m_gridIndices = ComputeNodeIndices();
+}
+
+void CurvilinearGrid::TrimGridNodes()
+{
+    if (m_gridNodes.rows() <= 1 || m_gridNodes.cols() <= 1)
+    {
+        return;
+    }
+
+    UInt rows = static_cast<UInt>(m_gridNodes.rows());
+    UInt cols = static_cast<UInt>(m_gridNodes.cols());
+
+    // Initialize valid row/column bounds
+    UInt firstValidRow = 0, lastValidRow = rows - 1;
+    UInt firstValidCol = 0, lastValidCol = cols - 1;
+    bool foundFirstRow = false;
+    bool foundFirstCol = false;
+    bool foundLastRow = false;
+    bool foundLastCol = false;
+
+    // Find first valid row
+    for (UInt r = 0; r < rows; ++r)
+    {
+        for (UInt c = 0; c < cols; ++c)
+        {
+            if (m_gridNodes(r, c).x != constants::missing::doubleValue &&
+                m_gridNodes(r, c).y != constants::missing::doubleValue)
+            {
+                firstValidRow = r;
+                foundFirstRow = true;
+                break;
+            }
+        }
+        if (foundFirstRow)
+            break;
+    }
+
+    // Find last valid row
+    for (UInt r = rows - 1; r >= firstValidRow; --r)
+    {
+        for (UInt c = 0; c < cols; ++c)
+        {
+            if (m_gridNodes(r, c).x != constants::missing::doubleValue &&
+                m_gridNodes(r, c).y != constants::missing::doubleValue)
+            {
+                lastValidRow = r;
+                foundLastRow = true;
+                break;
+            }
+        }
+        if (foundLastRow)
+            break;
+    }
+
+    // Find first valid column
+    for (UInt c = 0; c < cols; ++c)
+    {
+        for (UInt r = firstValidRow; r <= lastValidRow; ++r)
+        {
+            if (m_gridNodes(r, c).x != constants::missing::doubleValue &&
+                m_gridNodes(r, c).y != constants::missing::doubleValue)
+            {
+                firstValidCol = c;
+                foundFirstCol = true;
+                break;
+            }
+        }
+        if (foundFirstCol)
+            break;
+    }
+
+    // Find last valid column
+    for (UInt c = cols - 1; c >= firstValidCol; --c)
+    {
+        for (UInt r = firstValidRow; r <= lastValidRow; ++r)
+        {
+            if (m_gridNodes(r, c).x != constants::missing::doubleValue &&
+                m_gridNodes(r, c).x != constants::missing::doubleValue)
+            {
+                lastValidCol = c;
+                foundLastCol = true;
+                break;
+            }
+        }
+        if (foundLastCol)
+            break;
+    }
+
+    // Check if any valid rows/columns were found that need trimming
+    bool needsTrimming = false;
+    if (firstValidRow > 0 || lastValidRow < rows - 1 || firstValidCol > 0 || lastValidCol < cols - 1)
+    {
+        needsTrimming = true;
+    }
+
+    // If no trimming needed, return early
+    if (!needsTrimming)
+    {
+        return;
+    }
+
+    // Create a new matrix with only the valid range
+    UInt newRows = lastValidRow - firstValidRow + 1;
+    UInt newCols = lastValidCol - firstValidCol + 1;
+    lin_alg::Matrix<Point> trimmedGridNodes(newRows, newCols);
+
+    for (UInt r = 0; r < newRows; ++r)
+    {
+        for (UInt c = 0; c < newCols; ++c)
+        {
+            trimmedGridNodes(r, c) = m_gridNodes(firstValidRow + r, firstValidCol + c);
+        }
+    }
+
+    // Move the trimmed matrix back to gridNodes
+    m_gridNodes = std::move(trimmedGridNodes);
 }
 
 void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, UInt polygonIndex)
