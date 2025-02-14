@@ -2670,6 +2670,7 @@ namespace meshkernelapi
                                                                                                 maxValue);
 
             // Now compute the size of the arrays required
+            int num_masked_faces = 0;
             for (meshkernel::UInt f = 0; f < filterMask.size(); ++f)
             {
                 if (!filterMask[f])
@@ -2679,16 +2680,14 @@ namespace meshkernelapi
 
                 const auto faceNumEdges = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->m_facesNodes[f].size());
                 geometryListDimension += faceNumEdges + 2;
+                num_masked_faces++;
             }
 
-            if (geometryListDimension > 0)
-            {
-                geometryListDimension -= 1;
-                meshKernelState[meshKernelId].m_facePropertyCache = std::make_shared<FacePolygonPropertyCache>(propertyValue, minValue, maxValue,
-                                                                                                               *meshKernelState[meshKernelId].m_mesh2d,
-                                                                                                               geometryListDimension,
-                                                                                                               filterMask);
-            }
+            geometryListDimension = num_masked_faces > 0 ? geometryListDimension - 1 : 0;
+            meshKernelState[meshKernelId].m_facePropertyCache = std::make_shared<FacePolygonPropertyCache>(propertyValue, minValue, maxValue,
+                                                                                                           *meshKernelState[meshKernelId].m_mesh2d,
+                                                                                                           geometryListDimension,
+                                                                                                           filterMask);
         }
         catch (...)
         {
