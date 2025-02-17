@@ -425,6 +425,12 @@ std::tuple<double, double, double, double> Smoother::ComputeOperatorsForInterior
 
 void Smoother::ComputeOperatorsNode(UInt currentNode, const MeshNodeType nodeType)
 {
+
+    if (nodeType == MeshNodeType::Corner)
+    {
+        return;
+    }
+
     // the current topology index
     const auto currentTopology = m_nodeTopologyMapping[currentNode];
 
@@ -444,6 +450,7 @@ void Smoother::ComputeOperatorsNode(UInt currentNode, const MeshNodeType nodeTyp
 
     for (UInt f = 0; f < m_topologySharedFaces[currentTopology].size(); f++)
     {
+
         const auto edgeIndex = m_mesh.m_nodesEdges[currentNode][f];
         const auto otherNode = OtherNodeOfEdge(m_mesh.GetEdge(edgeIndex), currentNode);
 

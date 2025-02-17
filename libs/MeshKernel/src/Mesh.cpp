@@ -203,6 +203,8 @@ void Mesh::DeleteInvalidNodesAndEdges()
     FindConnectedNodes(connectedNodes, numInvalidEdges);
     InvalidateUnConnectedNodes(connectedNodes, numInvalidNodes);
 
+    std::cout << "number of invalid nodes and edges: " << numInvalidNodes << "  " << numInvalidEdges << std::endl;
+
     // If nothing to invalidate return
     if (numInvalidEdges == 0 && numInvalidNodes == 0)
     {

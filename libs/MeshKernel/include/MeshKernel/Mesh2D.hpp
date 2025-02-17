@@ -540,6 +540,8 @@ namespace meshkernel
                                       std::vector<std::array<double, 2>>& averageEdgesLength,
                                       std::vector<double>& aspectRatios) const;
 
+        void RemoveEdgesWithNoFace();
+
         std::vector<MeshNodeType> m_nodesTypes; ///< The node types (nb)
     };
 
