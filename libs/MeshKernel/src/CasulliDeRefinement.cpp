@@ -1071,7 +1071,7 @@ std::vector<int> meshkernel::CasulliDeRefinement::ComputeNodeTypes(const Mesh2D&
     {
         if (polygon.IsPointInAnyPolygon(mesh.Node(i)))
         {
-            nodeTypes[i] = mesh.m_nodesTypes[i];
+            nodeTypes[i] = static_cast<int>(mesh.GetNodeType(i));
         }
     }
 

@@ -29,7 +29,6 @@
 #include <memory>
 
 #include "MeshKernel/BoundingBox.hpp"
-#include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/UndoActions/AddEdgeAction.hpp"
@@ -452,7 +451,6 @@ namespace meshkernel
         // nodes
         std::vector<std::vector<UInt>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
         std::vector<UInt> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
-        std::vector<int> m_nodesTypes;               ///< The node types (nb)
 
         // edges
         std::vector<std::array<UInt, 2>> m_edgesFaces; ///< For each edge, the shared face index (lne)

@@ -35,7 +35,7 @@
 using meshkernel::Mesh2D;
 using meshkernel::Smoother;
 
-Smoother::Smoother(const Mesh2D& mesh) : m_mesh(mesh)
+Smoother::Smoother(const Mesh2D& mesh, const std::vector<MeshNodeType>& nodeType) : m_mesh(mesh), m_nodeType(nodeType)
 {
 }
 
@@ -93,7 +93,7 @@ void Smoother::ComputeOperators()
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
 
-        if (m_mesh.m_nodesTypes[n] != 1 && m_mesh.m_nodesTypes[n] != 2 && m_mesh.m_nodesTypes[n] != 3 && m_mesh.m_nodesTypes[n] != 4)
+        if (m_nodeType[n] != MeshNodeType::Internal && m_nodeType[n] != MeshNodeType::Boundary && m_nodeType[n] != MeshNodeType::Corner)
         {
             continue;
         }
@@ -108,7 +108,7 @@ void Smoother::ComputeOperators()
             // Compute node operators
 
             AllocateNodeOperators(currentTopology);
-            ComputeOperatorsNode(n);
+            ComputeOperatorsNode(n, m_nodeType[n]);
         }
     }
 }
@@ -120,7 +120,7 @@ void Smoother::ComputeWeights()
 
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
-        if (m_mesh.m_nodesTypes[n] != 1 && m_mesh.m_nodesTypes[n] != 2 && m_mesh.m_nodesTypes[n] != 4)
+        if (m_nodeType[n] != MeshNodeType::Internal && m_nodeType[n] != MeshNodeType::Boundary)
         {
             continue;
         }
@@ -155,7 +155,7 @@ void Smoother::ComputeWeights()
             continue;
 
         // Internal nodes and boundary nodes
-        if (m_mesh.m_nodesTypes[n] == 1 || m_mesh.m_nodesTypes[n] == 2)
+        if (m_nodeType[n] == MeshNodeType::Internal || m_nodeType[n] == MeshNodeType::Boundary)
         {
             const auto currentTopology = m_nodeTopologyMapping[n];
 
@@ -243,12 +243,12 @@ void Smoother::ComputeWeights()
     }
 }
 
-void Smoother::ComputeCellCircumcentreCoefficients(const UInt currentNode, const UInt currentTopology)
+void Smoother::ComputeCellCircumcentreCoefficients(const UInt currentNode, const UInt currentTopology, const MeshNodeType nodeType)
 {
 
     for (UInt f = 0; f < m_topologySharedFaces[currentTopology].size(); f++)
     {
-        if (m_topologySharedFaces[currentTopology][f] == constants::missing::uintValue || m_mesh.m_nodesTypes[currentNode] == 3)
+        if (m_topologySharedFaces[currentTopology][f] == constants::missing::uintValue || nodeType == MeshNodeType::Corner)
         {
             continue;
         }
@@ -423,12 +423,12 @@ std::tuple<double, double, double, double> Smoother::ComputeOperatorsForInterior
     return {leftXi, leftEta, rightXi, rightEta};
 }
 
-void Smoother::ComputeOperatorsNode(UInt currentNode)
+void Smoother::ComputeOperatorsNode(UInt currentNode, const MeshNodeType nodeType)
 {
     // the current topology index
     const auto currentTopology = m_nodeTopologyMapping[currentNode];
 
-    ComputeCellCircumcentreCoefficients(currentNode, currentTopology);
+    ComputeCellCircumcentreCoefficients(currentNode, currentTopology, nodeType);
 
     // Initialize caches
     std::fill(m_leftXFaceCenterCache.begin(), m_leftXFaceCenterCache.end(), 0.0);
@@ -693,6 +693,7 @@ void Smoother::UpdateXiEtaForSharedFace(const UInt currentNode,
 
 void Smoother::ComputeOptimalAngleForSharedFaces(const UInt currentNode,
                                                  const UInt numSharedFaces,
+                                                 const MeshNodeType nodeType,
                                                  const std::vector<double>& thetaSquare,
                                                  const std::vector<bool>& isSquareFace,
                                                  const double mu,
@@ -708,11 +709,11 @@ void Smoother::ComputeOptimalAngleForSharedFaces(const UInt currentNode,
         phi0 = phi0 + 0.5 * dPhi;
         if (m_sharedFacesCache[f] == constants::missing::uintValue)
         {
-            if (m_mesh.m_nodesTypes[currentNode] == 2)
+            if (nodeType == MeshNodeType::Boundary)
             {
                 dPhi = M_PI;
             }
-            else if (m_mesh.m_nodesTypes[currentNode] == 3)
+            else if (nodeType == MeshNodeType::Corner)
             {
                 dPhi = 1.5 * M_PI;
             }
@@ -818,19 +819,19 @@ void Smoother::ComputeNodeXiEta(UInt currentNode)
 
         if (isSquare)
         {
-            if (m_mesh.m_nodesTypes[nextNode] == 1 || m_mesh.m_nodesTypes[nextNode] == 4)
+            if (m_nodeType[nextNode] == MeshNodeType::Internal)
             {
                 // Inner node
                 numNonStencilQuad = m_mesh.m_nodesNumEdges[nextNode] - 2;
                 thetaSquare[f + 1] = (2.0 - double(numNonStencilQuad) * 0.5) * M_PI;
             }
-            if (m_mesh.m_nodesTypes[nextNode] == 2)
+            if (m_nodeType[nextNode] == MeshNodeType::Boundary)
             {
                 // boundary node
                 numNonStencilQuad = m_mesh.m_nodesNumEdges[nextNode] - 1 - m_mesh.m_edgesNumFaces[edgeIndex];
                 thetaSquare[f + 1] = (1.0 - double(numNonStencilQuad) * 0.5) * M_PI;
             }
-            if (m_mesh.m_nodesTypes[nextNode] == 3)
+            if (m_nodeType[nextNode] == MeshNodeType::Corner)
             {
                 // corner node
                 thetaSquare[f + 1] = 0.5 * M_PI;
@@ -862,12 +863,12 @@ void Smoother::ComputeNodeXiEta(UInt currentNode)
     ComputeInternalAngle(currentNode, numSharedFaces, thetaSquare, isSquareFace, internalAngleData, numNonStencilQuad);
 
     double factor = 1.0;
-    if (m_mesh.m_nodesTypes[currentNode] == 2)
+    if (m_nodeType[currentNode] == MeshNodeType::Boundary)
     {
         factor = 0.5;
     }
 
-    if (m_mesh.m_nodesTypes[currentNode] == 3)
+    if (m_nodeType[currentNode] == MeshNodeType::Corner)
     {
         factor = 0.25;
     }
@@ -898,7 +899,7 @@ void Smoother::ComputeNodeXiEta(UInt currentNode)
         throw MeshGeometryError(currentNode, Location::Nodes, "Fatal error (phiTot=0)");
     }
 
-    ComputeOptimalAngleForSharedFaces(currentNode, numSharedFaces, thetaSquare, isSquareFace, mu, muSquaredTriangles, muTriangles);
+    ComputeOptimalAngleForSharedFaces(currentNode, numSharedFaces, m_nodeType[currentNode], thetaSquare, isSquareFace, mu, muSquaredTriangles, muTriangles);
 }
 
 void Smoother::NodeAdministration(UInt currentNode)
