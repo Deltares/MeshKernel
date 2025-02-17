@@ -57,6 +57,7 @@ namespace meshkernel
             constexpr int intValue = -999;                                                     ///< Integer value used as missing value
             constexpr UInt uintValue = std::numeric_limits<UInt>::max();                       ///< missing value used for invalid indices
             constexpr Eigen::Index EigenIndexValue = std::numeric_limits<Eigen::Index>::max(); ///< missing value used for invalid eigen indices
+
         } // namespace missing
 
         // often used values
@@ -65,6 +66,7 @@ namespace meshkernel
             static double const squareRootOfThree = std::sqrt(3.0); ///< The result of sqrt(3)
             constexpr double oneThird = 1.0 / 3.0;                  ///< The result of 1 / 3
             constexpr int defaultSnappingIterations = 5;            ///< Default number of iterations to take in the spline snapping algorithm
+
         } // namespace numeric
 
         // unit conversion constants
@@ -72,6 +74,7 @@ namespace meshkernel
         {
             constexpr double degToRad = M_PI / 180.0;   ///< Conversion factor from degrees to radians(pi / 180)
             constexpr double radToDeg = 1.0 / degToRad; ///< Conversion factor from radians to degrees(180 / pi)
+
         } // namespace conversion
 
         // geometric constants
@@ -89,12 +92,14 @@ namespace meshkernel
             constexpr UInt maximumNumberOfEdgesPerFace = 6;                                 ///< Maximum number of edges per face
             constexpr UInt maximumNumberOfNodesPerFace = 6;                                 ///< Maximum number of nodes per face
             constexpr UInt maximumNumberOfConnectedNodes = maximumNumberOfEdgesPerNode * 4; ///< Maximum number of connected nodes
+
         } // namespace geometric
 
         namespace physical
         {
             constexpr double gravity = 9.80665;                    ///< Gravitational acceleration on earth (m/s^2)
             static double const sqrt_gravity = std::sqrt(gravity); ///< Square root of gravitational acceleration on earth
+
         } // namespace physical
 
     } // namespace constants
