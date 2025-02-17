@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['short_1750',['Short',['../namespacemeshkernel.html#abc88bd08e00d68260b39fb1e5f8b52a7a30bb747c98bccdd11b3f89e644c4d0ad',1,'meshkernel']]],
-  ['simpleaveraging_1751',['SimpleAveraging',['../classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0a6b3fcde058ff09e647354f7334491f08',1,'meshkernel::AveragingInterpolation']]],
-  ['stdlibexceptioncode_1752',['StdLibExceptionCode',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba4e7930c72823d9b0af49516867739003',1,'meshkernel']]],
-  ['success_1753',['Success',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba20e2d57f016460094a776b30d46bd2f5',1,'meshkernel']]]
+  ['n_1756',['N',['../namespacemeshkernel.html#ada45df7d9a6b761430af4dbf350f67cca8d9c307cb7f3c4a32822a51922d1ceaa',1,'meshkernel']]],
+  ['nodes_1757',['Nodes',['../namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9a187c6ad3a74cc93ac6c2229d398e383e',1,'meshkernel']]],
+  ['none_1758',['None',['../classmeshkernel_1_1_polygonal_enclosure.html#a5294cab21134ae4359209f24398fdbe3a6adf97f83acf6453d4a6a4b1070f3754',1,'meshkernel::PolygonalEnclosure']]],
+  ['notimplementederrorcode_1759',['NotImplementedErrorCode',['../namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba730f17cf6f651e9630f4e6196debe58c',1,'meshkernel']]]
 ];

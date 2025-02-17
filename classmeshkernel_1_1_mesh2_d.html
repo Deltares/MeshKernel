@@ -105,17 +105,6 @@ Public Types</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a41e7c8bf5e92fec3f46ba18204e8cc6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerator describing the different options to delete a mesh. <br /></td></tr>
 <tr class="separator:a41e7c8bf5e92fec3f46ba18204e8cc6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a17db40a7b9ea9151e51231c4af416d47"><td class="memItemLeft" align="right" valign="top"><a id="a17db40a7b9ea9151e51231c4af416d47"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a17db40a7b9ea9151e51231c4af416d47">NodeTypes</a> { <br />
-&#160;&#160;<b>internalNode</b>, 
-<b>onRing</b>, 
-<b>cornerNode</b>, 
-<b>hangingNode</b>, 
-<br />
-&#160;&#160;<b>other</b>
-<br />
- }</td></tr>
-<tr class="memdesc:a17db40a7b9ea9151e51231c4af416d47"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerator describing the different node types. <br /></td></tr>
-<tr class="separator:a17db40a7b9ea9151e51231c4af416d47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5302769bc3f1dd3291f60b7bb62fe85c"><td class="memItemLeft" align="right" valign="top"><a id="a5302769bc3f1dd3291f60b7bb62fe85c"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a5302769bc3f1dd3291f60b7bb62fe85c">Property</a> { <b>Orthogonality</b> = 0, 
 <b>EdgeLength</b> = 1
  }</td></tr>
@@ -203,13 +192,21 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a1eb897004225245dbb9e447cb6f60474">ComputeNodeNeighbours</a> (std::vector&lt; std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&gt; &amp;nodesNodes, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &amp;maxNumNeighbours) const</td></tr>
 <tr class="memdesc:a1eb897004225245dbb9e447cb6f60474"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes node neighbours. <br /></td></tr>
 <tr class="separator:a1eb897004225245dbb9e447cb6f60474"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a281602c3eee4a57f2f06a89badafa04d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a281602c3eee4a57f2f06a89badafa04d">ComputeAspectRatios</a> (std::vector&lt; double &gt; &amp;aspectRatios)</td></tr>
-<tr class="memdesc:a281602c3eee4a57f2f06a89badafa04d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the aspect ratios (the ratios edges lengths to flow edges lengths)  <a href="classmeshkernel_1_1_mesh2_d.html#a281602c3eee4a57f2f06a89badafa04d">More...</a><br /></td></tr>
-<tr class="separator:a281602c3eee4a57f2f06a89badafa04d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a636d15e559130e894343536165ea038f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a636d15e559130e894343536165ea038f">ComputeAspectRatios</a> (std::vector&lt; double &gt; &amp;aspectRatios) const</td></tr>
+<tr class="memdesc:a636d15e559130e894343536165ea038f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the aspect ratios (the ratios edges lengths to flow edges lengths)  <a href="classmeshkernel_1_1_mesh2_d.html#a636d15e559130e894343536165ea038f">More...</a><br /></td></tr>
+<tr class="separator:a636d15e559130e894343536165ea038f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae70f0bfaf5a55b9b0a76bd6a3d98041f"><td class="memItemLeft" align="right" valign="top"><a id="ae70f0bfaf5a55b9b0a76bd6a3d98041f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#ae70f0bfaf5a55b9b0a76bd6a3d98041f">ClassifyNodes</a> ()</td></tr>
 <tr class="memdesc:ae70f0bfaf5a55b9b0a76bd6a3d98041f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Classifies the nodes (makenetnodescoding) <br /></td></tr>
 <tr class="separator:ae70f0bfaf5a55b9b0a76bd6a3d98041f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b6ba0114567498045ed60d7243a4bc9"><td class="memItemLeft" align="right" valign="top"><a id="a3b6ba0114567498045ed60d7243a4bc9"></a>
+<a class="el" href="namespacemeshkernel.html#a296258ed24b382bc57ad5d4fe5f325ca">MeshNodeType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a3b6ba0114567498045ed60d7243a4bc9">GetNodeType</a> (const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> nodeId) const</td></tr>
+<tr class="memdesc:a3b6ba0114567498045ed60d7243a4bc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the node type. <br /></td></tr>
+<tr class="separator:a3b6ba0114567498045ed60d7243a4bc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af1b0b7e88efb44bdc493a7878a36347d"><td class="memItemLeft" align="right" valign="top"><a id="af1b0b7e88efb44bdc493a7878a36347d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#af1b0b7e88efb44bdc493a7878a36347d">GetNodeTypes</a> (std::vector&lt; <a class="el" href="namespacemeshkernel.html#a296258ed24b382bc57ad5d4fe5f325ca">MeshNodeType</a> &gt; &amp;nodeTypes) const</td></tr>
+<tr class="memdesc:af1b0b7e88efb44bdc493a7878a36347d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the node type. <br /></td></tr>
+<tr class="separator:af1b0b7e88efb44bdc493a7878a36347d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a893855b697eaa894c585960a265907c8"><td class="memItemLeft" align="right" valign="top"><a id="a893855b697eaa894c585960a265907c8"></a>
 std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a893855b697eaa894c585960a265907c8">DeleteDegeneratedTriangles</a> ()</td></tr>
 <tr class="memdesc:a893855b697eaa894c585960a265907c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes coinciding triangles. <br /></td></tr>
@@ -637,10 +634,6 @@ std::vector&lt; std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97
 std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#aa3e9286d4ca6faaa3d67efd1ba641124">m_nodesNumEdges</a></td></tr>
 <tr class="memdesc:aa3e9286d4ca6faaa3d67efd1ba641124 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">For each node, the number of connected edges (nmk) <br /></td></tr>
 <tr class="separator:aa3e9286d4ca6faaa3d67efd1ba641124 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a69248de9529d1c0ad698d056760e5900 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="a69248de9529d1c0ad698d056760e5900"></a>
-std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a69248de9529d1c0ad698d056760e5900">m_nodesTypes</a></td></tr>
-<tr class="memdesc:a69248de9529d1c0ad698d056760e5900 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">The node types (nb) <br /></td></tr>
-<tr class="separator:a69248de9529d1c0ad698d056760e5900 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa6634281d78a1ef707bc5a2376a84524 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memItemLeft" align="right" valign="top"><a id="aa6634281d78a1ef707bc5a2376a84524"></a>
 std::vector&lt; std::array&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>, 2 &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#aa6634281d78a1ef707bc5a2376a84524">m_edgesFaces</a></td></tr>
 <tr class="memdesc:aa6634281d78a1ef707bc5a2376a84524 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">For each edge, the shared face index (lne) <br /></td></tr>
@@ -898,8 +891,8 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a281602c3eee4a57f2f06a89badafa04d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a281602c3eee4a57f2f06a89badafa04d">&#9670;&nbsp;</a></span>ComputeAspectRatios()</h2>
+<a id="a636d15e559130e894343536165ea038f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a636d15e559130e894343536165ea038f">&#9670;&nbsp;</a></span>ComputeAspectRatios()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -909,7 +902,7 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
           <td>(</td>
           <td class="paramtype">std::vector&lt; double &gt; &amp;&#160;</td>
           <td class="paramname"><em>aspectRatios</em></td><td>)</td>
-          <td></td>
+          <td> const</td>
         </tr>
       </table>
 </div><div class="memdoc">

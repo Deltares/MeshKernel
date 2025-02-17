@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['edges_1728',['Edges',['../namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9a484afb8d54ec549700b1fe96417519a9',1,'meshkernel']]],
-  ['exterior_1729',['Exterior',['../classmeshkernel_1_1_polygonal_enclosure.html#a5294cab21134ae4359209f24398fdbe3ad9b3dceaf520ba1fa45c371c498c6baf',1,'meshkernel::PolygonalEnclosure']]]
+  ['double_1736',['Double',['../namespacemeshkernel.html#abc88bd08e00d68260b39fb1e5f8b52a7ad909d38d705ce75386dd86e611a82f5b',1,'meshkernel']]]
 ];

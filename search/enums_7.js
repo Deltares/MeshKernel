@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['projection_1714',['Projection',['../namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716',1,'meshkernel']]],
-  ['projecttolandboundaryoption_1715',['ProjectToLandBoundaryOption',['../classmeshkernel_1_1_land_boundaries.html#af722b430ae328691e49daaf616c90f29',1,'meshkernel::LandBoundaries']]],
-  ['property_1716',['Property',['../classmeshkernel_1_1_mesh2_d.html#a5302769bc3f1dd3291f60b7bb62fe85c',1,'meshkernel::Mesh2D']]]
+  ['refinementtype_1724',['RefinementType',['../classmeshkernel_1_1_mesh_refinement.html#a4070f77223ce02f79118a4209dcf3c34',1,'meshkernel::MeshRefinement']]],
+  ['region_1725',['Region',['../classmeshkernel_1_1_polygonal_enclosure.html#a5294cab21134ae4359209f24398fdbe3',1,'meshkernel::PolygonalEnclosure']]]
 ];

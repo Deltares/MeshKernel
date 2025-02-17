@@ -366,6 +366,17 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:abc88bd08e00d68260b39fb1e5f8b52a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">The possible types of the values to be interpolated in the gridded sample.  <a href="namespacemeshkernel.html#abc88bd08e00d68260b39fb1e5f8b52a7">More...</a><br /></td></tr>
 <tr class="separator:abc88bd08e00d68260b39fb1e5f8b52a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a296258ed24b382bc57ad5d4fe5f325ca"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a296258ed24b382bc57ad5d4fe5f325ca">MeshNodeType</a> : std::int8_t { <br />
+&#160;&#160;<a class="el" href="namespacemeshkernel.html#a296258ed24b382bc57ad5d4fe5f325caaaefea37c8d478f0968d6606e6095beb7">MeshNodeType::Hanging</a> = -1, 
+<a class="el" href="namespacemeshkernel.html#a296258ed24b382bc57ad5d4fe5f325caa6fcdc090caeade09d0efd6253932b6f5">MeshNodeType::Unspecified</a>, 
+<a class="el" href="namespacemeshkernel.html#a296258ed24b382bc57ad5d4fe5f325caaafbf0897a5a83fdd873dfb032ec695d3">MeshNodeType::Internal</a>, 
+<a class="el" href="namespacemeshkernel.html#a296258ed24b382bc57ad5d4fe5f325caae234de581c9c5ef91322f1469a585f9e">MeshNodeType::Boundary</a>, 
+<br />
+&#160;&#160;<a class="el" href="namespacemeshkernel.html#a296258ed24b382bc57ad5d4fe5f325caa45671f70ac97ff86643523f29eb4d3b9">MeshNodeType::Corner</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:a296258ed24b382bc57ad5d4fe5f325ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Possible unstructured node types.  <a href="namespacemeshkernel.html#a296258ed24b382bc57ad5d4fe5f325ca">More...</a><br /></td></tr>
+<tr class="separator:a296258ed24b382bc57ad5d4fe5f325ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25feb926a55573977c6c4f410ece8fbb"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbb">ExitCode</a> { <br />
 &#160;&#160;<a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbba20e2d57f016460094a776b30d46bd2f5">Success</a> = 0, 
 <a class="el" href="namespacemeshkernel.html#a25feb926a55573977c6c4f410ece8fbbae0d91fdaea35979fbd714182d61ff8c1">MeshKernelErrorCode</a> = 1, 
@@ -920,6 +931,42 @@ template&lt;typename Function &gt; </td></tr>
 <tr><td class="fieldname"><a id="a50aa377deae5c143c4fc0ba767f051d9a484afb8d54ec549700b1fe96417519a9"></a>Edges&#160;</td><td class="fielddoc"><p>Edges. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="a50aa377deae5c143c4fc0ba767f051d9a88183b946cc5f0e8c96b2e66e1c74a7e"></a>Unknown&#160;</td><td class="fielddoc"><p>Unknown. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="a296258ed24b382bc57ad5d4fe5f325ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a296258ed24b382bc57ad5d4fe5f325ca">&#9670;&nbsp;</a></span>MeshNodeType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="namespacemeshkernel.html#a296258ed24b382bc57ad5d4fe5f325ca">meshkernel::MeshNodeType</a> : std::int8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Possible unstructured node types. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a296258ed24b382bc57ad5d4fe5f325caaaefea37c8d478f0968d6606e6095beb7"></a>Hanging&#160;</td><td class="fielddoc"><p>Hanging node. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a296258ed24b382bc57ad5d4fe5f325caa6fcdc090caeade09d0efd6253932b6f5"></a>Unspecified&#160;</td><td class="fielddoc"><p>Initial value, unspecified or invalid nodes. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a296258ed24b382bc57ad5d4fe5f325caaafbf0897a5a83fdd873dfb032ec695d3"></a>Internal&#160;</td><td class="fielddoc"><p>Nodes in interior of domain. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a296258ed24b382bc57ad5d4fe5f325caae234de581c9c5ef91322f1469a585f9e"></a>Boundary&#160;</td><td class="fielddoc"><p>Nodes on boundary of domain, except corners. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a296258ed24b382bc57ad5d4fe5f325caa45671f70ac97ff86643523f29eb4d3b9"></a>Corner&#160;</td><td class="fielddoc"><p>Nodes at corners. </p>
 </td></tr>
 </table>
 
