@@ -57,7 +57,7 @@ void Orthogonalizer::Compute()
             continue;
         }
 
-        for (UInt nn = 0; nn < m_mesh.m_nodesNumEdges[n]; nn++)
+        for (UInt nn = 0; nn < m_mesh.GetNumNodesEdges(n); nn++)
         {
 
             const auto edgeIndex = m_mesh.m_nodesEdges[n][nn];

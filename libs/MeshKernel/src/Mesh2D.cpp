@@ -62,7 +62,7 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
 Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                const std::vector<Point>& nodes,
                const std::vector<std::vector<UInt>>& faceNodes,
-               const std::vector<UInt>& numFaceNodes,
+               const std::vector<std::uint8_t>& numFaceNodes,
                Projection projection)
     : Mesh(edges, nodes, projection)
 {
@@ -176,7 +176,7 @@ void Mesh2D::DoAdministration(CompoundUndoAction* undoAction)
 }
 
 void Mesh2D::DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
-                                                   const std::vector<UInt>& numFaceNodes)
+                                                   const std::vector<std::uint8_t>& numFaceNodes)
 {
     AdministrateNodesEdges();
 
@@ -550,7 +550,7 @@ void Mesh2D::FindFaces()
 }
 
 void Mesh2D::FindFacesGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
-                                            const std::vector<UInt>& numFaceNodes)
+                                            const std::vector<std::uint8_t>& numFaceNodes)
 {
     m_facesNodes = faceNodes;
     m_numFacesNodes = numFaceNodes;
@@ -1434,7 +1434,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::TriangulateFaces()
 
     for (UInt i = 0; i < GetNumFaces(); ++i)
     {
-        const auto NumEdges = GetNumFaceEdges(i);
+        const UInt NumEdges = GetNumFaceEdges(i);
 
         if (NumEdges < 4)
         {
@@ -1828,7 +1828,7 @@ void Mesh2D::DeletedMeshNodesAndEdges(const std::function<bool(UInt)>& excludedF
                                       std::vector<bool>& deleteNode,
                                       CompoundUndoAction& deleteMeshAction)
 {
-    std::vector<UInt> nodeEdgeCount(m_nodesNumEdges);
+    std::vector<std::uint8_t> nodeEdgeCount(m_nodesNumEdges);
 
     for (UInt e = 0; e < GetNumEdges(); ++e)
     {
@@ -2543,8 +2543,8 @@ void Mesh2D::FindFacesConnectedToNode(UInt nodeIndex, std::vector<UInt>& sharedF
         }
 
         // find the face shared by the two edges
-        const auto firstFace = std::max(std::min(m_edgesNumFaces[firstEdge], 2U), 1U) - 1U;
-        const auto secondFace = std::max(std::min(m_edgesNumFaces[secondEdge], static_cast<UInt>(2)), static_cast<UInt>(1)) - 1;
+        const auto firstFace = std::max(std::min<UInt>(m_edgesNumFaces[firstEdge], 2U), 1U) - 1U;
+        const auto secondFace = std::max(std::min<UInt>(m_edgesNumFaces[secondEdge], 2U), 1U) - 1U;
 
         if (m_edgesFaces[firstEdge][0] != newFaceIndex &&
             (m_edgesFaces[firstEdge][0] == m_edgesFaces[secondEdge][0] ||

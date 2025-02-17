@@ -484,11 +484,11 @@ namespace meshkernelapi
 
                 const auto face_nodes = meshkernel::ConvertToFaceNodesVector(mesh2d.num_faces, mesh2d.face_nodes, mesh2d.nodes_per_face);
 
-                std::vector<meshkernel::UInt> num_face_nodes;
+                std::vector<std::uint8_t> num_face_nodes;
                 num_face_nodes.reserve(mesh2d.num_faces);
                 for (auto n = 0; n < mesh2d.num_faces; n++)
                 {
-                    num_face_nodes.emplace_back(static_cast<meshkernel::UInt>(mesh2d.nodes_per_face[n]));
+                    num_face_nodes.emplace_back(static_cast<std::uint8_t>(mesh2d.nodes_per_face[n]));
                 }
 
                 // Do not change the pointer, just the object it is pointing to
@@ -672,11 +672,12 @@ namespace meshkernelapi
             {
                 const auto face_nodes = meshkernel::ConvertToFaceNodesVector(mesh2d.num_faces, mesh2d.face_nodes, mesh2d.nodes_per_face);
 
-                std::vector<meshkernel::UInt> num_face_nodes;
+                std::vector<std::uint8_t> num_face_nodes;
                 num_face_nodes.reserve(mesh2d.num_faces);
+
                 for (auto n = 0; n < mesh2d.num_faces; n++)
                 {
-                    num_face_nodes.emplace_back(static_cast<meshkernel::UInt>(mesh2d.nodes_per_face[n]));
+                    num_face_nodes.emplace_back(static_cast<std::uint8_t>(mesh2d.nodes_per_face[n]));
                 }
 
                 undoAction = meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges2d, nodes2d, face_nodes, num_face_nodes,

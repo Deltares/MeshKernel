@@ -108,7 +108,7 @@ std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initializ
         m_localCoordinatesIndices[0] = 1;
         for (UInt n = 0; n < m_mesh.GetNumNodes(); ++n)
         {
-            m_localCoordinatesIndices[n + 1] = m_localCoordinatesIndices[n] + std::max(m_mesh.m_nodesNumEdges[n] + 1, m_smoother.GetNumConnectedNodes(n));
+            m_localCoordinatesIndices[n + 1] = m_localCoordinatesIndices[n] + std::max(m_mesh.GetNumNodesEdges(n) + 1u, m_smoother.GetNumConnectedNodes(n));
         }
 
         m_localCoordinates.resize(m_localCoordinatesIndices.back() - 1, {constants::missing::doubleValue, constants::missing::doubleValue});
@@ -169,7 +169,7 @@ void OrthogonalizationAndSmoothing::AllocateLinearSystem()
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
         m_compressedEndNodeIndex[n] = nodeCacheSize;
-        nodeCacheSize += std::max(m_mesh.m_nodesNumEdges[n] + 1, m_smoother.GetNumConnectedNodes(n));
+        nodeCacheSize += std::max(m_mesh.GetNumNodesEdges(n) + 1, m_smoother.GetNumConnectedNodes(n));
         m_compressedStartNodeIndex[n] = nodeCacheSize;
     }
 
@@ -194,7 +194,7 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 #pragma omp parallel for
     for (int n = 0; n < static_cast<int>(m_mesh.GetNumNodes()); n++)
     {
-        if ((GetNodeType(n) != MeshNodeType::Internal && GetNodeType(n) != MeshNodeType::Boundary) || m_mesh.m_nodesNumEdges[n] < 2)
+        if ((GetNodeType(n) != MeshNodeType::Internal && GetNodeType(n) != MeshNodeType::Boundary) || m_mesh.GetNumNodesEdges(n) < 2)
         {
             continue;
         }
@@ -218,7 +218,7 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
             }
 
             // Orthogonalizer
-            if (nn < static_cast<int>(m_mesh.m_nodesNumEdges[n]) + 1)
+            if (nn < static_cast<int>(m_mesh.GetNumNodesEdges(n)) + 1)
             {
                 wwx += atpfLoc * m_orthogonalizer.GetWeight(n, nn - 1);
                 wwy += atpfLoc * m_orthogonalizer.GetWeight(n, nn - 1);
@@ -267,7 +267,7 @@ void OrthogonalizationAndSmoothing::FindNeighbouringBoundaryNodes(const UInt nod
                                                                   UInt& rightNode) const
 {
     UInt numNodes = 0;
-    const auto numEdges = m_mesh.m_nodesNumEdges[nearestPointIndex];
+    const auto numEdges = m_mesh.GetNumNodesEdges(nearestPointIndex);
 
     leftNode = constants::missing::uintValue;
     rightNode = constants::missing::uintValue;
@@ -310,7 +310,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
         const auto nearestPointIndex = nearestPoints[n];
-        if (GetNodeType(n) == MeshNodeType::Boundary && m_mesh.m_nodesNumEdges[n] > 0 && m_mesh.m_nodesNumEdges[nearestPointIndex] > 0)
+        if (GetNodeType(n) == MeshNodeType::Boundary && m_mesh.GetNumNodesEdges(n) > 0 && m_mesh.GetNumNodesEdges(nearestPointIndex) > 0)
         {
             Point firstPoint = m_mesh.Node(n);
             if (!firstPoint.IsValid())

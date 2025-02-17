@@ -811,7 +811,7 @@ MakeMeshWithFaceNodesForApiTesting()
 std::tuple<std::vector<meshkernel::Point>,
            std::vector<meshkernel::Edge>,
            std::vector<std::vector<meshkernel::UInt>>,
-           std::vector<meshkernel::UInt>>
+           std::vector<std::uint8_t>>
 MakeMeshWithFaceNodes()
 {
 
@@ -871,7 +871,7 @@ MakeMeshWithFaceNodes()
         {9, 10, 14, 13},
         {10, 11, 15, 14}};
 
-    std::vector<meshkernel::UInt> num_face_nodes{4, 4, 4, 4, 4, 4, 4, 4, 4};
+    std::vector<std::uint8_t> num_face_nodes{4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u, 4u};
 
     return {nodes, edges, faceNodes, num_face_nodes};
 }

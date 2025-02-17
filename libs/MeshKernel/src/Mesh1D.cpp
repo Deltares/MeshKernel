@@ -83,7 +83,7 @@ Mesh1D::Mesh1D(Network1D& network1d, double minFaceSize)
 Point Mesh1D::ComputeProjectedNode(UInt node, double distanceFactor) const
 {
 
-    if (m_nodesNumEdges[node] <= 0)
+    if (GetNumNodesEdges(node) <= 0)
     {
         throw AlgorithmError("ComputeProjectedNode: mesh 1d node has no connected edges");
     }

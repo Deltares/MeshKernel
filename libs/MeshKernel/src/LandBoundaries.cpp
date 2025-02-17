@@ -244,7 +244,7 @@ void LandBoundaries::AssignLandBoundaryPolylineToMeshNodes(UInt edgeIndex, bool 
 
     const auto lastVisitedNode = nodesLoc[numNodesLoc - 1];
 
-    for (UInt e = 0; e < m_mesh.m_nodesNumEdges[lastVisitedNode]; e++)
+    for (UInt e = 0; e < m_mesh.GetNumNodesEdges(lastVisitedNode); e++)
     {
         const auto edge = m_mesh.m_nodesEdges[lastVisitedNode][e];
 

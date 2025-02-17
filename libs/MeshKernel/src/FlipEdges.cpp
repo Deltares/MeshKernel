@@ -262,7 +262,7 @@ void FlipEdges::DeleteEdgeFromNode(UInt edge, UInt firstNode) const
     }
 
     UInt count = 0;
-    for (UInt i = 0; i < m_mesh.m_nodesNumEdges[firstNode] + 1; i++)
+    for (UInt i = 0; i < m_mesh.m_nodesNumEdges[firstNode] + 1u; i++)
     {
         if (i + 1 <= kk || i > kk)
         {
