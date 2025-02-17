@@ -169,7 +169,7 @@ void OrthogonalizationAndSmoothing::AllocateLinearSystem()
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
         m_compressedEndNodeIndex[n] = nodeCacheSize;
-        nodeCacheSize += std::max(m_mesh.GetNumNodesEdges(n) + 1, m_smoother->GetNumConnectedNodes(n));
+        nodeCacheSize += std::max(m_mesh.GetNumNodesEdges(n) + 1, m_smoother.GetNumConnectedNodes(n));
         m_compressedStartNodeIndex[n] = nodeCacheSize;
     }
 
