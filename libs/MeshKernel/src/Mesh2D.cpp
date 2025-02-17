@@ -62,7 +62,7 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
 Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                const std::vector<Point>& nodes,
                const std::vector<std::vector<UInt>>& faceNodes,
-               const std::vector<UInt>& numFaceNodes,
+               const std::vector<std::uint8_t>& numFaceNodes,
                Projection projection)
     : Mesh(edges, nodes, projection)
 {
@@ -176,7 +176,7 @@ void Mesh2D::DoAdministration(CompoundUndoAction* undoAction)
 }
 
 void Mesh2D::DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
-                                                   const std::vector<UInt>& numFaceNodes)
+                                                   const std::vector<std::uint8_t>& numFaceNodes)
 {
     AdministrateNodesEdges();
 
@@ -550,7 +550,7 @@ void Mesh2D::FindFaces()
 }
 
 void Mesh2D::FindFacesGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
-                                            const std::vector<UInt>& numFaceNodes)
+                                            const std::vector<std::uint8_t>& numFaceNodes)
 {
     m_facesNodes = faceNodes;
     m_numFacesNodes = numFaceNodes;
@@ -663,7 +663,7 @@ void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters
     }
 }
 
-void Mesh2D::InitialiseBoundaryNodeClassification()
+void Mesh2D::InitialiseBoundaryNodeClassification(std::vector<int>& intNodeType) const
 {
 
     for (UInt e = 0; e < GetNumEdges(); e++)
@@ -676,31 +676,33 @@ void Mesh2D::InitialiseBoundaryNodeClassification()
             continue;
         }
 
-        if (m_nodesTypes[firstNode] == -1 || m_nodesTypes[secondNode] == -1)
+        if (intNodeType[firstNode] == -1 || intNodeType[secondNode] == -1)
         {
             continue;
         }
 
         if (m_edgesNumFaces[e] == 0)
         {
-            m_nodesTypes[firstNode] = -1;
-            m_nodesTypes[secondNode] = -1;
+            intNodeType[firstNode] = -1;
+            intNodeType[secondNode] = -1;
         }
         if (IsEdgeOnBoundary(e))
         {
-            m_nodesTypes[firstNode] += 1;
-            m_nodesTypes[secondNode] += 1;
+            intNodeType[firstNode] += 1;
+            intNodeType[secondNode] += 1;
         }
     }
 }
 
-void Mesh2D::ClassifyNode(const UInt nodeId)
+meshkernel::MeshNodeType Mesh2D::ClassifyNode(const UInt nodeId) const
 {
+    using enum MeshNodeType;
+
+    MeshNodeType nodeType = Unspecified;
 
     if (m_nodesNumEdges[nodeId] == 2)
     {
-        // corner point
-        m_nodesTypes[nodeId] = 3;
+        nodeType = Corner;
     }
     else
     {
@@ -727,7 +729,8 @@ void Mesh2D::ClassifyNode(const UInt nodeId)
         }
 
         // point at the border
-        m_nodesTypes[nodeId] = 2;
+        nodeType = Boundary;
+
         if (firstNode != constants::missing::uintValue && secondNode != constants::missing::uintValue)
         {
             const double cosPhi = NormalizedInnerProductTwoSegments(m_nodes[nodeId], m_nodes[firstNode], m_nodes[nodeId], m_nodes[secondNode], m_projection);
@@ -737,44 +740,55 @@ void Mesh2D::ClassifyNode(const UInt nodeId)
             if (cosPhi > -cornerCosine)
             {
                 // void angle
-                m_nodesTypes[nodeId] = 3;
+                nodeType = Corner;
             }
         }
     }
+
+    return nodeType;
 }
 
 void Mesh2D::ClassifyNodes()
 {
-    m_nodesTypes.resize(GetNumNodes(), 0);
-    std::ranges::fill(m_nodesTypes, 0);
+    using enum MeshNodeType;
 
-    InitialiseBoundaryNodeClassification();
+    std::vector<int> intNodeType(GetNumNodes(), 0);
+    m_nodesTypes.resize(GetNumNodes(), Unspecified);
+    std::ranges::fill(m_nodesTypes, Unspecified);
+
+    InitialiseBoundaryNodeClassification(intNodeType);
 
     for (UInt n = 0; n < GetNumNodes(); n++)
     {
+
         if (!Node(n).IsValid()) [[unlikely]]
         {
             continue;
         }
 
-        if (m_nodesTypes[n] == 1 || m_nodesTypes[n] == 2)
+        if (intNodeType[n] == 1 || intNodeType[n] == 2)
         {
-            ClassifyNode(n);
+            m_nodesTypes[n] = ClassifyNode(n);
         }
-        else if (m_nodesTypes[n] > 2)
+        else if (intNodeType[n] > 2)
         {
             // corner point
-            m_nodesTypes[n] = 3;
+            m_nodesTypes[n] = Corner;
         }
-        else if (m_nodesTypes[n] != -1)
+        else if (intNodeType[n] != -1)
         {
             // internal node
-            m_nodesTypes[n] = 1;
+            m_nodesTypes[n] = Internal;
         }
+        else
+        {
+            m_nodesTypes[n] = static_cast<MeshNodeType>(intNodeType[n]);
+        }
+
         if (m_nodesNumEdges[n] < 2)
         {
             // hanging node
-            m_nodesTypes[n] = -1;
+            m_nodesTypes[n] = Hanging;
         }
     }
 }
@@ -1363,7 +1377,7 @@ void Mesh2D::ComputeAverageEdgeLength(const std::vector<double>& edgesLength,
     }
 }
 
-void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios)
+void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios) const
 {
     std::vector<std::array<double, 2>> averageEdgesLength(GetNumEdges(), std::array<double, 2>{constants::missing::doubleValue, constants::missing::doubleValue});
     std::vector<double> averageFlowEdgesLength(GetNumEdges(), constants::missing::doubleValue);
@@ -1420,7 +1434,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::TriangulateFaces()
 
     for (UInt i = 0; i < GetNumFaces(); ++i)
     {
-        const auto NumEdges = GetNumFaceEdges(i);
+        const UInt NumEdges = GetNumFaceEdges(i);
 
         if (NumEdges < 4)
         {
@@ -1814,7 +1828,7 @@ void Mesh2D::DeletedMeshNodesAndEdges(const std::function<bool(UInt)>& excludedF
                                       std::vector<bool>& deleteNode,
                                       CompoundUndoAction& deleteMeshAction)
 {
-    std::vector<UInt> nodeEdgeCount(m_nodesNumEdges);
+    std::vector<std::uint8_t> nodeEdgeCount(m_nodesNumEdges);
 
     for (UInt e = 0; e < GetNumEdges(); ++e)
     {
@@ -2529,8 +2543,8 @@ void Mesh2D::FindFacesConnectedToNode(UInt nodeIndex, std::vector<UInt>& sharedF
         }
 
         // find the face shared by the two edges
-        const auto firstFace = std::max(std::min(m_edgesNumFaces[firstEdge], 2U), 1U) - 1U;
-        const auto secondFace = std::max(std::min(m_edgesNumFaces[secondEdge], static_cast<UInt>(2)), static_cast<UInt>(1)) - 1;
+        const auto firstFace = std::max(std::min<UInt>(m_edgesNumFaces[firstEdge], 2U), 1U) - 1U;
+        const auto secondFace = std::max(std::min<UInt>(m_edgesNumFaces[secondEdge], 2U), 1U) - 1U;
 
         if (m_edgesFaces[firstEdge][0] != newFaceIndex &&
             (m_edgesFaces[firstEdge][0] == m_edgesFaces[secondEdge][0] ||
@@ -2552,7 +2566,7 @@ void Mesh2D::FindFacesConnectedToNode(UInt nodeIndex, std::vector<UInt>& sharedF
         // corner face (already found in the first iteration)
         if (m_nodesNumEdges[nodeIndex] == 2 &&
             e == 1 &&
-            m_nodesTypes[nodeIndex] == 3 &&
+            m_nodesTypes[nodeIndex] == MeshNodeType::Corner &&
             !sharedFaces.empty() &&
             sharedFaces[0] == newFaceIndex)
         {

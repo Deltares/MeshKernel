@@ -31,6 +31,7 @@
 #include <utility>
 #include <vector>
 
+#include "MeshKernel/Definitions.hpp"
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Polygon.hpp>
@@ -64,16 +65,6 @@ namespace meshkernel
             InsideNotIntersected = 0,
             InsideAndIntersected = 1,
             FacesWithIncludedCircumcenters = 2
-        };
-
-        /// Enumerator describing the different node types
-        enum class NodeTypes
-        {
-            internalNode,
-            onRing,
-            cornerNode,
-            hangingNode,
-            other
         };
 
         /// Enumerator for different properties on a 2D mesh
@@ -110,7 +101,7 @@ namespace meshkernel
         Mesh2D(const std::vector<Edge>& edges,
                const std::vector<Point>& nodes,
                const std::vector<std::vector<UInt>>& faceNodes,
-               const std::vector<UInt>& numFaceNodes,
+               const std::vector<std::uint8_t>& numFaceNodes,
                Projection projection);
 
         /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
@@ -132,7 +123,7 @@ namespace meshkernel
         /// @param[in] faceNodes The input face nodes
         /// @param[in] numFaceNodes For each face, the number of nodes
         void FindFacesGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
-                                            const std::vector<UInt>& numFaceNodes);
+                                            const std::vector<std::uint8_t>& numFaceNodes);
 
         /// @brief Offset the x coordinates if m_projection is spherical
         /// @param[in] minx
@@ -231,10 +222,16 @@ namespace meshkernel
 
         /// @brief Gets the aspect ratios (the ratios edges lengths to flow edges lengths)
         /// @param[in,out] aspectRatios The aspect ratios (passed as reference to avoid re-allocation)
-        void ComputeAspectRatios(std::vector<double>& aspectRatios);
+        void ComputeAspectRatios(std::vector<double>& aspectRatios) const;
 
         ///  @brief Classifies the nodes (makenetnodescoding)
         void ClassifyNodes();
+
+        /// @brief Get the node type
+        MeshNodeType GetNodeType(const UInt nodeId) const { return m_nodesTypes[nodeId]; }
+
+        /// @brief Get the node type
+        void GetNodeTypes(std::vector<MeshNodeType>& nodeTypes) const { nodeTypes = m_nodesTypes; }
 
         /// @brief Deletes coinciding triangles
         [[nodiscard]] std::unique_ptr<UndoAction> DeleteDegeneratedTriangles();
@@ -503,17 +500,17 @@ namespace meshkernel
         /// @param[in] faceNodes The input face nodes
         /// @param[in] numFaceNodes For each face, the number of nodes
         void DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
-                                                   const std::vector<UInt>& numFaceNodes);
+                                                   const std::vector<std::uint8_t>& numFaceNodes);
 
         /// @brief Perform complete administration
         /// @param[in,out] undoAction if not null then collect any undo actions generated during the administration.
         void DoAdministration(CompoundUndoAction* undoAction = nullptr);
 
         /// @brief Initialise the node type array for nodes that lie on the boundary
-        void InitialiseBoundaryNodeClassification();
+        void InitialiseBoundaryNodeClassification(std::vector<int>& intNodeType) const;
 
         /// @brief Classify a single node
-        void ClassifyNode(const UInt nodeId);
+        MeshNodeType ClassifyNode(const UInt nodeId) const;
 
         /// @brief Count the number of value edge in list
         UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, const UInt numNodes) const;
@@ -542,6 +539,8 @@ namespace meshkernel
                                       std::vector<bool>& curvilinearGridIndicator,
                                       std::vector<std::array<double, 2>>& averageEdgesLength,
                                       std::vector<double>& aspectRatios) const;
+
+        std::vector<MeshNodeType> m_nodesTypes; ///< The node types (nb)
     };
 
 } // namespace meshkernel

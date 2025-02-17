@@ -26,10 +26,10 @@
 //------------------------------------------------------------------------------
 
 #pragma once
+#include <cstdint>
 #include <memory>
 
 #include "MeshKernel/BoundingBox.hpp"
-#include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/UndoActions/AddEdgeAction.hpp"
@@ -160,15 +160,20 @@ namespace meshkernel
         /// @return The number of valid edges
         [[nodiscard]] UInt GetNumValidEdges() const;
 
+        /// @brief Get the number of edges for a node
+        /// @param[in] nodeIndex The node index
+        /// @return The number of valid nodes
+        [[nodiscard]] UInt GetNumNodesEdges(UInt nodeIndex) const { return static_cast<UInt>(m_nodesNumEdges[nodeIndex]); }
+
         /// @brief Get the number of edges for a face
         /// @param[in] faceIndex The face index
         /// @return The number of valid faces
-        [[nodiscard]] auto GetNumFaceEdges(UInt faceIndex) const { return m_numFacesNodes[faceIndex]; }
+        [[nodiscard]] UInt GetNumFaceEdges(UInt faceIndex) const { return static_cast<UInt>(m_numFacesNodes[faceIndex]); }
 
         /// @brief Get the number of faces an edges shares
         /// @param[in] edgeIndex The edge index
         /// @return The number of faces an edges shares
-        [[nodiscard]] auto GetNumEdgesFaces(UInt edgeIndex) const { return m_edgesNumFaces[edgeIndex]; }
+        [[nodiscard]] UInt GetNumEdgesFaces(UInt edgeIndex) const { return static_cast<UInt>(m_edgesNumFaces[edgeIndex]); }
 
         /// @brief Get the local edge number for an element edge.
         // TODO add unit test and with all failing cases
@@ -451,16 +456,15 @@ namespace meshkernel
 
         // nodes
         std::vector<std::vector<UInt>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
-        std::vector<UInt> m_nodesNumEdges;           ///< For each node, the number of connected edges (nmk)
-        std::vector<int> m_nodesTypes;               ///< The node types (nb)
+        std::vector<std::uint8_t> m_nodesNumEdges;   ///< For each node, the number of connected edges (nmk)
 
         // edges
         std::vector<std::array<UInt, 2>> m_edgesFaces; ///< For each edge, the shared face index (lne)
-        std::vector<UInt> m_edgesNumFaces;             ///< For each edge, the number of shared faces(lnn)
+        std::vector<std::uint8_t> m_edgesNumFaces;     ///< For each edge, the number of shared faces(lnn)
 
         // faces
         std::vector<std::vector<UInt>> m_facesNodes; ///< The nodes composing the faces, in ccw order (netcell%Nod)
-        std::vector<UInt> m_numFacesNodes;           ///< The number of nodes composing the face (netcell%N)
+        std::vector<std::uint8_t> m_numFacesNodes;   ///< The number of nodes composing the face (netcell%N)
         std::vector<std::vector<UInt>> m_facesEdges; ///< The edge indices composing the face (netcell%lin)
         std::vector<Point> m_facesCircumcenters;     ///< The face circumcenters the face circumcenter (xz, yz)
         std::vector<Point> m_facesMassCenters;       ///< The faces centers of mass (xzw, yzw)

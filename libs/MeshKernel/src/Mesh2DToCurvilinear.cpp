@@ -197,7 +197,7 @@ UInt Mesh2DToCurvilinear::ComputeNeighbouringFaceNodes(const UInt face,
     }
 
     // this edge belongs only to the current face
-    if (m_mesh.m_edgesNumFaces[edgeIndex] < 2)
+    if (m_mesh.GetNumEdgesFaces(edgeIndex) < 2)
     {
         return missing::uintValue;
     }
@@ -307,7 +307,7 @@ bool Mesh2DToCurvilinear::CheckGridLine(const UInt validNode, const UInt candida
 
         bool doCheck = m_mesh.GetNumFaceEdges(m_mesh.m_edgesFaces[edgeIndex][0]) == geometric::numNodesInQuadrilateral;
 
-        if (m_mesh.m_edgesNumFaces[edgeIndex] == 2)
+        if (m_mesh.GetNumEdgesFaces(edgeIndex) == 2)
         {
             doCheck = doCheck || m_mesh.GetNumFaceEdges(m_mesh.m_edgesFaces[edgeIndex][1]) == geometric::numNodesInQuadrilateral;
         }

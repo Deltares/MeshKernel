@@ -485,11 +485,11 @@ namespace meshkernelapi
 
                 const auto face_nodes = meshkernel::ConvertToFaceNodesVector(mesh2d.num_faces, mesh2d.face_nodes, mesh2d.nodes_per_face);
 
-                std::vector<meshkernel::UInt> num_face_nodes;
+                std::vector<std::uint8_t> num_face_nodes;
                 num_face_nodes.reserve(mesh2d.num_faces);
                 for (auto n = 0; n < mesh2d.num_faces; n++)
                 {
-                    num_face_nodes.emplace_back(static_cast<meshkernel::UInt>(mesh2d.nodes_per_face[n]));
+                    num_face_nodes.emplace_back(static_cast<std::uint8_t>(mesh2d.nodes_per_face[n]));
                 }
 
                 // Do not change the pointer, just the object it is pointing to
@@ -673,11 +673,12 @@ namespace meshkernelapi
             {
                 const auto face_nodes = meshkernel::ConvertToFaceNodesVector(mesh2d.num_faces, mesh2d.face_nodes, mesh2d.nodes_per_face);
 
-                std::vector<meshkernel::UInt> num_face_nodes;
+                std::vector<std::uint8_t> num_face_nodes;
                 num_face_nodes.reserve(mesh2d.num_faces);
+
                 for (auto n = 0; n < mesh2d.num_faces; n++)
                 {
-                    num_face_nodes.emplace_back(static_cast<meshkernel::UInt>(mesh2d.nodes_per_face[n]));
+                    num_face_nodes.emplace_back(static_cast<std::uint8_t>(mesh2d.nodes_per_face[n]));
                 }
 
                 undoAction = meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges2d, nodes2d, face_nodes, num_face_nodes,
@@ -1366,14 +1367,10 @@ namespace meshkernelapi
             auto const landBoundariesPoints = ConvertGeometryListToPointVector(landBoundaries);
 
             // Construct all dependencies
-            auto smoother = std::make_unique<meshkernel::Smoother>(*meshKernelState[meshKernelId].m_mesh2d);
-            auto orthogonalizer = std::make_unique<meshkernel::Orthogonalizer>(*meshKernelState[meshKernelId].m_mesh2d);
             auto polygon = std::make_unique<meshkernel::Polygons>(polygonNodes, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             auto landBoundary = std::make_unique<meshkernel::LandBoundaries>(landBoundariesPoints, *meshKernelState[meshKernelId].m_mesh2d, *polygon);
 
             meshkernel::OrthogonalizationAndSmoothing ortogonalization(*meshKernelState[meshKernelId].m_mesh2d,
-                                                                       std::move(smoother),
-                                                                       std::move(orthogonalizer),
                                                                        std::move(polygon),
                                                                        std::move(landBoundary),
                                                                        static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
@@ -1414,14 +1411,10 @@ namespace meshkernelapi
             auto const landBoundariesNodeVector = ConvertGeometryListToPointVector(landBoundaries);
 
             // Construct all dependencies
-            auto smoother = std::make_unique<meshkernel::Smoother>(*meshKernelState[meshKernelId].m_mesh2d);
-            auto orthogonalizer = std::make_unique<meshkernel::Orthogonalizer>(*meshKernelState[meshKernelId].m_mesh2d);
             auto polygon = std::make_unique<meshkernel::Polygons>(polygonNodesVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             auto landBoundary = std::make_unique<meshkernel::LandBoundaries>(landBoundariesNodeVector, *meshKernelState[meshKernelId].m_mesh2d, *polygon);
 
             meshKernelState[meshKernelId].m_meshOrthogonalization = std::make_unique<meshkernel::OrthogonalizationAndSmoothing>(*meshKernelState[meshKernelId].m_mesh2d,
-                                                                                                                                std::move(smoother),
-                                                                                                                                std::move(orthogonalizer),
                                                                                                                                 std::move(polygon),
                                                                                                                                 std::move(landBoundary),
                                                                                                                                 static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),

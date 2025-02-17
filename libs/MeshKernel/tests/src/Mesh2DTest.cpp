@@ -78,10 +78,10 @@ TEST(Mesh2D, OneQuadTestConstructor)
     ASSERT_EQ(3, mesh.m_nodesEdges[3][1]);
 
     // each node has two edges int this case
-    ASSERT_EQ(2, mesh.m_nodesNumEdges[0]);
-    ASSERT_EQ(2, mesh.m_nodesNumEdges[1]);
-    ASSERT_EQ(2, mesh.m_nodesNumEdges[2]);
-    ASSERT_EQ(2, mesh.m_nodesNumEdges[3]);
+    ASSERT_EQ(2, mesh.GetNumNodesEdges(0));
+    ASSERT_EQ(2, mesh.GetNumNodesEdges(1));
+    ASSERT_EQ(2, mesh.GetNumNodesEdges(2));
+    ASSERT_EQ(2, mesh.GetNumNodesEdges(3));
 
     // the nodes composing the face, in ccw order
     ASSERT_EQ(0, mesh.m_facesNodes[0][0]);
@@ -100,10 +100,10 @@ TEST(Mesh2D, OneQuadTestConstructor)
     ASSERT_DOUBLE_EQ(5.0, mesh.m_facesCircumcenters[0].y);
 
     // each edge has only one face in this case
-    ASSERT_EQ(1, mesh.m_edgesNumFaces[0]);
-    ASSERT_EQ(1, mesh.m_edgesNumFaces[1]);
-    ASSERT_EQ(1, mesh.m_edgesNumFaces[2]);
-    ASSERT_EQ(1, mesh.m_edgesNumFaces[3]);
+    ASSERT_EQ(1, mesh.GetNumEdgesFaces(0));
+    ASSERT_EQ(1, mesh.GetNumEdgesFaces(1));
+    ASSERT_EQ(1, mesh.GetNumEdgesFaces(2));
+    ASSERT_EQ(1, mesh.GetNumEdgesFaces(3));
 
     // each edge is a boundary edge, so the second entry of edgesFaces is an invalid index (meshkernel::constants::missing::sizetValue)
     ASSERT_EQ(meshkernel::constants::missing::uintValue, mesh.m_edgesFaces[0][1]);
@@ -1534,3 +1534,16 @@ TEST(Mesh2D, Mesh2DComputeAspectRatio)
         EXPECT_NEAR(aspectRatios[i], expectedAspectRatios[i], tolerance);
     }
 }
+
+// TEST(Mesh2D, WTF)
+// {
+//     // Prepare
+//     [[maybe_unused]] auto mesh = MakeRectangularMeshForTesting(4000,
+//                                                               4000,
+//                                                               10.0,
+//                                                               10.0,
+//                                                               meshkernel::Projection::cartesian);
+
+//     [[maybe_unused]] int dummy;
+//     std::cin >> dummy;
+// }

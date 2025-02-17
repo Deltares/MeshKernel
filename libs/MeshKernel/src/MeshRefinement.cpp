@@ -246,14 +246,14 @@ meshkernel::UInt MeshRefinement::DeleteIsolatedHangingnodes()
             continue;
         }
 
-        if (commonNode > 0 && m_mesh.m_nodesNumEdges[commonNode] == 2)
+        if (commonNode > 0 && m_mesh.GetNumNodesEdges(commonNode) == 2)
         {
-            for (UInt f = 0; f < m_mesh.m_edgesNumFaces[e]; ++f)
+            for (UInt f = 0; f < m_mesh.GetNumEdgesFaces(e); ++f)
             {
                 const auto faceIndex = m_mesh.m_edgesFaces[e][f];
 
                 if (faceIndex != m_mesh.m_edgesFaces[brotherEdgeIndex][0] &&
-                    faceIndex != m_mesh.m_edgesFaces[brotherEdgeIndex][std::min(m_mesh.m_edgesNumFaces[brotherEdgeIndex], static_cast<UInt>(1))])
+                    faceIndex != m_mesh.m_edgesFaces[brotherEdgeIndex][std::min(m_mesh.GetNumEdgesFaces(brotherEdgeIndex), static_cast<UInt>(1))])
                 {
                     throw AlgorithmError("Algorithm error.");
                 }
@@ -298,7 +298,7 @@ meshkernel::UInt MeshRefinement::DeleteIsolatedHangingnodes()
             }
 
             // change node adm of other node
-            for (UInt ee = 0; ee < m_mesh.m_nodesNumEdges[otherNodeIndex]; ++ee)
+            for (UInt ee = 0; ee < m_mesh.GetNumNodesEdges(otherNodeIndex); ++ee)
             {
                 if (m_mesh.m_nodesEdges[otherNodeIndex][ee] == brotherEdgeIndex)
                 {
@@ -667,7 +667,7 @@ void MeshRefinement::FindFacePolygonWithoutHangingNodes(const UInt faceId,
 
         if (edgeIndex != constants::missing::uintValue)
         {
-            localEdgesNumFaces.emplace_back(m_mesh.m_edgesNumFaces[edgeIndex]);
+            localEdgesNumFaces.emplace_back(m_mesh.GetNumEdgesFaces(edgeIndex));
         }
         else
         {
@@ -1538,7 +1538,7 @@ void MeshRefinement::FindBrotherEdges()
 
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
-        const auto numEdgesNodes = m_mesh.m_nodesNumEdges[n];
+        const auto numEdgesNodes = m_mesh.GetNumNodesEdges(n);
         for (UInt e = 0; e < numEdgesNodes; e++)
         {
 

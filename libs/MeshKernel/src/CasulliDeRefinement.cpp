@@ -73,7 +73,7 @@ void meshkernel::CasulliDeRefinement::FindDirectlyConnectedFaces(const Mesh2D& m
     {
         UInt edgeId = mesh.m_facesEdges[elementId][i];
 
-        if (mesh.m_edgesNumFaces[edgeId] < 2)
+        if (mesh.GetNumEdgesFaces(edgeId) < 2)
         {
             continue;
         }
@@ -94,11 +94,11 @@ void meshkernel::CasulliDeRefinement::FindIndirectlyConnectedFaces(const Mesh2D&
     {
         UInt nodeId = mesh.m_facesNodes[elementId][i];
 
-        for (UInt j = 0; j < mesh.m_nodesNumEdges[nodeId]; ++j)
+        for (UInt j = 0; j < mesh.GetNumNodesEdges(nodeId); ++j)
         {
             UInt edgeId = mesh.m_nodesEdges[nodeId][j];
 
-            for (UInt k = 0; k < mesh.m_edgesNumFaces[edgeId]; ++k)
+            for (UInt k = 0; k < mesh.GetNumEdgesFaces(edgeId); ++k)
             {
                 UInt otherElementId = mesh.m_edgesFaces[edgeId][k];
 
@@ -174,7 +174,7 @@ void meshkernel::CasulliDeRefinement::FindAdjacentFaces(const Mesh2D& mesh,
         {
             UInt edgeId = mesh.m_facesEdges[elementId][j];
 
-            if (mesh.m_edgesNumFaces[edgeId] < 2)
+            if (mesh.GetNumEdgesFaces(edgeId) < 2)
             {
                 continue;
             }
@@ -229,7 +229,7 @@ meshkernel::UInt meshkernel::CasulliDeRefinement::FindElementSeedIndex(const Mes
 
     for (UInt e = 0; e < mesh.Edges().size(); ++e)
     {
-        if (mesh.m_edgesNumFaces[e] != 1)
+        if (mesh.GetNumEdgesFaces(e) != 1)
         {
             continue;
         }
@@ -512,7 +512,7 @@ bool meshkernel::CasulliDeRefinement::ElementCannotBeDeleted(const Mesh2D& mesh,
             break;
         }
 
-        if (mesh.m_edgesNumFaces[edgeId] == 2 &&
+        if (mesh.GetNumEdgesFaces(edgeId) == 2 &&
             nodeTypes[mesh.GetEdge(edgeId).first] != 1 &&
             nodeTypes[mesh.GetEdge(edgeId).second] != 1)
         {
@@ -527,7 +527,7 @@ bool meshkernel::CasulliDeRefinement::ElementCannotBeDeleted(const Mesh2D& mesh,
     {
         UInt nodeId = mesh.m_facesNodes[elementId][i];
 
-        if (nodeTypes[nodeId] == 3 && mesh.m_nodesNumEdges[nodeId] <= 2)
+        if (nodeTypes[nodeId] == 3 && mesh.GetNumNodesEdges(nodeId) <= 2)
         {
             noGo = false;
             break;
@@ -602,7 +602,7 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> meshkernel::CasulliDeRefinement::
     {
         edgeId = mesh.m_facesEdges[leftElementId][j];
 
-        if (mesh.m_edgesNumFaces[edgeId] < 2)
+        if (mesh.GetNumEdgesFaces(edgeId) < 2)
         {
             continue;
         }
@@ -651,7 +651,7 @@ bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedTriangleElements(Me
     {
         UInt edgeId = mesh.m_facesEdges[connectedElementId][j];
 
-        if (mesh.m_edgesNumFaces[edgeId] < 2 && !CleanUpEdge(mesh, edgeId))
+        if (mesh.GetNumEdgesFaces(edgeId) < 2 && !CleanUpEdge(mesh, edgeId))
         {
             return false;
         }
@@ -709,7 +709,7 @@ void meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedNonTriangleElements
     {
         UInt edgeId = mesh.m_facesEdges[connectedElementId][j];
 
-        if (mesh.m_edgesNumFaces[edgeId] < 2)
+        if (mesh.GetNumEdgesFaces(edgeId) < 2)
         {
             continue;
         }
@@ -868,7 +868,7 @@ meshkernel::CasulliDeRefinement::ResultIndicator meshkernel::CasulliDeRefinement
             // previous-previous edgeId (not a real word)
             UInt antePreviousEdgeId = std::accumulate(mesh.m_facesEdges[connectedElementId].begin(), mesh.m_facesEdges[connectedElementId].begin() + 3, 0) - edgeId - previousEdgeId;
 
-            if (mesh.m_edgesNumFaces[antePreviousEdgeId] > 1)
+            if (mesh.GetNumEdgesFaces(antePreviousEdgeId) > 1)
             {
                 if (mesh.m_edgesFaces[antePreviousEdgeId][0] == connectedElementId)
                 {
@@ -906,12 +906,12 @@ bool meshkernel::CasulliDeRefinement::RemoveUnwantedBoundaryNodes(Mesh2D& mesh,
         {
             UInt edgeId = mesh.m_facesEdges[connectedElementId][i];
 
-            if (mesh.m_edgesNumFaces[edgeId] == 1)
+            if (mesh.GetNumEdgesFaces(edgeId) == 1)
             {
                 UInt im1 = NextCircularBackwardIndex(i, static_cast<UInt>(mesh.m_facesNodes[connectedElementId].size()));
                 UInt previousEdgeId = mesh.m_facesEdges[connectedElementId][im1];
 
-                if (mesh.m_edgesNumFaces[previousEdgeId] == 1)
+                if (mesh.GetNumEdgesFaces(previousEdgeId) == 1)
                 {
                     UInt nodeId = mesh.FindCommonNode(edgeId, previousEdgeId);
 
@@ -1036,7 +1036,7 @@ bool meshkernel::CasulliDeRefinement::CleanUpEdge(Mesh2D& mesh, const UInt edgeI
 
         UInt startOffset = constants::missing::uintValue;
 
-        for (UInt j = 0; j < mesh.m_nodesNumEdges[nodeId]; ++j)
+        for (UInt j = 0; j < mesh.GetNumNodesEdges(nodeId); ++j)
         {
             if (mesh.m_nodesEdges[nodeId][j] == edgeId)
             {
@@ -1071,7 +1071,7 @@ std::vector<int> meshkernel::CasulliDeRefinement::ComputeNodeTypes(const Mesh2D&
     {
         if (polygon.IsPointInAnyPolygon(mesh.Node(i)))
         {
-            nodeTypes[i] = mesh.m_nodesTypes[i];
+            nodeTypes[i] = static_cast<int>(mesh.GetNodeType(i));
         }
     }
 
