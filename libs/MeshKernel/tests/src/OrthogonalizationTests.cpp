@@ -824,34 +824,3 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
         EXPECT_EQ(edgeSecond[i], mesh.GetEdge(i).second);
     }
 }
-
-TEST(OrthogonalizationAndSmoothing, DISABLED_WTF)
-{
-
-    std::string fileName = TEST_FOLDER + "/data/maas_40m_v2020_1.4_v2_net.nc";
-
-    // now build node-edge mapping
-    auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/maas_40m_v2020_1.4_v2_net.nc");
-    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
-    OrthogonalizationParameters orthogonalizationParameters;
-    orthogonalizationParameters.outer_iterations = 2;
-    orthogonalizationParameters.boundary_iterations = 25;
-    orthogonalizationParameters.inner_iterations = 25;
-    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
-    orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 1.0;
-    orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
-
-    auto polygon = std::make_unique<Polygons>();
-
-    std::vector<Point> landBoundary;
-    auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
-
-    OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(polygon),
-                                                    std::move(landboundaries),
-                                                    projectToLandBoundaryOption,
-                                                    orthogonalizationParameters);
-
-    [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
-    orthogonalization.Compute();
-}
