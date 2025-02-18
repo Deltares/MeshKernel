@@ -175,12 +175,14 @@ void CurvilinearGrid::TrimGridNodes()
         return;
     }
 
-    UInt rows = static_cast<UInt>(m_gridNodes.rows());
-    UInt cols = static_cast<UInt>(m_gridNodes.cols());
+    const auto rows = static_cast<UInt>(m_gridNodes.rows());
+    const auto cols = static_cast<UInt>(m_gridNodes.cols());
 
     // Initialize valid row/column bounds
-    UInt firstValidRow = 0, lastValidRow = rows - 1;
-    UInt firstValidCol = 0, lastValidCol = cols - 1;
+    UInt firstValidRow = 0;
+    UInt lastValidRow = rows - 1;
+    UInt firstValidCol = 0;
+    UInt lastValidCol = cols - 1;
     bool foundFirstRow = false;
     bool foundFirstCol = false;
     bool foundLastRow = false;
