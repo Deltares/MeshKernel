@@ -57,9 +57,12 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
     : Mesh(edges, nodes, projection)
 {
     DoAdministration();
-    RemoveEdgesWithNoFace();
-    DeleteInvalidNodesAndEdges();
-    DoAdministration();
+
+    if (InvalidateEdgesWithNoFace() > 0)
+    {
+        DeleteInvalidNodesAndEdges();
+        DoAdministration();
+    }
 }
 
 Mesh2D::Mesh2D(const std::vector<Edge>& edges,
@@ -154,8 +157,9 @@ Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, P
     DoAdministration();
 }
 
-void Mesh2D::RemoveEdgesWithNoFace()
+meshkernel::UInt Mesh2D::InvalidateEdgesWithNoFace()
 {
+    UInt numberInvalidated = 0;
 
     for (UInt e = 0; e < m_edgesFaces.size(); ++e)
     {
@@ -164,8 +168,11 @@ void Mesh2D::RemoveEdgesWithNoFace()
         {
             m_edges[e].first = constants::missing::uintValue;
             m_edges[e].second = constants::missing::uintValue;
+            ++numberInvalidated;
         }
     }
+
+    return numberInvalidated;
 }
 
 void Mesh2D::DoAdministration(CompoundUndoAction* undoAction)

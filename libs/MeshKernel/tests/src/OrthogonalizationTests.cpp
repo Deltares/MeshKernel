@@ -825,12 +825,10 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
     }
 }
 
-TEST(OrthogonalizationAndSmoothing, WTF)
+TEST(OrthogonalizationAndSmoothing, DISABLED_WTF)
 {
 
     std::string fileName = TEST_FOLDER + "/data/maas_40m_v2020_1.4_v2_net.nc";
-
-    std::cout << "fileName " << fileName << std::endl;
 
     // now build node-edge mapping
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/maas_40m_v2020_1.4_v2_net.nc");

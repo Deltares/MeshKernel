@@ -540,7 +540,9 @@ namespace meshkernel
                                       std::vector<std::array<double, 2>>& averageEdgesLength,
                                       std::vector<double>& aspectRatios) const;
 
-        void RemoveEdgesWithNoFace();
+        /// @brief Set the node indices of edges with no attached faces to invalid id.
+        /// @returns The number of edges that have been invalidated
+        UInt InvalidateEdgesWithNoFace();
 
         std::vector<MeshNodeType> m_nodesTypes; ///< The node types (nb)
     };
