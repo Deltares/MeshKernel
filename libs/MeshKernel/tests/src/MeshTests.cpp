@@ -705,8 +705,8 @@ TEST(Mesh, DeleteHangingEdge)
     nodes.push_back({3.0, 2.0});
     edges.push_back({3, 1});
 
-    [[maybe_unused]] auto undoInsertNode = mesh.InsertNode (nodes[3]);
-    [[maybe_unused]] auto undoConnectNodes = mesh.ConnectNodes (3, 1);
+    [[maybe_unused]] auto undoInsertNode = mesh.InsertNode(nodes[3]);
+    [[maybe_unused]] auto undoConnectNodes = mesh.ConnectNodes(3, 1);
 
     // Assert
     ASSERT_EQ(1, mesh.GetNumFaces());

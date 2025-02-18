@@ -41,8 +41,8 @@
 #include "MeshKernel/MeshSmoothness.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygons.hpp"
-#include "MeshKernel/Utilities/Utilities.hpp"
 #include "MeshKernel/RemoveDisconnectedRegions.hpp"
+#include "MeshKernel/Utilities/Utilities.hpp"
 
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
@@ -518,9 +518,8 @@ TEST(Mesh2D, DeleteHangingEdge)
     nodes.push_back({3.0, 2.0});
     edges.push_back({3, 1});
 
-
-    [[maybe_unused]] auto undoInsertNode = mesh->InsertNode (nodes[3]);
-    [[maybe_unused]] auto undoConnectNodes = mesh->ConnectNodes (3, 1);
+    [[maybe_unused]] auto undoInsertNode = mesh->InsertNode(nodes[3]);
+    [[maybe_unused]] auto undoConnectNodes = mesh->ConnectNodes(3, 1);
 
     // Assert
     ASSERT_EQ(1, mesh->GetNumFaces());
@@ -1534,16 +1533,3 @@ TEST(Mesh2D, Mesh2DComputeAspectRatio)
         EXPECT_NEAR(aspectRatios[i], expectedAspectRatios[i], tolerance);
     }
 }
-
-// TEST(Mesh2D, WTF)
-// {
-//     // Prepare
-//     [[maybe_unused]] auto mesh = MakeRectangularMeshForTesting(4000,
-//                                                               4000,
-//                                                               10.0,
-//                                                               10.0,
-//                                                               meshkernel::Projection::cartesian);
-
-//     [[maybe_unused]] int dummy;
-//     std::cin >> dummy;
-// }
