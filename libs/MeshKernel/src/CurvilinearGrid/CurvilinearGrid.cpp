@@ -138,7 +138,7 @@ void CurvilinearGrid::SetGridNodes(const lin_alg::Matrix<Point>& gridNodes)
 {
     const auto [firstValidRow, lastValidRow, firstValidCol, lastValidCol] = TrimGridNodes(gridNodes);
 
-    if (lastValidRow <= firstValidRow || lastValidCol <= firstValidCol)
+    if (lastValidRow < firstValidRow || lastValidCol < firstValidCol)
     {
         throw std::invalid_argument("CurvilinearGrid::SetGridNodes: Invalid curvilinear grid nodes");
     }
@@ -151,20 +151,12 @@ void CurvilinearGrid::SetGridNodes(const lin_alg::Matrix<Point>& gridNodes)
     }
     else
     {
-        // Create a trimmed matrix
         UInt newRows = lastValidRow - firstValidRow + 1;
         UInt newCols = lastValidCol - firstValidCol + 1;
-        lin_alg::Matrix<Point> trimmedGridNodes(newRows, newCols);
-
-        for (UInt r = 0; r < newRows; ++r)
-        {
-            for (UInt c = 0; c < newCols; ++c)
-            {
-                trimmedGridNodes(r, c) = gridNodes(firstValidRow + r, firstValidCol + c);
-            }
-        }
-
-        m_gridNodes = std::move(trimmedGridNodes);
+        m_gridNodes = gridNodes.block(firstValidRow,
+                                      firstValidCol,
+                                      newRows,
+                                      newCols);
     }
 
     m_nodesRTreeRequiresUpdate = true;
@@ -178,7 +170,7 @@ void CurvilinearGrid::SetGridNodes(lin_alg::Matrix<Point>&& gridNodes)
 {
     const auto [firstValidRow, lastValidRow, firstValidCol, lastValidCol] = TrimGridNodes(gridNodes);
 
-    if (lastValidRow <= firstValidRow || lastValidCol <= firstValidCol)
+    if (lastValidRow < firstValidRow || lastValidCol < firstValidCol)
     {
         throw std::invalid_argument("CurvilinearGrid::SetGridNodes: Invalid curvilinear grid nodes");
     }
@@ -191,20 +183,12 @@ void CurvilinearGrid::SetGridNodes(lin_alg::Matrix<Point>&& gridNodes)
     }
     else
     {
-        // Create a trimmed matrix
         UInt newRows = lastValidRow - firstValidRow + 1;
         UInt newCols = lastValidCol - firstValidCol + 1;
-        lin_alg::Matrix<Point> trimmedGridNodes(newRows, newCols);
-
-        for (UInt r = 0; r < newRows; ++r)
-        {
-            for (UInt c = 0; c < newCols; ++c)
-            {
-                trimmedGridNodes(r, c) = gridNodes(firstValidRow + r, firstValidCol + c);
-            }
-        }
-
-        m_gridNodes = std::move(trimmedGridNodes);
+        m_gridNodes = gridNodes.block(firstValidRow,
+                                      firstValidCol,
+                                      newRows,
+                                      newCols);
     }
 
     // Mark R-Trees as requiring updates
