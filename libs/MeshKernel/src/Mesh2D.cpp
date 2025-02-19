@@ -163,8 +163,7 @@ meshkernel::UInt Mesh2D::InvalidateEdgesWithNoFace()
 
     for (UInt e = 0; e < m_edgesFaces.size(); ++e)
     {
-
-        if (m_edgesFaces[e][0] == constants::missing::uintValue && m_edgesFaces[e][1] == constants::missing::uintValue)
+        if (m_edgesNumFaces[e] == 0)
         {
             m_edges[e].first = constants::missing::uintValue;
             m_edges[e].second = constants::missing::uintValue;
