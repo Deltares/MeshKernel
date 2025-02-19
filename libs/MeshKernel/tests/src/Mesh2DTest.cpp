@@ -515,6 +515,7 @@ TEST(Mesh2D, DeleteHangingEdge)
     // Execute
     const auto mesh = std::make_unique<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
 
+    // Add new node and connect with existing node, creating hanging edge
     nodes.push_back({3.0, 2.0});
     edges.push_back({3, 1});
 
