@@ -214,6 +214,7 @@ CurvilinearGrid::TrimGridNodes(const lin_alg::Matrix<Point>& gridNodes) const
     UInt lastValidRow = rows - 1;
     UInt firstValidCol = 0;
     UInt lastValidCol = cols - 1;
+
     bool foundFirstRow = false;
     bool foundFirstCol = false;
     bool foundLastRow = false;
@@ -276,7 +277,7 @@ CurvilinearGrid::TrimGridNodes(const lin_alg::Matrix<Point>& gridNodes) const
         for (UInt r = firstValidRow; r <= lastValidRow; ++r)
         {
             if (gridNodes(r, c).x != constants::missing::doubleValue &&
-                gridNodes(r, c).x != constants::missing::doubleValue)
+                gridNodes(r, c).y != constants::missing::doubleValue)
             {
                 lastValidCol = c;
                 foundLastCol = true;
