@@ -548,6 +548,9 @@ namespace meshkernel
         /// @brief Get the node type of the interior nodes
         NodeType GetInteriorNodeType(const UInt n, const UInt m) const;
 
+        /// @brief Computes the indices of the first valid row and columns of a grid node matrix
+        std::tuple<UInt, UInt, UInt, UInt> TrimGridNodes(const lin_alg::Matrix<Point>& gridNodes) const;
+
         Projection m_projection;                               ///< The curvilinear grid projection
         lin_alg::Matrix<Point> m_gridNodes;                    ///< Member variable storing the grid
         lin_alg::Matrix<bool> m_gridFacesMask;                 ///< The mask of the grid faces (true/false)
