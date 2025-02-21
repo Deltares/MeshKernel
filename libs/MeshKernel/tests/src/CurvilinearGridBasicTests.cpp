@@ -971,3 +971,52 @@ TEST(CurvilinearBasicTests, InsertMultipleFacesAlongAllBoundaryEdges)
 
     //--------------------------------
 }
+
+class CurvilinearSetGridTests : public ::testing::TestWithParam<bool>
+{
+};
+
+TEST_P(CurvilinearSetGridTests, SetGridNodes_ShouldTrimMatrix)
+{
+    // SetUp
+    meshkernel::CurvilinearGrid curvilinearGrid;
+    lin_alg::Matrix<meshkernel::Point> gridNodes(3, 3);
+
+    // Fill the matrix with valid Point values
+    for (int r = 0; r < 3; ++r)
+    {
+        for (int c = 0; c < 3; ++c)
+        {
+            gridNodes(r, c) = meshkernel::Point{static_cast<double>(r), static_cast<double>(c)};
+        }
+    }
+    for (int r = 0; r < 3; ++r)
+    {
+        gridNodes(r, 0) = meshkernel::Point{meshkernel::constants::missing::doubleValue,
+                                            meshkernel::constants::missing::doubleValue};
+        gridNodes(r, 2) = meshkernel::Point{meshkernel::constants::missing::doubleValue,
+                                            meshkernel::constants::missing::doubleValue};
+    }
+
+    // Execute
+    if (GetParam())
+    {
+        // lvalue
+        curvilinearGrid.SetGridNodes(gridNodes);
+    }
+    else
+    {
+        // rvalue
+        curvilinearGrid.SetGridNodes(std::move(gridNodes));
+    }
+
+    // Assert: Ensure only one column remains
+    EXPECT_EQ(curvilinearGrid.NumN(), 3);
+    EXPECT_EQ(curvilinearGrid.NumM(), 1);
+}
+
+// Run the test for both lvalue (true) and rvalue (false) cases
+INSTANTIATE_TEST_SUITE_P(
+    CurvilinearGrid,
+    CurvilinearSetGridTests,
+    ::testing::Values(true, false));
