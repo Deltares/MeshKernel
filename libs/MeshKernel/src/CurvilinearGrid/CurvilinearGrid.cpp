@@ -206,14 +206,14 @@ std::tuple<meshkernel::UInt,
            meshkernel::UInt>
 CurvilinearGrid::TrimGridNodes(const lin_alg::Matrix<Point>& gridNodes) const
 {
-    const auto rows = static_cast<UInt>(gridNodes.rows());
-    const auto cols = static_cast<UInt>(gridNodes.cols());
+    const auto rows = static_cast<int>(gridNodes.rows());
+    const auto cols = static_cast<int>(gridNodes.cols());
 
     // Initialize valid row/column bounds
-    UInt firstValidRow = 0;
-    UInt lastValidRow = rows >= 1 ? rows - 1 : 0;
-    UInt firstValidCol = 0;
-    UInt lastValidCol = cols >= 1 ? cols - 1: 0;
+    int firstValidRow = 0;
+    int lastValidRow = rows - 1;
+    int firstValidCol = 0;
+    int lastValidCol = cols - 1;
 
     bool foundFirstRow = false;
     bool foundFirstCol = false;
@@ -221,9 +221,9 @@ CurvilinearGrid::TrimGridNodes(const lin_alg::Matrix<Point>& gridNodes) const
     bool foundLastCol = false;
 
     // Find first valid row
-    for (UInt r = 0; r < rows; ++r)
+    for (int r = 0; r < rows; ++r)
     {
-        for (UInt c = 0; c < cols; ++c)
+        for (int c = 0; c < cols; ++c)
         {
             if (gridNodes(r, c).x != constants::missing::doubleValue &&
                 gridNodes(r, c).y != constants::missing::doubleValue)
@@ -238,10 +238,9 @@ CurvilinearGrid::TrimGridNodes(const lin_alg::Matrix<Point>& gridNodes) const
     }
 
     // Find last valid row
-	const auto lastRow = rows >= 1 ? rows - 1 : 0;
-    for (UInt r = lastRow; r >= firstValidRow; --r)
+    for (int r = rows - 1; r >= firstValidRow; --r)
     {
-        for (UInt c = 0; c < cols; ++c)
+        for (int c = 0; c < cols; ++c)
         {
             if (gridNodes(r, c).x != constants::missing::doubleValue &&
                 gridNodes(r, c).y != constants::missing::doubleValue)
@@ -256,9 +255,9 @@ CurvilinearGrid::TrimGridNodes(const lin_alg::Matrix<Point>& gridNodes) const
     }
 
     // Find first valid column
-    for (UInt c = 0; c < cols; ++c)
+    for (int c = 0; c < cols; ++c)
     {
-        for (UInt r = firstValidRow; r <= lastValidRow; ++r)
+        for (int r = firstValidRow; r <= lastValidRow; ++r)
         {
             if (gridNodes(r, c).x != constants::missing::doubleValue &&
                 gridNodes(r, c).y != constants::missing::doubleValue)
@@ -273,10 +272,9 @@ CurvilinearGrid::TrimGridNodes(const lin_alg::Matrix<Point>& gridNodes) const
     }
 
     // Find last valid column
-    const auto lastColumn = cols >= 1 ? cols - 1 : 0;
-    for (UInt c = lastColumn; c >= firstValidCol; --c)
+    for (int c = cols - 1; c >= firstValidCol; --c)
     {
-        for (UInt r = firstValidRow; r <= lastValidRow; ++r)
+        for (int r = firstValidRow; r <= lastValidRow; ++r)
         {
             if (gridNodes(r, c).x != constants::missing::doubleValue &&
                 gridNodes(r, c).y != constants::missing::doubleValue)
