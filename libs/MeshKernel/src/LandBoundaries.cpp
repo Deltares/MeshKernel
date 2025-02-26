@@ -100,7 +100,9 @@ void LandBoundaries::Administrate()
 
 void LandBoundaries::FindNearestMeshBoundary(ProjectToLandBoundaryOption projectToLandBoundaryOption)
 {
-    if (m_landBoundary.IsEmpty() || projectToLandBoundaryOption == ProjectToLandBoundaryOption::DoNotProjectToLandBoundary)
+    if (m_landBoundary.IsEmpty() ||
+        projectToLandBoundaryOption == ProjectToLandBoundaryOption::DoNotProjectToLandBoundary ||
+        projectToLandBoundaryOption == ProjectToLandBoundaryOption::ToOriginalNetBoundary)
     {
         return;
     }
@@ -122,12 +124,14 @@ void LandBoundaries::FindNearestMeshBoundary(ProjectToLandBoundaryOption project
     // Loop over the segments of the land boundary and assign each node to the land boundary segment index
     for (UInt landBoundarySegment = 0; landBoundarySegment < m_validLandBoundaries.size(); ++landBoundarySegment)
     {
-        const auto [_, numRejectedPaths] = MakePath(landBoundarySegment);
+        UInt numRejectedNodesInPath;
+        UInt numNodesInPath;
+        const bool pathFound = MakePath(landBoundarySegment, numNodesInPath, numRejectedNodesInPath);
 
-        if (numRejectedPaths > 0 && projectToLandBoundaryOption == ProjectToLandBoundaryOption::InnerAndOuterMeshBoundaryToLandBoundary)
+        if (pathFound && projectToLandBoundaryOption == ProjectToLandBoundaryOption::InnerAndOuterMeshBoundaryToLandBoundary)
         {
             m_findOnlyOuterMeshBoundary = false;
-            MakePath(landBoundarySegment);
+            MakePath(landBoundarySegment, numNodesInPath, numRejectedNodesInPath);
             m_findOnlyOuterMeshBoundary = true;
         }
     }
@@ -411,11 +415,13 @@ bool LandBoundaries::StopPathSearch(const UInt landBoundaryIndex, const UInt cur
     return stopPathSearch;
 }
 
-std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::MakePath(UInt landBoundaryIndex)
+bool LandBoundaries::MakePath(UInt landBoundaryIndex, UInt& numNodesInPath, UInt& numRejectedNodesInPath)
 {
+    numNodesInPath = 0;
+    numRejectedNodesInPath = 0;
     if (m_landBoundary.IsEmpty())
     {
-        return {0, 0};
+        return false;
     }
 
     const auto& [startIndex, endIndex] = m_validLandBoundaries[landBoundaryIndex];
@@ -427,20 +433,19 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::MakePath(UInt lan
     // Fractional location of the projected outer nodes(min and max) on the land boundary segment
     ComputeMeshNodeMask(landBoundaryIndex);
 
-    auto [startMeshNode, endMeshNode] = FindStartEndMeshNodesDijkstraAlgorithm(landBoundaryIndex);
-
-    if (startMeshNode == constants::missing::uintValue || endMeshNode == constants::missing::uintValue || startMeshNode == endMeshNode)
+    UInt startMeshNode = constants::missing::uintValue;
+    UInt endMeshNode = constants::missing::uintValue;
+    const bool pathFound = FindStartEndMeshNodesDijkstraAlgorithm(landBoundaryIndex, startMeshNode, endMeshNode);
+    if (!pathFound)
     {
-        throw AlgorithmError("MakePath: Cannot not find valid mesh nodes.");
+        return false;
     }
-    const auto connectedNodeEdges = ShortestPath(landBoundaryIndex, startMeshNode);
 
+    const auto connectedNodeEdges = ShortestPath(landBoundaryIndex, startMeshNode);
     auto lastSegment = m_meshNodesLandBoundarySegments[endMeshNode];
     UInt lastNode = constants::missing::uintValue;
     auto currentNode = endMeshNode;
     UInt numConnectedNodes = 0;
-    UInt numNodesInPath = 0;
-    UInt numRejectedNodesInPath = 0;
 
     while (true)
     {
@@ -488,7 +493,7 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::MakePath(UInt lan
         m_meshNodesLandBoundarySegments[lastNode] = lastSegment;
     }
 
-    return {numNodesInPath, numRejectedNodesInPath};
+    return true;
 }
 
 void LandBoundaries::ComputeMeshNodeMask(UInt landBoundaryIndex)
@@ -793,15 +798,16 @@ meshkernel::UInt LandBoundaries::IsMeshEdgeCloseToLandBoundaries(UInt landBounda
     return landBoundaryNode;
 }
 
-std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::FindStartEndMeshNodesDijkstraAlgorithm(UInt landBoundaryIndex)
+bool LandBoundaries::FindStartEndMeshNodesDijkstraAlgorithm(UInt landBoundaryIndex, UInt& startMeshNode, UInt& endMeshNode)
 {
+    startMeshNode = constants::missing::uintValue;
+    endMeshNode = constants::missing::uintValue;
     if (m_landBoundary.IsEmpty())
     {
-        return {constants::missing::uintValue, constants::missing::uintValue};
+        return false;
     }
 
     const auto& [startLandBoundaryIndex, endLandBoundaryIndex] = m_validLandBoundaries[landBoundaryIndex];
-
     const auto leftIndex = endLandBoundaryIndex - 1;
     const auto rightIndex = startLandBoundaryIndex;
 
@@ -854,13 +860,13 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::FindStartEndMeshN
 
     if (startEdge == constants::missing::uintValue || endEdge == constants::missing::uintValue)
     {
-        throw std::invalid_argument("LandBoundaries::FindStartEndMeshNodesDijkstraAlgorithm: Cannot find startMeshNode or endMeshNode.");
+        return false;
     }
 
-    const auto startMeshNode = FindStartEndMeshNodesFromEdges(startEdge, startPoint);
-    const auto endMeshNode = FindStartEndMeshNodesFromEdges(endEdge, endPoint);
+    startMeshNode = FindStartEndMeshNodesFromEdges(startEdge, startPoint);
+    endMeshNode = FindStartEndMeshNodesFromEdges(endEdge, endPoint);
 
-    return {startMeshNode, endMeshNode};
+    return true;
 }
 
 meshkernel::UInt LandBoundaries::FindStartEndMeshNodesFromEdges(UInt edge, Point point) const
