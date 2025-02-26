@@ -319,3 +319,45 @@ TEST(LandBoundaries, LandBoundaryConstructorTestAddSegment)
         EXPECT_EQ(landBoundary.Node(i).y, controlPointsAfterAddition[i].y);
     }
 }
+
+TEST(LandBoundaries, FindNearestMeshBoundary_WithFarLandBoundary_ShouldNotAssociateAnyNodeToLandBoundarySegments)
+{
+    // Prepare
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 3, 3, meshkernel::Projection::cartesian, meshkernel::Point{0, 0});
+    std::vector<meshkernel::Point> landBoundaryPolygon{
+        {100.0, 100.0},
+        {250.0, 100.0},
+        {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
+    auto polygons = meshkernel::Polygons();
+
+    // Execute
+    auto landboundaries = meshkernel::LandBoundaries(landBoundaryPolygon, *mesh, polygons);
+    landboundaries.FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption::InnerAndOuterMeshBoundaryToLandBoundary);
+
+    // Checks
+    for (const auto& segment : landboundaries.m_meshNodesLandBoundarySegments)
+    {
+        EXPECT_EQ(meshkernel::constants::missing::uintValue, segment);
+    }
+}
+
+TEST(LandBoundaries, FindNearestMeshBoundary_WithCloseLandBoundary_ShoulAssociateAllNodesToLandBoundarySegments)
+{
+    // Prepare
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 3, 3, meshkernel::Projection::cartesian, meshkernel::Point{0, 0});
+    std::vector<meshkernel::Point> landBoundaryPolygon{
+        {0.0, -1.0},
+        {9.0, -1.0},
+        {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
+    auto polygons = meshkernel::Polygons();
+
+    // Execute
+    auto landboundaries = meshkernel::LandBoundaries(landBoundaryPolygon, *mesh, polygons);
+    landboundaries.FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption::InnerAndOuterMeshBoundaryToLandBoundary);
+
+    // Checks
+    EXPECT_EQ(0, landboundaries.m_meshNodesLandBoundarySegments[0]);
+    EXPECT_EQ(0, landboundaries.m_meshNodesLandBoundarySegments[4]);
+    EXPECT_EQ(0, landboundaries.m_meshNodesLandBoundarySegments[8]);
+    EXPECT_EQ(0, landboundaries.m_meshNodesLandBoundarySegments[12]);
+}
