@@ -72,7 +72,7 @@ BEGIN
 			VALUE "FileDescription",  "MeshKernel"
 			VALUE "FileVersion",      VER_FILEVERSION_STR
 			VALUE "InternalName",     "MeshKernel"
-			VALUE "LegalCopyright",   "Copyright (c) 2020 Deltares"
+			VALUE "LegalCopyright",   "Copyright (c) 2025 Deltares"
 			VALUE "OriginalFilename", "MeshKernel.dll"
 			VALUE "ProductName",      "MeshKernel"
 			VALUE "ProductVersion",   VER_PRODUCTVERSION_STR
