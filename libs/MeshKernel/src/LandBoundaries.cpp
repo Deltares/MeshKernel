@@ -124,8 +124,8 @@ void LandBoundaries::FindNearestMeshBoundary(ProjectToLandBoundaryOption project
     // Loop over the segments of the land boundary and assign each node to the land boundary segment index
     for (UInt landBoundarySegment = 0; landBoundarySegment < m_validLandBoundaries.size(); ++landBoundarySegment)
     {
-        UInt numRejectedNodesInPath;
-        UInt numNodesInPath;
+        UInt numRejectedNodesInPath = 0;
+        UInt numNodesInPath = 0;
         const bool pathFound = MakePath(landBoundarySegment, numNodesInPath, numRejectedNodesInPath);
 
         if (pathFound && projectToLandBoundaryOption == ProjectToLandBoundaryOption::InnerAndOuterMeshBoundaryToLandBoundary)
@@ -432,11 +432,8 @@ bool LandBoundaries::MakePath(UInt landBoundaryIndex, UInt& numNodesInPath, UInt
 
     // Fractional location of the projected outer nodes(min and max) on the land boundary segment
     ComputeMeshNodeMask(landBoundaryIndex);
-
-    UInt startMeshNode = constants::missing::uintValue;
-    UInt endMeshNode = constants::missing::uintValue;
-    const bool pathFound = FindStartEndMeshNodesDijkstraAlgorithm(landBoundaryIndex, startMeshNode, endMeshNode);
-    if (!pathFound)
+    const auto [startMeshNode, endMeshNode] = FindStartEndMeshNodesDijkstraAlgorithm(landBoundaryIndex);
+    if (startMeshNode == constants::missing::uintValue)
     {
         return false;
     }
@@ -696,10 +693,11 @@ void LandBoundaries::GetLandBoundaryNode(const double closeDistance,
                                          UInt& landBoundaryNode,
                                          bool& isWithinSegment) const
 {
-    const double landBoundaryLength = ComputeSquaredDistance(m_landBoundary.Node(currentNode), m_landBoundary.Node(currentNode + 1), m_mesh.m_projection);
+    const double landBoundaryLength = ComputeSquaredDistance(m_landBoundary.Node(currentNode),
+                                                             m_landBoundary.Node(currentNode + 1),
+                                                             m_mesh.m_projection);
 
     isWithinSegment = false;
-
     if (landBoundaryLength > 0.0)
     {
 
@@ -772,7 +770,6 @@ meshkernel::UInt LandBoundaries::IsMeshEdgeCloseToLandBoundaries(UInt landBounda
         bool isWithinSegment = false;
 
         GetLandBoundaryNode(closeDistance, firstMeshNode, secondMeshNode, currentNode, landBoundaryNode, isWithinSegment);
-
         if (isWithinSegment)
         {
             break;
@@ -798,13 +795,11 @@ meshkernel::UInt LandBoundaries::IsMeshEdgeCloseToLandBoundaries(UInt landBounda
     return landBoundaryNode;
 }
 
-bool LandBoundaries::FindStartEndMeshNodesDijkstraAlgorithm(UInt landBoundaryIndex, UInt& startMeshNode, UInt& endMeshNode)
+std::tuple<meshkernel::UInt, meshkernel::UInt> LandBoundaries::FindStartEndMeshNodesDijkstraAlgorithm(UInt landBoundaryIndex)
 {
-    startMeshNode = constants::missing::uintValue;
-    endMeshNode = constants::missing::uintValue;
     if (m_landBoundary.IsEmpty())
     {
-        return false;
+        return {constants::missing::uintValue, constants::missing::uintValue};
     }
 
     const auto& [startLandBoundaryIndex, endLandBoundaryIndex] = m_validLandBoundaries[landBoundaryIndex];
@@ -860,13 +855,13 @@ bool LandBoundaries::FindStartEndMeshNodesDijkstraAlgorithm(UInt landBoundaryInd
 
     if (startEdge == constants::missing::uintValue || endEdge == constants::missing::uintValue)
     {
-        return false;
+        return {constants::missing::uintValue, constants::missing::uintValue};
     }
 
-    startMeshNode = FindStartEndMeshNodesFromEdges(startEdge, startPoint);
-    endMeshNode = FindStartEndMeshNodesFromEdges(endEdge, endPoint);
+    const auto startMeshNode = FindStartEndMeshNodesFromEdges(startEdge, startPoint);
+    const auto endMeshNode = FindStartEndMeshNodesFromEdges(endEdge, endPoint);
 
-    return true;
+    return {startMeshNode, endMeshNode};
 }
 
 meshkernel::UInt LandBoundaries::FindStartEndMeshNodesFromEdges(UInt edge, Point point) const

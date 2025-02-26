@@ -160,10 +160,8 @@ namespace meshkernel
         ///
         /// \image html LandBoundaryDijkstra_step4.jpg  "Compute the land boundary representation on the mesh using the Djikstra shortest path algorithm."
         /// @param[in] landBoundaryIndex The land boundary polyline index
-        /// @param[in] startMeshNode The start node of the shortest path
-        /// @param[in] endMeshNode The end node of the shortest path
-        /// @returns true if the start and end node of the path are found, false otherwise
-        bool FindStartEndMeshNodesDijkstraAlgorithm(UInt landBoundaryIndex, UInt& startMeshNode, UInt& endMeshNode);
+        /// @returns a tuple with the start and end node of the shortest path
+        std::tuple<UInt, UInt> FindStartEndMeshNodesDijkstraAlgorithm(UInt landBoundaryIndex);
 
         /// @brief Finds the edge nodes closest to a point
         ///
