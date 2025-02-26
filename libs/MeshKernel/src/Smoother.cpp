@@ -425,18 +425,24 @@ std::tuple<double, double, double, double> Smoother::ComputeOperatorsForInterior
 
 void Smoother::ComputeOperatorsNode(UInt currentNode, const MeshNodeType nodeType)
 {
+
+    if (nodeType == MeshNodeType::Corner)
+    {
+        return;
+    }
+
     // the current topology index
     const auto currentTopology = m_nodeTopologyMapping[currentNode];
 
     ComputeCellCircumcentreCoefficients(currentNode, currentTopology, nodeType);
 
     // Initialize caches
-    std::fill(m_leftXFaceCenterCache.begin(), m_leftXFaceCenterCache.end(), 0.0);
-    std::fill(m_leftYFaceCenterCache.begin(), m_leftYFaceCenterCache.end(), 0.0);
-    std::fill(m_rightXFaceCenterCache.begin(), m_rightXFaceCenterCache.end(), 0.0);
-    std::fill(m_rightYFaceCenterCache.begin(), m_rightYFaceCenterCache.end(), 0.0);
-    std::fill(m_xisCache.begin(), m_xisCache.end(), 0.0);
-    std::fill(m_etasCache.begin(), m_etasCache.end(), 0.0);
+    std::ranges::fill(m_leftXFaceCenterCache, 0.0);
+    std::ranges::fill(m_leftYFaceCenterCache, 0.0);
+    std::ranges::fill(m_rightXFaceCenterCache, 0.0);
+    std::ranges::fill(m_rightYFaceCenterCache, 0.0);
+    std::ranges::fill(m_xisCache, 0.0);
+    std::ranges::fill(m_etasCache, 0.0);
 
     UInt faceRightIndex = 0;
     double xiBoundary = 0.0;
@@ -444,6 +450,7 @@ void Smoother::ComputeOperatorsNode(UInt currentNode, const MeshNodeType nodeTyp
 
     for (UInt f = 0; f < m_topologySharedFaces[currentTopology].size(); f++)
     {
+
         const auto edgeIndex = m_mesh.m_nodesEdges[currentNode][f];
         const auto otherNode = OtherNodeOfEdge(m_mesh.GetEdge(edgeIndex), currentNode);
 
