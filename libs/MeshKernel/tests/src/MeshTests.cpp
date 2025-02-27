@@ -297,12 +297,6 @@ TEST(Mesh, NodeMerging)
         {
             nodes[nodeIndex] = {i + x_distribution(generator), j + y_distribution(generator)};
 
-            // add artificial edges
-            auto edge = mesh->GetEdge(mesh->m_nodesEdges[originalNodeIndex][0]);
-            auto otherNode = edge.first + edge.second - originalNodeIndex;
-
-            edges[edgeIndex] = {nodeIndex, otherNode};
-            edgeIndex++;
             edges[edgeIndex] = {nodeIndex, originalNodeIndex};
             edgeIndex++;
 
@@ -697,17 +691,22 @@ TEST(Mesh, DeleteHangingEdge)
     std::vector<meshkernel::Point> nodes;
     nodes.push_back({0.0, 0.0});
     nodes.push_back({5.0, 0.0});
-    nodes.push_back({3.0, 2.0});
     nodes.push_back({3.0, 4.0});
 
     std::vector<meshkernel::Edge> edges;
     edges.push_back({0, 1});
-    edges.push_back({1, 3});
-    edges.push_back({3, 0});
-    edges.push_back({2, 1});
+    edges.push_back({1, 2});
+    edges.push_back({2, 0});
 
     // Execute
     auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+
+    // Add new node and connect with existing node, creating hanging edge
+    nodes.push_back({3.0, 2.0});
+    edges.push_back({3, 1});
+
+    [[maybe_unused]] auto undoInsertNode = mesh.InsertNode(nodes[3]);
+    [[maybe_unused]] auto undoConnectNodes = mesh.ConnectNodes(3, 1);
 
     // Assert
     ASSERT_EQ(1, mesh.GetNumFaces());

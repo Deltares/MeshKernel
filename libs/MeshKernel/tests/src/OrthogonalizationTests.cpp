@@ -27,21 +27,19 @@
 
 #include <gtest/gtest.h>
 
-#include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/FlipEdges.hpp>
-#include <MeshKernel/LandBoundaries.hpp>
-#include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/MeshRefinement.hpp>
-#include <MeshKernel/Operations.hpp>
-#include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
-#include <MeshKernel/Orthogonalizer.hpp>
-#include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/Smoother.hpp>
-#include <MeshKernel/UndoActions/UndoAction.hpp>
-#include <MeshKernel/Utilities/Utilities.hpp>
-#include <TestUtils/Definitions.hpp>
-#include <TestUtils/MakeMeshes.hpp>
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/FlipEdges.hpp"
+#include "MeshKernel/LandBoundaries.hpp"
+#include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/MeshRefinement.hpp"
+#include "MeshKernel/Operations.hpp"
+#include "MeshKernel/OrthogonalizationAndSmoothing.hpp"
+#include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
+#include "MeshKernel/Utilities/Utilities.hpp"
+#include "TestUtils/Definitions.hpp"
+#include "TestUtils/MakeMeshes.hpp"
 
 using namespace meshkernel;
 

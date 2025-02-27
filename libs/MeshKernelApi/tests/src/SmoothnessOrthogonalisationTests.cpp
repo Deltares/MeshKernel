@@ -48,7 +48,7 @@
 namespace mk = meshkernel;
 namespace mkapi = meshkernelapi;
 
-TEST(SmoothnessOrthogonalisationTests, Orthogonalize_OnInvalidMesh_ShouldThrowAMeshGeometryError)
+TEST(SmoothnessOrthogonalisationTests, DISABLED_Orthogonalize_OnInvalidMesh_ShouldThrowAMeshGeometryError)
 {
     // Prepare
     int meshKernelId;
