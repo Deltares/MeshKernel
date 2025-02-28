@@ -225,9 +225,9 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
         const auto numEdgesFirstNode = mesh2d->GetNumNodesEdges(firstNode);
         const auto numEdgesSecondNode = mesh2d->GetNumNodesEdges(secondNode);
         if ((numEdgesFirstNode == constants::geometric::numNodesInPentagon ||
-             numEdgesFirstNode == constants::geometric::numNodesInhaxagon) &&
+             numEdgesFirstNode == constants::geometric::numNodesInHexagon) &&
             (numEdgesSecondNode == constants::geometric::numNodesInPentagon ||
-             numEdgesSecondNode == constants::geometric::numNodesInhaxagon) &&
+             numEdgesSecondNode == constants::geometric::numNodesInHexagon) &&
             IsEqual(mesh2d->Node(firstNode).y, mesh2d->Node(secondNode).y, tolerance))
         {
             [[maybe_unused]] auto action = mesh2d->DeleteEdge(e);

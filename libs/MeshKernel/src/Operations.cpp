@@ -1232,6 +1232,80 @@ namespace meshkernel
         return circumcenter;
     }
 
+    UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, const UInt numNodes)
+    {
+        if (numNodes > edgesNumFaces.size())
+        {
+            throw ConstraintError("Invalid range for array: {} > {}", numNodes, edgesNumFaces.size());
+        }
+
+        UInt numValidEdges = 0;
+
+        for (UInt n = 0; n < numNodes; ++n)
+        {
+            if (edgesNumFaces[n] == 2)
+            {
+                numValidEdges++;
+            }
+        }
+
+        return numValidEdges;
+    }
+
+    void ComputeMidPointsAndNormals(const std::vector<Point>& polygon,
+                                    const std::vector<UInt>& edgesNumFaces,
+                                    const UInt numNodes,
+                                    std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
+                                    std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
+                                    UInt& pointCount,
+                                    const Projection& projection)
+    {
+        for (UInt n = 0; n < numNodes; n++)
+        {
+            if (edgesNumFaces[n] != 2)
+            {
+                continue;
+            }
+
+            const auto nextNode = NextCircularForwardIndex(n, numNodes);
+
+            middlePoints[pointCount] = ((polygon[n] + polygon[nextNode]) * 0.5);
+            normals[pointCount] = NormalVector(polygon[n], polygon[nextNode], middlePoints[pointCount], projection);
+            ++pointCount;
+        }
+    }
+
+    Point ComputeCircumCentre(const Point& centerOfMass,
+                              const UInt pointCount,
+                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
+                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
+                              const Projection& projection)
+    {
+        const UInt maximumNumberCircumcenterIterations = 100;
+        const double eps = projection == Projection::cartesian ? 1e-3 : 9e-10; // 111km = 0-e digit.
+
+        Point estimatedCircumCenter = centerOfMass;
+
+        for (UInt iter = 0; iter < maximumNumberCircumcenterIterations; ++iter)
+        {
+            const Point previousCircumCenter = estimatedCircumCenter;
+            for (UInt n = 0; n < pointCount; n++)
+            {
+                const Point delta{GetDx(middlePoints[n], estimatedCircumCenter, projection), GetDy(middlePoints[n], estimatedCircumCenter, projection)};
+                const auto increment = -0.1 * dot(delta, normals[n]);
+                AddIncrementToPoint(normals[n], increment, centerOfMass, projection, estimatedCircumCenter);
+            }
+            if (iter > 0 &&
+                abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps &&
+                abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
+            {
+                break;
+            }
+        }
+
+        return estimatedCircumCenter;
+    }
+
     std::tuple<bool, Point, double, double, double> AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
                                                                         const Point& firstSegmentSecondPoint,
                                                                         const Point& secondSegmentFirstPoint,

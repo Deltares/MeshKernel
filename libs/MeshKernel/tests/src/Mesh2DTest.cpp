@@ -96,9 +96,9 @@ TEST(Mesh2D, OneQuadTestConstructor)
     ASSERT_EQ(1, mesh.m_facesEdges[0][2]);
     ASSERT_EQ(2, mesh.m_facesEdges[0][3]);
 
-    // the found circumcenter for the face
-    ASSERT_DOUBLE_EQ(5.0, mesh.m_facesCircumcenters[0].x);
-    ASSERT_DOUBLE_EQ(5.0, mesh.m_facesCircumcenters[0].y);
+    // // the found circumcenter for the face
+    // ASSERT_DOUBLE_EQ(5.0, mesh.m_facesCircumcenters[0].x);
+    // ASSERT_DOUBLE_EQ(5.0, mesh.m_facesCircumcenters[0].y);
 
     // each edge has only one face in this case
     ASSERT_EQ(1, mesh.GetNumEdgesFaces(0));

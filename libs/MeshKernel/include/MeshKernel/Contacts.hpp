@@ -167,10 +167,11 @@ namespace meshkernel
         /// @brief Validate checking mesh1d and mesh2d are not empty, throws an exception otherwise
         void Validate() const;
 
-        Mesh1D& m_mesh1d;                  ///< The 1-d mesh to connect
-        Mesh2D& m_mesh2d;                  ///< The 2-d mesh to connect
-        std::vector<UInt> m_mesh1dIndices; ///< The indices of the connected 1-d nodes
-        std::vector<UInt> m_mesh2dIndices; ///< The indices of the connected 2-d faces
-        bool m_areComputed = false;        ///< Indicates whether contacts have been computed
+        Mesh1D& m_mesh1d;                        ///< The 1-d mesh to connect
+        Mesh2D& m_mesh2d;                        ///< The 2-d mesh to connect
+        std::vector<UInt> m_mesh1dIndices;       ///< The indices of the connected 1-d nodes
+        std::vector<UInt> m_mesh2dIndices;       ///< The indices of the connected 2-d faces
+        std::vector<Point> m_facesCircumcenters; ///< The circumcentres of the faces of the mesh2d.
+        bool m_areComputed = false;              ///< Indicates whether contacts have been computed
     };
 } // namespace meshkernel
