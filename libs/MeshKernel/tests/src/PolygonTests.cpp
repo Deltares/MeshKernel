@@ -430,3 +430,39 @@ TEST(PolygonTests, LinearRefine_WithStartIndexLargerThanEndIndex_ShouldRefine)
     EXPECT_NEAR(refinedPolygon[14].y, 2885.7028590012160, tolerance);
     EXPECT_NEAR(refinedPolygon[15].y, 2398.6833000000001, tolerance);
 }
+
+TEST(PolygonTests, WTF)
+{
+    // setup
+    const std::vector<mk::Point> outer{
+        {0.0, 0.0},
+        {10.0, 0.0},
+        {10.0, 10.0},
+        {0.0, 10.0},
+        {0.0, 0.0}};
+
+    const mk::Polygon polygon(outer, mk::Projection::cartesian);
+
+    // execute
+    std::vector<mk::Point> refinedPolygon = polygon.Refine(0, 4, 2.5);
+
+    for (size_t i = 0; i < refinedPolygon.size(); ++i)
+    {
+        std::cout << " ref " << i << " = " << refinedPolygon[i].x << ", " << refinedPolygon[i].y << std::endl;
+    }
+
+    std::cout << std::endl;
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    const mk::Polygon polygon2(refinedPolygon, mk::Projection::cartesian);
+
+    // execute
+    // std::vector<mk::Point> refinedPolygon2 = polygon2.LinearRefine(0, 15);
+    std::vector<mk::Point> refinedPolygon2 = polygon2.Refine(0, 15, 10.0);
+
+    for (size_t i = 0; i < refinedPolygon2.size(); ++i)
+    {
+        std::cout << " ref2 " << i << " = " << refinedPolygon2[i].x << ", " << refinedPolygon2[i].y << std::endl;
+    }
+}

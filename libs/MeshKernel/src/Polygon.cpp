@@ -459,14 +459,19 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const UInt startIndex
 
         // refine edges from the start to endIndex
         for (auto it = m_nodes.begin(); it != to; ++it)
+        {
             RefineSegment(refinedPolygon, it, refinementDistance, m_projection);
+        }
 
         // copy from endIndex up to startIndex
         std::copy(to, from, std::back_inserter(refinedPolygon));
 
         // refine edges from startIndex to the end of the polygon
         for (auto it = from; it != last; ++it)
+        {
             RefineSegment(refinedPolygon, it, refinementDistance, m_projection);
+        }
+
         refinedPolygon.push_back(m_nodes.back());
     }
     return refinedPolygon;
