@@ -99,30 +99,25 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
     }
 
     undoAction->Add(CurvilinearGridBlockUndoAction::Create(m_grid, lowerLeft, upperRight));
+    const auto boundaryCoordinate = m_lines[0].m_constantCoordinate == 0 ? 1 : m_lines[0].m_constantCoordinate;
 
     for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
     {
         if (gridLineType == Bottom)
         {
-            m_grid.GetNode(0, i) = m_grid.GetNode(1, i) * a +
-                                   m_grid.GetNode(2, i) * b;
+            m_grid.GetNode(boundaryCoordinate - 1, i) = m_grid.GetNode(boundaryCoordinate, i) * a + m_grid.GetNode(boundaryCoordinate + 1, i) * b;
         }
         if (gridLineType == Top)
         {
-            auto const last_row = (UInt)m_grid.NumN() - 1;
-            m_grid.GetNode(last_row, i) = m_grid.GetNode(last_row - 1, i) * a +
-                                          m_grid.GetNode(last_row - 2, i) * b;
+            m_grid.GetNode(boundaryCoordinate + 1, i) = m_grid.GetNode(boundaryCoordinate, i) * a + m_grid.GetNode(boundaryCoordinate - 1, i) * b;
         }
         if (gridLineType == Right)
         {
-            auto const last_col = (UInt)m_grid.NumM() - 1;
-            m_grid.GetNode(i, last_col) = m_grid.GetNode(i, last_col - 1) * a +
-                                          m_grid.GetNode(i, last_col - 2) * b;
+            m_grid.GetNode(i, boundaryCoordinate + 1) = m_grid.GetNode(i, boundaryCoordinate) * a + m_grid.GetNode(i, boundaryCoordinate - 1) * b;
         }
         if (gridLineType == Left)
         {
-            m_grid.GetNode(i, 0) = m_grid.GetNode(i, 1) * a +
-                                   m_grid.GetNode(i, 2) * b;
+            m_grid.GetNode(i, boundaryCoordinate - 1) = m_grid.GetNode(i, boundaryCoordinate) * a + m_grid.GetNode(i, boundaryCoordinate + 1) * b;
         }
     }
 
