@@ -25,27 +25,16 @@
 #include <span>
 #include <vector>
 
+#include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Mesh.hpp"
-#include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/Point.hpp"
 
 namespace meshkernel::algo
 {
-    /// @brief Compute the length values returning values in a vector
-    std::vector<double> ComputeMeshEdgeLength(const Mesh& mesh);
+    /// @brief Compute the circum-center point of each of the faces
+    std::vector<Point> ComputeFaceCircumcenters(const Mesh& mesh);
 
-    /// @brief Compute the length values overwriting the values in an array
-    void ComputeMeshEdgeLength(const Mesh& mesh, std::span<double> length);
-
-    /// @brief Compute the length values overwriting the values in an array
-    double MinEdgeLength(const Mesh& mesh, const Polygons& polygon,
-                         const std::span<const double> edgeLengths);
-
-    /// @brief Find the maximum edge length of the edges surrounding a node.
-    double MaxLengthSurroundingEdges(const Mesh& mesh,
-                                     const UInt nodeId,
-                                     const std::span<const double> edgeLengths);
-
-    /// @brief Compute the length value for the edge
-    static double ComputeEdgeLength(const Mesh& mesh, const UInt edgeId);
+    /// @brief Compute the circum-center point of each of the faces overwriting the values in an array
+    void ComputeFaceCircumcenters(const Mesh& mesh, std::span<Point> edgeCenters);
 
 } // namespace meshkernel::algo

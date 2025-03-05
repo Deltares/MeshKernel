@@ -31,6 +31,7 @@
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh2DIntersections.hpp"
+#include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/MeshOrthogonality.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygon.hpp"
@@ -418,14 +419,12 @@ void Mesh2D::ResizeAndInitializeFaceVectors()
     m_faceArea.clear();
     m_facesNodes.clear();
     m_facesEdges.clear();
-    m_facesCircumcenters.clear();
     m_numFacesNodes.clear();
 
     m_facesMassCenters.reserve(GetNumNodes());
     m_faceArea.reserve(GetNumNodes());
     m_facesNodes.reserve(GetNumNodes());
     m_facesEdges.reserve(GetNumNodes());
-    m_facesCircumcenters.reserve(GetNumNodes());
     m_numFacesNodes.reserve(GetNumNodes());
 }
 
@@ -547,13 +546,13 @@ void Mesh2D::FindFacesRecursive(UInt startNode,
 
 void Mesh2D::FindFaces()
 {
-    std::vector<UInt> sortedEdgesFaces(m_maximumNumberOfEdgesPerFace);
-    std::vector<UInt> sortedNodes(m_maximumNumberOfEdgesPerFace);
-    std::vector<Point> nodalValues(m_maximumNumberOfEdgesPerFace);
-    std::vector<UInt> edges(m_maximumNumberOfEdgesPerFace);
-    std::vector<UInt> nodes(m_maximumNumberOfEdgesPerFace);
+    std::vector<UInt> sortedEdgesFaces(constants::geometric::maximumNumberOfEdgesPerFace);
+    std::vector<UInt> sortedNodes(constants::geometric::maximumNumberOfEdgesPerFace);
+    std::vector<Point> nodalValues(constants::geometric::maximumNumberOfEdgesPerFace);
+    std::vector<UInt> edges(constants::geometric::maximumNumberOfEdgesPerFace);
+    std::vector<UInt> nodes(constants::geometric::maximumNumberOfEdgesPerFace);
 
-    for (UInt numEdgesPerFace = constants::geometric::numNodesInTriangle; numEdgesPerFace <= m_maximumNumberOfEdgesPerFace; ++numEdgesPerFace)
+    for (UInt numEdgesPerFace = constants::geometric::numNodesInTriangle; numEdgesPerFace <= constants::geometric::maximumNumberOfEdgesPerFace; ++numEdgesPerFace)
     {
         for (UInt n = 0; n < GetNumNodes(); n++)
         {
@@ -641,48 +640,25 @@ void Mesh2D::FindFacesGivenFaceNodesMapping(const std::vector<std::vector<UInt>>
 
 void Mesh2D::ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters)
 {
+
+    if (!computeMassCenters)
+    {
+        return;
+    }
+
     auto const numFaces = static_cast<int>(GetNumFaces());
-    m_facesCircumcenters.resize(numFaces);
-    m_faceArea.resize(numFaces);
     m_facesMassCenters.resize(numFaces);
 
-    std::vector<UInt> numEdgeFacesCache;
-    numEdgeFacesCache.reserve(m_maximumNumberOfEdgesPerFace);
     std::vector<Point> polygonNodesCache;
-#pragma omp parallel for private(numEdgeFacesCache, polygonNodesCache)
+#pragma omp parallel for private(polygonNodesCache)
     for (int f = 0; f < numFaces; f++)
     {
         // need to account for spherical coordinates. Build a polygon around a face
         ComputeFaceClosedPolygon(f, polygonNodesCache);
 
-        if (computeMassCenters)
-        {
-            const auto [area, centerOfMass, direction] = Polygon::FaceAreaAndCenterOfMass(polygonNodesCache, m_projection);
-            m_faceArea[f] = area;
-            m_facesMassCenters[f] = centerOfMass;
-        }
-
-        UInt numberOfInteriorEdges = 0;
-        const auto numberOfFaceNodes = static_cast<int>(GetNumFaceEdges(f));
-        for (int n = 0; n < numberOfFaceNodes; n++)
-        {
-            if (!IsEdgeOnBoundary(m_facesEdges[f][n]))
-            {
-                numberOfInteriorEdges += 1;
-            }
-        }
-        if (numberOfInteriorEdges == 0)
-        {
-            m_facesCircumcenters[f] = m_facesMassCenters[f];
-            continue;
-        }
-        numEdgeFacesCache.clear();
-        for (int n = 0; n < numberOfFaceNodes; n++)
-        {
-            numEdgeFacesCache.emplace_back(m_edgesNumFaces[m_facesEdges[f][n]]);
-        }
-
-        m_facesCircumcenters[f] = ComputeFaceCircumenter(polygonNodesCache, numEdgeFacesCache);
+        const auto [area, centerOfMass, direction] = Polygon::FaceAreaAndCenterOfMass(polygonNodesCache, m_projection);
+        m_faceArea[f] = area;
+        m_facesMassCenters[f] = centerOfMass;
     }
 }
 
@@ -840,19 +816,19 @@ void Mesh2D::ComputeFaceClosedPolygonWithLocalMappings(UInt faceIndex,
     globalEdgeIndicesCache.emplace_back(globalEdgeIndicesCache.front());
 }
 
-void Mesh2D::ComputeFaceClosedPolygon(UInt faceIndex, std::vector<Point>& polygonNodesCache) const
-{
-    const auto numFaceNodes = GetNumFaceEdges(faceIndex);
-    polygonNodesCache.clear();
-    polygonNodesCache.reserve(numFaceNodes + 1);
+// void Mesh2D::ComputeFaceClosedPolygon(UInt faceIndex, std::vector<Point>& polygonNodesCache) const
+// {
+//     const auto numFaceNodes = GetNumFaceEdges(faceIndex);
+//     polygonNodesCache.clear();
+//     polygonNodesCache.reserve(numFaceNodes + 1);
 
-    for (UInt n = 0; n < numFaceNodes; n++)
-    {
-        polygonNodesCache.push_back(m_nodes[m_facesNodes[faceIndex][n]]);
-    }
+//     for (UInt n = 0; n < numFaceNodes; n++)
+//     {
+//         polygonNodesCache.push_back(m_nodes[m_facesNodes[faceIndex][n]]);
+//     }
 
-    polygonNodesCache.push_back(polygonNodesCache.front());
-}
+//     polygonNodesCache.push_back(polygonNodesCache.front());
+// }
 
 std::unique_ptr<meshkernel::SphericalCoordinatesOffsetAction> Mesh2D::OffsetSphericalCoordinates(double minx, double maxx)
 {
@@ -893,139 +869,139 @@ void Mesh2D::RestoreAction(const SphericalCoordinatesOffsetAction& undoAction)
     undoAction.UndoOffset(m_nodes);
 }
 
-meshkernel::UInt Mesh2D::CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, const UInt numNodes) const
-{
-    UInt numValidEdges = 0;
+// meshkernel::UInt Mesh2D::CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, const UInt numNodes) const
+// {
+//     UInt numValidEdges = 0;
 
-    for (UInt n = 0; n < numNodes; ++n)
-    {
-        if (edgesNumFaces[n] == 2)
-        {
-            numValidEdges++;
-        }
-    }
+//     for (UInt n = 0; n < numNodes; ++n)
+//     {
+//         if (edgesNumFaces[n] == 2)
+//         {
+//             numValidEdges++;
+//         }
+//     }
 
-    return numValidEdges;
-}
+//     return numValidEdges;
+// }
 
-void Mesh2D::ComputeMidPointsAndNormals(const std::vector<Point>& polygon,
-                                        const std::vector<UInt>& edgesNumFaces,
-                                        const UInt numNodes,
-                                        std::array<Point, m_maximumNumberOfNodesPerFace>& middlePoints,
-                                        std::array<Point, m_maximumNumberOfNodesPerFace>& normals,
-                                        UInt& pointCount) const
-{
-    for (UInt n = 0; n < numNodes; n++)
-    {
-        if (edgesNumFaces[n] != 2)
-        {
-            continue;
-        }
+// void Mesh2D::ComputeMidPointsAndNormals(const std::vector<Point>& polygon,
+//                                         const std::vector<UInt>& edgesNumFaces,
+//                                         const UInt numNodes,
+//                                         std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
+//                                         std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
+//                                         UInt& pointCount) const
+// {
+//     for (UInt n = 0; n < numNodes; n++)
+//     {
+//         if (edgesNumFaces[n] != 2)
+//         {
+//             continue;
+//         }
 
-        const auto nextNode = NextCircularForwardIndex(n, numNodes);
+//         const auto nextNode = NextCircularForwardIndex(n, numNodes);
 
-        middlePoints[pointCount] = ((polygon[n] + polygon[nextNode]) * 0.5);
-        normals[pointCount] = NormalVector(polygon[n], polygon[nextNode], middlePoints[pointCount], m_projection);
-        ++pointCount;
-    }
-}
+//         middlePoints[pointCount] = ((polygon[n] + polygon[nextNode]) * 0.5);
+//         normals[pointCount] = NormalVector(polygon[n], polygon[nextNode], middlePoints[pointCount], m_projection);
+//         ++pointCount;
+//     }
+// }
 
-meshkernel::Point Mesh2D::ComputeCircumCentre(const Point& centerOfMass,
-                                              const UInt pointCount,
-                                              const std::array<Point, m_maximumNumberOfNodesPerFace>& middlePoints,
-                                              const std::array<Point, m_maximumNumberOfNodesPerFace>& normals) const
-{
-    const UInt maximumNumberCircumcenterIterations = 100;
-    const double eps = m_projection == Projection::cartesian ? 1e-3 : 9e-10; // 111km = 0-e digit.
+// meshkernel::Point Mesh2D::ComputeCircumCentre(const Point& centerOfMass,
+//                                               const UInt pointCount,
+//                                               const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
+//                                               const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals) const
+// {
+//     const UInt maximumNumberCircumcenterIterations = 100;
+//     const double eps = m_projection == Projection::cartesian ? 1e-3 : 9e-10; // 111km = 0-e digit.
 
-    Point estimatedCircumCenter = centerOfMass;
+//     Point estimatedCircumCenter = centerOfMass;
 
-    for (UInt iter = 0; iter < maximumNumberCircumcenterIterations; ++iter)
-    {
-        const Point previousCircumCenter = estimatedCircumCenter;
-        for (UInt n = 0; n < pointCount; n++)
-        {
-            const Point delta{GetDx(middlePoints[n], estimatedCircumCenter, m_projection), GetDy(middlePoints[n], estimatedCircumCenter, m_projection)};
-            const auto increment = -0.1 * dot(delta, normals[n]);
-            AddIncrementToPoint(normals[n], increment, centerOfMass, m_projection, estimatedCircumCenter);
-        }
-        if (iter > 0 &&
-            abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps &&
-            abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
-        {
-            break;
-        }
-    }
+//     for (UInt iter = 0; iter < maximumNumberCircumcenterIterations; ++iter)
+//     {
+//         const Point previousCircumCenter = estimatedCircumCenter;
+//         for (UInt n = 0; n < pointCount; n++)
+//         {
+//             const Point delta{GetDx(middlePoints[n], estimatedCircumCenter, m_projection), GetDy(middlePoints[n], estimatedCircumCenter, m_projection)};
+//             const auto increment = -0.1 * dot(delta, normals[n]);
+//             AddIncrementToPoint(normals[n], increment, centerOfMass, m_projection, estimatedCircumCenter);
+//         }
+//         if (iter > 0 &&
+//             abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps &&
+//             abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
+//         {
+//             break;
+//         }
+//     }
 
-    return estimatedCircumCenter;
-}
+//     return estimatedCircumCenter;
+// }
 
-meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                                 const std::vector<UInt>& edgesNumFaces) const
-{
-    std::array<Point, m_maximumNumberOfNodesPerFace> middlePoints;
-    std::array<Point, m_maximumNumberOfNodesPerFace> normals;
-    UInt pointCount = 0;
+// meshkernel::Point Mesh2D::ComputeFaceCircumenter(std::vector<Point>& polygon,
+//                                                  const std::vector<UInt>& edgesNumFaces) const
+// {
+//     std::array<Point, constants::geometric::maximumNumberOfNodesPerFace> middlePoints;
+//     std::array<Point, constants::geometric::maximumNumberOfNodesPerFace> normals;
+//     UInt pointCount = 0;
 
-    const auto numNodes = static_cast<UInt>(polygon.size()) - 1;
+//     const auto numNodes = static_cast<UInt>(polygon.size()) - 1;
 
-    Point centerOfMass{0.0, 0.0};
-    for (UInt n = 0; n < numNodes; n++)
-    {
-        centerOfMass.x += polygon[n].x;
-        centerOfMass.y += polygon[n].y;
-    }
+//     Point centerOfMass{0.0, 0.0};
+//     for (UInt n = 0; n < numNodes; n++)
+//     {
+//         centerOfMass.x += polygon[n].x;
+//         centerOfMass.y += polygon[n].y;
+//     }
 
-    centerOfMass /= static_cast<double>(numNodes);
+//     centerOfMass /= static_cast<double>(numNodes);
 
-    auto result = centerOfMass;
-    if (numNodes == constants::geometric::numNodesInTriangle)
-    {
-        result = CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], m_projection);
-    }
-    else if (!edgesNumFaces.empty())
-    {
-        UInt numValidEdges = CountNumberOfValidEdges(edgesNumFaces, numNodes);
+//     auto result = centerOfMass;
+//     if (numNodes == constants::geometric::numNodesInTriangle)
+//     {
+//         result = CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], m_projection);
+//     }
+//     else if (!edgesNumFaces.empty())
+//     {
+//         UInt numValidEdges = CountNumberOfValidEdges(edgesNumFaces, numNodes);
 
-        if (numValidEdges > 1)
-        {
-            ComputeMidPointsAndNormals(polygon, edgesNumFaces, numNodes, middlePoints, normals, pointCount);
-            result = ComputeCircumCentre(centerOfMass, pointCount, middlePoints, normals);
-        }
-    }
+//         if (numValidEdges > 1)
+//         {
+//             ComputeMidPointsAndNormals(polygon, edgesNumFaces, numNodes, middlePoints, normals, pointCount, m_projection);
+//             result = ComputeCircumCentre(centerOfMass, pointCount, middlePoints, normals);
+//         }
+//     }
 
-    for (UInt n = 0; n < numNodes; n++)
-    {
-        polygon[n] = m_weightCircumCenter * polygon[n] + (1.0 - m_weightCircumCenter) * centerOfMass;
-    }
+//     for (UInt n = 0; n < numNodes; n++)
+//     {
+//         polygon[n] = m_weightCircumCenter * polygon[n] + (1.0 - m_weightCircumCenter) * centerOfMass;
+//     }
 
-    // The circumcenter is included in the face, then return the calculated circumcentre
-    if (IsPointInPolygonNodes(result, polygon, m_projection))
-    {
-        return result;
-    }
+//     // The circumcenter is included in the face, then return the calculated circumcentre
+//     if (IsPointInPolygonNodes(result, polygon, m_projection))
+//     {
+//         return result;
+//     }
 
-    // If the circumcenter is not included in the face,
-    // the circumcenter will be placed at the intersection between an edge and the segment connecting the mass center with the circumcentre.
-    for (UInt n = 0; n < numNodes; n++)
-    {
-        const auto nextNode = NextCircularForwardIndex(n, numNodes);
+//     // If the circumcenter is not included in the face,
+//     // the circumcenter will be placed at the intersection between an edge and the segment connecting the mass center with the circumcentre.
+//     for (UInt n = 0; n < numNodes; n++)
+//     {
+//         const auto nextNode = NextCircularForwardIndex(n, numNodes);
 
-        const auto [areLineCrossing,
-                    intersection,
-                    crossProduct,
-                    firstRatio,
-                    secondRatio] = AreSegmentsCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, m_projection);
+//         const auto [areLineCrossing,
+//                     intersection,
+//                     crossProduct,
+//                     firstRatio,
+//                     secondRatio] = AreSegmentsCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, m_projection);
 
-        if (areLineCrossing)
-        {
-            result = intersection;
-            break;
-        }
-    }
+//         if (areLineCrossing)
+//         {
+//             result = intersection;
+//             break;
+//         }
+//     }
 
-    return result;
-}
+//     return result;
+// }
 
 std::vector<meshkernel::Point> Mesh2D::GetObtuseTrianglesCenters()
 {
@@ -1061,6 +1037,8 @@ std::vector<meshkernel::UInt> Mesh2D::GetEdgesCrossingSmallFlowEdges(double smal
     Administrate();
     std::vector<UInt> result;
     result.reserve(GetNumEdges());
+    std::vector<Point> faceCircumcenters = algo::ComputeFaceCircumcenters(*this);
+
     for (UInt e = 0; e < GetNumEdges(); ++e)
     {
         const auto firstFace = m_edgesFaces[e][0];
@@ -1068,7 +1046,7 @@ std::vector<meshkernel::UInt> Mesh2D::GetEdgesCrossingSmallFlowEdges(double smal
 
         if (firstFace != constants::missing::uintValue && secondFace != constants::missing::uintValue)
         {
-            const auto flowEdgeLength = ComputeDistance(m_facesCircumcenters[firstFace], m_facesCircumcenters[secondFace], m_projection);
+            const auto flowEdgeLength = ComputeDistance(faceCircumcenters[firstFace], faceCircumcenters[secondFace], m_projection);
             const double cutOffDistance = smallFlowEdgesThreshold * 0.5 * (std::sqrt(m_faceArea[firstFace]) + std::sqrt(m_faceArea[secondFace]));
 
             if (flowEdgeLength < cutOffDistance)
@@ -1084,11 +1062,13 @@ std::vector<meshkernel::Point> Mesh2D::GetFlowEdgesCenters(const std::vector<UIn
 {
     std::vector<Point> result;
     result.reserve(GetNumEdges());
+    std::vector<Point> faceCircumcenters = algo::ComputeFaceCircumcenters(*this);
+
     for (const auto& edge : edges)
     {
         const auto firstFace = m_edgesFaces[edge][0];
         const auto secondFace = m_edgesFaces[edge][1];
-        result.emplace_back((m_facesCircumcenters[firstFace] + m_facesCircumcenters[secondFace]) * 0.5);
+        result.emplace_back((faceCircumcenters[firstFace] + faceCircumcenters[secondFace]) * 0.5);
     }
 
     return result;
@@ -1298,6 +1278,7 @@ void Mesh2D::ComputeNodeNeighbours(std::vector<std::vector<UInt>>& nodesNodes, U
 void Mesh2D::ComputeAverageFlowEdgesLength(std::vector<double>& edgesLength,
                                            std::vector<double>& averageFlowEdgesLength) const
 {
+    std::vector<Point> faceCircumcenters = algo::ComputeFaceCircumcenters(*this);
 
     for (UInt e = 0; e < GetNumEdges(); e++)
     {
@@ -1317,7 +1298,7 @@ void Mesh2D::ComputeAverageFlowEdgesLength(std::vector<double>& edgesLength,
 
         if (m_edgesNumFaces[e] > 0)
         {
-            leftCenter = m_facesCircumcenters[m_edgesFaces[e][0]];
+            leftCenter = faceCircumcenters[m_edgesFaces[e][0]];
         }
         else
         {
@@ -1327,7 +1308,7 @@ void Mesh2D::ComputeAverageFlowEdgesLength(std::vector<double>& edgesLength,
         // find right cell center, if it exists
         if (m_edgesNumFaces[e] == 2)
         {
-            rightCenter = m_facesCircumcenters[m_edgesFaces[e][1]];
+            rightCenter = faceCircumcenters[m_edgesFaces[e][1]];
         }
         else
         {
@@ -1493,7 +1474,7 @@ void Mesh2D::MakeDualFace(const std::span<const Point> edgeCentres,
     const auto sortedFacesIndices = SortedFacesAroundNode(node);
     const auto numEdges = m_nodesNumEdges[node];
 
-    dualFace.reserve(m_maximumNumberOfEdgesPerNode);
+    dualFace.reserve(constants::geometric::maximumNumberOfEdgesPerNode);
     dualFace.clear();
 
     if (sortedFacesIndices.empty())
@@ -1952,6 +1933,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces(const Polygons& 
     std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
 
     Administrate(deleteMeshAction.get());
+    std::vector<Point> faceCircumcenters = algo::ComputeFaceCircumcenters(*this);
 
     for (UInt e = 0u; e < GetNumEdges(); ++e)
     {
@@ -1965,7 +1947,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces(const Polygons& 
                 continue;
             }
 
-            auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(m_facesCircumcenters[faceIndex]);
+            auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(faceCircumcenters[faceIndex]);
 
             if (invertDeletion)
             {
@@ -2446,7 +2428,6 @@ std::unique_ptr<Mesh2D> Mesh2D::Merge(const Mesh2D& mesh1, const Mesh2D& mesh2)
     mergedMesh.m_edgesNumFaces.insert(mergedMesh.m_edgesNumFaces.end(), mesh2.m_edgesNumFaces.begin(), mesh2.m_edgesNumFaces.end());
 
     mergedMesh.m_numFacesNodes.insert(mergedMesh.m_numFacesNodes.end(), mesh2.m_numFacesNodes.begin(), mesh2.m_numFacesNodes.end());
-    mergedMesh.m_facesCircumcenters.insert(mergedMesh.m_facesCircumcenters.end(), mesh2.m_facesCircumcenters.begin(), mesh2.m_facesCircumcenters.end());
     mergedMesh.m_facesMassCenters.insert(mergedMesh.m_facesMassCenters.end(), mesh2.m_facesMassCenters.begin(), mesh2.m_facesMassCenters.end());
     mergedMesh.m_faceArea.insert(mergedMesh.m_faceArea.end(), mesh2.m_faceArea.begin(), mesh2.m_faceArea.end());
 
@@ -2619,7 +2600,7 @@ void Mesh2D::FindNodesSharedByFaces(UInt nodeIndex, const std::vector<UInt>& sha
     // for each face store the positions of the its nodes in the connectedNodes (compressed array)
     if (faceNodeMapping.size() < sharedFaces.size())
     {
-        ResizeAndFill2DVector(faceNodeMapping, static_cast<UInt>(sharedFaces.size()), Mesh::m_maximumNumberOfNodesPerFace);
+        ResizeAndFill2DVector(faceNodeMapping, static_cast<UInt>(sharedFaces.size()), constants::geometric::maximumNumberOfNodesPerFace);
     }
 
     // Find all nodes shared by faces
