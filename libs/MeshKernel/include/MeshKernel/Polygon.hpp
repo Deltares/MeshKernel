@@ -169,7 +169,7 @@ namespace meshkernel
         std::vector<double> ComputeCumulativeDistances(const std::vector<meshkernel::Point>& polygonNodes) const;
 
         /// @brief Resample the polygon nodes
-        void ComputeResampledNodes(const UInt numberOfNewNodes,
+        void ComputeResampledNodes(const size_t numberOfNewNodes,
                                    const std::vector<double>& segmentLengths,
                                    const std::vector<size_t>& nodeIndices,
                                    std::vector<Point>& refinedPolygon) const;

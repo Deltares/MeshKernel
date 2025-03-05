@@ -404,7 +404,7 @@ meshkernel::Point meshkernel::Polygon::interpolatePointOnPolyline(const std::vec
     return (1.0 - ti) * points[intervalIndex - 1] + ti * points[intervalIndex];
 }
 
-void meshkernel::Polygon::ComputeResampledNodes(const UInt numberOfNewNodes, const std::vector<double>& segmentLengths, const std::vector<size_t>& nodeIndices, std::vector<Point>& refinedPolygon) const
+void meshkernel::Polygon::ComputeResampledNodes(const size_t numberOfNewNodes, const std::vector<double>& segmentLengths, const std::vector<size_t>& nodeIndices, std::vector<Point>& refinedPolygon) const
 {
     double delta = segmentLengths.back() / static_cast<double>(numberOfNewNodes);
     double distanceAlongPolygon = 0.0;
