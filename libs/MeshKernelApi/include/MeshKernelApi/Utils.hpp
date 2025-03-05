@@ -379,7 +379,7 @@ namespace meshkernelapi
     /// @param[out] mesh2dApi The output meshkernelapi::Mesh2D instance
     static void SetMesh2dApiData(meshkernel::Mesh2D& mesh2d, Mesh2D& mesh2dApi)
     {
-        std::vector<meshkernel::Point> edgeCentres = meshkernel::MeshEdgeCenters::Compute(mesh2d);
+        std::vector<meshkernel::Point> edgeCentres = meshkernel::algo::ComputeEdgeCentres(mesh2d);
 
         for (meshkernel::UInt n = 0; n < mesh2d.GetNumNodes(); n++)
         {

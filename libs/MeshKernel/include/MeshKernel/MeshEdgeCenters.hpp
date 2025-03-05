@@ -28,15 +28,15 @@
 #include "MeshKernel/Mesh.hpp"
 #include "MeshKernel/Point.hpp"
 
-namespace meshkernel::MeshEdgeCenters
+namespace meshkernel::algo
 {
     /// @brief Compute the centre point of each of the edges
-    std::vector<Point> Compute(const Mesh& mesh);
+    std::vector<Point> ComputeEdgeCentres(const Mesh& mesh);
 
     /// @brief Compute the centre point of each of the edges overwriting the values in an array
-    void Compute(const Mesh& mesh, std::span<Point> edgeCentres);
+    void ComputeEdgeCentres(const Mesh& mesh, std::span<Point> edgeCentres);
 
     /// @brief Return the centre point of the edge
-    static Point ComputeValue(const Mesh& mesh, const UInt edgeId);
+    static Point ComputeEdgeCentre(const Mesh& mesh, const UInt edgeId);
 
-} // namespace meshkernel::MeshEdgeCenters
+} // namespace meshkernel::algo
