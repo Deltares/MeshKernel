@@ -156,6 +156,75 @@ TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApiFailures)
     ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
 }
 
+TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApiFailuresWTTF)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
+
+    std::vector<double> xCoordinatesIn{
+        250,
+        250,
+        250,
+        250,
+        250,
+        250,
+        276.82158894559,
+        276.384526008527,
+        250
+
+    };
+
+    std::vector<double> yCoordinatesIn{
+
+        120,
+        110,
+        100,
+        90,
+        80,
+        70,
+        69.4438102668551,
+        119.26898509203,
+        120};
+
+    std::vector valuesIn{
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0};
+
+    geometryListIn.coordinates_x = xCoordinatesIn.data();
+    geometryListIn.coordinates_y = yCoordinatesIn.data();
+    geometryListIn.values = valuesIn.data();
+    geometryListIn.num_coordinates = static_cast<int>(xCoordinatesIn.size());
+
+    // Execute
+
+    meshkernelapi::GeometryList geometryListOut;
+    // Should fail due to the values not yet being cached.
+    int numberOfPolygonNodes;
+    auto errorCode = mkernel_polygon_count_refine(meshKernelId, geometryListIn, 5, 8, 5, numberOfPolygonNodes);
+
+    //// Should fail due to the values not yet being cached.
+    ///
+    std::vector<double> coordinates_out_x(numberOfPolygonNodes);
+    std::vector<double> coordinates_out_y(numberOfPolygonNodes);
+    geometryListOut.coordinates_x = coordinates_out_x.data();
+    geometryListOut.coordinates_y = coordinates_out_y.data();
+    geometryListOut.values = valuesIn.data();
+    geometryListOut.num_coordinates = static_cast<int>(coordinates_out_x.size());
+
+    errorCode = mkernel_polygon_refine(meshKernelId, geometryListIn, 5, 8, 5, geometryListOut);
+}
+
 TEST_F(CartesianApiTestFixture, LinearRefineAPolygonThroughApi)
 {
     // Prepare
