@@ -168,6 +168,12 @@ namespace meshkernel
         /// @brief Compute the cumulative distance, from first node, of the segments of the polygon.
         std::vector<double> ComputeCumulativeDistances(const std::vector<meshkernel::Point>& polygonNodes) const;
 
+        /// @brief Resample the polygon nodes
+        void ComputeResampledNodes(const UInt numberOfNewNodes,
+                                   const std::vector<double>& segmentLengths,
+                                   const std::vector<size_t>& nodeIndices,
+                                   std::vector<Point>& refinedPolygon) const;
+
         /// @brief Find the indices of the minimum and maximum average length ratios.
         std::tuple<meshkernel::UInt, meshkernel::UInt>
         FindMinMaxRatioIndex(const std::vector<double>& averageLengths,
