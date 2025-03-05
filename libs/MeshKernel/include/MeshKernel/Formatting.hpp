@@ -46,6 +46,8 @@ concept FormattableType = std::floating_point<T> ||
                           std::integral<T> ||
                           std::same_as<T, std::string>;
 
+/// \cond DOXYGEN_IGNORE
+///
 /// @brief Specialization of std::formatter for std::vector
 /// @tparam T Vector type (must be FormattableType)
 template <typename T>
@@ -82,3 +84,4 @@ struct fmt_ns::formatter<std::vector<T>> : fmt_ns::formatter<T>
         return fmt_ns::format_to(out, "}}");
     }
 };
+/// \endcond
