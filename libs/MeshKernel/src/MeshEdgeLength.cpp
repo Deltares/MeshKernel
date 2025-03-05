@@ -30,15 +30,15 @@
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Operations.hpp"
 
-std::vector<double> meshkernel::MeshEdgeLength::Compute(const Mesh& mesh)
+std::vector<double> meshkernel::algo::ComputeMeshEdgeLength(const Mesh& mesh)
 {
     std::vector<double> length(mesh.GetNumEdges(), constants::missing::doubleValue);
-    Compute(mesh, length);
+    ComputeMeshEdgeLength(mesh, length);
 
     return length;
 }
 
-double meshkernel::MeshEdgeLength::ComputeValue(const Mesh& mesh, const UInt edgeId)
+double meshkernel::algo::ComputeEdgeLength(const Mesh& mesh, const UInt edgeId)
 {
     const auto [firstNode, secondNode] = mesh.GetEdge(edgeId);
 
@@ -53,7 +53,7 @@ double meshkernel::MeshEdgeLength::ComputeValue(const Mesh& mesh, const UInt edg
     return val;
 }
 
-void meshkernel::MeshEdgeLength::Compute(const Mesh& mesh, std::span<double> length)
+void meshkernel::algo::ComputeMeshEdgeLength(const Mesh& mesh, std::span<double> length)
 {
     if (length.size() != mesh.GetNumEdges())
     {
@@ -65,11 +65,11 @@ void meshkernel::MeshEdgeLength::Compute(const Mesh& mesh, std::span<double> len
 #pragma omp parallel for
     for (int e = 0; e < numEdges; e++)
     {
-        length[e] = ComputeValue(mesh, static_cast<UInt>(e));
+        length[e] = ComputeEdgeLength(mesh, static_cast<UInt>(e));
     }
 }
 
-double meshkernel::MeshEdgeLength::MinEdgeLength(const Mesh& mesh, const Polygons& polygon, const std::span<const double> edgeLengths)
+double meshkernel::algo::MinEdgeLength(const Mesh& mesh, const Polygons& polygon, const std::span<const double> edgeLengths)
 {
     const int numEdges = static_cast<int>(mesh.GetNumEdges());
 
@@ -89,9 +89,9 @@ double meshkernel::MeshEdgeLength::MinEdgeLength(const Mesh& mesh, const Polygon
     return result;
 }
 
-double meshkernel::MeshEdgeLength::MaxLengthSurroundingEdges(const Mesh& mesh,
-                                                             const UInt nodeId,
-                                                             const std::span<const double> edgeLengths)
+double meshkernel::algo::MaxLengthSurroundingEdges(const Mesh& mesh,
+                                                   const UInt nodeId,
+                                                   const std::span<const double> edgeLengths)
 {
     double maxEdgeLength = std::numeric_limits<double>::lowest();
 

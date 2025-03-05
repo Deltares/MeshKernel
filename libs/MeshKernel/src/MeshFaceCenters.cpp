@@ -30,15 +30,15 @@
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Operations.hpp"
 
-std::vector<meshkernel::Point> meshkernel::MeshFaceCenters::ComputeCircumcenters(const Mesh& mesh)
+std::vector<meshkernel::Point> meshkernel::algo::ComputeFaceCircumcenters(const Mesh& mesh)
 {
     std::vector<Point> faceCenters(mesh.GetNumFaces());
-    ComputeCircumcenters(mesh, faceCenters);
+    ComputeFaceCircumcenters(mesh, faceCenters);
 
     return faceCenters;
 }
 
-void meshkernel::MeshFaceCenters::ComputeCircumcenters(const Mesh& mesh, std::span<Point> faceCenters)
+void meshkernel::algo::ComputeFaceCircumcenters(const Mesh& mesh, std::span<Point> faceCenters)
 {
     if (faceCenters.size() != mesh.GetNumFaces())
     {

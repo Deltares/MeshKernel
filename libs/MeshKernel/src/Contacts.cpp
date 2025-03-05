@@ -48,7 +48,7 @@ Contacts::Contacts(Mesh1D& mesh1d, Mesh2D& mesh2d)
         throw AlgorithmError("meshkernel::Contacts::Contacts: m_mesh1d and m_mesh2d projections are different");
     }
 
-    m_facesCircumcenters = MeshFaceCenters::ComputeCircumcenters(mesh2d);
+    m_facesCircumcenters = algo::ComputeFaceCircumcenters(mesh2d);
 }
 
 void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
@@ -186,7 +186,7 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
 
     // perform mesh1d administration
     m_mesh1d.AdministrateNodesEdges();
-    std::vector<double> mesh1dEdgeLengths = MeshEdgeLength::Compute(m_mesh1d);
+    std::vector<double> mesh1dEdgeLengths = algo::ComputeMeshEdgeLength(m_mesh1d);
 
     Validate();
 
@@ -206,7 +206,7 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
         const auto secondNode1dMeshEdge = m_mesh1d.GetEdge(e).second;
 
         // computes the maximum edge length
-        const auto maxEdgeLength = MeshEdgeLength::MaxLengthSurroundingEdges(m_mesh1d, firstNode1dMeshEdge, mesh1dEdgeLengths);
+        const auto maxEdgeLength = algo::MaxLengthSurroundingEdges(m_mesh1d, firstNode1dMeshEdge, mesh1dEdgeLengths);
 
         // compute the nearest 2d face indices
         rtree.SearchPoints(m_mesh1d.Node(firstNode1dMeshEdge), 1.1 * maxEdgeLength * maxEdgeLength);
@@ -410,7 +410,7 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
     // perform mesh1d administration
     m_mesh1d.AdministrateNodesEdges();
 
-    std::vector<double> mesh1dEdgeLengths = MeshEdgeLength::Compute(m_mesh1d);
+    std::vector<double> mesh1dEdgeLengths = algo::ComputeMeshEdgeLength(m_mesh1d);
 
     Validate();
 
@@ -442,7 +442,7 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
 
         if (computeLocalSearchRadius)
         {
-            localSearchRadius = MeshEdgeLength::MaxLengthSurroundingEdges(m_mesh1d, n, mesh1dEdgeLengths);
+            localSearchRadius = algo::MaxLengthSurroundingEdges(m_mesh1d, n, mesh1dEdgeLengths);
         }
 
         // compute the nearest 2d face indices

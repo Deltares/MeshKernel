@@ -72,7 +72,7 @@ void AveragingInterpolation::Compute()
         m_nodeResults.resize(m_mesh.GetNumNodes(), constants::missing::doubleValue);
         std::ranges::fill(m_nodeResults, constants::missing::doubleValue);
 
-        std::vector<Point> edgeCentres = MeshEdgeCenters::Compute(m_mesh);
+        std::vector<Point> edgeCentres = algo::ComputeEdgeCentres(m_mesh);
 
         std::vector<Point> dualFacePolygon;
         for (UInt n = 0; n < m_mesh.GetNumNodes(); ++n)

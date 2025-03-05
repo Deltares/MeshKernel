@@ -1197,7 +1197,7 @@ TEST(MeshRefinement, RefineCurvilinearGrid)
     MeshRefinement meshRefinement(*mesh, polygon, meshRefinementParameters);
     auto undoAction = meshRefinement.Compute();
 
-    std::vector<double> edgeLengths(meshkernel::MeshEdgeLength::Compute(*mesh));
+    std::vector<double> edgeLengths(meshkernel::algo::ComputeMeshEdgeLength(*mesh));
 
     // if the circumcenters are wrongly computed, some edges will be smaller than half cell size
     for (meshkernel::UInt i = 0; i < mesh->GetNumEdges(); ++i)
@@ -1272,7 +1272,7 @@ TEST(MeshRefinement, RefineElongatedFaces)
     // Assert circumcenters are correctly computed
     constexpr double tolerance = 1e-6;
 
-    std::vector<Point> faceCircumcenters = MeshFaceCenters::ComputeCircumcenters(*mesh);
+    std::vector<Point> faceCircumcenters = algo::ComputeFaceCircumcenters(*mesh);
 
     // Compare the x-location of the circumcentre.
     ASSERT_NEAR(1673.0860169014584, faceCircumcenters[0].x, tolerance);

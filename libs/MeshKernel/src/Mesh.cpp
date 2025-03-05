@@ -1166,7 +1166,7 @@ void Mesh::BuildTree(Location location, const BoundingBox& boundingBox)
         if (m_facesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
         {
             Administrate();
-            std::vector<Point> facesCircumcenters = MeshFaceCenters::ComputeCircumcenters(*this);
+            std::vector<Point> facesCircumcenters = algo::ComputeFaceCircumcenters(*this);
 
             m_RTrees.at(Location::Faces)->BuildTree(facesCircumcenters, boundingBox);
             m_facesRTreeRequiresUpdate = false;
@@ -1184,7 +1184,7 @@ void Mesh::BuildTree(Location location, const BoundingBox& boundingBox)
     case Location::Edges:
         if (m_edgesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
         {
-            std::vector<Point> edgeCentres = MeshEdgeCenters::Compute(*this);
+            std::vector<Point> edgeCentres = algo::ComputeEdgeCentres(*this);
             m_RTrees.at(Location::Edges)->BuildTree(edgeCentres, boundingBox);
             m_edgesRTreeRequiresUpdate = false;
             m_boundingBoxCache = boundingBox;

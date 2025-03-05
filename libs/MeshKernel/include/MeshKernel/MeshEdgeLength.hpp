@@ -28,13 +28,13 @@
 #include "MeshKernel/Mesh.hpp"
 #include "MeshKernel/Polygons.hpp"
 
-namespace meshkernel::MeshEdgeLength
+namespace meshkernel::algo
 {
     /// @brief Compute the length values returning values in a vector
-    std::vector<double> Compute(const Mesh& mesh);
+    std::vector<double> ComputeMeshEdgeLength(const Mesh& mesh);
 
     /// @brief Compute the length values overwriting the values in an array
-    void Compute(const Mesh& mesh, std::span<double> length);
+    void ComputeMeshEdgeLength(const Mesh& mesh, std::span<double> length);
 
     /// @brief Compute the length values overwriting the values in an array
     double MinEdgeLength(const Mesh& mesh, const Polygons& polygon,
@@ -46,6 +46,6 @@ namespace meshkernel::MeshEdgeLength
                                      const std::span<const double> edgeLengths);
 
     /// @brief Compute the length value for the edge
-    static double ComputeValue(const Mesh& mesh, const UInt edgeId);
+    static double ComputeEdgeLength(const Mesh& mesh, const UInt edgeId);
 
-} // namespace meshkernel::MeshEdgeLength
+} // namespace meshkernel::algo

@@ -84,7 +84,7 @@ void meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh, std::span<double
         throw ConstraintError("array for orthogonality values is not the correct size");
     }
 
-    std::vector<Point> faceCircumcentres = MeshFaceCenters::ComputeCircumcenters(mesh);
+    std::vector<Point> faceCircumcentres = algo::ComputeFaceCircumcenters(mesh);
 
     const auto numEdges = mesh.GetNumEdges();
 

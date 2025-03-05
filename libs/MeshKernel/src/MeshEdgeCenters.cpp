@@ -30,15 +30,15 @@
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Operations.hpp"
 
-std::vector<meshkernel::Point> meshkernel::MeshEdgeCenters::Compute(const Mesh& mesh)
+std::vector<meshkernel::Point> meshkernel::algo::ComputeEdgeCentres(const Mesh& mesh)
 {
     std::vector<Point> edgeCentres(mesh.GetNumEdges());
-    Compute(mesh, edgeCentres);
+    ComputeEdgeCentres(mesh, edgeCentres);
 
     return edgeCentres;
 }
 
-void meshkernel::MeshEdgeCenters::Compute(const Mesh& mesh, std::span<Point> edgeCentres)
+void meshkernel::algo::ComputeEdgeCentres(const Mesh& mesh, std::span<Point> edgeCentres)
 {
     if (edgeCentres.size() != mesh.GetNumEdges())
     {
@@ -50,11 +50,11 @@ void meshkernel::MeshEdgeCenters::Compute(const Mesh& mesh, std::span<Point> edg
 #pragma omp parallel for
     for (int e = 0; e < numEdges; e++)
     {
-        edgeCentres[e] = ComputeValue(mesh, static_cast<UInt>(e));
+        edgeCentres[e] = ComputeEdgeCentre(mesh, static_cast<UInt>(e));
     }
 }
 
-meshkernel::Point meshkernel::MeshEdgeCenters::ComputeValue(const Mesh& mesh, const UInt edgeId)
+meshkernel::Point meshkernel::algo::ComputeEdgeCentre(const Mesh& mesh, const UInt edgeId)
 {
     if (edgeId == constants::missing::uintValue)
     {

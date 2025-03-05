@@ -29,12 +29,12 @@
 #include "MeshKernel/Mesh.hpp"
 #include "MeshKernel/Point.hpp"
 
-namespace meshkernel::MeshFaceCenters
+namespace meshkernel::algo
 {
     /// @brief Compute the circum-center point of each of the faces
-    std::vector<Point> ComputeCircumcenters(const Mesh& mesh);
+    std::vector<Point> ComputeFaceCircumcenters(const Mesh& mesh);
 
     /// @brief Compute the circum-center point of each of the faces overwriting the values in an array
-    void ComputeCircumcenters(const Mesh& mesh, std::span<Point> edgeCenters);
+    void ComputeFaceCircumcenters(const Mesh& mesh, std::span<Point> edgeCenters);
 
-} // namespace meshkernel::MeshFaceCenters
+} // namespace meshkernel::algo
