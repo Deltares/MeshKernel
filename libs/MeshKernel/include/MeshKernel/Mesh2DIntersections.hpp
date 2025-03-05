@@ -122,7 +122,6 @@ namespace meshkernel
                                                                                      Direction direction) const;
 
         /// @brief Gets the next edge intersection
-        /// @returns The intersection seed
         void IntersectFaceEdges(const std::vector<Point>& polyLine,
                                 const std::vector<BoundingBox>& polyLineBoundingBoxes,
                                 const std::vector<double>& cumulativeLength,
