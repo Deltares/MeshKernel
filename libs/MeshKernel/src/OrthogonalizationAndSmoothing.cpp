@@ -65,7 +65,7 @@ std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initializ
     const auto nodeMask = m_mesh.NodeMaskFromPolygon(*m_polygons, true);
     m_mesh.GetNodeTypes(m_nodesTypes);
 
-    std::vector<UInt> nodeIndices(m_mesh.GetNumNodes(), constants::missing::uintValue);
+    std::vector nodeIndices(m_mesh.GetNumNodes(), constants::missing::uintValue);
     UInt nodesMovedCount = 0;
 
     // Flag nodes outside the polygon as corner points

@@ -42,6 +42,7 @@
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/RemoveDisconnectedRegions.hpp"
+#include "MeshKernel/Utilities/Utilities.hpp"
 
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
@@ -317,12 +318,6 @@ TEST(Mesh2D, NodeMerging)
         {
             nodes[nodeIndex] = {i + x_distribution(generator), j + y_distribution(generator)};
 
-            // add artificial edges
-            const auto& [firstNode, secondNode] = mesh->GetEdge(mesh->m_nodesEdges[originalNodeIndex][0]);
-            auto otherNode = firstNode + secondNode - originalNodeIndex;
-
-            edges[edgeIndex] = {nodeIndex, otherNode};
-            edgeIndex++;
             edges[edgeIndex] = {nodeIndex, originalNodeIndex};
             edgeIndex++;
 
@@ -510,17 +505,22 @@ TEST(Mesh2D, DeleteHangingEdge)
     std::vector<meshkernel::Point> nodes;
     nodes.push_back({0.0, 0.0});
     nodes.push_back({5.0, 0.0});
-    nodes.push_back({3.0, 2.0});
     nodes.push_back({3.0, 4.0});
 
     std::vector<meshkernel::Edge> edges;
     edges.push_back({0, 1});
-    edges.push_back({1, 3});
-    edges.push_back({3, 0});
-    edges.push_back({2, 1});
+    edges.push_back({1, 2});
+    edges.push_back({2, 0});
 
     // Execute
     const auto mesh = std::make_unique<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
+
+    // Add new node and connect with existing node, creating hanging edge
+    nodes.push_back({3.0, 2.0});
+    edges.push_back({3, 1});
+
+    [[maybe_unused]] auto undoInsertNode = mesh->InsertNode(nodes[3]);
+    [[maybe_unused]] auto undoConnectNodes = mesh->ConnectNodes(3, 1);
 
     // Assert
     ASSERT_EQ(1, mesh->GetNumFaces());
@@ -1534,16 +1534,3 @@ TEST(Mesh2D, Mesh2DComputeAspectRatio)
         EXPECT_NEAR(aspectRatios[i], expectedAspectRatios[i], tolerance);
     }
 }
-
-// TEST(Mesh2D, WTF)
-// {
-//     // Prepare
-//     [[maybe_unused]] auto mesh = MakeRectangularMeshForTesting(4000,
-//                                                               4000,
-//                                                               10.0,
-//                                                               10.0,
-//                                                               meshkernel::Projection::cartesian);
-
-//     [[maybe_unused]] int dummy;
-//     std::cin >> dummy;
-// }
