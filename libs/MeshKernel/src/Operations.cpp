@@ -1239,7 +1239,7 @@ namespace meshkernel
             throw ConstraintError("Invalid range for array: {} > {}", numEdges, edgesNumFaces.size());
         }
 
-        return static_cast<UInt>(std::count (edgesNumFaces.begin (), edgesNumFaces.begin () + numEdges, 2));
+        return static_cast<UInt>(std::count(edgesNumFaces.begin(), edgesNumFaces.begin() + numEdges, 2));
     }
 
     void ComputeMidPointsAndNormals(const std::vector<Point>& polygon,
