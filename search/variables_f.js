@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['transformationfunction_1687',['TransformationFunction',['../namespacemeshkernel.html#ad0be00d62721b0a8362e658f1c5b0d10',1,'meshkernel']]]
+  ['value_0',['value',['../classmeshkernel_1_1_sample.html#a68c093200ea0afa801ce6d73d483011b',1,'meshkernel::Sample']]],
+  ['value_5ftype_1',['value_type',['../structmeshkernelapi_1_1_gridded_samples.html#a2cdcb6e293c9c3608c193663025a7c45',1,'meshkernelapi::GriddedSamples']]],
+  ['values_2',['values',['../structmeshkernelapi_1_1_geometry_list.html#aeaf8a08698e61659636e6d6e5455f9b7',1,'meshkernelapi::GeometryList::values'],['../structmeshkernelapi_1_1_gridded_samples.html#a6b5b9d2ab246a0596396f769bf1dd58a',1,'meshkernelapi::GriddedSamples::values']]]
 ];
