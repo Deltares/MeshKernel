@@ -450,7 +450,7 @@ namespace meshkernel
     [[nodiscard]] Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection& projection);
 
     /// @brief Count the number of valid edges in list
-    UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, const UInt numNodes);
+    UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, UInt numNodes);
 
     /// @brief Compute mid point and normal of polygon segment
     void ComputeMidPointsAndNormals(const std::vector<Point>& polygon,
@@ -461,12 +461,17 @@ namespace meshkernel
                                     UInt& pointCount,
                                     const Projection& projection);
 
-    /// @brief Compute circumcentre of face
-    Point ComputeCircumCentre(const Point& centerOfMass,
+    /// @brief Compute circumcenter of face
+    Point ComputeCircumCenter(const Point& centerOfMass,
                               const UInt pointCount,
                               const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
                               const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
                               const Projection& projection);
+
+    /// @brief Compute the circumcenter for the face described by the polygon
+    Point ComputeFaceCircumenter(std::vector<Point>& polygon,
+                                 const std::vector<UInt>& edgesNumFaces,
+                                 const Projection& projection);
 
     /// @brief Determines if two segments are crossing (cross, cross3D)
     /// @param[in]  firstSegmentFirstPoint   The first point of the first segment

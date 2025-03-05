@@ -690,9 +690,9 @@ void MeshRefinement::ComputeSplittingNode(const UInt faceId,
         facePolygonWithoutHangingNodes.emplace_back(facePolygonWithoutHangingNodes.front());
         localEdgesNumFaces.emplace_back(localEdgesNumFaces.front());
 
-        splittingNode = MeshFaceCenters::ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
-                                                                localEdgesNumFaces,
-                                                                m_mesh.m_projection);
+        splittingNode = ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
+                                               localEdgesNumFaces,
+                                               m_mesh.m_projection);
 
         if (m_mesh.m_projection == Projection::spherical)
         {

@@ -1232,24 +1232,14 @@ namespace meshkernel
         return circumcenter;
     }
 
-    UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, const UInt numNodes)
+    UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, UInt numEdges)
     {
-        if (numNodes > edgesNumFaces.size())
+        if (numEdges > edgesNumFaces.size())
         {
-            throw ConstraintError("Invalid range for array: {} > {}", numNodes, edgesNumFaces.size());
+            throw ConstraintError("Invalid range for array: {} > {}", numEdges, edgesNumFaces.size());
         }
 
-        UInt numValidEdges = 0;
-
-        for (UInt n = 0; n < numNodes; ++n)
-        {
-            if (edgesNumFaces[n] == 2)
-            {
-                numValidEdges++;
-            }
-        }
-
-        return numValidEdges;
+        return static_cast<UInt>(std::count (edgesNumFaces.begin (), edgesNumFaces.begin () + numEdges, 2));
     }
 
     void ComputeMidPointsAndNormals(const std::vector<Point>& polygon,
@@ -1275,7 +1265,7 @@ namespace meshkernel
         }
     }
 
-    Point ComputeCircumCentre(const Point& centerOfMass,
+    Point ComputeCircumCenter(const Point& centerOfMass,
                               const UInt pointCount,
                               const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
                               const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
@@ -1304,6 +1294,76 @@ namespace meshkernel
         }
 
         return estimatedCircumCenter;
+    }
+
+    Point ComputeFaceCircumenter(std::vector<Point>& polygon,
+                                 const std::vector<UInt>& edgesNumFaces,
+                                 const Projection& projection)
+    {
+        static constexpr double weightCircumCenter = 1.0; ///< Weight circum center
+
+        std::array<Point, constants::geometric::maximumNumberOfNodesPerFace> middlePoints;
+        std::array<Point, constants::geometric::maximumNumberOfNodesPerFace> normals;
+        UInt pointCount = 0;
+
+        const auto numNodes = static_cast<UInt>(polygon.size()) - 1;
+
+        Point centerOfMass{0.0, 0.0};
+        for (UInt n = 0; n < numNodes; ++n)
+        {
+            centerOfMass.x += polygon[n].x;
+            centerOfMass.y += polygon[n].y;
+        }
+
+        centerOfMass /= static_cast<double>(numNodes);
+
+        auto result = centerOfMass;
+        if (numNodes == constants::geometric::numNodesInTriangle)
+        {
+            result = CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], projection);
+        }
+        else if (!edgesNumFaces.empty())
+        {
+            UInt numValidEdges = CountNumberOfValidEdges(edgesNumFaces, numNodes);
+
+            if (numValidEdges > 1)
+            {
+                ComputeMidPointsAndNormals(polygon, edgesNumFaces, numNodes, middlePoints, normals, pointCount, projection);
+                result = ComputeCircumCenter(centerOfMass, pointCount, middlePoints, normals, projection);
+            }
+        }
+
+        for (UInt n = 0; n < numNodes; ++n)
+        {
+            polygon[n] = weightCircumCenter * polygon[n] + (1.0 - weightCircumCenter) * centerOfMass;
+        }
+
+        // The circumcenter is included in the face, then return the calculated circumcenter
+        if (IsPointInPolygonNodes(result, polygon, projection))
+        {
+            return result;
+        }
+
+        // If the circumcenter is not included in the face,
+        // the circumcenter will be placed at the intersection between an edge and the segment connecting the mass center with the circumcenter.
+        for (UInt n = 0; n < numNodes; ++n)
+        {
+            const auto nextNode = NextCircularForwardIndex(n, numNodes);
+
+            const auto [areLineCrossing,
+                        intersection,
+                        crossProduct,
+                        firstRatio,
+                        secondRatio] = AreSegmentsCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, projection);
+
+            if (areLineCrossing)
+            {
+                result = intersection;
+                break;
+            }
+        }
+
+        return result;
     }
 
     std::tuple<bool, Point, double, double, double> AreSegmentsCrossing(const Point& firstSegmentFirstPoint,

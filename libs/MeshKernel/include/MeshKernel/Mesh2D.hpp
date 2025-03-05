@@ -149,11 +149,6 @@ namespace meshkernel
                                                        std::vector<UInt>& localNodeIndicesCache,
                                                        std::vector<UInt>& globalEdgeIndicesCache) const;
 
-        // /// @brief For a face create a closed polygon
-        // /// @param[in]     faceIndex         The face index
-        // /// @param[in,out] polygonNodesCache The cache array to be filled with the nodes values
-        // void ComputeFaceClosedPolygon(UInt faceIndex, std::vector<Point>& polygonNodesCache) const;
-
         /// @brief For a closed polygon, compute the circumcenter of a face (getcircumcenter)
         /// @param[in,out] polygon       Cache storing the face nodes
         /// @param[in]     edgesNumFaces For meshes, the number of faces sharing the edges

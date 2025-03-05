@@ -32,17 +32,17 @@
 
 std::vector<meshkernel::Point> meshkernel::MeshFaceCenters::ComputeCircumcenters(const Mesh& mesh)
 {
-    std::vector<Point> faceCentres(mesh.GetNumFaces());
-    ComputeCircumcenters(mesh, faceCentres);
+    std::vector<Point> faceCenters(mesh.GetNumFaces());
+    ComputeCircumcenters(mesh, faceCenters);
 
-    return faceCentres;
+    return faceCenters;
 }
 
-void meshkernel::MeshFaceCenters::ComputeCircumcenters(const Mesh& mesh, std::span<Point> faceCentres)
+void meshkernel::MeshFaceCenters::ComputeCircumcenters(const Mesh& mesh, std::span<Point> faceCenters)
 {
-    if (faceCentres.size() != mesh.GetNumFaces())
+    if (faceCenters.size() != mesh.GetNumFaces())
     {
-        throw ConstraintError("array for faceCentres values is not the correct size");
+        throw ConstraintError("array for faceCenters values is not the correct size");
     }
 
     const auto numFaces = static_cast<int>(mesh.GetNumFaces());
@@ -69,7 +69,7 @@ void meshkernel::MeshFaceCenters::ComputeCircumcenters(const Mesh& mesh, std::sp
 
         if (numberOfInteriorEdges == 0)
         {
-            faceCentres[f] = mesh.m_facesMassCenters[f];
+            faceCenters[f] = mesh.m_facesMassCenters[f];
         }
         else
         {
@@ -82,77 +82,7 @@ void meshkernel::MeshFaceCenters::ComputeCircumcenters(const Mesh& mesh, std::sp
                 numEdgeFacesCache.emplace_back(mesh.m_edgesNumFaces[mesh.m_facesEdges[f][n]]);
             }
 
-            faceCentres[f] = ComputeFaceCircumenter(polygonNodesCache, numEdgeFacesCache, mesh.m_projection);
+            faceCenters[f] = ComputeFaceCircumenter(polygonNodesCache, numEdgeFacesCache, mesh.m_projection);
         }
     }
-}
-
-meshkernel::Point meshkernel::MeshFaceCenters::ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                                                      const std::vector<UInt>& edgesNumFaces,
-                                                                      const Projection& projection)
-{
-    static constexpr double weightCircumCenter = 1.0; ///< Weight circum center
-
-    std::array<Point, constants::geometric::maximumNumberOfNodesPerFace> middlePoints;
-    std::array<Point, constants::geometric::maximumNumberOfNodesPerFace> normals;
-    UInt pointCount = 0;
-
-    const auto numNodes = static_cast<UInt>(polygon.size()) - 1;
-
-    Point centerOfMass{0.0, 0.0};
-    for (UInt n = 0; n < numNodes; ++n)
-    {
-        centerOfMass.x += polygon[n].x;
-        centerOfMass.y += polygon[n].y;
-    }
-
-    centerOfMass /= static_cast<double>(numNodes);
-
-    auto result = centerOfMass;
-    if (numNodes == constants::geometric::numNodesInTriangle)
-    {
-        result = CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], projection);
-    }
-    else if (!edgesNumFaces.empty())
-    {
-        UInt numValidEdges = CountNumberOfValidEdges(edgesNumFaces, numNodes);
-
-        if (numValidEdges > 1)
-        {
-            ComputeMidPointsAndNormals(polygon, edgesNumFaces, numNodes, middlePoints, normals, pointCount, projection);
-            result = ComputeCircumCentre(centerOfMass, pointCount, middlePoints, normals, projection);
-        }
-    }
-
-    for (UInt n = 0; n < numNodes; ++n)
-    {
-        polygon[n] = weightCircumCenter * polygon[n] + (1.0 - weightCircumCenter) * centerOfMass;
-    }
-
-    // The circumcenter is included in the face, then return the calculated circumcentre
-    if (IsPointInPolygonNodes(result, polygon, projection))
-    {
-        return result;
-    }
-
-    // If the circumcenter is not included in the face,
-    // the circumcenter will be placed at the intersection between an edge and the segment connecting the mass center with the circumcentre.
-    for (UInt n = 0; n < numNodes; ++n)
-    {
-        const auto nextNode = NextCircularForwardIndex(n, numNodes);
-
-        const auto [areLineCrossing,
-                    intersection,
-                    crossProduct,
-                    firstRatio,
-                    secondRatio] = AreSegmentsCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, projection);
-
-        if (areLineCrossing)
-        {
-            result = intersection;
-            break;
-        }
-    }
-
-    return result;
 }

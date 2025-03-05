@@ -31,15 +31,10 @@
 
 namespace meshkernel::MeshFaceCenters
 {
-    /// @brief Compute the circum-centre point of each of the faces
+    /// @brief Compute the circum-center point of each of the faces
     std::vector<Point> ComputeCircumcenters(const Mesh& mesh);
 
-    /// @brief Compute the circum-centre point of each of the faces overwriting the values in an array
-    void ComputeCircumcenters(const Mesh& mesh, std::span<Point> edgeCentres);
-
-    /// @brief Compute the circumcentre for the face described by the polygon
-    Point ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                 const std::vector<UInt>& edgesNumFaces,
-                                 const Projection& projection);
+    /// @brief Compute the circum-center point of each of the faces overwriting the values in an array
+    void ComputeCircumcenters(const Mesh& mesh, std::span<Point> edgeCenters);
 
 } // namespace meshkernel::MeshFaceCenters
