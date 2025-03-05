@@ -85,7 +85,6 @@ $(function() {
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
-<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classmeshkernel_1_1_mesh-members.html">List of all members</a>  </div>
@@ -387,6 +386,9 @@ RTreeBase &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>GetRTree</
 <tr class="memitem:a127847d3b8a1e6c1f3217eeeb3a1fab5" id="r_a127847d3b8a1e6c1f3217eeeb3a1fab5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a127847d3b8a1e6c1f3217eeeb3a1fab5">SetFacesRTreeRequiresUpdate</a> (bool value)</td></tr>
 <tr class="memdesc:a127847d3b8a1e6c1f3217eeeb3a1fab5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the m_facesRTreeRequiresUpdate flag.  <br /></td></tr>
 <tr class="separator:a127847d3b8a1e6c1f3217eeeb3a1fab5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e26b86c6e8ab77c1dc9d4c56cf4cca3" id="r_a2e26b86c6e8ab77c1dc9d4c56cf4cca3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a2e26b86c6e8ab77c1dc9d4c56cf4cca3">ComputeFaceClosedPolygon</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> faceIndex, std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygonNodesCache) const</td></tr>
+<tr class="memdesc:a2e26b86c6e8ab77c1dc9d4c56cf4cca3"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a face create a closed polygon.  <br /></td></tr>
+<tr class="separator:a2e26b86c6e8ab77c1dc9d4c56cf4cca3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -418,10 +420,6 @@ std::vector&lt; std::uint8_t &gt;&#160;</td><td class="memItemRight" valign="bot
 std::vector&lt; std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_facesEdges</b></td></tr>
 <tr class="memdesc:a1f33714b34fd0bcd708efc4b44f30b34"><td class="mdescLeft">&#160;</td><td class="mdescRight">The edge indices composing the face (netcelllin) <br /></td></tr>
 <tr class="separator:a1f33714b34fd0bcd708efc4b44f30b34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3342f40eb06afd71cc336010e641a227" id="r_a3342f40eb06afd71cc336010e641a227"><td class="memItemLeft" align="right" valign="top"><a id="a3342f40eb06afd71cc336010e641a227" name="a3342f40eb06afd71cc336010e641a227"></a>
-std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_facesCircumcenters</b></td></tr>
-<tr class="memdesc:a3342f40eb06afd71cc336010e641a227"><td class="mdescLeft">&#160;</td><td class="mdescRight">The face circumcenters the face circumcenter (xz, yz) <br /></td></tr>
-<tr class="separator:a3342f40eb06afd71cc336010e641a227"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79821f2e74e22834dcfce0ce0a326e2e" id="r_a79821f2e74e22834dcfce0ce0a326e2e"><td class="memItemLeft" align="right" valign="top"><a id="a79821f2e74e22834dcfce0ce0a326e2e" name="a79821f2e74e22834dcfce0ce0a326e2e"></a>
 std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_facesMassCenters</b></td></tr>
 <tr class="memdesc:a79821f2e74e22834dcfce0ce0a326e2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The faces centers of mass (xzw, yzw) <br /></td></tr>
@@ -434,25 +432,6 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td><td class="memItemRight" valign="bottom"><b>m_projection</b></td></tr>
 <tr class="memdesc:a01c05988ff2a54a0ddf3082c7e4aeeb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">The projection used. <br /></td></tr>
 <tr class="separator:a01c05988ff2a54a0ddf3082c7e4aeeb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
-Static Public Attributes</h2></td></tr>
-<tr class="memitem:a40fbec78aa3205dd3aa45393869672c5" id="r_a40fbec78aa3205dd3aa45393869672c5"><td class="memItemLeft" align="right" valign="top"><a id="a40fbec78aa3205dd3aa45393869672c5" name="a40fbec78aa3205dd3aa45393869672c5"></a>
-static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><b>m_maximumNumberOfEdgesPerNode</b> = 16</td></tr>
-<tr class="memdesc:a40fbec78aa3205dd3aa45393869672c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of edges per node. <br /></td></tr>
-<tr class="separator:a40fbec78aa3205dd3aa45393869672c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7fd1f56e9f2ca719b52e92c5e59aa6e4" id="r_a7fd1f56e9f2ca719b52e92c5e59aa6e4"><td class="memItemLeft" align="right" valign="top"><a id="a7fd1f56e9f2ca719b52e92c5e59aa6e4" name="a7fd1f56e9f2ca719b52e92c5e59aa6e4"></a>
-static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><b>m_maximumNumberOfEdgesPerFace</b> = 6</td></tr>
-<tr class="memdesc:a7fd1f56e9f2ca719b52e92c5e59aa6e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of edges per face. <br /></td></tr>
-<tr class="separator:a7fd1f56e9f2ca719b52e92c5e59aa6e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0ba1181dd7432ce3e1cd77169c4b6a0" id="r_aa0ba1181dd7432ce3e1cd77169c4b6a0"><td class="memItemLeft" align="right" valign="top"><a id="aa0ba1181dd7432ce3e1cd77169c4b6a0" name="aa0ba1181dd7432ce3e1cd77169c4b6a0"></a>
-static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><b>m_maximumNumberOfNodesPerFace</b> = 6</td></tr>
-<tr class="memdesc:aa0ba1181dd7432ce3e1cd77169c4b6a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of nodes per face. <br /></td></tr>
-<tr class="separator:aa0ba1181dd7432ce3e1cd77169c4b6a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7951192d95f5fd0a5c13b26084f69df7" id="r_a7951192d95f5fd0a5c13b26084f69df7"><td class="memItemLeft" align="right" valign="top"><a id="a7951192d95f5fd0a5c13b26084f69df7" name="a7951192d95f5fd0a5c13b26084f69df7"></a>
-static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><b>m_maximumNumberOfConnectedNodes</b> = <a class="el" href="classmeshkernel_1_1_mesh.html#a40fbec78aa3205dd3aa45393869672c5">m_maximumNumberOfEdgesPerNode</a> * 4</td></tr>
-<tr class="memdesc:a7951192d95f5fd0a5c13b26084f69df7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of connected nodes. <br /></td></tr>
-<tr class="separator:a7951192d95f5fd0a5c13b26084f69df7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -480,7 +459,7 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
 <div class="textblock"><p>A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2d meshes. </p>
 <p>MeshKernel can handle 2d meshes and 1d meshes. Algorithms require certain mappings to be available for both <a class="el" href="classmeshkernel_1_1_mesh1_d.html" title="A class derived from Mesh, which describes 1d meshes.">Mesh1D</a> and <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">Mesh2D</a>, such as a mapping listing all edge indices connected to a particular node. The methods computing these mappings are shared between <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">Mesh2D</a> and <a class="el" href="classmeshkernel_1_1_mesh1_d.html" title="A class derived from Mesh, which describes 1d meshes.">Mesh1D</a>, and implemented in the <a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> base class. The <a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> base class also contains other common data members, such as the node coordinate, the edges definitions, the face definitions and the mesh projection. The <a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> base class has the following responsibilities:</p>
 <ul>
-<li>Construct the mesh faces from the nodes and edges and other mesh mappings required by all algorithms (Mesh::FindFaces). Mesh::FindFaces is using recursion to find faces with up to 6 edges (<a class="el" href="classmeshkernel_1_1_mesh.html#a7fd1f56e9f2ca719b52e92c5e59aa6e4" title="Maximum number of edges per face.">meshkernel::Mesh::m_maximumNumberOfEdgesPerFace</a>).</li>
+<li>Construct the mesh faces from the nodes and edges and other mesh mappings required by all algorithms (Mesh::FindFaces). Mesh::FindFaces is using recursion to find faces with up to 6 edges (meshkernel::Mesh::m_maximumNumberOfEdgesPerFace).</li>
 <li>Supporting mesh editing, namely:<ul>
 <li>Node merging</li>
 <li>Node insertion</li>
@@ -668,6 +647,43 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">location</td><td>The mesh location for which the RTree is build </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">boundingBox</td><td>The bounding box </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a2e26b86c6e8ab77c1dc9d4c56cf4cca3" name="a2e26b86c6e8ab77c1dc9d4c56cf4cca3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2e26b86c6e8ab77c1dc9d4c56cf4cca3">&#9670;&#160;</a></span>ComputeFaceClosedPolygon()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void meshkernel::Mesh::ComputeFaceClosedPolygon </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
+          <td class="paramname"><em>faceIndex</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>polygonNodesCache</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>For a face create a closed polygon. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">faceIndex</td><td>The face index </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">polygonNodesCache</td><td>The cache array to be filled with the nodes values </td></tr>
   </table>
   </dd>
 </dl>

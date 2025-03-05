@@ -173,9 +173,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>CommitAction</b> (con
 <tr class="memitem:a35186078240ebfeac3c6bf9db8160cd2" id="r_a35186078240ebfeac3c6bf9db8160cd2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a35186078240ebfeac3c6bf9db8160cd2">ComputeFaceClosedPolygonWithLocalMappings</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> faceIndex, std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygonNodesCache, std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;localNodeIndicesCache, std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;globalEdgeIndicesCache) const</td></tr>
 <tr class="memdesc:a35186078240ebfeac3c6bf9db8160cd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a face create a closed polygon and fill local mapping caches (get_cellpolygon)  <br /></td></tr>
 <tr class="separator:a35186078240ebfeac3c6bf9db8160cd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abdbc0d31cca18d130630e3ed8fa653ff" id="r_abdbc0d31cca18d130630e3ed8fa653ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#abdbc0d31cca18d130630e3ed8fa653ff">ComputeFaceClosedPolygon</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> faceIndex, std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygonNodesCache) const</td></tr>
-<tr class="memdesc:abdbc0d31cca18d130630e3ed8fa653ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a face create a closed polygon.  <br /></td></tr>
-<tr class="separator:abdbc0d31cca18d130630e3ed8fa653ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4383fa3d1ca1d1aed4405a629330f4a1" id="r_a4383fa3d1ca1d1aed4405a629330f4a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a4383fa3d1ca1d1aed4405a629330f4a1">ComputeFaceCircumenter</a> (std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon, const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;edgesNumFaces) const</td></tr>
 <tr class="memdesc:a4383fa3d1ca1d1aed4405a629330f4a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a closed polygon, compute the circumcenter of a face (getcircumcenter)  <br /></td></tr>
 <tr class="separator:a4383fa3d1ca1d1aed4405a629330f4a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -621,6 +618,9 @@ RTreeBase &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>GetRTree</
 <tr class="memitem:a127847d3b8a1e6c1f3217eeeb3a1fab5 inherit pub_methods_classmeshkernel_1_1_mesh" id="r_a127847d3b8a1e6c1f3217eeeb3a1fab5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a127847d3b8a1e6c1f3217eeeb3a1fab5">SetFacesRTreeRequiresUpdate</a> (bool value)</td></tr>
 <tr class="memdesc:a127847d3b8a1e6c1f3217eeeb3a1fab5 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the m_facesRTreeRequiresUpdate flag.  <br /></td></tr>
 <tr class="separator:a127847d3b8a1e6c1f3217eeeb3a1fab5 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2e26b86c6e8ab77c1dc9d4c56cf4cca3 inherit pub_methods_classmeshkernel_1_1_mesh" id="r_a2e26b86c6e8ab77c1dc9d4c56cf4cca3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a2e26b86c6e8ab77c1dc9d4c56cf4cca3">ComputeFaceClosedPolygon</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> faceIndex, std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygonNodesCache) const</td></tr>
+<tr class="memdesc:a2e26b86c6e8ab77c1dc9d4c56cf4cca3 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a face create a closed polygon.  <br /></td></tr>
+<tr class="separator:a2e26b86c6e8ab77c1dc9d4c56cf4cca3 inherit pub_methods_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -663,10 +663,6 @@ std::vector&lt; std::uint8_t &gt;&#160;</td><td class="memItemRight" valign="bot
 std::vector&lt; std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_facesEdges</b></td></tr>
 <tr class="memdesc:a1f33714b34fd0bcd708efc4b44f30b34 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">The edge indices composing the face (netcelllin) <br /></td></tr>
 <tr class="separator:a1f33714b34fd0bcd708efc4b44f30b34 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3342f40eb06afd71cc336010e641a227 inherit pub_attribs_classmeshkernel_1_1_mesh" id="r_a3342f40eb06afd71cc336010e641a227"><td class="memItemLeft" align="right" valign="top">
-std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_facesCircumcenters</b></td></tr>
-<tr class="memdesc:a3342f40eb06afd71cc336010e641a227 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">The face circumcenters the face circumcenter (xz, yz) <br /></td></tr>
-<tr class="separator:a3342f40eb06afd71cc336010e641a227 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79821f2e74e22834dcfce0ce0a326e2e inherit pub_attribs_classmeshkernel_1_1_mesh" id="r_a79821f2e74e22834dcfce0ce0a326e2e"><td class="memItemLeft" align="right" valign="top">
 std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>m_facesMassCenters</b></td></tr>
 <tr class="memdesc:a79821f2e74e22834dcfce0ce0a326e2e inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">The faces centers of mass (xzw, yzw) <br /></td></tr>
@@ -679,23 +675,6 @@ std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td><td class="memItemRight" valign="bottom"><b>m_projection</b></td></tr>
 <tr class="memdesc:a01c05988ff2a54a0ddf3082c7e4aeeb6 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">The projection used. <br /></td></tr>
 <tr class="separator:a01c05988ff2a54a0ddf3082c7e4aeeb6 inherit pub_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_static_attribs_classmeshkernel_1_1_mesh"><td colspan="2" onclick="javascript:toggleInherit('pub_static_attribs_classmeshkernel_1_1_mesh')"><img src="closed.png" alt="-"/>&#160;Static Public Attributes inherited from <a class="el" href="classmeshkernel_1_1_mesh.html">meshkernel::Mesh</a></td></tr>
-<tr class="memitem:a40fbec78aa3205dd3aa45393869672c5 inherit pub_static_attribs_classmeshkernel_1_1_mesh" id="r_a40fbec78aa3205dd3aa45393869672c5"><td class="memItemLeft" align="right" valign="top">
-static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><b>m_maximumNumberOfEdgesPerNode</b> = 16</td></tr>
-<tr class="memdesc:a40fbec78aa3205dd3aa45393869672c5 inherit pub_static_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of edges per node. <br /></td></tr>
-<tr class="separator:a40fbec78aa3205dd3aa45393869672c5 inherit pub_static_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7fd1f56e9f2ca719b52e92c5e59aa6e4 inherit pub_static_attribs_classmeshkernel_1_1_mesh" id="r_a7fd1f56e9f2ca719b52e92c5e59aa6e4"><td class="memItemLeft" align="right" valign="top">
-static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><b>m_maximumNumberOfEdgesPerFace</b> = 6</td></tr>
-<tr class="memdesc:a7fd1f56e9f2ca719b52e92c5e59aa6e4 inherit pub_static_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of edges per face. <br /></td></tr>
-<tr class="separator:a7fd1f56e9f2ca719b52e92c5e59aa6e4 inherit pub_static_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0ba1181dd7432ce3e1cd77169c4b6a0 inherit pub_static_attribs_classmeshkernel_1_1_mesh" id="r_aa0ba1181dd7432ce3e1cd77169c4b6a0"><td class="memItemLeft" align="right" valign="top">
-static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><b>m_maximumNumberOfNodesPerFace</b> = 6</td></tr>
-<tr class="memdesc:aa0ba1181dd7432ce3e1cd77169c4b6a0 inherit pub_static_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of nodes per face. <br /></td></tr>
-<tr class="separator:aa0ba1181dd7432ce3e1cd77169c4b6a0 inherit pub_static_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7951192d95f5fd0a5c13b26084f69df7 inherit pub_static_attribs_classmeshkernel_1_1_mesh" id="r_a7951192d95f5fd0a5c13b26084f69df7"><td class="memItemLeft" align="right" valign="top">
-static constexpr <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><b>m_maximumNumberOfConnectedNodes</b> = <a class="el" href="classmeshkernel_1_1_mesh.html#a40fbec78aa3205dd3aa45393869672c5">m_maximumNumberOfEdgesPerNode</a> * 4</td></tr>
-<tr class="memdesc:a7951192d95f5fd0a5c13b26084f69df7 inherit pub_static_attribs_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maximum number of connected nodes. <br /></td></tr>
-<tr class="separator:a7951192d95f5fd0a5c13b26084f69df7 inherit pub_static_attribs_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classmeshkernel_1_1_mesh"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classmeshkernel_1_1_mesh')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classmeshkernel_1_1_mesh.html">meshkernel::Mesh</a></td></tr>
 <tr class="memitem:a6cefdee88e13794b67efd4fb46da9d83 inherit pro_methods_classmeshkernel_1_1_mesh" id="r_a6cefdee88e13794b67efd4fb46da9d83"><td class="memItemLeft" align="right" valign="top">
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>AdministrationRequired</b> () const</td></tr>
@@ -1018,43 +997,6 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The computed circumcenter </dd></dl>
-
-</div>
-</div>
-<a id="abdbc0d31cca18d130630e3ed8fa653ff" name="abdbc0d31cca18d130630e3ed8fa653ff"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abdbc0d31cca18d130630e3ed8fa653ff">&#9670;&#160;</a></span>ComputeFaceClosedPolygon()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void meshkernel::Mesh2D::ComputeFaceClosedPolygon </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td>
-          <td class="paramname"><em>faceIndex</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>polygonNodesCache</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>For a face create a closed polygon. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">faceIndex</td><td>The face index </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">polygonNodesCache</td><td>The cache array to be filled with the nodes values </td></tr>
-  </table>
-  </dd>
-</dl>
 
 </div>
 </div>
