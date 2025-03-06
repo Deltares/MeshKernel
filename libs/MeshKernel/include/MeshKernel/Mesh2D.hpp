@@ -31,7 +31,8 @@
 #include <utility>
 #include <vector>
 
-#include "MeshKernel/Definitions.hpp"
+#include <MeshKernel/Constants.hpp>
+#include <MeshKernel/Definitions.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Polygon.hpp>
@@ -147,11 +148,6 @@ namespace meshkernel
                                                        std::vector<Point>& polygonNodesCache,
                                                        std::vector<UInt>& localNodeIndicesCache,
                                                        std::vector<UInt>& globalEdgeIndicesCache) const;
-
-        /// @brief For a face create a closed polygon
-        /// @param[in]     faceIndex         The face index
-        /// @param[in,out] polygonNodesCache The cache array to be filled with the nodes values
-        void ComputeFaceClosedPolygon(UInt faceIndex, std::vector<Point>& polygonNodesCache) const;
 
         /// @brief For a closed polygon, compute the circumcenter of a face (getcircumcenter)
         /// @param[in,out] polygon       Cache storing the face nodes
@@ -398,7 +394,6 @@ namespace meshkernel
         static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length
         static constexpr double m_curvilinearToOrthogonalRatio = 0.5;     ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
         static constexpr double m_minimumCellArea = 1e-12;                ///< Minimum cell area
-        static constexpr double m_weightCircumCenter = 1.0;               ///< Weight circum center
         static constexpr UInt m_maximumNumberOfHangingNodesAlongEdge = 5; ///< The maximum number of hanging nodes along a single element edge
 
         /// @brief Bounded array for storing hanging node indices.
@@ -512,22 +507,22 @@ namespace meshkernel
         /// @brief Classify a single node
         MeshNodeType ClassifyNode(const UInt nodeId) const;
 
-        /// @brief Count the number of value edge in list
-        UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, const UInt numNodes) const;
+        // /// @brief Count the number of valid edges in list
+        // UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, const UInt numNodes) const;
 
         /// @brief Compute mid point and normal of polygon segment
         void ComputeMidPointsAndNormals(const std::vector<Point>& polygon,
                                         const std::vector<UInt>& edgesNumFaces,
                                         const UInt numNodes,
-                                        std::array<Point, m_maximumNumberOfNodesPerFace>& middlePoints,
-                                        std::array<Point, m_maximumNumberOfNodesPerFace>& normals,
+                                        std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
+                                        std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
                                         UInt& pointCount) const;
 
         /// @brief Compute circumcentre of face
         Point ComputeCircumCentre(const Point& centerOfMass,
                                   const UInt pointCount,
-                                  const std::array<Point, m_maximumNumberOfNodesPerFace>& middlePoints,
-                                  const std::array<Point, m_maximumNumberOfNodesPerFace>& normals) const;
+                                  const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
+                                  const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals) const;
 
         /// @brief Compute edge and average flow length
         void ComputeAverageFlowEdgesLength(std::vector<double>& edgesLength,
