@@ -2064,7 +2064,6 @@ namespace meshkernelapi
             }
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_projection);
-            auto const refinementResult = polygon.RefineFirstPolygon(firstNodeIndex, secondNodeIndex, targetEdgeLength);
 
             // Retrieve cached values
             meshKernelState[meshKernelId].m_polygonRefinementCache->Copy(refinedPolygon);

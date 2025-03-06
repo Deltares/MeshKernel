@@ -156,6 +156,76 @@ TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApiFailures)
     ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
 }
 
+TEST_F(CartesianApiTestFixture, ResamplePartialPolygon)
+{
+    // Prepare
+    MakeMesh();
+    auto const meshKernelId = GetMeshKernelId();
+
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
+
+    std::vector<double> xCoordinatesIn{250, 250, 250, 250, 250, 250, 276.82158894559, 276.384526008527, 250};
+    std::vector<double> yCoordinatesIn{120, 110, 100, 90, 80, 70, 69.4438102668551, 119.26898509203, 120};
+
+    geometryListIn.coordinates_x = xCoordinatesIn.data();
+    geometryListIn.coordinates_y = yCoordinatesIn.data();
+    geometryListIn.num_coordinates = static_cast<int>(xCoordinatesIn.size());
+
+    // Execute
+
+    const int startIndex = 5;
+    const int endIndex = 0;
+    const double resampleSize = 5.0;
+    const int expectedResampledSize = 27;
+
+    meshkernelapi::GeometryList geometryListOut;
+    // Should fail due to the values not yet being cached.
+    int numberOfPolygonNodes;
+    int errorCode = mkernel_polygon_count_refine(meshKernelId, geometryListIn, startIndex, endIndex, resampleSize, numberOfPolygonNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(numberOfPolygonNodes, expectedResampledSize);
+
+    std::vector<double> coordinates_out_x(numberOfPolygonNodes);
+    std::vector<double> coordinates_out_y(numberOfPolygonNodes);
+    geometryListOut.coordinates_x = coordinates_out_x.data();
+    geometryListOut.coordinates_y = coordinates_out_y.data();
+    geometryListOut.num_coordinates = numberOfPolygonNodes;
+
+    errorCode = mkernel_polygon_refine(meshKernelId, geometryListIn, startIndex, endIndex, resampleSize, geometryListOut);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    const std::vector<double> expectedRefinedX{250, 250, 250, 250, 250, 250, 254.9060452,
+                                               259.8120904, 264.7181356, 269.6241807,
+                                               274.5302259, 276.7986491, 276.755606,
+                                               276.7125629, 276.6695198, 276.6264768,
+                                               276.5834337, 276.5403906, 276.4973475,
+                                               276.4543044, 276.4112614, 274.5260877,
+                                               269.6208702, 264.7156526, 259.8104351,
+                                               254.9052175, 250};
+
+    const std::vector<double> expectedRefinedY{120, 110, 100, 90, 80, 70, 69.89826509,
+                                               69.79653018, 69.69479527, 69.59306036,
+                                               69.49132545, 72.05895392, 76.96586503,
+                                               81.87277614, 86.77968724, 91.68659835,
+                                               96.59350946, 101.5004206, 106.4073317,
+                                               111.3142428, 116.2211539, 119.3204754,
+                                               119.4563803, 119.5922852, 119.7281901,
+                                               119.8640951, 120};
+
+    const double tolerance = 1.0e-6;
+
+    for (size_t i = 0; i < coordinates_out_x.size(); ++i)
+    {
+        EXPECT_NEAR(expectedRefinedX[i], coordinates_out_x[i], tolerance);
+    }
+
+    for (size_t i = 0; i < coordinates_out_y.size(); ++i)
+    {
+        EXPECT_NEAR(expectedRefinedY[i], coordinates_out_y[i], tolerance);
+    }
+}
+
 TEST_F(CartesianApiTestFixture, LinearRefineAPolygonThroughApi)
 {
     // Prepare

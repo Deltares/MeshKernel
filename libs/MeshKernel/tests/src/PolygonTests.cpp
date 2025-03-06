@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include <iomanip> // TODO remove this
+
 #include <gtest/gtest.h>
 
 #include "MeshKernel/BoundingBox.hpp"
@@ -220,7 +222,8 @@ TEST(PolygonTests, Refine_WhenStartIndexLessThanEndIndex_ThenRefinesBetweenStart
 {
     // setup
     const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
-    const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 1.66666666666667}, {5, 3.33333333333333}, {5, 5}, {3.33333333333333, 5}, {1.66666666666667, 5}, {0, 5}, {0, 0}};
+    const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 2.0}, {5, 4.0}, {4.0, 5}, {2.0, 5}, {0, 5}, {0, 0}};
+    // const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 1.66666666666667}, {5, 3.33333333333333}, {5, 5}, {3.33333333333333, 5}, {1.66666666666667, 5}, {0, 5}, {0, 0}};
 
     const mk::Polygon polygon(outer, mk::Projection::cartesian);
 
@@ -236,7 +239,8 @@ TEST(PolygonTests, Refine_WhenStartIndexLargerThanEndIndex_ThenRefinesFromStartI
 {
     // setup
     const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
-    const std::vector<mk::Point> expected{{0, 0}, {1.66666666666667, 0}, {3.33333333333333, 0}, {5, 0}, {5, 5}, {0, 5}, {0, 3.33333333333333}, {0, 1.66666666666667}, {0, 0}};
+    const std::vector<mk::Point> expected{{5.0, 0}, {5.0, 5.0}, {0, 5.0}, {0, 3.0}, {0, 1.0}, {1.0, 0.0}, {3.0, 0.0}, {5.0, 0.0}};
+    // const std::vector<mk::Point> expected{{0, 0}, {1.66666666666667, 0}, {3.33333333333333, 0}, {5, 0}, {5, 5}, {0, 5}, {0, 3.33333333333333}, {0, 1.66666666666667}, {0, 0}};
 
     const mk::Polygon polygon(outer, mk::Projection::cartesian);
 
@@ -267,7 +271,8 @@ TEST(PolygonTests, Refine_WhenLastRefinedSegmentSlightlySmallerThanTolerance_Avo
     // setup
     constexpr double d = 2.5 * (1 - .9 * meshkernel::constants::geometric::refinementTolerance);
     const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
-    const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 2.5}, {5, 5}, {2.5, 5}, {0, 5}, {0, 0}};
+    const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 2}, {5, 4}, {4, 5}, {2, 5}, {0, 5}, {0, 0}};
+    // const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 2.5}, {5, 5}, {2.5, 5}, {0, 5}, {0, 0}};
     const mk::Polygon polygon(outer, mk::Projection::cartesian);
 
     // call
@@ -300,7 +305,8 @@ TEST(PolygonTests, Refine_AcceptsRefinedSegmentsLargerThanTheRefinementTolerance
     // setup
     constexpr double d = 2.5 * (1 - 1.1 * meshkernel::constants::geometric::refinementTolerance);
     const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
-    const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 2.5}, {5, 5}, {2.5, 5}, {0, 5}, {0, 0}};
+    const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 2}, {5, 4}, {4, 5}, {2, 5}, {0, 5}, {0, 0}};
+    // const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 2.5}, {5, 5}, {2.5, 5}, {0, 5}, {0, 0}};
     const mk::Polygon polygon(outer, mk::Projection::cartesian);
 
     // call
@@ -429,4 +435,75 @@ TEST(PolygonTests, LinearRefine_WithStartIndexLargerThanEndIndex_ShouldRefine)
     EXPECT_NEAR(refinedPolygon[13].y, 2870.2399407725420, tolerance);
     EXPECT_NEAR(refinedPolygon[14].y, 2885.7028590012160, tolerance);
     EXPECT_NEAR(refinedPolygon[15].y, 2398.6833000000001, tolerance);
+}
+
+TEST(PolygonTests, ResampleSmallerThenResampleLarger)
+{
+
+    const double tolerance = 1.0e-8;
+
+    // setup
+    const std::vector<mk::Point> outer{
+        {0.0, 0.0},
+        {10.0, 0.0},
+        {10.0, 10.0},
+        {0.0, 10.0},
+        {0.0, 0.0}};
+
+    std::cout.precision(12);
+    const mk::Polygon polygon(outer, mk::Projection::cartesian);
+
+    // execute
+    std::vector<mk::Point> refinedPolygon = polygon.Refine(0, 4, 2.5);
+    const std::vector<mk::Point> expectedFirstRefinement{{0.0, 0.0},
+                                                         {2.5, 0.0},
+                                                         {5.0, 0.0},
+                                                         {7.5, 0.0},
+                                                         {10.0, 0.0},
+                                                         {10.0, 2.5},
+                                                         {10.0, 5.0},
+                                                         {10.0, 7.5},
+                                                         {10.0, 10.0},
+                                                         {7.5, 10.0},
+                                                         {5.0, 10.0},
+                                                         {2.5, 10.0},
+                                                         {0.0, 10.0},
+                                                         {0.0, 7.5},
+                                                         {0.0, 5.0},
+                                                         {0.0, 2.5},
+                                                         {0.0, 0.0}};
+
+    ASSERT_EQ(expectedFirstRefinement.size(), refinedPolygon.size());
+
+    for (size_t i = 0; i < refinedPolygon.size(); ++i)
+    {
+        EXPECT_NEAR(expectedFirstRefinement[i].x, refinedPolygon[i].x, tolerance);
+        EXPECT_NEAR(expectedFirstRefinement[i].y, refinedPolygon[i].y, tolerance);
+    }
+
+    const mk::Polygon polygon2(refinedPolygon, mk::Projection::cartesian);
+
+    // Resample polygon, with start index larger than end index and resample distance larger than first resampling.
+    std::vector<mk::Point> refinedPolygon2 = polygon2.Refine(12, 4, 7.0);
+
+    const std::vector<mk::Point> expectedSecondRefinement{{10.0, 0.0},
+                                                          {10.0, 2.5},
+                                                          {10.0, 5.0},
+                                                          {10.0, 7.5},
+                                                          {10.0, 10.0},
+                                                          {7.5, 10.0},
+                                                          {5.0, 10.0},
+                                                          {2.5, 10.0},
+                                                          {0.0, 10.0},
+                                                          {0.0, 3.33333333333},
+                                                          {3.33333333333, 0.0},
+                                                          {10.0, 0.0}};
+
+    ASSERT_EQ(expectedSecondRefinement.size(), refinedPolygon2.size());
+
+    for (size_t i = 0; i < refinedPolygon2.size(); ++i)
+    {
+        EXPECT_NEAR(expectedSecondRefinement[i].x, refinedPolygon2[i].x, tolerance);
+        EXPECT_NEAR(expectedSecondRefinement[i].y, refinedPolygon2[i].y, tolerance);
+    }
 }
