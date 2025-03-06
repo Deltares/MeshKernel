@@ -6,7 +6,7 @@
         <authors>Deltares</authors>
         <owners>Deltares</owners>
         <description>Deltares back end mesh editing engine (C++ version)</description>
-        <copyright>Copyright 2021</copyright>
+        <copyright>Copyright © Deltares $copyrightYear$</copyright>
     </metadata>
     <files>
         <file src="..\libs\MeshKernelApi\Release\*" target="runtimes/win-x64/native/" />
