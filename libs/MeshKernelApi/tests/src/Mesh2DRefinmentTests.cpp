@@ -156,7 +156,7 @@ TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApiFailures)
     ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
 }
 
-TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApiFailuresWTTF)
+TEST_F(CartesianApiTestFixture, ResamplePartialPolygon)
 {
     // Prepare
     MakeMesh();
@@ -175,7 +175,7 @@ TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApiFailuresWTTF)
     // Execute
 
     const int startIndex = 5;
-    const int endIndex = 8;
+    const int endIndex = 0;
     const double resampleSize = 5.0;
     const int expectedResampledSize = 27;
 
@@ -184,7 +184,7 @@ TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApiFailuresWTTF)
     int numberOfPolygonNodes;
     int errorCode = mkernel_polygon_count_refine(meshKernelId, geometryListIn, startIndex, endIndex, resampleSize, numberOfPolygonNodes);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    EXPECT_EQ(numberOfPolygonNodes, expectedResampledSize);
+    ASSERT_EQ(numberOfPolygonNodes, expectedResampledSize);
 
     std::vector<double> coordinates_out_x(numberOfPolygonNodes);
     std::vector<double> coordinates_out_y(numberOfPolygonNodes);

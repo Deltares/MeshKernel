@@ -495,16 +495,20 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const UInt startIndex
         nodeIndices[0] = startIndex;
         size_t count = 1;
 
+        Point segmentStartPoint = m_nodes[startIndex];
+
         for (size_t i = startIndex + 1; i < m_nodes.size() - 1; ++i)
         {
-            segmentLengths[count] = segmentLengths[count - 1] + ComputeDistance(m_nodes[i - 1], m_nodes[i], m_projection);
+            segmentLengths[count] = segmentLengths[count - 1] + ComputeDistance(segmentStartPoint, m_nodes[i], m_projection);
+            segmentStartPoint = m_nodes[i];
             nodeIndices[count] = i;
             ++count;
         }
 
         for (size_t i = 0; i <= endIndex; ++i)
         {
-            segmentLengths[count] = segmentLengths[count - 1] + ComputeDistance(m_nodes[i], m_nodes[i + 1], m_projection);
+            segmentLengths[count] = segmentLengths[count - 1] + ComputeDistance(segmentStartPoint, m_nodes[i], m_projection);
+            segmentStartPoint = m_nodes[i];
             nodeIndices[count] = i;
             ++count;
         }
