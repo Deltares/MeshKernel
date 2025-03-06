@@ -335,17 +335,51 @@ lin_alg::Matrix<Point> Mesh2DToCurvilinear::ComputeCurvilinearMatrix()
     const auto numM = *maxI - *minI + 1;
     const auto numN = *maxJ - *minJ + 1;
 
-    lin_alg::Matrix<Point> result(numN, numM);
+    lin_alg::Matrix<Point> curvilinearMatrix(numN, numM);
 
+    std::size_t numNodes = m_mesh.GetNumNodes();
+    std::vector<bool> nodeInCurvilinearMesh(numNodes, false);
+
+    // First pass: Fill curvilinearMatrix and mark valid nodes
     for (auto n = 0u; n < m_mesh.GetNumNodes(); ++n)
     {
         if (m_j[n] != missing::intValue && m_i[n] != missing::intValue)
         {
             const int j = m_j[n] - *minJ;
             const int i = m_i[n] - *minI;
-            result(j, i) = m_mesh.Node(n);
+            curvilinearMatrix(j, i) = m_mesh.Node(n);
+            nodeInCurvilinearMesh[n] = true;
         }
     }
 
-    return result;
+    Point invalidPoint(missing::doubleValue, missing::doubleValue);
+    for (UInt n = 0; n < numNodes; ++n)
+    {
+        if (!nodeInCurvilinearMesh[n])
+            continue;
+
+        bool allEdgesInCurvilinear = true;
+        const auto& edges = m_mesh.m_nodesEdges[n];
+
+        for (const auto edge : edges)
+        {
+            auto const [firstNode, secondNode] = m_mesh.GetEdge(edge);
+
+            if (firstNode == missing::uintValue || secondNode == missing::uintValue)
+                continue;
+
+            if (!nodeInCurvilinearMesh[firstNode] || !nodeInCurvilinearMesh[secondNode])
+            {
+                allEdgesInCurvilinear = false;
+                break;
+            }
+        }
+
+        if (allEdgesInCurvilinear)
+        {
+            m_mesh.SetNode(n, invalidPoint);
+        }
+    }
+
+    return curvilinearMatrix;
 }
