@@ -179,8 +179,7 @@ namespace meshkernel
         /// @brief Computes the node indices of the neighbouring faces
         [[nodiscard]] UInt ComputeNeighbouringFaceNodes(const UInt face,
                                                         const Eigen::Matrix<UInt, 2, 2>& localNodeMapping,
-                                                        const UInt d,
-                                                        const std::vector<bool>& visitedFace);
+                                                        const UInt d);
 
         /// @brief Checks the valid node and the candidate node are connected and are part of a quadrangular face
         [[nodiscard]] bool CheckGridLine(const UInt validNode, const UInt candidateNode) const;
@@ -191,9 +190,11 @@ namespace meshkernel
         /// @brief Computes the final curvilinear matrix
         [[nodiscard]] lin_alg::Matrix<Point> ComputeCurvilinearMatrix();
 
-        Mesh2D& m_mesh;       ///< The mesh to convert
-        std::vector<int> m_i; ///< The i indices of each node on the curvilinear grid
-        std::vector<int> m_j; ///< The j indices of each node on the curvilinear grid
+        Mesh2D& m_mesh;                     ///< The mesh to convert
+        std::vector<int> m_i;               ///< The i indices of each node on the curvilinear grid
+        std::vector<int> m_j;               ///< The j indices of each node on the curvilinear grid
+        std::vector<bool> m_visitedFace;    ///< Mask for faces already visited in th breadth-first search
+        std::vector<bool> m_convertedFaces; ///< The faces in the mesh converted to curvilinear
 
         const std::array<std::array<int, 2>, 4> m_nodeFrom = {{{0, 0},
                                                                {0, 0},

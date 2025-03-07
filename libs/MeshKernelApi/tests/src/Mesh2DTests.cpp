@@ -1057,11 +1057,69 @@ TEST(Mesh2D, ConvertToCurvilinear_ShouldConvertMeshToCurvilinear)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(0, mesh2dOut.num_nodes);
-    ASSERT_EQ(0, mesh2dOut.num_edges);
+    ASSERT_EQ(0, mesh2dOut.num_valid_nodes);
+    ASSERT_EQ(0, mesh2dOut.num_valid_edges);
 
     ASSERT_EQ(11, curvilinearOut.num_m);
     ASSERT_EQ(11, curvilinearOut.num_n);
+}
+
+TEST(Mesh2D, ConvertToCurvilinear_OnStructuredAndUnstructuredMesh_ShouldConvertMeshToCurvilinear)
+{
+    // Prepare
+    int meshKernelId;
+    const int isGeographic = 0;
+    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+
+    auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] =
+        ReadLegacyMeshFile(TEST_FOLDER + "/data/SmallCurviAndTriangularMesh.nc");
+    meshkernelapi::Mesh2D mesh2d;
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2dOut{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dOut);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(152, mesh2dOut.num_valid_nodes);
+    ASSERT_EQ(308, mesh2dOut.num_valid_edges);
+
+    // Execute
+    errorCode = meshkernelapi::mkernel_mesh2d_convert_to_curvilinear(meshKernelId, 5.0, 5.0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dOut);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearOut{};
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearOut);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(38, mesh2dOut.num_valid_nodes);
+    ASSERT_EQ(94, mesh2dOut.num_valid_edges);
+
+    ASSERT_EQ(11, curvilinearOut.num_m);
+    ASSERT_EQ(11, curvilinearOut.num_n);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dOut);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(159, mesh2dOut.num_valid_nodes);
+    ASSERT_EQ(314, mesh2dOut.num_valid_edges);
+
+    meshkernelapi::GeometryList geometry_list;
+    geometry_list.num_coordinates = 0;
+    errorCode = mkernel_mesh2d_merge_nodes_with_merging_distance(meshKernelId, geometry_list, 0.001);
+
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
 TEST(Mesh2d, GetFacePolygons_OnAValidMesh_ShouldGetFacePolygons)

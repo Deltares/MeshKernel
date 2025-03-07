@@ -1257,7 +1257,7 @@ namespace meshkernelapi
             meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(*meshKernelState[meshKernelId].m_mesh2d);
 
             meshKernelState[meshKernelId].m_curvilinearGrid = mesh2DToCurvilinear.Compute({xPointCoordinate, yPointCoordinate});
-            meshKernelState[meshKernelId].m_mesh2d = std::make_unique<meshkernel::Mesh2D>(meshKernelState[meshKernelId].m_projection);
+
             meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
         }
         catch (...)

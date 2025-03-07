@@ -45,6 +45,9 @@ Mesh2DToCurvilinear::Mesh2DToCurvilinear(Mesh2D& mesh) : m_mesh(mesh)
     {
         throw AlgorithmError("Mesh with no faces");
     }
+
+    m_convertedFaces = std::vector<bool>(m_mesh.GetNumFaces(), false);
+    m_visitedFace = std::vector<bool>(m_mesh.GetNumFaces(), false);
 }
 
 std::unique_ptr<CurvilinearGrid> Mesh2DToCurvilinear::Compute(const Point& point)
@@ -108,21 +111,21 @@ std::unique_ptr<CurvilinearGrid> Mesh2DToCurvilinear::Compute(const Point& point
     m_mapping.setValue(1, 0, fourthNodeIndex);
 
     // 4. Grow the front using the breath first search algorithm
-    const auto numFaces = m_mesh.GetNumFaces();
-    std::vector visitedFace(numFaces, false);
     std::queue<UInt> q;
     q.push(initialFaceIndex);
+    m_convertedFaces[initialFaceIndex] = true;
+
     while (!q.empty())
     {
         const auto face = q.front();
         q.pop();
 
-        if (visitedFace[face])
+        if (m_visitedFace[face])
         {
             continue;
         }
-        visitedFace[face] = true;
 
+        m_visitedFace[face] = true;
         if (m_mesh.GetNumFaceEdges(face) != geometric::numNodesInQuadrilateral)
         {
             continue;
@@ -131,10 +134,11 @@ std::unique_ptr<CurvilinearGrid> Mesh2DToCurvilinear::Compute(const Point& point
         const auto localNodeMapping = ComputeLocalNodeMapping(face);
         for (auto d = 0u; d < geometric::numNodesInQuadrilateral; ++d)
         {
-            const auto newFaceIndex = ComputeNeighbouringFaceNodes(face, localNodeMapping, d, visitedFace);
+            const auto newFaceIndex = ComputeNeighbouringFaceNodes(face, localNodeMapping, d);
             if (newFaceIndex != missing::uintValue)
             {
                 q.push(newFaceIndex);
+                m_convertedFaces[newFaceIndex] = true;
             }
         }
     }
@@ -182,8 +186,7 @@ Eigen::Matrix<UInt, 2, 2> Mesh2DToCurvilinear::ComputeLocalNodeMapping(UInt face
 
 UInt Mesh2DToCurvilinear::ComputeNeighbouringFaceNodes(const UInt face,
                                                        const Eigen::Matrix<UInt, 2, 2>& localNodeMapping,
-                                                       const UInt d,
-                                                       const std::vector<bool>& visitedFace)
+                                                       const UInt d)
 {
 
     const auto firstNode = localNodeMapping(m_nodeFrom[d][0], m_nodeFrom[d][1]);
@@ -204,7 +207,7 @@ UInt Mesh2DToCurvilinear::ComputeNeighbouringFaceNodes(const UInt face,
 
     const auto newFace = face == m_mesh.m_edgesFaces[edgeIndex][0] ? m_mesh.m_edgesFaces[edgeIndex][1] : m_mesh.m_edgesFaces[edgeIndex][0];
 
-    if (visitedFace[newFace])
+    if (m_visitedFace[newFace])
     {
         return missing::uintValue;
     }
@@ -335,17 +338,43 @@ lin_alg::Matrix<Point> Mesh2DToCurvilinear::ComputeCurvilinearMatrix()
     const auto numM = *maxI - *minI + 1;
     const auto numN = *maxJ - *minJ + 1;
 
-    lin_alg::Matrix<Point> result(numN, numM);
+    lin_alg::Matrix<Point> curvilinearMatrix(numN, numM);
 
-    for (auto n = 0u; n < m_mesh.GetNumNodes(); ++n)
+    // First pass: Fill curvilinearMatrix and mark valid nodes
+    const auto numNodes = m_mesh.GetNumNodes();
+    for (auto n = 0u; n < numNodes; ++n)
     {
         if (m_j[n] != missing::intValue && m_i[n] != missing::intValue)
         {
             const int j = m_j[n] - *minJ;
             const int i = m_i[n] - *minI;
-            result(j, i) = m_mesh.Node(n);
+            curvilinearMatrix(j, i) = m_mesh.Node(n);
         }
     }
 
-    return result;
+    const auto numFaces = m_mesh.GetNumFaces();
+    const auto numEdges = m_mesh.GetNumEdges();
+    std::vector<bool> edgesToDelete(numEdges, true);
+    for (UInt f = 0; f < numFaces; ++f)
+    {
+        if (m_convertedFaces[f])
+        {
+            continue;
+        }
+        for (const auto edge : m_mesh.m_facesEdges[f])
+        {
+            edgesToDelete[edge] = false;
+        }
+    }
+
+    for (UInt e = 0; e < numEdges; ++e)
+    {
+        if (!edgesToDelete[e])
+        {
+            continue;
+        }
+        [[maybe_unused]] const auto nullUndo = m_mesh.DeleteEdge(e, false);
+    }
+
+    return curvilinearMatrix;
 }
