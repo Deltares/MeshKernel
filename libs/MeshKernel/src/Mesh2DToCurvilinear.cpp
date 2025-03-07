@@ -45,6 +45,9 @@ Mesh2DToCurvilinear::Mesh2DToCurvilinear(Mesh2D& mesh) : m_mesh(mesh)
     {
         throw AlgorithmError("Mesh with no faces");
     }
+
+    m_visitedFace = std::vector<bool>(m_mesh.GetNumFaces(), false);
+    m_convertedFaces = std::vector<bool>(m_mesh.GetNumFaces(), false);
 }
 
 std::unique_ptr<CurvilinearGrid> Mesh2DToCurvilinear::Compute(const Point& point)
@@ -108,21 +111,20 @@ std::unique_ptr<CurvilinearGrid> Mesh2DToCurvilinear::Compute(const Point& point
     m_mapping.setValue(1, 0, fourthNodeIndex);
 
     // 4. Grow the front using the breath first search algorithm
-    const auto numFaces = m_mesh.GetNumFaces();
-    std::vector visitedFace(numFaces, false);
     std::queue<UInt> q;
     q.push(initialFaceIndex);
+    m_convertedFaces[initialFaceIndex] = true;
     while (!q.empty())
     {
         const auto face = q.front();
         q.pop();
 
-        if (visitedFace[face])
+        if (m_visitedFace[face])
         {
             continue;
         }
-        visitedFace[face] = true;
 
+        m_visitedFace[face] = true;
         if (m_mesh.GetNumFaceEdges(face) != geometric::numNodesInQuadrilateral)
         {
             continue;
@@ -131,10 +133,11 @@ std::unique_ptr<CurvilinearGrid> Mesh2DToCurvilinear::Compute(const Point& point
         const auto localNodeMapping = ComputeLocalNodeMapping(face);
         for (auto d = 0u; d < geometric::numNodesInQuadrilateral; ++d)
         {
-            const auto newFaceIndex = ComputeNeighbouringFaceNodes(face, localNodeMapping, d, visitedFace);
+            const auto newFaceIndex = ComputeNeighbouringFaceNodes(face, localNodeMapping, d);
             if (newFaceIndex != missing::uintValue)
             {
                 q.push(newFaceIndex);
+                m_convertedFaces[newFaceIndex] = true;
             }
         }
     }
@@ -182,8 +185,7 @@ Eigen::Matrix<UInt, 2, 2> Mesh2DToCurvilinear::ComputeLocalNodeMapping(UInt face
 
 UInt Mesh2DToCurvilinear::ComputeNeighbouringFaceNodes(const UInt face,
                                                        const Eigen::Matrix<UInt, 2, 2>& localNodeMapping,
-                                                       const UInt d,
-                                                       const std::vector<bool>& visitedFace)
+                                                       const UInt d)
 {
 
     const auto firstNode = localNodeMapping(m_nodeFrom[d][0], m_nodeFrom[d][1]);
@@ -204,7 +206,7 @@ UInt Mesh2DToCurvilinear::ComputeNeighbouringFaceNodes(const UInt face,
 
     const auto newFace = face == m_mesh.m_edgesFaces[edgeIndex][0] ? m_mesh.m_edgesFaces[edgeIndex][1] : m_mesh.m_edgesFaces[edgeIndex][0];
 
-    if (visitedFace[newFace])
+    if (m_visitedFace[newFace])
     {
         return missing::uintValue;
     }
@@ -337,8 +339,8 @@ lin_alg::Matrix<Point> Mesh2DToCurvilinear::ComputeCurvilinearMatrix()
 
     lin_alg::Matrix<Point> curvilinearMatrix(numN, numM);
 
-    std::size_t numNodes = m_mesh.GetNumNodes();
-    std::vector<bool> nodeInCurvilinearMesh(numNodes, false);
+    const auto numNodes = m_mesh.GetNumNodes();
+    std::vector nodeInCurvilinearMesh(numNodes, false);
 
     // First pass: Fill curvilinearMatrix and mark valid nodes
     for (auto n = 0u; n < m_mesh.GetNumNodes(); ++n)
@@ -352,15 +354,16 @@ lin_alg::Matrix<Point> Mesh2DToCurvilinear::ComputeCurvilinearMatrix()
         }
     }
 
-    Point invalidPoint(missing::doubleValue, missing::doubleValue);
+    std::vector nodeInMesh(numNodes, false);
     for (UInt n = 0; n < numNodes; ++n)
     {
         if (!nodeInCurvilinearMesh[n])
+        {
+            nodeInMesh[n] = true;
             continue;
+        }
 
-        bool allEdgesInCurvilinear = true;
         const auto& edges = m_mesh.m_nodesEdges[n];
-
         for (const auto edge : edges)
         {
             auto const [firstNode, secondNode] = m_mesh.GetEdge(edge);
@@ -370,16 +373,30 @@ lin_alg::Matrix<Point> Mesh2DToCurvilinear::ComputeCurvilinearMatrix()
 
             if (!nodeInCurvilinearMesh[firstNode] || !nodeInCurvilinearMesh[secondNode])
             {
-                allEdgesInCurvilinear = false;
+                nodeInMesh[n] = true;
                 break;
             }
         }
+    }
 
-        if (allEdgesInCurvilinear)
+    // invalidate edges
+    const auto numEdges = m_mesh.GetNumEdges();
+    for (UInt e = 0; e < numEdges; ++e)
+    {
+        auto const [firstNode, secondNode] = m_mesh.GetEdge(e);
+
+        if (firstNode == missing::uintValue || secondNode == missing::uintValue)
+            continue;
+
+        if (!nodeInMesh[firstNode] && !nodeInMesh[secondNode])
         {
-            m_mesh.SetNode(n, invalidPoint);
+            [[maybe_unused]] const auto nullUndo = m_mesh.DeleteEdge(e, false);
         }
     }
+
+    m_mesh.SetNodesRTreeRequiresUpdate(true);
+    m_mesh.SetEdgesRTreeRequiresUpdate(true);
+    m_mesh.SetFacesRTreeRequiresUpdate(true);
 
     return curvilinearMatrix;
 }
