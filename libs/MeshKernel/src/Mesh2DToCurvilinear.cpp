@@ -52,7 +52,8 @@ Mesh2DToCurvilinear::Mesh2DToCurvilinear(Mesh2D& mesh) : m_mesh(mesh)
 
 std::unique_ptr<CurvilinearGrid> Mesh2DToCurvilinear::Compute(const Point& point)
 {
-    // 1. Find the face index
+    // 1. Find the face index, ensure the face rtree is built
+    m_mesh.SetFacesRTreeRequiresUpdate(true);
     m_mesh.BuildTree(Location::Faces);
     const auto initialFaceIndex = m_mesh.FindLocationIndex(point, Location::Faces);
     if (m_mesh.GetNumFaceEdges(initialFaceIndex) != geometric::numNodesInQuadrilateral)
@@ -339,8 +340,6 @@ lin_alg::Matrix<Point> Mesh2DToCurvilinear::ComputeCurvilinearMatrix()
     const auto numN = *maxJ - *minJ + 1;
 
     lin_alg::Matrix<Point> curvilinearMatrix(numN, numM);
-
-    // First pass: Fill curvilinearMatrix and mark valid nodes
     const auto numNodes = m_mesh.GetNumNodes();
     for (auto n = 0u; n < numNodes; ++n)
     {
