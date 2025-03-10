@@ -427,7 +427,9 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeNodesInPolygon(const Polygons
     UInt filteredNodeCount = 0;
     for (UInt i = 0; i < numNodes; ++i)
     {
-        if (isNodeInPolygon[i])
+        if (isNodeInPolygon[i] &&
+            m_nodes[i].x != constants::missing::doubleValue &&
+            m_nodes[i].y != constants::missing::doubleValue)
         {
             filteredNodes[filteredNodeCount] = m_nodes[i];
             originalNodeIndices[filteredNodeCount] = i;
