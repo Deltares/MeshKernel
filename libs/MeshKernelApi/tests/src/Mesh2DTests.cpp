@@ -1089,7 +1089,7 @@ TEST(Mesh2D, ConvertToCurvilinear_OnStructuredAndUnstructuredMesh_ShouldConvertM
     ASSERT_EQ(152, mesh2dOut.num_valid_nodes);
     ASSERT_EQ(308, mesh2dOut.num_valid_edges);
 
-    // Execute
+    // Execute: convert mesh to curvilinear
     errorCode = meshkernelapi::mkernel_mesh2d_convert_to_curvilinear(meshKernelId, 5.0, 5.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
@@ -1100,13 +1100,13 @@ TEST(Mesh2D, ConvertToCurvilinear_OnStructuredAndUnstructuredMesh_ShouldConvertM
     errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearOut);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    // Assert
+    // Assert: mesh and curvilinear grid co-exist in the same instance
     ASSERT_EQ(38, mesh2dOut.num_valid_nodes);
     ASSERT_EQ(94, mesh2dOut.num_valid_edges);
-
     ASSERT_EQ(11, curvilinearOut.num_m);
     ASSERT_EQ(11, curvilinearOut.num_n);
 
+    // Execute: curvilinear to mesh
     errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
@@ -1115,11 +1115,14 @@ TEST(Mesh2D, ConvertToCurvilinear_OnStructuredAndUnstructuredMesh_ShouldConvertM
     ASSERT_EQ(159, mesh2dOut.num_valid_nodes);
     ASSERT_EQ(314, mesh2dOut.num_valid_edges);
 
+    // Execute: Merge nodes ro restore mesh back to the original state
     meshkernelapi::GeometryList geometry_list;
     geometry_list.num_coordinates = 0;
     errorCode = mkernel_mesh2d_merge_nodes_with_merging_distance(meshKernelId, geometry_list, 0.001);
-
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dOut);
+    ASSERT_EQ(152, mesh2dOut.num_valid_nodes);
+    ASSERT_EQ(308, mesh2dOut.num_valid_edges);
 }
 
 TEST(Mesh2d, GetFacePolygons_OnAValidMesh_ShouldGetFacePolygons)
