@@ -245,9 +245,7 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstN
         throw ConstraintError("The polygon does not contain sufficient nodes: count = {}", m_polygon.Size());
     }
 
-    const auto areNodesValid = firstNode != secondNode &&
-                               secondNode != thirdNode &&
-                               firstNode != thirdNode;
+    const auto areNodesValid = firstNode != secondNode && secondNode != thirdNode && firstNode != thirdNode;
 
     if (!areNodesValid)
     {
@@ -283,12 +281,13 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstN
         numPointsSecondSide = thirdNode - secondNode;
     }
 
-    const auto numPointsThirdSide = numPolygonNodes - (numPointsFirstSide + numPointsSecondSide);
+    const UInt numPointsThirdSide = numPointsFirstSide + numPointsSecondSide > numPolygonNodes ? 0u : numPolygonNodes - (numPointsFirstSide + numPointsSecondSide);
     const auto blockSize = static_cast<UInt>(static_cast<double>(numPointsFirstSide + numPointsSecondSide + numPointsThirdSide) * 0.5);
 
     if (numPointsThirdSide >= blockSize || numPointsSecondSide >= blockSize || numPointsFirstSide >= blockSize)
     {
-        throw std::invalid_argument("CurvilinearGridFromPolygon::Compute: The block size is less than the number of points.");
+        throw std::invalid_argument("CurvilinearGridFromPolygon::Compute "
+                                    "The number of points on each side must be less than half the total number of points in the polygon");
     }
 
     const auto n1 = blockSize - numPointsThirdSide;

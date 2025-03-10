@@ -948,7 +948,7 @@ TEST_F(CartesianApiTestFixture, GetClosestMeshCoordinateThroughApi)
     ASSERT_EQ(0.0, xCoordinatesOut);
 }
 
-TEST_F(CartesianApiTestFixture, MakeCurvilinearGridFromTriangleThroughApi)
+TEST_F(CartesianApiTestFixture, CurvilinearComputeTransfiniteFromTriangle_OnValidSelection_ShouldCreateCurvilinearGrid)
 {
     // Prepare
     MakeMesh();
@@ -1013,6 +1013,108 @@ TEST_F(CartesianApiTestFixture, MakeCurvilinearGridFromTriangleThroughApi)
     // Assert
     ASSERT_EQ(28, mesh2d.num_nodes);
     ASSERT_EQ(40, mesh2d.num_edges);
+}
+
+TEST_F(CartesianApiTestFixture, CurvilinearComputeTransfiniteFromTriangle_OnInvalidSelection_ShouldEmitErrorMessage)
+{
+    // Prepare
+    auto const meshKernelId = GetMeshKernelId();
+    meshkernelapi::GeometryList geometryListIn;
+    geometryListIn.geometry_separator = meshkernel::constants::missing::doubleValue;
+    std::vector xCoordinatesIn{
+
+        624.810178166822,
+        523.558231396829,
+        422.306284626837,
+        321.054337856845,
+        219.802391086853,
+        118.550444316861,
+        48.2615856660667,
+        237.80030632643,
+        427.339026986793,
+        616.877747647156,
+        806.416468307519,
+        995.955188967883,
+        1185.49390962825,
+        1375.03263028861,
+        1564.57135094897,
+        1430.31975483724,
+        1296.0681587255,
+        1161.81656261376,
+        1027.56496650203,
+        893.313370390293,
+        759.061774278557,
+        624.810178166822};
+
+    std::vector yCoordinatesIn{
+        1678.91491569813,
+        1518.24565884755,
+        1357.57640199696,
+        1196.90714514637,
+        1036.23788829579,
+        875.568631445201,
+        733.274504823614,
+        745.175773330195,
+        757.077041836776,
+        768.978310343356,
+        780.879578849938,
+        792.780847356519,
+        804.6821158631,
+        816.58338436968,
+        828.484652876261,
+        949.974690422243,
+        1071.46472796822,
+        1192.95476551421,
+        1314.44480306019,
+        1435.93484060617,
+        1557.42487815215,
+        1678.91491569813};
+
+    std::vector valuesIn{
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0};
+
+    geometryListIn.coordinates_x = xCoordinatesIn.data();
+    geometryListIn.coordinates_y = yCoordinatesIn.data();
+    geometryListIn.values = valuesIn.data();
+    geometryListIn.num_coordinates = static_cast<int>(xCoordinatesIn.size());
+
+    // Execute
+    auto errorCode = mkernel_curvilinear_compute_transfinite_from_triangle(meshKernelId,
+                                                                           geometryListIn,
+                                                                           0,
+                                                                           6,
+                                                                           9);
+
+    // Assert
+    ASSERT_EQ(meshkernel::ExitCode::StdLibExceptionCode, errorCode);
+
+    auto exceptionMessage = std::make_unique<char[]>(512);
+    errorCode = meshkernelapi::mkernel_get_error(exceptionMessage.get());
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    std::string exceptionMessageString(exceptionMessage.get());
+    ASSERT_FALSE(exceptionMessageString.empty());
 }
 
 TEST_F(CartesianApiTestFixture, Delete_WithEmptyPolygon_ShouldDeleteMesh2D)
