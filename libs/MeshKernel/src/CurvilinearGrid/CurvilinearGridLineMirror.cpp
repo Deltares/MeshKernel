@@ -75,8 +75,10 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
 
     const auto startNode = m_lines[0].m_startNode;
     const auto endNode = m_lines[0].m_endNode;
+    CurvilinearGridLine curvilinearGridLine = m_lines[0];
     m_grid.ComputeGridNodeTypes();
-    auto [addedLine, addLinesUndoAction] = m_grid.AddGridLinesAtBoundary(startNode, endNode, m_numRowsToMirror);
+    auto [numAddedLines, addLinesUndoAction] = m_grid.AddGridLinesAtBoundary(startNode, endNode, m_numRowsToMirror);
+
     auto undoAction = CompoundUndoAction::Create();
     undoAction->Add(std::move(addLinesUndoAction));
 
@@ -92,61 +94,77 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
     switch (gridLineType)
     {
     case Bottom:
-        lowerLeft = {0, m_lines[0].m_startCoordinate};
-        upperRight = {1, m_lines[0].m_endCoordinate + 1};
+        lowerLeft = {0, curvilinearGridLine.m_startCoordinate};
+        upperRight = {1, curvilinearGridLine.m_endCoordinate + 1};
         break;
     case Top:
-        lowerLeft = {m_grid.NumN() - 1, m_lines[0].m_startCoordinate};
-        upperRight = {m_grid.NumN() - 0, m_lines[0].m_endCoordinate + 1};
+        lowerLeft = {m_grid.NumN() - 1, curvilinearGridLine.m_startCoordinate};
+        upperRight = {m_grid.NumN() - 0, curvilinearGridLine.m_endCoordinate + 1};
         break;
     case Right:
-        lowerLeft = {m_lines[0].m_startCoordinate, m_grid.NumM() - 1};
-        upperRight = {m_lines[0].m_endCoordinate + 1, m_grid.NumM() - 0};
+        lowerLeft = {curvilinearGridLine.m_startCoordinate, m_grid.NumM() - 1};
+        upperRight = {curvilinearGridLine.m_endCoordinate + 1, m_grid.NumM() - 0};
         break;
     case Left:
-        lowerLeft = {0, m_lines[0].m_startCoordinate};
-        upperRight = {m_lines[0].m_endCoordinate + 1, m_lines[0].m_startCoordinate + 1};
+        lowerLeft = {0, curvilinearGridLine.m_startCoordinate};
+        upperRight = {curvilinearGridLine.m_endCoordinate + 1, curvilinearGridLine.m_startCoordinate + 1};
         break;
     default:
         throw std::invalid_argument("CurvilinearGridLineMirror:: Invalid grid line type");
     }
 
     undoAction->Add(CurvilinearGridBlockUndoAction::Create(m_grid, lowerLeft, upperRight));
-    auto boundaryCoordinate = m_lines[0].m_constantCoordinate == 0 ? 1 : m_lines[0].m_constantCoordinate;
-
+    UInt boundaryCoordinate;
     switch (gridLineType)
     {
     case Bottom:
-
-        // for (auto j = 0; j < m_numRowsToMirror; ++j)
-        //{
-        //  boundaryCoordinate = boundaryCoordinate -
-        for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
+        boundaryCoordinate = curvilinearGridLine.m_constantCoordinate + numAddedLines;
+        for (int j = 0; j < m_numRowsToMirror; ++j)
         {
-            m_grid.GetNode(boundaryCoordinate - 1, i) = m_grid.GetNode(boundaryCoordinate, i) * a + m_grid.GetNode(boundaryCoordinate + 1, i) * b;
+            for (auto i = curvilinearGridLine.m_startCoordinate; i <= curvilinearGridLine.m_endCoordinate; ++i)
+            {
+                m_grid.GetNode(boundaryCoordinate - 1, i) = m_grid.GetNode(boundaryCoordinate, i) * a +
+                                                            m_grid.GetNode(boundaryCoordinate + 1, i) * b;
+            }
+            boundaryCoordinate--;
         }
-        /*}*/
-
         break;
-
     case Top:
-        for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
+        boundaryCoordinate = curvilinearGridLine.m_constantCoordinate;
+        for (int j = 0; j < m_numRowsToMirror; ++j)
         {
-            m_grid.GetNode(boundaryCoordinate + 1, i) = m_grid.GetNode(boundaryCoordinate, i) * a + m_grid.GetNode(boundaryCoordinate - 1, i) * b;
+            for (auto i = curvilinearGridLine.m_startCoordinate; i <= curvilinearGridLine.m_endCoordinate; ++i)
+            {
+                m_grid.GetNode(boundaryCoordinate + 1, i) = m_grid.GetNode(boundaryCoordinate, i) * a +
+                                                            m_grid.GetNode(boundaryCoordinate - 1, i) * b;
+            }
+            boundaryCoordinate++;
         }
         break;
 
     case Right:
-        for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
+        boundaryCoordinate = curvilinearGridLine.m_constantCoordinate;
+        for (int j = 0; j < m_numRowsToMirror; ++j)
         {
-            m_grid.GetNode(i, boundaryCoordinate + 1) = m_grid.GetNode(i, boundaryCoordinate) * a + m_grid.GetNode(i, boundaryCoordinate - 1) * b;
+            for (auto i = curvilinearGridLine.m_startCoordinate; i <= curvilinearGridLine.m_endCoordinate; ++i)
+            {
+                m_grid.GetNode(i, boundaryCoordinate + 1) = m_grid.GetNode(i, boundaryCoordinate) * a +
+                                                            m_grid.GetNode(i, boundaryCoordinate - 1) * b;
+            }
+            boundaryCoordinate++;
         }
         break;
 
     case Left:
-        for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
+        boundaryCoordinate = curvilinearGridLine.m_constantCoordinate + numAddedLines;
+        for (int j = 0; j < m_numRowsToMirror; ++j)
         {
-            m_grid.GetNode(i, boundaryCoordinate - 1) = m_grid.GetNode(i, boundaryCoordinate) * a + m_grid.GetNode(i, boundaryCoordinate + 1) * b;
+            for (auto i = curvilinearGridLine.m_startCoordinate; i <= curvilinearGridLine.m_endCoordinate; ++i)
+            {
+                m_grid.GetNode(i, boundaryCoordinate - 1) = m_grid.GetNode(i, boundaryCoordinate) * a +
+                                                            m_grid.GetNode(i, boundaryCoordinate + 1) * b;
+            }
+            boundaryCoordinate--;
         }
         break;
     default:

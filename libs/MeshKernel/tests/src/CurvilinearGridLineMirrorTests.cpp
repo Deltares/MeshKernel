@@ -246,7 +246,7 @@ protected:
         for (const auto& coord : mirroredCoords)
         {
             auto node = curvilinearGrid->GetNode(coord.first, coord.second);
-            EXPECT_NEAR(expectedX, node.x, tolerance);
+            ASSERT_NEAR(expectedX, node.x, tolerance);
         }
     }
 };

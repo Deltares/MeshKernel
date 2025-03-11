@@ -272,27 +272,27 @@ namespace meshkernel
         /// @return The new displacement
         [[nodiscard]] Point TransformDisplacement(Point const& displacement, CurvilinearGridNodeIndices const& node, bool isLocal) const;
 
-        UndoActionPtr AddGridLinesAtBottom(const CurvilinearGridNodeIndices& firstNode,
-                                           const CurvilinearGridNodeIndices& secondNode,
-                                           int numLines);
+        std::tuple<UndoActionPtr, int> AddGridLinesAtBottom(const CurvilinearGridNodeIndices& firstNode,
+                                                            const CurvilinearGridNodeIndices& secondNode,
+                                                            int numLines);
 
-        UndoActionPtr AddGridLinesAtTop(const CurvilinearGridNodeIndices& firstNode,
-                                        const CurvilinearGridNodeIndices& secondNode,
-                                        int numLines);
+        std::tuple<UndoActionPtr, int> AddGridLinesAtTop(const CurvilinearGridNodeIndices& firstNode,
+                                                         const CurvilinearGridNodeIndices& secondNode,
+                                                         int numLines);
 
-        UndoActionPtr AddGridLinesAtLeft(const CurvilinearGridNodeIndices& firstNode,
-                                         const CurvilinearGridNodeIndices& secondNode,
-                                         int numLines);
+        std::tuple<UndoActionPtr, int> AddGridLinesAtLeft(const CurvilinearGridNodeIndices& firstNode,
+                                                          const CurvilinearGridNodeIndices& secondNode,
+                                                          int numLines);
 
-        UndoActionPtr AddGridLinesAtRight(const CurvilinearGridNodeIndices& firstNode,
-                                          const CurvilinearGridNodeIndices& secondNode,
-                                          int numLines);
+        std::tuple<UndoActionPtr, int> AddGridLinesAtRight(const CurvilinearGridNodeIndices& firstNode,
+                                                           const CurvilinearGridNodeIndices& secondNode,
+                                                           int numLines);
 
         /// @brief Allocates a new grid line at the boundary of the curvilinear grid if needed.
         /// @param firstNode The first node of the boundary grid line.
         /// @param secondNode The second node of the boundary grid line.
         /// @return If a new grid line has been allocated
-        std::tuple<bool, UndoActionPtr> AddGridLinesAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode, int numLines);
+        std::tuple<int, UndoActionPtr> AddGridLinesAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode, int numLines);
 
         /// @brief Get the boundary grid line type: left, right, bottom or up
         /// @param[in] firstNode The first node of the grid line
