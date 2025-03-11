@@ -763,14 +763,15 @@ meshkernel::UndoActionPtr CurvilinearGrid::InsertFace(Point const& point)
     return undoAction;
 }
 
-meshkernel::UndoActionPtr CurvilinearGrid::AddGridLineAtBottom(const CurvilinearGridNodeIndices& firstNode,
-                                                               const CurvilinearGridNodeIndices& secondNode)
+meshkernel::UndoActionPtr CurvilinearGrid::AddGridLinesAtBottom(const CurvilinearGridNodeIndices& firstNode,
+                                                                const CurvilinearGridNodeIndices& secondNode,
+                                                                int numLines)
 {
-    UndoActionPtr undoAction;
+    std::unique_ptr<CompoundUndoAction> undoAction = CompoundUndoAction::Create();
+    const int numLinesToAdd = numLines - std::min(firstNode.m_n, secondNode.m_n);
 
-    if (firstNode.m_n == 0 || secondNode.m_n == 0)
+    for (int lineCount = 0; lineCount < numLinesToAdd; ++lineCount)
     {
-
         // n-direction
         if (m_startOffset.m_n == 0)
         {
@@ -780,19 +781,20 @@ meshkernel::UndoActionPtr CurvilinearGrid::AddGridLineAtBottom(const Curvilinear
         {
             m_startOffset.m_n -= 1;
         }
-
-        undoAction = AddGridLineUndoAction::Create(*this, {1, 0}, {0, 0});
+        undoAction->Add(AddGridLineUndoAction::Create(*this, {1, 0}, {0, 0}));
     }
 
     return undoAction;
 }
 
-meshkernel::UndoActionPtr CurvilinearGrid::AddGridLineAtTop(const CurvilinearGridNodeIndices& firstNode,
-                                                            const CurvilinearGridNodeIndices& secondNode)
+meshkernel::UndoActionPtr CurvilinearGrid::AddGridLinesAtTop(const CurvilinearGridNodeIndices& firstNode,
+                                                             const CurvilinearGridNodeIndices& secondNode,
+                                                             int numLines)
 {
-    UndoActionPtr undoAction;
+    std::unique_ptr<CompoundUndoAction> undoAction = CompoundUndoAction::Create();
+    const int numLinesToAdd = numLines - (NumN() - 1 - std::max(firstNode.m_n, secondNode.m_n));
 
-    if (firstNode.m_n == NumN() - 1 || secondNode.m_n == NumN() - 1)
+    for (int lineCount = 0; lineCount < numLinesToAdd; ++lineCount)
     {
         // n-direction
         if (m_endOffset.m_n == 0)
@@ -804,18 +806,20 @@ meshkernel::UndoActionPtr CurvilinearGrid::AddGridLineAtTop(const CurvilinearGri
             m_endOffset.m_n -= 1;
         }
 
-        undoAction = AddGridLineUndoAction::Create(*this, {0, 0}, {1, 0});
+        undoAction->Add(AddGridLineUndoAction::Create(*this, {0, 0}, {1, 0}));
     }
 
     return undoAction;
 }
 
-meshkernel::UndoActionPtr CurvilinearGrid::AddGridLineAtLeft(const CurvilinearGridNodeIndices& firstNode,
-                                                             const CurvilinearGridNodeIndices& secondNode)
+meshkernel::UndoActionPtr CurvilinearGrid::AddGridLinesAtLeft(const CurvilinearGridNodeIndices& firstNode,
+                                                              const CurvilinearGridNodeIndices& secondNode,
+                                                              int numLines)
 {
-    UndoActionPtr undoAction;
+    std::unique_ptr<CompoundUndoAction> undoAction = CompoundUndoAction::Create();
+    const int numLinesToAdd = numLines - std::min(firstNode.m_m, secondNode.m_m);
 
-    if (firstNode.m_m == 0 || secondNode.m_m == 0)
+    for (int lineCount = 0; lineCount < numLinesToAdd; ++lineCount)
     {
 
         // m-direction
@@ -828,18 +832,20 @@ meshkernel::UndoActionPtr CurvilinearGrid::AddGridLineAtLeft(const CurvilinearGr
             m_startOffset.m_m -= 1;
         }
 
-        undoAction = AddGridLineUndoAction::Create(*this, {0, 1}, {0, 0});
+        undoAction->Add(AddGridLineUndoAction::Create(*this, {0, 1}, {0, 0}));
     }
 
     return undoAction;
 }
 
-meshkernel::UndoActionPtr CurvilinearGrid::AddGridLineAtRight(const CurvilinearGridNodeIndices& firstNode,
-                                                              const CurvilinearGridNodeIndices& secondNode)
+meshkernel::UndoActionPtr CurvilinearGrid::AddGridLinesAtRight(const CurvilinearGridNodeIndices& firstNode,
+                                                               const CurvilinearGridNodeIndices& secondNode,
+                                                               int numLines)
 {
-    UndoActionPtr undoAction;
+    std::unique_ptr<CompoundUndoAction> undoAction = CompoundUndoAction::Create();
+    const int numLinesToAdd = numLines - (NumM() - 1 - std::max(firstNode.m_m, secondNode.m_m));
 
-    if (firstNode.m_m == NumM() - 1 || secondNode.m_m == NumM() - 1)
+    for (int lineCount = 0; lineCount < numLinesToAdd; ++lineCount)
     {
         // m-direction
         if (m_endOffset.m_m == 0)
@@ -851,14 +857,15 @@ meshkernel::UndoActionPtr CurvilinearGrid::AddGridLineAtRight(const CurvilinearG
             m_endOffset.m_m -= 1;
         }
 
-        undoAction = AddGridLineUndoAction::Create(*this, {0, 0}, {0, 1});
+        undoAction->Add(AddGridLineUndoAction::Create(*this, {0, 0}, {0, 1}));
     }
 
     return undoAction;
 }
 
-std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode,
-                                                                                   CurvilinearGridNodeIndices const& secondNode)
+std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLinesAtBoundary(CurvilinearGridNodeIndices const& firstNode,
+                                                                                    CurvilinearGridNodeIndices const& secondNode,
+                                                                                    int numLines)
 {
 
     if (!firstNode.IsValid() || !secondNode.IsValid())
@@ -885,23 +892,22 @@ std::tuple<bool, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLineAtBounda
     auto const gridLineType = GetBoundaryGridLineType(firstNode, secondNode);
 
     UndoActionPtr undoAction;
-
     if (areNodesValid)
     {
 
         switch (gridLineType)
         {
         case BoundaryGridLineType::Bottom:
-            undoAction = AddGridLineAtBottom(firstNode, secondNode);
+            undoAction = AddGridLinesAtBottom(firstNode, secondNode, numLines);
             break;
         case BoundaryGridLineType::Top:
-            undoAction = AddGridLineAtTop(firstNode, secondNode);
+            undoAction = AddGridLinesAtTop(firstNode, secondNode, numLines);
             break;
         case BoundaryGridLineType::Right:
-            undoAction = AddGridLineAtRight(firstNode, secondNode);
+            undoAction = AddGridLinesAtRight(firstNode, secondNode, numLines);
             break;
         case BoundaryGridLineType::Left:
-            undoAction = AddGridLineAtLeft(firstNode, secondNode);
+            undoAction = AddGridLinesAtLeft(firstNode, secondNode, numLines);
             break;
         default:
             throw ConstraintError("Invalid gridLineType");
@@ -977,7 +983,7 @@ meshkernel::UndoActionPtr CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices co
     {
         auto const firstNewNodeCoordinates = GetNode(firstNode.m_n, firstNode.m_m) * 2.0 - GetNode(firstNode.m_n + 1, firstNode.m_m);
         auto const secondNewNodeCoordinates = GetNode(secondNode.m_n, secondNode.m_m) * 2.0 - GetNode(secondNode.m_n + 1, secondNode.m_m);
-        auto [isGridLineAdded, addGridLineUndo] = AddGridLineAtBoundary(firstNode, secondNode);
+        auto [isGridLineAdded, addGridLineUndo] = AddGridLinesAtBoundary(firstNode, secondNode, 1);
 
         if (isGridLineAdded)
         {
@@ -996,7 +1002,7 @@ meshkernel::UndoActionPtr CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices co
     {
         auto const firstNewNodeCoordinates = GetNode(firstNode.m_n, firstNode.m_m) * 2.0 - GetNode(firstNode.m_n - 1, firstNode.m_m);
         auto const secondNewNodeCoordinates = GetNode(secondNode.m_n, secondNode.m_m) * 2.0 - GetNode(secondNode.m_n - 1, secondNode.m_m);
-        auto [isGridLineAdded, addGridLineUndo] = AddGridLineAtBoundary(firstNode, secondNode);
+        auto [isGridLineAdded, addGridLineUndo] = AddGridLinesAtBoundary(firstNode, secondNode, 1);
 
         if (isGridLineAdded)
         {
@@ -1011,7 +1017,7 @@ meshkernel::UndoActionPtr CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices co
     {
         auto const firstNewNodeCoordinates = GetNode(firstNode.m_n, firstNode.m_m) * 2.0 - GetNode(firstNode.m_n, firstNode.m_m + 1);
         auto const secondNewNodeCoordinates = GetNode(secondNode.m_n, secondNode.m_m) * 2.0 - GetNode(secondNode.m_n, secondNode.m_m + 1);
-        auto [isGridLineAdded, addGridLineUndo] = AddGridLineAtBoundary(firstNode, secondNode);
+        auto [isGridLineAdded, addGridLineUndo] = AddGridLinesAtBoundary(firstNode, secondNode, 1);
 
         if (isGridLineAdded)
         {
@@ -1031,7 +1037,7 @@ meshkernel::UndoActionPtr CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices co
     {
         auto const firstNewNodeCoordinates = GetNode(firstNode.m_n, firstNode.m_m) * 2.0 - GetNode(firstNode.m_n, firstNode.m_m - 1);
         auto const secondNewNodeCoordinates = GetNode(secondNode.m_n, secondNode.m_m) * 2.0 - GetNode(secondNode.m_n, secondNode.m_m - 1);
-        auto [isGridLineAdded, addGridLineUndo] = AddGridLineAtBoundary(firstNode, secondNode);
+        auto [isGridLineAdded, addGridLineUndo] = AddGridLinesAtBoundary(firstNode, secondNode, 1);
 
         if (isGridLineAdded)
         {

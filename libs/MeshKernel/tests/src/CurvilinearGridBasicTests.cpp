@@ -72,7 +72,7 @@ TEST(CurvilinearBasicTests, SimpleAddGridLineAtBoundary)
     EXPECT_EQ(grid->NumM(), nx);
 
     // Add grid line to bottom of domain
-    std::tie(addedLine, undoAction) = grid->AddGridLineAtBoundary({0, 0}, {0, 1});
+    std::tie(addedLine, undoAction) = grid->AddGridLinesAtBoundary({0, 0}, {0, 1}, 1);
     EXPECT_EQ(grid->NumN(), ny + 1);
     EXPECT_EQ(grid->NumM(), nx);
 

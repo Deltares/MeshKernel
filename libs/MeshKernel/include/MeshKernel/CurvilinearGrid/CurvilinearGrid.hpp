@@ -272,23 +272,27 @@ namespace meshkernel
         /// @return The new displacement
         [[nodiscard]] Point TransformDisplacement(Point const& displacement, CurvilinearGridNodeIndices const& node, bool isLocal) const;
 
-        UndoActionPtr AddGridLineAtBottom(const CurvilinearGridNodeIndices& firstNode,
-                                          const CurvilinearGridNodeIndices& secondNode);
+        UndoActionPtr AddGridLinesAtBottom(const CurvilinearGridNodeIndices& firstNode,
+                                           const CurvilinearGridNodeIndices& secondNode,
+                                           int numLines);
 
-        UndoActionPtr AddGridLineAtTop(const CurvilinearGridNodeIndices& firstNode,
-                                       const CurvilinearGridNodeIndices& secondNode);
+        UndoActionPtr AddGridLinesAtTop(const CurvilinearGridNodeIndices& firstNode,
+                                        const CurvilinearGridNodeIndices& secondNode,
+                                        int numLines);
 
-        UndoActionPtr AddGridLineAtLeft(const CurvilinearGridNodeIndices& firstNode,
-                                        const CurvilinearGridNodeIndices& secondNode);
+        UndoActionPtr AddGridLinesAtLeft(const CurvilinearGridNodeIndices& firstNode,
+                                         const CurvilinearGridNodeIndices& secondNode,
+                                         int numLines);
 
-        UndoActionPtr AddGridLineAtRight(const CurvilinearGridNodeIndices& firstNode,
-                                         const CurvilinearGridNodeIndices& secondNode);
+        UndoActionPtr AddGridLinesAtRight(const CurvilinearGridNodeIndices& firstNode,
+                                          const CurvilinearGridNodeIndices& secondNode,
+                                          int numLines);
 
         /// @brief Allocates a new grid line at the boundary of the curvilinear grid if needed.
         /// @param firstNode The first node of the boundary grid line.
         /// @param secondNode The second node of the boundary grid line.
         /// @return If a new grid line has been allocated
-        std::tuple<bool, UndoActionPtr> AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
+        std::tuple<bool, UndoActionPtr> AddGridLinesAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode, int numLines);
 
         /// @brief Get the boundary grid line type: left, right, bottom or up
         /// @param[in] firstNode The first node of the grid line

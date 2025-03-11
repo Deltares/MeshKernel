@@ -35,7 +35,25 @@ using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridLineMirror;
 using meshkernel::Point;
 
-CurvilinearGridLineMirror::CurvilinearGridLineMirror(CurvilinearGrid& grid, double mirroringFactor) : CurvilinearGridAlgorithm(grid), m_mirroringFactor(mirroringFactor)
+CurvilinearGridLineMirror::CurvilinearGridLineMirror(CurvilinearGrid& grid,
+                                                     double mirroringFactor,
+                                                     int numRowsToMirror) : CurvilinearGridAlgorithm(grid),
+                                                                            m_mirroringFactor(mirroringFactor),
+                                                                            m_numRowsToMirror(numRowsToMirror)
+
+{
+    if (m_mirroringFactor <= 0)
+    {
+        throw std::invalid_argument("CurvilinearGridLineMirror::CurvilinearGridLineMirror mirroring factor cannot be less or equal to zero");
+    }
+    if (m_numRowsToMirror <= 0)
+    {
+        throw std::invalid_argument("CurvilinearGridLineMirror::CurvilinearGridLineMirror the number of rows to mirror cannot be less or equal to zero");
+    }
+}
+
+CurvilinearGridLineMirror::CurvilinearGridLineMirror(CurvilinearGrid& grid,
+                                                     double mirroringFactor) : CurvilinearGridAlgorithm(grid), m_mirroringFactor(mirroringFactor)
 
 {
     if (m_mirroringFactor <= 0)
@@ -55,17 +73,12 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
         throw std::invalid_argument("CurvilinearGridLineMirror:: Invalid curvilinear grid");
     }
 
-    std::unique_ptr<CompoundUndoAction> undoAction = CompoundUndoAction::Create();
-
     const auto startNode = m_lines[0].m_startNode;
     const auto endNode = m_lines[0].m_endNode;
-
     m_grid.ComputeGridNodeTypes();
-    auto const gridLineType = m_grid.GetBoundaryGridLineType(startNode, endNode);
-
-    auto [addedLine, addGridLineAction] = m_grid.AddGridLineAtBoundary(startNode, endNode);
-    m_grid.ComputeGridNodeTypes();
-    undoAction->Add(std::move(addGridLineAction));
+    auto [addedLine, addLinesUndoAction] = m_grid.AddGridLinesAtBoundary(startNode, endNode, m_numRowsToMirror);
+    auto undoAction = CompoundUndoAction::Create();
+    undoAction->Add(std::move(addLinesUndoAction));
 
     double const a = 1.0 + m_mirroringFactor;
     double const b = -m_mirroringFactor;
@@ -75,6 +88,7 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
 
     using enum CurvilinearGrid::BoundaryGridLineType;
 
+    auto const gridLineType = m_grid.GetBoundaryGridLineType(startNode, endNode);
     switch (gridLineType)
     {
     case Bottom:
@@ -98,15 +112,21 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
     }
 
     undoAction->Add(CurvilinearGridBlockUndoAction::Create(m_grid, lowerLeft, upperRight));
-    const auto boundaryCoordinate = m_lines[0].m_constantCoordinate == 0 ? 1 : m_lines[0].m_constantCoordinate;
+    auto boundaryCoordinate = m_lines[0].m_constantCoordinate == 0 ? 1 : m_lines[0].m_constantCoordinate;
 
     switch (gridLineType)
     {
     case Bottom:
+
+        // for (auto j = 0; j < m_numRowsToMirror; ++j)
+        //{
+        //  boundaryCoordinate = boundaryCoordinate -
         for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
         {
             m_grid.GetNode(boundaryCoordinate - 1, i) = m_grid.GetNode(boundaryCoordinate, i) * a + m_grid.GetNode(boundaryCoordinate + 1, i) * b;
         }
+        /*}*/
+
         break;
 
     case Top:
