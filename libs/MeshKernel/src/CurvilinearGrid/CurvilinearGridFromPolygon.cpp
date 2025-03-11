@@ -245,9 +245,7 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstN
         throw ConstraintError("The polygon does not contain sufficient nodes: count = {}", m_polygon.Size());
     }
 
-    const auto areNodesValid = firstNode != secondNode &&
-                               secondNode != thirdNode &&
-                               firstNode != thirdNode;
+    const auto areNodesValid = firstNode != secondNode && secondNode != thirdNode && firstNode != thirdNode;
 
     if (!areNodesValid)
     {
@@ -283,12 +281,28 @@ std::unique_ptr<CurvilinearGrid> CurvilinearGridFromPolygon::Compute(UInt firstN
         numPointsSecondSide = thirdNode - secondNode;
     }
 
-    const auto numPointsThirdSide = numPolygonNodes - (numPointsFirstSide + numPointsSecondSide);
+    const UInt numPointsThirdSide = numPointsFirstSide + numPointsSecondSide > numPolygonNodes ? 0u : numPolygonNodes - (numPointsFirstSide + numPointsSecondSide);
     const auto blockSize = static_cast<UInt>(static_cast<double>(numPointsFirstSide + numPointsSecondSide + numPointsThirdSide) * 0.5);
 
-    if (numPointsThirdSide >= blockSize || numPointsSecondSide >= blockSize || numPointsFirstSide >= blockSize)
+    if (numPointsFirstSide >= blockSize)
     {
-        throw std::invalid_argument("CurvilinearGridFromPolygon::Compute: The block size is less than the number of points.");
+        throw std::invalid_argument("CurvilinearGridFromPolygon::Compute "
+                                    "The number of points on the first side is " +
+                                    std::to_string(numPointsFirstSide) + " which cannot be larger or equal to the block size " + std::to_string(blockSize));
+    }
+
+    if (numPointsSecondSide >= blockSize)
+    {
+        throw std::invalid_argument("CurvilinearGridFromPolygon::Compute "
+                                    "The number of points on the second side is " +
+                                    std::to_string(numPointsSecondSide) + " which cannot be larger or equal to the block size " + std::to_string(blockSize));
+    }
+
+    if (numPointsThirdSide >= blockSize)
+    {
+        throw std::invalid_argument("CurvilinearGridFromPolygon::Compute "
+                                    "The number of points on the third side is " +
+                                    std::to_string(numPointsThirdSide) + " which cannot be larger or equal to the block size " + std::to_string(blockSize));
     }
 
     const auto n1 = blockSize - numPointsThirdSide;
