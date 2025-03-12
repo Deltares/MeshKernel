@@ -223,6 +223,7 @@ TEST(CurvilinearBasicTests, AddGridLinesAllRound)
 
     constexpr size_t nx = 10;
     constexpr size_t ny = 10;
+    const int numRowsToMirror = 1;
 
     mk::UndoActionStack undoActions;
 
@@ -233,7 +234,7 @@ TEST(CurvilinearBasicTests, AddGridLinesAllRound)
 
     //--------------------------------
 
-    mk::CurvilinearGridLineMirror lineMirror(*grid, deltaX);
+    mk::CurvilinearGridLineMirror lineMirror(*grid, deltaX, numRowsToMirror);
 
     EXPECT_EQ(grid->NumN(), ny);
     EXPECT_EQ(grid->NumM(), nx);
@@ -700,6 +701,8 @@ TEST(CurvilinearBasicTests, CompoundTest)
     constexpr size_t nx = 30;
     constexpr size_t ny = 30;
 
+    const int numRowsToMirror = 1;
+
     mk::UndoActionStack undoActions;
     std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
     grid->ComputeGridNodeTypes();
@@ -721,7 +724,7 @@ TEST(CurvilinearBasicTests, CompoundTest)
 
     //--------------------------------
 
-    mk::CurvilinearGridLineMirror lineMirror(*grid, deltaX);
+    mk::CurvilinearGridLineMirror lineMirror(*grid, deltaX, numRowsToMirror);
 
     // Bottom
     lineMirror.m_lines.push_back(mk::CurvilinearGridLine({0, 0}, {0, nx - 1 + 10}));

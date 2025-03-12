@@ -984,7 +984,7 @@ TEST(CurvilinearGridUndoTests, LineMirror)
     constexpr double tolerance = 1.0e-10;
 
     // Add an extra column on the left of the domain
-    errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId, delta, 0.0, 0.0, 0.0, 30.0);
+    errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId, delta, 1, 0.0, 0.0, 0.0, 30.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid extendedGrid{};
@@ -1522,7 +1522,7 @@ TEST(CurvilinearGridUndoTests, InsertFaceUndoThenMirrorLine)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Add an extra column on the left of the domain
-    errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId, delta, 0.0, 0.0, 0.0, 30.0);
+    errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId, delta, 1, 0.0, 0.0, 0.0, 30.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, updatedGrid);

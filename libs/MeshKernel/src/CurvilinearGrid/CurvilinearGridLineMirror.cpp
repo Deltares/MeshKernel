@@ -52,16 +52,6 @@ CurvilinearGridLineMirror::CurvilinearGridLineMirror(CurvilinearGrid& grid,
     }
 }
 
-CurvilinearGridLineMirror::CurvilinearGridLineMirror(CurvilinearGrid& grid,
-                                                     double mirroringFactor) : CurvilinearGridAlgorithm(grid), m_mirroringFactor(mirroringFactor)
-
-{
-    if (m_mirroringFactor <= 0)
-    {
-        throw std::invalid_argument("CurvilinearGridLineMirror::CurvilinearGridLineMirror mirroring factor cannot be less or equal to zero");
-    }
-}
-
 meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
 {
     if (m_lines.empty())
@@ -75,7 +65,6 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
 
     const auto startNode = m_lines[0].m_startNode;
     const auto endNode = m_lines[0].m_endNode;
-    CurvilinearGridLine curvilinearGridLine = m_lines[0];
     m_grid.ComputeGridNodeTypes();
     auto [numAddedLines, addLinesUndoAction] = m_grid.AddGridLinesAtBoundary(startNode, endNode, m_numRowsToMirror);
 
@@ -94,20 +83,20 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
     switch (gridLineType)
     {
     case Bottom:
-        lowerLeft = {0, curvilinearGridLine.m_startCoordinate};
-        upperRight = {1, curvilinearGridLine.m_endCoordinate + 1};
+        lowerLeft = {0, m_lines[0].m_startCoordinate};
+        upperRight = {1, m_lines[0].m_endCoordinate + 1};
         break;
     case Top:
-        lowerLeft = {m_grid.NumN() - 1, curvilinearGridLine.m_startCoordinate};
-        upperRight = {m_grid.NumN() - 0, curvilinearGridLine.m_endCoordinate + 1};
+        lowerLeft = {m_grid.NumN() - 1, m_lines[0].m_startCoordinate};
+        upperRight = {m_grid.NumN() - 0, m_lines[0].m_endCoordinate + 1};
         break;
     case Right:
-        lowerLeft = {curvilinearGridLine.m_startCoordinate, m_grid.NumM() - 1};
-        upperRight = {curvilinearGridLine.m_endCoordinate + 1, m_grid.NumM() - 0};
+        lowerLeft = {m_lines[0].m_startCoordinate, m_grid.NumM() - 1};
+        upperRight = {m_lines[0].m_endCoordinate + 1, m_grid.NumM() - 0};
         break;
     case Left:
-        lowerLeft = {0, curvilinearGridLine.m_startCoordinate};
-        upperRight = {curvilinearGridLine.m_endCoordinate + 1, curvilinearGridLine.m_startCoordinate + 1};
+        lowerLeft = {0, m_lines[0].m_startCoordinate};
+        upperRight = {m_lines[0].m_endCoordinate + 1, m_lines[0].m_startCoordinate + 1};
         break;
     default:
         throw std::invalid_argument("CurvilinearGridLineMirror:: Invalid grid line type");
@@ -118,10 +107,10 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
     switch (gridLineType)
     {
     case Bottom:
-        boundaryCoordinate = curvilinearGridLine.m_constantCoordinate + numAddedLines;
+        boundaryCoordinate = m_lines[0].m_constantCoordinate + numAddedLines;
         for (int j = 0; j < m_numRowsToMirror; ++j)
         {
-            for (auto i = curvilinearGridLine.m_startCoordinate; i <= curvilinearGridLine.m_endCoordinate; ++i)
+            for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
             {
                 m_grid.GetNode(boundaryCoordinate - 1, i) = m_grid.GetNode(boundaryCoordinate, i) * a +
                                                             m_grid.GetNode(boundaryCoordinate + 1, i) * b;
@@ -130,10 +119,10 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
         }
         break;
     case Top:
-        boundaryCoordinate = curvilinearGridLine.m_constantCoordinate;
+        boundaryCoordinate = m_lines[0].m_constantCoordinate;
         for (int j = 0; j < m_numRowsToMirror; ++j)
         {
-            for (auto i = curvilinearGridLine.m_startCoordinate; i <= curvilinearGridLine.m_endCoordinate; ++i)
+            for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
             {
                 m_grid.GetNode(boundaryCoordinate + 1, i) = m_grid.GetNode(boundaryCoordinate, i) * a +
                                                             m_grid.GetNode(boundaryCoordinate - 1, i) * b;
@@ -143,10 +132,10 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
         break;
 
     case Right:
-        boundaryCoordinate = curvilinearGridLine.m_constantCoordinate;
+        boundaryCoordinate = m_lines[0].m_constantCoordinate;
         for (int j = 0; j < m_numRowsToMirror; ++j)
         {
-            for (auto i = curvilinearGridLine.m_startCoordinate; i <= curvilinearGridLine.m_endCoordinate; ++i)
+            for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
             {
                 m_grid.GetNode(i, boundaryCoordinate + 1) = m_grid.GetNode(i, boundaryCoordinate) * a +
                                                             m_grid.GetNode(i, boundaryCoordinate - 1) * b;
@@ -156,10 +145,10 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
         break;
 
     case Left:
-        boundaryCoordinate = curvilinearGridLine.m_constantCoordinate + numAddedLines;
+        boundaryCoordinate = m_lines[0].m_constantCoordinate + numAddedLines;
         for (int j = 0; j < m_numRowsToMirror; ++j)
         {
-            for (auto i = curvilinearGridLine.m_startCoordinate; i <= curvilinearGridLine.m_endCoordinate; ++i)
+            for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
             {
                 m_grid.GetNode(i, boundaryCoordinate - 1) = m_grid.GetNode(i, boundaryCoordinate) * a +
                                                             m_grid.GetNode(i, boundaryCoordinate + 1) * b;

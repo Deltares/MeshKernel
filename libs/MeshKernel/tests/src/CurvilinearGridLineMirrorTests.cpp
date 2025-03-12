@@ -38,8 +38,9 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnLeftBoundary_ShouldCorrectlySumC
     EXPECT_EQ(2, curvilinearGrid->NumN());
     EXPECT_EQ(3, curvilinearGrid->NumM());
 
-    constexpr double f = 1.2;
-    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, f);
+    constexpr double mirroringFactor = 1.2;
+    constexpr int numRowsToMirror = 1;
+    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, mirroringFactor, numRowsToMirror);
     curvilinearLineMirror.SetLine({0, 0}, {0, 2});
 
     const auto p0 = curvilinearGrid->GetNode(1, 0);
@@ -53,7 +54,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnLeftBoundary_ShouldCorrectlySumC
 
     // Asserts
     constexpr double tolerance = 1e-6;
-    const auto p_expected = (1 + f) * p0 + (-f) * p1;
+    const auto p_expected = (1 + mirroringFactor) * p0 + (-mirroringFactor) * p1;
     const auto p_actual = curvilinearGrid->GetNode(1, 0);
     ASSERT_TRUE(meshkernel::IsEqual(p_expected, p_actual, tolerance));
 }
@@ -66,7 +67,8 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldCorrectlySum
     EXPECT_EQ(2, curvilinearGrid->NumN());
 
     constexpr double f = 1.2;
-    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, f);
+    constexpr int numRowsToMirror = 1;
+    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, f, numRowsToMirror);
     curvilinearLineMirror.SetLine({2, 0}, {2, 2});
 
     const auto p0 = curvilinearGrid->GetNode(1, 2);
@@ -89,7 +91,9 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnBottomBoundary_ShouldAddFacesOnB
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
-    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, 1.2);
+    const double mirroringFactor = 1.2;
+    const int numRowsToMirror = 1;
+    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, mirroringFactor, numRowsToMirror);
     curvilinearLineMirror.SetLine({79983.0, 366936.2}, {80155.8, 366529.5});
 
     // Execute
@@ -116,7 +120,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnBottomBoundaryWithZeroMirrowingF
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     // Assert
-    ASSERT_THROW(meshkernel::CurvilinearGridLineMirror(*curvilinearGrid, 0.0), std::invalid_argument);
+    ASSERT_THROW(meshkernel::CurvilinearGridLineMirror(*curvilinearGrid, 0.0, 1), std::invalid_argument);
 }
 
 TEST(CurvilinearLineMirror, Compute_LineMirrorOnUpperBoundary_ShouldAddFacesOnUpperBoundary)
@@ -124,7 +128,9 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnUpperBoundary_ShouldAddFacesOnUp
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
     ASSERT_EQ(9, curvilinearGrid->NumM());
-    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, 1.2);
+    const int numRowsToMirror = 1;
+    const double mirroringFactor = 1.2;
+    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, mirroringFactor, numRowsToMirror);
     curvilinearLineMirror.SetLine({80960.2, 366520.7}, {80609.8, 367406.0});
 
     // Execute
@@ -152,7 +158,9 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnLeftBoundary_ShouldAddFacesOnLef
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
-    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, 1.2);
+    const int numRowsToMirror = 1;
+    const double mirroringFactor = 1.2;
+    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, mirroringFactor, numRowsToMirror);
     curvilinearLineMirror.SetLine({79983.0, 366936.2}, {80609.8, 367406.0});
 
     // Execute
@@ -186,7 +194,9 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldAddFacesOnRi
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
     ASSERT_EQ(5, curvilinearGrid->NumN());
-    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, 1.2);
+    const int numRowsToMirror = 1;
+    const double mirroringFactor = 1.2;
+    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, mirroringFactor, numRowsToMirror);
     curvilinearLineMirror.SetLine({80155.8, 366529.5}, {80960.2, 366520.72});
 
     // Execute
@@ -349,30 +359,6 @@ INSTANTIATE_TEST_SUITE_P(
                             {9.0, 7.64},
                             {10.0, 7.64}}), // Bottom-side test
 
-        std::make_tuple(std::make_pair(7, 5),
-                        std::make_pair(10, 5),
-                        2,
-                        std::vector<std::pair<int, int>>{
-                            {6, 7},
-                            {6, 8},
-                            {6, 9},
-                            {6, 10},
-
-                            {7, 7},
-                            {7, 8},
-                            {7, 9},
-                            {7, 10}},
-                        std::vector<meshkernel::Point>{
-                            {7.0, 6.2},
-                            {8.0, 6.2},
-                            {9.0, 6.2},
-                            {10.0, 6.2},
-
-                            {7.0, 7.64},
-                            {8.0, 7.64},
-                            {9.0, 7.64},
-                            {10.0, 7.64}}), // Bottom-side test
-
         std::make_tuple(std::make_pair(7, 10),
                         std::make_pair(10, 10),
                         2,
@@ -395,7 +381,7 @@ INSTANTIATE_TEST_SUITE_P(
                             {7.0, 7.36},
                             {8.0, 7.36},
                             {9.0, 7.36},
-                            {10.0, 7.36}}) // Bottom-side test
+                            {10.0, 7.36}}) // Top-side test
         ));
 
 TEST_P(CurvilinearLineMirrorInternalBoundaryTest, Compute_LineMirrorInsideHole_ShouldCorrectlyAddLine)

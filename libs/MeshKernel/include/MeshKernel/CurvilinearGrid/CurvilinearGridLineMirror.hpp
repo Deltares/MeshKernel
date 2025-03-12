@@ -44,11 +44,7 @@ namespace meshkernel
         /// @brief Class constructor
         /// @param[in] grid The input curvilinear grid
         /// @param[in] mirroringFactor The mirroringFactor factor
-        CurvilinearGridLineMirror(CurvilinearGrid& grid, double mirroringFactor);
-
-        /// @brief Class constructor
-        /// @param[in] grid The input curvilinear grid
-        /// @param[in] mirroringFactor The mirroringFactor factor
+        /// @param[in] numRowsToMirror The number of rows to mirror
         CurvilinearGridLineMirror(CurvilinearGrid& grid, double mirroringFactor, int numRowsToMirror);
 
         /// @brief Computes a new curvilinear grid with the line shift
