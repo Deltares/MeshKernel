@@ -108,7 +108,7 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
     {
     case Bottom:
         boundaryCoordinate = m_lines[0].m_constantCoordinate + numAddedLines;
-        for (int j = 0; j < m_numRowsToMirror; ++j)
+        for (int r = 0; r < m_numRowsToMirror; ++r)
         {
             for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
             {
@@ -120,7 +120,7 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
         break;
     case Top:
         boundaryCoordinate = m_lines[0].m_constantCoordinate;
-        for (int j = 0; j < m_numRowsToMirror; ++j)
+        for (int r = 0; r < m_numRowsToMirror; ++r)
         {
             for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
             {
@@ -133,7 +133,7 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
 
     case Right:
         boundaryCoordinate = m_lines[0].m_constantCoordinate;
-        for (int j = 0; j < m_numRowsToMirror; ++j)
+        for (int r = 0; r < m_numRowsToMirror; ++r)
         {
             for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
             {
@@ -146,7 +146,7 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
 
     case Left:
         boundaryCoordinate = m_lines[0].m_constantCoordinate + numAddedLines;
-        for (int j = 0; j < m_numRowsToMirror; ++j)
+        for (int r = 0; r < m_numRowsToMirror; ++r)
         {
             for (auto i = m_lines[0].m_startCoordinate; i <= m_lines[0].m_endCoordinate; ++i)
             {
