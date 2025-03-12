@@ -254,7 +254,7 @@ void meshkernel::SampleAveragingInterpolator::InterpolateAtNodes(const int prope
     std::vector<Sample> sampleCache;
     sampleCache.reserve(100);
 
-    std::vector<Point> edgeCentres = MeshEdgeCenters::Compute(mesh);
+    std::vector<Point> edgeCentres = algo::ComputeEdgeCentres(mesh);
 
     for (UInt n = 0; n < mesh.GetNumNodes(); ++n)
     {

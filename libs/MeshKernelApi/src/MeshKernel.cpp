@@ -76,12 +76,10 @@
 #include <MeshKernel/MeshTransformation.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
-#include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/ProjectionConversions.hpp>
 #include <MeshKernel/RangeCheck.hpp>
 #include <MeshKernel/RemoveDisconnectedRegions.hpp>
-#include <MeshKernel/Smoother.hpp>
 #include <MeshKernel/SplineAlgorithms.hpp>
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernel/SplitRowColumnOfMesh.hpp>
@@ -1260,7 +1258,7 @@ namespace meshkernelapi
             meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(*meshKernelState[meshKernelId].m_mesh2d);
 
             meshKernelState[meshKernelId].m_curvilinearGrid = mesh2DToCurvilinear.Compute({xPointCoordinate, yPointCoordinate});
-            meshKernelState[meshKernelId].m_mesh2d = std::make_unique<meshkernel::Mesh2D>(meshKernelState[meshKernelId].m_projection);
+
             meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
         }
         catch (...)
@@ -2067,7 +2065,6 @@ namespace meshkernelapi
             }
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_projection);
-            auto const refinementResult = polygon.RefineFirstPolygon(firstNodeIndex, secondNodeIndex, targetEdgeLength);
 
             // Retrieve cached values
             meshKernelState[meshKernelId].m_polygonRefinementCache->Copy(refinedPolygon);
@@ -2204,9 +2201,9 @@ namespace meshkernelapi
             auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            std::vector<double> edgeLengths(meshkernel::MeshEdgeLength::Compute(*meshKernelState[meshKernelId].m_mesh2d));
+            std::vector<double> edgeLengths(meshkernel::algo::ComputeMeshEdgeLength(*meshKernelState[meshKernelId].m_mesh2d));
 
-            const auto minEdgeLength = meshkernel::MeshEdgeLength::MinEdgeLength(*meshKernelState[meshKernelId].m_mesh2d, polygon, edgeLengths);
+            const auto minEdgeLength = meshkernel::algo::MinEdgeLength(*meshKernelState[meshKernelId].m_mesh2d, polygon, edgeLengths);
             const auto searchRadius = std::max(1e-6, minEdgeLength * 0.1);
             meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, searchRadius), meshKernelId);
         }
@@ -2382,7 +2379,7 @@ namespace meshkernelapi
 
             const auto newEdgeLength = ComputeDistance(firstNodeCoordinates, secondNodeCoordinates, meshKernelState[meshKernelId].m_projection);
 
-            std::vector<double> edgeLengths(meshkernel::MeshEdgeLength::Compute(*meshKernelState[meshKernelId].m_mesh2d));
+            std::vector<double> edgeLengths(meshkernel::algo::ComputeMeshEdgeLength(*meshKernelState[meshKernelId].m_mesh2d));
             constexpr auto lengthFraction = 0.01;
 
             const auto minMeshEdgeLength = edgeLengths.empty() ? newEdgeLength : *std::ranges::min_element(edgeLengths);

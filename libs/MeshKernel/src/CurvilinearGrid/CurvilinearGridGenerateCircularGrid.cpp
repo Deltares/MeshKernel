@@ -26,7 +26,6 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridGenerateCircularGrid.hpp"
-#include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Utilities/LinearAlgebra.hpp"
 
 #include <cmath>

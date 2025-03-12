@@ -732,18 +732,14 @@ TEST(OrthogonalizationAndSmoothing, RefineUndoThenOrthogonalise)
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
 {
 
-    std::vector<Point> polygonPoints{{0.0, 0.0}, {100.0, 20.0}, {150.0, 50.0}, {75.0, 75.0}, {-20.0, 30.0}, {0.0, 0.0}};
+    std::vector<Point> polygonPoints{{0, 0}, {25, 5}, {50, 10}, {75, 15}, {100, 20}, {125, 35}, {150, 50}, {125, 58.33333333333334}, {100, 66.66666666666667}, {75, 75}, {51.25, 63.75}, {27.5, 52.5}, {3.75, 41.25}, {-20, 30}, {0, 0}};
 
-    const Polygons polygon(polygonPoints, Projection::cartesian);
-
-    std::vector<Point> refinedPolygonPoints = polygon.RefinePolygon(0, 0, 5, 25.0);
-
-    std::unique_ptr<Polygons> refinedPolygon = std::make_unique<Polygons>(refinedPolygonPoints, Projection::cartesian);
+    std::unique_ptr<Polygons> polygon = std::make_unique<Polygons>(polygonPoints, Projection::cartesian);
 
     // generate samples in all polygons
-    const std::vector<std::vector<Point>> generatedPoints = refinedPolygon->ComputePointsInPolygons();
+    const std::vector<std::vector<Point>> generatedPoints = polygon->ComputePointsInPolygons();
 
-    meshkernel::Mesh2D mesh(generatedPoints[0], *refinedPolygon, Projection::cartesian);
+    meshkernel::Mesh2D mesh(generatedPoints[0], *polygon, Projection::cartesian);
 
     // Create some gaps in the node and edge arrays
     auto [nodeId, nodeInsertUndo] = mesh.InsertNode({0.5, 0.5});
@@ -751,7 +747,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
     [[maybe_unused]] auto [edgeId, edgeInsertUndo] = mesh.ConnectNodes(nodeId, originNodeId);
     [[maybe_unused]] auto nodeRemovaUndo = mesh.DeleteNode(nodeId);
 
-    std::unique_ptr<LandBoundaries> boundary = std::make_unique<LandBoundaries>(refinedPolygonPoints, mesh, *refinedPolygon);
+    std::unique_ptr<LandBoundaries> boundary = std::make_unique<LandBoundaries>(polygonPoints, mesh, *polygon);
 
     FlipEdges flipEdges1(mesh, *boundary, true, false);
 
@@ -767,7 +763,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
     FlipEdges flipEdges(mesh, *boundary, true, false);
 
     OrthogonalizationAndSmoothing orthogonalization(mesh,
-                                                    std::move(refinedPolygon),
+                                                    std::move(polygon),
                                                     std::move(boundary),
                                                     projectToLandBoundaryOption,
                                                     orthogonalizationParameters);

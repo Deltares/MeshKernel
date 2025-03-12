@@ -39,15 +39,19 @@ namespace fmt_ns = fmt;
 namespace fmt_ns = std;
 #endif
 
-/// @brief Defines the formattable types
+/// @concept FormattableType
+/// @brief Defines types that can be formatted.
 template <typename T>
 concept FormattableType = std::floating_point<T> ||
                           std::integral<T> ||
                           std::same_as<T, std::string>;
 
+/// \cond DOXYGEN_IGNORE
+///
 /// @brief Specialization of std::formatter for std::vector
 /// @tparam T Vector type (must be FormattableType)
-template <FormattableType T>
+template <typename T>
+    requires FormattableType<T>
 struct fmt_ns::formatter<std::vector<T>> : fmt_ns::formatter<T>
 {
     /// @brief
@@ -80,3 +84,4 @@ struct fmt_ns::formatter<std::vector<T>> : fmt_ns::formatter<T>
         return fmt_ns::format_to(out, "}}");
     }
 };
+/// \endcond

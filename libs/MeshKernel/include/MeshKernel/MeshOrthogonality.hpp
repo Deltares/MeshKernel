@@ -46,7 +46,7 @@ namespace meshkernel
 
     private:
         /// @brief Compute the orthogonality value for the edge
-        static double ComputeValue(const Mesh2D& mesh, const UInt edgeId);
+        static double ComputeValue(const Mesh2D& mesh, const std::vector<Point>& faceCircumcentres, const UInt edgeId);
     };
 
 } // namespace meshkernel

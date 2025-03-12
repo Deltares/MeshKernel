@@ -212,3 +212,58 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldAddFacesOnRi
         EXPECT_TRUE(meshkernel::IsEqual(expected[i], curvilinearGrid->GetNode(last, i), tolerance));
     }
 }
+
+class CurvilinearLineMirrorInternalBoundaryTest : public ::testing::TestWithParam<std::tuple<std::pair<int, int>, std::pair<int, int>, std::vector<std::pair<int, int>>, double>>
+{
+protected:
+    void RunTest()
+    {
+        // Set-up
+        const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, 10, 10);
+
+        // Delete internal nodes for creating a hole
+        std::vector<meshkernel::Point> holeNodes = {
+            {5, 3}, {5, 4}, {5, 5}, {6, 3}, {6, 4}, {6, 5}, {7, 3}, {7, 4}, {7, 5}};
+
+        for (const auto& node : holeNodes)
+        {
+            [[maybe_unused]] auto dummyUndoAction = curvilinearGrid->DeleteNode(node);
+        }
+
+        // Get test parameters
+        auto [start, end, mirroredCoords, expectedX] = GetParam();
+        constexpr double f = 1.2;
+        meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, f);
+
+        // Apply line mirroring
+        meshkernel::Point startLinePoint{static_cast<double>(start.first), static_cast<double>(start.second)};
+        meshkernel::Point secondLinePoint{static_cast<double>(end.first), static_cast<double>(end.second)};
+
+        curvilinearLineMirror.SetLine(startLinePoint, secondLinePoint);
+        [[maybe_unused]] auto dummyUndoAction = curvilinearLineMirror.Compute();
+
+        const double tolerance = 1e-6;
+        for (const auto& coord : mirroredCoords)
+        {
+            auto node = curvilinearGrid->GetNode(coord.first, coord.second);
+            EXPECT_NEAR(expectedX, node.x, tolerance);
+        }
+    }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    CurvilinearLineMirrorTests,
+    CurvilinearLineMirrorInternalBoundaryTest,
+    ::testing::Values(
+        std::make_tuple(std::make_pair(4, 3), std::make_pair(4, 5),
+                        std::vector<std::pair<int, int>>{{3, 5}, {4, 5}, {5, 5}},
+                        5.2), // Right-side test
+        std::make_tuple(std::make_pair(8, 3), std::make_pair(8, 5),
+                        std::vector<std::pair<int, int>>{{3, 7}, {4, 7}, {5, 7}},
+                        6.8) // Left-side test
+        ));
+
+TEST_P(CurvilinearLineMirrorInternalBoundaryTest, Compute_LineMirrorInsideHole_ShouldCorrectlyAddLine)
+{
+    RunTest();
+}

@@ -45,7 +45,7 @@ LandBoundaries::LandBoundaries(const std::vector<Point>& boundaryNodes,
 {
     if (!m_landBoundary.IsEmpty())
     {
-        m_polygonNodesCache.resize(Mesh::m_maximumNumberOfNodesPerFace);
+        m_polygonNodesCache.resize(constants::geometric::maximumNumberOfNodesPerFace);
     }
 }
 

@@ -404,6 +404,42 @@ meshkernel::Point meshkernel::Polygon::interpolatePointOnPolyline(const std::vec
     return (1.0 - ti) * points[intervalIndex - 1] + ti * points[intervalIndex];
 }
 
+void meshkernel::Polygon::ComputeResampledNodes(const size_t numberOfNewNodes, const std::vector<double>& segmentLengths, const std::vector<size_t>& nodeIndices, std::vector<Point>& refinedPolygon) const
+{
+    double delta = segmentLengths.back() / static_cast<double>(numberOfNewNodes);
+    double distanceAlongPolygon = 0.0;
+    size_t segmentEndIndex = 0;
+
+    for (size_t i = 1; i < numberOfNewNodes; ++i)
+    {
+        distanceAlongPolygon += delta;
+
+        while (distanceAlongPolygon > segmentLengths[segmentEndIndex])
+        {
+            if (IsEqual(distanceAlongPolygon, segmentLengths[segmentEndIndex]))
+            {
+                break;
+            }
+
+            ++segmentEndIndex;
+
+            if (segmentEndIndex == segmentLengths.size())
+            {
+                throw meshkernel::ConstraintError("Inconsistency between distanceAlongPolygon and segmentLengths");
+            }
+        }
+
+        double lambda = (distanceAlongPolygon - segmentLengths[segmentEndIndex - 1]) / (segmentLengths[segmentEndIndex] - segmentLengths[segmentEndIndex - 1]);
+
+        size_t nodeStartIndex = nodeIndices[segmentEndIndex - 1];
+        size_t nodeEndIndex = nodeIndices[segmentEndIndex];
+
+        Point newPoint = (1.0 - lambda) * m_nodes[nodeStartIndex] + lambda * m_nodes[nodeEndIndex];
+
+        refinedPolygon.push_back(newPoint);
+    }
+}
+
 std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const UInt startIndex, const UInt endIndex, const double refinementDistance) const
 {
     if (startIndex == endIndex)
@@ -422,53 +458,77 @@ std::vector<meshkernel::Point> meshkernel::Polygon::Refine(const UInt startIndex
     const auto from = std::next(m_nodes.begin(), iStart);
     const auto to = std::next(m_nodes.begin(), iEnd);
 
-    auto computeDistance = [&projection = std::as_const(m_projection)](auto l, const Point& p)
-    {
-        return l + ComputeDistance(p, *std::next(&p), projection);
-    };
-
     if (startIndex < endIndex)
     {
-        // estimate the size of the resulting polygon
-        const double length = std::accumulate(from, to, 0.0, computeDistance);
-        const size_t sizeEstimate = m_nodes.size() + std::lround(std::ceil(length / refinementDistance));
+        std::vector<double> segmentLengths(endIndex - startIndex + 1);
+        std::vector<size_t> nodeIndices(endIndex + m_nodes.size() - startIndex);
+        segmentLengths[0] = 0.0;
+        nodeIndices[0] = startIndex;
+
+        std::iota(nodeIndices.begin(), nodeIndices.end(), startIndex);
+
+        for (size_t i = startIndex + 1; i <= endIndex; ++i)
+        {
+            segmentLengths[i - startIndex] = segmentLengths[i - 1 - startIndex] + ComputeDistance(m_nodes[i - 1], m_nodes[i], m_projection);
+        }
+
+        const double length = segmentLengths.back();
+        const size_t numberOfNewNodes = static_cast<size_t>(std::ceil(length / refinementDistance));
+        const size_t sizeEstimate = m_nodes.size() + numberOfNewNodes;
+
         refinedPolygon.reserve(sizeEstimate);
 
         // copy the first segments, up to startIndex
-        std::copy(m_nodes.begin(), from, std::back_inserter(refinedPolygon));
+        std::copy(m_nodes.begin(), from + 1, std::back_inserter(refinedPolygon));
 
-        // refine edges starting with startIndex
-        for (auto it = from; it != to; ++it)
-        {
-            RefineSegment(refinedPolygon, it, refinementDistance, m_projection);
-        }
+        ComputeResampledNodes(numberOfNewNodes, segmentLengths, nodeIndices, refinedPolygon);
 
         // copy the nodes starting with endIndex until the end
         std::copy(to, m_nodes.end(), std::back_inserter(refinedPolygon));
     }
     else
     {
-        // estimate the size of the resulting polygon
-        const auto last = std::prev(m_nodes.end());
-        const double length =
-            std::accumulate(m_nodes.begin(), from, 0.0, computeDistance) +
-            std::accumulate(to, last, 0.0, computeDistance);
+        std::vector<double> segmentLengths(endIndex + m_nodes.size() - startIndex);
+        std::vector<size_t> nodeIndices(endIndex + m_nodes.size() - startIndex);
 
-        const size_t sizeEstimate = m_nodes.size() + static_cast<size_t>(length / refinementDistance);
+        segmentLengths[0] = 0.0;
+        nodeIndices[0] = startIndex;
+        size_t count = 1;
+
+        Point segmentStartPoint = m_nodes[startIndex];
+
+        for (size_t i = startIndex + 1; i < m_nodes.size() - 1; ++i)
+        {
+            segmentLengths[count] = segmentLengths[count - 1] + ComputeDistance(segmentStartPoint, m_nodes[i], m_projection);
+            segmentStartPoint = m_nodes[i];
+            nodeIndices[count] = i;
+            ++count;
+        }
+
+        for (size_t i = 0; i <= endIndex; ++i)
+        {
+            segmentLengths[count] = segmentLengths[count - 1] + ComputeDistance(segmentStartPoint, m_nodes[i], m_projection);
+            segmentStartPoint = m_nodes[i];
+            nodeIndices[count] = i;
+            ++count;
+        }
+
+        const double length = segmentLengths[segmentLengths.size() - 1];
+
+        const size_t numberOfNewNodes = static_cast<size_t>(std::ceil(length / refinementDistance));
+        const size_t sizeEstimate = m_nodes.size() + numberOfNewNodes;
+
         refinedPolygon.reserve(sizeEstimate);
 
-        // refine edges from the start to endIndex
-        for (auto it = m_nodes.begin(); it != to; ++it)
-            RefineSegment(refinedPolygon, it, refinementDistance, m_projection);
+        // copy the first segments, up to startIndex
+        std::copy(to, from + 1, std::back_inserter(refinedPolygon));
 
-        // copy from endIndex up to startIndex
-        std::copy(to, from, std::back_inserter(refinedPolygon));
+        ComputeResampledNodes(numberOfNewNodes, segmentLengths, nodeIndices, refinedPolygon);
 
-        // refine edges from startIndex to the end of the polygon
-        for (auto it = from; it != last; ++it)
-            RefineSegment(refinedPolygon, it, refinementDistance, m_projection);
-        refinedPolygon.push_back(m_nodes.back());
+        // Close the polygon
+        refinedPolygon.push_back(*to);
     }
+
     return refinedPolygon;
 }
 

@@ -117,7 +117,7 @@ TEST(TriangleInterpolation, InterpolateOnEdges)
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TriangleInterpolationTests/simple_grid_net.nc");
     ASSERT_GT(mesh->GetNumNodes(), static_cast<meshkernel::UInt>(0));
 
-    std::vector<meshkernel::Point> edgeCentres = meshkernel::MeshEdgeCenters::Compute(*mesh);
+    std::vector<meshkernel::Point> edgeCentres = meshkernel::algo::ComputeEdgeCentres(*mesh);
     meshkernel::TriangulationInterpolation triangulationInterpolation(edgeCentres, samples, meshkernel::Projection::cartesian);
     triangulationInterpolation.Compute();
 

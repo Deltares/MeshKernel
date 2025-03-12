@@ -136,7 +136,10 @@ CurvilinearGrid& CurvilinearGrid::operator=(const CurvilinearGrid& copy)
 
 void CurvilinearGrid::SetGridNodes(const lin_alg::Matrix<Point>& gridNodes)
 {
-    const auto [firstValidRow, lastValidRow, firstValidCol, lastValidCol] = TrimGridNodes(gridNodes);
+    const auto [firstValidRow,
+                lastValidRow,
+                firstValidCol,
+                lastValidCol] = TrimGridNodes(gridNodes);
 
     if (lastValidRow < firstValidRow || lastValidCol < firstValidCol)
     {

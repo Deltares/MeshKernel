@@ -44,7 +44,7 @@ void meshkernel::SampleTriangulationInterpolator::Interpolate(const int property
         meshNodes = std::span<const Point>(mesh.Nodes());
         break;
     case Location::Edges:
-        meshPoints = MeshEdgeCenters::Compute(mesh);
+        meshPoints = algo::ComputeEdgeCentres(mesh);
         meshNodes = std::span<const Point>(meshPoints);
         break;
     case Location::Faces:
