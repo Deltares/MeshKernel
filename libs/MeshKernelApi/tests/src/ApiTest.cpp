@@ -401,7 +401,8 @@ TEST_F(CartesianApiTestFixture, GetMeshBoundariesThroughApi)
     MakeMesh();
     auto const meshKernelId = GetMeshKernelId();
     int numberOfpolygonNodes;
-    auto errorCode = meshkernelapi::mkernel_mesh2d_count_mesh_boundaries_as_polygons(meshKernelId, numberOfpolygonNodes);
+    meshkernelapi::GeometryList selectingPolygon;
+    auto errorCode = mkernel_mesh2d_count_mesh_boundaries_as_polygons(meshKernelId, selectingPolygon, numberOfpolygonNodes);
     ASSERT_EQ(11, numberOfpolygonNodes);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
@@ -418,7 +419,7 @@ TEST_F(CartesianApiTestFixture, GetMeshBoundariesThroughApi)
     geometryListOut.values = zCoordinates.data();
 
     // Execute
-    errorCode = mkernel_mesh2d_get_mesh_boundaries_as_polygons(meshKernelId, geometryListOut);
+    errorCode = mkernel_mesh2d_get_mesh_boundaries_as_polygons(meshKernelId, selectingPolygon, geometryListOut);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
