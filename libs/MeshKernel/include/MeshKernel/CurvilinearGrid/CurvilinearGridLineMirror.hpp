@@ -53,6 +53,6 @@ namespace meshkernel
     private:
         CurvilinearGrid m_originalGrid; ///< The new grid, storing the new positions
         double m_mirroringFactor;       ///< The factor used to determine how far the faces should be mirrored
-        int m_numRowsToMirror = 1;      ///< The number of rows to mirror
+        int m_numRowsToMirror;          ///< The number of rows to mirror
     };
 } // namespace meshkernel
