@@ -275,7 +275,7 @@ protected:
         [[maybe_unused]] auto dummyUndoAction = curvilinearLineMirror.Compute();
 
         const double tolerance = 1e-6;
-        for (int i = 0; i < mirroredCoords.size(); ++i)
+        for (auto i = 0u; i < mirroredCoords.size(); ++i)
         {
             const auto [nIndex, mIndex] = mirroredCoords[i];
             auto node = curvilinearGrid->GetNode(nIndex, mIndex);
