@@ -270,9 +270,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <tr class="memitem:a5727bee8dd3366d7915e3f80c684e518" id="r_a5727bee8dd3366d7915e3f80c684e518"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a5727bee8dd3366d7915e3f80c684e518">mkernel_curvilinear_line_attraction_repulsion</a> (int meshKernelId, double repulsionParameter, double xFirstNodeOnTheLine, double yFirstNodeOnTheLine, double xSecondNodeOnTheLine, double ySecondNodeOnTheLine, double xLowerLeftCorner, double yLowerLeftCorner, double xUpperRightCorner, double yUpperRightCorner)</td></tr>
 <tr class="memdesc:a5727bee8dd3366d7915e3f80c684e518"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attracts/repulses grid lines in a block towards another set grid line.  <br /></td></tr>
 <tr class="separator:a5727bee8dd3366d7915e3f80c684e518"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa55a4a01c4325f46d98254fbf6ccbc32" id="r_aa55a4a01c4325f46d98254fbf6ccbc32"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa55a4a01c4325f46d98254fbf6ccbc32">mkernel_curvilinear_line_mirror</a> (int meshKernelId, double mirroringFactor, double xFirstGridLineNode, double yFirstGridLineNode, double xSecondGridLineNode, double ySecondGridLineNode)</td></tr>
-<tr class="memdesc:aa55a4a01c4325f46d98254fbf6ccbc32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mirrors a boundary gridline outwards. The boundary grid line is defined by its starting and ending points.  <br /></td></tr>
-<tr class="separator:aa55a4a01c4325f46d98254fbf6ccbc32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87af9356631d704e8188ecba009004ea" id="r_a87af9356631d704e8188ecba009004ea"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a87af9356631d704e8188ecba009004ea">mkernel_curvilinear_line_mirror</a> (int meshKernelId, double mirroringFactor, int numRowsToMirror, double xFirstGridLineNode, double yFirstGridLineNode, double xSecondGridLineNode, double ySecondGridLineNode)</td></tr>
+<tr class="memdesc:a87af9356631d704e8188ecba009004ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mirrors a boundary gridline outwards. The boundary grid line is defined by its starting and ending points.  <br /></td></tr>
+<tr class="separator:a87af9356631d704e8188ecba009004ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad4cf4944145f3981e711822151ffdeac" id="r_ad4cf4944145f3981e711822151ffdeac"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ad4cf4944145f3981e711822151ffdeac">mkernel_curvilinear_line_shift</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:ad4cf4944145f3981e711822151ffdeac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the new grid, shifting the line towards the moved nodes and distributing the shifting in block specified before.  <br /></td></tr>
 <tr class="separator:ad4cf4944145f3981e711822151ffdeac"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -2806,8 +2806,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 
 </div>
 </div>
-<a id="aa55a4a01c4325f46d98254fbf6ccbc32" name="aa55a4a01c4325f46d98254fbf6ccbc32"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa55a4a01c4325f46d98254fbf6ccbc32">&#9670;&#160;</a></span>mkernel_curvilinear_line_mirror()</h2>
+<a id="a87af9356631d704e8188ecba009004ea" name="a87af9356631d704e8188ecba009004ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87af9356631d704e8188ecba009004ea">&#9670;&#160;</a></span>mkernel_curvilinear_line_mirror()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2823,6 +2823,12 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
           <td></td>
           <td class="paramtype">double&#160;</td>
           <td class="paramname"><em>mirroringFactor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>numRowsToMirror</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -2861,6 +2867,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">mirroringFactor</td><td>The mirroring factor </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">numRowsToMirror</td><td>The number of rows to mirror </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">xFirstGridLineNode</td><td>The x coordinate of the first grid line point </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">yFirstGridLineNode</td><td>The y coordinate of the first grid line point </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">xSecondGridLineNode</td><td>The x coordinate of the second grid line point </td></tr>
