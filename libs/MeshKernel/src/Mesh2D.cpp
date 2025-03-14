@@ -1605,7 +1605,7 @@ std::vector<meshkernel::UInt> Mesh2D::SortedFacesAroundNode(UInt node) const
 
 std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector<Point>& polygonNodes)
 {
-    Polygon polygon(polygonNodes, m_projection);
+    const Polygon polygon(polygonNodes, m_projection);
 
     // Find faces
     Administrate();

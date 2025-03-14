@@ -1925,7 +1925,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& boundaryPolygons)
+    MKERNEL_API int mkernel_mesh2d_get_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& selectionPolygon, GeometryList& boundaryPolygons)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -1935,8 +1935,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const std::vector<meshkernel::Point> polygonNodes;
-            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->ComputeBoundaryPolygons(polygonNodes);
+            auto const selectionPolygonPoints = ConvertGeometryListToPointVector(selectionPolygon);
+            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->ComputeBoundaryPolygons(selectionPolygonPoints);
 
             ConvertPointVectorToGeometryList(meshBoundaryPolygon, boundaryPolygons);
         }
@@ -1947,7 +1947,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, int& numberOfPolygonNodes)
+    MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& selectionPolygon, int& numberOfPolygonNodes)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -1957,8 +1957,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const std::vector<meshkernel::Point> polygonNodes;
-            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->ComputeBoundaryPolygons(polygonNodes);
+            auto const selectionPolygonPoints = ConvertGeometryListToPointVector(selectionPolygon);
+            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->ComputeBoundaryPolygons(selectionPolygonPoints);
             numberOfPolygonNodes = static_cast<int>(meshBoundaryPolygon.size()); // last value is a separator
         }
         catch (...)
