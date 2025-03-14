@@ -755,6 +755,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearLineMirror_ShouldInsertANewGridLine)
     // Execute
     auto errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId,
                                                                     1.2,
+                                                                    1,
                                                                     0.0,
                                                                     0.0,
                                                                     0.0,
@@ -780,6 +781,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearLineMirror_ShouldInsertTwoNewGridLine
     // Execute
     auto errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId,
                                                                     1.2,
+                                                                    1,
                                                                     0.0,
                                                                     0.0,
                                                                     0.0,
@@ -787,6 +789,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearLineMirror_ShouldInsertTwoNewGridLine
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId,
                                                                1.2,
+                                                               1,
                                                                -10.0,
                                                                0.0,
                                                                -10.0,

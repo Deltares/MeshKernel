@@ -38,8 +38,9 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnLeftBoundary_ShouldCorrectlySumC
     EXPECT_EQ(2, curvilinearGrid->NumN());
     EXPECT_EQ(3, curvilinearGrid->NumM());
 
-    constexpr double f = 1.2;
-    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, f);
+    constexpr double mirroringFactor = 1.2;
+    constexpr int numRowsToMirror = 1;
+    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, mirroringFactor, numRowsToMirror);
     curvilinearLineMirror.SetLine({0, 0}, {0, 2});
 
     const auto p0 = curvilinearGrid->GetNode(1, 0);
@@ -53,7 +54,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnLeftBoundary_ShouldCorrectlySumC
 
     // Asserts
     constexpr double tolerance = 1e-6;
-    const auto p_expected = (1 + f) * p0 + (-f) * p1;
+    const auto p_expected = (1 + mirroringFactor) * p0 + (-mirroringFactor) * p1;
     const auto p_actual = curvilinearGrid->GetNode(1, 0);
     ASSERT_TRUE(meshkernel::IsEqual(p_expected, p_actual, tolerance));
 }
@@ -66,7 +67,8 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldCorrectlySum
     EXPECT_EQ(2, curvilinearGrid->NumN());
 
     constexpr double f = 1.2;
-    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, f);
+    constexpr int numRowsToMirror = 1;
+    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, f, numRowsToMirror);
     curvilinearLineMirror.SetLine({2, 0}, {2, 2});
 
     const auto p0 = curvilinearGrid->GetNode(1, 2);
@@ -89,7 +91,9 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnBottomBoundary_ShouldAddFacesOnB
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
-    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, 1.2);
+    const double mirroringFactor = 1.2;
+    const int numRowsToMirror = 1;
+    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, mirroringFactor, numRowsToMirror);
     curvilinearLineMirror.SetLine({79983.0, 366936.2}, {80155.8, 366529.5});
 
     // Execute
@@ -116,7 +120,7 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnBottomBoundaryWithZeroMirrowingF
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     // Assert
-    ASSERT_THROW(meshkernel::CurvilinearGridLineMirror(*curvilinearGrid, 0.0), std::invalid_argument);
+    ASSERT_THROW(meshkernel::CurvilinearGridLineMirror(*curvilinearGrid, 0.0, 1), std::invalid_argument);
 }
 
 TEST(CurvilinearLineMirror, Compute_LineMirrorOnUpperBoundary_ShouldAddFacesOnUpperBoundary)
@@ -124,7 +128,9 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnUpperBoundary_ShouldAddFacesOnUp
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
     ASSERT_EQ(9, curvilinearGrid->NumM());
-    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, 1.2);
+    const int numRowsToMirror = 1;
+    const double mirroringFactor = 1.2;
+    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, mirroringFactor, numRowsToMirror);
     curvilinearLineMirror.SetLine({80960.2, 366520.7}, {80609.8, 367406.0});
 
     // Execute
@@ -152,7 +158,9 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnLeftBoundary_ShouldAddFacesOnLef
 {
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
-    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, 1.2);
+    const int numRowsToMirror = 1;
+    const double mirroringFactor = 1.2;
+    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, mirroringFactor, numRowsToMirror);
     curvilinearLineMirror.SetLine({79983.0, 366936.2}, {80609.8, 367406.0});
 
     // Execute
@@ -186,7 +194,9 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldAddFacesOnRi
     // Set-up
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
     ASSERT_EQ(5, curvilinearGrid->NumN());
-    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, 1.2);
+    const int numRowsToMirror = 1;
+    const double mirroringFactor = 1.2;
+    meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, mirroringFactor, numRowsToMirror);
     curvilinearLineMirror.SetLine({80155.8, 366529.5}, {80960.2, 366520.72});
 
     // Execute
@@ -213,17 +223,39 @@ TEST(CurvilinearLineMirror, Compute_LineMirrorOnRightBoundary_ShouldAddFacesOnRi
     }
 }
 
-class CurvilinearLineMirrorInternalBoundaryTest : public ::testing::TestWithParam<std::tuple<std::pair<int, int>, std::pair<int, int>, std::vector<std::pair<int, int>>, double>>
+class CurvilinearLineMirrorInternalBoundaryTest : public ::testing::TestWithParam<std::tuple<std::pair<int, int>,
+                                                                                             std::pair<int, int>,
+                                                                                             int,
+                                                                                             std::vector<std::pair<int, int>>,
+                                                                                             std::vector<meshkernel::Point>>>
 {
 protected:
     void RunTest()
     {
         // Set-up
-        const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, 10, 10);
+        const auto curvilinearGrid = MakeCurvilinearGrid(0.0, 0.0, 1.0, 1.0, 15, 15);
 
         // Delete internal nodes for creating a hole
         std::vector<meshkernel::Point> holeNodes = {
-            {5, 3}, {5, 4}, {5, 5}, {6, 3}, {6, 4}, {6, 5}, {7, 3}, {7, 4}, {7, 5}};
+            {7, 6},
+            {7, 7},
+            {7, 8},
+            {7, 9},
+
+            {8, 6},
+            {8, 7},
+            {8, 8},
+            {8, 9},
+
+            {9, 6},
+            {9, 7},
+            {9, 8},
+            {9, 9},
+
+            {10, 6},
+            {10, 7},
+            {10, 8},
+            {10, 9}};
 
         for (const auto& node : holeNodes)
         {
@@ -231,9 +263,9 @@ protected:
         }
 
         // Get test parameters
-        auto [start, end, mirroredCoords, expectedX] = GetParam();
-        constexpr double f = 1.2;
-        meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, f);
+        auto [start, end, numRowsToMirror, mirroredCoords, expectedCoordinates] = GetParam();
+        constexpr double mirroringFactor = 1.2;
+        meshkernel::CurvilinearGridLineMirror curvilinearLineMirror(*curvilinearGrid, mirroringFactor, numRowsToMirror);
 
         // Apply line mirroring
         meshkernel::Point startLinePoint{static_cast<double>(start.first), static_cast<double>(start.second)};
@@ -243,10 +275,12 @@ protected:
         [[maybe_unused]] auto dummyUndoAction = curvilinearLineMirror.Compute();
 
         const double tolerance = 1e-6;
-        for (const auto& coord : mirroredCoords)
+        for (auto i = 0u; i < mirroredCoords.size(); ++i)
         {
-            auto node = curvilinearGrid->GetNode(coord.first, coord.second);
-            EXPECT_NEAR(expectedX, node.x, tolerance);
+            const auto [nIndex, mIndex] = mirroredCoords[i];
+            auto node = curvilinearGrid->GetNode(nIndex, mIndex);
+            ASSERT_NEAR(node.x, expectedCoordinates[i].x, tolerance);
+            ASSERT_NEAR(node.y, expectedCoordinates[i].y, tolerance);
         }
     }
 };
@@ -255,12 +289,99 @@ INSTANTIATE_TEST_SUITE_P(
     CurvilinearLineMirrorTests,
     CurvilinearLineMirrorInternalBoundaryTest,
     ::testing::Values(
-        std::make_tuple(std::make_pair(4, 3), std::make_pair(4, 5),
-                        std::vector<std::pair<int, int>>{{3, 5}, {4, 5}, {5, 5}},
-                        5.2), // Right-side test
-        std::make_tuple(std::make_pair(8, 3), std::make_pair(8, 5),
-                        std::vector<std::pair<int, int>>{{3, 7}, {4, 7}, {5, 7}},
-                        6.8) // Left-side test
+        std::make_tuple(std::make_pair(6, 6),
+                        std::make_pair(6, 9),
+                        2,
+                        std::vector<std::pair<int, int>>{{6, 7},
+                                                         {7, 7},
+                                                         {8, 7},
+                                                         {9, 7},
+
+                                                         {6, 8},
+                                                         {7, 8},
+                                                         {8, 8},
+                                                         {9, 8}},
+
+                        std::vector<meshkernel::Point>{{7.2, 6},
+                                                       {7.2, 7},
+                                                       {7.2, 8},
+                                                       {7.2, 9},
+
+                                                       {8.64, 6},
+                                                       {8.64, 7},
+                                                       {8.64, 8},
+                                                       {8.64, 9}}), // Right-side test
+        std::make_tuple(std::make_pair(11, 6),
+                        std::make_pair(11, 9),
+                        2,
+                        std::vector<std::pair<int, int>>{
+                            {6, 10},
+                            {7, 10},
+                            {8, 10},
+                            {9, 10},
+
+                            {6, 9},
+                            {7, 9},
+                            {8, 9},
+                            {9, 9}},
+                        std::vector<meshkernel::Point>{
+                            {9.8, 6},
+                            {9.8, 7},
+                            {9.8, 8},
+                            {9.8, 9},
+
+                            {8.36, 6},
+                            {8.36, 7},
+                            {8.36, 8},
+                            {8.36, 9}}), // Left-side test
+
+        std::make_tuple(std::make_pair(7, 5),
+                        std::make_pair(10, 5),
+                        2,
+                        std::vector<std::pair<int, int>>{
+                            {6, 7},
+                            {6, 8},
+                            {6, 9},
+                            {6, 10},
+
+                            {7, 7},
+                            {7, 8},
+                            {7, 9},
+                            {7, 10}},
+                        std::vector<meshkernel::Point>{
+                            {7.0, 6.2},
+                            {8.0, 6.2},
+                            {9.0, 6.2},
+                            {10.0, 6.2},
+
+                            {7.0, 7.64},
+                            {8.0, 7.64},
+                            {9.0, 7.64},
+                            {10.0, 7.64}}), // Bottom-side test
+
+        std::make_tuple(std::make_pair(7, 10),
+                        std::make_pair(10, 10),
+                        2,
+                        std::vector<std::pair<int, int>>{
+                            {9, 7},
+                            {9, 8},
+                            {9, 9},
+                            {9, 10},
+
+                            {8, 7},
+                            {8, 8},
+                            {8, 9},
+                            {8, 10}},
+                        std::vector<meshkernel::Point>{
+                            {7.0, 8.8},
+                            {8.0, 8.8},
+                            {9.0, 8.8},
+                            {10.0, 8.8},
+
+                            {7.0, 7.36},
+                            {8.0, 7.36},
+                            {9.0, 7.36},
+                            {10.0, 7.36}}) // Top-side test
         ));
 
 TEST_P(CurvilinearLineMirrorInternalBoundaryTest, Compute_LineMirrorInsideHole_ShouldCorrectlyAddLine)
