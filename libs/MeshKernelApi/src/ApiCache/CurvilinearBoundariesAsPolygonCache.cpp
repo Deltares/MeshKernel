@@ -41,9 +41,9 @@ meshkernelapi::CurvilinearBoundariesAsPolygonCache::CurvilinearBoundariesAsPolyg
 }
 
 bool meshkernelapi::CurvilinearBoundariesAsPolygonCache::ValidOptions(const int lowerLeftN,
-                                                           const int lowerLeftM,
-                                                           const int upperRightN,
-                                                           const int upperRightM) const
+                                                                      const int lowerLeftM,
+                                                                      const int upperRightN,
+                                                                      const int upperRightM) const
 {
     return lowerLeftN == m_lowerLeftNValue &&
            lowerLeftM == m_lowerLeftMValue &&
