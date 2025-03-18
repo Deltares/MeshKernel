@@ -89,8 +89,8 @@
 #include <MeshKernel/UndoActions/UndoActionStack.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
-#include "MeshKernelApi/ApiCache/CurvilinearBoundariesAsPolygonCache.hpp"
 #include "MeshKernelApi/ApiCache/CachedPointValues.hpp"
+#include "MeshKernelApi/ApiCache/CurvilinearBoundariesAsPolygonCache.hpp"
 #include "MeshKernelApi/ApiCache/FacePolygonPropertyCache.hpp"
 #include "MeshKernelApi/ApiCache/HangingEdgeCache.hpp"
 #include "MeshKernelApi/ApiCache/NodeInPolygonCache.hpp"
@@ -1935,10 +1935,20 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            auto const selectionPolygonPoints = ConvertGeometryListToPointVector(selectionPolygon);
-            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->ComputeBoundaryPolygons(selectionPolygonPoints);
+            if (meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Polygon data has not been cached, mkernel_mesh2d_count_mesh_boundaries_as_polygons must be called before");
+            }
 
-            ConvertPointVectorToGeometryList(meshBoundaryPolygon, boundaryPolygons);
+            auto const selectionPolygonPoints = ConvertGeometryListToPointVector(selectionPolygon);
+
+            if (!meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache->ValidOptions(selectionPolygonPoints))
+            {
+                meshKernelState[meshKernelId].m_polygonRefinementCache.reset();
+                throw meshkernel::ConstraintError("Given boundary polygon is not compatible with the cached values. Cached values will be deleted.");
+            }
+
+            meshKernelState[meshKernelId].m_polygonRefinementCache->Copy(boundaryPolygons);
         }
         catch (...)
         {
@@ -1959,6 +1969,9 @@ namespace meshkernelapi
 
             auto const selectionPolygonPoints = ConvertGeometryListToPointVector(selectionPolygon);
             const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->ComputeBoundaryPolygons(selectionPolygonPoints);
+
+            meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache = std::make_shared<MeshBoundariesAsPolygonCache>(selectionPolygonPoints,
+                                                                                                                          meshBoundaryPolygon);
             numberOfPolygonNodes = static_cast<int>(meshBoundaryPolygon.size()); // last value is a separator
         }
         catch (...)

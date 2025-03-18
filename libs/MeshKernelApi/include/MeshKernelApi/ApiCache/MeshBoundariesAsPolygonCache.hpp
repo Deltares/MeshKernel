@@ -25,29 +25,33 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernelApi/ApiCache/MeshBoundariesAsPolygonCache.hpp"
+#pragma once
 
-meshkernelapi::MeshBoundariesAsPolygonCache::MeshBoundariesAsPolygonCache(const std::vector<meshkernel::Point>& selectionPolygonPoints,
-                                                                          const std::vector<meshkernel::Point>& boundaryPoints)
-    : CachedPointValues(boundaryPoints), m_selectionPolygonPoints(selectionPolygonPoints)
+#include <algorithm>
+#include <cstring>
+#include <utility>
+#include <vector>
+
+#include "MeshKernelApi/ApiCache/CachedPointValues.hpp"
+#include "MeshKernelApi/GeometryList.hpp"
+#include "MeshKernelApi/Utils.hpp"
+
+namespace meshkernelapi
 {
-}
 
-bool meshkernelapi::MeshBoundariesAsPolygonCache::ValidOptions(const std::vector<meshkernel::Point>& selectionPolygonPoints) const
-{
-
-    if (selectionPolygonPoints.size() != m_selectionPolygonPoints.size())
+    /// @brief Cache boundary polygon points
+    class MeshBoundariesAsPolygonCache : public CachedPointValues
     {
-        return false;
-    }
+    public:
+        /// @brief Constructor
+        MeshBoundariesAsPolygonCache(const std::vector<meshkernel::Point>& selectionPolygonPoints,
+                                     const std::vector<meshkernel::Point>& boundaryPoints);
 
-    const double tolerance = 1e-9;
-    for (int i = 0; i < selectionPolygonPoints.size(); ++i)
-    {
-        if (!IsEqual(selectionPolygonPoints[i], m_selectionPolygonPoints[i], tolerance))
-        {
-            return false;
-        }
-    }
-    return true;
-}
+        /// @brief Determine if current options match those used to construct the object
+        bool ValidOptions(const std::vector<meshkernel::Point>& selectionPolygonPoints) const;
+
+    private:
+        const std::vector<meshkernel::Point> m_selectionPolygonPoints; ///< the points of the selection polygon
+    };
+
+} // namespace meshkernelapi
