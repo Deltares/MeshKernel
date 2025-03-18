@@ -40,11 +40,11 @@ namespace meshkernelapi
 {
 
     /// @brief Cache boundary polygon points
-    class BoundariesAsPolygonCache : public CachedPointValues
+    class CurvilinearBoundariesAsPolygonCache : public CachedPointValues
     {
     public:
         /// @brief Constructor
-        BoundariesAsPolygonCache(const int lowerLeftN,
+        CurvilinearBoundariesAsPolygonCache(const int lowerLeftN,
                                  const int lowerLeftM,
                                  const int upperRightN,
                                  const int upperRightM,

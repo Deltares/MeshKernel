@@ -38,7 +38,7 @@
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/OrthogonalizationAndSmoothing.hpp"
 
-#include "MeshKernelApi/ApiCache/BoundariesAsPolygonCache.hpp"
+#include "MeshKernelApi/ApiCache/CurvilinearBoundariesAsPolygonCache.hpp"
 #include "MeshKernelApi/ApiCache/FacePolygonPropertyCache.hpp"
 #include "MeshKernelApi/ApiCache/HangingEdgeCache.hpp"
 #include "MeshKernelApi/ApiCache/NodeInPolygonCache.hpp"
@@ -86,7 +86,7 @@ namespace meshkernelapi
 
         // Cached values, used when dimensions are computed first, followed by values being retrieved in a separate call
         std::shared_ptr<FacePolygonPropertyCache> m_facePropertyCache;          ///< face property cache
-        std::shared_ptr<BoundariesAsPolygonCache> m_boundariesAsPolygonCache;   ///< boundaries as polygon cache
+        std::shared_ptr<CurvilinearBoundariesAsPolygonCache> m_boundariesAsPolygonCache;   ///< boundaries as polygon cache
         std::shared_ptr<PolygonRefinementCache> m_polygonRefinementCache;       ///< polygon refinement cache
         std::shared_ptr<NodeInPolygonCache> m_nodeInPolygonCache;               ///< node in polygon cache
         std::shared_ptr<SmallFlowEdgeCentreCache> m_smallFlowEdgeCentreCache;   ///< small flow edge centres cache

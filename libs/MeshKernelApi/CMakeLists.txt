@@ -29,7 +29,7 @@ set(SRC_LIST
 )
 
 set(CACHE_SRC_LIST
-  ${CACHE_SRC_DIR}/BoundariesAsPolygonCache.cpp
+  ${CACHE_SRC_DIR}/CurvilinearBoundariesAsPolygonCache.cpp
   ${CACHE_SRC_DIR}/CachedIntegerValues.cpp
   ${CACHE_SRC_DIR}/CachedPointValues.cpp
   ${CACHE_SRC_DIR}/FacePolygonPropertyCache.cpp
@@ -63,7 +63,7 @@ set(
 
 set(
   CACHE_INC_LIST
-  ${CACHE_INC_DIR}/BoundariesAsPolygonCache.hpp
+  ${CACHE_INC_DIR}/CurvilinearBoundariesAsPolygonCache.hpp
   ${CACHE_INC_DIR}/CachedIntegerValues.hpp
   ${CACHE_INC_DIR}/CachedPointValues.hpp
   ${CACHE_INC_DIR}/FacePolygonPropertyCache.hpp
