@@ -27,13 +27,10 @@
 
 #pragma once
 
-#include <algorithm>
 #include <cstring>
-#include <utility>
 #include <vector>
 
 #include "MeshKernelApi/ApiCache/CachedPointValues.hpp"
-#include "MeshKernelApi/GeometryList.hpp"
 #include "MeshKernelApi/Utils.hpp"
 
 namespace meshkernelapi
@@ -45,10 +42,10 @@ namespace meshkernelapi
     public:
         /// @brief Constructor
         CurvilinearBoundariesAsPolygonCache(const int lowerLeftN,
-                                 const int lowerLeftM,
-                                 const int upperRightN,
-                                 const int upperRightM,
-                                 const std::vector<meshkernel::Point>& boundaryPoints);
+                                            const int lowerLeftM,
+                                            const int upperRightN,
+                                            const int upperRightM,
+                                            const std::vector<meshkernel::Point>& boundaryPoints);
 
         /// @brief Determine if current options match those used to construct the object
         bool ValidOptions(const int lowerLeftN,
