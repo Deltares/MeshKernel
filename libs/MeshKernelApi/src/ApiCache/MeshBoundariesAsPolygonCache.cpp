@@ -41,8 +41,8 @@ bool meshkernelapi::MeshBoundariesAsPolygonCache::ValidOptions(const std::vector
         return false;
     }
 
-    const double tolerance = 1e-9;
-    for (int i = 0; i < selectionPolygonPoints.size(); ++i)
+    constexpr double tolerance = 1e-9;
+    for (auto i = 0u; i < selectionPolygonPoints.size(); ++i)
     {
         if (!IsEqual(selectionPolygonPoints[i], m_selectionPolygonPoints[i], tolerance))
         {
