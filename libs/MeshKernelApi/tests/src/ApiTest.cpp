@@ -428,6 +428,77 @@ TEST_F(CartesianApiTestFixture, GetMeshBoundariesThroughApi)
     ASSERT_NEAR(0.0, geometryListOut.coordinates_y[0], tolerance);
 }
 
+TEST_F(CartesianApiTestFixture, GetMeshBoundariesAsPolygons_WithSelectedPolygon_ShouldGetSelectedMeshBoundary)
+{
+    // Prepare
+    MakeMesh(10, 10, 1);
+    auto const meshKernelId = GetMeshKernelId();
+
+    int nodeIndex = 0;
+    auto errorCode = meshkernelapi::mkernel_mesh2d_get_node_index(meshKernelId,
+                                                                  4.0,
+                                                                  4.0,
+                                                                  0.1,
+                                                                  0.0,
+                                                                  0.0,
+                                                                  10.0,
+                                                                  10.0,
+                                                                  nodeIndex);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = meshkernelapi::mkernel_mesh2d_delete_node(meshKernelId, nodeIndex);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    int numberOfBoundaryPolygonNodes;
+    meshkernelapi::GeometryList selectingPolygon;
+    auto coordinates_x = std::vector<double>{2, 6, 6, 2, 2};
+    auto coordinates_y = std::vector<double>{2, 2, 6, 6, 2};
+    selectingPolygon.coordinates_x = coordinates_x.data();
+    selectingPolygon.coordinates_y = coordinates_y.data();
+    selectingPolygon.num_coordinates = static_cast<int>(coordinates_x.size());
+
+    errorCode = mkernel_mesh2d_count_mesh_boundaries_as_polygons(meshKernelId, selectingPolygon, numberOfBoundaryPolygonNodes);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::GeometryList BoundaryPolygon;
+    BoundaryPolygon.geometry_separator = meshkernel::constants::missing::doubleValue;
+    BoundaryPolygon.num_coordinates = numberOfBoundaryPolygonNodes;
+
+    std::vector<double> xCoordinatesBoundaryPolygon(numberOfBoundaryPolygonNodes);
+    std::vector<double> yCoordinatesBoundaryPolygon(numberOfBoundaryPolygonNodes);
+    std::vector<double> zCoordinatesBoundaryPolygon(numberOfBoundaryPolygonNodes);
+
+    BoundaryPolygon.coordinates_x = xCoordinatesBoundaryPolygon.data();
+    BoundaryPolygon.coordinates_y = yCoordinatesBoundaryPolygon.data();
+    BoundaryPolygon.values = zCoordinatesBoundaryPolygon.data();
+
+    // Execute
+    errorCode = mkernel_mesh2d_get_mesh_boundaries_as_polygons(meshKernelId, selectingPolygon, BoundaryPolygon);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(3.0, BoundaryPolygon.coordinates_x[0], tolerance);
+    ASSERT_NEAR(4.0, BoundaryPolygon.coordinates_x[1], tolerance);
+    ASSERT_NEAR(5.0, BoundaryPolygon.coordinates_x[2], tolerance);
+    ASSERT_NEAR(5.0, BoundaryPolygon.coordinates_x[3], tolerance);
+    ASSERT_NEAR(5.0, BoundaryPolygon.coordinates_x[4], tolerance);
+    ASSERT_NEAR(4.0, BoundaryPolygon.coordinates_x[5], tolerance);
+    ASSERT_NEAR(3.0, BoundaryPolygon.coordinates_x[6], tolerance);
+    ASSERT_NEAR(3.0, BoundaryPolygon.coordinates_x[7], tolerance);
+    ASSERT_NEAR(3.0, BoundaryPolygon.coordinates_x[8], tolerance);
+
+    ASSERT_NEAR(3.0, BoundaryPolygon.coordinates_y[0], tolerance);
+    ASSERT_NEAR(3.0, BoundaryPolygon.coordinates_y[1], tolerance);
+    ASSERT_NEAR(3.0, BoundaryPolygon.coordinates_y[2], tolerance);
+    ASSERT_NEAR(4.0, BoundaryPolygon.coordinates_y[3], tolerance);
+    ASSERT_NEAR(5.0, BoundaryPolygon.coordinates_y[4], tolerance);
+    ASSERT_NEAR(5.0, BoundaryPolygon.coordinates_y[5], tolerance);
+    ASSERT_NEAR(5.0, BoundaryPolygon.coordinates_y[6], tolerance);
+    ASSERT_NEAR(4.0, BoundaryPolygon.coordinates_y[7], tolerance);
+    ASSERT_NEAR(3.0, BoundaryPolygon.coordinates_y[8], tolerance);
+}
+
 TEST_F(CartesianApiTestFixture, OffsetAPolygonThroughApi)
 {
     // Prepare
