@@ -5185,6 +5185,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_curvilinear_line_mirror(int meshKernelId,
                                                     double mirroringFactor,
+                                                    int numRowsToMirror,
                                                     double xFirstGridLineNode,
                                                     double yFirstGridLineNode,
                                                     double xSecondGridLineNode,
@@ -5208,7 +5209,9 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
             }
 
-            auto curvilinearGridLineMirror = meshkernel::CurvilinearGridLineMirror(*meshKernelState[meshKernelId].m_curvilinearGrid, mirroringFactor);
+            auto curvilinearGridLineMirror = meshkernel::CurvilinearGridLineMirror(*meshKernelState[meshKernelId].m_curvilinearGrid,
+                                                                                   mirroringFactor,
+                                                                                   numRowsToMirror);
 
             curvilinearGridLineMirror.SetLine({xFirstGridLineNode, yFirstGridLineNode}, {xSecondGridLineNode, ySecondGridLineNode});
 
