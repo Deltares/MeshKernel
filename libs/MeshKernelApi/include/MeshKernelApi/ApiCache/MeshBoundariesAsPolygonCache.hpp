@@ -27,14 +27,10 @@
 
 #pragma once
 
-#include <algorithm>
 #include <cstring>
-#include <utility>
 #include <vector>
 
 #include "MeshKernelApi/ApiCache/CachedPointValues.hpp"
-#include "MeshKernelApi/GeometryList.hpp"
-#include "MeshKernelApi/Utils.hpp"
 
 namespace meshkernelapi
 {

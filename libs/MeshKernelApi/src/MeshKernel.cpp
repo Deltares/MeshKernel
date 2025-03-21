@@ -1944,11 +1944,14 @@ namespace meshkernelapi
 
             if (!meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache->ValidOptions(selectionPolygonPoints))
             {
-                meshKernelState[meshKernelId].m_polygonRefinementCache.reset();
+                meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache.reset();
                 throw meshkernel::ConstraintError("Given boundary polygon is not compatible with the cached values. Cached values will be deleted.");
             }
 
-            meshKernelState[meshKernelId].m_polygonRefinementCache->Copy(boundaryPolygons);
+            meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache->Copy(boundaryPolygons);
+
+            // Clear the cache now that the values have been retrieved
+            meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache.reset();
         }
         catch (...)
         {
