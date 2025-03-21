@@ -27,40 +27,27 @@
 
 #pragma once
 
-#include <algorithm>
 #include <cstring>
-#include <utility>
 #include <vector>
 
 #include "MeshKernelApi/ApiCache/CachedPointValues.hpp"
-#include "MeshKernelApi/GeometryList.hpp"
-#include "MeshKernelApi/Utils.hpp"
 
 namespace meshkernelapi
 {
 
     /// @brief Cache boundary polygon points
-    class BoundariesAsPolygonCache : public CachedPointValues
+    class MeshBoundariesAsPolygonCache : public CachedPointValues
     {
     public:
         /// @brief Constructor
-        BoundariesAsPolygonCache(const int lowerLeftN,
-                                 const int lowerLeftM,
-                                 const int upperRightN,
-                                 const int upperRightM,
-                                 const std::vector<meshkernel::Point>& boundaryPoints);
+        MeshBoundariesAsPolygonCache(const std::vector<meshkernel::Point>& selectionPolygonPoints,
+                                     const std::vector<meshkernel::Point>& boundaryPoints);
 
         /// @brief Determine if current options match those used to construct the object
-        bool ValidOptions(const int lowerLeftN,
-                          const int lowerLeftM,
-                          const int upperRightN,
-                          const int upperRightM) const;
+        bool ValidOptions(const std::vector<meshkernel::Point>& selectionPolygonPoints) const;
 
     private:
-        int m_lowerLeftNValue = -1;  ///< Initial lower left N value
-        int m_lowerLeftMValue = -1;  ///< Initial lower left M value
-        int m_upperRightNValue = -1; ///< Initial upper right N value
-        int m_upperRightMValue = -1; ///< Initial upper right M value
+        const std::vector<meshkernel::Point> m_selectionPolygonPoints; ///< the points of the selection polygon
     };
 
 } // namespace meshkernelapi
