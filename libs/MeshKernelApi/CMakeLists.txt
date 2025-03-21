@@ -70,7 +70,7 @@ set(
   ${CACHE_INC_DIR}/FacePolygonPropertyCache.hpp
   ${CACHE_INC_DIR}/HangingEdgeCache.hpp
   ${CACHE_INC_DIR}/NodeInPolygonCache.hpp
-  ${CACHE_SRC_DIR}/MeshBoundariesAsPolygonCache.hpp
+  ${CACHE_INC_DIR}/MeshBoundariesAsPolygonCache.hpp
   ${CACHE_INC_DIR}/ObtuseTriangleCentreCache.hpp
   ${CACHE_INC_DIR}/PolygonRefinementCache.hpp
   ${CACHE_INC_DIR}/SmallFlowEdgeCentreCache.hpp
