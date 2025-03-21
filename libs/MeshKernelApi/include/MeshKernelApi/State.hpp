@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include "ApiCache/MeshBoundariesAsPolygonCache.hpp"
+
 #include <memory>
 
 #include "MeshKernel/Contacts.hpp"
@@ -38,7 +40,7 @@
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/OrthogonalizationAndSmoothing.hpp"
 
-#include "MeshKernelApi/ApiCache/BoundariesAsPolygonCache.hpp"
+#include "MeshKernelApi/ApiCache/CurvilinearBoundariesAsPolygonCache.hpp"
 #include "MeshKernelApi/ApiCache/FacePolygonPropertyCache.hpp"
 #include "MeshKernelApi/ApiCache/HangingEdgeCache.hpp"
 #include "MeshKernelApi/ApiCache/NodeInPolygonCache.hpp"
@@ -85,13 +87,14 @@ namespace meshkernelapi
         meshkernel::Projection m_projection{meshkernel::Projection::cartesian}; ///< Projection used by the meshes
 
         // Cached values, used when dimensions are computed first, followed by values being retrieved in a separate call
-        std::shared_ptr<FacePolygonPropertyCache> m_facePropertyCache;          ///< face property cache
-        std::shared_ptr<BoundariesAsPolygonCache> m_boundariesAsPolygonCache;   ///< boundaries as polygon cache
-        std::shared_ptr<PolygonRefinementCache> m_polygonRefinementCache;       ///< polygon refinement cache
-        std::shared_ptr<NodeInPolygonCache> m_nodeInPolygonCache;               ///< node in polygon cache
-        std::shared_ptr<SmallFlowEdgeCentreCache> m_smallFlowEdgeCentreCache;   ///< small flow edge centres cache
-        std::shared_ptr<HangingEdgeCache> m_hangingEdgeCache;                   ///< hanging edge id cache
-        std::shared_ptr<ObtuseTriangleCentreCache> m_obtuseTriangleCentreCache; ///< centre of obtuse triangles cache
+        std::shared_ptr<FacePolygonPropertyCache> m_facePropertyCache;                   ///< face property cache
+        std::shared_ptr<CurvilinearBoundariesAsPolygonCache> m_boundariesAsPolygonCache; ///< boundaries as polygon cache
+        std::shared_ptr<MeshBoundariesAsPolygonCache> m_meshBoundariesAsPolygonCache;    ///< boundaries as polygon cache
+        std::shared_ptr<PolygonRefinementCache> m_polygonRefinementCache;                ///< polygon refinement cache
+        std::shared_ptr<NodeInPolygonCache> m_nodeInPolygonCache;                        ///< node in polygon cache
+        std::shared_ptr<SmallFlowEdgeCentreCache> m_smallFlowEdgeCentreCache;            ///< small flow edge centres cache
+        std::shared_ptr<HangingEdgeCache> m_hangingEdgeCache;                            ///< hanging edge id cache
+        std::shared_ptr<ObtuseTriangleCentreCache> m_obtuseTriangleCentreCache;          ///< centre of obtuse triangles cache
     };
 
 } // namespace meshkernelapi
