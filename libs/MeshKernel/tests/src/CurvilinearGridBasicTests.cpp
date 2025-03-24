@@ -493,7 +493,7 @@ TEST(CurvilinearBasicTests, Derefinement)
 
     const lin_alg::Matrix<mk::Point> originalPoints = grid->GetNodes();
 
-    mk::CurvilinearGridDeRefinement deRefinement(*grid);
+    mk::CurvilinearGridDeRefinement deRefinement(*grid, 10);
 
     deRefinement.SetBlock({10.0, 20.0}, {20.0, 20.0});
 

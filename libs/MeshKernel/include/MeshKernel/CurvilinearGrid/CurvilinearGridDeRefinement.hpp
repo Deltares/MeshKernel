@@ -43,9 +43,11 @@ namespace meshkernel
     public:
         /// @brief Class constructor
         /// @param[in] grid The input curvilinear grid
-        explicit CurvilinearGridDeRefinement(CurvilinearGrid& grid);
+        explicit CurvilinearGridDeRefinement(CurvilinearGrid& grid, int derefinementFactor);
 
         /// @brief Refine the curvilinear grid
         [[nodiscard]] UndoActionPtr Compute() override;
+    private:
+        int m_derefinementFactor;
     };
 } // namespace meshkernel

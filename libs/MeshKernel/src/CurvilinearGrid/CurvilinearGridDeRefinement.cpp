@@ -33,7 +33,7 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridDeRefinement;
 
-CurvilinearGridDeRefinement::CurvilinearGridDeRefinement(CurvilinearGrid& grid) : CurvilinearGridAlgorithm(grid)
+CurvilinearGridDeRefinement::CurvilinearGridDeRefinement(CurvilinearGrid& grid, int derefinementFactor) : m_derefinementFactor(derefinementFactor), CurvilinearGridAlgorithm(grid)
 {
 }
 
@@ -48,6 +48,9 @@ meshkernel::UndoActionPtr CurvilinearGridDeRefinement::Compute()
     const auto numMToDeRefine = m_upperRight.m_m > m_lowerLeft.m_m ? m_upperRight.m_m - m_lowerLeft.m_m : 1;
     const auto numNToDeRefine = m_upperRight.m_n > m_lowerLeft.m_n ? m_upperRight.m_n - m_lowerLeft.m_n : 1;
 
+    const int mDeRefineFactor = numMToDeRefine > 1 ? m_derefinementFactor : 1;
+    const int nDeRefineFactor = numNToDeRefine > 1 ? m_derefinementFactor : 1;
+
     std::unique_ptr<CurvilinearGridRefinementUndoAction> undoAction = CurvilinearGridRefinementUndoAction::Create(m_grid);
 
     // the de-refined grid
@@ -60,7 +63,11 @@ meshkernel::UndoActionPtr CurvilinearGridDeRefinement::Compute()
         UInt localNDeRefinement = 1;
         if (nIndexOriginalGrid >= m_lowerLeft.m_n && nIndexOriginalGrid < m_upperRight.m_n)
         {
-            localNDeRefinement = numNToDeRefine;
+            localNDeRefinement = nDeRefineFactor;
+            if (nIndexOriginalGrid + localNDeRefinement > m_upperRight.m_n)
+            {
+                localNDeRefinement = m_upperRight.m_n - nIndexOriginalGrid;
+            }
         }
         deRefinedGrid.emplace_back(std::vector<Point>());
         deRefinedGrid.back().reserve(m_grid.NumM());
@@ -71,7 +78,11 @@ meshkernel::UndoActionPtr CurvilinearGridDeRefinement::Compute()
             UInt localMDeRefinement = 1;
             if (mIndexOriginalGrid >= m_lowerLeft.m_m && mIndexOriginalGrid < m_upperRight.m_m)
             {
-                localMDeRefinement = numMToDeRefine;
+                localMDeRefinement = mDeRefineFactor;
+                if (mIndexOriginalGrid + localMDeRefinement > m_upperRight.m_m)
+                {
+                    localMDeRefinement = m_upperRight.m_n - mIndexOriginalGrid;
+                }
             }
             deRefinedGrid.back().emplace_back(m_grid.GetNode(nIndexOriginalGrid, mIndexOriginalGrid));
             mIndexOriginalGrid += localMDeRefinement;

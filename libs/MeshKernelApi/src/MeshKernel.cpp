@@ -3997,6 +3997,12 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
+
+            if (refinement < 0)
+            {
+                throw meshkernel::MeshKernelError("Refinement factor cannot be negative");
+            }
+
             meshkernel::Point const firstPoint{xLowerLeftCorner, yLowerLeftCorner};
             meshkernel::Point const secondPoint{xUpperRightCorner, yUpperRightCorner};
 
@@ -4054,7 +4060,8 @@ namespace meshkernelapi
                                                  double xLowerLeftCorner,
                                                  double yLowerLeftCorner,
                                                  double xUpperRightCorner,
-                                                 double yUpperRightCorner)
+                                                 double yUpperRightCorner,
+                                                 int derefinementFactor)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -4064,11 +4071,16 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
+            if (derefinementFactor < 0)
+            {
+                throw meshkernel::MeshKernelError("De-refinement factor cannot be negative");
+            }
+
             meshkernel::Point const firstPoint{xLowerLeftCorner, yLowerLeftCorner};
             meshkernel::Point const secondPoint{xUpperRightCorner, yUpperRightCorner};
 
             // Execute
-            meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid);
+            meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid, derefinementFactor);
 
             curvilinearGridDeRefinement.SetBlock(firstPoint, secondPoint);
             meshKernelUndoStack.Add(curvilinearGridDeRefinement.Compute(), meshKernelId);

@@ -43,7 +43,7 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineVertic
         Point{0, 30}, Point{10, 30}, Point{15, 30}, Point{20, 30}, Point{30, 30};
 
     CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
-    CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
+    CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid, 2);
     curvilinearGridDeRefinement.SetBlock({10, 20}, {20, 20});
 
     // Execute
@@ -65,7 +65,7 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGridWithMissingFaces_Shou
         Point{0, 30}, Point{10, 30}, Point{11, 30}, Point{12, 30}, Point{13, 30}, Point{20, 30}, Point{30, 30}, Point{40, 30}, Point{50, 30};
 
     CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
-    CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
+    CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid, 4);
     curvilinearGridDeRefinement.SetBlock({10, 20}, {20, 20});
 
     // Execute
@@ -88,7 +88,7 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineHorizo
         Point{0, 30}, Point{10, 30}, Point{20, 30}, Point{30, 30};
 
     CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
-    CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
+    CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid, 2);
     curvilinearGridDeRefinement.SetBlock({10, 10}, {10, 20});
 
     // Execute
