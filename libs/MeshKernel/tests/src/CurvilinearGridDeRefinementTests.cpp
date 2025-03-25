@@ -155,10 +155,9 @@ TEST(CurvilinearGridDeRefinement, Compute_OnRefinedCurvilinearGridWithSubsequent
     }
 
     // Assert, given the large de-refinement factor all lines between are removed
+    constexpr double tolerance = 1e-6;
     ASSERT_EQ(11, curvilinearGrid.NumN());
     ASSERT_EQ(2, curvilinearGrid.NumM());
-
-    constexpr double tolerance = 1e-6;
     ASSERT_NEAR(0, curvilinearGrid.GetNode(0, 0).x, tolerance);
     ASSERT_NEAR(100.0, curvilinearGrid.GetNode(0, 1).x, tolerance);
 }
