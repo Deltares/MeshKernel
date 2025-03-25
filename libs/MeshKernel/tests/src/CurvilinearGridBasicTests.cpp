@@ -411,7 +411,7 @@ TEST(CurvilinearBasicTests, GridSmoothing)
 
     mk::CurvilinearGridSmoothing curvilinearGridSmoothing(*grid, 10);
 
-    curvilinearGridSmoothing.SetBlock({ny * deltaX / 4.0, ny * deltaX / 4.0}, {3.0 * ny * deltaX / 4.0, 3.0 * ny * deltaX / 4.0});
+    curvilinearGridSmoothing.SetBlock(meshkernel::Point{ny * deltaX / 4.0, ny * deltaX / 4.0}, meshkernel::Point{3.0 * ny * deltaX / 4.0, 3.0 * ny * deltaX / 4.0});
 
     std::unique_ptr<mk::UndoAction> undoAction = curvilinearGridSmoothing.Compute();
 
@@ -456,7 +456,7 @@ TEST(CurvilinearBasicTests, GridOrthogonalisation)
 
     meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(*grid, orthogonalizationParameters);
 
-    curvilinearGridOrthogonalization.SetBlock({-10.0, -10.0}, {2.0 * nx * deltaX, 2.0 * nx * deltaX});
+    curvilinearGridOrthogonalization.SetBlock(meshkernel::Point{-10.0, -10.0}, meshkernel::Point{2.0 * nx * deltaX, 2.0 * nx * deltaX});
 
     std::unique_ptr<mk::UndoAction> undoAction = curvilinearGridOrthogonalization.Compute();
 
@@ -495,7 +495,7 @@ TEST(CurvilinearBasicTests, Derefinement)
 
     mk::CurvilinearGridDeRefinement deRefinement(*grid, 10);
 
-    deRefinement.SetBlock({10.0, 20.0}, {20.0, 20.0});
+    deRefinement.SetBlock(meshkernel::Point{10.0, 20.0}, meshkernel::Point{20.0, 20.0});
 
     std::unique_ptr<mk::UndoAction> undoAction = deRefinement.Compute();
 
@@ -533,7 +533,7 @@ TEST(CurvilinearBasicTests, UndoLineAttractor)
     mk::CurvilinearGridLineAttractionRepulsion lineAttractor(*grid, 0.5);
 
     lineAttractor.SetLine({80266.8, 367104.0}, {80419.3, 366566.2});
-    lineAttractor.SetBlock({80198.2, 366750.6}, {80583.1, 366889.8});
+    lineAttractor.SetBlock(meshkernel::Point{80198.2, 366750.6}, meshkernel::Point{80583.1, 366889.8});
 
     std::unique_ptr<mk::UndoAction> undoAction = lineAttractor.Compute();
     grid->ComputeGridNodeTypes();
@@ -573,7 +573,7 @@ TEST(CurvilinearBasicTests, UndoLineShift)
     meshkernel::CurvilinearGridLineShift curvilinearLineShift(*grid);
 
     curvilinearLineShift.SetLine({79982.0, 366934.0}, {80155.0, 366530.0});
-    curvilinearLineShift.SetBlock({80108.0, 366707.0}, {80291.0, 366792.0});
+    curvilinearLineShift.SetBlock(meshkernel::Point{80108.0, 366707.0}, meshkernel::Point{80291.0, 366792.0});
     // The line shift is made by combining two actions
     // The first is to move the node.
     auto undoMoveNode = curvilinearLineShift.MoveNode({79982.0, 366934.0}, {79872.0, 366876.0});
@@ -654,7 +654,7 @@ TEST(CurvilinearBasicTests, AnotherTest11)
     meshkernel::CurvilinearGridLineShift lineShift(*grid);
 
     lineShift.SetLine({5.0, 3.0}, {5.0, 15.0});
-    lineShift.SetBlock({2.0, 3.0}, {10.0, 10.0});
+    lineShift.SetBlock(meshkernel::Point{2.0, 3.0}, meshkernel::Point{10.0, 10.0});
     std::unique_ptr<mk::UndoAction> undoMoveNode = lineShift.MoveNode({5.0, 5.0}, {6.5, 6.0});
 
     // Execute
@@ -713,12 +713,12 @@ TEST(CurvilinearBasicTests, CompoundTest)
     meshkernel::CurvilinearGridLineShift lineShift(*grid);
 
     lineShift.SetLine({5.0, 3.0}, {5.0, 15.0});
-    lineShift.SetBlock({2.0, 3.0}, {10.0, 10.0});
+    lineShift.SetBlock(meshkernel::Point{2.0, 3.0}, meshkernel::Point{10.0, 10.0});
 
     undoActions.Add(lineShift.Compute({5.0, 5.0}, {6.5, 6.0}));
 
     mk::CurvilinearGridRefinement refinement(*grid, 2);
-    refinement.SetBlock({10.0, 20.0}, {20.0, 20.0});
+    refinement.SetBlock(meshkernel::Point{10.0, 20.0}, meshkernel::Point{20.0, 20.0});
 
     undoActions.Add(refinement.Compute());
 
@@ -785,7 +785,7 @@ TEST(CurvilinearBasicTests, CompoundTest)
     //--------------------------------
 
     mk::CurvilinearGridRefinement refinement2(*grid, 2);
-    refinement2.SetBlock({0.0, 10.0}, {0.0, 20.0});
+    refinement2.SetBlock(meshkernel::Point{0.0, 10.0}, meshkernel::Point{0.0, 20.0});
 
     undoActions.Add(refinement2.Compute());
 

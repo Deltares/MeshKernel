@@ -531,8 +531,8 @@ namespace meshkernelapi
         /// @brief Curvilinear grid refinement. Additional gridlines are added in both directions, over the entire grid.
         ///
         /// @param[in] meshKernelId      The id of the mesh state.
-        /// @param[in] mRefinement       The amount of refinement to compute in m-direction
-        /// @param[in] nRefinement       The amount of refinement to compute in n-direction
+        /// @param[in] mRefinement       The amount of refinement to compute in m-direction. Positive refinement, negative de-refinement.
+        /// @param[in] nRefinement       The amount of refinement to compute in n-direction. Positive refinement, negative de-refinement.
         /// @return                            Error code
         MKERNEL_API int mkernel_curvilinear_full_refine(int meshKernelId,
                                                         int mRefinement,

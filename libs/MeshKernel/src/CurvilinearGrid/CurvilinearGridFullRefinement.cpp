@@ -26,8 +26,75 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridFullRefinement.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridDeRefinement.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp"
 #include "MeshKernel/CurvilinearGrid/UndoActions/CurvilinearGridRefinementUndoAction.hpp"
 #include "MeshKernel/Exceptions.hpp"
+
+meshkernel::UndoActionPtr meshkernel::CurvilinearGridFullRefinement::Compute(CurvilinearGrid& grid,
+                                                                             const int mRefinement,
+                                                                             const int nRefinement) const
+{
+    if (mRefinement == 0 && nRefinement == 0)
+    {
+        throw ConstraintError("Incorrect refinement value. One of the two values must be larger than 0",
+                              mRefinement, nRefinement);
+    }
+
+    if (mRefinement == constants::missing::intValue || nRefinement == constants::missing::intValue)
+    {
+        throw ConstraintError("Incorrect refinement value. Value should not be the invalid value: m-refinement = {}, n-refinement = {}",
+                              mRefinement, nRefinement);
+    }
+
+    if (mRefinement == 1 && nRefinement == 1)
+    {
+        // nothing to do
+        return nullptr;
+    }
+
+    if (mRefinement > 1 && nRefinement > 1)
+    {
+        return Compute(grid, mRefinement, nRefinement);
+    }
+
+    // Estimate the dimension of the refined grid
+    const UInt maxM = grid.NumM();
+    const auto left = CurvilinearGridNodeIndices(0, 0);
+    const auto right = CurvilinearGridNodeIndices(0, maxM);
+
+    std::unique_ptr<CompoundUndoAction> undoAction = CompoundUndoAction::Create();
+    if (mRefinement > 1)
+    {
+        CurvilinearGridRefinement curvilinearGridRefinement(grid, mRefinement);
+        curvilinearGridRefinement.SetBlock(left, right);
+        undoAction->Add(curvilinearGridRefinement.Compute());
+    }
+    else if (mRefinement < 1)
+    {
+        CurvilinearGridDeRefinement curvilinearGridDeRefinement(grid, -mRefinement);
+        curvilinearGridDeRefinement.SetBlock(left, right);
+        undoAction->Add(curvilinearGridDeRefinement.Compute());
+    }
+
+    const UInt maxN = grid.NumN();
+    const auto bottom = CurvilinearGridNodeIndices(0, 0);
+    const auto top = CurvilinearGridNodeIndices(maxN, 0);
+    if (nRefinement > 1)
+    {
+        CurvilinearGridRefinement curvilinearGridRefinement(grid, nRefinement);
+        curvilinearGridRefinement.SetBlock(bottom, top);
+        undoAction->Add(curvilinearGridRefinement.Compute());
+    }
+    else if (nRefinement < 1)
+    {
+        CurvilinearGridDeRefinement curvilinearGridDeRefinement(grid, -nRefinement);
+        curvilinearGridDeRefinement.SetBlock(bottom, top);
+        undoAction->Add(curvilinearGridDeRefinement.Compute());
+    }
+
+    return undoAction;
+}
 
 meshkernel::UndoActionPtr meshkernel::CurvilinearGridFullRefinement::Compute(CurvilinearGrid& grid,
                                                                              const UInt mRefinement,

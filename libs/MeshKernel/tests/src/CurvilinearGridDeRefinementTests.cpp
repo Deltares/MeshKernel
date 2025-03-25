@@ -46,7 +46,7 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineVertic
 
     CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
     CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid, 2);
-    curvilinearGridDeRefinement.SetBlock({10, 20}, {20, 20});
+    curvilinearGridDeRefinement.SetBlock(Point{10, 20}, Point{20, 20});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridDeRefinement.Compute();
@@ -68,7 +68,7 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGridWithMissingFaces_Shou
 
     CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
     CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid, 4);
-    curvilinearGridDeRefinement.SetBlock({10, 20}, {20, 20});
+    curvilinearGridDeRefinement.SetBlock(Point{10, 20}, Point{20, 20});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridDeRefinement.Compute();
@@ -91,7 +91,7 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineHorizo
 
     CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
     CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid, 2);
-    curvilinearGridDeRefinement.SetBlock({10, 10}, {10, 20});
+    curvilinearGridDeRefinement.SetBlock(Point{10, 10}, Point{10, 20});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridDeRefinement.Compute();
@@ -117,11 +117,11 @@ TEST(CurvilinearGridDeRefinement, Compute_OnRefinedCurvilinearGridWithLargeDeref
 
     CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
     CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGrid, 5);
-    curvilinearGridRefinement.SetBlock({20, 0}, {80, 0});
+    curvilinearGridRefinement.SetBlock(Point{20, 0}, Point{80, 0});
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridRefinement.Compute();
 
     CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid, 100);
-    curvilinearGridDeRefinement.SetBlock({20, 0}, {80, 0});
+    curvilinearGridDeRefinement.SetBlock(Point{20, 0}, Point{80, 0});
 
     // Execute
     dummyUndoAction = curvilinearGridDeRefinement.Compute();
