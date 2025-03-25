@@ -101,15 +101,15 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineHorizo
     ASSERT_EQ(4, curvilinearGrid.NumM());
 }
 
-TEST(CurvilinearGridDeRefinement, Compute_OnRefinedCurvilinearGridWithLargeDerefinementFactor_ShouldDeRefineVerticallGridLines)
+TEST(CurvilinearGridDeRefinement, Compute_OnRefinedCurvilinearGridWithLargeDerefinementFactor_ShouldDeRefineVerticalGridLines)
 {
     // Set-up
     lin_alg::Matrix<Point> grid(10, 10);
 
     // Fill the grid
-    for (int y = 0; y < 10; ++y)
+    for (int y = 0; y < grid.rows(); ++y)
     {
-        for (int x = 0; x < 10; ++x)
+        for (int x = 0; x < grid.cols(); ++x)
         {
             grid(y, x) = Point{x * 10.0, y * 10.0};
         }
@@ -129,4 +129,36 @@ TEST(CurvilinearGridDeRefinement, Compute_OnRefinedCurvilinearGridWithLargeDeref
     // Assert, given the large de-refinement factor all lines between are removed
     ASSERT_EQ(10, curvilinearGrid.NumN());
     ASSERT_EQ(5, curvilinearGrid.NumM());
+}
+
+TEST(CurvilinearGridDeRefinement, Compute_OnRefinedCurvilinearGridWithSubsequentDerefinements_ShouldDeRefineVerticallGridLinesAndKeepRightBoundary)
+{
+    // Set-up
+    lin_alg::Matrix<Point> grid(11, 11);
+
+    // Fill the grid
+    for (int y = 0; y < grid.rows(); ++y)
+    {
+        for (int x = 0; x < grid.cols(); ++x)
+        {
+            grid(y, x) = Point{x * 10.0, y * 10.0};
+        }
+    }
+
+    CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
+
+    for (int iter = 0; iter < 4; ++iter)
+    {
+        CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid, 2);
+        curvilinearGridDeRefinement.SetBlock(Point{0, 0}, Point{100, 0});
+        [[maybe_unused]] auto dummyUndoAction = curvilinearGridDeRefinement.Compute();
+    }
+
+    // Assert, given the large de-refinement factor all lines between are removed
+    ASSERT_EQ(11, curvilinearGrid.NumN());
+    ASSERT_EQ(2, curvilinearGrid.NumM());
+
+    constexpr double tolerance = 1e-6;
+    ASSERT_NEAR(0, curvilinearGrid.GetNode(0, 0).x, tolerance);
+    ASSERT_NEAR(100.0, curvilinearGrid.GetNode(0, 1).x, tolerance);
 }
