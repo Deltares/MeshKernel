@@ -98,3 +98,33 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineHorizo
     ASSERT_EQ(4, curvilinearGrid.NumN());
     ASSERT_EQ(4, curvilinearGrid.NumM());
 }
+
+TEST(CurvilinearGridDeRefinement, Compute_OnRefinedCurvilinearGridWithLargeDerefinementFactor_ShouldDeRefineVerticallGridLines)
+{
+    // Set-up
+    lin_alg::Matrix<Point> grid(10, 10);
+
+    // Fill the grid
+    for (int y = 0; y < 10; ++y)
+    {
+        for (int x = 0; x < 10; ++x)
+        {
+            grid(y, x) = Point{x * 10.0, y * 10.0};
+        }
+    }
+
+    CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
+    CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGrid, 5);
+    curvilinearGridRefinement.SetBlock({20, 0}, {80, 0});
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridRefinement.Compute();
+
+    CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid, 100);
+    curvilinearGridDeRefinement.SetBlock({20, 0}, {80, 0});
+
+    // Execute
+    dummyUndoAction = curvilinearGridDeRefinement.Compute();
+
+    // Assert, given the large de-refinemnt factor all lines between are removed
+    ASSERT_EQ(10, curvilinearGrid.NumN());
+    ASSERT_EQ(5, curvilinearGrid.NumM());
+}

@@ -60,13 +60,13 @@ meshkernel::UndoActionPtr CurvilinearGridDeRefinement::Compute()
     UInt nIndexOriginalGrid = 0;
     while (nIndexOriginalGrid < m_grid.NumN())
     {
-        UInt localNDeRefinement = 1;
+        int localNDeRefinement = 1;
         if (nIndexOriginalGrid >= m_lowerLeft.m_n && nIndexOriginalGrid < m_upperRight.m_n)
         {
             localNDeRefinement = nDeRefineFactor;
             if (nIndexOriginalGrid + localNDeRefinement > m_upperRight.m_n)
             {
-                localNDeRefinement = m_upperRight.m_n - nIndexOriginalGrid;
+                localNDeRefinement = static_cast<int>(m_upperRight.m_n) - nIndexOriginalGrid;
             }
         }
         deRefinedGrid.emplace_back(std::vector<Point>());
@@ -75,13 +75,13 @@ meshkernel::UndoActionPtr CurvilinearGridDeRefinement::Compute()
         UInt mIndexOriginalGrid = 0;
         while (mIndexOriginalGrid < m_grid.NumM())
         {
-            UInt localMDeRefinement = 1;
+            int localMDeRefinement = 1;
             if (mIndexOriginalGrid >= m_lowerLeft.m_m && mIndexOriginalGrid < m_upperRight.m_m)
             {
                 localMDeRefinement = mDeRefineFactor;
                 if (mIndexOriginalGrid + localMDeRefinement > m_upperRight.m_m)
                 {
-                    localMDeRefinement = m_upperRight.m_n - mIndexOriginalGrid;
+                    localMDeRefinement = static_cast<int>(m_upperRight.m_m) - mIndexOriginalGrid;
                 }
             }
             deRefinedGrid.back().emplace_back(m_grid.GetNode(nIndexOriginalGrid, mIndexOriginalGrid));
