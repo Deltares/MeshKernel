@@ -78,8 +78,19 @@ meshkernel::UndoActionPtr meshkernel::CurvilinearGridFullRefinement::Compute(Cur
             // Only if all grid nodes of the face are valid, perform transfinite interpolation
             if (ValidFace(grid, currentM, currentN))
             {
-                ComputeRefinedElementEdges(splines, grid.NumM() + currentN, currentM, mRefinement, bottomRefinement, topRefinement);
-                ComputeRefinedElementEdges(splines, currentM, currentN, nRefinement, leftRefinement, rightRefinement);
+                ComputeRefinedElementEdges(splines,
+                                           grid.NumM() + currentN,
+                                           currentM,
+                                           mRefinement,
+                                           bottomRefinement,
+                                           topRefinement);
+
+                ComputeRefinedElementEdges(splines,
+                                           currentM,
+                                           currentN,
+                                           nRefinement,
+                                           leftRefinement,
+                                           rightRefinement);
 
                 // Perform transfinite interpolation on the current curvilinear face
                 const auto localGrid = DiscretizeTransfinite(bottomRefinement,

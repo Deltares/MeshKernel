@@ -33,7 +33,7 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridDeRefinement;
 
-CurvilinearGridDeRefinement::CurvilinearGridDeRefinement(CurvilinearGrid& grid, int derefinementFactor) : m_derefinementFactor(derefinementFactor), CurvilinearGridAlgorithm(grid)
+CurvilinearGridDeRefinement::CurvilinearGridDeRefinement(CurvilinearGrid& grid, int derefinementFactor) : CurvilinearGridAlgorithm(grid), m_derefinementFactor(derefinementFactor)
 {
 }
 
