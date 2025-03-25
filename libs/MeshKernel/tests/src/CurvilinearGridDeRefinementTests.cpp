@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp"
+
 #include <gtest/gtest.h>
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
