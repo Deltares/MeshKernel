@@ -47,6 +47,7 @@ namespace meshkernel
 
         /// @brief Refine the curvilinear grid
         [[nodiscard]] UndoActionPtr Compute() override;
+
     private:
         int m_derefinementFactor;
     };

@@ -126,7 +126,7 @@ TEST(CurvilinearGridDeRefinement, Compute_OnRefinedCurvilinearGridWithLargeDeref
     // Execute
     dummyUndoAction = curvilinearGridDeRefinement.Compute();
 
-    // Assert, given the large de-refinemnt factor all lines between are removed
+    // Assert, given the large de-refinement factor all lines between are removed
     ASSERT_EQ(10, curvilinearGrid.NumN());
     ASSERT_EQ(5, curvilinearGrid.NumM());
 }
