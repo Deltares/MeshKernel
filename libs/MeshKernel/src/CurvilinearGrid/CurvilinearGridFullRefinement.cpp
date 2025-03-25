@@ -35,9 +35,9 @@ meshkernel::UndoActionPtr meshkernel::CurvilinearGridFullRefinement::Compute(Cur
                                                                              const int mRefinement,
                                                                              const int nRefinement) const
 {
-    if (mRefinement == 0 && nRefinement == 0)
+    if (mRefinement == 0 || nRefinement == 0)
     {
-        throw ConstraintError("Incorrect refinement value. One of the two values must be larger than 0",
+        throw ConstraintError("Incorrect refinement value. Both refinement factors must be non 0: m-refinement = {}, n-refinement = {}",
                               mRefinement, nRefinement);
     }
 
@@ -53,9 +53,9 @@ meshkernel::UndoActionPtr meshkernel::CurvilinearGridFullRefinement::Compute(Cur
         return nullptr;
     }
 
-    if (mRefinement > 1 && nRefinement > 1)
+    if (mRefinement >= 1 && nRefinement >= 1)
     {
-        return Compute(grid, mRefinement, nRefinement);
+        return Compute(grid, static_cast<UInt>(mRefinement), static_cast<UInt>(nRefinement));
     }
 
     // Estimate the dimension of the refined grid
@@ -70,7 +70,7 @@ meshkernel::UndoActionPtr meshkernel::CurvilinearGridFullRefinement::Compute(Cur
         curvilinearGridRefinement.SetBlock(left, right);
         undoAction->Add(curvilinearGridRefinement.Compute());
     }
-    else if (mRefinement < 1)
+    else if (mRefinement < -1)
     {
         CurvilinearGridDeRefinement curvilinearGridDeRefinement(grid, -mRefinement);
         curvilinearGridDeRefinement.SetBlock(left, right);
@@ -86,7 +86,7 @@ meshkernel::UndoActionPtr meshkernel::CurvilinearGridFullRefinement::Compute(Cur
         curvilinearGridRefinement.SetBlock(bottom, top);
         undoAction->Add(curvilinearGridRefinement.Compute());
     }
-    else if (nRefinement < 1)
+    else if (nRefinement < -1)
     {
         CurvilinearGridDeRefinement curvilinearGridDeRefinement(grid, -nRefinement);
         curvilinearGridDeRefinement.SetBlock(bottom, top);
