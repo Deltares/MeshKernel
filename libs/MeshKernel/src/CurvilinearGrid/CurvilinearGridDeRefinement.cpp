@@ -67,7 +67,8 @@ meshkernel::UndoActionPtr CurvilinearGridDeRefinement::Compute()
             localNDeRefinement = nDeRefineFactor;
             if (nCurrentIndex + localNDeRefinement > m_upperRight.m_n)
             {
-                localNDeRefinement = static_cast<int>(m_upperRight.m_n) - nCurrentIndex;
+                localNDeRefinement = static_cast<int>(m_upperRight.m_n) -
+                                     static_cast<int>(nCurrentIndex);
             }
         }
         deRefinedGrid.emplace_back(std::vector<Point>());
@@ -84,7 +85,8 @@ meshkernel::UndoActionPtr CurvilinearGridDeRefinement::Compute()
                 localMDeRefinement = mDeRefineFactor;
                 if (mCurrentIndex + localMDeRefinement > m_upperRight.m_m)
                 {
-                    localMDeRefinement = static_cast<int>(m_upperRight.m_m) - mCurrentIndex;
+                    localMDeRefinement = static_cast<int>(m_upperRight.m_m) -
+                                         static_cast<int>(mCurrentIndex);
                 }
             }
             const auto currentNode = m_grid.GetNode(nCurrentIndex, mCurrentIndex);
