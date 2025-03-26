@@ -43,17 +43,26 @@ namespace meshkernel
     class CurvilinearGridFullRefinement final
     {
     public:
-        /// @brief Refine the entire grid by the refinement factors.
+        /// @brief Refine the entire grid by positive or negative refinement factors.
+        ///
+        /// @param grid [in out] The grid to be refined
+        /// @param mRefinement [in] How much refinement (positive) or de-refinement (negative) is required in the m-direction
+        /// @param nRefinement [in] How much refinement (positive) or de-refinement (negative) is required in the n-direction
+        /// @returns the unto action, should the mesh want to be reverted to the original state.
+        [[nodiscard]] UndoActionPtr Compute(CurvilinearGrid& grid,
+                                            const int mRefinement,
+                                            const int nRefinement) const;
+
+    private:
+        /// @brief Refine the entire grid by positive refinement factors.
         ///
         /// @param grid [in out] The grid to be refined
         /// @param mRefinement [in] How much refinement required in the m-direction
         /// @param nRefinement [in] How much refinement required in the n-direction
         /// @returns the unto action, should the mesh want to be reverted to the original state.
-        [[nodiscard]] UndoActionPtr Compute(CurvilinearGrid& grid,
-                                            const UInt mRefinement,
-                                            const UInt nRefinement) const;
-
-    private:
+        [[nodiscard]] UndoActionPtr ComputeRefinement(CurvilinearGrid& grid,
+                                                      const UInt mRefinement,
+                                                      const UInt nRefinement) const;
         /// @brief Compute the discretisation of two opposite edges of a face
         ///
         /// This can be for either top and bottom or left and right edges.
