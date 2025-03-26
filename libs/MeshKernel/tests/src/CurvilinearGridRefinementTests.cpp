@@ -318,3 +318,25 @@ TEST(CurvilinearGridRefinement, IncorrectFullRefinementParameters)
     EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, 0, constants::missing::intValue), meshkernel::ConstraintError);
     EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, constants::missing::intValue, constants::missing::intValue), meshkernel::ConstraintError);
 }
+
+TEST(CurvilinearGridDeRefinement, Compute_GivenMixedRefinementFactors_RefinesCorrectly)
+{
+    // Set-up
+    lin_alg::Matrix<Point> grid(11, 11);
+
+    // Fill the grid
+    for (int y = 0; y < grid.rows(); ++y)
+    {
+        for (int x = 0; x < grid.cols(); ++x)
+        {
+            grid(y, x) = Point{x * 10.0, y * 10.0};
+        }
+    }
+    CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
+    CurvilinearGridFullRefinement curvilinearGridFullRefinement;
+    [[maybe_unused]] const auto dummyUndo = curvilinearGridFullRefinement.Compute(curvilinearGrid, 2, -2);
+
+    // Assert, given the large de-refinement factor all lines between are removed
+    ASSERT_EQ(6, curvilinearGrid.NumN());
+    ASSERT_EQ(21, curvilinearGrid.NumM());
+}

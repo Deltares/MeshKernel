@@ -37,7 +37,7 @@ meshkernel::UndoActionPtr meshkernel::CurvilinearGridFullRefinement::Compute(Cur
 {
     if (mRefinement == 0 || nRefinement == 0)
     {
-        throw ConstraintError("Incorrect refinement value. Both refinement factors must be non 0: m-refinement = {}, n-refinement = {}",
+        throw ConstraintError("Incorrect refinement value. Both refinement factors must be non zero: m-refinement = {}, n-refinement = {}",
                               mRefinement, nRefinement);
     }
 
@@ -55,7 +55,9 @@ meshkernel::UndoActionPtr meshkernel::CurvilinearGridFullRefinement::Compute(Cur
 
     if (mRefinement >= 1 && nRefinement >= 1)
     {
-        return Compute(grid, static_cast<UInt>(mRefinement), static_cast<UInt>(nRefinement));
+        return ComputeRefinement(grid,
+                                 static_cast<UInt>(mRefinement),
+                                 static_cast<UInt>(nRefinement));
     }
 
     // Estimate the dimension of the refined grid
@@ -96,9 +98,9 @@ meshkernel::UndoActionPtr meshkernel::CurvilinearGridFullRefinement::Compute(Cur
     return undoAction;
 }
 
-meshkernel::UndoActionPtr meshkernel::CurvilinearGridFullRefinement::Compute(CurvilinearGrid& grid,
-                                                                             const UInt mRefinement,
-                                                                             const UInt nRefinement) const
+meshkernel::UndoActionPtr meshkernel::CurvilinearGridFullRefinement::ComputeRefinement(CurvilinearGrid& grid,
+                                                                                       const UInt mRefinement,
+                                                                                       const UInt nRefinement) const
 {
 
     if (mRefinement == 0 || nRefinement == 0)

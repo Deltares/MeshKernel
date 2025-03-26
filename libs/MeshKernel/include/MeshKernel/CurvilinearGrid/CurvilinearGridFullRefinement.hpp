@@ -60,9 +60,9 @@ namespace meshkernel
         /// @param mRefinement [in] How much refinement required in the m-direction
         /// @param nRefinement [in] How much refinement required in the n-direction
         /// @returns the unto action, should the mesh want to be reverted to the original state.
-        [[nodiscard]] UndoActionPtr Compute(CurvilinearGrid& grid,
-                                            const UInt mRefinement,
-                                            const UInt nRefinement) const;
+        [[nodiscard]] UndoActionPtr ComputeRefinement(CurvilinearGrid& grid,
+                                                      const UInt mRefinement,
+                                                      const UInt nRefinement) const;
         /// @brief Compute the discretisation of two opposite edges of a face
         ///
         /// This can be for either top and bottom or left and right edges.
