@@ -4002,18 +4002,19 @@ namespace meshkernelapi
             meshkernel::Point const firstPoint{xLowerLeftCorner, yLowerLeftCorner};
             meshkernel::Point const secondPoint{xUpperRightCorner, yUpperRightCorner};
 
-            // Execute
-            if (refinement >= 1)
+            if (refinement > 1)
             {
+                // Refinement
                 meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid, refinement);
                 curvilinearGridRefinement.SetBlock(firstPoint, secondPoint);
                 meshKernelUndoStack.Add(curvilinearGridRefinement.Compute(), meshKernelId);
             }
-            else if (refinement <= -1)
+            else if (refinement < -1)
             {
-                meshkernel::CurvilinearGridDeRefinement curvilinearGridRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid, refinement);
-                curvilinearGridRefinement.SetBlock(firstPoint, secondPoint);
-                meshKernelUndoStack.Add(curvilinearGridRefinement.Compute(), meshKernelId);
+                // De-refinement
+                meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid, -refinement);
+                curvilinearGridDeRefinement.SetBlock(firstPoint, secondPoint);
+                meshKernelUndoStack.Add(curvilinearGridDeRefinement.Compute(), meshKernelId);
             }
         }
         catch (...)
