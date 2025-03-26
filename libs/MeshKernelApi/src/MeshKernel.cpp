@@ -3999,18 +3999,22 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            if (refinement < 0)
-            {
-                throw meshkernel::MeshKernelError("Refinement factor cannot be negative");
-            }
-
             meshkernel::Point const firstPoint{xLowerLeftCorner, yLowerLeftCorner};
             meshkernel::Point const secondPoint{xUpperRightCorner, yUpperRightCorner};
 
             // Execute
-            meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid, refinement);
-            curvilinearGridRefinement.SetBlock(firstPoint, secondPoint);
-            meshKernelUndoStack.Add(curvilinearGridRefinement.Compute(), meshKernelId);
+            if (refinement >= 1)
+            {
+                meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid, refinement);
+                curvilinearGridRefinement.SetBlock(firstPoint, secondPoint);
+                meshKernelUndoStack.Add(curvilinearGridRefinement.Compute(), meshKernelId);
+            }
+            else if (refinement <= -1)
+            {
+                meshkernel::CurvilinearGridDeRefinement curvilinearGridRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid, refinement);
+                curvilinearGridRefinement.SetBlock(firstPoint, secondPoint);
+                meshKernelUndoStack.Add(curvilinearGridRefinement.Compute(), meshKernelId);
+            }
         }
         catch (...)
         {
@@ -4046,42 +4050,6 @@ namespace meshkernelapi
             lastExitCode = HandleException();
         }
 
-        return lastExitCode;
-    }
-
-    MKERNEL_API int mkernel_curvilinear_derefine(int meshKernelId,
-                                                 double xLowerLeftCorner,
-                                                 double yLowerLeftCorner,
-                                                 double xUpperRightCorner,
-                                                 double yUpperRightCorner,
-                                                 int derefinementFactor)
-    {
-        lastExitCode = meshkernel::ExitCode::Success;
-        try
-        {
-            if (!meshKernelState.contains(meshKernelId))
-            {
-                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
-            }
-
-            if (derefinementFactor < 0)
-            {
-                throw meshkernel::MeshKernelError("De-refinement factor cannot be negative");
-            }
-
-            meshkernel::Point const firstPoint{xLowerLeftCorner, yLowerLeftCorner};
-            meshkernel::Point const secondPoint{xUpperRightCorner, yUpperRightCorner};
-
-            // Execute
-            meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid, derefinementFactor);
-
-            curvilinearGridDeRefinement.SetBlock(firstPoint, secondPoint);
-            meshKernelUndoStack.Add(curvilinearGridDeRefinement.Compute(), meshKernelId);
-        }
-        catch (...)
-        {
-            lastExitCode = HandleException();
-        }
         return lastExitCode;
     }
 
