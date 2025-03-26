@@ -234,9 +234,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <tr class="memitem:ae4058e2207ebb8a74b5f80024a02e888" id="r_ae4058e2207ebb8a74b5f80024a02e888"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ae4058e2207ebb8a74b5f80024a02e888">mkernel_curvilinear_delete_orthogonal_grid_from_splines</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:ae4058e2207ebb8a74b5f80024a02e888"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalizes curvilinear grid from splines algorithm.  <br /></td></tr>
 <tr class="separator:ae4058e2207ebb8a74b5f80024a02e888"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6de2ba28c078686437dce5b9fe5a3d82" id="r_a6de2ba28c078686437dce5b9fe5a3d82"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a6de2ba28c078686437dce5b9fe5a3d82">mkernel_curvilinear_derefine</a> (int meshKernelId, double xLowerLeftCorner, double yLowerLeftCorner, double xUpperRightCorner, double yUpperRightCorner)</td></tr>
-<tr class="memdesc:a6de2ba28c078686437dce5b9fe5a3d82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directional curvilinear grid de-refinement. Grid lines are removed perpendicularly to the segment defined by lowerLeftCorner and xUpperRightCorner.  <br /></td></tr>
-<tr class="separator:a6de2ba28c078686437dce5b9fe5a3d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4dc9dc32bbb49e1f911ac2f3f64b517" id="r_ab4dc9dc32bbb49e1f911ac2f3f64b517"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ab4dc9dc32bbb49e1f911ac2f3f64b517">mkernel_curvilinear_derefine</a> (int meshKernelId, double xLowerLeftCorner, double yLowerLeftCorner, double xUpperRightCorner, double yUpperRightCorner, int deRefinementFactor)</td></tr>
+<tr class="memdesc:ab4dc9dc32bbb49e1f911ac2f3f64b517"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directional curvilinear grid de-refinement. Grid lines are removed perpendicularly to the segment defined by lowerLeftCorner and xUpperRightCorner.  <br /></td></tr>
+<tr class="separator:ab4dc9dc32bbb49e1f911ac2f3f64b517"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9fc4804f0c3e0d14b9ea7e9d217081d6" id="r_a9fc4804f0c3e0d14b9ea7e9d217081d6"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a9fc4804f0c3e0d14b9ea7e9d217081d6">mkernel_curvilinear_finalize_line_shift</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:a9fc4804f0c3e0d14b9ea7e9d217081d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the instance of the line shift algorithm in <a class="el" href="structmeshkernelapi_1_1_mesh_kernel_state.html" title="The class holding the state of the C API library.">MeshKernelState</a>.  <br /></td></tr>
 <tr class="separator:a9fc4804f0c3e0d14b9ea7e9d217081d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1919,8 +1919,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 
 </div>
 </div>
-<a id="a6de2ba28c078686437dce5b9fe5a3d82" name="a6de2ba28c078686437dce5b9fe5a3d82"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6de2ba28c078686437dce5b9fe5a3d82">&#9670;&#160;</a></span>mkernel_curvilinear_derefine()</h2>
+<a id="ab4dc9dc32bbb49e1f911ac2f3f64b517" name="ab4dc9dc32bbb49e1f911ac2f3f64b517"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4dc9dc32bbb49e1f911ac2f3f64b517">&#9670;&#160;</a></span>mkernel_curvilinear_derefine()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1953,7 +1953,13 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>yUpperRightCorner</em>&#160;</td>
+          <td class="paramname"><em>yUpperRightCorner</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>deRefinementFactor</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1971,6 +1977,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
     <tr><td class="paramdir">[in]</td><td class="paramname">yLowerLeftCorner</td><td>The y coordinate of the lower left corner of the block to de-refine </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">xUpperRightCorner</td><td>The x coordinate of the upper right corner of the block to de-refine </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">yUpperRightCorner</td><td>The y coordinate of the upper right corner of the block to de-refine </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">deRefinementFactor</td><td>The factor to use for de-refinement </td></tr>
   </table>
   </dd>
 </dl>
@@ -2332,8 +2339,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">mRefinement</td><td>The amount of refinement to compute in m-direction </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">nRefinement</td><td>The amount of refinement to compute in n-direction </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mRefinement</td><td>The amount of refinement to compute in m-direction. Positive refinement, negative de-refinement. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">nRefinement</td><td>The amount of refinement to compute in n-direction. Positive refinement, negative de-refinement. </td></tr>
   </table>
   </dd>
 </dl>

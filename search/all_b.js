@@ -139,7 +139,7 @@ var searchData=
   ['mkernel_5fcurvilinear_5fdelete_5finterior_136',['mkernel_curvilinear_delete_interior',['../namespacemeshkernelapi.html#a96ec15d80f7c46e3b9ee0558e968516d',1,'meshkernelapi']]],
   ['mkernel_5fcurvilinear_5fdelete_5fnode_137',['mkernel_curvilinear_delete_node',['../namespacemeshkernelapi.html#a8828c734b99cf7e4a75065b93750e7c3',1,'meshkernelapi']]],
   ['mkernel_5fcurvilinear_5fdelete_5forthogonal_5fgrid_5ffrom_5fsplines_138',['mkernel_curvilinear_delete_orthogonal_grid_from_splines',['../namespacemeshkernelapi.html#ae4058e2207ebb8a74b5f80024a02e888',1,'meshkernelapi']]],
-  ['mkernel_5fcurvilinear_5fderefine_139',['mkernel_curvilinear_derefine',['../namespacemeshkernelapi.html#a6de2ba28c078686437dce5b9fe5a3d82',1,'meshkernelapi']]],
+  ['mkernel_5fcurvilinear_5fderefine_139',['mkernel_curvilinear_derefine',['../namespacemeshkernelapi.html#ab4dc9dc32bbb49e1f911ac2f3f64b517',1,'meshkernelapi']]],
   ['mkernel_5fcurvilinear_5ffinalize_5fline_5fshift_140',['mkernel_curvilinear_finalize_line_shift',['../namespacemeshkernelapi.html#a9fc4804f0c3e0d14b9ea7e9d217081d6',1,'meshkernelapi']]],
   ['mkernel_5fcurvilinear_5ffrozen_5fline_5fadd_141',['mkernel_curvilinear_frozen_line_add',['../namespacemeshkernelapi.html#a2ddb979ccad2937a9a0f7793992f1bec',1,'meshkernelapi']]],
   ['mkernel_5fcurvilinear_5ffrozen_5fline_5fdelete_142',['mkernel_curvilinear_frozen_line_delete',['../namespacemeshkernelapi.html#ad4d69fa7859cf8db64e927ee80c05d80',1,'meshkernelapi']]],
