@@ -29,6 +29,7 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
+#include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
 #include <MeshKernel/Utilities/Utilities.hpp>
@@ -45,18 +46,18 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnStronglyNonOrthogonalCurvilinea
         Point{20, 0}, Point{20, 10}, Point{20, 20}, Point{20, 30},
         Point{30, 0}, Point{30, 10}, Point{30, 20}, Point{30, 30};
 
-    CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
+    CurvilinearGrid curvilinearGrid(grid, meshkernel::Projection::cartesian);
 
     // Move a node, to make the grid strongly non orthogonal
-    [[maybe_unused]] auto dummyUnusedAction = curvilinearGrid.MoveNode(Point(10.0, 20.0), Point(18.0, 12.0));
+    [[maybe_unused]] auto dummyUnusedAction = curvilinearGrid.MoveNode(meshkernel::Point(10.0, 20.0), meshkernel::Point(18.0, 12.0));
 
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 1;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
-    CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
-    curvilinearGridOrthogonalization.SetBlock(Point{0, 0}, Point{30, 30});
+    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
+    curvilinearGridOrthogonalization.SetBlock({0, 0}, {30, 30});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridOrthogonalization.Compute();
@@ -77,15 +78,15 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnOrthogonalCurvilinearGrid_Shoul
         Point{30, 0}, Point{30, 10}, Point{30, 20}, Point{30, 30}, Point{30, 40},
         Point{40, 0}, Point{40, 10}, Point{40, 20}, Point{40, 30}, Point{40, 40};
 
-    CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
+    meshkernel::CurvilinearGrid curvilinearGrid(grid, meshkernel::Projection::cartesian);
 
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 1;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
-    CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
-    curvilinearGridOrthogonalization.SetBlock(Point{0, 0}, Point{30, 30});
+    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
+    curvilinearGridOrthogonalization.SetBlock({0, 0}, {30, 30});
     curvilinearGridOrthogonalization.SetLine({20.0, 0.0}, {20.0, 30.0});
 
     // Execute
@@ -153,8 +154,8 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGrid_S
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
-    CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(*curvilinearGrid, orthogonalizationParameters);
-    curvilinearGridOrthogonalization.SetBlock(Point{80154, 366530}, Point{80610, 367407});
+    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(*curvilinearGrid, orthogonalizationParameters);
+    curvilinearGridOrthogonalization.SetBlock({80154, 366530}, {80610, 367407});
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridOrthogonalization.Compute();
 
@@ -212,8 +213,8 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
-    CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(*curvilinearGrid, orthogonalizationParameters);
-    curvilinearGridOrthogonalization.SetBlock(Point{80154, 366530}, Point{80610, 367407});
+    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(*curvilinearGrid, orthogonalizationParameters);
+    curvilinearGridOrthogonalization.SetBlock({80154, 366530}, {80610, 367407});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridOrthogonalization.Compute();
@@ -291,8 +292,8 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnONonOrthogonalCurvilinearGridWi
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
-    CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(*curvilinearGrid, orthogonalizationParameters);
-    curvilinearGridOrthogonalization.SetBlock(Point{80154, 366530}, Point{80610, 367407});
+    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(*curvilinearGrid, orthogonalizationParameters);
+    curvilinearGridOrthogonalization.SetBlock({80154, 366530}, {80610, 367407});
     curvilinearGridOrthogonalization.SetLine({80144, 367046}, {80329, 366550});
 
     // Execute
@@ -385,7 +386,7 @@ TEST(CurvilinearGridOrthogonalization, SetFrozenLine_ShouldFreezeLines)
             double xDisplacement = 0.6 * random() * deltaX;
             double yDisplacement = 0.6 * random() * deltaY;
 
-            curvilinearGrid->GetNode(i, j) += Vector(xDisplacement, yDisplacement);
+            curvilinearGrid->GetNode(i, j) += meshkernel::Vector(xDisplacement, yDisplacement);
         }
     }
 
@@ -395,7 +396,7 @@ TEST(CurvilinearGridOrthogonalization, SetFrozenLine_ShouldFreezeLines)
     orthogonalizationParameters.inner_iterations = 25;
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
 
-    CurvilinearGridOrthogonalization orthogonalisation(*curvilinearGrid, orthogonalizationParameters);
+    meshkernel::CurvilinearGridOrthogonalization orthogonalisation(*curvilinearGrid, orthogonalizationParameters);
 
     Point blockLL = curvilinearGrid->GetNode(2, 2);
     Point blockUR = curvilinearGrid->GetNode(12, 12);
@@ -494,7 +495,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_CurvilinearGrid_ShouldOrthogonali
             double xDisplacement = random[randomCount()] * deltaX;
             double yDisplacement = random[randomCount()] * deltaY;
 
-            curvilinearGrid->GetNode(i, j) += Vector(xDisplacement, yDisplacement);
+            curvilinearGrid->GetNode(i, j) += meshkernel::Vector(xDisplacement, yDisplacement);
         }
     }
 
@@ -504,7 +505,7 @@ TEST(CurvilinearGridOrthogonalization, Compute_CurvilinearGrid_ShouldOrthogonali
     orthogonalizationParameters.inner_iterations = 25;
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
 
-    CurvilinearGridOrthogonalization orthogonalisation(*curvilinearGrid, orthogonalizationParameters);
+    meshkernel::CurvilinearGridOrthogonalization orthogonalisation(*curvilinearGrid, orthogonalizationParameters);
 
     UInt bottomLeftIndex = 2;
     UInt topRightIndex = 12;
@@ -571,15 +572,15 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnNonOrthogonalCurvilinearGridWit
         Point{30, 0}, Point{30, 10}, Point{30, 15}, Point{30, 20}, Point{30, 30},
         Point{40, 0}, Point{40, 10}, Point{40, 15}, Point{40, 20}, Point{40, 30};
 
-    CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
+    meshkernel::CurvilinearGrid curvilinearGrid(grid, meshkernel::Projection::cartesian);
 
     OrthogonalizationParameters orthogonalizationParameters;
     orthogonalizationParameters.outer_iterations = 20;
     orthogonalizationParameters.boundary_iterations = 25;
     orthogonalizationParameters.inner_iterations = 25;
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
-    CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
-    curvilinearGridOrthogonalization.SetBlock(Point{0, 0}, Point{30, 30});
+    meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(curvilinearGrid, orthogonalizationParameters);
+    curvilinearGridOrthogonalization.SetBlock({0, 0}, {30, 30});
     curvilinearGridOrthogonalization.SetLine({10.0, 10.0}, {20.0, 10.0}); // First frozen line
     curvilinearGridOrthogonalization.SetLine({10.0, 20.0}, {20.0, 20.0}); // Second frozen line
 

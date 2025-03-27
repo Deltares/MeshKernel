@@ -718,8 +718,7 @@ TEST(CurvilinearGridUndoTests, Derefine)
 
     errorCode = meshkernelapi::mkernel_curvilinear_derefine(meshKernelId,
                                                             10.0, 20.0,
-                                                            20.0, 20.0,
-                                                            10);
+                                                            20.0, 20.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid refinedGrid{};

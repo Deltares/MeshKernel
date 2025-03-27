@@ -37,7 +37,7 @@ TEST(CurvilinearLineShift, Compute_OnMGridlineShiftingOneNode_ShouldShiftLine)
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
     meshkernel::CurvilinearGridLineShift curvilinearLineShift(*curvilinearGrid);
     curvilinearLineShift.SetLine({79982.0, 366934.0}, {80155.0, 366530.0});
-    curvilinearLineShift.SetBlock(meshkernel::Point{80108.0, 366707.0}, meshkernel::Point{80291.0, 366792.0});
+    curvilinearLineShift.SetBlock({80108.0, 366707.0}, {80291.0, 366792.0});
     [[maybe_unused]] auto dummyUndoAction1 = curvilinearLineShift.MoveNode({79982.0, 366934.0}, {79872.0, 366876.0});
 
     // Execute
@@ -93,7 +93,7 @@ TEST(CurvilinearLineShift, Compute_OnMGridlineShiftingTwoNodes_ShouldShiftLine)
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
     meshkernel::CurvilinearGridLineShift curvilinearLineShift(*curvilinearGrid);
     curvilinearLineShift.SetLine({79982.0, 366934.0}, {80155.0, 366530.0});
-    curvilinearLineShift.SetBlock(meshkernel::Point{80108.0, 366707.0}, meshkernel::Point{80291.0, 366792.0});
+    curvilinearLineShift.SetBlock({80108.0, 366707.0}, {80291.0, 366792.0});
 
     // Move two nodes
     [[maybe_unused]] auto dummyUndoAction1 = curvilinearLineShift.MoveNode({79982.0, 366934.0}, {79872.0, 366876.0});
