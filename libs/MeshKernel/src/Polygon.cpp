@@ -660,7 +660,11 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const UInt star
     const double lastLength = averageLengths.back();
     double cumulativeDistanceTarget = 0.0;
     const UInt maxInnerIter = 20;
-    const UInt maxOuterIter = numPolygonNodes;
+
+    // Get an estimate of number of nodes to be added
+    const UInt estimateOfNodesToBeAdded = static_cast<UInt>(2.0 * cumulativeDistances.back() / (firstLength + lastLength));
+    const UInt maxOuterIter = m_nodes.size() + 5 * estimateOfNodesToBeAdded;
+
     UInt outerIter = 0;
 
     while (outerIter < maxOuterIter)
@@ -674,6 +678,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const UInt star
 
             computeAverageLengths(cumulativeDistances, actualAverageLengths);
             smoothAverageLengths(cumulativeDistances, firstLength, lastLength, averageLengths);
+
             smoothCumulativeDistance(averageLengths, cumulativeDistances);
             cumulativeDistanceTarget = std::accumulate(averageLengths.begin(), averageLengths.end(), 0.0) - 0.5 * (averageLengths.front() +
                                                                                                                    averageLengths.back());
@@ -684,10 +689,12 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const UInt star
         if (minRatioIndex != constants::missing::uintValue && cumulativeDistanceTarget - 1.5 * averageLengths[minRatioIndex] > initialCumulativeDistances.back())
         {
             --numPolygonNodes;
+
             for (UInt i = minRatioIndex; i < numPolygonNodes; ++i)
             {
                 cumulativeDistances[i] = cumulativeDistances[i + 1];
             }
+
             averageLengths.resize(numPolygonNodes);
             actualAverageLengths.resize(numPolygonNodes);
             cumulativeDistances.resize(numPolygonNodes);
