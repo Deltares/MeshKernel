@@ -1065,10 +1065,9 @@ namespace meshkernelapi
 
         /// @brief Counts the number of polygon nodes contained in the mesh boundary polygons computed in function `mkernel_mesh2d_get_mesh_boundaries_as_polygons`
         /// @param[in]  meshKernelId         The id of the mesh state
-        /// @param[in]  selectionPolygon The polygon selecting the area where generating the mesh boundary polygons
         /// @param[out] numberOfPolygonNodes The number of polygon nodes
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& selectionPolygon, int& numberOfPolygonNodes);
+        MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, int& numberOfPolygonNodes);
 
         /// @brief Counts the number of selected mesh node indices.
         ///
@@ -1332,10 +1331,9 @@ namespace meshkernelapi
         ///
         /// For example, if a mesh has an single inner hole, two polygons will be generated, one for the inner boundary and one for the outer boundary.
         /// @param[in]  meshKernelId The id of the mesh state
-        /// @param[in]  selectionPolygon The polygon selecting the area where generating the mesh boundary polygons
         /// @param[out] boundaryPolygons The output network boundary polygon
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_get_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& selectionPolygon, GeometryList& boundaryPolygons);
+        MKERNEL_API int mkernel_mesh2d_get_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& boundaryPolygons);
 
         /// @brief Finds the mesh2d node closest to a point, within a search radius.
         /// @param[in]  meshKernelId  The id of the mesh state
