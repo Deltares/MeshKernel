@@ -47,7 +47,7 @@ TEST(CurvilinearGridSmoothing, Compute_OnSmoothCurvilinearGrid_ShouldNotSmoothGr
     CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
 
     // Execute
-    curvilinearGridSmoothing.SetBlock(Point{0, 0}, Point{30, 30});
+    curvilinearGridSmoothing.SetBlock({0, 0}, {30, 30});
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.Compute();
 
     // Assert nodes are on the same location because the grid is already smooth
@@ -101,7 +101,7 @@ TEST(CurvilinearGridSmoothing, Compute_OnONonSmoothCurvilinearGrid_ShouldSmoothG
     CurvilinearGridSmoothing curvilinearGridSmoothing(*curvilinearGrid, 10);
 
     // Execute
-    curvilinearGridSmoothing.SetBlock(Point{80154, 366530}, Point{80610, 367407});
+    curvilinearGridSmoothing.SetBlock({80154, 366530}, {80610, 367407});
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.Compute();
 
     // Assert
@@ -156,7 +156,7 @@ TEST(CurvilinearGridSmoothing, Compute_OnONonSmoothCurvilinearGridWithMissingEle
     CurvilinearGridSmoothing curvilinearGridSmoothing(*curvilinearGrid, 10);
 
     // Execute
-    curvilinearGridSmoothing.SetBlock(Point{80154, 366530}, Point{80610, 367407});
+    curvilinearGridSmoothing.SetBlock({80154, 366530}, {80610, 367407});
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.Compute();
 
     // Assert
@@ -229,7 +229,7 @@ TEST(CurvilinearGridSmoothing, ComputedDirectionalSmooth_OnMDrirection_ShouldSmo
     auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     CurvilinearGridSmoothing curvilinearGridSmoothing(*curvilinearGrid, 10);
-    curvilinearGridSmoothing.SetBlock(Point{80199, 366749}, Point{80480, 366869});
+    curvilinearGridSmoothing.SetBlock({80199, 366749}, {80480, 366869});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.ComputeDirectional({80143, 367041}, {80333, 366553});
@@ -264,7 +264,7 @@ TEST(CurvilinearGridSmoothing, ComputedDirectionalSmooth_OnNDrirection_ShouldSmo
     auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     CurvilinearGridSmoothing curvilinearGridSmoothing(*curvilinearGrid, 10);
-    curvilinearGridSmoothing.SetBlock(Point{80143, 367041}, Point{80333, 366553});
+    curvilinearGridSmoothing.SetBlock({80143, 367041}, {80333, 366553});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.ComputeDirectional({80199, 366749}, {80480, 366869});
@@ -303,10 +303,10 @@ TEST(CurvilinearGridOrthogonalization, Compute_OnNonSmoothedlCurvilinearGridWith
         Point{30, 0}, Point{30, 10}, Point{30, 15}, Point{30, 20}, Point{30, 30},
         Point{40, 0}, Point{40, 10}, Point{40, 15}, Point{40, 20}, Point{40, 30};
 
-    CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
+    meshkernel::CurvilinearGrid curvilinearGrid(grid, meshkernel::Projection::cartesian);
     CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 20);
 
-    curvilinearGridSmoothing.SetBlock(Point{0, 0}, Point{30, 30});
+    curvilinearGridSmoothing.SetBlock({0, 0}, {30, 30});
     curvilinearGridSmoothing.SetLine({10.0, 10.0}, {20.0, 10.0}); // First frozen line
     curvilinearGridSmoothing.SetLine({10.0, 20.0}, {20.0, 20.0}); // Second frozen line
 

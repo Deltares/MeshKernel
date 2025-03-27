@@ -304,14 +304,12 @@ namespace meshkernelapi
         /// @param[in] yLowerLeftCorner  The y coordinate of the lower left corner of the block to de-refine
         /// @param[in] xUpperRightCorner The x coordinate of the upper right corner of the block to de-refine
         /// @param[in] yUpperRightCorner The y coordinate of the upper right corner of the block to de-refine
-        /// @param[in] deRefinementFactor The factor to use for de-refinement
         /// @return Error code
         MKERNEL_API int mkernel_curvilinear_derefine(int meshKernelId,
                                                      double xLowerLeftCorner,
                                                      double yLowerLeftCorner,
                                                      double xUpperRightCorner,
-                                                     double yUpperRightCorner,
-                                                     int deRefinementFactor);
+                                                     double yUpperRightCorner);
 
         /// @brief Resets the instance of the line shift algorithm in MeshKernelState
         /// @param[in] meshKernelId The id of the mesh state
@@ -531,8 +529,8 @@ namespace meshkernelapi
         /// @brief Curvilinear grid refinement. Additional gridlines are added in both directions, over the entire grid.
         ///
         /// @param[in] meshKernelId      The id of the mesh state.
-        /// @param[in] mRefinement       The amount of refinement to compute in m-direction. Positive refinement, negative de-refinement.
-        /// @param[in] nRefinement       The amount of refinement to compute in n-direction. Positive refinement, negative de-refinement.
+        /// @param[in] mRefinement       The amount of refinement to compute in m-direction
+        /// @param[in] nRefinement       The amount of refinement to compute in n-direction
         /// @return                            Error code
         MKERNEL_API int mkernel_curvilinear_full_refine(int meshKernelId,
                                                         int mRefinement,
@@ -1065,10 +1063,9 @@ namespace meshkernelapi
 
         /// @brief Counts the number of polygon nodes contained in the mesh boundary polygons computed in function `mkernel_mesh2d_get_mesh_boundaries_as_polygons`
         /// @param[in]  meshKernelId         The id of the mesh state
-        /// @param[in]  selectionPolygon The polygon selecting the area where generating the mesh boundary polygons
         /// @param[out] numberOfPolygonNodes The number of polygon nodes
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& selectionPolygon, int& numberOfPolygonNodes);
+        MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, int& numberOfPolygonNodes);
 
         /// @brief Counts the number of selected mesh node indices.
         ///
@@ -1332,10 +1329,9 @@ namespace meshkernelapi
         ///
         /// For example, if a mesh has an single inner hole, two polygons will be generated, one for the inner boundary and one for the outer boundary.
         /// @param[in]  meshKernelId The id of the mesh state
-        /// @param[in]  selectionPolygon The polygon selecting the area where generating the mesh boundary polygons
         /// @param[out] boundaryPolygons The output network boundary polygon
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_get_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& selectionPolygon, GeometryList& boundaryPolygons);
+        MKERNEL_API int mkernel_mesh2d_get_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& boundaryPolygons);
 
         /// @brief Finds the mesh2d node closest to a point, within a search radius.
         /// @param[in]  meshKernelId  The id of the mesh state

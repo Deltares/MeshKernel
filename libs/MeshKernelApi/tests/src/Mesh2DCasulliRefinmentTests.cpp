@@ -670,11 +670,11 @@ TEST(CasulliRefinement, CurvilinearFullMeshRefinementFailureTests)
 
     // Should fail, invalid refinement factor
     errorCode = meshkernelapi::mkernel_curvilinear_full_refine(meshKernelId, -1, 0);
-    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
     errorCode = meshkernelapi::mkernel_curvilinear_full_refine(meshKernelId, 0, -2);
-    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
     errorCode = meshkernelapi::mkernel_curvilinear_full_refine(meshKernelId, -3, -4);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
 
     errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);

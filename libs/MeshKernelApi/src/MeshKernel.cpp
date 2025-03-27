@@ -89,8 +89,8 @@
 #include <MeshKernel/UndoActions/UndoActionStack.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
+#include "MeshKernelApi/ApiCache/BoundariesAsPolygonCache.hpp"
 #include "MeshKernelApi/ApiCache/CachedPointValues.hpp"
-#include "MeshKernelApi/ApiCache/CurvilinearBoundariesAsPolygonCache.hpp"
 #include "MeshKernelApi/ApiCache/FacePolygonPropertyCache.hpp"
 #include "MeshKernelApi/ApiCache/HangingEdgeCache.hpp"
 #include "MeshKernelApi/ApiCache/NodeInPolygonCache.hpp"
@@ -1119,7 +1119,7 @@ namespace meshkernelapi
             const auto boundaryPolygon = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeBoundaryPolygons({minN, minM},
                                                                                                                   {maxN, maxM});
             numberOfPolygonNodes = static_cast<int>(boundaryPolygon.size());
-            meshKernelState[meshKernelId].m_boundariesAsPolygonCache = std::make_shared<CurvilinearBoundariesAsPolygonCache>(lowerLeftN, lowerLeftM, upperRightN, upperRightM, boundaryPolygon);
+            meshKernelState[meshKernelId].m_boundariesAsPolygonCache = std::make_shared<BoundariesAsPolygonCache>(lowerLeftN, lowerLeftM, upperRightN, upperRightM, boundaryPolygon);
         }
         catch (...)
         {
@@ -1925,7 +1925,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& selectionPolygon, GeometryList& boundaryPolygons)
+    MKERNEL_API int mkernel_mesh2d_get_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& boundaryPolygons)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -1935,23 +1935,10 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            if (meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache == nullptr)
-            {
-                throw meshkernel::MeshKernelError("Polygon data has not been cached, mkernel_mesh2d_count_mesh_boundaries_as_polygons must be called before");
-            }
+            const std::vector<meshkernel::Point> polygonNodes;
+            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->ComputeBoundaryPolygons(polygonNodes);
 
-            auto const selectionPolygonPoints = ConvertGeometryListToPointVector(selectionPolygon);
-
-            if (!meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache->ValidOptions(selectionPolygonPoints))
-            {
-                meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache.reset();
-                throw meshkernel::ConstraintError("Given boundary polygon is not compatible with the cached values. Cached values will be deleted.");
-            }
-
-            meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache->Copy(boundaryPolygons);
-
-            // Clear the cache now that the values have been retrieved
-            meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache.reset();
+            ConvertPointVectorToGeometryList(meshBoundaryPolygon, boundaryPolygons);
         }
         catch (...)
         {
@@ -1960,7 +1947,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& selectionPolygon, int& numberOfPolygonNodes)
+    MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, int& numberOfPolygonNodes)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -1970,11 +1957,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            auto const selectionPolygonPoints = ConvertGeometryListToPointVector(selectionPolygon);
-            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->ComputeBoundaryPolygons(selectionPolygonPoints);
-
-            meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache = std::make_shared<MeshBoundariesAsPolygonCache>(selectionPolygonPoints,
-                                                                                                                          meshBoundaryPolygon);
+            const std::vector<meshkernel::Point> polygonNodes;
+            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->ComputeBoundaryPolygons(polygonNodes);
             numberOfPolygonNodes = static_cast<int>(meshBoundaryPolygon.size()); // last value is a separator
         }
         catch (...)
@@ -3997,12 +3981,6 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
-
-            if (refinement < 0)
-            {
-                throw meshkernel::MeshKernelError("Refinement factor cannot be negative");
-            }
-
             meshkernel::Point const firstPoint{xLowerLeftCorner, yLowerLeftCorner};
             meshkernel::Point const secondPoint{xUpperRightCorner, yUpperRightCorner};
 
@@ -4036,8 +4014,16 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id is valid, but the expected curvilinear grid is not a valid grid");
             }
 
+            if (mRefinement <= 0 || nRefinement <= 0)
+            {
+                throw meshkernel::MeshKernelError("Invalid mesh refinement factors: m-refinement {}, n-refinement {} ",
+                                                  mRefinement, nRefinement);
+            }
+
             meshkernel::CurvilinearGridFullRefinement gridRefinement;
-            meshKernelUndoStack.Add(gridRefinement.Compute(*meshKernelState[meshKernelId].m_curvilinearGrid, mRefinement, nRefinement),
+            meshKernelUndoStack.Add(gridRefinement.Compute(*meshKernelState[meshKernelId].m_curvilinearGrid,
+                                                           static_cast<meshkernel::UInt>(mRefinement),
+                                                           static_cast<meshkernel::UInt>(nRefinement)),
                                     meshKernelId);
         }
         catch (...)
@@ -4052,8 +4038,7 @@ namespace meshkernelapi
                                                  double xLowerLeftCorner,
                                                  double yLowerLeftCorner,
                                                  double xUpperRightCorner,
-                                                 double yUpperRightCorner,
-                                                 int derefinementFactor)
+                                                 double yUpperRightCorner)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -4063,16 +4048,11 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            if (derefinementFactor < 0)
-            {
-                throw meshkernel::MeshKernelError("De-refinement factor cannot be negative");
-            }
-
             meshkernel::Point const firstPoint{xLowerLeftCorner, yLowerLeftCorner};
             meshkernel::Point const secondPoint{xUpperRightCorner, yUpperRightCorner};
 
             // Execute
-            meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid, derefinementFactor);
+            meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid);
 
             curvilinearGridDeRefinement.SetBlock(firstPoint, secondPoint);
             meshKernelUndoStack.Add(curvilinearGridDeRefinement.Compute(), meshKernelId);
@@ -5118,8 +5098,8 @@ namespace meshkernelapi
             }
             meshkernel::CurvilinearGridDeleteExterior curvilinearDeleteExterior(*meshKernelState[meshKernelId].m_curvilinearGrid);
 
-            curvilinearDeleteExterior.SetBlock(meshkernel::Point{boundingBox.xLowerLeft, boundingBox.yLowerLeft},
-                                               meshkernel::Point{boundingBox.xUpperRight, boundingBox.yUpperRight});
+            curvilinearDeleteExterior.SetBlock({boundingBox.xLowerLeft, boundingBox.yLowerLeft},
+                                               {boundingBox.xUpperRight, boundingBox.yUpperRight});
 
             meshKernelUndoStack.Add(curvilinearDeleteExterior.Compute(), meshKernelId);
         }
@@ -5152,8 +5132,8 @@ namespace meshkernelapi
             }
             meshkernel::CurvilinearGridDeleteInterior curvilinearDeleteInterior(*meshKernelState[meshKernelId].m_curvilinearGrid);
 
-            curvilinearDeleteInterior.SetBlock(meshkernel::Point{boundingBox.xLowerLeft, boundingBox.yLowerLeft},
-                                               meshkernel::Point{boundingBox.xUpperRight, boundingBox.yUpperRight});
+            curvilinearDeleteInterior.SetBlock({boundingBox.xLowerLeft, boundingBox.yLowerLeft},
+                                               {boundingBox.xUpperRight, boundingBox.yUpperRight});
 
             meshKernelUndoStack.Add(curvilinearDeleteInterior.Compute(), meshKernelId);
         }

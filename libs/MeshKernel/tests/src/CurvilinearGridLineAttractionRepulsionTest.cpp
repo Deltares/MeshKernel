@@ -37,8 +37,7 @@ TEST(CurvilinearLineAttraction, Compute_OnMLine_ShouldAttractMLines)
     auto curvilinearGrid = MakeSmallCurvilinearGrid();
     meshkernel::CurvilinearGridLineAttractionRepulsion curvilinearLineAttractionRepulsion(*curvilinearGrid, 0.5);
     curvilinearLineAttractionRepulsion.SetLine({80266.8, 367104.0}, {80419.3, 366566.2});
-    curvilinearLineAttractionRepulsion.SetBlock(meshkernel::Point{80198.2, 366750.6},
-                                                meshkernel::Point{80583.1, 366889.8});
+    curvilinearLineAttractionRepulsion.SetBlock({80198.2, 366750.6}, {80583.1, 366889.8});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearLineAttractionRepulsion.Compute();
@@ -65,8 +64,7 @@ TEST(CurvilinearLineAttraction, Compute_OnNLine_ShouldAttractNLines)
     auto curvilinearGrid = MakeSmallCurvilinearGrid();
     meshkernel::CurvilinearGridLineAttractionRepulsion curvilinearLineAttractionRepulsion(*curvilinearGrid, 0.5);
     curvilinearLineAttractionRepulsion.SetLine({80198.2, 366750.6}, {80583.1, 366889.8});
-    curvilinearLineAttractionRepulsion.SetBlock(meshkernel::Point{80266.8, 367104.0},
-                                                meshkernel::Point{80419.3, 366566.2});
+    curvilinearLineAttractionRepulsion.SetBlock({80266.8, 367104.0}, {80419.3, 366566.2});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearLineAttractionRepulsion.Compute();
@@ -93,7 +91,7 @@ TEST(CurvilinearLineRepulsion, Compute_OnMLine_ShouldRepulseMLines)
     auto curvilinearGrid = MakeSmallCurvilinearGrid();
     meshkernel::CurvilinearGridLineAttractionRepulsion curvilinearLineAttractionRepulsion(*curvilinearGrid, -0.5);
     curvilinearLineAttractionRepulsion.SetLine({80266.8, 367104.0}, {80419.3, 366566.2});
-    curvilinearLineAttractionRepulsion.SetBlock(meshkernel::Point{80198.2, 366750.6}, meshkernel::Point{80583.1, 366889.8});
+    curvilinearLineAttractionRepulsion.SetBlock({80198.2, 366750.6}, {80583.1, 366889.8});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearLineAttractionRepulsion.Compute();
@@ -120,7 +118,7 @@ TEST(CurvilinearLineRepulsion, Compute_OnNLine_ShouldRepulseNLines)
     auto curvilinearGrid = MakeSmallCurvilinearGrid();
     meshkernel::CurvilinearGridLineAttractionRepulsion curvilinearLineAttractionRepulsion(*curvilinearGrid, -0.5);
     curvilinearLineAttractionRepulsion.SetLine({80198.2, 366750.6}, {80583.1, 366889.8});
-    curvilinearLineAttractionRepulsion.SetBlock(meshkernel::Point{80266.8, 367104.0}, meshkernel::Point{80419.3, 366566.2});
+    curvilinearLineAttractionRepulsion.SetBlock({80266.8, 367104.0}, {80419.3, 366566.2});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearLineAttractionRepulsion.Compute();

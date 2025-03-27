@@ -25,13 +25,13 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernelApi/ApiCache/CurvilinearBoundariesAsPolygonCache.hpp"
+#include "MeshKernelApi/ApiCache/BoundariesAsPolygonCache.hpp"
 
-meshkernelapi::CurvilinearBoundariesAsPolygonCache::CurvilinearBoundariesAsPolygonCache(const int lowerLeftN,
-                                                                                        const int lowerLeftM,
-                                                                                        const int upperRightN,
-                                                                                        const int upperRightM,
-                                                                                        const std::vector<meshkernel::Point>& boundaryPoints)
+meshkernelapi::BoundariesAsPolygonCache::BoundariesAsPolygonCache(const int lowerLeftN,
+                                                                  const int lowerLeftM,
+                                                                  const int upperRightN,
+                                                                  const int upperRightM,
+                                                                  const std::vector<meshkernel::Point>& boundaryPoints)
     : CachedPointValues(boundaryPoints),
       m_lowerLeftNValue(lowerLeftN),
       m_lowerLeftMValue(lowerLeftM),
@@ -40,10 +40,10 @@ meshkernelapi::CurvilinearBoundariesAsPolygonCache::CurvilinearBoundariesAsPolyg
 {
 }
 
-bool meshkernelapi::CurvilinearBoundariesAsPolygonCache::ValidOptions(const int lowerLeftN,
-                                                                      const int lowerLeftM,
-                                                                      const int upperRightN,
-                                                                      const int upperRightM) const
+bool meshkernelapi::BoundariesAsPolygonCache::ValidOptions(const int lowerLeftN,
+                                                           const int lowerLeftM,
+                                                           const int upperRightN,
+                                                           const int upperRightM) const
 {
     return lowerLeftN == m_lowerLeftNValue &&
            lowerLeftM == m_lowerLeftMValue &&
