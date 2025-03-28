@@ -663,7 +663,7 @@ std::vector<meshkernel::Point> meshkernel::Polygon::LinearRefine(const UInt star
 
     // Get an estimate of number of nodes to be added
     const UInt estimateOfNodesToBeAdded = static_cast<UInt>(2.0 * cumulativeDistances.back() / (firstLength + lastLength));
-    const UInt maxOuterIter = m_nodes.size() + 5 * estimateOfNodesToBeAdded;
+    const UInt maxOuterIter = static_cast<UInt>(m_nodes.size()) + static_cast<UInt>(5) * estimateOfNodesToBeAdded;
 
     UInt outerIter = 0;
 
