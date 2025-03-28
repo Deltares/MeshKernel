@@ -3998,6 +3998,12 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
+
+            if (refinement < 0)
+            {
+                throw meshkernel::MeshKernelError("Refinement factor cannot be negative");
+            }
+
             meshkernel::Point const firstPoint{xLowerLeftCorner, yLowerLeftCorner};
             meshkernel::Point const secondPoint{xUpperRightCorner, yUpperRightCorner};
 
@@ -4031,16 +4037,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id is valid, but the expected curvilinear grid is not a valid grid");
             }
 
-            if (mRefinement <= 0 || nRefinement <= 0)
-            {
-                throw meshkernel::MeshKernelError("Invalid mesh refinement factors: m-refinement {}, n-refinement {} ",
-                                                  mRefinement, nRefinement);
-            }
-
             meshkernel::CurvilinearGridFullRefinement gridRefinement;
-            meshKernelUndoStack.Add(gridRefinement.Compute(*meshKernelState[meshKernelId].m_curvilinearGrid,
-                                                           static_cast<meshkernel::UInt>(mRefinement),
-                                                           static_cast<meshkernel::UInt>(nRefinement)),
+            meshKernelUndoStack.Add(gridRefinement.Compute(*meshKernelState[meshKernelId].m_curvilinearGrid, mRefinement, nRefinement),
                                     meshKernelId);
         }
         catch (...)
@@ -4055,7 +4053,8 @@ namespace meshkernelapi
                                                  double xLowerLeftCorner,
                                                  double yLowerLeftCorner,
                                                  double xUpperRightCorner,
-                                                 double yUpperRightCorner)
+                                                 double yUpperRightCorner,
+                                                 int derefinementFactor)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -4065,11 +4064,16 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
+            if (derefinementFactor < 0)
+            {
+                throw meshkernel::MeshKernelError("De-refinement factor cannot be negative");
+            }
+
             meshkernel::Point const firstPoint{xLowerLeftCorner, yLowerLeftCorner};
             meshkernel::Point const secondPoint{xUpperRightCorner, yUpperRightCorner};
 
             // Execute
-            meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid);
+            meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid, derefinementFactor);
 
             curvilinearGridDeRefinement.SetBlock(firstPoint, secondPoint);
             meshKernelUndoStack.Add(curvilinearGridDeRefinement.Compute(), meshKernelId);
@@ -5115,8 +5119,8 @@ namespace meshkernelapi
             }
             meshkernel::CurvilinearGridDeleteExterior curvilinearDeleteExterior(*meshKernelState[meshKernelId].m_curvilinearGrid);
 
-            curvilinearDeleteExterior.SetBlock({boundingBox.xLowerLeft, boundingBox.yLowerLeft},
-                                               {boundingBox.xUpperRight, boundingBox.yUpperRight});
+            curvilinearDeleteExterior.SetBlock(meshkernel::Point{boundingBox.xLowerLeft, boundingBox.yLowerLeft},
+                                               meshkernel::Point{boundingBox.xUpperRight, boundingBox.yUpperRight});
 
             meshKernelUndoStack.Add(curvilinearDeleteExterior.Compute(), meshKernelId);
         }
@@ -5149,8 +5153,8 @@ namespace meshkernelapi
             }
             meshkernel::CurvilinearGridDeleteInterior curvilinearDeleteInterior(*meshKernelState[meshKernelId].m_curvilinearGrid);
 
-            curvilinearDeleteInterior.SetBlock({boundingBox.xLowerLeft, boundingBox.yLowerLeft},
-                                               {boundingBox.xUpperRight, boundingBox.yUpperRight});
+            curvilinearDeleteInterior.SetBlock(meshkernel::Point{boundingBox.xLowerLeft, boundingBox.yLowerLeft},
+                                               meshkernel::Point{boundingBox.xUpperRight, boundingBox.yUpperRight});
 
             meshKernelUndoStack.Add(curvilinearDeleteInterior.Compute(), meshKernelId);
         }

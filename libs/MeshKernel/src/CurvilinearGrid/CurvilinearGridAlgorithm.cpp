@@ -54,6 +54,18 @@ void CurvilinearGridAlgorithm::SetBlock(Point const& firstCornerPoint, Point con
     m_upperRight = upperRight;
 }
 
+void CurvilinearGridAlgorithm::SetBlock(CurvilinearGridNodeIndices const& firstCornerPoint, CurvilinearGridNodeIndices const& secondCornerPoint)
+{
+    // Coinciding corner nodes, no valid area, nothing to do
+    if (firstCornerPoint == secondCornerPoint)
+    {
+        throw std::invalid_argument("CurvilinearGridSmoothing::SetBlock coinciding corner nodes, no valid area to smooth");
+    }
+
+    m_lowerLeft = firstCornerPoint;
+    m_upperRight = secondCornerPoint;
+}
+
 void CurvilinearGridAlgorithm::SetLine(Point const& firstPoint, Point const& secondPoint)
 {
     // The selected nodes must be on the vertical or horizontal line

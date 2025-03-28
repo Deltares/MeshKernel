@@ -33,7 +33,7 @@
 using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridDeRefinement;
 
-CurvilinearGridDeRefinement::CurvilinearGridDeRefinement(CurvilinearGrid& grid) : CurvilinearGridAlgorithm(grid)
+CurvilinearGridDeRefinement::CurvilinearGridDeRefinement(CurvilinearGrid& grid, int derefinementFactor) : CurvilinearGridAlgorithm(grid), m_derefinementFactor(derefinementFactor)
 {
 }
 
@@ -44,9 +44,12 @@ meshkernel::UndoActionPtr CurvilinearGridDeRefinement::Compute()
         throw std::invalid_argument("CurvilinearGridDeRefinement::Compute: lower left and upper right corners defining the curvilinear grid block are not set");
     }
 
-    /// estimate the dimension of the refined grid
+    // estimate the dimension of the refined grid
     const auto numMToDeRefine = m_upperRight.m_m > m_lowerLeft.m_m ? m_upperRight.m_m - m_lowerLeft.m_m : 1;
     const auto numNToDeRefine = m_upperRight.m_n > m_lowerLeft.m_n ? m_upperRight.m_n - m_lowerLeft.m_n : 1;
+
+    const int mDeRefineFactor = numMToDeRefine > 1 ? m_derefinementFactor : 1;
+    const int nDeRefineFactor = numNToDeRefine > 1 ? m_derefinementFactor : 1;
 
     std::unique_ptr<CurvilinearGridRefinementUndoAction> undoAction = CurvilinearGridRefinementUndoAction::Create(m_grid);
 
@@ -54,32 +57,63 @@ meshkernel::UndoActionPtr CurvilinearGridDeRefinement::Compute()
     std::vector<std::vector<Point>> deRefinedGrid;
     deRefinedGrid.reserve(m_grid.NumN());
 
-    UInt nIndexOriginalGrid = 0;
-    while (nIndexOriginalGrid < m_grid.NumN())
+    UInt nCurrentIndex = 0;
+    UInt nLastUsedIndex = 0;
+    while (nCurrentIndex < m_grid.NumN())
     {
-        UInt localNDeRefinement = 1;
-        if (nIndexOriginalGrid >= m_lowerLeft.m_n && nIndexOriginalGrid < m_upperRight.m_n)
+        int localNDeRefinement = 1;
+        if (nCurrentIndex >= m_lowerLeft.m_n && nCurrentIndex < m_upperRight.m_n)
         {
-            localNDeRefinement = numNToDeRefine;
+            localNDeRefinement = nDeRefineFactor;
+            if (nCurrentIndex + localNDeRefinement > m_upperRight.m_n)
+            {
+                localNDeRefinement = static_cast<int>(m_upperRight.m_n) -
+                                     static_cast<int>(nCurrentIndex);
+            }
         }
         deRefinedGrid.emplace_back(std::vector<Point>());
         deRefinedGrid.back().reserve(m_grid.NumM());
+        nLastUsedIndex = nCurrentIndex;
 
-        UInt mIndexOriginalGrid = 0;
-        while (mIndexOriginalGrid < m_grid.NumM())
+        UInt mCurrentIndex = 0;
+        UInt mLastUsedIndex = 0;
+        while (mCurrentIndex < m_grid.NumM())
         {
-            UInt localMDeRefinement = 1;
-            if (mIndexOriginalGrid >= m_lowerLeft.m_m && mIndexOriginalGrid < m_upperRight.m_m)
+            int localMDeRefinement = 1;
+            if (mCurrentIndex >= m_lowerLeft.m_m && mCurrentIndex < m_upperRight.m_m)
             {
-                localMDeRefinement = numMToDeRefine;
+                localMDeRefinement = mDeRefineFactor;
+                if (mCurrentIndex + localMDeRefinement > m_upperRight.m_m)
+                {
+                    localMDeRefinement = static_cast<int>(m_upperRight.m_m) -
+                                         static_cast<int>(mCurrentIndex);
+                }
             }
-            deRefinedGrid.back().emplace_back(m_grid.GetNode(nIndexOriginalGrid, mIndexOriginalGrid));
-            mIndexOriginalGrid += localMDeRefinement;
+            const auto currentNode = m_grid.GetNode(nCurrentIndex, mCurrentIndex);
+            mLastUsedIndex = mCurrentIndex;
+            deRefinedGrid.back().emplace_back(currentNode);
+            mCurrentIndex += localMDeRefinement;
         }
-        nIndexOriginalGrid += localNDeRefinement;
+
+        // Emplace the last column to avoid reducing the curvilinear grid size
+        if (mLastUsedIndex < m_grid.NumM() - 1)
+        {
+            deRefinedGrid.back().emplace_back(m_grid.GetNode(nCurrentIndex, m_grid.NumM() - 1));
+        }
+        nCurrentIndex += localNDeRefinement;
     }
 
-    // substitute original grid with the derefined one
+    // Emplace the last row to avoid reducing the grid size
+    if (nLastUsedIndex < m_grid.NumN() - 1)
+    {
+        deRefinedGrid.emplace_back(std::vector<Point>());
+        for (auto m = 0u; m < m_grid.NumM(); ++m)
+        {
+            deRefinedGrid.back().emplace_back(m_grid.GetNode(m_grid.NumN() - 1, m));
+        }
+    }
+
+    // Substitute original grid with the derefined one
     m_grid.SetGridNodes(lin_alg::STLVectorOfVectorsToMatrix(deRefinedGrid));
 
     return undoAction;

@@ -304,12 +304,14 @@ namespace meshkernelapi
         /// @param[in] yLowerLeftCorner  The y coordinate of the lower left corner of the block to de-refine
         /// @param[in] xUpperRightCorner The x coordinate of the upper right corner of the block to de-refine
         /// @param[in] yUpperRightCorner The y coordinate of the upper right corner of the block to de-refine
+        /// @param[in] deRefinementFactor The factor to use for de-refinement
         /// @return Error code
         MKERNEL_API int mkernel_curvilinear_derefine(int meshKernelId,
                                                      double xLowerLeftCorner,
                                                      double yLowerLeftCorner,
                                                      double xUpperRightCorner,
-                                                     double yUpperRightCorner);
+                                                     double yUpperRightCorner,
+                                                     int deRefinementFactor);
 
         /// @brief Resets the instance of the line shift algorithm in MeshKernelState
         /// @param[in] meshKernelId The id of the mesh state
@@ -529,8 +531,8 @@ namespace meshkernelapi
         /// @brief Curvilinear grid refinement. Additional gridlines are added in both directions, over the entire grid.
         ///
         /// @param[in] meshKernelId      The id of the mesh state.
-        /// @param[in] mRefinement       The amount of refinement to compute in m-direction
-        /// @param[in] nRefinement       The amount of refinement to compute in n-direction
+        /// @param[in] mRefinement       The amount of refinement to compute in m-direction. Positive refinement, negative de-refinement.
+        /// @param[in] nRefinement       The amount of refinement to compute in n-direction. Positive refinement, negative de-refinement.
         /// @return                            Error code
         MKERNEL_API int mkernel_curvilinear_full_refine(int meshKernelId,
                                                         int mRefinement,

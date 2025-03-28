@@ -52,6 +52,11 @@ namespace meshkernel
         /// @param[in] secondCornerPoint           The second point defining the bounding box
         void SetBlock(Point const& firstCornerPoint, Point const& secondCornerPoint);
 
+        /// @brief Sets a block using curvilinear node indices
+        /// @param[in] firstCornerPoint            The curvilinear grid index defining the lower left corner of the bounding box
+        /// @param[in] secondCornerPoint           The curvilinear grid index defining the upper right corner of the bounding box
+        void SetBlock(CurvilinearGridNodeIndices const& firstCornerPoint, CurvilinearGridNodeIndices const& secondCornerPoint);
+
         /// @brief Sets a line, applicable to algorithms such as directional smoothing,
         /// freeze a line in curvilinear grid orthogonalization and line shift
         /// @param[in] firstPoint The point containing the first point of the line to freeze
