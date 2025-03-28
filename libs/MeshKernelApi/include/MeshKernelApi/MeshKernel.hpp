@@ -296,23 +296,6 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_curvilinear_delete_orthogonal_grid_from_splines(int meshKernelId);
 
-        /// @brief Directional curvilinear grid de-refinement. Grid lines are removed perpendicularly to the segment defined by lowerLeftCorner and xUpperRightCorner.
-        ///
-        /// \p firstPoint and \p secondPoint must lie on the same grid line.
-        /// @param meshKernelId          The id of the mesh state.
-        /// @param[in] xLowerLeftCorner  The x coordinate of the lower left corner of the block to de-refine
-        /// @param[in] yLowerLeftCorner  The y coordinate of the lower left corner of the block to de-refine
-        /// @param[in] xUpperRightCorner The x coordinate of the upper right corner of the block to de-refine
-        /// @param[in] yUpperRightCorner The y coordinate of the upper right corner of the block to de-refine
-        /// @param[in] deRefinementFactor The factor to use for de-refinement
-        /// @return Error code
-        MKERNEL_API int mkernel_curvilinear_derefine(int meshKernelId,
-                                                     double xLowerLeftCorner,
-                                                     double yLowerLeftCorner,
-                                                     double xUpperRightCorner,
-                                                     double yUpperRightCorner,
-                                                     int deRefinementFactor);
-
         /// @brief Resets the instance of the line shift algorithm in MeshKernelState
         /// @param[in] meshKernelId The id of the mesh state
         /// @return  Error code
@@ -506,7 +489,7 @@ namespace meshkernelapi
                                                                  double xToCoordinate,
                                                                  double yToCoordinate);
 
-        /// @brief Directional curvilinear grid refinement. Additional gridlines are added perpendicularly to the segment defined by lowerLeftCorner and xUpperRightCorner.
+        /// @brief Directional curvilinear grid refinement or de-refinement. Additional gridlines are added or removed perpendicularly to the segment defined by lowerLeftCorner and xUpperRightCorner.
         ///
         /// \p firstPoint and \p secondPoint must lie on the same grid line.
         /// @param[in] meshKernelId      The id of the mesh state.
@@ -514,7 +497,7 @@ namespace meshkernelapi
         /// @param[in] yLowerLeftCorner  The y coordinate of the lower left corner of the block to refine
         /// @param[in] xUpperRightCorner The x coordinate of the upper right corner of the block to refine
         /// @param[in] yUpperRightCorner The y coordinate of the upper right corner of the block to refine
-        /// @param[in] refinement        The number of grid lines to add between \p firstPoint and \p secondPoint
+        /// @param[in] refinement        The number of grid lines to add between \p firstPoint and \p secondPoint. Positive for refinement, negative for de-refinement
         /// @return                            Error code
         MKERNEL_API int mkernel_curvilinear_refine(int meshKernelId,
                                                    double xLowerLeftCorner,
