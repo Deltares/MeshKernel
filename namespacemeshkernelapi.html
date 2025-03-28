@@ -234,9 +234,6 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <tr class="memitem:ae4058e2207ebb8a74b5f80024a02e888" id="r_ae4058e2207ebb8a74b5f80024a02e888"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ae4058e2207ebb8a74b5f80024a02e888">mkernel_curvilinear_delete_orthogonal_grid_from_splines</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:ae4058e2207ebb8a74b5f80024a02e888"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finalizes curvilinear grid from splines algorithm.  <br /></td></tr>
 <tr class="separator:ae4058e2207ebb8a74b5f80024a02e888"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4dc9dc32bbb49e1f911ac2f3f64b517" id="r_ab4dc9dc32bbb49e1f911ac2f3f64b517"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ab4dc9dc32bbb49e1f911ac2f3f64b517">mkernel_curvilinear_derefine</a> (int meshKernelId, double xLowerLeftCorner, double yLowerLeftCorner, double xUpperRightCorner, double yUpperRightCorner, int deRefinementFactor)</td></tr>
-<tr class="memdesc:ab4dc9dc32bbb49e1f911ac2f3f64b517"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directional curvilinear grid de-refinement. Grid lines are removed perpendicularly to the segment defined by lowerLeftCorner and xUpperRightCorner.  <br /></td></tr>
-<tr class="separator:ab4dc9dc32bbb49e1f911ac2f3f64b517"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9fc4804f0c3e0d14b9ea7e9d217081d6" id="r_a9fc4804f0c3e0d14b9ea7e9d217081d6"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a9fc4804f0c3e0d14b9ea7e9d217081d6">mkernel_curvilinear_finalize_line_shift</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:a9fc4804f0c3e0d14b9ea7e9d217081d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the instance of the line shift algorithm in <a class="el" href="structmeshkernelapi_1_1_mesh_kernel_state.html" title="The class holding the state of the C API library.">MeshKernelState</a>.  <br /></td></tr>
 <tr class="separator:a9fc4804f0c3e0d14b9ea7e9d217081d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -295,7 +292,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <tr class="memdesc:a6dadaf06c429d8c30f962d672b72c1bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves a node of the line to shift, the operation can be performed multiple times.  <br /></td></tr>
 <tr class="separator:a6dadaf06c429d8c30f962d672b72c1bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a958ee3292784ee27c9d4c09adb0e2fb4" id="r_a958ee3292784ee27c9d4c09adb0e2fb4"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a958ee3292784ee27c9d4c09adb0e2fb4">mkernel_curvilinear_refine</a> (int meshKernelId, double xLowerLeftCorner, double yLowerLeftCorner, double xUpperRightCorner, double yUpperRightCorner, int refinement)</td></tr>
-<tr class="memdesc:a958ee3292784ee27c9d4c09adb0e2fb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directional curvilinear grid refinement. Additional gridlines are added perpendicularly to the segment defined by lowerLeftCorner and xUpperRightCorner.  <br /></td></tr>
+<tr class="memdesc:a958ee3292784ee27c9d4c09adb0e2fb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Directional curvilinear grid refinement or de-refinement. Additional gridlines are added or removed perpendicularly to the segment defined by lowerLeftCorner and xUpperRightCorner.  <br /></td></tr>
 <tr class="separator:a958ee3292784ee27c9d4c09adb0e2fb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac5018cc5b18f40820c127929506cdfab" id="r_ac5018cc5b18f40820c127929506cdfab"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac5018cc5b18f40820c127929506cdfab">mkernel_curvilinear_refresh_orthogonal_grid_from_splines</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:ac5018cc5b18f40820c127929506cdfab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts curvilinear grid to mesh and refreshes the state (interactive)  <br /></td></tr>
@@ -1919,72 +1916,6 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 
 </div>
 </div>
-<a id="ab4dc9dc32bbb49e1f911ac2f3f64b517" name="ab4dc9dc32bbb49e1f911ac2f3f64b517"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab4dc9dc32bbb49e1f911ac2f3f64b517">&#9670;&#160;</a></span>mkernel_curvilinear_derefine()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_curvilinear_derefine </td>
-          <td>(</td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>meshKernelId</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>xLowerLeftCorner</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>yLowerLeftCorner</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>xUpperRightCorner</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>yUpperRightCorner</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>deRefinementFactor</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Directional curvilinear grid de-refinement. Grid lines are removed perpendicularly to the segment defined by lowerLeftCorner and xUpperRightCorner. </p>
-<p><code>firstPoint</code> and <code>secondPoint</code> must lie on the same grid line. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">meshKernelId</td><td>The id of the mesh state. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">xLowerLeftCorner</td><td>The x coordinate of the lower left corner of the block to de-refine </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">yLowerLeftCorner</td><td>The y coordinate of the lower left corner of the block to de-refine </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">xUpperRightCorner</td><td>The x coordinate of the upper right corner of the block to de-refine </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">yUpperRightCorner</td><td>The y coordinate of the upper right corner of the block to de-refine </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">deRefinementFactor</td><td>The factor to use for de-refinement </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
-
-</div>
-</div>
 <a id="a9fc4804f0c3e0d14b9ea7e9d217081d6" name="a9fc4804f0c3e0d14b9ea7e9d217081d6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9fc4804f0c3e0d14b9ea7e9d217081d6">&#9670;&#160;</a></span>mkernel_curvilinear_finalize_line_shift()</h2>
 
@@ -3147,7 +3078,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
       </table>
 </div><div class="memdoc">
 
-<p>Directional curvilinear grid refinement. Additional gridlines are added perpendicularly to the segment defined by lowerLeftCorner and xUpperRightCorner. </p>
+<p>Directional curvilinear grid refinement or de-refinement. Additional gridlines are added or removed perpendicularly to the segment defined by lowerLeftCorner and xUpperRightCorner. </p>
 <p><code>firstPoint</code> and <code>secondPoint</code> must lie on the same grid line. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state. </td></tr>
@@ -3155,7 +3086,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
     <tr><td class="paramdir">[in]</td><td class="paramname">yLowerLeftCorner</td><td>The y coordinate of the lower left corner of the block to refine </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">xUpperRightCorner</td><td>The x coordinate of the upper right corner of the block to refine </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">yUpperRightCorner</td><td>The y coordinate of the upper right corner of the block to refine </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">refinement</td><td>The number of grid lines to add between <code>firstPoint</code> and <code>secondPoint</code> </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">refinement</td><td>The number of grid lines to add between <code>firstPoint</code> and <code>secondPoint</code>. Positive for refinement, negative for de-refinement </td></tr>
   </table>
   </dd>
 </dl>
