@@ -320,6 +320,7 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
             vistedEdges);
 
         polygonIndexStart = crossedSegmentIndex;
+        // If polygon line exits the mesh, then it can enter again only via a boundary element.
         checkOnlyBoundarySegments = true;
 
         // no valid seed found in the entire mesh, we are done
