@@ -62,6 +62,7 @@ Mesh2DIntersections::Mesh2DIntersections(Mesh2D& mesh) : m_mesh(mesh)
 std::tuple<UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh2D& mesh,
                                                                 const std::vector<Point>& polyLine,
                                                                 const UInt polygonIndexStart,
+                                                                const bool checkOnlyBoundarySegments,
                                                                 const std::vector<BoundingBox>& polyLineBoundingBoxes,
                                                                 const std::vector<bool>& vistedEdges) const
 {
@@ -76,6 +77,11 @@ std::tuple<UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh2D& me
         {
             // edge already crossed, nothing to do
             if (vistedEdges[edgeIndex])
+            {
+                continue;
+            }
+
+            if (checkOnlyBoundarySegments && !mesh.IsEdgeOnBoundary (edgeIndex))
             {
                 continue;
             }
@@ -298,6 +304,7 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
 
     // Keep a track of the last polygon segment that checked
     UInt polygonIndexStart = 0;
+    bool checkOnlyBoundarySegments = false;
 
     // keep traversing the polyline as long crossed edges are found
     while (true)
@@ -307,10 +314,12 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
             m_mesh,
             polyLine,
             polygonIndexStart,
+            checkOnlyBoundarySegments,
             polyLineBoundingBoxes,
             vistedEdges);
 
         polygonIndexStart = crossedSegmentIndex;
+        checkOnlyBoundarySegments = true;
 
         // no valid seed found in the entire mesh, we are done
         if (crossedEdgeIndex == constants::missing::uintValue)
