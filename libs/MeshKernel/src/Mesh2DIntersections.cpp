@@ -296,6 +296,7 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
     std::vector<bool> vistedEdges(m_mesh.GetNumEdges(), false);
     std::vector<bool> vistedFaces(m_mesh.GetNumEdges(), false);
 
+    // Keep a track of the last polygon segment that checked
     UInt polygonIndexStart = 0;
 
     // keep traversing the polyline as long crossed edges are found
