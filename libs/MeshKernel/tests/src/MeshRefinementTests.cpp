@@ -2680,25 +2680,3 @@ TEST(MeshRefinement, RowSplittingFailureTests)
     // Invalid edge id
     EXPECT_THROW([[maybe_unused]] auto undo4 = splitMeshRow.Compute(mesh, edgeId), ConstraintError);
 }
-
-TEST (MeshRefinement, WTF)
-{
-
-  meshkernel::Projection projection = meshkernel::Projection::spherical;
-
-  auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/MeshRefinementTests/ee25_net.nc");
-  [[maybe_unused]]auto polygons = ReadPolygons(TEST_FOLDER + "/data/MeshRefinementTests/allcontinents_coarse.pol", projection);
-
-  std::cout << "projection: "  << meshkernel::ProjectionToString (mesh->m_projection) <<std::endl;
-  std::cout << "polygons:   "  << polygons->GetNumPolygons() << std::endl;
-
-  std::cout << "mesh: " << mesh->GetNumNodes () <<"  " << mesh->GetNumEdges () << std::endl;
-
-  [[maybe_unused]]auto undoAction = mesh->DeleteMesh (*polygons, meshkernel::Mesh2D::DeleteMeshOptions::InsideNotIntersected, true);
-
-  std::cout << "mesh: " << mesh->GetNumNodes () <<"  " << mesh->GetNumEdges () << std::endl;
-  std::cout << "mesh: " << mesh->GetNumValidNodes () <<"  " << mesh->GetNumValidEdges () << std::endl;
-
-  // meshkernel::SaveVtk (mesh->Nodes (), mesh->Edges (),"deleted");
-
-}
