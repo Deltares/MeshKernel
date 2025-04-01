@@ -81,7 +81,7 @@ std::tuple<UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh2D& me
                 continue;
             }
 
-            if (checkOnlyBoundarySegments && !mesh.IsEdgeOnBoundary (edgeIndex))
+            if (checkOnlyBoundarySegments && !mesh.IsEdgeOnBoundary(edgeIndex))
             {
                 continue;
             }
