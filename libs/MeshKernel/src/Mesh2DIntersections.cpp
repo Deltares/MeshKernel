@@ -304,6 +304,7 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
 
     // Keep a track of the last polygon segment that checked
     UInt polygonIndexStart = 0;
+    // The first check for intersection seed must check all edges in the mesh, so initialise to false.
     bool checkOnlyBoundarySegments = false;
 
     // keep traversing the polyline as long crossed edges are found
