@@ -2695,7 +2695,7 @@ TEST(MeshRefinement, WTF)
     std::vector<meshkernel::Sample> samples (numX * numY);
 
     size_t count = 0;
-    double deltaT = 90.0 / static_cast<double> (numY - 1);
+    double deltaT = 180.0 / static_cast<double> (numY - 1);
     double theta = 0.0;
 
     double deltaP = 360.0 / static_cast<double> (numX - 1);
@@ -2732,12 +2732,12 @@ TEST(MeshRefinement, WTF)
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 3;
     meshRefinementParameters.refine_intersected = 0;
-    meshRefinementParameters.use_mass_center_when_refining = 0;
-    meshRefinementParameters.min_edge_size = 2500.0;
+    meshRefinementParameters.use_mass_center_when_refining = 1;
+    meshRefinementParameters.min_edge_size = 0.1;//2500.0;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 0;
     meshRefinementParameters.refinement_type = 1;
-    meshRefinementParameters.smoothing_iterations = 3;
+    meshRefinementParameters.smoothing_iterations = 5;//3;
     meshRefinementParameters.max_courant_time = 120.0;
 
     MeshRefinement meshRefinement(*mesh,
