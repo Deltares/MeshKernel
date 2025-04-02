@@ -2695,13 +2695,13 @@ TEST(MeshRefinement, WTF)
     std::vector<meshkernel::Sample> samples (numX * numY);
 
     size_t count = 0;
-    double deltaT = 90.0 / static_cast<double> (numY + 1);
+    double deltaT = 90.0 / static_cast<double> (numY - 1);
     double theta = 0.0;
 
-    double deltaP = 90.0 / static_cast<double> (numX + 1);
+    double deltaP = 360.0 / static_cast<double> (numX - 1);
 
     for (int t = 0; t < numY; ++t) {
-        double phi = 0.0;
+        double phi = -180.0;
 
         for (int p = 0; p < numX; ++p) {
             samples [count] = {phi, theta, values [count]};
@@ -2718,7 +2718,7 @@ TEST(MeshRefinement, WTF)
     std::cout << "projection " << meshkernel::ProjectionToString (mesh->m_projection) << std::endl;
     std::cout << " mesh " << mesh->GetNumValidNodes () << "  " << mesh->GetNumValidEdges () << "  " << mesh->GetNumFaces () << std::endl;
 
-    meshkernel::SaveVtk (mesh->Nodes (), mesh->m_facesNodes, "meshfile.vtk");
+    meshkernel::SaveVtk (mesh->Nodes (), mesh->m_facesNodes, "meshfile.vtu");
 
     [[maybe_unused]]auto interpolator = std::make_unique<meshkernel::AveragingInterpolation>(*mesh,
                                                                  samples,
@@ -2745,6 +2745,6 @@ TEST(MeshRefinement, WTF)
                                   meshRefinementParameters);
 
     [[maybe_unused]]auto undoAction = meshRefinement.Compute();
-    meshkernel::SaveVtk (mesh->Nodes (), mesh->m_facesNodes, "meshfile_ref.vtk");
+    meshkernel::SaveVtk (mesh->Nodes (), mesh->m_facesNodes, "meshfile_ref.vtu");
 
 }
