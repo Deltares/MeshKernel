@@ -103,6 +103,9 @@ void meshkernel::SaveVtk(const std::vector<Point>& nodes, const std::vector<std:
 
     std::string meshType = "UnstructuredGrid";
     std::string versionNumber = "1.0";
+    std::array<UInt, 15> unsavedElements;
+
+    unsavedElements.fill (0);
 
     UInt numberOfElements = 0;
 
@@ -112,6 +115,15 @@ void meshkernel::SaveVtk(const std::vector<Point>& nodes, const std::vector<std:
         {
             ++numberOfElements;
         }
+
+        if (faces[i].size() < 15) {
+            ++unsavedElements[faces[i].size()];
+        }
+
+    }
+
+    for (size_t i = 0; i < unsavedElements.size (); ++i){
+        std::cout << "elements " << i <<  " = " << unsavedElements [i] << std::endl;
     }
 
     vtkFile << "<VTKFile type=\""
