@@ -716,9 +716,10 @@ TEST(CurvilinearGridUndoTests, Derefine)
     std::vector<double> originalNodeX(node_x);
     std::vector<double> originalNodeY(node_y);
 
-    errorCode = meshkernelapi::mkernel_curvilinear_derefine(meshKernelId,
-                                                            10.0, 20.0,
-                                                            20.0, 20.0);
+    errorCode = meshkernelapi::mkernel_curvilinear_refine(meshKernelId,
+                                                          10.0, 20.0,
+                                                          20.0, 20.0,
+                                                          -10);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid refinedGrid{};

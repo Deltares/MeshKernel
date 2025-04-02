@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2024.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,31 +25,29 @@
 //
 //------------------------------------------------------------------------------
 
-#pragma once
-#include <memory>
+#include "MeshKernelApi/ApiCache/MeshBoundariesAsPolygonCache.hpp"
 
-#include "MeshKernel/CurvilinearGrid/CurvilinearGridAlgorithm.hpp"
-#include "MeshKernel/UndoActions/UndoAction.hpp"
-
-namespace meshkernel
+meshkernelapi::MeshBoundariesAsPolygonCache::MeshBoundariesAsPolygonCache(const std::vector<meshkernel::Point>& selectionPolygonPoints,
+                                                                          const std::vector<meshkernel::Point>& boundaryPoints)
+    : CachedPointValues(boundaryPoints), m_selectionPolygonPoints(selectionPolygonPoints)
 {
-    class CurvilinearGrid;
+}
 
-    /// @brief A class implementing the curvilinear grid de-refinement algorithm.
-    /// A segment is defined by the first and second point.
-    /// The grid lines crossed by the segment are eliminated from the curvilinear grid.
-    class CurvilinearGridDeRefinement : public CurvilinearGridAlgorithm
+bool meshkernelapi::MeshBoundariesAsPolygonCache::ValidOptions(const std::vector<meshkernel::Point>& selectionPolygonPoints) const
+{
+
+    if (selectionPolygonPoints.size() != m_selectionPolygonPoints.size())
     {
-    public:
-        /// @brief Class constructor
-        /// @param[in] grid The input curvilinear grid
-        /// @param[in] derefinementFactor The derefinement factor
-        explicit CurvilinearGridDeRefinement(CurvilinearGrid& grid, int derefinementFactor);
+        return false;
+    }
 
-        /// @brief Refine the curvilinear grid
-        [[nodiscard]] UndoActionPtr Compute() override;
-
-    private:
-        int m_derefinementFactor;
-    };
-} // namespace meshkernel
+    constexpr double tolerance = 1e-9;
+    for (auto i = 0u; i < selectionPolygonPoints.size(); ++i)
+    {
+        if (!IsEqual(selectionPolygonPoints[i], m_selectionPolygonPoints[i], tolerance))
+        {
+            return false;
+        }
+    }
+    return true;
+}

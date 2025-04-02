@@ -30,7 +30,6 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFullRefinement.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp>
-#include <MeshKernel/Entities.hpp>
 
 using namespace meshkernel;
 
@@ -46,7 +45,7 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGrid_ShouldRefine)
 
     CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
     CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGrid, 10);
-    curvilinearGridRefinement.SetBlock({10, 20}, {20, 20});
+    curvilinearGridRefinement.SetBlock(Point{10, 20}, Point{20, 20});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridRefinement.Compute();
@@ -92,7 +91,7 @@ TEST(CurvilinearGridRefinement, Compute_OnCurvilinearGridWithMissingFaces_Should
 
     CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
     CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGrid, 10);
-    curvilinearGridRefinement.SetBlock({10, 20}, {20, 20});
+    curvilinearGridRefinement.SetBlock(Point{10, 20}, Point{20, 20});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridRefinement.Compute();
@@ -268,11 +267,11 @@ TEST(CurvilinearGridRefinement, FullRefinementWithMissingRegion)
     CurvilinearGrid curvilinearGrid(gridNodes, Projection::cartesian);
     CurvilinearGridFullRefinement curvilinearGridRefinement;
 
-    const UInt mRefinement = 2;
-    const UInt nRefinement = 3;
+    const int mRefinement = 2;
+    const int nRefinement = 3;
 
-    const UInt expectedSizeM = mRefinement * (static_cast<meshkernel::UInt>(gridNodes.cols()) - 1) + 1;
-    const UInt expectedSizeN = nRefinement * (static_cast<meshkernel::UInt>(gridNodes.rows()) - 1) + 1;
+    const UInt expectedSizeM = mRefinement * (static_cast<UInt>(gridNodes.cols()) - 1) + 1;
+    const UInt expectedSizeN = nRefinement * (static_cast<UInt>(gridNodes.rows()) - 1) + 1;
 
     // Refine mesh
     [[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, mRefinement, nRefinement);
@@ -315,7 +314,29 @@ TEST(CurvilinearGridRefinement, IncorrectFullRefinementParameters)
     EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, 0, 2), meshkernel::ConstraintError);
     EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, 3, 0), meshkernel::ConstraintError);
     EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, 0, 0), meshkernel::ConstraintError);
-    EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, constants::missing::uintValue, 0), meshkernel::ConstraintError);
-    EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, 0, constants::missing::uintValue), meshkernel::ConstraintError);
-    EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, constants::missing::uintValue, constants::missing::uintValue), meshkernel::ConstraintError);
+    EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, constants::missing::intValue, 0), meshkernel::ConstraintError);
+    EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, 0, constants::missing::intValue), meshkernel::ConstraintError);
+    EXPECT_THROW([[maybe_unused]] auto undo = curvilinearGridRefinement.Compute(curvilinearGrid, constants::missing::intValue, constants::missing::intValue), meshkernel::ConstraintError);
+}
+
+TEST(CurvilinearGridDeRefinement, Compute_GivenMixedRefinementFactors_RefinesCorrectly)
+{
+    // Set-up
+    lin_alg::Matrix<Point> grid(11, 11);
+
+    // Fill the grid
+    for (int y = 0; y < grid.rows(); ++y)
+    {
+        for (int x = 0; x < grid.cols(); ++x)
+        {
+            grid(y, x) = Point{x * 10.0, y * 10.0};
+        }
+    }
+    CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
+    CurvilinearGridFullRefinement curvilinearGridFullRefinement;
+    [[maybe_unused]] const auto dummyUndo = curvilinearGridFullRefinement.Compute(curvilinearGrid, 2, -2);
+
+    // Assert, given the large de-refinement factor all lines between are removed
+    ASSERT_EQ(6, curvilinearGrid.NumN());
+    ASSERT_EQ(21, curvilinearGrid.NumM());
 }

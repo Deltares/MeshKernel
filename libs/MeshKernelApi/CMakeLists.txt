@@ -29,12 +29,13 @@ set(SRC_LIST
 )
 
 set(CACHE_SRC_LIST
-  ${CACHE_SRC_DIR}/BoundariesAsPolygonCache.cpp
   ${CACHE_SRC_DIR}/CachedIntegerValues.cpp
   ${CACHE_SRC_DIR}/CachedPointValues.cpp
+  ${CACHE_SRC_DIR}/CurvilinearBoundariesAsPolygonCache.cpp
   ${CACHE_SRC_DIR}/FacePolygonPropertyCache.cpp
   ${CACHE_SRC_DIR}/HangingEdgeCache.cpp
   ${CACHE_SRC_DIR}/NodeInPolygonCache.cpp
+  ${CACHE_SRC_DIR}/MeshBoundariesAsPolygonCache.cpp
   ${CACHE_SRC_DIR}/ObtuseTriangleCentreCache.cpp
   ${CACHE_SRC_DIR}/PolygonRefinementCache.cpp
   ${CACHE_SRC_DIR}/SmallFlowEdgeCentreCache.cpp
@@ -63,12 +64,13 @@ set(
 
 set(
   CACHE_INC_LIST
-  ${CACHE_INC_DIR}/BoundariesAsPolygonCache.hpp
   ${CACHE_INC_DIR}/CachedIntegerValues.hpp
   ${CACHE_INC_DIR}/CachedPointValues.hpp
+  ${CACHE_INC_DIR}/CurvilinearBoundariesAsPolygonCache.hpp
   ${CACHE_INC_DIR}/FacePolygonPropertyCache.hpp
   ${CACHE_INC_DIR}/HangingEdgeCache.hpp
   ${CACHE_INC_DIR}/NodeInPolygonCache.hpp
+  ${CACHE_INC_DIR}/MeshBoundariesAsPolygonCache.hpp
   ${CACHE_INC_DIR}/ObtuseTriangleCentreCache.hpp
   ${CACHE_INC_DIR}/PolygonRefinementCache.hpp
   ${CACHE_INC_DIR}/SmallFlowEdgeCentreCache.hpp
