@@ -2681,7 +2681,6 @@ TEST(MeshRefinement, RowSplittingFailureTests)
     EXPECT_THROW([[maybe_unused]] auto undo4 = splitMeshRow.Compute(mesh, edgeId), ConstraintError);
 }
 
-
 TEST(MeshRefinement, WTF)
 {
     namespace fs = std::filesystem;
@@ -2690,21 +2689,23 @@ TEST(MeshRefinement, WTF)
     [[maybe_unused]] auto [numX, numY, xllCenter, yllCenter, cellSize, nodatavalue, values] = ReadAscFile<double>(ascFilePath);
     [[maybe_unused]] auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/MeshRefinementTests/step2_net.nc");
 
-    std::cout << "values " << numX << "  " << numY  << "  " << xllCenter << "  " << yllCenter << "  " << cellSize << "  " << nodatavalue << std::endl;
+    std::cout << "values " << numX << "  " << numY << "  " << xllCenter << "  " << yllCenter << "  " << cellSize << "  " << nodatavalue << std::endl;
 
-    std::vector<meshkernel::Sample> samples (numX * numY);
+    std::vector<meshkernel::Sample> samples(numX * numY);
 
     size_t count = 0;
-    double deltaT = 180.0 / static_cast<double> (numY - 1);
+    double deltaT = 180.0 / static_cast<double>(numY - 1);
     double theta = 0.0;
 
-    double deltaP = 360.0 / static_cast<double> (numX - 1);
+    double deltaP = 360.0 / static_cast<double>(numX - 1);
 
-    for (int t = 0; t < numY; ++t) {
+    for (int t = 0; t < numY; ++t)
+    {
         double phi = -180.0;
 
-        for (int p = 0; p < numX; ++p) {
-            samples [count] = {phi, theta, values [count]};
+        for (int p = 0; p < numX; ++p)
+        {
+            samples[count] = {phi, theta, values[count]};
             ++count;
 
             phi += deltaP;
@@ -2715,36 +2716,36 @@ TEST(MeshRefinement, WTF)
 
     mesh->m_projection = meshkernel::Projection::spherical;
 
-    std::cout << "projection " << meshkernel::ProjectionToString (mesh->m_projection) << std::endl;
-    std::cout << " mesh " << mesh->GetNumValidNodes () << "  " << mesh->GetNumValidEdges () << "  " << mesh->GetNumFaces () << std::endl;
+    std::cout << "projection " << meshkernel::ProjectionToString(mesh->m_projection) << std::endl;
+    std::cout << " mesh " << mesh->GetNumValidNodes() << "  " << mesh->GetNumValidEdges() << "  " << mesh->GetNumFaces() << std::endl;
 
-    meshkernel::SaveVtk (mesh->Nodes (), mesh->m_facesNodes, "meshfile.vtu");
+    meshkernel::SaveVtk(mesh->Nodes(), mesh->m_facesNodes, "meshfile.vtu");
 
-    [[maybe_unused]]auto interpolator = std::make_unique<meshkernel::AveragingInterpolation>(*mesh,
-                                                                 samples,
-                                                                 meshkernel::AveragingInterpolation::Method::MinAbsValue,
-                                                                 meshkernel::Location::Faces,
-                                                                 1.0,
-                                                                 false,
-                                                                 false,
-                                                                 1);
+    [[maybe_unused]] auto interpolator = std::make_unique<meshkernel::AveragingInterpolation>(*mesh,
+                                                                                              samples,
+                                                                                              // meshkernel::AveragingInterpolation::Method::Max,
+                                                                                              meshkernel::AveragingInterpolation::Method::MinAbsValue,
+                                                                                              meshkernel::Location::Faces,
+                                                                                              1.0 /* relativeSearchRadius */,
+                                                                                              false /* useClosestSampleIfNoneAvailable */,
+                                                                                              false /* subtractSampleValues */,
+                                                                                              1 /*minNumSamples*/);
 
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 3;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 1;
-    meshRefinementParameters.min_edge_size = 0.1;//2500.0;
+    meshRefinementParameters.min_edge_size = 2500.0;
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 0;
     meshRefinementParameters.refinement_type = 1;
-    meshRefinementParameters.smoothing_iterations = 5;//3;
+    meshRefinementParameters.smoothing_iterations = 5; // 3;
     meshRefinementParameters.max_courant_time = 120.0;
 
     MeshRefinement meshRefinement(*mesh,
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
-    [[maybe_unused]]auto undoAction = meshRefinement.Compute();
-    meshkernel::SaveVtk (mesh->Nodes (), mesh->m_facesNodes, "meshfile_ref.vtu");
-
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
+    meshkernel::SaveVtk(mesh->Nodes(), mesh->m_facesNodes, "meshfile_ref.vtu");
 }
