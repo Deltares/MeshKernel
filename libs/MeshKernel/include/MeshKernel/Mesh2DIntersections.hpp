@@ -109,6 +109,8 @@ namespace meshkernel
         /// @returns The intersection seed
         std::tuple<UInt, UInt> GetIntersectionSeed(const Mesh2D& mesh,
                                                    const std::vector<Point>& polyLine,
+                                                   const UInt polygonIndexStart,
+                                                   const bool checkOnlyBoundarySegments,
                                                    const std::vector<BoundingBox>& polyLineBoundingBoxes,
                                                    const std::vector<bool>& vistedEdges) const;
 
