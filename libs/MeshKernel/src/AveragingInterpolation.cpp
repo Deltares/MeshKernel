@@ -112,6 +112,7 @@ void AveragingInterpolation::Compute()
 
         for (UInt f = 0; f < m_mesh.GetNumFaces(); ++f)
         {
+            std::cout << "starting face: " << f << std::endl;
             polygonNodesCache.clear();
 
             for (UInt n = 0; n < m_mesh.GetNumFaceEdges(f); ++n)
@@ -238,6 +239,7 @@ double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygo
     }
 
     m_samplesRtree->SearchPoints(interpolationPoint, searchRadiusSquared);
+    std::cout << "query size: " << m_samplesRtree->GetQueryResultSize() << std::endl;
     if (!m_samplesRtree->HasQueryResults() && m_useClosestSampleIfNoneAvailable)
     {
         m_samplesRtree->SearchNearestPoint(interpolationPoint);
