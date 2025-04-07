@@ -161,6 +161,9 @@ namespace meshkernel
         [[nodiscard]] bool HasQueryResults() const override { return !m_queryCache.empty(); }
 
     private:
+        /// @brief Convert 2d point in spherical coordinates to 3d point in Cartesian coordinates.
+        Point2D convert(const Point& p) const;
+
         /// @brief Builds the tree from a vector of types derived from Point
         template <std::derived_from<Point> T>
         void BuildTreeFromVector(const std::vector<T>& nodes)
@@ -172,10 +175,7 @@ namespace meshkernel
             {
                 if (nodes[n].x != constants::missing::doubleValue && nodes[n].y != constants::missing::doubleValue)
                 {
-                    double x = constants::geometric::earth_radius * std::cos(nodes[n].y * constants::conversion::degToRad) * std::cos(nodes[n].x * constants::conversion::degToRad);
-                    double y = constants::geometric::earth_radius * std::cos(nodes[n].y * constants::conversion::degToRad) * std::sin(nodes[n].x * constants::conversion::degToRad);
-                    double z = constants::geometric::earth_radius * std::sin(nodes[n].y * constants::conversion::degToRad);
-                    m_points.emplace_back(Point2D{x, y, z}, n);
+                    m_points.emplace_back(convert(nodes[n]), n);
                 }
             }
             m_rtree2D = RTree2D(m_points);
@@ -197,11 +197,7 @@ namespace meshkernel
 
                 if (nodes[n].x != constants::missing::doubleValue && nodes[n].y != constants::missing::doubleValue)
                 {
-                    double x = constants::geometric::earth_radius * std::cos(nodes[n].y * constants::conversion::degToRad) * std::cos(nodes[n].x * constants::conversion::degToRad);
-                    double y = constants::geometric::earth_radius * std::cos(nodes[n].y * constants::conversion::degToRad) * std::sin(nodes[n].x * constants::conversion::degToRad);
-                    double z = constants::geometric::earth_radius * std::sin(nodes[n].y * constants::conversion::degToRad);
-
-                    m_points.emplace_back(Point2D{x, y, z}, n);
+                    m_points.emplace_back(convert(nodes[n]), n);
                 }
             }
             m_rtree2D = RTree2D(m_points);
