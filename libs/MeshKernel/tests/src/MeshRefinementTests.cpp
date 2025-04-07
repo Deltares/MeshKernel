@@ -55,6 +55,7 @@
 #include "TestUtils/MakeCurvilinearGrids.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 #include "TestUtils/MeshReaders.hpp"
+#include "TestUtils/PolygonReader.hpp"
 #include "TestUtils/SampleFileReader.hpp"
 #include "TestUtils/SampleGenerator.hpp"
 
