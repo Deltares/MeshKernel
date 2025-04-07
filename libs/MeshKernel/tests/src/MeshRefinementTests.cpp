@@ -2693,18 +2693,77 @@ TEST(MeshRefinement, WTF)
 
     std::vector<meshkernel::Sample> samples(numX * numY);
 
-    size_t count = 0;
-    double deltaT = 180.0 / static_cast<double>(numY - 1);
-    double theta = 0.0;
+    // std::cout << "values " << numX << "  " << numY << "  " << xllCenter << "  " << yllCenter << "  " << cellSize << "  " << nodatavalue << std::endl;
 
-    double deltaP = 360.0 / static_cast<double>(numX - 1);
+    // std::vector<meshkernel::Sample> samples(numX * numY);
+
+    // size_t count = 0;
+    // // Angle from north to south pole
+    // double deltaT = 180.0 / static_cast<double>(numY);
+    // double deltaP = 360.0 / static_cast<double>(numX);
+
+    // // double phi = -180.0;
+
+    // // for (int t = 0; t < numX; ++t)
+    // // {
+    // //     double theta = 0.0;
+
+    // //     for (int p = 0; p < numY; ++p)
+    // //     {
+    // //         samples[count] = {phi, theta, values[count]};
+    // //         ++count;
+
+    // //         theta += deltaT;
+    // //     }
+
+    // //     phi += deltaP;
+    // // }
+
+    // double theta = 0.0;
+
+    // for (int t = 0; t < numY; ++t)
+    // {
+    //     double phi = -180.0;
+
+    //     for (int p = 0; p < numX; ++p)
+    //     {
+    //         samples[count] = {phi, theta, values[count]};
+    //         ++count;
+
+    //         phi += deltaP;
+    //     }
+
+    //     theta += deltaT;
+    // }
+
+    size_t count = 0;
+    double deltaT = 180.0 / static_cast<double>(numY + 1);
+    double theta = deltaT;
+
+    double deltaP = 360.0 / static_cast<double>(numX);
 
     for (int t = 0; t < numY; ++t)
     {
+        // double phi = 0.0;
         double phi = -180.0;
 
         for (int p = 0; p < numX; ++p)
         {
+            meshkernel::Point node(phi, theta);
+
+            double x = meshkernel::constants::geometric::earth_radius * std::cos((node.y + 90.0) * meshkernel::constants::conversion::degToRad) * std::cos((node.x + 90.0) * meshkernel::constants::conversion::degToRad);
+            double y = meshkernel::constants::geometric::earth_radius * std::cos((node.y + 90.0) * meshkernel::constants::conversion::degToRad) * std::sin((node.x + 90.0) * meshkernel::constants::conversion::degToRad);
+            double z = meshkernel::constants::geometric::earth_radius * std::sin((node.y + 90.0) * meshkernel::constants::conversion::degToRad);
+
+            double signy = (y > 0.0 ? 1.0 : -1.0);
+            double theta2 = std::acos(z / std::sqrt(x * x + y * y + z * z)) * meshkernel::constants::conversion::radToDeg;
+            double phi2 = signy * std::acos(x / std::sqrt(x * x + y * y)) * meshkernel::constants::conversion::radToDeg;
+
+            std::cout << "mapping: "
+                      << std::setw(20) << phi << ", " << std::setw(20) << theta << "  -- "
+                      << std::setw(20) << phi2 << ", " << std::setw(20) << theta2 << "  -- "
+                      << std::setw(20) << x << "  " << std::setw(20) << y << "  " << std::setw(20) << z << std::endl;
+
             samples[count] = {phi, theta, values[count]};
             ++count;
 
@@ -2713,6 +2772,8 @@ TEST(MeshRefinement, WTF)
 
         theta += deltaT;
     }
+
+    return;
 
     mesh->m_projection = meshkernel::Projection::spherical;
 
@@ -2732,10 +2793,10 @@ TEST(MeshRefinement, WTF)
                                                                                               1 /*minNumSamples*/);
 
     MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 3;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 1;
-    meshRefinementParameters.min_edge_size = 2500.0;
+    meshRefinementParameters.min_edge_size = 1000.0; // 2500.0
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.connect_hanging_nodes = 0;
     meshRefinementParameters.refinement_type = 1;
