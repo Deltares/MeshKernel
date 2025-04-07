@@ -4,9 +4,9 @@
 
 meshkernel::RTreeSphericalToCartesian::Point2D meshkernel::RTreeSphericalToCartesian::convert(const Point& node) const
 {
-    double x = constants::geometric::earth_radius * std::cos((node.y + 180.0) * constants::conversion::degToRad) * std::cos((node.x + 180.0) * constants::conversion::degToRad);
-    double y = constants::geometric::earth_radius * std::cos((node.y + 180.0) * constants::conversion::degToRad) * std::sin((node.x + 180.0) * constants::conversion::degToRad);
-    double z = constants::geometric::earth_radius * std::sin((node.y + 180.0) * constants::conversion::degToRad);
+    double x = constants::geometric::earth_radius * std::cos(node.y * constants::conversion::degToRad) * std::cos(node.x * constants::conversion::degToRad);
+    double y = constants::geometric::earth_radius * std::cos(node.y * constants::conversion::degToRad) * std::sin(node.x * constants::conversion::degToRad);
+    double z = constants::geometric::earth_radius * std::sin(node.y * constants::conversion::degToRad);
     return {x, y, z};
 }
 
