@@ -2691,10 +2691,6 @@ TEST(MeshRefinement, WTF)
 
     mesh->m_projection = meshkernel::Projection::spherical;
 
-    std::cout << "values " << numX << "  " << numY << "  " << xllCenter << "  " << yllCenter << "  " << cellSize << "  " << nodatavalue << std::endl;
-
-    meshkernel::SaveVtk(mesh->Nodes(), mesh->m_facesNodes, "meshfile.vtu");
-
     MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.max_num_refinement_iterations = 3;
     meshRefinementParameters.refine_intersected = 0;
@@ -2706,7 +2702,7 @@ TEST(MeshRefinement, WTF)
     meshRefinementParameters.smoothing_iterations = 5; // 3;
     meshRefinementParameters.max_courant_time = 120.0;
 
-    bool useNodalRefinement = false;
+    bool useNodalRefinement = true;
 
     meshkernel::Point origin{xllCenter, yllCenter};
     auto bilinear = std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples<double>>(*mesh,
@@ -2715,13 +2711,11 @@ TEST(MeshRefinement, WTF)
                                                                                                 origin,
                                                                                                 cellSize,
                                                                                                 samplesVector);
-    // std::span<const double>{reinterpret_cast<T const* const>(samplesVector),
-    // static_cast<size_t>(numX * numY)});
 
     meshkernel::MeshRefinement meshRefinement(*mesh,
                                               std::move(bilinear),
                                               meshRefinementParameters,
                                               useNodalRefinement);
     [[maybe_unused]] auto undoAction = meshRefinement.Compute();
-    meshkernel::SaveVtk(mesh->Nodes(), mesh->m_facesNodes, "meshfile_ref.vtu");
+    // meshkernel::SaveVtk(mesh->Nodes(), mesh->m_facesNodes, "meshfile_ref.vtu");
 }
