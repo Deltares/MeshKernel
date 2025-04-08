@@ -1083,8 +1083,8 @@ TEST(Mesh2DConnectDD, SimpleMergeMeshes)
     const auto& nodes = mergedMesh->Nodes();
     const auto& edges = mergedMesh->Edges();
 
-    ASSERT_EQ(expectedNodes.size (), nodes.size());
-    ASSERT_EQ(expectedEdges.size (), edges.size());
+    ASSERT_EQ(expectedNodes.size(), nodes.size());
+    ASSERT_EQ(expectedEdges.size(), edges.size());
 
     const double tolerance = 1.0e-10;
 
