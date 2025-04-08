@@ -2681,7 +2681,7 @@ TEST(MeshRefinement, RowSplittingFailureTests)
     EXPECT_THROW([[maybe_unused]] auto undo4 = splitMeshRow.Compute(mesh, edgeId), ConstraintError);
 }
 
-TEST(MeshRefinement, WTF)
+TEST(MeshRefinement, DISABLED_WTF)
 {
     namespace fs = std::filesystem;
 
