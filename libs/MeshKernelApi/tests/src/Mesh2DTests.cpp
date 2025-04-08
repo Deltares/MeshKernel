@@ -1339,46 +1339,45 @@ TEST(Mesh2D, SimpleConnectMeshes)
 
     meshkernelapi::Mesh2D mesh2d_3{};
 
-    errorCode = meshkernelapi::mkernel_mesh2d_get_dimensions (mk_id, mesh2d_3);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_dimensions(mk_id, mesh2d_3);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    ASSERT_EQ (mesh2d_3.num_nodes, mesh2d_1.num_nodes + mesh2d_2.num_nodes);
-    ASSERT_EQ (mesh2d_3.num_edges, mesh2d_1.num_edges + mesh2d_2.num_edges);
+    ASSERT_EQ(mesh2d_3.num_nodes, mesh2d_1.num_nodes + mesh2d_2.num_nodes);
+    ASSERT_EQ(mesh2d_3.num_edges, mesh2d_1.num_edges + mesh2d_2.num_edges);
 
-    std::vector<double> node_x_3 (mesh2d_3.num_nodes);
-    std::vector<double> node_y_3 (mesh2d_3.num_nodes);
+    std::vector<double> node_x_3(mesh2d_3.num_nodes);
+    std::vector<double> node_y_3(mesh2d_3.num_nodes);
 
-    std::vector<int> edge_nodes_3 (2 * mesh2d_3.num_edges);
+    std::vector<int> edge_nodes_3(2 * mesh2d_3.num_edges);
 
     mesh2d_3.node_x = node_x_3.data();
     mesh2d_3.node_y = node_y_3.data();
     mesh2d_3.edge_nodes = edge_nodes_3.data();
 
-    errorCode = meshkernelapi::mkernel_mesh2d_get_node_edge_data (mk_id, mesh2d_3);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_node_edge_data(mk_id, mesh2d_3);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    for (size_t i = 0; i < node_x_1.size (); ++i)
+    for (size_t i = 0; i < node_x_1.size(); ++i)
     {
-        EXPECT_EQ (node_x_1[i], node_x_3 [i]);
-        EXPECT_EQ (node_y_1[i], node_y_3 [i]);
+        EXPECT_EQ(node_x_1[i], node_x_3[i]);
+        EXPECT_EQ(node_y_1[i], node_y_3[i]);
     }
 
-    for (size_t i = 0; i < node_x_2.size (); ++i)
+    for (size_t i = 0; i < node_x_2.size(); ++i)
     {
-        EXPECT_EQ (node_x_2[i], node_x_3 [i + node_x_1.size ()]);
-        EXPECT_EQ (node_y_2[i], node_y_3 [i + node_x_1.size ()]);
+        EXPECT_EQ(node_x_2[i], node_x_3[i + node_x_1.size()]);
+        EXPECT_EQ(node_y_2[i], node_y_3[i + node_x_1.size()]);
     }
 
-    for (size_t i = 0; i < edge_nodes_1.size (); ++i)
+    for (size_t i = 0; i < edge_nodes_1.size(); ++i)
     {
-        EXPECT_EQ (edge_nodes_1[i], edge_nodes_3 [i]);
+        EXPECT_EQ(edge_nodes_1[i], edge_nodes_3[i]);
     }
 
-    for (size_t i = 0; i < edge_nodes_2.size (); ++i)
+    for (size_t i = 0; i < edge_nodes_2.size(); ++i)
     {
-        EXPECT_EQ (edge_nodes_2[i] + mesh2d_1.num_nodes, edge_nodes_3 [i + edge_nodes_1.size ()]);
+        EXPECT_EQ(edge_nodes_2[i] + mesh2d_1.num_nodes, edge_nodes_3[i + edge_nodes_1.size()]);
     }
-
 }
 
 TEST(Mesh2D, InsertEdgeThroughApi)

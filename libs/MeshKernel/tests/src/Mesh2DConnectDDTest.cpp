@@ -35,7 +35,6 @@
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
-#include <MeshKernel/Utilities/Utilities.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
@@ -1058,8 +1057,6 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesErrorInSeparationFraction)
     EXPECT_THROW([[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh, 0.0), meshkernel::RangeError);
 }
 
-
-
 TEST(Mesh2DConnectDD, SimpleMergeMeshes)
 {
 
@@ -1083,25 +1080,23 @@ TEST(Mesh2DConnectDD, SimpleMergeMeshes)
 
     const std::vector<meshkernel::Edge> expectedEdges{{0, 3}, {1, 4}, {2, 5}, {3, 6}, {4, 7}, {5, 8}, {1, 0}, {2, 1}, {4, 3}, {5, 4}, {7, 6}, {8, 7}, {9, 14}, {10, 15}, {11, 16}, {12, 17}, {13, 18}, {14, 19}, {15, 20}, {16, 21}, {17, 22}, {18, 23}, {10, 9}, {11, 10}, {12, 11}, {13, 12}, {15, 14}, {16, 15}, {17, 16}, {18, 17}, {20, 19}, {21, 20}, {22, 21}, {23, 22}};
 
-    const auto& nodes = mergedMesh->Nodes ();
-    const auto& edges = mergedMesh->Edges ();
+    const auto& nodes = mergedMesh->Nodes();
+    const auto& edges = mergedMesh->Edges();
 
-    ASSERT_EQ (24, nodes.size ());
-    ASSERT_EQ (34, edges.size ());
-
-
-    std::cout.precision (15);
+    ASSERT_EQ(24, nodes.size());
+    ASSERT_EQ(34, edges.size());
 
     const double tolerance = 1.0e-10;
 
-    for (size_t i = 0; i < nodes.size (); ++i) {
-        EXPECT_NEAR (expectedNodes [i].x, nodes[i].x, tolerance);
-        EXPECT_NEAR (expectedNodes [i].y, nodes[i].y, tolerance);
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        EXPECT_NEAR(expectedNodes[i].x, nodes[i].x, tolerance);
+        EXPECT_NEAR(expectedNodes[i].y, nodes[i].y, tolerance);
     }
 
-    for (size_t i = 0; i < edges.size (); ++i) {
-        EXPECT_EQ (expectedEdges [i].first, edges[i].first);
-        EXPECT_EQ (expectedEdges [i].second, edges[i].second);
+    for (size_t i = 0; i < edges.size(); ++i)
+    {
+        EXPECT_EQ(expectedEdges[i].first, edges[i].first);
+        EXPECT_EQ(expectedEdges[i].second, edges[i].second);
     }
-
 }
