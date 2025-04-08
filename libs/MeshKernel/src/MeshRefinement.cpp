@@ -894,6 +894,11 @@ void MeshRefinement::ComputeRefinementMasksFromSamples()
     // Compute all interpolated values
     m_interpolant->Compute();
 
+    if (m_useNodalRefinement && m_refinementType == RefinementType::WaveCourant)
+    {
+        ComputeFaceLocationTypes();
+    }
+
     for (UInt f = 0; f < m_mesh.GetNumFaces(); f++)
     {
         FindHangingNodes(f);
@@ -1100,10 +1105,6 @@ void MeshRefinement::ComputeRefinementMasksForWaveCourant(UInt face,
                                                           size_t& numberOfEdgesToRefine,
                                                           std::vector<UInt>& edgeToRefine)
 {
-    if (m_useNodalRefinement)
-    {
-        ComputeFaceLocationTypes();
-    }
     for (size_t e = 0; e < m_mesh.GetNumFaceEdges(face); ++e)
     {
         const auto edge = m_mesh.m_facesEdges[face][e];
