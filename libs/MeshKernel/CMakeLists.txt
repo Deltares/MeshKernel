@@ -98,8 +98,6 @@ set(
 set(
   UTILITIES_SRC_LIST
   ${UTILITIES_SRC_DIR}/Utilities.cpp
-  ${UTILITIES_SRC_DIR}/RTreeFactory.cpp
-  ${UTILITIES_SRC_DIR}/RTreeSphericalToCartesian.cpp
 )
 
 set(
@@ -294,7 +292,6 @@ set(
   ${UTILITIES_INC_DIR}/RTree.hpp
   ${UTILITIES_INC_DIR}/RTreeBase.hpp
   ${UTILITIES_INC_DIR}/RTreeFactory.hpp
-  ${UTILITIES_INC_DIR}/RTreeSphericalToCartesian.hpp
   ${UTILITIES_INC_DIR}/Utilities.hpp
 )
 
