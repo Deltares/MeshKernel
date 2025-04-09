@@ -833,7 +833,7 @@ TEST(UndoTests, UnstructuredGridConnection)
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     // Connect the meshes.
-    errorCode = mkapi::mkernel_mesh2d_connect_meshes(meshKernelId2, mesh2d, 0.1);
+    errorCode = mkapi::mkernel_mesh2d_connect_meshes(meshKernelId2, mesh2d, 0.1, true);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId2, mesh2d);

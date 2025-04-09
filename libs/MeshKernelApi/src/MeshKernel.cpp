@@ -3910,7 +3910,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d, double searchFraction)
+    MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d, double searchFraction, bool connect)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -3934,8 +3934,13 @@ namespace meshkernelapi
                                                                 meshKernelState[meshKernelId].m_projection);
             // Keep existing mesh to restore with undo
             auto undoAction = meshkernel::FullUnstructuredGridUndo::Create(*meshKernelState[meshKernelId].m_mesh2d);
-            // The undo information collected from the ConnectMeshes::Compute is not needed here.
-            [[maybe_unused]] auto undo = meshkernel::ConnectMeshes::Compute(*mergedMeshes, searchFraction);
+
+            if (connect)
+            {
+                // The undo information collected from the ConnectMeshes::Compute is not needed here.
+                [[maybe_unused]] auto undo = meshkernel::ConnectMeshes::Compute(*mergedMeshes, searchFraction);
+            }
+
             meshKernelState[meshKernelId].m_mesh2d->SetNodes(mergedMeshes->Nodes());
             meshKernelState[meshKernelId].m_mesh2d->SetEdges(mergedMeshes->Edges());
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
