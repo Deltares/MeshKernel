@@ -70,8 +70,6 @@ namespace meshkernel
         BilinearInterpolationOnGriddedSamples(const Mesh2D& mesh,
                                               std::span<double const> xCoordinates,
                                               std::span<double const> yCoordinates,
-                                              // const std::vector<double>& xCoordinates,
-                                              // const std::vector<double>& yCoordinates,
                                               std::span<T const> values);
 
         /// @brief Compute interpolation
