@@ -491,9 +491,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <tr class="separator:a70d6d63626c31eb93ebb68f020f563fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a156192886c65dcffa89cad36a5c78045" id="r_a156192886c65dcffa89cad36a5c78045"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a156192886c65dcffa89cad36a5c78045">mkernel_mesh2d_compute_orthogonalization</a> (int meshKernelId, int projectToLandBoundaryOption, const <a class="el" href="structmeshkernel_1_1_orthogonalization_parameters.html">meshkernel::OrthogonalizationParameters</a> &amp;orthogonalizationParameters, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;selectingPolygon, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;landBoundaries)</td></tr>
 <tr class="separator:a156192886c65dcffa89cad36a5c78045"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf9d548882516ac652fd0f01a08c88bd" id="r_acf9d548882516ac652fd0f01a08c88bd"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#acf9d548882516ac652fd0f01a08c88bd">mkernel_mesh2d_connect_meshes</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d, double searchFraction)</td></tr>
-<tr class="memdesc:acf9d548882516ac652fd0f01a08c88bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect two or more disconnected regions along boundary.  <br /></td></tr>
-<tr class="separator:acf9d548882516ac652fd0f01a08c88bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ce7996ae5eae6bdf137fe9f06d724b1" id="r_a2ce7996ae5eae6bdf137fe9f06d724b1"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a2ce7996ae5eae6bdf137fe9f06d724b1">mkernel_mesh2d_connect_meshes</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d, double searchFraction, bool connect)</td></tr>
+<tr class="memdesc:a2ce7996ae5eae6bdf137fe9f06d724b1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect two or more disconnected regions along boundary.  <br /></td></tr>
+<tr class="separator:a2ce7996ae5eae6bdf137fe9f06d724b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8a14647b813f56d13fdfc182a9f95011" id="r_a8a14647b813f56d13fdfc182a9f95011"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8a14647b813f56d13fdfc182a9f95011">mkernel_mesh2d_convert_projection</a> (int meshKernelId, int projectionType, const char *const zoneString)</td></tr>
 <tr class="memdesc:a8a14647b813f56d13fdfc182a9f95011"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts the projection of a mesh2d.  <br /></td></tr>
 <tr class="separator:a8a14647b813f56d13fdfc182a9f95011"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -5194,8 +5194,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 
 </div>
 </div>
-<a id="acf9d548882516ac652fd0f01a08c88bd" name="acf9d548882516ac652fd0f01a08c88bd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acf9d548882516ac652fd0f01a08c88bd">&#9670;&#160;</a></span>mkernel_mesh2d_connect_meshes()</h2>
+<a id="a2ce7996ae5eae6bdf137fe9f06d724b1" name="a2ce7996ae5eae6bdf137fe9f06d724b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ce7996ae5eae6bdf137fe9f06d724b1">&#9670;&#160;</a></span>mkernel_mesh2d_connect_meshes()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -5216,7 +5216,13 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>searchFraction</em>&#160;</td>
+          <td class="paramname"><em>searchFraction</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>connect</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -5232,6 +5238,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh states </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh2d</td><td>The mesh we want to connect to the main mesh </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">searchFraction</td><td>Fraction of the shortest edge (along an edge to be connected) to use when determining neighbour edge closeness </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">connect</td><td>Boolean value indicating whether or not the two meshes should be connected </td></tr>
   </table>
   </dd>
 </dl>
