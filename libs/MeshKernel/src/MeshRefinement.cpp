@@ -1254,6 +1254,11 @@ void MeshRefinement::ComputeEdgeBelowMinSizeAfterRefinement()
     m_isEdgeBelowMinSizeAfterRefinement.resize(m_mesh.GetNumEdges());
     for (UInt e = 0; e < m_mesh.GetNumEdges(); e++)
     {
+        if (IsEqual(m_edgeLengths[e], constants::missing::doubleValue))
+        {
+            m_isEdgeBelowMinSizeAfterRefinement[e] = true; // The invalid edge will not be refined
+            continue;
+        }
         const double newEdgeLength = 0.5 * m_edgeLengths[e];
         m_isEdgeBelowMinSizeAfterRefinement[e] = newEdgeLength < m_meshRefinementParameters.min_edge_size;
     }
