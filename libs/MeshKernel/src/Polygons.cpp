@@ -116,11 +116,13 @@ std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() 
 
         // average triangle size
         const auto averageEdgeLength = polygon.PerimeterLength() / static_cast<double>(polygon.Size());
-        const double averageTriangleArea = 0.25 * std::numbers::sqrt3 * averageEdgeLength * averageEdgeLength;
+        const auto [minimumSegmentLength, maximumSegmentLength] = polygon.SegmentLengthExtrema();
+        const double segmentRatio = (minimumSegmentLength == constants::missing::doubleValue ? 1.0 : maximumSegmentLength / minimumSegmentLength);
+        const double averageTriangleArea = 0.5 * segmentRatio * segmentRatio * 0.25 * std::numbers::sqrt3 * averageEdgeLength * averageEdgeLength;
 
         // estimated number of triangles
         constexpr UInt SafetySize = 11;
-        const auto numberOfTriangles = static_cast<UInt>(SafetySize * localPolygonArea / averageTriangleArea);
+        const auto numberOfTriangles = static_cast<UInt>(SafetySize * std::max(1.0, localPolygonArea / averageTriangleArea));
 
         if (numberOfTriangles == 0)
         {
