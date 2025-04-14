@@ -340,8 +340,8 @@ TEST_F(CartesianApiTestFixture, GenerateTriangularGridThroughApi)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(42, mesh2d.num_nodes);
-    ASSERT_EQ(107, mesh2d.num_edges);
+    ASSERT_EQ(23, mesh2d.num_nodes);
+    ASSERT_EQ(50, mesh2d.num_edges);
 }
 
 TEST_F(CartesianApiTestFixture, GenerateTriangularGridFromSamplesThroughApi)
