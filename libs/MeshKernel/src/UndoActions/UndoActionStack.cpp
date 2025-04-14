@@ -31,8 +31,6 @@
 #include <algorithm>
 #include <utility>
 
-const meshkernel::UInt meshkernel::UndoActionStack::DefaultMaxUndoSize = 50;
-
 meshkernel::UndoActionStack::UndoActionStack(const UInt maximumSize) : m_maxUndoSize(maximumSize) {}
 
 void meshkernel::UndoActionStack::Add(UndoActionPtr&& action, const int actionId)
