@@ -120,12 +120,12 @@ namespace meshkernel
             return NumM() > 1 && NumN() > 1;
         }
 
-        /// @brief Gets a reference to the grid node at the (m,n) location
+        /// @brief Gets a reference to the grid node at the (n,m) location
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
         [[nodiscard]] inline Point& GetNode(const UInt n, const UInt m);
 
-        /// @brief Gets a constant reference to the grid node at the (m,n) location
+        /// @brief Gets a constant reference to the grid node at the (n,m) location
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
         [[nodiscard]] inline Point const& GetNode(const UInt n, const UInt m) const;

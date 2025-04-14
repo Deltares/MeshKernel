@@ -44,6 +44,9 @@
 #include "MeshKernel/RemoveDisconnectedRegions.hpp"
 #include "MeshKernel/Utilities/Utilities.hpp"
 
+#include "MeshKernel/ConnectMeshes.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridLineMirror.hpp"
+
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 
@@ -1533,4 +1536,60 @@ TEST(Mesh2D, Mesh2DComputeAspectRatio)
     {
         EXPECT_NEAR(aspectRatios[i], expectedAspectRatios[i], tolerance);
     }
+}
+
+TEST(Mesh2D, WTF)
+{
+
+    // Prepare
+    const auto mesh1 = MakeRectangularMeshForTesting(6,
+                                                     6,
+                                                     50.0,
+                                                     50.0,
+                                                     meshkernel::Projection::cartesian);
+    // Prepare
+    const auto mesh2 = MakeRectangularMeshForTesting(6,
+                                                     6,
+                                                     50.0,
+                                                     50.0,
+                                                     meshkernel::Projection::cartesian,
+                                                     {50.0, 20.0});
+
+    auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
+
+    [[maybe_unused]] auto undoConnection = meshkernel::ConnectMeshes::Compute(*mergedMesh);
+
+    meshkernel::Mesh2DToCurvilinear toClg(*mergedMesh);
+
+    auto convertedClg = toClg.Compute({2.5, 2.5});
+
+    meshkernel::CurvilinearGridLineMirror lineMirror(*convertedClg, 1.0, 3);
+
+    lineMirror.SetLine({10.0, 50.0}, {30.0, 50.0});
+
+    [[maybe_unused]] auto mirrorUndo = lineMirror.Compute();
+
+    auto p1 = convertedClg->GetNode(2, 8);
+    std::cout << "clg node: " << p1.x << "  " << p1.y << "  " << convertedClg->NumN() << "  " << convertedClg->NumM() << std::endl;
+    p1 = convertedClg->GetNode(2, 2);
+    std::cout << "clg node: " << p1.x << "  " << p1.y << "  " << std::endl;
+
+    p1 = convertedClg->GetNode(3, 3);
+    std::cout << "clg node: " << p1.x << "  " << p1.y << "  " << std::endl;
+
+    p1 = convertedClg->GetNode(10, 0);
+    std::cout << "clg node: " << p1.x << "  " << p1.y << "  " << std::endl;
+
+    auto location = convertedClg->FindLocationIndex(meshkernel::Point(20.0, 80.0), meshkernel::Location::Nodes);
+    auto index = convertedClg->GetCurvilinearGridNodeIndices(location);
+
+    p1 = convertedClg->Node(location);
+    auto p2 = convertedClg->GetNode(index);
+    std::cout << "clg node: " << p1.x << "  " << p1.y << "  " << "  " << p2.x << "  " << p2.y << "  " << location << "  " << index.m_n << "  " << index.m_m << std::endl;
+
+    [[maybe_unused]] auto nodeMoveUndo = convertedClg->MoveNode(meshkernel::Point(20.0, 80.0), meshkernel::Point(20.0, 85.0));
+    // [[maybe_unused]] auto nodeMoveUndo = convertedClg->MoveNode(meshkernel::CurvilinearGridNodeIndices(2, 8), meshkernel::Point(20.0, 85.0));
+
+    // meshkernel::Print(mergedMesh->Nodes(), mergedMesh->Edges());
+    meshkernel::Print(convertedClg->ComputeNodes(), convertedClg->ComputeEdges());
 }
