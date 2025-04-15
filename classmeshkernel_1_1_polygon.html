@@ -179,6 +179,9 @@ std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &g
 <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a>&#160;</td><td class="memItemRight" valign="bottom"><b>GetProjection</b> () const</td></tr>
 <tr class="memdesc:a9f675af34863d309211eef338a6396f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the projection used. <br /></td></tr>
 <tr class="separator:a9f675af34863d309211eef338a6396f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7f894bb584c46ad0b5f3dbb449f8db41" id="r_a7f894bb584c46ad0b5f3dbb449f8db41"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; double, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygon.html#a7f894bb584c46ad0b5f3dbb449f8db41">SegmentLengthExtrema</a> () const</td></tr>
+<tr class="memdesc:a7f894bb584c46ad0b5f3dbb449f8db41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the minimum and maximum segment lengths.  <br /></td></tr>
+<tr class="separator:a7f894bb584c46ad0b5f3dbb449f8db41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -362,6 +365,26 @@ static std::tuple&lt; double, <a class="el" href="classmeshkernel_1_1_point.html
 
 <p>Refine the polygon. </p>
 <p>The refined nodes are placed at equally spaced intervals for each polygon segment. The spacing of the refined nodes may differ between polygon segments. </p><dl class="section return"><dt>Returns</dt><dd>The points for the refined polygon </dd></dl>
+
+</div>
+</div>
+<a id="a7f894bb584c46ad0b5f3dbb449f8db41" name="a7f894bb584c46ad0b5f3dbb449f8db41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7f894bb584c46ad0b5f3dbb449f8db41">&#9670;&#160;</a></span>SegmentLengthExtrema()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::tuple&lt; double, double &gt; meshkernel::Polygon::SegmentLengthExtrema </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compute the minimum and maximum segment lengths. </p>
+<p>If the number of points in the polygon is 1 or less, then the invalid values will be returned for both. Returns {minimum-segment-length, maximum-segment-length} </p>
 
 </div>
 </div>
