@@ -27,6 +27,7 @@ set(SRC_LIST
     ${SRC_DIR}/SmoothnessOrthogonalisationTests.cpp
     ${SRC_DIR}/TestMeshGeneration.cpp
     ${SRC_DIR}/UndoTests.cpp
+    ${SRC_DIR}/UtilsTests.cpp
 )
 
 set(INC_LIST

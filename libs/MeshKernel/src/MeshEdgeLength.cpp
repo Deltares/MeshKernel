@@ -80,7 +80,7 @@ double meshkernel::algo::MinEdgeLength(const Mesh& mesh, const Polygons& polygon
     {
         const auto& [firstNode, secondNode] = mesh.GetEdge(static_cast<UInt>(e));
 
-        if (isNodeInPolygon[firstNode] || isNodeInPolygon[secondNode])
+        if ((isNodeInPolygon[firstNode] || isNodeInPolygon[secondNode]) && !IsEqual(edgeLengths[e], constants::missing::doubleValue))
         {
             result = std::min(result, edgeLengths[e]);
         }

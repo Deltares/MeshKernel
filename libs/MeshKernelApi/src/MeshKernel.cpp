@@ -2396,9 +2396,11 @@ namespace meshkernelapi
             const auto newEdgeLength = ComputeDistance(firstNodeCoordinates, secondNodeCoordinates, meshKernelState[meshKernelId].m_projection);
 
             std::vector<double> edgeLengths(meshkernel::algo::ComputeMeshEdgeLength(*meshKernelState[meshKernelId].m_mesh2d));
-            constexpr auto lengthFraction = 0.01;
 
-            const auto minMeshEdgeLength = edgeLengths.empty() ? newEdgeLength : *std::ranges::min_element(edgeLengths);
+            const auto minValueOpt = MinValidElement(edgeLengths);
+            const auto minMeshEdgeLength = minValueOpt.has_value() ? minValueOpt.value() : newEdgeLength;
+
+            constexpr double lengthFraction = 0.01;
             const auto searchRadius = std::min(newEdgeLength * lengthFraction, minMeshEdgeLength * lengthFraction);
 
             if (searchRadius <= 0.0)
