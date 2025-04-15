@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include <cmath>
+#include <limits>
 
 #include "MeshKernel/Cartesian3DPoint.hpp"
 #include "MeshKernel/Constants.hpp"
@@ -1044,4 +1045,26 @@ std::vector<meshkernel::Point> meshkernel::Polygon::ComputeOffset(double distanc
     }
 
     return offsetPoints;
+}
+
+std::tuple<double, double> meshkernel::Polygon::SegmentLengthExtrema() const
+{
+
+    if (m_nodes.size() <= 1)
+    {
+        return {constants::missing::doubleValue, constants::missing::doubleValue};
+    }
+
+    double minimumSegmentLength = std::numeric_limits<double>::max();
+    double maximumSegmentLength = 0.0;
+
+    for (size_t i = 1; i < m_nodes.size(); ++i)
+    {
+        double segmentLength = ComputeDistance(m_nodes[i - 1], m_nodes[i], m_projection);
+
+        minimumSegmentLength = std::min(minimumSegmentLength, segmentLength);
+        maximumSegmentLength = std::max(maximumSegmentLength, segmentLength);
+    }
+
+    return {minimumSegmentLength, maximumSegmentLength};
 }
