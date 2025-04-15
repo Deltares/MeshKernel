@@ -2680,3 +2680,41 @@ TEST(MeshRefinement, RowSplittingFailureTests)
     // Invalid edge id
     EXPECT_THROW([[maybe_unused]] auto undo4 = splitMeshRow.Compute(mesh, edgeId), ConstraintError);
 }
+
+TEST(MeshRefinement, DISABLED_WTF)
+{
+    namespace fs = std::filesystem;
+
+    const fs::path ascFilePath = fs::path(TEST_FOLDER) / "data" / "MeshRefinementTests" / "GEBCO2021_coarsefac40_res1d006deg_res18553m_untiled_corrbedmap2waterdepth.asc";
+    [[maybe_unused]] auto [numX, numY, xllCenter, yllCenter, cellSize, nodatavalue, samplesVector] = ReadAscFile<double>(ascFilePath);
+    [[maybe_unused]] auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/MeshRefinementTests/step2_net.nc");
+
+    mesh->m_projection = meshkernel::Projection::spherical;
+
+    MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 3;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 1;
+    meshRefinementParameters.min_edge_size = 2500.0;
+    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.connect_hanging_nodes = 0;
+    meshRefinementParameters.refinement_type = 1;
+    meshRefinementParameters.smoothing_iterations = 5; // 3;
+    meshRefinementParameters.max_courant_time = 120.0;
+
+    bool useNodalRefinement = true;
+
+    meshkernel::Point origin{xllCenter, yllCenter};
+    auto bilinear = std::make_unique<meshkernel::BilinearInterpolationOnGriddedSamples<double>>(*mesh,
+                                                                                                numX,
+                                                                                                numY,
+                                                                                                origin,
+                                                                                                cellSize,
+                                                                                                samplesVector);
+
+    meshkernel::MeshRefinement meshRefinement(*mesh,
+                                              std::move(bilinear),
+                                              meshRefinementParameters,
+                                              useNodalRefinement);
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
+}
