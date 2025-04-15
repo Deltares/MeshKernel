@@ -2717,5 +2717,4 @@ TEST(MeshRefinement, DISABLED_WTF)
                                               meshRefinementParameters,
                                               useNodalRefinement);
     [[maybe_unused]] auto undoAction = meshRefinement.Compute();
-    // meshkernel::SaveVtk(mesh->Nodes(), mesh->m_facesNodes, "meshfile_ref.vtu");
 }
