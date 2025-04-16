@@ -494,7 +494,7 @@ namespace meshkernel
         /// @brief Restore grid to state after node was modified
         void CommitAction(const ResetCurvilinearNodeAction& undoAction);
 
-    private:
+    // private:
         /// @brief One dimensional array of NodeType
         using NodeTypeArray1D = std::array<meshkernel::NodeType, 2>;
 

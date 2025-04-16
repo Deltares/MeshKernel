@@ -46,9 +46,11 @@
 
 #include "MeshKernel/ConnectMeshes.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridLineMirror.hpp"
+#include "MeshKernel/UndoActions/UndoActionStack.hpp"
 
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeMeshes.hpp"
+#include "TestUtils/MakeCurvilinearGrids.hpp"
 
 TEST(Mesh2D, OneQuadTestConstructor)
 {
@@ -1557,7 +1559,9 @@ TEST(Mesh2D, WTF)
 
     auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
 
-    [[maybe_unused]] auto undoConnection = meshkernel::ConnectMeshes::Compute(*mergedMesh);
+    meshkernel::UndoActionStack undoStack;
+
+    undoStack.Add (meshkernel::ConnectMeshes::Compute(*mergedMesh));
 
     meshkernel::Mesh2DToCurvilinear toClg(*mergedMesh);
 
@@ -1565,9 +1569,10 @@ TEST(Mesh2D, WTF)
 
     meshkernel::CurvilinearGridLineMirror lineMirror(*convertedClg, 1.0, 3);
 
-    lineMirror.SetLine({10.0, 50.0}, {30.0, 50.0});
+    lineMirror.SetLine({70.0, 20.0}, {90.0, 20.0});
+    // lineMirror.SetLine({10.0, 50.0}, {30.0, 50.0});
 
-    [[maybe_unused]] auto mirrorUndo = lineMirror.Compute();
+    undoStack.Add (lineMirror.Compute());
 
     auto p1 = convertedClg->GetNode(2, 8);
     std::cout << "clg node: " << p1.x << "  " << p1.y << "  " << convertedClg->NumN() << "  " << convertedClg->NumM() << std::endl;
@@ -1585,11 +1590,124 @@ TEST(Mesh2D, WTF)
 
     p1 = convertedClg->Node(location);
     auto p2 = convertedClg->GetNode(index);
-    std::cout << "clg node: " << p1.x << "  " << p1.y << "  " << "  " << p2.x << "  " << p2.y << "  " << location << "  " << index.m_n << "  " << index.m_m << std::endl;
+    std::cout << "clg node: " << p1.x << "  " << p1.y << " -- " << "  " << p2.x << "  " << p2.y << " -- " << location << " -- " << index.m_n << "  " << index.m_m << std::endl;
 
-    [[maybe_unused]] auto nodeMoveUndo = convertedClg->MoveNode(meshkernel::Point(20.0, 80.0), meshkernel::Point(20.0, 85.0));
-    // [[maybe_unused]] auto nodeMoveUndo = convertedClg->MoveNode(meshkernel::CurvilinearGridNodeIndices(2, 8), meshkernel::Point(20.0, 85.0));
+    // undoStack.Add (convertedClg->MoveNode(meshkernel::Point(20.0, 80.0), meshkernel::Point(20.0, 85.0)));
+    // // undoStack.Add (convertedClg->MoveNode(meshkernel::CurvilinearGridNodeIndices(2, 8), meshkernel::Point(20.0, 85.0)));
 
-    // meshkernel::Print(mergedMesh->Nodes(), mergedMesh->Edges());
+    // // meshkernel::Print(mergedMesh->Nodes(), mergedMesh->Edges());
+
+    // undoStack.Undo (); // move node
+    undoStack.Undo (); // line mirror
+
     meshkernel::Print(convertedClg->ComputeNodes(), convertedClg->ComputeEdges());
+}
+
+TEST(Mesh2D, WTF3)
+{
+
+    // Prepare
+    const auto mesh1 = MakeRectangularMeshForTesting(11,
+                                                     11,
+                                                     100.0,
+                                                     100.0,
+                                                     meshkernel::Projection::cartesian);
+    // Prepare
+    const auto mesh2 = MakeRectangularMeshForTesting(11,
+                                                     11,
+                                                     100.0,
+                                                     100.0,
+                                                     meshkernel::Projection::cartesian,
+                                                     {70.0, 100.0});
+
+    auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
+
+    meshkernel::UndoActionStack undoStack;
+
+    undoStack.Add (meshkernel::ConnectMeshes::Compute(*mergedMesh));
+
+    meshkernel::Mesh2DToCurvilinear toClg(*mergedMesh);
+
+    auto convertedClg = toClg.Compute({2.5, 2.5});
+
+    meshkernel::CurvilinearGridLineMirror lineMirror(*convertedClg, 1.0, 9);
+
+    lineMirror.SetLine({70.0, 130.0}, {70.0, 150.0});
+    // // lineMirror.SetLine({10.0, 50.0}, {30.0, 50.0});
+
+    undoStack.Add (lineMirror.Compute());
+
+    // // undoStack.Undo (); // move node
+    undoStack.Undo (); // line mirror
+
+    meshkernel::Print(convertedClg->ComputeNodes(), convertedClg->ComputeEdges());
+}
+
+TEST(Mesh2D, WTF4)
+{
+
+    // Prepare
+    const auto mesh1 = MakeRectangularMeshForTesting(11,
+                                                     11,
+                                                     100.0,
+                                                     100.0,
+                                                     meshkernel::Projection::cartesian);
+    // Prepare
+    const auto mesh2 = MakeRectangularMeshForTesting(11,
+                                                     11,
+                                                     100.0,
+                                                     100.0,
+                                                     meshkernel::Projection::cartesian,
+                                                     {100.0, 70.0});
+
+    auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
+
+    meshkernel::UndoActionStack undoStack;
+
+    undoStack.Add (meshkernel::ConnectMeshes::Compute(*mergedMesh));
+
+    meshkernel::Mesh2DToCurvilinear toClg(*mergedMesh);
+
+    auto convertedClg = toClg.Compute({2.5, 2.5});
+
+    meshkernel::CurvilinearGridLineMirror lineMirror(*convertedClg, 1.0, 5);
+
+    lineMirror.SetLine({120.0, 70.0}, {140.0, 70.0});
+    // lineMirror.SetLine({20.0, 100.0}, {40.0, 100.0});
+    // // lineMirror.SetLine({10.0, 50.0}, {30.0, 50.0});
+
+    undoStack.Add (lineMirror.Compute());
+
+    // // undoStack.Undo (); // move node
+    undoStack.Undo (); // line mirror
+
+    meshkernel::Print(convertedClg->ComputeNodes(), convertedClg->ComputeEdges());
+}
+
+TEST(Mesh2D, WTF2)
+{
+
+    // Prepare
+    const auto mesh1 = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 11, 11);
+    meshkernel::UndoActionStack undoStack;
+
+    meshkernel::CurvilinearGridLineMirror lineMirror(*mesh1, 1.0, 5);
+
+    lineMirror.SetLine({0.0, 20.0}, {0.0, 50.0}); // left
+    // lineMirror.SetLine({20.0, 100.0}, {60.0, 100.0}); // top
+    // lineMirror.SetLine({100.0, 20.0}, {100.0, 50.0}); // right
+    // lineMirror.SetLine({20.0, 0.0}, {40.0, 0.0}); // bottom
+
+
+    undoStack.Add (lineMirror.Compute());
+    undoStack.Undo ();
+
+    meshkernel::CurvilinearGridLineMirror lineMirror2(*mesh1, 1.0, 3);
+
+    lineMirror2.SetLine({0.0, 20.0}, {0.0, 50.0}); // left
+    undoStack.Add (lineMirror2.Compute());
+
+    undoStack.Undo ();
+
+    meshkernel::Print(mesh1->ComputeNodes(), mesh1->ComputeEdges());
 }

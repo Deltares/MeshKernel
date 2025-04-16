@@ -378,6 +378,8 @@ void CurvilinearGrid::Delete(std::shared_ptr<Polygons> polygons, UInt polygonInd
 
 void CurvilinearGrid::BuildTree(Location location, const BoundingBox& boundingBox)
 {
+    std::cout << "CurvilinearGrid::BuildTree" << std::endl;
+
     switch (location)
     {
     case Location::Faces:
@@ -392,6 +394,7 @@ void CurvilinearGrid::BuildTree(Location location, const BoundingBox& boundingBo
     case Location::Nodes:
         if (m_nodesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
         {
+            std::cout << "is being built" << std::endl;
             const auto nodes = ComputeNodes();
             m_RTrees.at(Location::Nodes)->BuildTree(nodes, boundingBox);
             m_nodesRTreeRequiresUpdate = false;
@@ -772,18 +775,26 @@ std::tuple<meshkernel::UndoActionPtr, int> CurvilinearGrid::AddGridLinesAtBottom
                                             static_cast<int>(secondNode.m_n));
     numLinesToAdd = std::max(numLinesToAdd, 0);
 
+    bool shouldComputeNodeIndices = false;
+
     for (int lineCount = 0; lineCount < numLinesToAdd; ++lineCount)
     {
         // n-direction
         if (m_startOffset.m_n == 0)
         {
             lin_alg::InsertRow(m_gridNodes, lin_alg::RowVector<Point>(FullNumM()), 0);
+            shouldComputeNodeIndices = true;
         }
         else
         {
             m_startOffset.m_n -= 1;
         }
         undoAction->Add(AddGridLineUndoAction::Create(*this, {1, 0}, {0, 0}));
+    }
+
+    if (shouldComputeNodeIndices)
+    {
+        m_gridIndices = ComputeNodeIndices();
     }
 
     return std::make_tuple(std::move(undoAction), numLinesToAdd);
@@ -811,6 +822,8 @@ std::tuple<meshkernel::UndoActionPtr, int> CurvilinearGrid::AddGridLinesAtTop(co
 
         undoAction->Add(AddGridLineUndoAction::Create(*this, {0, 0}, {1, 0}));
     }
+
+    m_gridIndices = ComputeNodeIndices();
 
     return std::make_tuple(std::move(undoAction), numLinesToAdd);
 }
@@ -840,6 +853,8 @@ std::tuple<meshkernel::UndoActionPtr, int> CurvilinearGrid::AddGridLinesAtLeft(c
         undoAction->Add(AddGridLineUndoAction::Create(*this, {0, 1}, {0, 0}));
     }
 
+    m_gridIndices = ComputeNodeIndices();
+
     return std::make_tuple(std::move(undoAction), numLinesToAdd);
 }
 
@@ -865,6 +880,8 @@ std::tuple<meshkernel::UndoActionPtr, int> CurvilinearGrid::AddGridLinesAtRight(
 
         undoAction->Add(AddGridLineUndoAction::Create(*this, {0, 0}, {0, 1}));
     }
+
+    m_gridIndices = ComputeNodeIndices();
 
     return std::make_tuple(std::move(undoAction), numLinesToAdd);
 }
@@ -918,6 +935,7 @@ std::tuple<int, meshkernel::UndoActionPtr> CurvilinearGrid::AddGridLinesAtBounda
         default:
             throw ConstraintError("Invalid gridLineType");
         }
+
     }
 
     return {numLinesAdded, std::move(undoAction)};
@@ -1201,7 +1219,11 @@ meshkernel::UndoActionPtr CurvilinearGrid::MoveNode(const CurvilinearGridNodeInd
         throw std::invalid_argument("CurvilinearGrid::MoveNode node indices not found");
     }
 
-    std::unique_ptr<ResetCurvilinearNodeAction> undoAction = ResetCurvilinearNodeAction::Create(*this, nodeIndex, GetNode(nodeIndex), toPoint,
+    auto pnt = GetNode(nodeIndex);
+
+    std::cout << "mode node index: " << pnt.x << ", " << pnt.y << " -- " << GetNode(nodeIndex.m_n, nodeIndex.m_m).x << ", " << GetNode(nodeIndex.m_n, nodeIndex.m_m).y << std::endl;
+
+    std::unique_ptr<ResetCurvilinearNodeAction> undoAction = ResetCurvilinearNodeAction::Create(*this, nodeIndex, pnt, toPoint,
                                                                                                 false /* recomputeNodeTypes */);
 
     // move fromPoint to toPoint
@@ -1214,6 +1236,7 @@ meshkernel::UndoActionPtr CurvilinearGrid::MoveNode(Point const& fromPoint, Poin
     // Get the node indices of fromPoint
     auto const nodeToMoveIndex = FindLocationIndex(fromPoint, Location::Nodes);
     const auto nodeToMove = m_gridIndices[nodeToMoveIndex];
+
     return MoveNode(nodeToMove, toPoint);
 }
 
@@ -1424,6 +1447,8 @@ std::vector<meshkernel::Point> CurvilinearGrid::ComputeEdgesCenters() const
 
 std::vector<CurvilinearGridNodeIndices> CurvilinearGrid::ComputeNodeIndices() const
 {
+    std::cout << "CurvilinearGrid::ComputeNodeIndices "<< std::endl;
+
     std::vector result(NumN() * NumM(),
                        CurvilinearGridNodeIndices{constants::missing::uintValue,
                                                   constants::missing::uintValue});
