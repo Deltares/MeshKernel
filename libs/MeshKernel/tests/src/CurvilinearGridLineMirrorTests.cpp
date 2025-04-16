@@ -27,9 +27,15 @@
 
 #include <gtest/gtest.h>
 
-#include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
-#include <MeshKernel/CurvilinearGrid/CurvilinearGridLineMirror.hpp>
-#include <TestUtils/MakeCurvilinearGrids.hpp>
+#include "MeshKernel/ConnectMeshes.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridLineMirror.hpp"
+#include "MeshKernel/Mesh2DToCurvilinear.hpp"
+#include "MeshKernel/UndoActions/UndoActionStack.hpp"
+#include "MeshKernel/Utilities/Utilities.hpp"
+
+#include "TestUtils/MakeCurvilinearGrids.hpp"
+#include "TestUtils/MakeMeshes.hpp"
 
 TEST(CurvilinearLineMirror, Compute_LineMirrorOnLeftBoundary_ShouldCorrectlySumContributionsFromSubsequentColumns)
 {
@@ -387,4 +393,326 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(CurvilinearLineMirrorInternalBoundaryTest, Compute_LineMirrorInsideHole_ShouldCorrectlyAddLine)
 {
     RunTest();
+}
+
+namespace CurvilinearLineMirrorTest
+{
+    size_t CountValidNodes(const meshkernel::CurvilinearGrid& grid)
+    {
+
+        size_t count = 0;
+
+        for (meshkernel::UInt n = 0; n < grid.NumN(); ++n)
+        {
+            for (meshkernel::UInt m = 0; m < grid.NumM(); ++m)
+            {
+                if (grid.GetNode(n, m).IsValid())
+                {
+                    ++count;
+                }
+            }
+        }
+
+        return count;
+    }
+} // namespace CurvilinearLineMirrorTest
+
+TEST(CurvilinearLineMirror, MultiStageMirrorCells)
+{
+
+    // This tests consists of several stages
+    // 1. generate two unstructured grid, s1 slightly offset from the other
+    // 2. combine these two grids into a single grid
+    // 3. convert the merged grid into a single curvilinear grid.
+    // 4. add 3 layers of mirror cells
+    // 5. move the middle node of the mirrored cells
+    // 6. check the nodes of the mirrored cells are correct
+    // 7. undo node move and mirrored cells
+    // 8. check the nodes are same as the original mesh
+
+    // Prepare
+    const auto mesh1 = MakeRectangularMeshForTesting(6,
+                                                     6,
+                                                     50.0,
+                                                     50.0,
+                                                     meshkernel::Projection::cartesian);
+    // Prepare
+    const auto mesh2 = MakeRectangularMeshForTesting(6,
+                                                     6,
+                                                     50.0,
+                                                     50.0,
+                                                     meshkernel::Projection::cartesian,
+                                                     {50.0, 20.0});
+
+    auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
+
+    meshkernel::UndoActionStack undoStack;
+
+    undoStack.Add(meshkernel::ConnectMeshes::Compute(*mergedMesh));
+
+    meshkernel::Mesh2DToCurvilinear toClg(*mergedMesh);
+
+    auto convertedClg = toClg.Compute({2.5, 2.5});
+
+    ASSERT_EQ(convertedClg->NumN(), 11);
+    ASSERT_EQ(convertedClg->NumM(), 8);
+
+    std::vector<meshkernel::Point> originalMeshPoints(convertedClg->ComputeNodes());
+
+    meshkernel::CurvilinearGridLineMirror lineMirror(*convertedClg, 1.0, 3);
+
+    lineMirror.SetLine({10.0, 50.0}, {30.0, 50.0});
+
+    undoStack.Add(lineMirror.Compute());
+
+    undoStack.Add(convertedClg->MoveNode(meshkernel::Point(20.0, 80.0), meshkernel::Point(20.0, 85.0)));
+
+    std::vector<meshkernel::UInt> expectedIndices{87, 78, 69, 88, 79, 70, 89, 80, 71};
+    std::vector<meshkernel::Point> mirroredPoints{{10.0, 60.0}, {20.0, 60.0}, {30.0, 60.0}, {10.0, 70.0}, {20.0, 70.0}, {30.0, 70.0}, {10.0, 80.0}, {20.0, 85.0}, {30.0, 80.0}};
+
+    ASSERT_EQ(convertedClg->NumN(), 11);
+    ASSERT_EQ(convertedClg->NumM(), 9);
+
+    for (size_t i = 0; i < mirroredPoints.size(); ++i)
+    {
+        EXPECT_EQ(expectedIndices[i], convertedClg->FindLocationIndex(mirroredPoints[i], meshkernel::Location::Nodes));
+    }
+
+    undoStack.Undo(); // move node
+    undoStack.Undo(); // line mirror
+
+    std::vector<meshkernel::Point> finalMeshPoints(convertedClg->ComputeNodes());
+
+    ASSERT_EQ(finalMeshPoints.size(), originalMeshPoints.size());
+
+    ASSERT_EQ(convertedClg->NumN(), 11);
+    ASSERT_EQ(convertedClg->NumM(), 8);
+
+    for (size_t i = 0; i < originalMeshPoints.size(); ++i)
+    {
+        EXPECT_EQ(originalMeshPoints[i].x, finalMeshPoints[i].x);
+        EXPECT_EQ(originalMeshPoints[i].y, finalMeshPoints[i].y);
+    }
+}
+
+TEST(CurvilinearLineMirror, UndoAndRecomputeMirrorCellsRightwards)
+{
+
+    // Prepare
+    const auto mesh1 = MakeRectangularMeshForTesting(11,
+                                                     11,
+                                                     100.0,
+                                                     100.0,
+                                                     meshkernel::Projection::cartesian);
+    // Prepare
+    const auto mesh2 = MakeRectangularMeshForTesting(11,
+                                                     11,
+                                                     100.0,
+                                                     100.0,
+                                                     meshkernel::Projection::cartesian,
+                                                     {70.0, 100.0});
+
+    auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
+
+    meshkernel::UndoActionStack undoStack;
+
+    undoStack.Add(meshkernel::ConnectMeshes::Compute(*mergedMesh));
+
+    meshkernel::Mesh2DToCurvilinear toClg(*mergedMesh);
+
+    auto convertedClg = toClg.Compute({2.5, 2.5});
+
+    ASSERT_EQ(convertedClg->NumN(), 18);
+    ASSERT_EQ(convertedClg->NumM(), 21);
+
+    meshkernel::CurvilinearGridLineMirror lineMirror(*convertedClg, 1.0, 9);
+    lineMirror.SetLine({100.0, 30.0}, {100.0, 50.0});
+    undoStack.Add(lineMirror.Compute());
+    EXPECT_EQ(CurvilinearLineMirrorTest::CountValidNodes(*convertedClg), 265);
+
+    ASSERT_EQ(convertedClg->NumN(), 20);
+    ASSERT_EQ(convertedClg->NumM(), 21);
+
+    undoStack.Undo(); // line mirror 9
+
+    ASSERT_EQ(convertedClg->NumN(), 18);
+    ASSERT_EQ(convertedClg->NumM(), 21);
+
+    meshkernel::CurvilinearGridLineMirror lineMirror2(*convertedClg, 1.0, 10);
+    lineMirror2.SetLine({100.0, 30.0}, {100.0, 50.0});
+    undoStack.Add(lineMirror2.Compute());
+    EXPECT_EQ(CurvilinearLineMirrorTest::CountValidNodes(*convertedClg), 268);
+
+    ASSERT_EQ(convertedClg->NumN(), 21);
+    ASSERT_EQ(convertedClg->NumM(), 21);
+
+    undoStack.Undo(); // line mirror 10
+
+    EXPECT_EQ(CurvilinearLineMirrorTest::CountValidNodes(*convertedClg), 238);
+    ASSERT_EQ(convertedClg->NumN(), 18);
+    ASSERT_EQ(convertedClg->NumM(), 21);
+}
+
+TEST(CurvilinearLineMirror, UndoAndRecomputeMirrorCellsLeftwards)
+{
+
+    // Prepare
+    const auto mesh1 = MakeRectangularMeshForTesting(11,
+                                                     11,
+                                                     100.0,
+                                                     100.0,
+                                                     meshkernel::Projection::cartesian);
+    // Prepare
+    const auto mesh2 = MakeRectangularMeshForTesting(11,
+                                                     11,
+                                                     100.0,
+                                                     100.0,
+                                                     meshkernel::Projection::cartesian,
+                                                     {70.0, 100.0});
+
+    auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
+
+    meshkernel::UndoActionStack undoStack;
+
+    undoStack.Add(meshkernel::ConnectMeshes::Compute(*mergedMesh));
+
+    meshkernel::Mesh2DToCurvilinear toClg(*mergedMesh);
+
+    auto convertedClg = toClg.Compute({2.5, 2.5});
+
+    ASSERT_EQ(convertedClg->NumN(), 18);
+    ASSERT_EQ(convertedClg->NumM(), 21);
+    EXPECT_EQ(CurvilinearLineMirrorTest::CountValidNodes(*convertedClg), 238);
+
+    meshkernel::CurvilinearGridLineMirror lineMirror(*convertedClg, 1.0, 9);
+    lineMirror.SetLine({70.0, 130.0}, {70.0, 150.0});
+    undoStack.Add(lineMirror.Compute());
+
+    ASSERT_EQ(convertedClg->NumN(), 20);
+    ASSERT_EQ(convertedClg->NumM(), 21);
+    EXPECT_EQ(CurvilinearLineMirrorTest::CountValidNodes(*convertedClg), 265);
+
+    undoStack.Undo(); // line mirror 9
+
+    ASSERT_EQ(convertedClg->NumN(), 18);
+    ASSERT_EQ(convertedClg->NumM(), 21);
+    EXPECT_EQ(CurvilinearLineMirrorTest::CountValidNodes(*convertedClg), 238);
+
+    meshkernel::CurvilinearGridLineMirror lineMirror2(*convertedClg, 1.0, 10);
+    lineMirror2.SetLine({70.0, 140.0}, {70.0, 160.0});
+    undoStack.Add(lineMirror2.Compute());
+    EXPECT_EQ(CurvilinearLineMirrorTest::CountValidNodes(*convertedClg), 268);
+
+    ASSERT_EQ(convertedClg->NumN(), 21);
+    ASSERT_EQ(convertedClg->NumM(), 21);
+
+    undoStack.Undo(); // line mirror 10
+    EXPECT_EQ(CurvilinearLineMirrorTest::CountValidNodes(*convertedClg), 238);
+
+    ASSERT_EQ(convertedClg->NumN(), 18);
+    ASSERT_EQ(convertedClg->NumM(), 21);
+}
+
+TEST(CurvilinearLineMirror, UndoAndRecomputeMirrorCellsDownwards)
+{
+
+    // Prepare
+    const auto mesh1 = MakeRectangularMeshForTesting(11,
+                                                     11,
+                                                     100.0,
+                                                     100.0,
+                                                     meshkernel::Projection::cartesian);
+    // Prepare
+    const auto mesh2 = MakeRectangularMeshForTesting(11,
+                                                     11,
+                                                     100.0,
+                                                     100.0,
+                                                     meshkernel::Projection::cartesian,
+                                                     {100.0, 70.0});
+
+    auto mergedMesh = meshkernel::Mesh2D::Merge(*mesh1, *mesh2);
+
+    meshkernel::UndoActionStack undoStack;
+
+    undoStack.Add(meshkernel::ConnectMeshes::Compute(*mergedMesh));
+
+    meshkernel::Mesh2DToCurvilinear toClg(*mergedMesh);
+
+    auto convertedClg = toClg.Compute({2.5, 2.5});
+
+    ASSERT_EQ(convertedClg->NumN(), 21);
+    ASSERT_EQ(convertedClg->NumM(), 18);
+    EXPECT_EQ(CurvilinearLineMirrorTest::CountValidNodes(*convertedClg), 238);
+
+    meshkernel::CurvilinearGridLineMirror lineMirror(*convertedClg, 1.0, 5);
+    lineMirror.SetLine({120.0, 70.0}, {140.0, 70.0});
+    undoStack.Add(lineMirror.Compute());
+    EXPECT_EQ(CurvilinearLineMirrorTest::CountValidNodes(*convertedClg), 253);
+
+    undoStack.Undo(); // line mirror
+
+    ASSERT_EQ(convertedClg->NumN(), 21);
+    ASSERT_EQ(convertedClg->NumM(), 18);
+
+    meshkernel::CurvilinearGridLineMirror lineMirror2(*convertedClg, 1.0, 8);
+    lineMirror2.SetLine({120.0, 70.0}, {140.0, 70.0});
+    undoStack.Add(lineMirror2.Compute());
+
+    ASSERT_EQ(convertedClg->NumN(), 21);
+    ASSERT_EQ(convertedClg->NumM(), 19);
+    EXPECT_EQ(CurvilinearLineMirrorTest::CountValidNodes(*convertedClg), 262);
+
+    undoStack.Undo(); // line mirror
+
+    meshkernel::CurvilinearGridLineMirror lineMirror3(*convertedClg, 1.0, 5);
+    lineMirror3.SetLine({120.0, 70.0}, {140.0, 70.0});
+    undoStack.Add(lineMirror3.Compute());
+    EXPECT_EQ(CurvilinearLineMirrorTest::CountValidNodes(*convertedClg), 253);
+    undoStack.Undo(); // line mirror
+
+    meshkernel::CurvilinearGridLineMirror lineMirror4(*convertedClg, 1.0, 9);
+    lineMirror4.SetLine({120.0, 70.0}, {140.0, 70.0});
+    undoStack.Add(lineMirror4.Compute());
+
+    ASSERT_EQ(convertedClg->NumN(), 21);
+    ASSERT_EQ(convertedClg->NumM(), 20);
+    EXPECT_EQ(CurvilinearLineMirrorTest::CountValidNodes(*convertedClg), 265);
+}
+
+TEST(CurvilinearLineMirror, UndoAndExtendMirrorCells)
+{
+
+    // Prepare
+    const auto mesh1 = MakeCurvilinearGrid(0.0, 0.0, 10.0, 10.0, 11, 11);
+    meshkernel::UndoActionStack undoStack;
+
+    meshkernel::CurvilinearGridLineMirror lineMirror(*mesh1, 1.0, 5);
+
+    lineMirror.SetLine({20.0, 0.0}, {40.0, 0.0}); // bottom
+
+    undoStack.Add(lineMirror.Compute());
+
+    EXPECT_EQ(CurvilinearLineMirrorTest::CountValidNodes(*mesh1), 136);
+
+    undoStack.Undo();
+
+    meshkernel::CurvilinearGridLineMirror lineMirror2(*mesh1, 1.0, 3);
+
+    lineMirror2.SetLine({20.0, 0.0}, {40.0, 0.0}); // bottom
+    undoStack.Add(lineMirror2.Compute());
+    EXPECT_EQ(CurvilinearLineMirrorTest::CountValidNodes(*mesh1), 130);
+
+    undoStack.Undo();
+
+    meshkernel::CurvilinearGridLineMirror lineMirror3(*mesh1, 1.0, 6);
+
+    lineMirror3.SetLine({20.0, 0.0}, {40.0, 0.0}); // bottom
+    undoStack.Add(lineMirror3.Compute());
+    EXPECT_EQ(CurvilinearLineMirrorTest::CountValidNodes(*mesh1), 139);
+
+    meshkernel::CurvilinearGridLineMirror lineMirror4(*mesh1, 1.0, 2);
+
+    lineMirror4.SetLine({20.0, -60.0}, {40.0, -60.0}); // bottom
+    undoStack.Add(lineMirror4.Compute());
+    EXPECT_EQ(CurvilinearLineMirrorTest::CountValidNodes(*mesh1), 145);
 }

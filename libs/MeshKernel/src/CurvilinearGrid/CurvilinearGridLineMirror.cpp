@@ -63,8 +63,8 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
         throw std::invalid_argument("CurvilinearGridLineMirror:: Invalid curvilinear grid");
     }
 
-    auto startNode = m_lines[0].m_startNode;
-    auto endNode = m_lines[0].m_endNode;
+    const auto startNode = m_lines[0].m_startNode;
+    const auto endNode = m_lines[0].m_endNode;
     m_grid.ComputeGridNodeTypes();
     auto [numAddedLines, gridLineType, addLinesUndoAction] = m_grid.AddGridLinesAtBoundary(startNode, endNode, m_numRowsToMirror);
 
