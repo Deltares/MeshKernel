@@ -25,7 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-#include <iomanip>
 #include <utility>
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp"
@@ -109,7 +108,6 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
     switch (gridLineType)
     {
     case Bottom:
-        std::cout << "Bottom" << std::endl;
         boundaryCoordinate = m_lines[0].m_constantCoordinate + numAddedLines;
         for (int r = 0; r < m_numRowsToMirror; ++r)
         {
@@ -117,15 +115,13 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
             {
                 m_grid.GetNode(boundaryCoordinate - 1, i) = m_grid.GetNode(boundaryCoordinate, i) * a +
                                                             m_grid.GetNode(boundaryCoordinate + 1, i) * b;
-                std::cout << "{" << std::setw(5) << boundaryCoordinate - 1 << ", " << std::setw(5) << i << "} ";
             }
 
-            std::cout << std::endl;
             boundaryCoordinate--;
         }
         break;
+
     case Top:
-        std::cout << "Top" << std::endl;
         boundaryCoordinate = m_lines[0].m_constantCoordinate;
         for (int r = 0; r < m_numRowsToMirror; ++r)
         {
@@ -133,16 +129,13 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
             {
                 m_grid.GetNode(boundaryCoordinate + 1, i) = m_grid.GetNode(boundaryCoordinate, i) * a +
                                                             m_grid.GetNode(boundaryCoordinate - 1, i) * b;
-                std::cout << "{" << std::setw(5) << boundaryCoordinate + 1 << ", " << std::setw(5) << i << "} ";
             }
 
-            std::cout << std::endl;
             boundaryCoordinate++;
         }
         break;
 
     case Right:
-        std::cout << "Right" << std::endl;
         boundaryCoordinate = m_lines[0].m_constantCoordinate;
         for (int r = 0; r < m_numRowsToMirror; ++r)
         {
@@ -150,16 +143,13 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
             {
                 m_grid.GetNode(i, boundaryCoordinate + 1) = m_grid.GetNode(i, boundaryCoordinate) * a +
                                                             m_grid.GetNode(i, boundaryCoordinate - 1) * b;
-
-                std::cout << "{" << std::setw(5) << i << ", " << std::setw(5) << boundaryCoordinate + 1 << "} ";
             }
-            std::cout << std::endl;
+
             boundaryCoordinate++;
         }
         break;
 
     case Left:
-        std::cout << "Left" << std::endl;
         boundaryCoordinate = m_lines[0].m_constantCoordinate + numAddedLines;
         for (int r = 0; r < m_numRowsToMirror; ++r)
         {
@@ -167,12 +157,12 @@ meshkernel::UndoActionPtr CurvilinearGridLineMirror::Compute()
             {
                 m_grid.GetNode(i, boundaryCoordinate - 1) = m_grid.GetNode(i, boundaryCoordinate) * a +
                                                             m_grid.GetNode(i, boundaryCoordinate + 1) * b;
-                std::cout << "{" << std::setw(5) << i << ", " << std::setw(5) << boundaryCoordinate - 1 << "} ";
             }
-            std::cout << std::endl;
+
             boundaryCoordinate--;
         }
         break;
+
     default:
         throw std::invalid_argument("CurvilinearGridLineMirror::Compute Invalid grid line type");
     }
