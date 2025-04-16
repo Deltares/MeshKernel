@@ -116,12 +116,8 @@ static void BM_Orthogonalization(benchmark::State& state)
         // resume the timers to begin benchmarking
         state.ResumeTiming();
 
-        auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-        auto smoother = std::make_unique<Smoother>(*mesh);
         OrthogonalizationAndSmoothing orthogonalization(
             *mesh,
-            std::move(smoother),
-            std::move(orthogonalizer),
             std::move(polygon),
             std::move(landboundaries),
             project_to_land_Boundary,
