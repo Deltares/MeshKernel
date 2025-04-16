@@ -311,10 +311,11 @@ namespace meshkernel
         /// @brief Allocates a new grid line at the boundary of the curvilinear grid if needed.
         /// @param firstNode The first node of the boundary grid line.
         /// @param secondNode The second node of the boundary grid line.
-        /// @return If a new grid line has been allocated
-        std::tuple<int, UndoActionPtr> AddGridLinesAtBoundary(CurvilinearGridNodeIndices const& firstNode,
-                                                              CurvilinearGridNodeIndices const& secondNode,
-                                                              int numLines);
+        /// @param numLines The number of gridlines required to be added.
+        /// @return The number of new rows/columns added, the boundary on which they were added and the undo action
+        std::tuple<int, BoundaryGridLineType, UndoActionPtr> AddGridLinesAtBoundary(CurvilinearGridNodeIndices const& firstNode,
+                                                                                    CurvilinearGridNodeIndices const& secondNode,
+                                                                                    int numLines);
 
         /// @brief Get the boundary grid line type: left, right, bottom or up
         /// @param[in] firstNode The first node of the grid line
@@ -494,7 +495,7 @@ namespace meshkernel
         /// @brief Restore grid to state after node was modified
         void CommitAction(const ResetCurvilinearNodeAction& undoAction);
 
-    // private:
+    private:
         /// @brief One dimensional array of NodeType
         using NodeTypeArray1D = std::array<meshkernel::NodeType, 2>;
 
