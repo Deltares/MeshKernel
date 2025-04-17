@@ -338,7 +338,7 @@ TEST(PointTests, Cartesian3DToSphericalTest)
 {
     meshkernel::Cartesian3DPoint p1{-1040758.31651999, 5902433.71909574, -2181451.33089076};
 
-    meshkernel::Point result = meshkernel::Cartesian3DToSpherical(p1, 25.0);
+    meshkernel::Point result = meshkernel::Cartesian3DToSpherical(p1);
 
     // Result not obtained analytically
     meshkernel::Point expectedResult{100.0, -20.0};

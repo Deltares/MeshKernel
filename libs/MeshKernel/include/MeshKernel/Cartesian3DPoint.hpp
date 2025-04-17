@@ -79,9 +79,8 @@ namespace meshkernel
 
     /// @brief Transforms 3D cartesian coordinates to 2D point in spherical coordinates
     /// @param[in] cartesianPoint The 3d cartesian point
-    /// @param[in] referenceLongitude The reference longitude
     /// @returns The spherical coordinate
-    [[nodiscard]] Point Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude);
+    [[nodiscard]] Point Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint);
 
 } // end namespace meshkernel
 

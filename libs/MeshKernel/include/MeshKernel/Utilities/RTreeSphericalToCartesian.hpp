@@ -86,9 +86,9 @@ namespace meshkernel
     /// For more details on available query methods, refer to the base class documentation: meshkernel::RTreeBase.
     class RTreeSphericalToCartesian : public RTreeBase
     {
-        using Point2D = bg::model::point<double, 3, bg::cs::cartesian>; ///< Typedef for Point2D
-        using Box2D = bg::model::box<Point2D>;                          ///< Typedef for box of Point2D
-        using Value2D = std::pair<Point2D, UInt>;                       ///< Typedef of pair of Point2D and UInt
+        using Point3D = bg::model::point<double, 3, bg::cs::cartesian>; ///< Typedef for Point3D
+        using Box2D = bg::model::box<Point3D>;                          ///< Typedef for box of Point3D
+        using Value2D = std::pair<Point3D, UInt>;                       ///< Typedef of pair of Point3D and UInt
         using RTree2D = bgi::rtree<Value2D, bgi::linear<16>>;           ///< Typedef for a 2D RTree
 
         /// @brief Ninety degrees
@@ -160,7 +160,7 @@ namespace meshkernel
 
     private:
         /// @brief Convert 2d point in spherical coordinates to 3d point in Cartesian coordinates.
-        Point2D convert(const Point& p) const;
+        Point3D convert(const Point& p) const;
 
         /// @brief Builds the tree from a vector of types derived from Point
         template <std::derived_from<Point> T>
@@ -208,7 +208,7 @@ namespace meshkernel
         void Search(Point const& node, double searchRadiusSquared, bool findNearest);
 
         RTree2D m_rtree2D;                              ///< The 2D RTree
-        std::vector<std::pair<Point2D, UInt>> m_points; ///< The points
+        std::vector<std::pair<Point3D, UInt>> m_points; ///< The points
         std::vector<Value2D> m_queryCache;              ///< The query cache
         std::vector<UInt> m_queryIndices;               ///< The query indices
         UInt m_queryVectorCapacity = 100;               ///< Capacity of the query vector

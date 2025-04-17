@@ -50,7 +50,7 @@ meshkernel::Cartesian3DPoint meshkernel::VectorProduct(const Cartesian3DPoint& a
         a.x * b.y - a.y * b.x};
 }
 
-meshkernel::Point meshkernel::Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude)
+meshkernel::Point meshkernel::Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint)
 {
     const double r = constants::geometric::earth_radius;
     const double theta = std::acos(cartesianPoint.z / r);
