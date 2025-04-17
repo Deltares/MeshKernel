@@ -408,6 +408,9 @@ Enumerations</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:aebc362b0eb95223762baed0fce321f8f" id="r_aebc362b0eb95223762baed0fce321f8f"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; double, double, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#aebc362b0eb95223762baed0fce321f8f">ComputeSphericalCoordinatesFromLatitudeAndLongitude</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;point)</td></tr>
+<tr class="memdesc:aebc362b0eb95223762baed0fce321f8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts geographic coordinates (latitude and longitude) to 3D spherical Cartesian coordinates.  <br /></td></tr>
+<tr class="separator:aebc362b0eb95223762baed0fce321f8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a214dc989df380801d32a03bb4350300c" id="r_a214dc989df380801d32a03bb4350300c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a214dc989df380801d32a03bb4350300c">VectorProduct</a> (const <a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a> &amp;a, const <a class="el" href="structmeshkernel_1_1_cartesian3_d_point.html">Cartesian3DPoint</a> &amp;b)</td></tr>
 <tr class="memdesc:a214dc989df380801d32a03bb4350300c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines vector product for cartesian 3D-space.  <br /></td></tr>
 <tr class="separator:a214dc989df380801d32a03bb4350300c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1698,6 +1701,33 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A vector containing the chainage volau of the polyline nodes </dd></dl>
+
+</div>
+</div>
+<a id="aebc362b0eb95223762baed0fce321f8f" name="aebc362b0eb95223762baed0fce321f8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebc362b0eb95223762baed0fce321f8f">&#9670;&#160;</a></span>ComputeSphericalCoordinatesFromLatitudeAndLongitude()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::tuple&lt; double, double, double &gt; meshkernel::ComputeSphericalCoordinatesFromLatitudeAndLongitude </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
+          <td class="paramname"><em>point</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Converts geographic coordinates (latitude and longitude) to 3D spherical Cartesian coordinates. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">point</td><td>The input point specified in latitude and longitude (in degrees). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A tuple containing the corresponding (x, y, z) coordinates on the sphere. </dd></dl>
 
 </div>
 </div>
