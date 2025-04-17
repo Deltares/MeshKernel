@@ -11,7 +11,6 @@ std::unique_ptr<meshkernel::RTreeBase> meshkernel::RTreeFactory::Create(Projecti
     case spherical:
     case sphericalAccurate:
         return std::make_unique<RTreeSphericalToCartesian>();
-        // return std::make_unique<RTree<bg::cs::geographic<bg::degree>>>();
     default:
         throw MeshKernelError("Invalid projection '{}'", ProjectionToString(projection));
     }
