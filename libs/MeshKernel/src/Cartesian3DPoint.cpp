@@ -50,6 +50,18 @@ meshkernel::Cartesian3DPoint meshkernel::VectorProduct(const Cartesian3DPoint& a
         a.x * b.y - a.y * b.x};
 }
 
+meshkernel::Point meshkernel::Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude)
+{
+    const double r = constants::geometric::earth_radius;
+    const double theta = std::acos(cartesianPoint.z / r);
+    const double phi = std::atan2(cartesianPoint.y, cartesianPoint.x);
+
+    const double latitude = 90.0 - theta * constants::conversion::radToDeg;
+    const double longitude = phi * constants::conversion::radToDeg;
+
+    return {longitude, latitude};
+}
+
 meshkernel::Cartesian3DPoint meshkernel::SphericalToCartesian3D(const Point& sphericalPoint)
 {
     const auto [x, y, z] = meshkernel::ComputeSphericalCoordinatesFromLatitudeAndLongitude(sphericalPoint);
@@ -58,13 +70,4 @@ meshkernel::Cartesian3DPoint meshkernel::SphericalToCartesian3D(const Point& sph
     result.y = y;
     result.z = z;
     return result;
-}
-
-meshkernel::Point meshkernel::Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude)
-{
-    Point sphericalPoint;
-    const double angle = std::atan2(cartesianPoint.y, cartesianPoint.x) * constants::conversion::radToDeg;
-    sphericalPoint.y = std::atan2(cartesianPoint.z, sqrt(cartesianPoint.x * cartesianPoint.x + cartesianPoint.y * cartesianPoint.y)) * constants::conversion::radToDeg;
-    sphericalPoint.x = angle + static_cast<double>(std::lround((referenceLongitude - angle) / 360.0)) * 360.0;
-    return sphericalPoint;
 }

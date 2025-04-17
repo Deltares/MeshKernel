@@ -109,3 +109,28 @@ TEST(SphericalCoordinatesTest, LongitudeNegative180EqualsPositive180)
     EXPECT_NEAR(yPos, yNeg, tolerance);
     EXPECT_NEAR(zPos, zNeg, tolerance);
 }
+
+TEST(SphericalToCartesianRoundTripTest, ConvertsAndBackCorrectly)
+{
+    std::vector<meshkernel::Point> testPoints = {
+        {0.0, 0.0},     // Equator, Prime Meridian
+        {180.0, 0.0},   // Equator, International Date Line
+        {-180.0, 0.0},  // Equator, -180 deg
+        {0.0, 90.0},    // North Pole
+        {0.0, -90.0},   // South Pole
+        {45.0, 45.0},   // NE Hemisphere
+        {-90.0, 30.0},  // Western Hemisphere
+        {135.0, -45.0}, // SE Hemisphere
+    };
+
+    constexpr double tolerance = 1e-6;
+    for (const auto& original : testPoints)
+    {
+        auto [x, y, z] = ComputeSphericalCoordinatesFromLatitudeAndLongitude(original);
+        meshkernel::Cartesian3DPoint cartesian{x, y, z};
+        meshkernel::Point roundTripped = Cartesian3DToSpherical(cartesian, /*referenceLongitude=*/0.0);
+
+        EXPECT_NEAR(original.x, roundTripped.x, tolerance);
+        EXPECT_NEAR(original.y, roundTripped.y, tolerance);
+    }
+}
