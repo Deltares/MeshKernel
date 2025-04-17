@@ -128,7 +128,7 @@ TEST(SphericalToCartesianRoundTripTest, ConvertsAndBackCorrectly)
     {
         auto [x, y, z] = ComputeSphericalCoordinatesFromLatitudeAndLongitude(original);
         meshkernel::Cartesian3DPoint cartesian{x, y, z};
-        meshkernel::Point roundTripped = Cartesian3DToSpherical(cartesian);
+        meshkernel::Point roundTripped = Cartesian3DToSpherical(cartesian, original.x);
 
         EXPECT_NEAR(original.x, roundTripped.x, tolerance);
         EXPECT_NEAR(original.y, roundTripped.y, tolerance);

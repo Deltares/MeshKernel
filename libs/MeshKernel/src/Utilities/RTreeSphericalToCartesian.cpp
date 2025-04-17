@@ -4,7 +4,7 @@
 
 #include <cmath>
 
-meshkernel::RTreeSphericalToCartesian::Point3D meshkernel::RTreeSphericalToCartesian::convert(const Point& node) const
+meshkernel::RTreeSphericalToCartesian::Point2D meshkernel::RTreeSphericalToCartesian::convert(const Point& node) const
 {
     const auto [x, y, z] = ComputeSphericalCoordinatesFromLatitudeAndLongitude(node);
     return {x, y, z};
@@ -20,10 +20,10 @@ void meshkernel::RTreeSphericalToCartesian::Search(Point const& node, double sea
     m_queryCache.reserve(m_queryVectorCapacity);
     m_queryCache.clear();
 
-    const Point3D nodeSought = convert(node);
+    const Point2D nodeSought = convert(node);
     const auto searchRadius = std::sqrt(searchRadiusSquared);
-    Box2D const box(Point3D(bg::get<0>(nodeSought) - searchRadius, bg::get<1>(nodeSought) - searchRadius, bg::get<2>(nodeSought) - searchRadius),
-                    Point3D(bg::get<0>(nodeSought) + searchRadius, bg::get<1>(nodeSought) + searchRadius, bg::get<2>(nodeSought) + searchRadius));
+    Box2D const box(Point2D(bg::get<0>(nodeSought) - searchRadius, bg::get<1>(nodeSought) - searchRadius, bg::get<2>(nodeSought) - searchRadius),
+                    Point2D(bg::get<0>(nodeSought) + searchRadius, bg::get<1>(nodeSought) + searchRadius, bg::get<2>(nodeSought) + searchRadius));
 
     auto pointIsNearby = [&nodeSought, &searchRadiusSquared](Value2D const& v)
     { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; };
@@ -74,7 +74,7 @@ void meshkernel::RTreeSphericalToCartesian::SearchNearestPoint(Point const& node
     m_queryCache.reserve(m_queryVectorCapacity);
     m_queryCache.clear();
 
-    const Point3D nodeSought = convert(node);
+    const Point2D nodeSought = convert(node);
     m_rtree2D.query(bgi::nearest(nodeSought, 1), std::back_inserter(m_queryCache));
 
     if (!m_queryCache.empty())
@@ -95,5 +95,5 @@ void meshkernel::RTreeSphericalToCartesian::DeleteNode(UInt position)
     {
         return;
     }
-    m_points[position] = {Point3D{constants::missing::doubleValue, constants::missing::doubleValue, constants::missing::doubleValue}, std::numeric_limits<UInt>::max()};
+    m_points[position] = {Point2D{constants::missing::doubleValue, constants::missing::doubleValue, constants::missing::doubleValue}, std::numeric_limits<UInt>::max()};
 }

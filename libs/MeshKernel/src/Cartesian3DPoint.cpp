@@ -32,13 +32,10 @@
 
 std::tuple<double, double, double> meshkernel::ComputeSphericalCoordinatesFromLatitudeAndLongitude(const Point& point)
 {
-    const double theta = (90.0 - point.y) * constants::conversion::degToRad;
-    const double phi = point.x * constants::conversion::degToRad;
-    const double r = constants::geometric::earth_radius;
-
-    const double x = r * std::sin(theta) * std::cos(phi);
-    const double y = r * std::sin(theta) * std::sin(phi);
-    const double z = r * std::cos(theta);
+    const double z = constants::geometric::earth_radius * std::sin(point.y * constants::conversion::degToRad);
+    const double rr = constants::geometric::earth_radius * std::cos(point.y * constants::conversion::degToRad);
+    const double x = rr * std::cos(point.x * constants::conversion::degToRad);
+    const double y = rr * std::sin(point.x * constants::conversion::degToRad);
     return {x, y, z};
 }
 
@@ -50,16 +47,13 @@ meshkernel::Cartesian3DPoint meshkernel::VectorProduct(const Cartesian3DPoint& a
         a.x * b.y - a.y * b.x};
 }
 
-meshkernel::Point meshkernel::Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint)
+meshkernel::Point meshkernel::Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude)
 {
-    const double r = constants::geometric::earth_radius;
-    const double theta = std::acos(cartesianPoint.z / r);
-    const double phi = std::atan2(cartesianPoint.y, cartesianPoint.x);
-
-    const double latitude = 90.0 - theta * constants::conversion::radToDeg;
-    const double longitude = phi * constants::conversion::radToDeg;
-
-    return {longitude, latitude};
+    Point sphericalPoint;
+    const double angle = std::atan2(cartesianPoint.y, cartesianPoint.x) * constants::conversion::radToDeg;
+    sphericalPoint.y = std::atan2(cartesianPoint.z, sqrt(cartesianPoint.x * cartesianPoint.x + cartesianPoint.y * cartesianPoint.y)) * constants::conversion::radToDeg;
+    sphericalPoint.x = angle + static_cast<double>(std::lround((referenceLongitude - angle) / 360.0)) * 360.0;
+    return sphericalPoint;
 }
 
 meshkernel::Cartesian3DPoint meshkernel::SphericalToCartesian3D(const Point& sphericalPoint)

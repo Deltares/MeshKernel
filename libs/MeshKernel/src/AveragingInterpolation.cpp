@@ -112,6 +112,7 @@ void AveragingInterpolation::Compute()
 
         for (UInt f = 0; f < m_mesh.GetNumFaces(); ++f)
         {
+            std::cout << "starting face: " << f << std::endl;
             polygonNodesCache.clear();
 
             for (UInt n = 0; n < m_mesh.GetNumFaceEdges(f); ++n)

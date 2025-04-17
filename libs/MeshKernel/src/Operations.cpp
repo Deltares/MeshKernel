@@ -598,7 +598,8 @@ namespace meshkernel
             Cartesian3DPoint middleCartesianPointCoordinate{constants::missing::doubleValue, constants::missing::doubleValue, constants::missing::doubleValue};
             middleCartesianPointCoordinate.x = 0.5 * (firstPointCartesianCoordinates.x + secondPointCartesianCoordinates.x);
             middleCartesianPointCoordinate.y = 0.5 * (firstPointCartesianCoordinates.y + secondPointCartesianCoordinates.y);
-            const auto result = Cartesian3DToSpherical(middleCartesianPointCoordinate);
+            const double referenceLongitude = std::max(firstPoint.x, secondPoint.x);
+            const auto result = Cartesian3DToSpherical(middleCartesianPointCoordinate, referenceLongitude);
             return result;
         }
 
@@ -733,7 +734,7 @@ namespace meshkernel
             const double vzz = globalComponents.x * elambda[2] + globalComponents.y * ephi[2];
 
             // transform to local spherical coordinates
-            const auto globalCoordinatesToLocal = Cartesian3DToSpherical(globalCoordinatesCartesianRotated);
+            const auto globalCoordinatesToLocal = Cartesian3DToSpherical(globalCoordinatesCartesianRotated, reference.x);
 
             // compute base vectors at other point in rotated 3D(xxp, yyp, zzp) frame
             std::array<double, 3> elambdap{0.0, 0.0, 0.0};
@@ -861,7 +862,7 @@ namespace meshkernel
             rotatedPoint.y = firstPointCartesian.y + alpha * vyy;
             rotatedPoint.z = firstPointCartesian.z + alpha * vzz;
 
-            thirdPoint = Cartesian3DToSpherical(rotatedPoint);
+            thirdPoint = Cartesian3DToSpherical(rotatedPoint, firstPoint.x);
         }
 
         if (OuterProductTwoSegments(firstPoint, thirdPoint, firstPoint, secondPoint, projection) * OuterProductTwoSegments(firstPoint, insidePoint, firstPoint, secondPoint, projection) > 0.0)
@@ -1089,7 +1090,8 @@ namespace meshkernel
                                      cartesianNormal3DPoint.y * cartesianNormal3DPoint.y +
                                      cartesianNormal3DPoint.z * cartesianNormal3DPoint.z);
 
-                normalPoint = Cartesian3DToSpherical(cartesianNormal3DPoint);
+                const double referenceLongitude = std::max({firstNode.x, secondNode.x, point.x});
+                normalPoint = Cartesian3DToSpherical(cartesianNormal3DPoint, referenceLongitude);
             }
         }
 
@@ -1473,7 +1475,7 @@ namespace meshkernel
                 intersectionCartesian3DPoint.x = firstSegmentFirstCartesian3DPoint.x + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.x - firstSegmentFirstCartesian3DPoint.x);
                 intersectionCartesian3DPoint.y = firstSegmentFirstCartesian3DPoint.y + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.y - firstSegmentFirstCartesian3DPoint.y);
                 intersectionCartesian3DPoint.z = firstSegmentFirstCartesian3DPoint.z + ratioFirstSegment * (firstSegmentSecondCartesian3DPoint.z - firstSegmentFirstCartesian3DPoint.z);
-                intersectionPoint = Cartesian3DToSpherical(intersectionCartesian3DPoint);
+                intersectionPoint = Cartesian3DToSpherical(intersectionCartesian3DPoint, std::max(firstSegmentFirstPoint.x, firstSegmentSecondPoint.x));
             }
         }
 
@@ -1782,7 +1784,7 @@ namespace meshkernel
             averagePoint3D.y = averagePoint3D.y / static_cast<double>(validCount);
             averagePoint3D.z = averagePoint3D.z / static_cast<double>(validCount);
 
-            return Cartesian3DToSpherical(averagePoint3D);
+            return Cartesian3DToSpherical(averagePoint3D, points[firstValidPoint].x);
         }
 
         auto result = std::accumulate(points.begin(), points.end(), Point{0.0, 0.0}, [](const Point& sum, const Point& current)

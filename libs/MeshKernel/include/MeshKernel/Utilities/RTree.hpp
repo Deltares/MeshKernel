@@ -88,9 +88,9 @@ namespace meshkernel
     template <typename projection = bg::cs::cartesian>
     class RTree : public RTreeBase
     {
-        using Point2D = bg::model::point<double, 2, projection>; ///< Typedef for Point3D
-        using Box2D = bg::model::box<Point2D>;                   ///< Typedef for box of Point3D
-        using Value2D = std::pair<Point2D, UInt>;                ///< Typedef of pair of Point3D and UInt
+        using Point2D = bg::model::point<double, 2, projection>; ///< Typedef for Point2D
+        using Box2D = bg::model::box<Point2D>;                   ///< Typedef for box of Point2D
+        using Value2D = std::pair<Point2D, UInt>;                ///< Typedef of pair of Point2D and UInt
         using RTree2D = bgi::rtree<Value2D, bgi::linear<16>>;    ///< Typedef for a 2D RTree
 
         /// @brief Ninety degrees
