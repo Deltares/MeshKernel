@@ -79,10 +79,10 @@ TEST(SphericalCoordinatesTest, LongitudeNegative180)
     meshkernel::Point point{-180.0, 0.0}; // Equator, -180 longitude
     auto [x, y, z] = ComputeSphericalCoordinatesFromLatitudeAndLongitude(point);
 
-    constexpr double tolernce = 1e-6;
-    EXPECT_NEAR(x, -meshkernel::constants::geometric::earth_radius, tolernce);
-    EXPECT_NEAR(y, 0.0, tolernce);
-    EXPECT_NEAR(z, 0.0, tolernce);
+    constexpr double tolerance = 1e-6;
+    EXPECT_NEAR(x, -meshkernel::constants::geometric::earth_radius, tolerance);
+    EXPECT_NEAR(y, 0.0, tolerance);
+    EXPECT_NEAR(z, 0.0, tolerance);
 }
 
 TEST(SphericalCoordinatesTest, LongitudePositive180)
@@ -90,10 +90,10 @@ TEST(SphericalCoordinatesTest, LongitudePositive180)
     meshkernel::Point point{180.0, 0.0}; // Equator, 180 longitude
     auto [x, y, z] = ComputeSphericalCoordinatesFromLatitudeAndLongitude(point);
 
-    constexpr double tolearance = 1e-6;
-    EXPECT_NEAR(x, -meshkernel::constants::geometric::earth_radius, tolearance);
-    EXPECT_NEAR(y, 0.0, tolearance);
-    EXPECT_NEAR(z, 0.0, tolearance);
+    constexpr double tolerance = 1e-6;
+    EXPECT_NEAR(x, -meshkernel::constants::geometric::earth_radius, tolerance);
+    EXPECT_NEAR(y, 0.0, tolerance);
+    EXPECT_NEAR(z, 0.0, tolerance);
 }
 
 TEST(SphericalCoordinatesTest, LongitudeNegative180EqualsPositive180)
