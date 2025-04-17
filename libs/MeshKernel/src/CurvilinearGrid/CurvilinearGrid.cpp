@@ -1007,7 +1007,7 @@ meshkernel::UndoActionPtr CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices co
     {
         auto const firstNewNodeCoordinates = GetNode(firstNode.m_n, firstNode.m_m) * 2.0 - GetNode(firstNode.m_n + 1, firstNode.m_m);
         auto const secondNewNodeCoordinates = GetNode(secondNode.m_n, secondNode.m_m) * 2.0 - GetNode(secondNode.m_n + 1, secondNode.m_m);
-        auto [numAddedLines, gridLineType, addGridLineUndo] = AddGridLinesAtBoundary(firstNode, secondNode, 1);
+        auto [numAddedLines, addedGridLineType, addGridLineUndo] = AddGridLinesAtBoundary(firstNode, secondNode, 1);
 
         if (numAddedLines > 0)
         {
@@ -1026,7 +1026,7 @@ meshkernel::UndoActionPtr CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices co
     {
         auto const firstNewNodeCoordinates = GetNode(firstNode.m_n, firstNode.m_m) * 2.0 - GetNode(firstNode.m_n - 1, firstNode.m_m);
         auto const secondNewNodeCoordinates = GetNode(secondNode.m_n, secondNode.m_m) * 2.0 - GetNode(secondNode.m_n - 1, secondNode.m_m);
-        auto [numAddedLines, gridLineType, addGridLineUndo] = AddGridLinesAtBoundary(firstNode, secondNode, 1);
+        auto [numAddedLines, addedGridLineType, addGridLineUndo] = AddGridLinesAtBoundary(firstNode, secondNode, 1);
 
         if (numAddedLines > 0)
         {
@@ -1041,7 +1041,7 @@ meshkernel::UndoActionPtr CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices co
     {
         auto const firstNewNodeCoordinates = GetNode(firstNode.m_n, firstNode.m_m) * 2.0 - GetNode(firstNode.m_n, firstNode.m_m + 1);
         auto const secondNewNodeCoordinates = GetNode(secondNode.m_n, secondNode.m_m) * 2.0 - GetNode(secondNode.m_n, secondNode.m_m + 1);
-        auto [numAddedLines, gridLineType, addGridLineUndo] = AddGridLinesAtBoundary(firstNode, secondNode, 1);
+        auto [numAddedLines, addedGridLineType, addGridLineUndo] = AddGridLinesAtBoundary(firstNode, secondNode, 1);
 
         if (numAddedLines > 0)
         {
@@ -1061,7 +1061,7 @@ meshkernel::UndoActionPtr CurvilinearGrid::AddEdge(CurvilinearGridNodeIndices co
     {
         auto const firstNewNodeCoordinates = GetNode(firstNode.m_n, firstNode.m_m) * 2.0 - GetNode(firstNode.m_n, firstNode.m_m - 1);
         auto const secondNewNodeCoordinates = GetNode(secondNode.m_n, secondNode.m_m) * 2.0 - GetNode(secondNode.m_n, secondNode.m_m - 1);
-        auto [numAddedLines, gridLineType, addGridLineUndo] = AddGridLinesAtBoundary(firstNode, secondNode, 1);
+        auto [numAddedLines, addedGridLineType, addGridLineUndo] = AddGridLinesAtBoundary(firstNode, secondNode, 1);
 
         if (numAddedLines > 0)
         {
