@@ -32,13 +32,13 @@
 
 std::tuple<double, double, double> meshkernel::ComputeSphericalCoordinatesFromLatitudeAndLongitude(const Point& point)
 {
-    double theta = (90.0 - point.y) * constants::conversion::degToRad;
-    double phi = point.x * constants::conversion::degToRad;
-    double r = constants::geometric::earth_radius;
+    const double theta = (90.0 - point.y) * constants::conversion::degToRad;
+    const double phi = point.x * constants::conversion::degToRad;
+    const double r = constants::geometric::earth_radius;
 
-    double x = r * std::sin(theta) * std::cos(phi);
-    double y = r * std::sin(theta) * std::sin(phi);
-    double z = r * std::cos(theta);
+    const double x = r * std::sin(theta) * std::cos(phi);
+    const double y = r * std::sin(theta) * std::sin(phi);
+    const double z = r * std::cos(theta);
     return {x, y, z};
 }
 
