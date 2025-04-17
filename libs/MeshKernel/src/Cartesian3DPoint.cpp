@@ -58,10 +58,7 @@ meshkernel::Point meshkernel::Cartesian3DToSpherical(const Cartesian3DPoint& car
 
 meshkernel::Cartesian3DPoint meshkernel::SphericalToCartesian3D(const Point& sphericalPoint)
 {
-    const auto [x, y, z] = meshkernel::ComputeSphericalCoordinatesFromLatitudeAndLongitude(sphericalPoint);
     Cartesian3DPoint result;
-    result.x = x;
-    result.y = y;
-    result.z = z;
+    std::tie(result.x, result.y, result.z) = meshkernel::ComputeSphericalCoordinatesFromLatitudeAndLongitude(sphericalPoint);
     return result;
 }
