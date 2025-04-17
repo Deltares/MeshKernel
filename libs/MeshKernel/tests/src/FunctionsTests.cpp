@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include "MeshKernel/Cartesian3DPoint.hpp"
+
 #include <chrono>
 #include <gtest/gtest.h>
 #include <random>
@@ -48,4 +50,62 @@ TEST(FunctionsTest, NormalVectorInsideTestCartesian)
     ASSERT_EQ(normal.x, 0.0);
     ASSERT_EQ(normal.y, 1.0);
     ASSERT_EQ(flippedNormal, true);
+}
+
+TEST(SphericalCoordinatesTest, NorthPole)
+{
+    meshkernel::Point north_pole{0.0, 90.0}; // lon, lat
+    auto [x, y, z] = ComputeSphericalCoordinatesFromLatitudeAndLongitude(north_pole);
+
+    constexpr double tolerance = 1e-6;
+    EXPECT_NEAR(x, 0.0, tolerance);
+    EXPECT_NEAR(y, 0.0, tolerance);
+    EXPECT_NEAR(z, meshkernel::constants::geometric::earth_radius, tolerance);
+}
+
+TEST(SphericalCoordinatesTest, SouthPole)
+{
+    meshkernel::Point south_pole{0.0, -90.0}; // lon, lat
+    auto [x, y, z] = ComputeSphericalCoordinatesFromLatitudeAndLongitude(south_pole);
+
+    constexpr double tolerance = 1e-6;
+    EXPECT_NEAR(x, 0.0, tolerance);
+    EXPECT_NEAR(y, 0.0, tolerance);
+    EXPECT_NEAR(z, -meshkernel::constants::geometric::earth_radius, tolerance);
+}
+
+TEST(SphericalCoordinatesTest, LongitudeNegative180)
+{
+    meshkernel::Point point{-180.0, 0.0}; // Equator, -180 longitude
+    auto [x, y, z] = ComputeSphericalCoordinatesFromLatitudeAndLongitude(point);
+
+    constexpr double tolernce = 1e-6;
+    EXPECT_NEAR(x, -meshkernel::constants::geometric::earth_radius, tolernce);
+    EXPECT_NEAR(y, 0.0, tolernce);
+    EXPECT_NEAR(z, 0.0, tolernce);
+}
+
+TEST(SphericalCoordinatesTest, LongitudePositive180)
+{
+    meshkernel::Point point{180.0, 0.0}; // Equator, 180 longitude
+    auto [x, y, z] = ComputeSphericalCoordinatesFromLatitudeAndLongitude(point);
+
+    constexpr double tolearance = 1e-6;
+    EXPECT_NEAR(x, -meshkernel::constants::geometric::earth_radius, tolearance);
+    EXPECT_NEAR(y, 0.0, tolearance);
+    EXPECT_NEAR(z, 0.0, tolearance);
+}
+
+TEST(SphericalCoordinatesTest, LongitudeNegative180EqualsPositive180)
+{
+    meshkernel::Point point_neg{-180.0, 0.0};
+    meshkernel::Point point_pos{180.0, 0.0};
+
+    auto [xPos, yPos, zPos] = ComputeSphericalCoordinatesFromLatitudeAndLongitude(point_neg);
+    auto [xNeg, yNeg, zNeg] = ComputeSphericalCoordinatesFromLatitudeAndLongitude(point_pos);
+
+    constexpr double tolerance = 1e-6;
+    EXPECT_NEAR(xPos, xNeg, tolerance);
+    EXPECT_NEAR(yPos, yNeg, tolerance);
+    EXPECT_NEAR(zPos, zNeg, tolerance);
 }

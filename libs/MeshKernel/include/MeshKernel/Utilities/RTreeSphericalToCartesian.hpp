@@ -29,7 +29,6 @@
 
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Exceptions.hpp>
 
 // include boost
 #define BOOST_ALLOW_DEPRECATED_HEADERS
@@ -39,7 +38,6 @@
 #undef BOOST_ALLOW_DEPRECATED_HEADERS
 
 #include "MeshKernel/BoundingBox.hpp"
-#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Utilities/RTreeBase.hpp"
 
 #include <concepts>

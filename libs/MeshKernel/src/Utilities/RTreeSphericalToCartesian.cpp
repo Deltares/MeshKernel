@@ -1,12 +1,12 @@
 #include "MeshKernel/Utilities/RTreeSphericalToCartesian.hpp"
 
+#include "MeshKernel/Cartesian3DPoint.hpp"
+
 #include <cmath>
 
 meshkernel::RTreeSphericalToCartesian::Point2D meshkernel::RTreeSphericalToCartesian::convert(const Point& node) const
 {
-    double x = constants::geometric::earth_radius * std::cos((node.y + 180.0) * constants::conversion::degToRad) * std::cos((node.x + 180.0) * constants::conversion::degToRad);
-    double y = constants::geometric::earth_radius * std::cos((node.y + 180.0) * constants::conversion::degToRad) * std::sin((node.x + 180.0) * constants::conversion::degToRad);
-    double z = constants::geometric::earth_radius * std::sin((node.y + 180.0) * constants::conversion::degToRad);
+    const auto [x, y, z] = ComputeSphericalCoordinatesFromLatitudeAndLongitude(node);
     return {x, y, z};
 }
 
