@@ -53,20 +53,7 @@ namespace meshkernel
         /// @endcode
         ///
         /// @throws std::invalid_argument if an invalid projection value is provided.
-        static std::unique_ptr<RTreeBase> Create(Projection projection)
-        {
-            switch (projection)
-            {
-                using enum Projection;
-            case cartesian:
-                return std::make_unique<RTree<bg::cs::cartesian>>();
-            case spherical:
-            case sphericalAccurate:
-                return std::make_unique<RTree<bg::cs::geographic<bg::degree>>>();
-            default:
-                throw MeshKernelError("Invalid projection '{}'", ProjectionToString(projection));
-            }
-        }
+        static std::unique_ptr<RTreeBase> Create(Projection projection);
     };
 
 } // namespace meshkernel
