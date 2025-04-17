@@ -1,3 +1,30 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh2D.hpp>
@@ -89,12 +116,8 @@ static void BM_Orthogonalization(benchmark::State& state)
         // resume the timers to begin benchmarking
         state.ResumeTiming();
 
-        auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-        auto smoother = std::make_unique<Smoother>(*mesh);
         OrthogonalizationAndSmoothing orthogonalization(
             *mesh,
-            std::move(smoother),
-            std::move(orthogonalizer),
             std::move(polygon),
             std::move(landboundaries),
             project_to_land_Boundary,

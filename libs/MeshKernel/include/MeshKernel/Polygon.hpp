@@ -135,6 +135,12 @@ namespace meshkernel
         /// @brief Get the projection used.
         Projection GetProjection() const;
 
+        /// @brief Compute the minimum and maximum segment lengths.
+        ///
+        /// If the number of points in the polygon is 1 or less, then the invalid values will be returned for both.
+        /// Returns {minimum-segment-length, maximum-segment-length}
+        std::tuple<double, double> SegmentLengthExtrema() const;
+
     private:
         /// @brief Refines the segment between two polygon nodes.
         ///
@@ -167,6 +173,12 @@ namespace meshkernel
 
         /// @brief Compute the cumulative distance, from first node, of the segments of the polygon.
         std::vector<double> ComputeCumulativeDistances(const std::vector<meshkernel::Point>& polygonNodes) const;
+
+        /// @brief Resample the polygon nodes
+        void ComputeResampledNodes(const size_t numberOfNewNodes,
+                                   const std::vector<double>& segmentLengths,
+                                   const std::vector<size_t>& nodeIndices,
+                                   std::vector<Point>& refinedPolygon) const;
 
         /// @brief Find the indices of the minimum and maximum average length ratios.
         std::tuple<meshkernel::UInt, meshkernel::UInt>

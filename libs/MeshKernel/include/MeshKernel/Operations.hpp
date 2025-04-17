@@ -88,33 +88,6 @@ namespace meshkernel
         }
     }
 
-    /// @brief Defines vector product for cartesian 3D-space
-    /// @param[in] a The first cartesian 3D point
-    /// @param[in] b The second cartesian 3D point
-    /// @return The vector product
-    [[nodiscard]] Cartesian3DPoint VectorProduct(const Cartesian3DPoint& a, const Cartesian3DPoint& b);
-
-    /// @brief Defines inner product in cartesian 3D-space
-    /// @param[in] a The first cartesian 3D point
-    /// @param[in] b The second cartesian 3D point
-    /// @return The resulting inner product
-    [[nodiscard]] double InnerProduct(const Cartesian3DPoint& a, const Cartesian3DPoint& b);
-
-    /// @brief Multiply Cartesian point p by a scalar value
-    Cartesian3DPoint operator*(const Cartesian3DPoint& p, const double value);
-
-    /// @brief Multiply Cartesian point p by a scalar value
-    Cartesian3DPoint operator*(const double value, const Cartesian3DPoint& p);
-
-    /// @brief Divide Cartesian point p by a scalar value
-    Cartesian3DPoint operator/(const Cartesian3DPoint& p, const double value);
-
-    /// @brief Add Cartesian point p2 to p1.
-    Cartesian3DPoint operator+(const Cartesian3DPoint& p1, const Cartesian3DPoint& p2);
-
-    /// @brief Subtract Cartesian point p2 from p1.
-    Cartesian3DPoint operator-(const Cartesian3DPoint& p1, const Cartesian3DPoint& p2);
-
     /// @brief Find index of a certain element
     /// @param[in] vec The vector to search in
     /// @param[in] el The element to search for
@@ -274,17 +247,6 @@ namespace meshkernel
     /// @param[in] point The current point.
     /// @returns If the point is on the pole.
     [[nodiscard]] bool IsPointOnPole(const Point& point);
-
-    /// @brief Transforms 2D point in spherical coordinates to 3D cartesian coordinates.
-    /// @param[in] sphericalPoint The current spherical point (2 coordinates).
-    /// @returns The converted cartesian 3d point.
-    [[nodiscard]] Cartesian3DPoint SphericalToCartesian3D(const Point& sphericalPoint);
-
-    /// @brief Transforms 3D cartesian coordinates to 2D point in spherical coordinates
-    /// @param[in] cartesianPoint The 3d cartesian point
-    /// @param[in] referenceLongitude The reference longitude
-    /// @returns The spherical coordinate
-    [[nodiscard]] Point Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude);
 
     /// @brief Computes the cross product between two segments (duitpl)
     /// @param[in] firstSegmentFirstPoint   The first point of the first segment
@@ -487,6 +449,30 @@ namespace meshkernel
     /// @return The resulting circumcenter
     [[nodiscard]] Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection& projection);
 
+    /// @brief Count the number of valid edges in list
+    UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, UInt numNodes);
+
+    /// @brief Compute mid point and normal of polygon segment
+    void ComputeMidPointsAndNormals(const std::vector<Point>& polygon,
+                                    const std::vector<UInt>& edgesNumFaces,
+                                    const UInt numNodes,
+                                    std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
+                                    std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
+                                    UInt& pointCount,
+                                    const Projection& projection);
+
+    /// @brief Compute circumcenter of face
+    Point ComputeCircumCenter(const Point& centerOfMass,
+                              const UInt pointCount,
+                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
+                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
+                              const Projection& projection);
+
+    /// @brief Compute the circumcenter for the face described by the polygon
+    Point ComputeFaceCircumenter(std::vector<Point>& polygon,
+                                 const std::vector<UInt>& edgesNumFaces,
+                                 const Projection& projection);
+
     /// @brief Determines if two segments are crossing (cross, cross3D)
     /// @param[in]  firstSegmentFirstPoint   The first point of the first segment
     /// @param[in]  firstSegmentSecondPoint  The second point of the first segment
@@ -648,28 +634,3 @@ namespace meshkernel
     }
 
 } // namespace meshkernel
-
-inline meshkernel::Cartesian3DPoint meshkernel::operator+(const Cartesian3DPoint& p1, const Cartesian3DPoint& p2)
-{
-    return {p1.x + p2.x, p1.y + p2.y, p1.z + p2.z};
-}
-
-inline meshkernel::Cartesian3DPoint meshkernel::operator-(const Cartesian3DPoint& p1, const Cartesian3DPoint& p2)
-{
-    return {p1.x - p2.x, p1.y - p2.y, p1.z - p2.z};
-}
-
-inline meshkernel::Cartesian3DPoint meshkernel::operator/(const Cartesian3DPoint& p, const double value)
-{
-    return {p.x / value, p.y / value, p.z / value};
-}
-
-inline meshkernel::Cartesian3DPoint meshkernel::operator*(const double value, const Cartesian3DPoint& p)
-{
-    return {value * p.x, value * p.y, value * p.z};
-}
-
-inline meshkernel::Cartesian3DPoint meshkernel::operator*(const Cartesian3DPoint& p, const double value)
-{
-    return value * p;
-}

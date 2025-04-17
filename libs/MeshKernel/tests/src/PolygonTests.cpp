@@ -1,3 +1,32 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
+#include <iomanip> // TODO remove this
+
 #include <gtest/gtest.h>
 
 #include "MeshKernel/BoundingBox.hpp"
@@ -193,7 +222,8 @@ TEST(PolygonTests, Refine_WhenStartIndexLessThanEndIndex_ThenRefinesBetweenStart
 {
     // setup
     const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
-    const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 1.66666666666667}, {5, 3.33333333333333}, {5, 5}, {3.33333333333333, 5}, {1.66666666666667, 5}, {0, 5}, {0, 0}};
+    const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 2.0}, {5, 4.0}, {4.0, 5}, {2.0, 5}, {0, 5}, {0, 0}};
+    // const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 1.66666666666667}, {5, 3.33333333333333}, {5, 5}, {3.33333333333333, 5}, {1.66666666666667, 5}, {0, 5}, {0, 0}};
 
     const mk::Polygon polygon(outer, mk::Projection::cartesian);
 
@@ -209,7 +239,8 @@ TEST(PolygonTests, Refine_WhenStartIndexLargerThanEndIndex_ThenRefinesFromStartI
 {
     // setup
     const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
-    const std::vector<mk::Point> expected{{0, 0}, {1.66666666666667, 0}, {3.33333333333333, 0}, {5, 0}, {5, 5}, {0, 5}, {0, 3.33333333333333}, {0, 1.66666666666667}, {0, 0}};
+    const std::vector<mk::Point> expected{{5.0, 0}, {5.0, 5.0}, {0, 5.0}, {0, 3.0}, {0, 1.0}, {1.0, 0.0}, {3.0, 0.0}, {5.0, 0.0}};
+    // const std::vector<mk::Point> expected{{0, 0}, {1.66666666666667, 0}, {3.33333333333333, 0}, {5, 0}, {5, 5}, {0, 5}, {0, 3.33333333333333}, {0, 1.66666666666667}, {0, 0}};
 
     const mk::Polygon polygon(outer, mk::Projection::cartesian);
 
@@ -240,7 +271,8 @@ TEST(PolygonTests, Refine_WhenLastRefinedSegmentSlightlySmallerThanTolerance_Avo
     // setup
     constexpr double d = 2.5 * (1 - .9 * meshkernel::constants::geometric::refinementTolerance);
     const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
-    const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 2.5}, {5, 5}, {2.5, 5}, {0, 5}, {0, 0}};
+    const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 2}, {5, 4}, {4, 5}, {2, 5}, {0, 5}, {0, 0}};
+    // const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 2.5}, {5, 5}, {2.5, 5}, {0, 5}, {0, 0}};
     const mk::Polygon polygon(outer, mk::Projection::cartesian);
 
     // call
@@ -273,7 +305,8 @@ TEST(PolygonTests, Refine_AcceptsRefinedSegmentsLargerThanTheRefinementTolerance
     // setup
     constexpr double d = 2.5 * (1 - 1.1 * meshkernel::constants::geometric::refinementTolerance);
     const std::vector<mk::Point> outer{{0., 0.}, {5., 0.}, {5., 5.}, {0, 5.}, {0., 0.}};
-    const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 2.5}, {5, 5}, {2.5, 5}, {0, 5}, {0, 0}};
+    const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 2}, {5, 4}, {4, 5}, {2, 5}, {0, 5}, {0, 0}};
+    // const std::vector<mk::Point> expected{{0, 0}, {5, 0}, {5, 2.5}, {5, 5}, {2.5, 5}, {0, 5}, {0, 0}};
     const mk::Polygon polygon(outer, mk::Projection::cartesian);
 
     // call
@@ -402,4 +435,175 @@ TEST(PolygonTests, LinearRefine_WithStartIndexLargerThanEndIndex_ShouldRefine)
     EXPECT_NEAR(refinedPolygon[13].y, 2870.2399407725420, tolerance);
     EXPECT_NEAR(refinedPolygon[14].y, 2885.7028590012160, tolerance);
     EXPECT_NEAR(refinedPolygon[15].y, 2398.6833000000001, tolerance);
+}
+
+TEST(PolygonTests, ResampleSmallerThenResampleLarger)
+{
+
+    const double tolerance = 1.0e-8;
+
+    // setup
+    const std::vector<mk::Point> outer{
+        {0.0, 0.0},
+        {10.0, 0.0},
+        {10.0, 10.0},
+        {0.0, 10.0},
+        {0.0, 0.0}};
+
+    std::cout.precision(12);
+    const mk::Polygon polygon(outer, mk::Projection::cartesian);
+
+    // execute
+    std::vector<mk::Point> refinedPolygon = polygon.Refine(0, 4, 2.5);
+    const std::vector<mk::Point> expectedFirstRefinement{{0.0, 0.0},
+                                                         {2.5, 0.0},
+                                                         {5.0, 0.0},
+                                                         {7.5, 0.0},
+                                                         {10.0, 0.0},
+                                                         {10.0, 2.5},
+                                                         {10.0, 5.0},
+                                                         {10.0, 7.5},
+                                                         {10.0, 10.0},
+                                                         {7.5, 10.0},
+                                                         {5.0, 10.0},
+                                                         {2.5, 10.0},
+                                                         {0.0, 10.0},
+                                                         {0.0, 7.5},
+                                                         {0.0, 5.0},
+                                                         {0.0, 2.5},
+                                                         {0.0, 0.0}};
+
+    ASSERT_EQ(expectedFirstRefinement.size(), refinedPolygon.size());
+
+    for (size_t i = 0; i < refinedPolygon.size(); ++i)
+    {
+        EXPECT_NEAR(expectedFirstRefinement[i].x, refinedPolygon[i].x, tolerance);
+        EXPECT_NEAR(expectedFirstRefinement[i].y, refinedPolygon[i].y, tolerance);
+    }
+
+    const mk::Polygon polygon2(refinedPolygon, mk::Projection::cartesian);
+
+    // Resample polygon, with start index larger than end index and resample distance larger than first resampling.
+    std::vector<mk::Point> refinedPolygon2 = polygon2.Refine(12, 4, 7.0);
+
+    const std::vector<mk::Point> expectedSecondRefinement{{10.0, 0.0},
+                                                          {10.0, 2.5},
+                                                          {10.0, 5.0},
+                                                          {10.0, 7.5},
+                                                          {10.0, 10.0},
+                                                          {7.5, 10.0},
+                                                          {5.0, 10.0},
+                                                          {2.5, 10.0},
+                                                          {0.0, 10.0},
+                                                          {0.0, 3.33333333333},
+                                                          {3.33333333333, 0.0},
+                                                          {10.0, 0.0}};
+
+    ASSERT_EQ(expectedSecondRefinement.size(), refinedPolygon2.size());
+
+    for (size_t i = 0; i < refinedPolygon2.size(); ++i)
+    {
+        EXPECT_NEAR(expectedSecondRefinement[i].x, refinedPolygon2[i].x, tolerance);
+        EXPECT_NEAR(expectedSecondRefinement[i].y, refinedPolygon2[i].y, tolerance);
+    }
+}
+
+TEST(PolygonTests, LinearRefine_WithVaryingSegmentSize_WithStartIndexLargerThanEndIndex_ShouldRefine)
+{
+
+    std::vector<meshkernel::Point> outer{{-27.9394258397185, 1665.31356424612},
+                                         {76.9523523071914, 1668.31047219317},
+                                         {178.847222507047, 1668.31047219317},
+                                         {259.763737077521, 1668.31047219317},
+                                         {388.630778800867, 1668.31047219317},
+                                         {505.510188735996, 1665.31356424612},
+                                         {580.43288741236, 1662.31665629906},
+                                         {769.238088076798, 1653.3259324579},
+                                         {850.154602647272, 1656.32284040495},
+                                         {967.0340125824, 1656.32284040495},
+                                         {1110.88559404102, 1656.32284040495},
+                                         {1281.70934702313, 1653.3259324579},
+                                         {1365.62276954066, 1653.3259324579},
+                                         {1449.53619205819, 1656.32284040495},
+                                         {1614.36612914619, 1653.3259324579},
+                                         {1734.24244702837, 1653.3259324579},
+                                         {1890.08166027521, 1653.3259324579},
+                                         {2048.9177814691, 1650.32902451084},
+                                         {2078.88686093965, 556.457623835923},
+                                         {-66.899229151428, 589.423611253523},
+                                         {-27.9394258397185, 1665.31356424612}};
+
+    std::vector<meshkernel::Point> expected{{259.763737077521, 1668.31047219317},
+                                            {388.630778800867, 1668.31047219317},
+                                            {505.510188735996, 1665.31356424612},
+                                            {580.43288741236, 1662.31665629906},
+                                            {769.238088076798, 1653.3259324579},
+                                            {850.154602647272, 1656.32284040495},
+                                            {967.0340125824, 1656.32284040495},
+                                            {1110.88559404102, 1656.32284040495},
+                                            {1281.70934702313, 1653.3259324579},
+                                            {1365.62276954066, 1653.3259324579},
+                                            {1449.53619205819, 1656.32284040495},
+                                            {1614.36612914619, 1653.3259324579},
+                                            {1734.24244702837, 1653.3259324579},
+                                            {1889.0205150208, 1653.3259324579},
+                                            {2041.43040301866, 1650.47029580236},
+                                            {2052.82432345575, 1507.74024199828},
+                                            {2056.87376421424, 1359.93565431344},
+                                            {2060.86195131697, 1214.3668250635},
+                                            {2064.78981131421, 1070.99993516439},
+                                            {2068.65825674078, 929.801677094647},
+                                            {2072.4681863281, 790.739247157293},
+                                            {2076.220485213, 653.78033785879},
+                                            {2041.31270598354, 557.034880406478},
+                                            {1908.43169489973, 559.076348453855},
+                                            {1777.56070154287, 561.086936340622},
+                                            {1648.66932148398, 563.067111173929},
+                                            {1521.72761020512, 565.017332995252},
+                                            {1396.70607614254, 566.938054887275},
+                                            {1273.57567383509, 568.829723079149},
+                                            {1152.30779717631, 570.692777050164},
+                                            {1032.8742727685, 572.527649631848},
+                                            {915.247353377413, 574.334767108527},
+                                            {799.399711485897, 576.114549316357},
+                                            {685.304432945077, 577.867409740867},
+                                            {572.935010721554, 579.593755613016},
+                                            {462.265338739193, 581.293988003807},
+                                            {353.269705814071, 582.968501917461},
+                                            {245.922789681153, 584.61768638319},
+                                            {140.199651111336, 586.241924545576},
+                                            {36.0757281174708, 587.841593753582},
+                                            {-66.4731697519648, 589.417065648224},
+                                            {-63.2593151982587, 689.941235037199},
+                                            {-59.6592734167226, 789.357773465774},
+                                            {-56.1136874806049, 887.270492778563},
+                                            {-52.6217336663824, 983.702140417477},
+                                            {-49.1826007105429, 1078.67511973643},
+                                            {-45.7954896211099, 1172.21149520616},
+                                            {-42.4596134920174, 1264.33299754033},
+                                            {-39.1741973202934, 1355.06102874409},
+                                            {-35.9384778260081, 1444.41666708628},
+                                            {-32.7517032749458, 1532.42067199638},
+                                            {-29.6131333039599, 1619.09348888745},
+                                            {11.2119415203001, 1666.43217474212},
+                                            {95.310761132729, 1668.31047219317},
+                                            {178.163885853533, 1668.31047219317},
+                                            {259.763737077521, 1668.31047219317}};
+
+    const mk::Polygon polygon(outer, mk::Projection::cartesian);
+
+    // execute
+    std::vector<mk::Point> refinedPolygon = polygon.LinearRefine(15, 3);
+
+    std::cout.precision(15);
+
+    ASSERT_EQ(refinedPolygon.size(), expected.size());
+
+    const double tolerance = 1.0e-10;
+
+    for (size_t i = 0; i < refinedPolygon.size(); ++i)
+    {
+        EXPECT_NEAR(expected[i].x, refinedPolygon[i].x, tolerance);
+        EXPECT_NEAR(expected[i].y, refinedPolygon[i].y, tolerance);
+    }
 }

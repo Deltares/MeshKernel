@@ -69,28 +69,28 @@
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Mesh2DGenerateGlobal.hpp>
 #include <MeshKernel/MeshConversion.hpp>
+#include <MeshKernel/MeshEdgeLength.hpp>
+#include <MeshKernel/MeshOrthogonality.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
+#include <MeshKernel/MeshSmoothness.hpp>
 #include <MeshKernel/MeshTransformation.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
-#include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/ProjectionConversions.hpp>
 #include <MeshKernel/RangeCheck.hpp>
 #include <MeshKernel/RemoveDisconnectedRegions.hpp>
-#include <MeshKernel/Smoother.hpp>
 #include <MeshKernel/SplineAlgorithms.hpp>
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernel/SplitRowColumnOfMesh.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
-#include <MeshKernel/UndoActions/NoActionUndo.hpp>
 #include <MeshKernel/UndoActions/UndoAction.hpp>
 #include <MeshKernel/UndoActions/UndoActionStack.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
-#include "MeshKernelApi/ApiCache/BoundariesAsPolygonCache.hpp"
 #include "MeshKernelApi/ApiCache/CachedPointValues.hpp"
+#include "MeshKernelApi/ApiCache/CurvilinearBoundariesAsPolygonCache.hpp"
 #include "MeshKernelApi/ApiCache/FacePolygonPropertyCache.hpp"
 #include "MeshKernelApi/ApiCache/HangingEdgeCache.hpp"
 #include "MeshKernelApi/ApiCache/NodeInPolygonCache.hpp"
@@ -99,11 +99,14 @@
 #include "MeshKernelApi/ApiCache/SmallFlowEdgeCentreCache.hpp"
 #include "MeshKernelApi/MKStateUndoAction.hpp"
 #include "MeshKernelApi/MeshKernel.hpp"
+
+#include "MeshKernelApi/CurvilinearFrozenLinesAddUndoAction.hpp"
+#include "MeshKernelApi/CurvilinearFrozenLinesDeleteUndoAction.hpp"
 #include "MeshKernelApi/PropertyCalculator.hpp"
 #include "MeshKernelApi/State.hpp"
 #include "MeshKernelApi/Utils.hpp"
 
-#include <Version/Version.hpp>
+#include "Version/Version.hpp"
 
 #include <cstring>
 #include <span>
@@ -112,8 +115,12 @@
 
 namespace meshkernelapi
 {
+    std::map<int, std::unique_ptr<PropertyCalculator>> allocateDefaultPropertyCalculators();
+
     // The state held by MeshKernel
     static std::unordered_map<int, MeshKernelState> meshKernelState;
+    /// @brief Map of property calculators, from an property identifier to the calculator.
+    static std::map<int, std::unique_ptr<PropertyCalculator>> propertyCalculators = allocateDefaultPropertyCalculators();
     static int meshKernelStateCounter = 0;
 
     // Error state
@@ -235,8 +242,9 @@ namespace meshkernelapi
 
             mkState.m_meshOrthogonalization.reset();
             mkState.m_curvilinearGridFromSplines.reset();
-            mkState.m_curvilinearGridOrthogonalization.reset();
             mkState.m_curvilinearGridLineShift.reset();
+            mkState.m_frozenLines.clear();
+            mkState.m_frozenLinesCounter = 0;
 
             meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
         }
@@ -476,11 +484,11 @@ namespace meshkernelapi
 
                 const auto face_nodes = meshkernel::ConvertToFaceNodesVector(mesh2d.num_faces, mesh2d.face_nodes, mesh2d.nodes_per_face);
 
-                std::vector<meshkernel::UInt> num_face_nodes;
+                std::vector<std::uint8_t> num_face_nodes;
                 num_face_nodes.reserve(mesh2d.num_faces);
                 for (auto n = 0; n < mesh2d.num_faces; n++)
                 {
-                    num_face_nodes.emplace_back(static_cast<meshkernel::UInt>(mesh2d.nodes_per_face[n]));
+                    num_face_nodes.emplace_back(static_cast<std::uint8_t>(mesh2d.nodes_per_face[n]));
                 }
 
                 // Do not change the pointer, just the object it is pointing to
@@ -680,11 +688,12 @@ namespace meshkernelapi
             {
                 const auto face_nodes = meshkernel::ConvertToFaceNodesVector(mesh2d.num_faces, mesh2d.face_nodes, mesh2d.nodes_per_face);
 
-                std::vector<meshkernel::UInt> num_face_nodes;
+                std::vector<std::uint8_t> num_face_nodes;
                 num_face_nodes.reserve(mesh2d.num_faces);
+
                 for (auto n = 0; n < mesh2d.num_faces; n++)
                 {
-                    num_face_nodes.emplace_back(static_cast<meshkernel::UInt>(mesh2d.nodes_per_face[n]));
+                    num_face_nodes.emplace_back(static_cast<std::uint8_t>(mesh2d.nodes_per_face[n]));
                 }
 
                 undoAction = meshKernelState[meshKernelId].m_mesh2d->Join(meshkernel::Mesh2D(edges2d, nodes2d, face_nodes, num_face_nodes,
@@ -1128,7 +1137,7 @@ namespace meshkernelapi
             const auto boundaryPolygon = meshKernelState[meshKernelId].m_curvilinearGrid->ComputeBoundaryPolygons({minN, minM},
                                                                                                                   {maxN, maxM});
             numberOfPolygonNodes = static_cast<int>(boundaryPolygon.size());
-            meshKernelState[meshKernelId].m_boundariesAsPolygonCache = std::make_shared<BoundariesAsPolygonCache>(lowerLeftN, lowerLeftM, upperRightN, upperRightM, boundaryPolygon);
+            meshKernelState[meshKernelId].m_boundariesAsPolygonCache = std::make_shared<CurvilinearBoundariesAsPolygonCache>(lowerLeftN, lowerLeftM, upperRightN, upperRightM, boundaryPolygon);
         }
         catch (...)
         {
@@ -1269,7 +1278,7 @@ namespace meshkernelapi
             meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(*meshKernelState[meshKernelId].m_mesh2d);
 
             meshKernelState[meshKernelId].m_curvilinearGrid = mesh2DToCurvilinear.Compute({xPointCoordinate, yPointCoordinate});
-            meshKernelState[meshKernelId].m_mesh2d = std::make_unique<meshkernel::Mesh2D>(meshKernelState[meshKernelId].m_projection);
+
             meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
         }
         catch (...)
@@ -1376,14 +1385,10 @@ namespace meshkernelapi
             auto const landBoundariesPoints = ConvertGeometryListToPointVector(landBoundaries);
 
             // Construct all dependencies
-            auto smoother = std::make_unique<meshkernel::Smoother>(*meshKernelState[meshKernelId].m_mesh2d);
-            auto orthogonalizer = std::make_unique<meshkernel::Orthogonalizer>(*meshKernelState[meshKernelId].m_mesh2d);
             auto polygon = std::make_unique<meshkernel::Polygons>(polygonNodes, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             auto landBoundary = std::make_unique<meshkernel::LandBoundaries>(landBoundariesPoints, *meshKernelState[meshKernelId].m_mesh2d, *polygon);
 
             meshkernel::OrthogonalizationAndSmoothing ortogonalization(*meshKernelState[meshKernelId].m_mesh2d,
-                                                                       std::move(smoother),
-                                                                       std::move(orthogonalizer),
                                                                        std::move(polygon),
                                                                        std::move(landBoundary),
                                                                        static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
@@ -1424,14 +1429,10 @@ namespace meshkernelapi
             auto const landBoundariesNodeVector = ConvertGeometryListToPointVector(landBoundaries);
 
             // Construct all dependencies
-            auto smoother = std::make_unique<meshkernel::Smoother>(*meshKernelState[meshKernelId].m_mesh2d);
-            auto orthogonalizer = std::make_unique<meshkernel::Orthogonalizer>(*meshKernelState[meshKernelId].m_mesh2d);
             auto polygon = std::make_unique<meshkernel::Polygons>(polygonNodesVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             auto landBoundary = std::make_unique<meshkernel::LandBoundaries>(landBoundariesNodeVector, *meshKernelState[meshKernelId].m_mesh2d, *polygon);
 
             meshKernelState[meshKernelId].m_meshOrthogonalization = std::make_unique<meshkernel::OrthogonalizationAndSmoothing>(*meshKernelState[meshKernelId].m_mesh2d,
-                                                                                                                                std::move(smoother),
-                                                                                                                                std::move(orthogonalizer),
                                                                                                                                 std::move(polygon),
                                                                                                                                 std::move(landBoundary),
                                                                                                                                 static_cast<meshkernel::LandBoundaries::ProjectToLandBoundaryOption>(projectToLandBoundaryOption),
@@ -1590,17 +1591,13 @@ namespace meshkernelapi
                 return lastExitCode;
             }
 
-            const auto result = meshKernelState[meshKernelId].m_mesh2d->GetOrthogonality();
-
-            if (static_cast<size_t>(geometryList.num_coordinates) != result.size())
+            if (static_cast<size_t>(geometryList.num_coordinates) != meshKernelState[meshKernelId].m_mesh2d->GetNumEdges())
             {
                 throw meshkernel::MeshKernelError("The value array has not the same size of the result array storing the orthogonality values at the edges");
             }
 
-            for (auto i = 0; i < geometryList.num_coordinates; ++i)
-            {
-                geometryList.values[i] = result[i];
-            }
+            std::span<double> orthogonality(geometryList.values, geometryList.num_coordinates);
+            meshkernel::MeshOrthogonality::Compute(*meshKernelState[meshKernelId].m_mesh2d, orthogonality);
         }
         catch (...)
         {
@@ -1715,6 +1712,7 @@ namespace meshkernelapi
                 return lastExitCode;
             }
 
+            // TODO try to use span here to save copying, probably the same for other properties
             const auto result = meshKernelState[meshKernelId].m_mesh2d->GetSmoothness();
 
             std::ranges::copy(result, geometryList.values);
@@ -1957,7 +1955,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& boundaryPolygons)
+    MKERNEL_API int mkernel_mesh2d_get_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& selectionPolygon, GeometryList& boundaryPolygons)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -1967,10 +1965,23 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const std::vector<meshkernel::Point> polygonNodes;
-            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->ComputeBoundaryPolygons(polygonNodes);
+            if (meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Polygon data has not been cached, mkernel_mesh2d_count_mesh_boundaries_as_polygons must be called before");
+            }
 
-            ConvertPointVectorToGeometryList(meshBoundaryPolygon, boundaryPolygons);
+            auto const selectionPolygonPoints = ConvertGeometryListToPointVector(selectionPolygon);
+
+            if (!meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache->ValidOptions(selectionPolygonPoints))
+            {
+                meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache.reset();
+                throw meshkernel::ConstraintError("Given boundary polygon is not compatible with the cached values. Cached values will be deleted.");
+            }
+
+            meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache->Copy(boundaryPolygons);
+
+            // Clear the cache now that the values have been retrieved
+            meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache.reset();
         }
         catch (...)
         {
@@ -1979,7 +1990,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, int& numberOfPolygonNodes)
+    MKERNEL_API int mkernel_mesh2d_count_mesh_boundaries_as_polygons(int meshKernelId, GeometryList& selectionPolygon, int& numberOfPolygonNodes)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -1989,8 +2000,11 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            const std::vector<meshkernel::Point> polygonNodes;
-            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->ComputeBoundaryPolygons(polygonNodes);
+            auto const selectionPolygonPoints = ConvertGeometryListToPointVector(selectionPolygon);
+            const auto meshBoundaryPolygon = meshKernelState[meshKernelId].m_mesh2d->ComputeBoundaryPolygons(selectionPolygonPoints);
+
+            meshKernelState[meshKernelId].m_meshBoundariesAsPolygonCache = std::make_shared<MeshBoundariesAsPolygonCache>(selectionPolygonPoints,
+                                                                                                                          meshBoundaryPolygon);
             numberOfPolygonNodes = static_cast<int>(meshBoundaryPolygon.size()); // last value is a separator
         }
         catch (...)
@@ -2096,7 +2110,6 @@ namespace meshkernelapi
             }
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_projection);
-            auto const refinementResult = polygon.RefineFirstPolygon(firstNodeIndex, secondNodeIndex, targetEdgeLength);
 
             // Retrieve cached values
             meshKernelState[meshKernelId].m_polygonRefinementCache->Copy(refinedPolygon);
@@ -2233,9 +2246,9 @@ namespace meshkernelapi
             auto const polygonVector = ConvertGeometryListToPointVector(geometryListIn);
 
             const meshkernel::Polygons polygon(polygonVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            meshKernelState[meshKernelId].m_mesh2d->ComputeEdgesLengths();
+            std::vector<double> edgeLengths(meshkernel::algo::ComputeMeshEdgeLength(*meshKernelState[meshKernelId].m_mesh2d));
 
-            const auto minEdgeLength = meshKernelState[meshKernelId].m_mesh2d->ComputeMinEdgeLength(polygon);
+            const auto minEdgeLength = meshkernel::algo::MinEdgeLength(*meshKernelState[meshKernelId].m_mesh2d, polygon, edgeLengths);
             const auto searchRadius = std::max(1e-6, minEdgeLength * 0.1);
             meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->MergeNodesInPolygon(polygon, searchRadius), meshKernelId);
         }
@@ -2410,10 +2423,13 @@ namespace meshkernelapi
             meshkernel::Point const secondNodeCoordinates{secondNodeX, secondNodeY};
 
             const auto newEdgeLength = ComputeDistance(firstNodeCoordinates, secondNodeCoordinates, meshKernelState[meshKernelId].m_projection);
-            const auto& edgeLengths = meshKernelState[meshKernelId].m_mesh2d->m_edgeLengths;
-            constexpr auto lengthFraction = 0.01;
 
-            const auto minMeshEdgeLength = edgeLengths.empty() ? newEdgeLength : *std::ranges::min_element(edgeLengths);
+            std::vector<double> edgeLengths(meshkernel::algo::ComputeMeshEdgeLength(*meshKernelState[meshKernelId].m_mesh2d));
+
+            const auto minValueOpt = MinValidElement(edgeLengths);
+            const auto minMeshEdgeLength = minValueOpt.has_value() ? minValueOpt.value() : newEdgeLength;
+
+            constexpr double lengthFraction = 0.01;
             const auto searchRadius = std::min(newEdgeLength * lengthFraction, minMeshEdgeLength * lengthFraction);
 
             if (searchRadius <= 0.0)
@@ -2699,6 +2715,7 @@ namespace meshkernelapi
                                                                                                 maxValue);
 
             // Now compute the size of the arrays required
+            int num_masked_faces = 0;
             for (meshkernel::UInt f = 0; f < filterMask.size(); ++f)
             {
                 if (!filterMask[f])
@@ -2708,16 +2725,14 @@ namespace meshkernelapi
 
                 const auto faceNumEdges = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->m_facesNodes[f].size());
                 geometryListDimension += faceNumEdges + 2;
+                num_masked_faces++;
             }
 
-            if (geometryListDimension > 0)
-            {
-                geometryListDimension -= 1;
-                meshKernelState[meshKernelId].m_facePropertyCache = std::make_shared<FacePolygonPropertyCache>(propertyValue, minValue, maxValue,
-                                                                                                               *meshKernelState[meshKernelId].m_mesh2d,
-                                                                                                               geometryListDimension,
-                                                                                                               filterMask);
-            }
+            geometryListDimension = num_masked_faces > 0 ? geometryListDimension - 1 : 0;
+            meshKernelState[meshKernelId].m_facePropertyCache = std::make_shared<FacePolygonPropertyCache>(propertyValue, minValue, maxValue,
+                                                                                                           *meshKernelState[meshKernelId].m_mesh2d,
+                                                                                                           geometryListDimension,
+                                                                                                           filterMask);
         }
         catch (...)
         {
@@ -3974,7 +3989,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d, double searchFraction)
+    MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d, double searchFraction, bool connect)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -3998,8 +4013,13 @@ namespace meshkernelapi
                                                                 meshKernelState[meshKernelId].m_projection);
             // Keep existing mesh to restore with undo
             auto undoAction = meshkernel::FullUnstructuredGridUndo::Create(*meshKernelState[meshKernelId].m_mesh2d);
-            // The undo information collected from the ConnectMeshes::Compute is not needed here.
-            [[maybe_unused]] auto undo = meshkernel::ConnectMeshes::Compute(*mergedMeshes, searchFraction);
+
+            if (connect)
+            {
+                // The undo information collected from the ConnectMeshes::Compute is not needed here.
+                [[maybe_unused]] auto undo = meshkernel::ConnectMeshes::Compute(*mergedMeshes, searchFraction);
+            }
+
             meshKernelState[meshKernelId].m_mesh2d->SetNodes(mergedMeshes->Nodes());
             meshKernelState[meshKernelId].m_mesh2d->SetEdges(mergedMeshes->Edges());
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
@@ -4062,13 +4082,24 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
+
             meshkernel::Point const firstPoint{xLowerLeftCorner, yLowerLeftCorner};
             meshkernel::Point const secondPoint{xUpperRightCorner, yUpperRightCorner};
 
-            // Execute
-            meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid, refinement);
-            curvilinearGridRefinement.SetBlock(firstPoint, secondPoint);
-            meshKernelUndoStack.Add(curvilinearGridRefinement.Compute(), meshKernelId);
+            if (refinement > 1)
+            {
+                // Refinement
+                meshkernel::CurvilinearGridRefinement curvilinearGridRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid, refinement);
+                curvilinearGridRefinement.SetBlock(firstPoint, secondPoint);
+                meshKernelUndoStack.Add(curvilinearGridRefinement.Compute(), meshKernelId);
+            }
+            else if (refinement < -1)
+            {
+                // De-refinement
+                meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid, -refinement);
+                curvilinearGridDeRefinement.SetBlock(firstPoint, secondPoint);
+                meshKernelUndoStack.Add(curvilinearGridDeRefinement.Compute(), meshKernelId);
+            }
         }
         catch (...)
         {
@@ -4095,16 +4126,8 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id is valid, but the expected curvilinear grid is not a valid grid");
             }
 
-            if (mRefinement <= 0 || nRefinement <= 0)
-            {
-                throw meshkernel::MeshKernelError("Invalid mesh refinement factors: m-refinement {}, n-refinement {} ",
-                                                  mRefinement, nRefinement);
-            }
-
             meshkernel::CurvilinearGridFullRefinement gridRefinement;
-            meshKernelUndoStack.Add(gridRefinement.Compute(*meshKernelState[meshKernelId].m_curvilinearGrid,
-                                                           static_cast<meshkernel::UInt>(mRefinement),
-                                                           static_cast<meshkernel::UInt>(nRefinement)),
+            meshKernelUndoStack.Add(gridRefinement.Compute(*meshKernelState[meshKernelId].m_curvilinearGrid, mRefinement, nRefinement),
                                     meshKernelId);
         }
         catch (...)
@@ -4112,36 +4135,6 @@ namespace meshkernelapi
             lastExitCode = HandleException();
         }
 
-        return lastExitCode;
-    }
-
-    MKERNEL_API int mkernel_curvilinear_derefine(int meshKernelId,
-                                                 double xLowerLeftCorner,
-                                                 double yLowerLeftCorner,
-                                                 double xUpperRightCorner,
-                                                 double yUpperRightCorner)
-    {
-        lastExitCode = meshkernel::ExitCode::Success;
-        try
-        {
-            if (!meshKernelState.contains(meshKernelId))
-            {
-                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
-            }
-
-            meshkernel::Point const firstPoint{xLowerLeftCorner, yLowerLeftCorner};
-            meshkernel::Point const secondPoint{xUpperRightCorner, yUpperRightCorner};
-
-            // Execute
-            meshkernel::CurvilinearGridDeRefinement curvilinearGridDeRefinement(*meshKernelState[meshKernelId].m_curvilinearGrid);
-
-            curvilinearGridDeRefinement.SetBlock(firstPoint, secondPoint);
-            meshKernelUndoStack.Add(curvilinearGridDeRefinement.Compute(), meshKernelId);
-        }
-        catch (...)
-        {
-            lastExitCode = HandleException();
-        }
         return lastExitCode;
     }
 
@@ -4588,8 +4581,12 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_initialize_orthogonalize(int meshKernelId,
-                                                                 const meshkernel::OrthogonalizationParameters& orthogonalizationParameters)
+    MKERNEL_API int mkernel_curvilinear_orthogonalize(int meshKernelId,
+                                                      const meshkernel::OrthogonalizationParameters& orthogonalizationParameters,
+                                                      double xLowerLeftCorner,
+                                                      double yLowerLeftCorner,
+                                                      double xUpperRightCorner,
+                                                      double yUpperRightCorner)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -4599,40 +4596,21 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization = std::make_unique<meshkernel::CurvilinearGridOrthogonalization>(*meshKernelState[meshKernelId].m_curvilinearGrid,
-                                                                                                                                              orthogonalizationParameters);
-        }
-        catch (...)
-        {
-            lastExitCode = HandleException();
-        }
-        return lastExitCode;
-    }
-
-    MKERNEL_API int mkernel_curvilinear_set_block_orthogonalize(int meshKernelId,
-                                                                double xLowerLeftCorner,
-                                                                double yLowerLeftCorner,
-                                                                double xUpperRightCorner,
-                                                                double yUpperRightCorner)
-    {
-        lastExitCode = meshkernel::ExitCode::Success;
-        try
-        {
-            if (!meshKernelState.contains(meshKernelId))
-            {
-                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
-            }
-
-            if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
-            {
-                throw meshkernel::MeshKernelError("CurvilinearGridOrthogonalization not instantiated.");
-            }
-
+            auto curvilinearOrthogonalization = meshkernel::CurvilinearGridOrthogonalization(*meshKernelState[meshKernelId].m_curvilinearGrid, orthogonalizationParameters);
             meshkernel::Point firstPoint{xLowerLeftCorner, yLowerLeftCorner};
             meshkernel::Point secondPoint{xUpperRightCorner, yUpperRightCorner};
 
-            // Execute
-            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->SetBlock(firstPoint, secondPoint);
+            // Set frozen lines
+            for (const auto& [firstFrozenLineCoordinate, secondFrozenLineCoordinate] : meshKernelState[meshKernelId].m_frozenLines | std::views::values)
+            {
+                curvilinearOrthogonalization.SetLine(firstFrozenLineCoordinate, secondFrozenLineCoordinate);
+            }
+
+            // Set the block to orthogonalize
+            curvilinearOrthogonalization.SetBlock(firstPoint, secondPoint);
+
+            // Compute
+            meshKernelUndoStack.Add(curvilinearOrthogonalization.Compute(), meshKernelId);
         }
         catch (...)
         {
@@ -4641,11 +4619,34 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_set_frozen_lines_orthogonalize(int meshKernelId,
-                                                                       double xFirstGridLineNode,
-                                                                       double yFirstGridLineNode,
-                                                                       double xSecondGridLineNode,
-                                                                       double ySecondGridLineNode)
+    MKERNEL_API int mkernel_curvilinear_frozen_line_is_valid(int meshKernelId, int frozenLineId, bool& isValid)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_frozenLines.contains(frozenLineId))
+            {
+                isValid = true;
+            }
+            else
+            {
+                isValid = false;
+            }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_frozen_line_delete(int meshKernelId,
+                                                           int frozenLineId)
 
     {
         lastExitCode = meshkernel::ExitCode::Success;
@@ -4656,16 +4657,55 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
-            if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
+            if (!meshKernelState[meshKernelId].m_frozenLines.contains(frozenLineId))
             {
-                throw meshkernel::MeshKernelError("CurvilinearGridOrthogonalization not instantiated.");
+                throw meshkernel::MeshKernelError("The frozen line id is not contained.");
+            }
+
+            const auto frozenLinePoints = meshKernelState[meshKernelId].m_frozenLines[frozenLineId];
+
+            meshKernelState[meshKernelId].m_frozenLines.erase(frozenLineId);
+
+            meshKernelUndoStack.Add(std::make_unique<CurvilinearFrozenLinesDeleteUndoAction>(meshKernelState[meshKernelId],
+                                                                                             frozenLineId,
+                                                                                             frozenLinePoints),
+                                    meshKernelId);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_curvilinear_frozen_line_add(int meshKernelId,
+                                                        double xFirstGridLineNode,
+                                                        double yFirstGridLineNode,
+                                                        double xSecondGridLineNode,
+                                                        double ySecondGridLineNode,
+                                                        int& frozenLineId)
+
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
             meshkernel::Point const firstPoint{xFirstGridLineNode, yFirstGridLineNode};
             meshkernel::Point const secondPoint{xSecondGridLineNode, ySecondGridLineNode};
 
-            // Execute
-            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->SetLine(firstPoint, secondPoint);
+            const auto frozenLinePoints = std::make_pair(firstPoint, secondPoint);
+            frozenLineId = meshKernelState[meshKernelId].m_frozenLinesCounter;
+            meshKernelState[meshKernelId].m_frozenLines[frozenLineId] = frozenLinePoints;
+            meshKernelState[meshKernelId].m_frozenLinesCounter++;
+
+            meshKernelUndoStack.Add(std::make_unique<CurvilinearFrozenLinesAddUndoAction>(meshKernelState[meshKernelId],
+                                                                                          frozenLineId,
+                                                                                          frozenLinePoints),
+                                    meshKernelId);
         }
         catch (...)
         {
@@ -4674,7 +4714,12 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_orthogonalize(int meshKernelId)
+    MKERNEL_API int mkernel_curvilinear_frozen_line_get(int meshKernelId,
+                                                        int frozenLineId,
+                                                        double& xFirstFrozenLineCoordinate,
+                                                        double& yFirstFrozenLineCoordinate,
+                                                        double& xSecondFrozenLineCoordinate,
+                                                        double& ySecondFrozenLineCoordinate)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -4684,13 +4729,16 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
-            if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
+            if (!meshKernelState[meshKernelId].m_frozenLines.contains(frozenLineId))
             {
-                throw meshkernel::MeshKernelError("CurvilinearGridOrthogonalization not instantiated.");
+                throw meshkernel::MeshKernelError("The frozen line id is not contained.");
             }
+            const auto [firstCoordinate, secondCoordinate] = meshKernelState[meshKernelId].m_frozenLines[frozenLineId];
 
-            // Execute
-            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization->Compute(), meshKernelId);
+            xFirstFrozenLineCoordinate = firstCoordinate.x;
+            yFirstFrozenLineCoordinate = firstCoordinate.y;
+            xSecondFrozenLineCoordinate = secondCoordinate.x;
+            ySecondFrozenLineCoordinate = secondCoordinate.y;
         }
         catch (...)
         {
@@ -4699,7 +4747,8 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_curvilinear_finalize_orthogonalize(int meshKernelId)
+    MKERNEL_API int mkernel_curvilinear_frozen_lines_get_count(int meshKernelId,
+                                                               int& numFrozenLines)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -4709,12 +4758,32 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
-            if (meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization == nullptr)
+            numFrozenLines = static_cast<int>(meshKernelState[meshKernelId].m_frozenLines.size());
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+    MKERNEL_API int mkernel_curvilinear_frozen_lines_get_ids(int meshKernelId,
+                                                             int* frozenLinesIds)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
             {
-                throw meshkernel::MeshKernelError("CurvilinearGridOrthogonalization not instantiated.");
+                throw meshkernel::MeshKernelError("The selected mesh kernel state does not exist.");
             }
 
-            meshKernelState[meshKernelId].m_curvilinearGridOrthogonalization.reset();
+            std::vector<int> stateFrozenLinesIds;
+            for (const auto& frozenLineId : meshKernelState[meshKernelId].m_frozenLines | std::views::keys)
+            {
+                stateFrozenLinesIds.push_back(frozenLineId);
+            }
+
+            std::memcpy(frozenLinesIds, stateFrozenLinesIds.data(), stateFrozenLinesIds.size() * sizeof(int));
         }
         catch (...)
         {
@@ -4749,14 +4818,19 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
             }
 
+            meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(*meshKernelState[meshKernelId].m_curvilinearGrid, smoothingIterations);
+
+            // Set the frozen line
+            for (const auto& [firstFrozenLineCoordinate, secondFrozenLineCoordinate] : meshKernelState[meshKernelId].m_frozenLines | std::views::values)
+            {
+                curvilinearGridSmoothing.SetLine(firstFrozenLineCoordinate, secondFrozenLineCoordinate);
+            }
+
             const meshkernel::Point firstPoint{xLowerLeftCorner, yLowerLeftCorner};
             const meshkernel::Point secondPoint{xUpperRightCorner, yUpperRightCorner};
+            curvilinearGridSmoothing.SetBlock(firstPoint, secondPoint);
 
             // Execute
-            meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(*meshKernelState[meshKernelId].m_curvilinearGrid,
-                                                                          static_cast<meshkernel::UInt>(smoothingIterations));
-
-            curvilinearGridSmoothing.SetBlock(firstPoint, secondPoint);
             meshKernelUndoStack.Add(curvilinearGridSmoothing.Compute(), meshKernelId);
         }
         catch (...)
@@ -4802,13 +4876,11 @@ namespace meshkernelapi
 
             // Execute
             meshkernel::CurvilinearGridSmoothing curvilinearGridSmoothing(*meshKernelState[meshKernelId].m_curvilinearGrid, smoothingIterations);
-
-            curvilinearGridSmoothing.SetLine(firstNode, secondNode);
             curvilinearGridSmoothing.SetBlock(lowerLeft, upperRight);
 
             auto undoAction = MKStateUndoAction::Create(meshKernelState[meshKernelId]);
 
-            meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridSmoothing.ComputeDirectional();
+            meshKernelState[meshKernelId].m_curvilinearGrid = curvilinearGridSmoothing.ComputeDirectional(firstNode, secondNode);
 
             meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
         }
@@ -5100,8 +5172,8 @@ namespace meshkernelapi
             }
             meshkernel::CurvilinearGridDeleteExterior curvilinearDeleteExterior(*meshKernelState[meshKernelId].m_curvilinearGrid);
 
-            curvilinearDeleteExterior.SetBlock({boundingBox.xLowerLeft, boundingBox.yLowerLeft},
-                                               {boundingBox.xUpperRight, boundingBox.yUpperRight});
+            curvilinearDeleteExterior.SetBlock(meshkernel::Point{boundingBox.xLowerLeft, boundingBox.yLowerLeft},
+                                               meshkernel::Point{boundingBox.xUpperRight, boundingBox.yUpperRight});
 
             meshKernelUndoStack.Add(curvilinearDeleteExterior.Compute(), meshKernelId);
         }
@@ -5134,8 +5206,8 @@ namespace meshkernelapi
             }
             meshkernel::CurvilinearGridDeleteInterior curvilinearDeleteInterior(*meshKernelState[meshKernelId].m_curvilinearGrid);
 
-            curvilinearDeleteInterior.SetBlock({boundingBox.xLowerLeft, boundingBox.yLowerLeft},
-                                               {boundingBox.xUpperRight, boundingBox.yUpperRight});
+            curvilinearDeleteInterior.SetBlock(meshkernel::Point{boundingBox.xLowerLeft, boundingBox.yLowerLeft},
+                                               meshkernel::Point{boundingBox.xUpperRight, boundingBox.yUpperRight});
 
             meshKernelUndoStack.Add(curvilinearDeleteInterior.Compute(), meshKernelId);
         }
@@ -5186,6 +5258,7 @@ namespace meshkernelapi
 
     MKERNEL_API int mkernel_curvilinear_line_mirror(int meshKernelId,
                                                     double mirroringFactor,
+                                                    int numRowsToMirror,
                                                     double xFirstGridLineNode,
                                                     double yFirstGridLineNode,
                                                     double xSecondGridLineNode,
@@ -5209,7 +5282,9 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Not valid curvilinear grid.");
             }
 
-            auto curvilinearGridLineMirror = meshkernel::CurvilinearGridLineMirror(*meshKernelState[meshKernelId].m_curvilinearGrid, mirroringFactor);
+            auto curvilinearGridLineMirror = meshkernel::CurvilinearGridLineMirror(*meshKernelState[meshKernelId].m_curvilinearGrid,
+                                                                                   mirroringFactor,
+                                                                                   numRowsToMirror);
 
             curvilinearGridLineMirror.SetLine({xFirstGridLineNode, yFirstGridLineNode}, {xSecondGridLineNode, ySecondGridLineNode});
 

@@ -1,3 +1,30 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #include <gtest/gtest.h>
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
@@ -10,7 +37,7 @@ TEST(CurvilinearLineShift, Compute_OnMGridlineShiftingOneNode_ShouldShiftLine)
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
     meshkernel::CurvilinearGridLineShift curvilinearLineShift(*curvilinearGrid);
     curvilinearLineShift.SetLine({79982.0, 366934.0}, {80155.0, 366530.0});
-    curvilinearLineShift.SetBlock({80108.0, 366707.0}, {80291.0, 366792.0});
+    curvilinearLineShift.SetBlock(meshkernel::Point{80108.0, 366707.0}, meshkernel::Point{80291.0, 366792.0});
     [[maybe_unused]] auto dummyUndoAction1 = curvilinearLineShift.MoveNode({79982.0, 366934.0}, {79872.0, 366876.0});
 
     // Execute
@@ -66,7 +93,7 @@ TEST(CurvilinearLineShift, Compute_OnMGridlineShiftingTwoNodes_ShouldShiftLine)
     const auto curvilinearGrid = MakeSmallCurvilinearGrid();
     meshkernel::CurvilinearGridLineShift curvilinearLineShift(*curvilinearGrid);
     curvilinearLineShift.SetLine({79982.0, 366934.0}, {80155.0, 366530.0});
-    curvilinearLineShift.SetBlock({80108.0, 366707.0}, {80291.0, 366792.0});
+    curvilinearLineShift.SetBlock(meshkernel::Point{80108.0, 366707.0}, meshkernel::Point{80291.0, 366792.0});
 
     // Move two nodes
     [[maybe_unused]] auto dummyUndoAction1 = curvilinearLineShift.MoveNode({79982.0, 366934.0}, {79872.0, 366876.0});

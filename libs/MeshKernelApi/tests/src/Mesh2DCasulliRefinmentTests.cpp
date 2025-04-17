@@ -1,3 +1,30 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #include <algorithm>
 #include <gtest/gtest.h>
 #include <random>
@@ -112,7 +139,7 @@ TEST(CasulliRefinement, ConnectingTwoMeshesAfterCasulliRefinementDoesNotCrash)
     // to note: the mesh associated with meshKernelId1 has gaps in the node and edge data arrays (with invalid data)
     // after the Casulli refinement. The mesh data, mesh2d1, does not have any such gaps.
     // The mesh with gaps in the data must appear first in the mesh connection.
-    errorCode = meshkernelapi::mkernel_mesh2d_connect_meshes(meshKernelId1, mesh2d1, 0.1);
+    errorCode = meshkernelapi::mkernel_mesh2d_connect_meshes(meshKernelId1, mesh2d1, 0.1, true);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     //--------------------------------
@@ -643,11 +670,11 @@ TEST(CasulliRefinement, CurvilinearFullMeshRefinementFailureTests)
 
     // Should fail, invalid refinement factor
     errorCode = meshkernelapi::mkernel_curvilinear_full_refine(meshKernelId, -1, 0);
-    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
     errorCode = meshkernelapi::mkernel_curvilinear_full_refine(meshKernelId, 0, -2);
-    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
     errorCode = meshkernelapi::mkernel_curvilinear_full_refine(meshKernelId, -3, -4);
-    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);

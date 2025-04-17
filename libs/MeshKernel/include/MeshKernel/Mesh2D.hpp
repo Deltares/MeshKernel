@@ -31,6 +31,8 @@
 #include <utility>
 #include <vector>
 
+#include <MeshKernel/Constants.hpp>
+#include <MeshKernel/Definitions.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Polygon.hpp>
@@ -64,16 +66,6 @@ namespace meshkernel
             InsideNotIntersected = 0,
             InsideAndIntersected = 1,
             FacesWithIncludedCircumcenters = 2
-        };
-
-        /// Enumerator describing the different node types
-        enum class NodeTypes
-        {
-            internalNode,
-            onRing,
-            cornerNode,
-            hangingNode,
-            other
         };
 
         /// Enumerator for different properties on a 2D mesh
@@ -110,7 +102,7 @@ namespace meshkernel
         Mesh2D(const std::vector<Edge>& edges,
                const std::vector<Point>& nodes,
                const std::vector<std::vector<UInt>>& faceNodes,
-               const std::vector<UInt>& numFaceNodes,
+               const std::vector<std::uint8_t>& numFaceNodes,
                Projection projection);
 
         /// @brief Create triangular grid from nodes (triangulatesamplestonetwork)
@@ -132,7 +124,7 @@ namespace meshkernel
         /// @param[in] faceNodes The input face nodes
         /// @param[in] numFaceNodes For each face, the number of nodes
         void FindFacesGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
-                                            const std::vector<UInt>& numFaceNodes);
+                                            const std::vector<std::uint8_t>& numFaceNodes);
 
         /// @brief Offset the x coordinates if m_projection is spherical
         /// @param[in] minx
@@ -156,11 +148,6 @@ namespace meshkernel
                                                        std::vector<Point>& polygonNodesCache,
                                                        std::vector<UInt>& localNodeIndicesCache,
                                                        std::vector<UInt>& globalEdgeIndicesCache) const;
-
-        /// @brief For a face create a closed polygon
-        /// @param[in]     faceIndex         The face index
-        /// @param[in,out] polygonNodesCache The cache array to be filled with the nodes values
-        void ComputeFaceClosedPolygon(UInt faceIndex, std::vector<Point>& polygonNodesCache) const;
 
         /// @brief For a closed polygon, compute the circumcenter of a face (getcircumcenter)
         /// @param[in,out] polygon       Cache storing the face nodes
@@ -226,23 +213,21 @@ namespace meshkernel
         /// This threshold is the ration of the face area to the average area of neighboring faces.
         [[nodiscard]] std::unique_ptr<UndoAction> DeleteSmallTrianglesAtBoundaries(double minFractionalAreaTriangles);
 
-        /// @brief Computes m_nodesNodes, see class members
-        void ComputeNodeNeighbours();
-
-        /// @brief Get the orthogonality values, the inner product of edges and segments connecting the face circumcenters
-        /// @return The edge orthogonality
-        [[nodiscard]] std::vector<double> GetOrthogonality() const;
-
-        /// @brief Gets the smoothness values, ratios of the face areas
-        /// @return The smoothness at the edges
-        [[nodiscard]] std::vector<double> GetSmoothness() const;
+        /// @brief Computes node neighbours
+        void ComputeNodeNeighbours(std::vector<std::vector<UInt>>& nodesNodes, UInt& maxNumNeighbours) const;
 
         /// @brief Gets the aspect ratios (the ratios edges lengths to flow edges lengths)
         /// @param[in,out] aspectRatios The aspect ratios (passed as reference to avoid re-allocation)
-        void ComputeAspectRatios(std::vector<double>& aspectRatios);
+        void ComputeAspectRatios(std::vector<double>& aspectRatios) const;
 
         ///  @brief Classifies the nodes (makenetnodescoding)
         void ClassifyNodes();
+
+        /// @brief Get the node type
+        MeshNodeType GetNodeType(const UInt nodeId) const { return m_nodesTypes[nodeId]; }
+
+        /// @brief Get the node type
+        void GetNodeTypes(std::vector<MeshNodeType>& nodeTypes) const { nodeTypes = m_nodesTypes; }
 
         /// @brief Deletes coinciding triangles
         [[nodiscard]] std::unique_ptr<UndoAction> DeleteDegeneratedTriangles();
@@ -251,10 +236,14 @@ namespace meshkernel
         [[nodiscard]] std::unique_ptr<UndoAction> TriangulateFaces();
 
         /// @brief Make a dual face around the node, enlarged by a factor
+        /// @param[in] edgeCentres Centre point of each of the edges.
         /// @param[in] node The node index
         /// @param[in] enlargementFactor The factor by which the dual face is enlarged
         /// @param[out] dualFace The dual face to be calculated
-        void MakeDualFace(UInt node, double enlargementFactor, std::vector<Point>& dualFace) const;
+        void MakeDualFace(const std::span<const Point> edgeCentres,
+                          UInt node,
+                          double enlargementFactor,
+                          std::vector<Point>& dualFace) const;
 
         /// @brief Sorts the faces around a node, sorted in counter clock wise order
         /// @param[in] node The node index
@@ -339,8 +328,6 @@ namespace meshkernel
         /// @return Id of neighbour face along the edge
         UInt NextFace(const UInt faceId, const UInt edgeId) const;
 
-        UInt m_maxNumNeighbours = 0; ///< Maximum number of neighbours
-
         /// @brief Merges mesh connectivity.
         ///
         /// Only merges the mesh connectivity graphs and updates indices.
@@ -407,7 +394,6 @@ namespace meshkernel
         static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length
         static constexpr double m_curvilinearToOrthogonalRatio = 0.5;     ///< Ratio determining curvilinear-like(0.0) to pure(1.0) orthogonalization
         static constexpr double m_minimumCellArea = 1e-12;                ///< Minimum cell area
-        static constexpr double m_weightCircumCenter = 1.0;               ///< Weight circum center
         static constexpr UInt m_maximumNumberOfHangingNodesAlongEdge = 5; ///< The maximum number of hanging nodes along a single element edge
 
         /// @brief Bounded array for storing hanging node indices.
@@ -509,34 +495,34 @@ namespace meshkernel
         /// @param[in] faceNodes The input face nodes
         /// @param[in] numFaceNodes For each face, the number of nodes
         void DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector<UInt>>& faceNodes,
-                                                   const std::vector<UInt>& numFaceNodes);
+                                                   const std::vector<std::uint8_t>& numFaceNodes);
 
         /// @brief Perform complete administration
         /// @param[in,out] undoAction if not null then collect any undo actions generated during the administration.
         void DoAdministration(CompoundUndoAction* undoAction = nullptr);
 
         /// @brief Initialise the node type array for nodes that lie on the boundary
-        void InitialiseBoundaryNodeClassification();
+        void InitialiseBoundaryNodeClassification(std::vector<int>& intNodeType) const;
 
         /// @brief Classify a single node
-        void ClassifyNode(const UInt nodeId);
+        MeshNodeType ClassifyNode(const UInt nodeId) const;
 
-        /// @brief Count the number of value edge in list
-        UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, const UInt numNodes) const;
+        // /// @brief Count the number of valid edges in list
+        // UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, const UInt numNodes) const;
 
         /// @brief Compute mid point and normal of polygon segment
         void ComputeMidPointsAndNormals(const std::vector<Point>& polygon,
                                         const std::vector<UInt>& edgesNumFaces,
                                         const UInt numNodes,
-                                        std::array<Point, m_maximumNumberOfNodesPerFace>& middlePoints,
-                                        std::array<Point, m_maximumNumberOfNodesPerFace>& normals,
+                                        std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
+                                        std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
                                         UInt& pointCount) const;
 
         /// @brief Compute circumcentre of face
         Point ComputeCircumCentre(const Point& centerOfMass,
                                   const UInt pointCount,
-                                  const std::array<Point, m_maximumNumberOfNodesPerFace>& middlePoints,
-                                  const std::array<Point, m_maximumNumberOfNodesPerFace>& normals) const;
+                                  const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
+                                  const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals) const;
 
         /// @brief Compute edge and average flow length
         void ComputeAverageFlowEdgesLength(std::vector<double>& edgesLength,
@@ -548,6 +534,12 @@ namespace meshkernel
                                       std::vector<bool>& curvilinearGridIndicator,
                                       std::vector<std::array<double, 2>>& averageEdgesLength,
                                       std::vector<double>& aspectRatios) const;
+
+        /// @brief Set the node indices of edges with no attached faces to invalid id.
+        /// @returns The number of edges that have been invalidated
+        UInt InvalidateEdgesWithNoFace();
+
+        std::vector<MeshNodeType> m_nodesTypes; ///< The node types (nb)
     };
 
 } // namespace meshkernel

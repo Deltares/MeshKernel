@@ -34,7 +34,8 @@ using meshkernel::CurvilinearGrid;
 using meshkernel::CurvilinearGridAlgorithm;
 using meshkernel::CurvilinearGridLine;
 
-CurvilinearGridAlgorithm::CurvilinearGridAlgorithm(CurvilinearGrid& grid) : m_grid(grid)
+CurvilinearGridAlgorithm::CurvilinearGridAlgorithm(CurvilinearGrid& grid) : m_grid(grid),
+                                                                            m_isGridNodeFrozen(m_grid.NumN(), m_grid.NumM())
 {
 }
 
@@ -51,6 +52,18 @@ void CurvilinearGridAlgorithm::SetBlock(Point const& firstCornerPoint, Point con
 
     m_lowerLeft = lowerLeft;
     m_upperRight = upperRight;
+}
+
+void CurvilinearGridAlgorithm::SetBlock(CurvilinearGridNodeIndices const& firstCornerPoint, CurvilinearGridNodeIndices const& secondCornerPoint)
+{
+    // Coinciding corner nodes, no valid area, nothing to do
+    if (firstCornerPoint == secondCornerPoint)
+    {
+        throw std::invalid_argument("CurvilinearGridSmoothing::SetBlock coinciding corner nodes, no valid area to smooth");
+    }
+
+    m_lowerLeft = firstCornerPoint;
+    m_upperRight = secondCornerPoint;
 }
 
 void CurvilinearGridAlgorithm::SetLine(Point const& firstPoint, Point const& secondPoint)
@@ -70,23 +83,22 @@ void CurvilinearGridAlgorithm::SetLine(Point const& firstPoint, Point const& sec
         throw AlgorithmError("The nodes do not define a grid line");
     }
 
-    CurvilinearGridLine const newGridline{newLineLowerLeft, newLineUpperRight};
+    // Store a new grid line
+    m_lines.emplace_back(newLineLowerLeft, newLineUpperRight);
+}
 
-    // Frozen lines cannot cross existing frozen lines
+void CurvilinearGridAlgorithm::ComputeFrozenNodes()
+{
+    m_isGridNodeFrozen.fill(false);
     for (auto const& frozenLine : m_lines)
     {
-        for (auto i = frozenLine.m_startCoordinate; i <= frozenLine.m_endCoordinate; ++i)
+
+        for (auto n = frozenLine.m_startNode.m_n; n <= frozenLine.m_endNode.m_n; ++n)
         {
-            for (auto j = newGridline.m_startCoordinate; j <= newGridline.m_endCoordinate; ++j)
+            for (auto m = frozenLine.m_startNode.m_m; m <= frozenLine.m_endNode.m_m; ++m)
             {
-                if (j == frozenLine.m_constantCoordinate && i == newGridline.m_constantCoordinate)
-                {
-                    throw AlgorithmError("CurvilinearGridOrthogonalization::SetLine the new line is crossing an existing one");
-                }
+                m_isGridNodeFrozen(n, m) = true;
             }
         }
     }
-
-    // Now a new line can be stored
-    m_lines.emplace_back(newGridline);
 }

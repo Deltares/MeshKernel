@@ -1,9 +1,35 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #include <gtest/gtest.h>
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSnapping.hpp>
-#include <MeshKernel/Entities.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
 using namespace meshkernel;
@@ -21,7 +47,7 @@ TEST(CurvilinearGridSmoothing, Compute_OnSmoothCurvilinearGrid_ShouldNotSmoothGr
     CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 10);
 
     // Execute
-    curvilinearGridSmoothing.SetBlock({0, 0}, {30, 30});
+    curvilinearGridSmoothing.SetBlock(Point{0, 0}, Point{30, 30});
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.Compute();
 
     // Assert nodes are on the same location because the grid is already smooth
@@ -75,7 +101,7 @@ TEST(CurvilinearGridSmoothing, Compute_OnONonSmoothCurvilinearGrid_ShouldSmoothG
     CurvilinearGridSmoothing curvilinearGridSmoothing(*curvilinearGrid, 10);
 
     // Execute
-    curvilinearGridSmoothing.SetBlock({80154, 366530}, {80610, 367407});
+    curvilinearGridSmoothing.SetBlock(Point{80154, 366530}, Point{80610, 367407});
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.Compute();
 
     // Assert
@@ -130,7 +156,7 @@ TEST(CurvilinearGridSmoothing, Compute_OnONonSmoothCurvilinearGridWithMissingEle
     CurvilinearGridSmoothing curvilinearGridSmoothing(*curvilinearGrid, 10);
 
     // Execute
-    curvilinearGridSmoothing.SetBlock({80154, 366530}, {80610, 367407});
+    curvilinearGridSmoothing.SetBlock(Point{80154, 366530}, Point{80610, 367407});
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.Compute();
 
     // Assert
@@ -203,11 +229,10 @@ TEST(CurvilinearGridSmoothing, ComputedDirectionalSmooth_OnMDrirection_ShouldSmo
     auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     CurvilinearGridSmoothing curvilinearGridSmoothing(*curvilinearGrid, 10);
-    curvilinearGridSmoothing.SetLine({80143, 367041}, {80333, 366553});
-    curvilinearGridSmoothing.SetBlock({80199, 366749}, {80480, 366869});
+    curvilinearGridSmoothing.SetBlock(Point{80199, 366749}, Point{80480, 366869});
 
     // Execute
-    [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.ComputeDirectional();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.ComputeDirectional({80143, 367041}, {80333, 366553});
 
     // Assert
     constexpr double tolerance = 1e-6;
@@ -239,11 +264,10 @@ TEST(CurvilinearGridSmoothing, ComputedDirectionalSmooth_OnNDrirection_ShouldSmo
     auto curvilinearGrid = MakeSmallCurvilinearGrid();
 
     CurvilinearGridSmoothing curvilinearGridSmoothing(*curvilinearGrid, 10);
-    curvilinearGridSmoothing.SetLine({80199, 366749}, {80480, 366869});
-    curvilinearGridSmoothing.SetBlock({80143, 367041}, {80333, 366553});
+    curvilinearGridSmoothing.SetBlock(Point{80143, 367041}, Point{80333, 366553});
 
     // Execute
-    [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.ComputeDirectional();
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.ComputeDirectional({80199, 366749}, {80480, 366869});
 
     // Assert
     constexpr double tolerance = 1e-6;
@@ -267,4 +291,76 @@ TEST(CurvilinearGridSmoothing, ComputedDirectionalSmooth_OnNDrirection_ShouldSmo
     ASSERT_NEAR(367099.12347147451, curvilinearGrid->GetNode(1, 6).y, tolerance);
     ASSERT_NEAR(367143.03018172452, curvilinearGrid->GetNode(1, 7).y, tolerance);
     ASSERT_NEAR(367188.18349069095, curvilinearGrid->GetNode(1, 8).y, tolerance);
+}
+
+TEST(CurvilinearGridOrthogonalization, Compute_OnNonSmoothedlCurvilinearGridWithFrozenLine_ShouldSmoothGridExceptFrozenLinePoins)
+{
+    // Set-up a mesh that will be changed by smoothing
+    lin_alg::Matrix<Point> grid(5, 5);
+    grid << Point{0, 0}, Point{0, 10}, Point{0, 15}, Point{0, 20}, Point{0, 30},
+        Point{10, 0}, Point{10, 10}, Point{10, 15}, Point{10, 20}, Point{10, 30},
+        Point{20, 0}, Point{20, 10}, Point{20, 15}, Point{20, 20}, Point{20, 30},
+        Point{30, 0}, Point{30, 10}, Point{30, 15}, Point{30, 20}, Point{30, 30},
+        Point{40, 0}, Point{40, 10}, Point{40, 15}, Point{40, 20}, Point{40, 30};
+
+    CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
+    CurvilinearGridSmoothing curvilinearGridSmoothing(curvilinearGrid, 20);
+
+    curvilinearGridSmoothing.SetBlock(Point{0, 0}, Point{30, 30});
+    curvilinearGridSmoothing.SetLine({10.0, 10.0}, {20.0, 10.0}); // First frozen line
+    curvilinearGridSmoothing.SetLine({10.0, 20.0}, {20.0, 20.0}); // Second frozen line
+
+    // Execute
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridSmoothing.Compute();
+
+    // Assert nodes stays in place
+    constexpr double tolerance = 1e-6;
+
+    ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 0).x, tolerance);
+    ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 1).x, tolerance);
+    ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 2).x, tolerance);
+    ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 3).x, tolerance);
+    ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 4).x, tolerance);
+
+    ASSERT_NEAR(10.0, curvilinearGrid.GetNode(1, 0).x, tolerance);
+    ASSERT_NEAR(10.0, curvilinearGrid.GetNode(1, 1).x, tolerance);
+    ASSERT_NEAR(10.0, curvilinearGrid.GetNode(1, 2).x, tolerance);
+    ASSERT_NEAR(10.0, curvilinearGrid.GetNode(1, 3).x, tolerance);
+    ASSERT_NEAR(10.0, curvilinearGrid.GetNode(1, 4).x, tolerance);
+
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(2, 0).x, tolerance);
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(2, 1).x, tolerance);
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(2, 2).x, tolerance);
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(2, 3).x, tolerance);
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(2, 4).x, tolerance);
+
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(3, 0).x, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(3, 1).x, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(3, 2).x, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(3, 3).x, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(3, 4).x, tolerance);
+
+    ASSERT_NEAR(0.0, curvilinearGrid.GetNode(0, 0).y, tolerance);
+    ASSERT_NEAR(8.3333349227905273, curvilinearGrid.GetNode(0, 1).y, tolerance);
+    ASSERT_NEAR(15.000000000000000, curvilinearGrid.GetNode(0, 2).y, tolerance);
+    ASSERT_NEAR(21.666665077209473, curvilinearGrid.GetNode(0, 3).y, tolerance);
+    ASSERT_NEAR(30.000000000000000, curvilinearGrid.GetNode(0, 4).y, tolerance);
+
+    ASSERT_NEAR(0.0, curvilinearGrid.GetNode(1, 0).y, tolerance);
+    ASSERT_NEAR(10.0, curvilinearGrid.GetNode(1, 1).y, tolerance); // stays in place
+    ASSERT_NEAR(15.0, curvilinearGrid.GetNode(1, 2).y, tolerance); // stays in place
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(1, 3).y, tolerance); // stays in place
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(1, 4).y, tolerance);
+
+    ASSERT_NEAR(0.0, curvilinearGrid.GetNode(2, 0).y, tolerance);
+    ASSERT_NEAR(10.0, curvilinearGrid.GetNode(2, 1).y, tolerance); // stays in place
+    ASSERT_NEAR(15.0, curvilinearGrid.GetNode(2, 2).y, tolerance); // stays in place
+    ASSERT_NEAR(20.0, curvilinearGrid.GetNode(2, 3).y, tolerance); // stays in place
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(2, 4).y, tolerance);
+
+    ASSERT_NEAR(0.0, curvilinearGrid.GetNode(3, 0).y, tolerance);
+    ASSERT_NEAR(8.7500011920928955, curvilinearGrid.GetNode(3, 1).y, tolerance);
+    ASSERT_NEAR(15.000000000000000, curvilinearGrid.GetNode(3, 2).y, tolerance);
+    ASSERT_NEAR(21.249998807907104, curvilinearGrid.GetNode(3, 3).y, tolerance);
+    ASSERT_NEAR(30.0, curvilinearGrid.GetNode(3, 4).y, tolerance);
 }

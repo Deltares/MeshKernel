@@ -1,3 +1,30 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #include <gtest/gtest.h>
 
 #include <MeshKernel/Constants.hpp>
@@ -291,4 +318,46 @@ TEST(LandBoundaries, LandBoundaryConstructorTestAddSegment)
         EXPECT_EQ(landBoundary.Node(i).x, controlPointsAfterAddition[i].x);
         EXPECT_EQ(landBoundary.Node(i).y, controlPointsAfterAddition[i].y);
     }
+}
+
+TEST(LandBoundaries, FindNearestMeshBoundary_WithFarLandBoundary_ShouldNotAssociateAnyNodeToLandBoundarySegments)
+{
+    // Prepare
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 3, 3, meshkernel::Projection::cartesian, meshkernel::Point{0, 0});
+    std::vector<meshkernel::Point> landBoundaryPolygon{
+        {100.0, 100.0},
+        {250.0, 100.0},
+        {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
+    auto polygons = meshkernel::Polygons();
+
+    // Execute
+    auto landboundaries = meshkernel::LandBoundaries(landBoundaryPolygon, *mesh, polygons);
+    landboundaries.FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption::InnerAndOuterMeshBoundaryToLandBoundary);
+
+    // Checks
+    for (const auto& segment : landboundaries.m_meshNodesLandBoundarySegments)
+    {
+        EXPECT_EQ(meshkernel::constants::missing::uintValue, segment);
+    }
+}
+
+TEST(LandBoundaries, FindNearestMeshBoundary_WithCloseLandBoundary_ShoulAssociateAllNodesToLandBoundarySegments)
+{
+    // Prepare
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 3, 3, meshkernel::Projection::cartesian, meshkernel::Point{0, 0});
+    std::vector<meshkernel::Point> landBoundaryPolygon{
+        {0.0, -1.0},
+        {9.0, -1.0},
+        {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
+    auto polygons = meshkernel::Polygons();
+
+    // Execute
+    auto landboundaries = meshkernel::LandBoundaries(landBoundaryPolygon, *mesh, polygons);
+    landboundaries.FindNearestMeshBoundary(meshkernel::LandBoundaries::ProjectToLandBoundaryOption::InnerAndOuterMeshBoundaryToLandBoundary);
+
+    // Checks
+    EXPECT_EQ(0, landboundaries.m_meshNodesLandBoundarySegments[0]);
+    EXPECT_EQ(0, landboundaries.m_meshNodesLandBoundarySegments[4]);
+    EXPECT_EQ(0, landboundaries.m_meshNodesLandBoundarySegments[8]);
+    EXPECT_EQ(0, landboundaries.m_meshNodesLandBoundarySegments[12]);
 }

@@ -66,11 +66,6 @@ namespace meshkernel
         /// @param[in] minFaceSize The minimum face size below which two nodes will be merged
         Mesh1D(Network1D& network1d, double minFaceSize);
 
-        /// @brief Inquire if a mesh 1d-node is on boundary
-        /// @param[in] node The node index
-        /// @return If the node is on boundary
-        [[nodiscard]] bool IsNodeOnBoundary(UInt node) const { return m_nodesNumEdges[node] == 1; }
-
         /// @brief Compute a projected node along a line normal to the edges connected to the node.
         /// @param node [in] The node
         /// @param distanceFactor [in] The distance factor

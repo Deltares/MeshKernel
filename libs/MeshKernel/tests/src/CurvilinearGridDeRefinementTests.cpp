@@ -1,3 +1,32 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
+#include "MeshKernel/CurvilinearGrid/CurvilinearGridRefinement.hpp"
+
 #include <gtest/gtest.h>
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
@@ -16,8 +45,8 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineVertic
         Point{0, 30}, Point{10, 30}, Point{15, 30}, Point{20, 30}, Point{30, 30};
 
     CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
-    CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
-    curvilinearGridDeRefinement.SetBlock({10, 20}, {20, 20});
+    CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid, 2);
+    curvilinearGridDeRefinement.SetBlock(Point{10, 20}, Point{20, 20});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridDeRefinement.Compute();
@@ -38,8 +67,8 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGridWithMissingFaces_Shou
         Point{0, 30}, Point{10, 30}, Point{11, 30}, Point{12, 30}, Point{13, 30}, Point{20, 30}, Point{30, 30}, Point{40, 30}, Point{50, 30};
 
     CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
-    CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
-    curvilinearGridDeRefinement.SetBlock({10, 20}, {20, 20});
+    CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid, 4);
+    curvilinearGridDeRefinement.SetBlock(Point{10, 20}, Point{20, 20});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridDeRefinement.Compute();
@@ -61,8 +90,8 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineHorizo
         Point{0, 30}, Point{10, 30}, Point{20, 30}, Point{30, 30};
 
     CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
-    CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid);
-    curvilinearGridDeRefinement.SetBlock({10, 10}, {10, 20});
+    CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid, 2);
+    curvilinearGridDeRefinement.SetBlock(Point{10, 10}, Point{10, 20});
 
     // Execute
     [[maybe_unused]] auto dummyUndoAction = curvilinearGridDeRefinement.Compute();
@@ -70,4 +99,65 @@ TEST(CurvilinearGridDeRefinement, Compute_OnCurvilinearGrid_ShouldDeRefineHorizo
     // Assert (the vertical line at x=15 is removed)
     ASSERT_EQ(4, curvilinearGrid.NumN());
     ASSERT_EQ(4, curvilinearGrid.NumM());
+}
+
+TEST(CurvilinearGridDeRefinement, Compute_OnRefinedCurvilinearGridWithLargeDerefinementFactor_ShouldDeRefineVerticalGridLines)
+{
+    // Set-up
+    lin_alg::Matrix<Point> grid(10, 10);
+
+    // Fill the grid
+    for (int y = 0; y < grid.rows(); ++y)
+    {
+        for (int x = 0; x < grid.cols(); ++x)
+        {
+            grid(y, x) = Point{x * 10.0, y * 10.0};
+        }
+    }
+
+    CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
+    CurvilinearGridRefinement curvilinearGridRefinement(curvilinearGrid, 5);
+    curvilinearGridRefinement.SetBlock(Point{20, 0}, Point{80, 0});
+    [[maybe_unused]] auto dummyUndoAction = curvilinearGridRefinement.Compute();
+
+    CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid, 100);
+    curvilinearGridDeRefinement.SetBlock(Point{20, 0}, Point{80, 0});
+
+    // Execute
+    dummyUndoAction = curvilinearGridDeRefinement.Compute();
+
+    // Assert, given the large de-refinement factor all lines between are removed
+    ASSERT_EQ(10, curvilinearGrid.NumN());
+    ASSERT_EQ(5, curvilinearGrid.NumM());
+}
+
+TEST(CurvilinearGridDeRefinement, Compute_OnRefinedCurvilinearGridWithSubsequentDerefinements_ShouldDeRefineVerticallGridLinesAndKeepRightBoundary)
+{
+    // Set-up
+    lin_alg::Matrix<Point> grid(11, 11);
+
+    // Fill the grid
+    for (int y = 0; y < grid.rows(); ++y)
+    {
+        for (int x = 0; x < grid.cols(); ++x)
+        {
+            grid(y, x) = Point{x * 10.0, y * 10.0};
+        }
+    }
+
+    CurvilinearGrid curvilinearGrid(grid, Projection::cartesian);
+
+    for (int iter = 0; iter < 4; ++iter)
+    {
+        CurvilinearGridDeRefinement curvilinearGridDeRefinement(curvilinearGrid, 2);
+        curvilinearGridDeRefinement.SetBlock(Point{0, 0}, Point{100, 0});
+        [[maybe_unused]] auto dummyUndoAction = curvilinearGridDeRefinement.Compute();
+    }
+
+    // Assert, given the large de-refinement factor all lines between are removed
+    constexpr double tolerance = 1e-6;
+    ASSERT_EQ(11, curvilinearGrid.NumN());
+    ASSERT_EQ(2, curvilinearGrid.NumM());
+    ASSERT_NEAR(0, curvilinearGrid.GetNode(0, 0).x, tolerance);
+    ASSERT_NEAR(100.0, curvilinearGrid.GetNode(0, 1).x, tolerance);
 }

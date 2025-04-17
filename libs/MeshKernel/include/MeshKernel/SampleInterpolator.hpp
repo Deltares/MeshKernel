@@ -52,7 +52,6 @@ namespace meshkernel
     class SampleInterpolator
     {
     public:
-
         /// @brief Destructor
         virtual ~SampleInterpolator() = default;
 

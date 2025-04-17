@@ -1,7 +1,35 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #include "MeshKernel/Mesh2DGenerateGlobal.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
+#include "MeshKernel/Utilities/RTreeFactory.hpp"
 #include <cmath>
 
 using namespace meshkernel;
@@ -49,7 +77,6 @@ void Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
                                    const GridExpansionDirection growingDirection,
                                    const UInt numNodes)
 {
-    std::unique_ptr<CompoundUndoAction> refineFacesAction = CompoundUndoAction::Create();
     std::array<UInt, 5> nodeIndices{};
 
     for (UInt n = 0; n < numNodes; ++n)
@@ -62,7 +89,6 @@ void Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
         {
             auto [edgeId, nodeInsertionAction] = mesh.InsertNode(p);
             nodeIndices[n] = edgeId;
-            refineFacesAction->Add(std::move(nodeInsertionAction));
         }
     }
 
@@ -80,7 +106,6 @@ void Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
         if (mesh.FindEdgeWithLinearSearch(firstNodeIndex, secondNodeIndex) == constants::missing::uintValue)
         {
             auto [edgeId, connectionAction] = mesh.ConnectNodes(firstNodeIndex, secondNodeIndex);
-            refineFacesAction->Add(std::move(connectionAction));
         }
     }
 }
@@ -163,7 +188,8 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
                 numberOfPoints = 5;
             }
 
-            if (points[2].x <= 180.0)
+            // TODO before merging with master is it possible to change which points get deleted in the Mesh::MergePointsInPolygon
+            if (points[2].x < 180.0)
             {
                 pentagonFace = false;
                 AddFace(*mesh2d, points, GridExpansionDirection::Northwards, numberOfPoints);
@@ -196,12 +222,12 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
             continue;
         }
 
-        const auto numEdgesFirstNode = mesh2d->m_nodesNumEdges[firstNode];
-        const auto numEdgesSecondNode = mesh2d->m_nodesNumEdges[secondNode];
+        const auto numEdgesFirstNode = mesh2d->GetNumNodesEdges(firstNode);
+        const auto numEdgesSecondNode = mesh2d->GetNumNodesEdges(secondNode);
         if ((numEdgesFirstNode == constants::geometric::numNodesInPentagon ||
-             numEdgesFirstNode == constants::geometric::numNodesInhaxagon) &&
+             numEdgesFirstNode == constants::geometric::numNodesInHexagon) &&
             (numEdgesSecondNode == constants::geometric::numNodesInPentagon ||
-             numEdgesSecondNode == constants::geometric::numNodesInhaxagon) &&
+             numEdgesSecondNode == constants::geometric::numNodesInHexagon) &&
             IsEqual(mesh2d->Node(firstNode).y, mesh2d->Node(secondNode).y, tolerance))
         {
             [[maybe_unused]] auto action = mesh2d->DeleteEdge(e);

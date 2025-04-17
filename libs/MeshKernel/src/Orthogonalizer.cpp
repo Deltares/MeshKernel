@@ -34,14 +34,17 @@
 using meshkernel::Mesh2D;
 using meshkernel::Orthogonalizer;
 
-Orthogonalizer::Orthogonalizer(Mesh2D& mesh) : m_mesh(mesh)
+Orthogonalizer::Orthogonalizer(const Mesh2D& mesh,
+                               const std::vector<std::vector<UInt>>& nodesNodes,
+                               const std::vector<MeshNodeType>& nodeType) : m_mesh(mesh), m_nodesNodes(nodesNodes), m_nodeType(nodeType)
 {
 }
 
 void Orthogonalizer::Compute()
 {
-    m_mesh.ComputeNodeNeighbours();
-    ResizeAndFill2DVector(m_weights, m_mesh.GetNumNodes(), m_mesh.m_maxNumNeighbours, true, 0.0);
+    UInt maxNumNeighbours = *(std::max_element(m_mesh.m_nodesNumEdges.begin(), m_mesh.m_nodesNumEdges.end())) + 1;
+
+    ResizeAndFill2DVector(m_weights, m_mesh.GetNumNodes(), maxNumNeighbours, true, 0.0);
     ResizeAndFill2DVector(m_rhs, m_mesh.GetNumNodes(), 2, true, 0.0);
 
     // Compute mesh aspect ratios
@@ -49,12 +52,12 @@ void Orthogonalizer::Compute()
 
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
-        if (m_mesh.m_nodesTypes[n] != 1 && m_mesh.m_nodesTypes[n] != 2)
+        if (m_nodeType[n] != MeshNodeType::Internal && m_nodeType[n] != MeshNodeType::Boundary)
         {
             continue;
         }
 
-        for (UInt nn = 0; nn < m_mesh.m_nodesNumEdges[n]; nn++)
+        for (UInt nn = 0; nn < m_mesh.GetNumNodesEdges(n); nn++)
         {
 
             const auto edgeIndex = m_mesh.m_nodesEdges[n][nn];
@@ -78,7 +81,7 @@ void Orthogonalizer::Compute()
             m_weights[n][nn] = 0.5 * aspectRatio;
 
             // compute the edge length
-            Point neighbouringNode = m_mesh.Node(m_mesh.m_nodesNodes[n][nn]);
+            Point neighbouringNode = m_mesh.Node(m_nodesNodes[n][nn]);
             const auto neighbouringNodeDistance = ComputeDistance(neighbouringNode, m_mesh.Node(n), m_mesh.m_projection);
 
             const auto leftFace = m_mesh.m_edgesFaces[edgeIndex][0];

@@ -30,8 +30,6 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridNodeIndices.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridOrthogonalization.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridUtilities.hpp>
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/Splines.hpp>
 
@@ -42,26 +40,10 @@ CurvilinearGridOrthogonalization::CurvilinearGridOrthogonalization(CurvilinearGr
                                                                    const OrthogonalizationParameters& orthogonalizationParameters)
     : CurvilinearGridAlgorithm(grid),
       m_orthoEqTerms(m_grid.NumN(), m_grid.NumM()),
-      m_isGridNodeFrozen(m_grid.NumN(), m_grid.NumM()),
       m_splines(Splines(m_grid))
 {
     CheckOrthogonalizationParameters(orthogonalizationParameters);
     m_orthogonalizationParameters = orthogonalizationParameters;
-    m_isGridNodeFrozen.fill(false);
-}
-
-void CurvilinearGridOrthogonalization::ComputeFrozenGridPoints()
-{
-    for (auto const& frozenLine : m_lines)
-    {
-        for (auto n = frozenLine.m_startNode.m_n; n <= frozenLine.m_endNode.m_n; ++n)
-        {
-            for (auto m = frozenLine.m_startNode.m_m; m <= frozenLine.m_endNode.m_m; ++m)
-            {
-                m_isGridNodeFrozen(n, m) = true;
-            }
-        }
-    }
 }
 
 meshkernel::UndoActionPtr CurvilinearGridOrthogonalization::Compute()
@@ -79,8 +61,8 @@ meshkernel::UndoActionPtr CurvilinearGridOrthogonalization::Compute()
     // Compute the grid node types
     m_grid.ComputeGridNodeTypes();
 
-    // Set the frozen node mask
-    ComputeFrozenGridPoints();
+    // Compute the frozen nodes
+    ComputeFrozenNodes();
 
     // Compute the matrix coefficients
     for (auto outerIterations = 0; outerIterations < m_orthogonalizationParameters.outer_iterations; ++outerIterations)
@@ -206,6 +188,8 @@ void CurvilinearGridOrthogonalization::ComputePointsForGridLineM(const UInt m,
 
 void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 {
+    using enum NodeType;
+
     // m grid lines (horizontal)
     for (UInt m = 0; m < m_grid.NumM(); ++m)
     {
@@ -214,17 +198,17 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
         for (UInt n = 0; n < m_grid.NumN(); ++n)
         {
             const auto nodeType = m_grid.GetNodeType(n, m);
-            if (nodeType == NodeType::BottomLeft || nodeType == NodeType::UpperLeft)
+            if (nodeType == BottomLeft || nodeType == UpperLeft)
             {
                 startN = n;
                 continue;
             }
-            if (nodeType == NodeType::Bottom)
+            if (nodeType == Bottom)
             {
                 nextVertical = 1;
                 continue;
             }
-            if (nodeType == NodeType::Up)
+            if (nodeType == Up)
             {
                 nextVertical = -1;
                 continue;
@@ -232,9 +216,9 @@ void CurvilinearGridOrthogonalization::ProjectHorizontalBoundaryGridNodes()
 
             // Project the nodes at the boundary (Bottom and Up node types) if a valid interval has been found.
             // The interval ranges from startM to the next BottomRight or UpperRight node.
-            if (startN != constants::missing::uintValue &&
-                (nodeType == NodeType::BottomRight || nodeType == NodeType::UpperRight) &&
-                nextVertical != 0)
+            if ((nodeType == BottomRight || nodeType == UpperRight) &&
+                nextVertical != 0 &&
+                startN != constants::missing::uintValue)
             {
                 ComputePointsForGridLineN(m, n, startN, nextVertical);
             }
@@ -292,8 +276,8 @@ void CurvilinearGridOrthogonalization::Solve()
     const auto minMInternal = std::max(static_cast<UInt>(1), m_lowerLeft.m_m);
     const auto minNInternal = std::max(static_cast<UInt>(1), m_lowerLeft.m_n);
 
-    const auto maxMInternal = std::min(m_upperRight.m_m, m_grid.NumM() - 1);
-    const auto maxNInternal = std::min(m_upperRight.m_n, m_grid.NumN() - 1);
+    const auto maxMInternal = std::min(m_upperRight.m_m + 1, m_grid.NumM() - 1);
+    const auto maxNInternal = std::min(m_upperRight.m_n + 1, m_grid.NumN() - 1);
 
     for (auto innerIterations = 0; innerIterations < m_orthogonalizationParameters.inner_iterations; ++innerIterations)
     {
@@ -318,6 +302,11 @@ void CurvilinearGridOrthogonalization::Solve()
                     m_grid.GetNode(n, m - 1) * m_orthoEqTerms.d(n, m) +
                     m_grid.GetNode(n, m) * m_orthoEqTerms.e(n, m);
 
+                // No update to perform if residual is too small
+                if (IsEqual(residual.x, 0.0) && IsEqual(residual.y, 0.0))
+                {
+                    continue;
+                }
                 m_grid.GetNode(n, m) = m_grid.GetNode(n, m) - residual / m_orthoEqTerms.e(n, m) * omega;
             }
         }
@@ -343,9 +332,15 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
     m_orthoEqTerms.e.fill(constants::missing::doubleValue);
     m_orthoEqTerms.atp.fill(constants::missing::doubleValue);
 
-    for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
+    const auto startN = m_lowerLeft.m_n == 0 ? 0 : m_lowerLeft.m_n - 1;
+    const auto startM = m_lowerLeft.m_m == 0 ? 0 : m_lowerLeft.m_m - 1;
+
+    const auto endN = std::min(m_grid.NumN() - 1, m_upperRight.m_n + 1);
+    const auto endM = std::min(m_grid.NumM() - 1, m_upperRight.m_m + 1);
+
+    for (auto n = startN; n < endN; ++n)
     {
-        for (auto m = m_lowerLeft.m_m; m < m_upperRight.m_m; ++m)
+        for (auto m = startM; m < endM; ++m)
         {
 
             if (!m_grid.IsFaceMaskValid(n, m))
@@ -374,9 +369,9 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
 
     // Normalize
     const auto smoothingFactor = 1.0 - m_orthogonalizationParameters.orthogonalization_to_smoothing_factor;
-    for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
+    for (auto n = startN; n < endN; ++n)
     {
-        for (auto m = m_lowerLeft.m_m; m < m_upperRight.m_m; ++m)
+        for (auto m = startM; m < endM; ++m)
         {
             if (!m_grid.IsFaceMaskValid(n, m))
             {
@@ -384,6 +379,7 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
             }
             m_orthoEqTerms.atp(n, m) = m_orthoEqTerms.atp(n, m) * m_orthoEqTerms.a(n, m) / m_orthoEqTerms.c(n, m);
             m_orthoEqTerms.atp(n, m) = m_orthogonalizationParameters.orthogonalization_to_smoothing_factor * m_orthoEqTerms.atp(n, m) + smoothingFactor * m_orthoEqTerms.a(n, m);
+
             m_orthoEqTerms.e(n, m) = m_orthoEqTerms.e(n, m) * m_orthoEqTerms.b(n, m) / m_orthoEqTerms.d(n, m);
             m_orthoEqTerms.e(n, m) = m_orthogonalizationParameters.orthogonalization_to_smoothing_factor * m_orthoEqTerms.e(n, m) + smoothingFactor * m_orthoEqTerms.b(n, m);
 
@@ -393,9 +389,9 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
     }
 
     // Calculate m_atp
-    for (auto n = m_lowerLeft.m_n; n < m_upperRight.m_n; ++n)
+    for (auto n = startN; n < endN; ++n)
     {
-        for (auto m = m_lowerLeft.m_m; m < m_upperRight.m_m; ++m)
+        for (auto m = startM; m < endM; ++m)
         {
             if (!m_grid.IsFaceMaskValid(n, m))
             {
@@ -413,9 +409,9 @@ void CurvilinearGridOrthogonalization::ComputeCoefficients()
     m_orthoEqTerms.d.fill(0.0);
     m_orthoEqTerms.e.fill(0.0);
 
-    for (auto n = m_lowerLeft.m_n + 1; n < m_upperRight.m_n; ++n)
+    for (auto n = startN + 1; n < endN; ++n)
     {
-        for (auto m = m_lowerLeft.m_m + 1; m < m_upperRight.m_m; ++m)
+        for (auto m = startM + 1; m < endM; ++m)
         {
             if (m_grid.GetNodeType(n, m) != NodeType::InternalValid)
             {

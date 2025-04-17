@@ -120,12 +120,12 @@ namespace meshkernel
             return NumM() > 1 && NumN() > 1;
         }
 
-        /// @brief Gets a reference to the grid node at the (m,n) location
+        /// @brief Gets a reference to the grid node at the (n,m) location
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
         [[nodiscard]] inline Point& GetNode(const UInt n, const UInt m);
 
-        /// @brief Gets a constant reference to the grid node at the (m,n) location
+        /// @brief Gets a constant reference to the grid node at the (n,m) location
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
         [[nodiscard]] inline Point const& GetNode(const UInt n, const UInt m) const;
@@ -272,29 +272,57 @@ namespace meshkernel
         /// @return The new displacement
         [[nodiscard]] Point TransformDisplacement(Point const& displacement, CurvilinearGridNodeIndices const& node, bool isLocal) const;
 
-        UndoActionPtr AddGridLineAtBottom(const CurvilinearGridNodeIndices& firstNode,
-                                          const CurvilinearGridNodeIndices& secondNode);
+        /// @brief Adds grid lines at the bottom between two specified nodes.
+        /// @param[in] firstNode The first node defining the range.
+        /// @param[in] secondNode The second node defining the range.
+        /// @param[in] numLines The number of grid lines to add.
+        /// @return A tuple containing an UndoActionPtr and the number of lines actually added.
+        std::tuple<UndoActionPtr, int> AddGridLinesAtBottom(const CurvilinearGridNodeIndices& firstNode,
+                                                            const CurvilinearGridNodeIndices& secondNode,
+                                                            int numLines);
 
-        UndoActionPtr AddGridLineAtTop(const CurvilinearGridNodeIndices& firstNode,
-                                       const CurvilinearGridNodeIndices& secondNode);
+        /// @brief Adds grid lines at the top between two specified nodes.
+        /// @param[in] firstNode The first node defining the range.
+        /// @param[in] secondNode The second node defining the range.
+        /// @param[in] numLines The number of grid lines to add.
+        /// @return A tuple containing an UndoActionPtr and the number of lines actually added.
+        std::tuple<UndoActionPtr, int> AddGridLinesAtTop(const CurvilinearGridNodeIndices& firstNode,
+                                                         const CurvilinearGridNodeIndices& secondNode,
+                                                         int numLines);
 
-        UndoActionPtr AddGridLineAtLeft(const CurvilinearGridNodeIndices& firstNode,
-                                        const CurvilinearGridNodeIndices& secondNode);
+        /// @brief Adds grid lines to the left between two specified nodes.
+        /// @param[in] firstNode The first node defining the range.
+        /// @param[in] secondNode The second node defining the range.
+        /// @param[in] numLines The number of grid lines to add.
+        /// @return A tuple containing an UndoActionPtr and the number of lines actually added.
+        std::tuple<UndoActionPtr, int> AddGridLinesAtLeft(const CurvilinearGridNodeIndices& firstNode,
+                                                          const CurvilinearGridNodeIndices& secondNode,
+                                                          int numLines);
 
-        UndoActionPtr AddGridLineAtRight(const CurvilinearGridNodeIndices& firstNode,
-                                         const CurvilinearGridNodeIndices& secondNode);
+        /// @brief Adds grid lines to the right between two specified nodes.
+        /// @param[in] firstNode The first node defining the range.
+        /// @param[in] secondNode The second node defining the range.
+        /// @param[in] numLines The number of grid lines to add.
+        /// @return A tuple containing an UndoActionPtr and the number of lines actually added.
+        std::tuple<UndoActionPtr, int> AddGridLinesAtRight(const CurvilinearGridNodeIndices& firstNode,
+                                                           const CurvilinearGridNodeIndices& secondNode,
+                                                           int numLines);
 
         /// @brief Allocates a new grid line at the boundary of the curvilinear grid if needed.
         /// @param firstNode The first node of the boundary grid line.
         /// @param secondNode The second node of the boundary grid line.
-        /// @return If a new grid line has been allocated
-        std::tuple<bool, UndoActionPtr> AddGridLineAtBoundary(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode);
+        /// @param numLines The number of gridlines required to be added.
+        /// @return The number of new rows/columns added, the boundary on which they were added and the undo action
+        std::tuple<int, BoundaryGridLineType, UndoActionPtr> AddGridLinesAtBoundary(CurvilinearGridNodeIndices const& firstNode,
+                                                                                    CurvilinearGridNodeIndices const& secondNode,
+                                                                                    int numLines);
 
         /// @brief Get the boundary grid line type: left, right, bottom or up
         /// @param[in] firstNode The first node of the grid line
         /// @param[in] secondNode The second node of the grid line
         /// @return The boundary grid line type
-        [[nodiscard]] BoundaryGridLineType GetBoundaryGridLineType(CurvilinearGridNodeIndices const& firstNode, CurvilinearGridNodeIndices const& secondNode) const;
+        [[nodiscard]] BoundaryGridLineType GetBoundaryGridLineType(CurvilinearGridNodeIndices const& firstNode,
+                                                                   CurvilinearGridNodeIndices const& secondNode) const;
 
         /// @brief Delete a node at a specific location by setting it to an invalid point.
         /// @param[in] point The input point coordinate. The closest grid node will be deleted.
@@ -436,6 +464,11 @@ namespace meshkernel
         /// @return A number >= 2 for a valid curvilinear grid
         UInt FullNumN() const { return static_cast<UInt>(m_gridNodes.rows()); }
 
+        /// @brief Computes a grid line from two points
+        /// @param[in] firstPoint The point containing the first point of the line
+        /// @param[in] secondPoint The point containing the second point of the line
+        CurvilinearGridLine GetGridLine(const Point& firstPoint, const Point& secondPoint);
+
         /// @brief Restore grid to state before grid line was added
         void RestoreAction(const AddGridLineUndoAction& undoAction);
 
@@ -542,6 +575,9 @@ namespace meshkernel
 
         /// @brief Get the node type of the interior nodes
         NodeType GetInteriorNodeType(const UInt n, const UInt m) const;
+
+        /// @brief Computes the indices of the first valid row and columns of a grid node matrix
+        std::tuple<UInt, UInt, UInt, UInt> TrimGridNodes(const lin_alg::Matrix<Point>& gridNodes) const;
 
         Projection m_projection;                               ///< The curvilinear grid projection
         lin_alg::Matrix<Point> m_gridNodes;                    ///< Member variable storing the grid

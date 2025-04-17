@@ -25,12 +25,13 @@
 //
 //------------------------------------------------------------------------------
 
+#include "MeshKernel/AveragingInterpolation.hpp"
+#include "MeshKernel/AveragingStrategies/AveragingStrategyFactory.hpp"
+#include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/MeshEdgeCenters.hpp"
+#include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Utilities/RTreeFactory.hpp"
-#include <MeshKernel/AveragingInterpolation.hpp>
-#include <MeshKernel/AveragingStrategies/AveragingStrategyFactory.hpp>
-#include <MeshKernel/Exceptions.hpp>
-#include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/Operations.hpp>
 
 using meshkernel::AveragingInterpolation;
 
@@ -71,13 +72,12 @@ void AveragingInterpolation::Compute()
         m_nodeResults.resize(m_mesh.GetNumNodes(), constants::missing::doubleValue);
         std::ranges::fill(m_nodeResults, constants::missing::doubleValue);
 
-        // make sure edge centers are computed
-        m_mesh.ComputeEdgesCenters();
+        std::vector<Point> edgeCentres = algo::ComputeEdgeCentres(m_mesh);
 
         std::vector<Point> dualFacePolygon;
         for (UInt n = 0; n < m_mesh.GetNumNodes(); ++n)
         {
-            m_mesh.MakeDualFace(n, m_relativeSearchRadius, dualFacePolygon);
+            m_mesh.MakeDualFace(edgeCentres, n, m_relativeSearchRadius, dualFacePolygon);
             const auto result = ComputeOnPolygon(dualFacePolygon, m_mesh.Node(n));
             m_nodeResults[n] = result;
         }
@@ -106,7 +106,7 @@ void AveragingInterpolation::Compute()
     if (m_interpolationLocation == Location::Faces)
     {
         std::vector<bool> visitedSamples(m_samples.size(), false); ///< The visited samples
-        std::vector<Point> polygonNodesCache(Mesh::m_maximumNumberOfNodesPerFace + 1);
+        std::vector<Point> polygonNodesCache(constants::geometric::maximumNumberOfNodesPerFace + 1);
         m_faceResults.resize(m_mesh.GetNumFaces(), constants::missing::doubleValue);
         std::ranges::fill(m_faceResults, constants::missing::doubleValue);
 

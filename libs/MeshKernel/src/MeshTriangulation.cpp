@@ -41,7 +41,7 @@ extern "C"
                        double const* const xs,
                        double const* const ys,
                        int ns,
-                       int* const indx,
+                       int* const index,
                        int* const numtri,
                        int* const edgeidx,
                        int* const numedge,
@@ -65,12 +65,10 @@ meshkernel::MeshTriangulation::MeshTriangulation(const std::span<const Point> no
     std::vector<double> xNodes(nodes.size());
     std::vector<double> yNodes(nodes.size());
 
-    std::transform(nodes.begin(), nodes.end(), xNodes.begin(),
-                   [](const Point& p)
-                   { return p.x; });
-    std::transform(nodes.begin(), nodes.end(), yNodes.begin(),
-                   [](const Point& p)
-                   { return p.y; });
+    std::ranges::transform(nodes, xNodes.begin(), [](const Point& p)
+                           { return p.x; });
+    std::ranges::transform(nodes, yNodes.begin(), [](const Point& p)
+                           { return p.y; });
 
     Compute(xNodes, yNodes);
 }
@@ -154,9 +152,9 @@ void meshkernel::MeshTriangulation::Compute(const std::span<const double>& xNode
                       xNodes.data(),
                       yNodes.data(),
                       numInputNodes,
-                      faceNodes.data(), // INDX
+                      faceNodes.data(), // INDEX
                       &numFaces,
-                      edgeNodes.data(), // EDGEINDX
+                      edgeNodes.data(), // EDGEINDEX
                       &numEdges,
                       faceEdges.data(), // TRIEDGE
                       nullptr, nullptr, nullptr,
@@ -226,10 +224,10 @@ void meshkernel::MeshTriangulation::Compute(const std::span<const double>& xNode
 
     for (UInt e = 0; e < m_numEdges; ++e)
     {
-        Edge edge = GetEdge(e);
+        auto [edgeFirst, edgeSecond] = GetEdge(e);
 
-        m_nodesEdges[edge.first].push_back(e);
-        m_nodesEdges[edge.second].push_back(e);
+        m_nodesEdges[edgeFirst].push_back(e);
+        m_nodesEdges[edgeSecond].push_back(e);
     }
 }
 
@@ -237,83 +235,85 @@ meshkernel::UInt meshkernel::MeshTriangulation::FindNearestFace(const Point& pnt
 {
     m_elementCentreRTree->SearchNearestPoint(pnt);
 
-    if (m_elementCentreRTree->HasQueryResults())
+    if (!m_elementCentreRTree->HasQueryResults())
     {
-        UInt faceId = m_elementCentreRTree->GetQueryResult(0);
+        return constants::missing::uintValue;
+    }
 
-        if (PointIsInElement(pnt, faceId))
+    UInt faceId = m_elementCentreRTree->GetQueryResult(0);
+
+    if (PointIsInElement(pnt, faceId))
+    {
+        return faceId;
+    }
+
+    const auto edgeIds = GetEdgeIds(faceId);
+
+    BoundedStack<4 * MaximumNumberOfEdgesPerNode> elementsChecked;
+    elementsChecked.push_back(faceId);
+
+    for (UInt i = 0; i < edgeIds.size(); ++i)
+    {
+        const auto [neighbour1, neighbour2] = GetFaceIds(edgeIds[i]);
+
+        if (neighbour1 != faceId && neighbour1 != constants::missing::uintValue)
         {
-            return faceId;
+            if (PointIsInElement(pnt, neighbour1))
+            {
+                return neighbour1;
+            }
+
+            elementsChecked.push_back(neighbour1);
         }
 
-        const auto edgeIds = GetEdgeIds(faceId);
-
-        BoundedStack<4 * MaximumNumberOfEdgesPerNode> elementsChecked;
-        elementsChecked.push_back(faceId);
-
-        for (UInt i = 0; i < edgeIds.size(); ++i)
+        if (neighbour2 != faceId && neighbour2 != constants::missing::uintValue)
         {
-            const auto [neighbour1, neighbour2] = GetFaceIds(edgeIds[i]);
-
-            if (neighbour1 != faceId && neighbour1 != constants::missing::uintValue)
+            if (PointIsInElement(pnt, neighbour2))
             {
-                if (PointIsInElement(pnt, neighbour1))
-                {
-                    return neighbour1;
-                }
-
-                elementsChecked.push_back(neighbour1);
+                return neighbour2;
             }
 
-            if (neighbour2 != faceId && neighbour2 != constants::missing::uintValue)
-            {
-                if (PointIsInElement(pnt, neighbour2))
-                {
-                    return neighbour2;
-                }
+            elementsChecked.push_back(neighbour2);
+        }
+    }
 
-                elementsChecked.push_back(neighbour2);
-            }
+    // Point not in direct neighbours of the element
+
+    m_nodeRTree->SearchNearestPoint(pnt);
+
+    if (m_nodeRTree->HasQueryResults())
+    {
+        UInt nodeId = m_nodeRTree->GetQueryResult(0);
+
+        if (nodeId == constants::missing::uintValue)
+        {
+            return constants::missing::uintValue;
         }
 
-        // Point not in direct neighbours of the element
-
-        m_nodeRTree->SearchNearestPoint(pnt);
-
-        if (m_nodeRTree->HasQueryResults())
+        for (UInt n = 0; n < m_nodesEdges[nodeId].size(); ++n)
         {
-            UInt nodeId = m_nodeRTree->GetQueryResult(0);
+            const auto faces = GetFaceIds(m_nodesEdges[nodeId][n]);
 
-            if (nodeId == constants::missing::uintValue)
+            if (faces[0] != constants::missing::uintValue && !elementsChecked.contains(faces[0]))
             {
-                return constants::missing::uintValue;
+
+                if (PointIsInElement(pnt, faces[0]))
+                {
+                    return faces[0];
+                }
+
+                elementsChecked.push_back(faces[0]);
             }
 
-            for (UInt n = 0; n < m_nodesEdges[nodeId].size(); ++n)
+            if (faces[1] != constants::missing::uintValue && !elementsChecked.contains(faces[1]))
             {
-                const auto faces = GetFaceIds(m_nodesEdges[nodeId][n]);
 
-                if (faces[0] != constants::missing::uintValue && !elementsChecked.contains(faces[0]))
+                if (PointIsInElement(pnt, faces[1]))
                 {
-
-                    if (PointIsInElement(pnt, faces[0]))
-                    {
-                        return faces[0];
-                    }
-
-                    elementsChecked.push_back(faces[0]);
+                    return faces[1];
                 }
 
-                if (faces[1] != constants::missing::uintValue && !elementsChecked.contains(faces[1]))
-                {
-
-                    if (PointIsInElement(pnt, faces[1]))
-                    {
-                        return faces[1];
-                    }
-
-                    elementsChecked.push_back(faces[1]);
-                }
+                elementsChecked.push_back(faces[1]);
             }
         }
     }

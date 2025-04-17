@@ -117,7 +117,7 @@ void meshkernel::ConnectMeshes::GetQuadrilateralElementsOnDomainBoundary(const M
 {
     for (UInt i = 0; i < mesh.GetNumEdges(); ++i)
     {
-        if (mesh.m_edgesNumFaces[i] == 1)
+        if (mesh.GetNumEdgesFaces(i) == 1)
         {
             const UInt faceId = mesh.m_edgesFaces[i][0];
 
@@ -217,14 +217,18 @@ void meshkernel::ConnectMeshes::GatherHangingNodes(const UInt primaryStartNode,
     const UInt secondaryStartNode = irregularEdge.first;
     const UInt secondaryEndNode = irregularEdge.second;
 
-    if (mergeIndicator[secondaryStartNode] == MergeIndicator::Initial && secondaryStartNode != primaryStartNode && secondaryStartNode != primaryEndNode)
+    if (secondaryStartNode != constants::missing::uintValue &&
+        mergeIndicator[secondaryStartNode] == MergeIndicator::Initial &&
+        secondaryStartNode != primaryStartNode && secondaryStartNode != primaryEndNode)
     {
         hangingNodesOnEdge[numberOfHangingNodes] = secondaryStartNode;
         ++numberOfHangingNodes;
         mergeIndicator[secondaryStartNode] = MergeIndicator::DoNotMerge;
     }
 
-    if (mergeIndicator[secondaryEndNode] == MergeIndicator::Initial && secondaryEndNode != primaryStartNode && secondaryEndNode != primaryEndNode)
+    if (secondaryEndNode != constants::missing::uintValue &&
+        mergeIndicator[secondaryEndNode] == MergeIndicator::Initial &&
+        secondaryEndNode != primaryStartNode && secondaryEndNode != primaryEndNode)
     {
         hangingNodesOnEdge[numberOfHangingNodes] = secondaryEndNode;
         ++numberOfHangingNodes;

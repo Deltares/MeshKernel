@@ -28,11 +28,10 @@
 #pragma once
 
 #include "MeshKernel/Definitions.hpp"
-#include "MeshKernel/SampleInterpolator.hpp"
 #include "MeshKernel/Parameters.hpp"
+#include "MeshKernel/SampleInterpolator.hpp"
 
 #include "MeshKernelApi/GeometryList.hpp"
-// #include "MeshKernelApi/State.hpp"
 
 namespace meshkernelapi
 {
@@ -64,7 +63,7 @@ namespace meshkernelapi
         /// @brief Determine is the calculator can compute the desired results correctly.
         ///
         /// This has a default of checking that the mesh2d is valid and the location is at edges
-        virtual bool IsValid(const MeshKernelState& state, const meshkernel::Location location) const;
+        virtual bool IsValid(const MeshKernelState& state, const meshkernel::Location location) const override;
 
         /// @brief Calculate the orthogonality for a mesh
         void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const override;
@@ -80,7 +79,7 @@ namespace meshkernelapi
         /// @brief Determine is the calculator can compute the desired results correctly.
         ///
         /// This has a default of checking that the mesh2d is valid and the location is at edges
-        virtual bool IsValid(const MeshKernelState& state, const meshkernel::Location location) const;
+        virtual bool IsValid(const MeshKernelState& state, const meshkernel::Location location) const override;
 
         /// @brief Calculate the edge-length for a mesh
         ///
@@ -98,7 +97,7 @@ namespace meshkernelapi
         /// @brief Constructor
         InterpolatedSamplePropertyCalculator(const GeometryList& sampleData,
                                              const meshkernel::Projection projection,
-                                             const meshkernel::InterpolationParameters& interpolationParameters,
+                                             const int interpolationType,
                                              const int propertyId);
 
         /// @brief Determine is the calculator can interpolate depth values correctly

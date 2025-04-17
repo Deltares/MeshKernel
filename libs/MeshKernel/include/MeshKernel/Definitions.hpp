@@ -113,4 +113,44 @@ namespace meshkernel
     /// @brief Get the string representation of the CurvilinearDirection enumeration values.
     const std::string& CurvilinearDirectionToString(CurvilinearDirection direction);
 
+    /// @brief Boolean value designed for use in std::vector
+    ///
+    /// This is needed to ensure thread safety when writing to an std::vector of
+    /// Boolean (bool) values. The template specialisation of std::vector<bool>
+    /// has resulted in unsafe multithreaded writes to an object of this type.
+    /// See RM 23.2.2
+    class Boolean
+    {
+    public:
+        /// @brief Default constructor
+        Boolean() = default;
+
+        /// @brief Constructor
+        Boolean(const bool val) : m_value(val) {}
+
+        /// @brief Assignment operator
+        Boolean& operator=(const bool val)
+        {
+            m_value = val;
+            return *this;
+        }
+
+        /// @brief Type conversion operator
+        operator bool() const { return m_value; }
+
+    private:
+        /// @brief The member Boolean value.
+        bool m_value = false;
+    };
+
+    /// @brief Possible unstructured node types
+    enum class MeshNodeType : std::int8_t
+    {
+        Hanging = -1, ///< Hanging node
+        Unspecified,  ///< Initial value, unspecified or invalid nodes
+        Internal,     ///< Nodes in interior of domain
+        Boundary,     ///< Nodes on boundary of domain, except corners
+        Corner        ///< Nodes at corners
+    };
+
 } // namespace meshkernel

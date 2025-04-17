@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #pragma once
+#include <cstdint>
 #include <filesystem>
 #include <memory>
 
@@ -134,5 +135,5 @@ MakeMeshWithFaceNodesForApiTesting();
 std::tuple<std::vector<meshkernel::Point>,
            std::vector<meshkernel::Edge>,
            std::vector<std::vector<meshkernel::UInt>>,
-           std::vector<meshkernel::UInt>>
+           std::vector<std::uint8_t>>
 MakeMeshWithFaceNodes();

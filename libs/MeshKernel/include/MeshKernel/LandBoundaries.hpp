@@ -114,9 +114,11 @@ namespace meshkernel
         /// @brief Assigns to each mesh node a land boundary segment.
         ///
         /// This is done by modifying m_meshNodesLandBoundarySegments.
-        /// @param[in] landBoundaryIndex       The current landboundary segment
-        /// @returns The number of mesh nodes and rejected nodes for this path
-        std::tuple<UInt, UInt> MakePath(UInt landBoundaryIndex);
+        /// @param[in] landBoundaryIndex            The current landboundary segment
+        /// @param[in] numNodesInPath               The number of nodes in the path
+        /// @param[in] numRejectedNodesInPath       The number of rejected paths
+        /// @returns True if a path is found, false otherwise
+        bool MakePath(UInt landBoundaryIndex, UInt& numNodesInPath, UInt& numRejectedNodesInPath);
 
         /// @brief Mask the mesh nodes to be considered in the shortest path algorithm for the current land boundary polyline (masknodes).
         /// @param[in] landBoundaryIndex The land boundary polyline index
@@ -158,7 +160,7 @@ namespace meshkernel
         ///
         /// \image html LandBoundaryDijkstra_step4.jpg  "Compute the land boundary representation on the mesh using the Djikstra shortest path algorithm."
         /// @param[in] landBoundaryIndex The land boundary polyline index
-        /// @returns the start and the end mesh nodes indices
+        /// @returns a tuple with the start and end node of the shortest path
         std::tuple<UInt, UInt> FindStartEndMeshNodesDijkstraAlgorithm(UInt landBoundaryIndex);
 
         /// @brief Finds the edge nodes closest to a point

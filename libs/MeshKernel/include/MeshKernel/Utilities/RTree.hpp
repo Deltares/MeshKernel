@@ -42,6 +42,7 @@
 #include "MeshKernel/Utilities/RTreeBase.hpp"
 
 #include <concepts>
+#include <utility>
 
 // r-tree
 // https://gist.github.com/logc/10272165
@@ -91,6 +92,9 @@ namespace meshkernel
         using Box2D = bg::model::box<Point2D>;                   ///< Typedef for box of Point2D
         using Value2D = std::pair<Point2D, UInt>;                ///< Typedef of pair of Point2D and UInt
         using RTree2D = bgi::rtree<Value2D, bgi::linear<16>>;    ///< Typedef for a 2D RTree
+
+        /// @brief Ninety degrees
+        static constexpr double NinetyDegrees = 90.0;
 
     public:
         /// @brief Builds the tree from a vector of Points
@@ -196,6 +200,12 @@ namespace meshkernel
             m_rtree2D = RTree2D(m_points);
         }
 
+        /// @brief Performs a spatial search within a search radius
+        /// @param[in] node The reference point for the search.
+        /// @param[in] searchRadiusSquared The squared search radius.
+        /// @param[in] findNearest If true, finds the nearest point; otherwise, finds all points within the radius.
+        void Search(Point const& node, double searchRadiusSquared, bool findNearest);
+
         RTree2D m_rtree2D;                              ///< The 2D RTree
         std::vector<std::pair<Point2D, UInt>> m_points; ///< The points
         std::vector<Value2D> m_queryCache;              ///< The query cache
@@ -204,38 +214,7 @@ namespace meshkernel
     };
 
     template <typename projection>
-    void RTree<projection>::SearchPoints(Point const& node, double searchRadiusSquared)
-    {
-        if (Empty())
-        {
-            throw AlgorithmError("RTree is empty, search cannot be performed");
-        }
-
-        const auto searchRadius = std::sqrt(searchRadiusSquared);
-
-        Box2D const box(Point2D(node.x - searchRadius, node.y - searchRadius),
-                        Point2D(node.x + searchRadius, node.y + searchRadius));
-        Point2D nodeSought = Point2D(node.x, node.y);
-
-        m_queryCache.reserve(m_queryVectorCapacity);
-        m_queryCache.clear();
-        m_rtree2D.query(bgi::within(box) &&
-                            bgi::satisfies([&nodeSought, &searchRadiusSquared](Value2D const& v)
-                                           { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; }),
-                        std::back_inserter(m_queryCache));
-
-        m_queryIndices.reserve(m_queryCache.size());
-        m_queryIndices.clear();
-
-        for (size_t i = 0; i < m_queryCache.size(); ++i)
-        {
-            auto const index = std::get<1>(m_queryCache[i]);
-            m_queryIndices.emplace_back(index);
-        }
-    }
-
-    template <typename projection>
-    void RTree<projection>::SearchNearestPoint(Point const& node, double searchRadiusSquared)
+    void RTree<projection>::Search(Point const& node, double searchRadiusSquared, bool findNearest)
     {
         if (Empty())
         {
@@ -248,17 +227,73 @@ namespace meshkernel
         const auto searchRadius = std::sqrt(searchRadiusSquared);
         Box2D const box(Point2D(node.x - searchRadius, node.y - searchRadius),
                         Point2D(node.x + searchRadius, node.y + searchRadius));
-        m_rtree2D.query(bgi::within(box) &&
-                            bgi::satisfies([&nodeSought, &searchRadiusSquared](Value2D const& v)
-                                           { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; }) &&
-                            bgi::nearest(nodeSought, 1),
-                        std::back_inserter(m_queryCache));
 
-        if (!m_queryCache.empty())
+        auto pointIsNearby = [&nodeSought, &searchRadiusSquared](Value2D const& v)
+        { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; };
+
+        auto atPoleOrInBox = [&nodeSought, &box](Value2D const& v)
         {
-            m_queryIndices.clear();
+            const Point2D& p(v.first);
+            return (nodeSought.template get<1>() == NinetyDegrees && p.template get<1>() == NinetyDegrees) ||
+                   (nodeSought.template get<1>() == -NinetyDegrees && p.template get<1>() == -NinetyDegrees) ||
+                   bg::within(p, box);
+        };
+
+        if constexpr (std::is_same<projection, bg::cs::cartesian>::value)
+        {
+            if (findNearest)
+            {
+                m_rtree2D.query(bgi::within(box) && bgi::satisfies(pointIsNearby) && bgi::nearest(nodeSought, 1),
+                                std::back_inserter(m_queryCache));
+            }
+            else
+            {
+                m_rtree2D.query(bgi::within(box) && bgi::satisfies(pointIsNearby),
+                                std::back_inserter(m_queryCache));
+            }
+        }
+        else if constexpr (std::is_same<projection, bg::cs::geographic<bg::degree>>::value)
+        {
+            if (findNearest)
+            {
+                m_rtree2D.query(bgi::satisfies(atPoleOrInBox) && bgi::satisfies(pointIsNearby) && bgi::nearest(nodeSought, 1),
+                                std::back_inserter(m_queryCache));
+            }
+            else
+            {
+                m_rtree2D.query(bgi::satisfies(atPoleOrInBox) && bgi::satisfies(pointIsNearby),
+                                std::back_inserter(m_queryCache));
+            }
+        }
+        else
+        {
+            throw ConstraintError("Searching for points has not been implemented for this projection type");
+        }
+
+        m_queryIndices.clear();
+        if (findNearest && !m_queryCache.empty())
+        {
             m_queryIndices.emplace_back(m_queryCache[0].second);
         }
+        else
+        {
+            for (const auto& entry : m_queryCache)
+            {
+                m_queryIndices.emplace_back(entry.second);
+            }
+        }
+    }
+
+    template <typename projection>
+    void RTree<projection>::SearchPoints(Point const& node, double searchRadiusSquared)
+    {
+        Search(node, searchRadiusSquared, false);
+    }
+
+    template <typename projection>
+    void RTree<projection>::SearchNearestPoint(Point const& node, double searchRadiusSquared)
+    {
+        Search(node, searchRadiusSquared, true);
     }
 
     template <typename projection>

@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernel/SampleAveragingInterpolator.hpp"
+#include "MeshKernel/MeshEdgeCenters.hpp"
 #include "MeshKernel/Operations.hpp"
 
 std::vector<meshkernel::Point> meshkernel::SampleAveragingInterpolator::CombineCoordinates(const std::span<const double> xNodes,
@@ -253,13 +254,15 @@ void meshkernel::SampleAveragingInterpolator::InterpolateAtNodes(const int prope
     std::vector<Sample> sampleCache;
     sampleCache.reserve(100);
 
+    std::vector<Point> edgeCentres = algo::ComputeEdgeCentres(mesh);
+
     for (UInt n = 0; n < mesh.GetNumNodes(); ++n)
     {
-        mesh.MakeDualFace(n, m_interpolationParameters.relative_search_radius, dualFacePolygon);
+        mesh.MakeDualFace(edgeCentres, n, m_interpolationParameters.relative_search_radius, dualFacePolygon);
 
         double resultValue = constants::missing::doubleValue;
 
-        if (dualFacePolygon.size() > 0)
+        if (!dualFacePolygon.empty())
         {
             resultValue = ComputeOnPolygon(propertyId,
                                            dualFacePolygon,
@@ -333,27 +336,29 @@ void meshkernel::SampleAveragingInterpolator::Interpolate(const int propertyId, 
     std::vector<double> intermediateNodeResult;
     std::span<double> nodeResult;
 
-    if (location == Location::Nodes)
+    using enum Location;
+
+    if (location == Nodes)
     {
         nodeResult = std::span<double>(result.data(), result.size());
     }
-    else if (location == Location::Edges)
+    else if (location == Edges)
     {
         intermediateNodeResult.resize(mesh.GetNumNodes(), 0.0);
         nodeResult = std::span<double>(intermediateNodeResult.data(), intermediateNodeResult.size());
     }
 
-    if (location == Location::Nodes || location == Location::Edges)
+    if (location == Nodes || location == Edges)
     {
         InterpolateAtNodes(propertyId, mesh, nodeResult);
     }
 
-    if (location == Location::Edges)
+    if (location == Edges)
     {
         InterpolateAtEdgeCentres(mesh, nodeResult, result);
     }
 
-    if (location == Location::Faces)
+    if (location == Faces)
     {
         InterpolateAtFaces(propertyId, mesh, result);
     }

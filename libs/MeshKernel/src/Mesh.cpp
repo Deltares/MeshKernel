@@ -27,11 +27,14 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iomanip>
 #include <numeric>
 
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh.hpp"
+#include "MeshKernel/MeshEdgeCenters.hpp"
+#include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/RangeCheck.hpp"
@@ -78,7 +81,7 @@ bool Mesh::NodeAdministration()
             continue;
         }
 
-        if (m_nodesNumEdges[firstNode] >= m_maximumNumberOfEdgesPerNode || m_nodesNumEdges[secondNode] >= m_maximumNumberOfEdgesPerNode)
+        if (m_nodesNumEdges[firstNode] >= constants::geometric::maximumNumberOfEdgesPerNode || m_nodesNumEdges[secondNode] >= constants::geometric::maximumNumberOfEdgesPerNode)
         {
             continue;
         }
@@ -359,7 +362,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeTwoNodes(UInt firstNodeIndex,
     }
 
     // add all valid edges starting at secondNode
-    std::vector<UInt> secondNodeEdges(m_maximumNumberOfEdgesPerNode, constants::missing::uintValue);
+    std::vector<UInt> secondNodeEdges(constants::geometric::maximumNumberOfEdgesPerNode, constants::missing::uintValue);
     UInt numSecondNodeEdges = 0;
 
     for (UInt n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
@@ -415,7 +418,6 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeTwoNodes(UInt firstNodeIndex,
 
 std::unique_ptr<meshkernel::UndoAction> Mesh::MergeNodesInPolygon(const Polygons& polygon, double mergingDistance)
 {
-
     // first filter the nodes in polygon
     const auto numNodes = GetNumNodes();
     std::vector<Point> filteredNodes(numNodes);
@@ -425,7 +427,9 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeNodesInPolygon(const Polygons
     UInt filteredNodeCount = 0;
     for (UInt i = 0; i < numNodes; ++i)
     {
-        if (isNodeInPolygon[i])
+        if (isNodeInPolygon[i] &&
+            m_nodes[i].x != constants::missing::doubleValue &&
+            m_nodes[i].y != constants::missing::doubleValue)
         {
             filteredNodes[filteredNodeCount] = m_nodes[i];
             originalNodeIndices[filteredNodeCount] = i;
@@ -450,16 +454,20 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeNodesInPolygon(const Polygons
 
     // merge the closest nodes
     auto const mergingDistanceSquared = mergingDistance * mergingDistance;
+
     for (UInt i = 0; i < filteredNodes.size(); ++i)
     {
         nodesRtree->SearchPoints(filteredNodes[i], mergingDistanceSquared);
 
         const auto resultSize = nodesRtree->GetQueryResultSize();
+
         if (resultSize > 1)
         {
+
             for (UInt j = 0; j < nodesRtree->GetQueryResultSize(); j++)
             {
                 const auto nodeIndexInFilteredNodes = nodesRtree->GetQueryResult(j);
+
                 if (nodeIndexInFilteredNodes != i)
                 {
                     undoAction->Add(MergeTwoNodes(originalNodeIndices[i], originalNodeIndices[nodeIndexInFilteredNodes]));
@@ -597,46 +605,6 @@ std::unique_ptr<meshkernel::DeleteNodeAction> Mesh::DeleteNode(UInt node, const 
         CommitAction(undoAction);
         return nullptr;
     }
-}
-
-void Mesh::ComputeEdgesLengths()
-{
-    auto const numEdges = GetNumEdges();
-    m_edgeLengths.resize(numEdges, constants::missing::doubleValue);
-
-    // TODO could be openmp loop
-    for (UInt e = 0; e < numEdges; e++)
-    {
-        auto const first = m_edges[e].first;
-        auto const second = m_edges[e].second;
-
-        if (first != constants::missing::uintValue && second != constants::missing::uintValue) [[likely]]
-        {
-            m_edgeLengths[e] = ComputeDistance(m_nodes[first], m_nodes[second], m_projection);
-        }
-    }
-}
-
-double Mesh::ComputeMinEdgeLength(const Polygons& polygon) const
-{
-    auto const numEdges = GetNumEdges();
-    auto result = std::numeric_limits<double>::max();
-
-    const auto isNodeInPolygon = IsLocationInPolygon(polygon, Location::Nodes);
-    for (UInt e = 0; e < numEdges; e++)
-    {
-        const auto& [firstNode, secondNode] = m_edges[e];
-        if (isNodeInPolygon[firstNode] || isNodeInPolygon[secondNode])
-        {
-            result = std::min(result, m_edgeLengths[e]);
-        }
-    }
-    return result;
-}
-
-void Mesh::ComputeEdgesCenters()
-{
-    m_edgesCenters = ComputeEdgeCenters(m_nodes, m_edges);
 }
 
 meshkernel::UInt Mesh::FindCommonNode(UInt firstEdgeIndex, UInt secondEdgeIndex) const
@@ -833,9 +801,9 @@ bool Mesh::IsFaceOnBoundary(UInt face) const
 void Mesh::SortEdgesInCounterClockWiseOrder(UInt startNode, UInt endNode)
 {
 
-    std::vector<double> edgeAngles(m_maximumNumberOfEdgesPerNode);
-    std::vector<UInt> indices(m_maximumNumberOfEdgesPerNode);
-    std::vector<UInt> edgeNodeCopy(m_maximumNumberOfEdgesPerNode);
+    std::vector<double> edgeAngles(constants::geometric::maximumNumberOfEdgesPerNode);
+    std::vector<UInt> indices(constants::geometric::maximumNumberOfEdgesPerNode);
+    std::vector<UInt> edgeNodeCopy(constants::geometric::maximumNumberOfEdgesPerNode);
     for (UInt n = startNode; n <= endNode; n++)
     {
         if (!m_nodes[n].IsValid())
@@ -921,7 +889,6 @@ void Mesh::Administrate(CompoundUndoAction* undoAction)
 
 void Mesh::AdministrateNodesEdges(CompoundUndoAction* undoAction)
 {
-    m_edgesCenters.clear();
     SetUnConnectedNodesAndEdgesToInvalid(undoAction);
 
     // return if there are no nodes or no edges
@@ -931,7 +898,7 @@ void Mesh::AdministrateNodesEdges(CompoundUndoAction* undoAction)
     }
 
     m_nodesEdges.resize(m_nodes.size());
-    std::ranges::fill(m_nodesEdges, std::vector(m_maximumNumberOfEdgesPerNode, constants::missing::uintValue));
+    std::ranges::fill(m_nodesEdges, std::vector(constants::geometric::maximumNumberOfEdgesPerNode, constants::missing::uintValue));
 
     m_nodesNumEdges.resize(m_nodes.size());
     std::ranges::fill(m_nodesNumEdges, 0);
@@ -939,24 +906,6 @@ void Mesh::AdministrateNodesEdges(CompoundUndoAction* undoAction)
     NodeAdministration();
 
     SortEdgesInCounterClockWiseOrder(0, GetNumNodes() - 1);
-}
-
-double Mesh::ComputeMaxLengthSurroundingEdges(UInt node)
-{
-
-    if (m_edgeLengths.empty())
-    {
-        ComputeEdgesLengths();
-    }
-
-    auto maxEdgeLength = std::numeric_limits<double>::lowest();
-    for (UInt ee = 0; ee < m_nodesNumEdges[node]; ++ee)
-    {
-        const auto edge = m_nodesEdges[node][ee];
-        maxEdgeLength = std::max(maxEdgeLength, m_edgeLengths[edge]);
-    }
-
-    return maxEdgeLength;
 }
 
 std::vector<meshkernel::Point> Mesh::ComputeLocations(Location location) const
@@ -1015,11 +964,13 @@ meshkernel::UInt Mesh::GetLocalFaceNodeIndex(const UInt faceIndex, const UInt no
     return faceNodeIndex;
 }
 
-std::vector<bool> Mesh::IsLocationInPolygon(const Polygons& polygon, Location location) const
+std::vector<meshkernel::Boolean> Mesh::IsLocationInPolygon(const Polygons& polygon, Location location) const
 {
     const auto locations = ComputeLocations(location);
-    std::vector<bool> result(locations.size(), false);
-    for (UInt i = 0; i < result.size(); ++i)
+    std::vector<Boolean> result(locations.size());
+
+#pragma omp parallel for
+    for (int i = 0; i < static_cast<int>(result.size()); ++i)
     {
         result[i] = polygon.IsPointInPolygon(locations[i], 0);
     }
@@ -1217,7 +1168,9 @@ void Mesh::BuildTree(Location location, const BoundingBox& boundingBox)
         if (m_facesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
         {
             Administrate();
-            m_RTrees.at(Location::Faces)->BuildTree(m_facesCircumcenters, boundingBox);
+            std::vector<Point> facesCircumcenters = algo::ComputeFaceCircumcenters(*this);
+
+            m_RTrees.at(Location::Faces)->BuildTree(facesCircumcenters, boundingBox);
             m_facesRTreeRequiresUpdate = false;
             m_boundingBoxCache = boundingBox;
         }
@@ -1233,8 +1186,8 @@ void Mesh::BuildTree(Location location, const BoundingBox& boundingBox)
     case Location::Edges:
         if (m_edgesRTreeRequiresUpdate || m_boundingBoxCache != boundingBox)
         {
-            ComputeEdgesCenters();
-            m_RTrees.at(Location::Edges)->BuildTree(m_edgesCenters, boundingBox);
+            std::vector<Point> edgeCentres = algo::ComputeEdgeCentres(*this);
+            m_RTrees.at(Location::Edges)->BuildTree(edgeCentres, boundingBox);
             m_edgesRTreeRequiresUpdate = false;
             m_boundingBoxCache = boundingBox;
         }
@@ -1374,4 +1327,18 @@ void Mesh::RestoreAction(FullUnstructuredGridUndo& undoAction)
     m_edgesRTreeRequiresUpdate = true;
     SetAdministrationRequired(true);
     Administrate();
+}
+
+void Mesh::ComputeFaceClosedPolygon(UInt faceIndex, std::vector<Point>& polygonNodesCache) const
+{
+    const auto numFaceNodes = GetNumFaceEdges(faceIndex);
+    polygonNodesCache.clear();
+    polygonNodesCache.reserve(numFaceNodes + 1);
+
+    for (UInt n = 0; n < numFaceNodes; n++)
+    {
+        polygonNodesCache.push_back(m_nodes[m_facesNodes[faceIndex][n]]);
+    }
+
+    polygonNodesCache.push_back(polygonNodesCache.front());
 }

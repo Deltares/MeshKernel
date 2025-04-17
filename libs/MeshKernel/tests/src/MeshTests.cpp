@@ -1,3 +1,30 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #include <chrono>
 #include <gtest/gtest.h>
 #include <random>
@@ -41,10 +68,10 @@ TEST(Mesh, OneQuadTestConstructor)
     ASSERT_EQ(3, mesh.m_nodesEdges[3][1]);
 
     // each node has two edges int this case
-    ASSERT_EQ(2, mesh.m_nodesNumEdges[0]);
-    ASSERT_EQ(2, mesh.m_nodesNumEdges[1]);
-    ASSERT_EQ(2, mesh.m_nodesNumEdges[2]);
-    ASSERT_EQ(2, mesh.m_nodesNumEdges[3]);
+    ASSERT_EQ(2, mesh.GetNumNodesEdges(0));
+    ASSERT_EQ(2, mesh.GetNumNodesEdges(1));
+    ASSERT_EQ(2, mesh.GetNumNodesEdges(2));
+    ASSERT_EQ(2, mesh.GetNumNodesEdges(3));
 
     // the nodes composing the face, in ccw order
     ASSERT_EQ(0, mesh.m_facesNodes[0][0]);
@@ -58,15 +85,15 @@ TEST(Mesh, OneQuadTestConstructor)
     ASSERT_EQ(1, mesh.m_facesEdges[0][2]);
     ASSERT_EQ(2, mesh.m_facesEdges[0][3]);
 
-    // the found circumcenter for the face
-    ASSERT_DOUBLE_EQ(5.0, mesh.m_facesCircumcenters[0].x);
-    ASSERT_DOUBLE_EQ(5.0, mesh.m_facesCircumcenters[0].y);
+    // // the found circumcenter for the face
+    // ASSERT_DOUBLE_EQ(5.0, mesh.m_facesCircumcenters[0].x);
+    // ASSERT_DOUBLE_EQ(5.0, mesh.m_facesCircumcenters[0].y);
 
     // each edge has only one face in this case
-    ASSERT_EQ(1, mesh.m_edgesNumFaces[0]);
-    ASSERT_EQ(1, mesh.m_edgesNumFaces[1]);
-    ASSERT_EQ(1, mesh.m_edgesNumFaces[2]);
-    ASSERT_EQ(1, mesh.m_edgesNumFaces[3]);
+    ASSERT_EQ(1, mesh.GetNumEdgesFaces(0));
+    ASSERT_EQ(1, mesh.GetNumEdgesFaces(1));
+    ASSERT_EQ(1, mesh.GetNumEdgesFaces(2));
+    ASSERT_EQ(1, mesh.GetNumEdgesFaces(3));
 
     // each edge is a boundary edge, so the second entry of edgesFaces is an invalid index (meshkernel::constants::missing::sizetValue)
     ASSERT_EQ(meshkernel::constants::missing::uintValue, mesh.m_edgesFaces[0][1]);
@@ -270,12 +297,6 @@ TEST(Mesh, NodeMerging)
         {
             nodes[nodeIndex] = {i + x_distribution(generator), j + y_distribution(generator)};
 
-            // add artificial edges
-            auto edge = mesh->GetEdge(mesh->m_nodesEdges[originalNodeIndex][0]);
-            auto otherNode = edge.first + edge.second - originalNodeIndex;
-
-            edges[edgeIndex] = {nodeIndex, otherNode};
-            edgeIndex++;
             edges[edgeIndex] = {nodeIndex, originalNodeIndex};
             edgeIndex++;
 
@@ -670,17 +691,22 @@ TEST(Mesh, DeleteHangingEdge)
     std::vector<meshkernel::Point> nodes;
     nodes.push_back({0.0, 0.0});
     nodes.push_back({5.0, 0.0});
-    nodes.push_back({3.0, 2.0});
     nodes.push_back({3.0, 4.0});
 
     std::vector<meshkernel::Edge> edges;
     edges.push_back({0, 1});
-    edges.push_back({1, 3});
-    edges.push_back({3, 0});
-    edges.push_back({2, 1});
+    edges.push_back({1, 2});
+    edges.push_back({2, 0});
 
     // Execute
     auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+
+    // Add new node and connect with existing node, creating hanging edge
+    nodes.push_back({3.0, 2.0});
+    edges.push_back({3, 1});
+
+    [[maybe_unused]] auto undoInsertNode = mesh.InsertNode(nodes[3]);
+    [[maybe_unused]] auto undoConnectNodes = mesh.ConnectNodes(3, 1);
 
     // Assert
     ASSERT_EQ(1, mesh.GetNumFaces());

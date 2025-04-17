@@ -45,7 +45,7 @@ namespace meshkernel
     {
     public:
         /// @brief Default maximum number of undo action items
-        static const UInt DefaultMaxUndoSize;
+        static constexpr UInt DefaultMaxUndoSize = 50;
 
         // Add info about the action, both short and long form
         // Perhaps Short for for menu items, long form for tooltips?

@@ -1,3 +1,30 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #include <algorithm>
 #include <gtest/gtest.h>
 #include <random>
@@ -108,7 +135,6 @@ TEST(MeshPropertyTests, BathymetryTest)
     sampleData.coordinates_x = bathymetryXNodes.data();
     sampleData.coordinates_y = bathymetryYNodes.data();
 
-
     meshkernel::InterpolationParameters interpolationParameters{.interpolation_type = 0};
 
     errorCode = mkapi::mkernel_mesh2d_set_property(meshKernelId, interpolationParameters, sampleData, bathymetryPropertyId);
@@ -152,7 +178,6 @@ TEST(MeshPropertyTests, BathymetryTest)
 
     errorCode = mkapi::mkernel_expunge_state(meshKernelId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
-
 }
 
 TEST(MeshPropertyTests, PropertyFailureTest)

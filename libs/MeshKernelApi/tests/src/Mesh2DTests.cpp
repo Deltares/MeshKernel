@@ -1,3 +1,30 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #include <algorithm>
 #include <gtest/gtest.h>
 #include <random>
@@ -1034,11 +1061,72 @@ TEST(Mesh2D, ConvertToCurvilinear_ShouldConvertMeshToCurvilinear)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(0, mesh2dOut.num_nodes);
-    ASSERT_EQ(0, mesh2dOut.num_edges);
+    ASSERT_EQ(0, mesh2dOut.num_valid_nodes);
+    ASSERT_EQ(0, mesh2dOut.num_valid_edges);
 
     ASSERT_EQ(11, curvilinearOut.num_m);
     ASSERT_EQ(11, curvilinearOut.num_n);
+}
+
+TEST(Mesh2D, ConvertToCurvilinear_OnStructuredAndUnstructuredMesh_ShouldConvertMeshToCurvilinear)
+{
+    // Prepare
+    int meshKernelId;
+    const int isGeographic = 0;
+    meshkernelapi::mkernel_allocate_state(isGeographic, meshKernelId);
+
+    auto [num_nodes, num_edges, node_x, node_y, node_type, edge_nodes, edge_type] =
+        ReadLegacyMeshFile(TEST_FOLDER + "/data/SmallCurviAndTriangularMesh.nc");
+    meshkernelapi::Mesh2D mesh2d;
+    mesh2d.num_edges = static_cast<int>(num_edges);
+    mesh2d.num_nodes = static_cast<int>(num_nodes);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+    auto errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2dOut{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dOut);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(152, mesh2dOut.num_valid_nodes);
+    ASSERT_EQ(308, mesh2dOut.num_valid_edges);
+
+    // Execute: convert mesh to curvilinear
+    errorCode = meshkernelapi::mkernel_mesh2d_convert_to_curvilinear(meshKernelId, 5.0, 5.0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dOut);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearOut{};
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearOut);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert: mesh and curvilinear grid co-exist in the same instance
+    ASSERT_EQ(38, mesh2dOut.num_valid_nodes);
+    ASSERT_EQ(94, mesh2dOut.num_valid_edges);
+    ASSERT_EQ(11, curvilinearOut.num_m);
+    ASSERT_EQ(11, curvilinearOut.num_n);
+
+    // Execute: curvilinear to mesh
+    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dOut);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(159, mesh2dOut.num_valid_nodes);
+    ASSERT_EQ(314, mesh2dOut.num_valid_edges);
+
+    // Execute: Merge nodes ro restore mesh back to the original state
+    meshkernelapi::GeometryList geometry_list;
+    geometry_list.num_coordinates = 0;
+    errorCode = mkernel_mesh2d_merge_nodes_with_merging_distance(meshKernelId, geometry_list, 0.001);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dOut);
+    ASSERT_EQ(152, mesh2dOut.num_valid_nodes);
+    ASSERT_EQ(308, mesh2dOut.num_valid_edges);
 }
 
 TEST(Mesh2d, GetFacePolygons_OnAValidMesh_ShouldGetFacePolygons)
@@ -1194,7 +1282,7 @@ TEST(Mesh2D, UndoConnectMeshes)
     errorCode = meshkernelapi::mkernel_mesh2d_set(mk_id, mesh2d_1);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_mesh2d_connect_meshes(mk_id, mesh2d_2, 0.1);
+    errorCode = meshkernelapi::mkernel_mesh2d_connect_meshes(mk_id, mesh2d_2, 0.1, true);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     bool didUndo = false;
@@ -1207,6 +1295,93 @@ TEST(Mesh2D, UndoConnectMeshes)
     errorCode = meshkernelapi::mkernel_redo_state(didUndo, undoMkId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_EQ(undoMkId, mk_id);
+}
+
+TEST(Mesh2D, SimpleConnectMeshes)
+{
+    const meshkernel::UInt num_nodes_x = 3;
+    const meshkernel::UInt num_nodes_y = 3;
+    const double delta = 1.0;
+
+    // create first mesh
+    auto [num_nodes_1, num_edges_1, node_x_1, node_y_1, edge_nodes_1] =
+        MakeRectangularMeshForApiTesting(num_nodes_x,
+                                         num_nodes_y,
+                                         delta,
+                                         meshkernel::Point(0.0, 0.0));
+    meshkernelapi::Mesh2D mesh2d_1{};
+    mesh2d_1.num_nodes = static_cast<int>(num_nodes_1);
+    mesh2d_1.num_edges = static_cast<int>(num_edges_1);
+    mesh2d_1.node_x = node_x_1.data();
+    mesh2d_1.node_y = node_y_1.data();
+    mesh2d_1.edge_nodes = edge_nodes_1.data();
+
+    // create second mesh
+    auto [num_nodes_2, num_edges_2, node_x_2, node_y_2, edge_nodes_2] =
+        MakeRectangularMeshForApiTesting(num_nodes_x,
+                                         2 * num_nodes_y,
+                                         0.5 * delta,
+                                         meshkernel::Point(3.0, 0.0));
+    meshkernelapi::Mesh2D mesh2d_2{};
+    mesh2d_2.num_nodes = static_cast<int>(num_nodes_2);
+    mesh2d_2.num_edges = static_cast<int>(num_edges_2);
+    mesh2d_2.node_x = node_x_2.data();
+    mesh2d_2.node_y = node_y_2.data();
+    mesh2d_2.edge_nodes = edge_nodes_2.data();
+
+    // allocate state
+    int mk_id = 0;
+    int errorCode = meshkernelapi::mkernel_allocate_state(0, mk_id);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // first initialise using the first mesh, mesh2d_1
+    errorCode = meshkernelapi::mkernel_mesh2d_set(mk_id, mesh2d_1);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_mesh2d_connect_meshes(mk_id, mesh2d_2, 0.1, false);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d_3{};
+
+    errorCode = meshkernelapi::mkernel_mesh2d_get_dimensions(mk_id, mesh2d_3);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    ASSERT_EQ(mesh2d_3.num_nodes, mesh2d_1.num_nodes + mesh2d_2.num_nodes);
+    ASSERT_EQ(mesh2d_3.num_edges, mesh2d_1.num_edges + mesh2d_2.num_edges);
+
+    std::vector<double> node_x_3(mesh2d_3.num_nodes);
+    std::vector<double> node_y_3(mesh2d_3.num_nodes);
+
+    std::vector<int> edge_nodes_3(2 * mesh2d_3.num_edges);
+
+    mesh2d_3.node_x = node_x_3.data();
+    mesh2d_3.node_y = node_y_3.data();
+    mesh2d_3.edge_nodes = edge_nodes_3.data();
+
+    errorCode = meshkernelapi::mkernel_mesh2d_get_node_edge_data(mk_id, mesh2d_3);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    for (size_t i = 0; i < node_x_1.size(); ++i)
+    {
+        EXPECT_EQ(node_x_1[i], node_x_3[i]);
+        EXPECT_EQ(node_y_1[i], node_y_3[i]);
+    }
+
+    for (size_t i = 0; i < node_x_2.size(); ++i)
+    {
+        EXPECT_EQ(node_x_2[i], node_x_3[i + node_x_1.size()]);
+        EXPECT_EQ(node_y_2[i], node_y_3[i + node_x_1.size()]);
+    }
+
+    for (size_t i = 0; i < edge_nodes_1.size(); ++i)
+    {
+        EXPECT_EQ(edge_nodes_1[i], edge_nodes_3[i]);
+    }
+
+    for (size_t i = 0; i < edge_nodes_2.size(); ++i)
+    {
+        EXPECT_EQ(edge_nodes_2[i] + mesh2d_1.num_nodes, edge_nodes_3[i + edge_nodes_1.size()]);
+    }
 }
 
 TEST(Mesh2D, InsertEdgeThroughApi)

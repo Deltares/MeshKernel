@@ -99,7 +99,7 @@ meshkernel::UndoActionPtr CurvilinearGridLineAttractionRepulsion::Compute()
             }
             if (m_lines[0].IsNGridLine())
             {
-                double const direction = m < m_lines[0].m_constantCoordinate ? 1.0 : -1.0;
+                double const direction = m < m_lines[0].m_constantCoordinate ? -1.0 : 1.0;
                 displacement.y = distance * m_attractionFactor * mSmoothing * direction;
             }
 

@@ -1,3 +1,30 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #include <gtest/gtest.h>
 
 #include <MeshKernel/Entities.hpp>
@@ -231,12 +258,14 @@ TEST(Polygons, RefinePolygonTwiceWithLargerRefinement)
     // Only need to check the points from the second refinement, the test above will
     // catch any problems in the first refinement.
     ASSERT_EQ(13, refinedPolygon.size());
-    ASSERT_EQ(refinedPolygon.size(), refinedPolygon2.size());
 
-    for (size_t i = 0; i < refinedPolygon.size(); ++i)
+    const std::vector<meshkernel::Point> expectedSecondRefinement{{0.0, 0.0}, {2.0, 0.0}, {3.0, 1.0}, {3.0, 3.0}, {1.0, 3.0}, {0.0, 2.0}, {0.0, 0.0}};
+    ASSERT_EQ(expectedSecondRefinement.size(), refinedPolygon2.size());
+
+    for (size_t i = 0; i < refinedPolygon2.size(); ++i)
     {
-        EXPECT_NEAR(refinedPolygon[i].x, refinedPolygon2[i].x, tolerance);
-        EXPECT_NEAR(refinedPolygon[i].y, refinedPolygon2[i].y, tolerance);
+        EXPECT_NEAR(expectedSecondRefinement[i].x, refinedPolygon2[i].x, tolerance);
+        EXPECT_NEAR(expectedSecondRefinement[i].y, refinedPolygon2[i].y, tolerance);
     }
 }
 
@@ -479,35 +508,13 @@ TEST(Polygons, RefinePolygonLongerSquare)
     ASSERT_EQ(14, refinedPolygon.size());
     constexpr double tolerance = 1e-5;
 
-    ASSERT_NEAR(0.0, refinedPolygon[0].x, tolerance);
-    ASSERT_NEAR(1.0, refinedPolygon[1].x, tolerance);
-    ASSERT_NEAR(2.0, refinedPolygon[2].x, tolerance);
-    ASSERT_NEAR(3.0, refinedPolygon[3].x, tolerance);
-    ASSERT_NEAR(3.0, refinedPolygon[4].x, tolerance);
-    ASSERT_NEAR(3.0, refinedPolygon[5].x, tolerance);
-    ASSERT_NEAR(3.0, refinedPolygon[6].x, tolerance);
-    ASSERT_NEAR(3.16666666666667, refinedPolygon[7].x, tolerance);
-    ASSERT_NEAR(3.33333333333333, refinedPolygon[8].x, tolerance);
-    ASSERT_NEAR(3.5, refinedPolygon[9].x, tolerance);
-    ASSERT_NEAR(2.625, refinedPolygon[10].x, tolerance);
-    ASSERT_NEAR(1.75, refinedPolygon[11].x, tolerance);
-    ASSERT_NEAR(0.875, refinedPolygon[12].x, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[13].x, tolerance);
+    const std::vector<meshkernel::Point> expectedRefinedPolygon{{0.0, 0.0}, {0.9647216358, 0.0}, {1.929443272, 0.0}, {2.894164907, 0.0}, {3.0, 0.8588865431}, {3.0, 1.823608179}, {3.0, 2.788329815}, {3.123800896, 2.257194625}, {3.282400156, 1.305599065}, {3.440999416, 0.3540035055}, {2.894164907, 0.0}, {1.929443272, 0.0}, {0.9647216358, 0.0}, {0.0, 0.0}};
 
-    ASSERT_NEAR(0.0, refinedPolygon[0].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[1].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[2].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[3].y, tolerance);
-    ASSERT_NEAR(1.0, refinedPolygon[4].y, tolerance);
-    ASSERT_NEAR(2.0, refinedPolygon[5].y, tolerance);
-    ASSERT_NEAR(3.0, refinedPolygon[6].y, tolerance);
-    ASSERT_NEAR(2.0, refinedPolygon[7].y, tolerance);
-    ASSERT_NEAR(1.0, refinedPolygon[8].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[9].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[10].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[11].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[12].y, tolerance);
-    ASSERT_NEAR(0.0, refinedPolygon[13].y, tolerance);
+    for (size_t i = 0; i < refinedPolygon.size(); ++i)
+    {
+        EXPECT_NEAR(expectedRefinedPolygon[i].x, refinedPolygon[i].x, tolerance);
+        EXPECT_NEAR(expectedRefinedPolygon[i].y, refinedPolygon[i].y, tolerance);
+    }
 }
 
 TEST(Polygons, OffsetCopy)

@@ -71,8 +71,10 @@ TEST(CurvilinearBasicTests, SimpleAddGridLineAtBoundary)
     EXPECT_EQ(grid->NumN(), ny);
     EXPECT_EQ(grid->NumM(), nx);
 
+    meshkernel::CurvilinearGrid::BoundaryGridLineType gridLineType;
+
     // Add grid line to bottom of domain
-    std::tie(addedLine, undoAction) = grid->AddGridLineAtBoundary({0, 0}, {0, 1});
+    std::tie(addedLine, gridLineType, undoAction) = grid->AddGridLinesAtBoundary({0, 0}, {0, 1}, 1);
     EXPECT_EQ(grid->NumN(), ny + 1);
     EXPECT_EQ(grid->NumM(), nx);
 
@@ -223,6 +225,7 @@ TEST(CurvilinearBasicTests, AddGridLinesAllRound)
 
     constexpr size_t nx = 10;
     constexpr size_t ny = 10;
+    const int numRowsToMirror = 1;
 
     mk::UndoActionStack undoActions;
 
@@ -233,7 +236,7 @@ TEST(CurvilinearBasicTests, AddGridLinesAllRound)
 
     //--------------------------------
 
-    mk::CurvilinearGridLineMirror lineMirror(*grid, deltaX);
+    mk::CurvilinearGridLineMirror lineMirror(*grid, deltaX, numRowsToMirror);
 
     EXPECT_EQ(grid->NumN(), ny);
     EXPECT_EQ(grid->NumM(), nx);
@@ -410,7 +413,7 @@ TEST(CurvilinearBasicTests, GridSmoothing)
 
     mk::CurvilinearGridSmoothing curvilinearGridSmoothing(*grid, 10);
 
-    curvilinearGridSmoothing.SetBlock({ny * deltaX / 4.0, ny * deltaX / 4.0}, {3.0 * ny * deltaX / 4.0, 3.0 * ny * deltaX / 4.0});
+    curvilinearGridSmoothing.SetBlock(meshkernel::Point{ny * deltaX / 4.0, ny * deltaX / 4.0}, meshkernel::Point{3.0 * ny * deltaX / 4.0, 3.0 * ny * deltaX / 4.0});
 
     std::unique_ptr<mk::UndoAction> undoAction = curvilinearGridSmoothing.Compute();
 
@@ -455,7 +458,7 @@ TEST(CurvilinearBasicTests, GridOrthogonalisation)
 
     meshkernel::CurvilinearGridOrthogonalization curvilinearGridOrthogonalization(*grid, orthogonalizationParameters);
 
-    curvilinearGridOrthogonalization.SetBlock({-10.0, -10.0}, {2.0 * nx * deltaX, 2.0 * nx * deltaX});
+    curvilinearGridOrthogonalization.SetBlock(meshkernel::Point{-10.0, -10.0}, meshkernel::Point{2.0 * nx * deltaX, 2.0 * nx * deltaX});
 
     std::unique_ptr<mk::UndoAction> undoAction = curvilinearGridOrthogonalization.Compute();
 
@@ -492,9 +495,9 @@ TEST(CurvilinearBasicTests, Derefinement)
 
     const lin_alg::Matrix<mk::Point> originalPoints = grid->GetNodes();
 
-    mk::CurvilinearGridDeRefinement deRefinement(*grid);
+    mk::CurvilinearGridDeRefinement deRefinement(*grid, 10);
 
-    deRefinement.SetBlock({10.0, 20.0}, {20.0, 20.0});
+    deRefinement.SetBlock(meshkernel::Point{10.0, 20.0}, meshkernel::Point{20.0, 20.0});
 
     std::unique_ptr<mk::UndoAction> undoAction = deRefinement.Compute();
 
@@ -532,7 +535,7 @@ TEST(CurvilinearBasicTests, UndoLineAttractor)
     mk::CurvilinearGridLineAttractionRepulsion lineAttractor(*grid, 0.5);
 
     lineAttractor.SetLine({80266.8, 367104.0}, {80419.3, 366566.2});
-    lineAttractor.SetBlock({80198.2, 366750.6}, {80583.1, 366889.8});
+    lineAttractor.SetBlock(meshkernel::Point{80198.2, 366750.6}, meshkernel::Point{80583.1, 366889.8});
 
     std::unique_ptr<mk::UndoAction> undoAction = lineAttractor.Compute();
     grid->ComputeGridNodeTypes();
@@ -540,17 +543,17 @@ TEST(CurvilinearBasicTests, UndoLineAttractor)
     // Asserts
     constexpr double tolerance = 1e-6;
 
-    ASSERT_NEAR(80178.014482303217, grid->GetNode(0, 2).x, tolerance);
-    ASSERT_NEAR(80266.910680413363, grid->GetNode(1, 2).x, tolerance);
-    ASSERT_NEAR(80322.584162464715, grid->GetNode(2, 2).x, tolerance);
-    ASSERT_NEAR(80350.500795549306, grid->GetNode(3, 2).x, tolerance);
-    ASSERT_NEAR(80362.879671417410, grid->GetNode(4, 2).x, tolerance);
+    ASSERT_NEAR(80113.927180594226, grid->GetNode(0, 2).x, tolerance);
+    ASSERT_NEAR(80202.937709587452, grid->GetNode(1, 2).x, tolerance);
+    ASSERT_NEAR(80262.314053574693, grid->GetNode(2, 2).x, tolerance);
+    ASSERT_NEAR(80290.291966405988, grid->GetNode(3, 2).x, tolerance);
+    ASSERT_NEAR(80299.521456868417, grid->GetNode(4, 2).x, tolerance);
 
-    ASSERT_NEAR(367069.60110549850, grid->GetNode(0, 2).y, tolerance);
-    ASSERT_NEAR(366937.57246542675, grid->GetNode(1, 2).y, tolerance);
-    ASSERT_NEAR(366803.23746104678, grid->GetNode(2, 2).y, tolerance);
-    ASSERT_NEAR(366683.98469820933, grid->GetNode(3, 2).y, tolerance);
-    ASSERT_NEAR(366555.11052078847, grid->GetNode(4, 2).y, tolerance);
+    ASSERT_NEAR(367025.12442372262, grid->GetNode(0, 2).y, tolerance);
+    ASSERT_NEAR(366900.80385695840, grid->GetNode(1, 2).y, tolerance);
+    ASSERT_NEAR(366781.77878604224, grid->GetNode(2, 2).y, tolerance);
+    ASSERT_NEAR(366674.26710998092, grid->GetNode(3, 2).y, tolerance);
+    ASSERT_NEAR(366549.70842920581, grid->GetNode(4, 2).y, tolerance);
 
     undoAction->Restore();
 
@@ -572,7 +575,7 @@ TEST(CurvilinearBasicTests, UndoLineShift)
     meshkernel::CurvilinearGridLineShift curvilinearLineShift(*grid);
 
     curvilinearLineShift.SetLine({79982.0, 366934.0}, {80155.0, 366530.0});
-    curvilinearLineShift.SetBlock({80108.0, 366707.0}, {80291.0, 366792.0});
+    curvilinearLineShift.SetBlock(meshkernel::Point{80108.0, 366707.0}, meshkernel::Point{80291.0, 366792.0});
     // The line shift is made by combining two actions
     // The first is to move the node.
     auto undoMoveNode = curvilinearLineShift.MoveNode({79982.0, 366934.0}, {79872.0, 366876.0});
@@ -653,7 +656,7 @@ TEST(CurvilinearBasicTests, AnotherTest11)
     meshkernel::CurvilinearGridLineShift lineShift(*grid);
 
     lineShift.SetLine({5.0, 3.0}, {5.0, 15.0});
-    lineShift.SetBlock({2.0, 3.0}, {10.0, 10.0});
+    lineShift.SetBlock(meshkernel::Point{2.0, 3.0}, meshkernel::Point{10.0, 10.0});
     std::unique_ptr<mk::UndoAction> undoMoveNode = lineShift.MoveNode({5.0, 5.0}, {6.5, 6.0});
 
     // Execute
@@ -700,6 +703,8 @@ TEST(CurvilinearBasicTests, CompoundTest)
     constexpr size_t nx = 30;
     constexpr size_t ny = 30;
 
+    const int numRowsToMirror = 1;
+
     mk::UndoActionStack undoActions;
     std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
     grid->ComputeGridNodeTypes();
@@ -710,18 +715,18 @@ TEST(CurvilinearBasicTests, CompoundTest)
     meshkernel::CurvilinearGridLineShift lineShift(*grid);
 
     lineShift.SetLine({5.0, 3.0}, {5.0, 15.0});
-    lineShift.SetBlock({2.0, 3.0}, {10.0, 10.0});
+    lineShift.SetBlock(meshkernel::Point{2.0, 3.0}, meshkernel::Point{10.0, 10.0});
 
     undoActions.Add(lineShift.Compute({5.0, 5.0}, {6.5, 6.0}));
 
     mk::CurvilinearGridRefinement refinement(*grid, 2);
-    refinement.SetBlock({10.0, 20.0}, {20.0, 20.0});
+    refinement.SetBlock(meshkernel::Point{10.0, 20.0}, meshkernel::Point{20.0, 20.0});
 
     undoActions.Add(refinement.Compute());
 
     //--------------------------------
 
-    mk::CurvilinearGridLineMirror lineMirror(*grid, deltaX);
+    mk::CurvilinearGridLineMirror lineMirror(*grid, deltaX, numRowsToMirror);
 
     // Bottom
     lineMirror.m_lines.push_back(mk::CurvilinearGridLine({0, 0}, {0, nx - 1 + 10}));
@@ -782,7 +787,7 @@ TEST(CurvilinearBasicTests, CompoundTest)
     //--------------------------------
 
     mk::CurvilinearGridRefinement refinement2(*grid, 2);
-    refinement2.SetBlock({0.0, 10.0}, {0.0, 20.0});
+    refinement2.SetBlock(meshkernel::Point{0.0, 10.0}, meshkernel::Point{0.0, 20.0});
 
     undoActions.Add(refinement2.Compute());
 
@@ -971,3 +976,52 @@ TEST(CurvilinearBasicTests, InsertMultipleFacesAlongAllBoundaryEdges)
 
     //--------------------------------
 }
+
+class CurvilinearSetGridTests : public ::testing::TestWithParam<bool>
+{
+};
+
+TEST_P(CurvilinearSetGridTests, SetGridNodes_ShouldTrimMatrix)
+{
+    // SetUp
+    meshkernel::CurvilinearGrid curvilinearGrid;
+    lin_alg::Matrix<meshkernel::Point> gridNodes(3, 3);
+
+    // Fill the matrix with valid Point values
+    for (int r = 0; r < 3; ++r)
+    {
+        for (int c = 0; c < 3; ++c)
+        {
+            gridNodes(r, c) = meshkernel::Point{static_cast<double>(r), static_cast<double>(c)};
+        }
+    }
+    for (int r = 0; r < 3; ++r)
+    {
+        gridNodes(r, 0) = meshkernel::Point{meshkernel::constants::missing::doubleValue,
+                                            meshkernel::constants::missing::doubleValue};
+        gridNodes(r, 2) = meshkernel::Point{meshkernel::constants::missing::doubleValue,
+                                            meshkernel::constants::missing::doubleValue};
+    }
+
+    // Execute
+    if (GetParam())
+    {
+        // lvalue
+        curvilinearGrid.SetGridNodes(gridNodes);
+    }
+    else
+    {
+        // rvalue
+        curvilinearGrid.SetGridNodes(std::move(gridNodes));
+    }
+
+    // Assert: Ensure only one column remains
+    EXPECT_EQ(curvilinearGrid.NumN(), 3);
+    EXPECT_EQ(curvilinearGrid.NumM(), 1);
+}
+
+// Run the test for both lvalue (true) and rvalue (false) cases
+INSTANTIATE_TEST_SUITE_P(
+    CurvilinearGrid,
+    CurvilinearSetGridTests,
+    ::testing::Values(true, false));

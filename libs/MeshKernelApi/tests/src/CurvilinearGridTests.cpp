@@ -1,3 +1,30 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -337,7 +364,7 @@ TEST_F(CartesianApiTestFixture, DerefineCompute_OnCurvilinearGrid_ShouldDeRefine
     MakeRectangularCurvilinearGrid();
 
     // Execute
-    auto errorCode = meshkernelapi::mkernel_curvilinear_derefine(meshKernelId, 10.0, 20.0, 30.0, 20.0);
+    auto errorCode = meshkernelapi::mkernel_curvilinear_refine(meshKernelId, 10.0, 20.0, 30.0, 20.0, -2);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
@@ -365,11 +392,7 @@ TEST_F(CartesianApiTestFixture, Orthogonalize_CurvilinearGrid_ShouldOrthogonaliz
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
 
     // Execute
-    errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    errorCode = meshkernelapi::mkernel_curvilinear_set_block_orthogonalize(meshKernelId, 0.0, 0.0, 30.0, 30.0);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId, orthogonalizationParameters, 0.0, 0.0, 30.0, 30.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
     errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
@@ -398,7 +421,14 @@ TEST_F(CartesianApiTestFixture, Smoothing_CurvilinearGrid_ShouldSmooth)
     MakeRectangularCurvilinearGrid();
 
     // Execute
-    auto errorCode = meshkernelapi::mkernel_curvilinear_smoothing(meshKernelId, 10, 10.0, 20.0, 30.0, 20.0);
+    auto errorCode = meshkernelapi::mkernel_curvilinear_smoothing(meshKernelId,
+                                                                  10,
+                                                                  10.0,
+                                                                  20.0,
+                                                                  30.0,
+                                                                  20.0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     meshkernelapi::CurvilinearGrid curvilinearGrid{};
     errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
@@ -725,6 +755,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearLineMirror_ShouldInsertANewGridLine)
     // Execute
     auto errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId,
                                                                     1.2,
+                                                                    1,
                                                                     0.0,
                                                                     0.0,
                                                                     0.0,
@@ -739,6 +770,40 @@ TEST_F(CartesianApiTestFixture, CurvilinearLineMirror_ShouldInsertANewGridLine)
 
     // Assert that 5 nodes have been inserted on the bottom boundary, so the total count is 30
     ASSERT_EQ(curvilinearGrid.num_m * curvilinearGrid.num_n, 30);
+}
+
+TEST_F(CartesianApiTestFixture, CurvilinearLineMirror_ShouldInsertTwoNewGridLines)
+{
+    // Setup
+    MakeRectangularCurvilinearGrid();
+    auto const meshKernelId = GetMeshKernelId();
+
+    // Execute
+    auto errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId,
+                                                                    1.2,
+                                                                    1,
+                                                                    0.0,
+                                                                    0.0,
+                                                                    0.0,
+                                                                    50.0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId,
+                                                               1.2,
+                                                               1,
+                                                               -10.0,
+                                                               0.0,
+                                                               -10.0,
+                                                               50.0);
+
+    // Assert
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::CurvilinearGrid curvilinearGrid{};
+    errorCode = mkernel_curvilinear_get_dimensions(meshKernelId, curvilinearGrid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert that 10 nodes have been inserted on the bottom boundary, so the total count is 35
+    ASSERT_EQ(curvilinearGrid.num_m * curvilinearGrid.num_n, 35);
 }
 
 TEST_F(CartesianApiTestFixture, CurvilinearLineAttractionRepulsion_ShouldAttractGridlines)
@@ -769,9 +834,9 @@ TEST_F(CartesianApiTestFixture, CurvilinearLineAttractionRepulsion_ShouldAttract
     // Assert data
     const double tolerance = 1e-6;
     // Nodes
-    ASSERT_NEAR(17.5, curvilinearGrid.node_x[2], tolerance);
+    ASSERT_NEAR(22.5, curvilinearGrid.node_x[2], tolerance);
     ASSERT_NEAR(0.0, curvilinearGrid.node_y[2], tolerance);
-    ASSERT_NEAR(42.5, curvilinearGrid.node_x[4], tolerance);
+    ASSERT_NEAR(37.5, curvilinearGrid.node_x[4], tolerance);
     ASSERT_NEAR(0.0, curvilinearGrid.node_y[4], tolerance);
 }
 
@@ -1698,4 +1763,119 @@ TEST(CurvilinearGrid, MakeCircularGrid_CartesianCoordinate_ShouldFail)
 
     errorCode = meshkernelapi::mkernel_deallocate_state(meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+}
+
+TEST_F(CartesianApiTestFixture, AddAndDeleteFrozenLines_OnACurvilinearGrid_ShouldAddAndDeleteFrozenLines)
+{
+    // Prepare
+    MakeRectangularCurvilinearGrid();
+    auto const meshKernelId = GetMeshKernelId();
+    int frozenLineId = -1;
+
+    // Execute
+    auto errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_add(meshKernelId, 10.0, 0.0, 10.0, 50.0, frozenLineId);
+    ASSERT_EQ(frozenLineId, 0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_delete(meshKernelId, frozenLineId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Counter is always increasing
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_add(meshKernelId, 10.0, 0.0, 10.0, 50.0, frozenLineId);
+    ASSERT_EQ(frozenLineId, 1);
+}
+
+TEST_F(CartesianApiTestFixture, FrozenLineValid_ShouldReturnCorrectValues)
+{
+    // Initialize the mesh kernel
+    MakeRectangularCurvilinearGrid();
+    int meshKernelId = GetMeshKernelId();
+
+    // Verify an invalid frozen line
+    int frozenLineId = 0;
+    bool isValid = true;
+    auto errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_is_valid(meshKernelId, frozenLineId, isValid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode) << "API call failed.";
+    ASSERT_FALSE(isValid) << "Expected frozen line to be invalid.";
+
+    // Add a frozen line and verify its validity
+    frozenLineId = -1;
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_add(meshKernelId, 10.0, 0.0, 10.0, 50.0, frozenLineId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode) << "Failed to add frozen line.";
+
+    isValid = false;
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_is_valid(meshKernelId, frozenLineId, isValid);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode) << "Failed to check validity.";
+    ASSERT_TRUE(isValid) << "Frozen line should be valid.";
+}
+
+TEST_F(CartesianApiTestFixture, FrozenLinesGetIds_ShouldGetFrozenLinesIds)
+{
+    // Initialize the mesh kernel
+    MakeRectangularCurvilinearGrid();
+    int meshKernelId = GetMeshKernelId();
+
+    // Verify initial frozen line count
+    int numFrozenLines = 0;
+    auto errorCode = meshkernelapi::mkernel_curvilinear_frozen_lines_get_count(meshKernelId, numFrozenLines);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode) << "Failed to get frozen line count.";
+    ASSERT_EQ(0, numFrozenLines) << "Unexpected number of frozen lines.";
+
+    // Add two frozen lines
+    int firstFrozenLineId = -1;
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_add(meshKernelId, 10.0, 0.0, 10.0, 50.0, firstFrozenLineId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode) << "Failed to add first frozen line.";
+
+    int secondFrozenLineId = -1;
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_add(meshKernelId, 20.0, 0.0, 20.0, 50.0, secondFrozenLineId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode) << "Failed to add second frozen line.";
+
+    // Verify frozen line count
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_lines_get_count(meshKernelId, numFrozenLines);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode) << "Failed to get frozen line count.";
+    ASSERT_EQ(2, numFrozenLines) << "Unexpected number of frozen lines.";
+
+    // Retrieve frozen line IDs
+    std::vector<int> frozenLineIds(2, 0);
+    meshkernelapi::mkernel_curvilinear_frozen_lines_get_ids(meshKernelId, frozenLineIds.data());
+
+    ASSERT_THAT(frozenLineIds, ::testing::UnorderedElementsAre(firstFrozenLineId, secondFrozenLineId))
+        << "Frozen line IDs do not match expected values.";
+
+    // Delete first frozen line
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_delete(meshKernelId, firstFrozenLineId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode) << "Failed to delete frozen line.";
+
+    // Verify updated frozen line count
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_lines_get_count(meshKernelId, numFrozenLines);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode) << "Failed to get frozen line count.";
+    ASSERT_EQ(1, numFrozenLines) << "Unexpected number of frozen lines after deletion.";
+
+    // Retrieve remaining frozen line ID
+    meshkernelapi::mkernel_curvilinear_frozen_lines_get_ids(meshKernelId, frozenLineIds.data());
+    ASSERT_EQ(secondFrozenLineId, frozenLineIds[0]) << "Remaining frozen line ID mismatch.";
+}
+
+TEST_F(CartesianApiTestFixture, FrozenLinesGet_ShouldGetFrozenLinesCoordinates)
+{
+    // Initialize the mesh kernel
+    MakeRectangularCurvilinearGrid();
+    int meshKernelId = GetMeshKernelId();
+
+    // Add a frozen line
+    int frozenLineId = -1;
+    auto errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_add(meshKernelId, 10.0, 0.0, 10.0, 50.0, frozenLineId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode) << "Failed to add frozen line.";
+
+    // Retrieve frozen line coordinates
+    double xStart, yStart, xEnd, yEnd;
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_get(meshKernelId, frozenLineId, xStart, yStart, xEnd, yEnd);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode) << "Failed to get frozen line coordinates.";
+
+    // Validate coordinates
+    const double tolerance = 1e-6;
+    ASSERT_NEAR(10.0, xStart, tolerance) << "Unexpected start X coordinate.";
+    ASSERT_NEAR(0.0, yStart, tolerance) << "Unexpected start Y coordinate.";
+    ASSERT_NEAR(10.0, xEnd, tolerance) << "Unexpected end X coordinate.";
+    ASSERT_NEAR(50.0, yEnd, tolerance) << "Unexpected end Y coordinate.";
 }

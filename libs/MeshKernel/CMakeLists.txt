@@ -33,6 +33,7 @@ set(CURVILINEAR_UNDO_INC_DIR ${CURVILINEAR_GRID_INC_DIR}/UndoActions)
 set(
   SRC_LIST
   ${SRC_DIR}/AveragingInterpolation.cpp
+  ${SRC_DIR}/Cartesian3DPoint.cpp
   ${SRC_DIR}/CasulliDeRefinement.cpp
   ${SRC_DIR}/CasulliRefinement.cpp
   ${SRC_DIR}/ConnectMeshes.cpp
@@ -44,13 +45,18 @@ set(
   ${SRC_DIR}/LandBoundaries.cpp
   ${SRC_DIR}/LandBoundary.cpp
   ${SRC_DIR}/Mesh.cpp
+  ${SRC_DIR}/MeshEdgeLength.cpp
   ${SRC_DIR}/Mesh1D.cpp
   ${SRC_DIR}/Mesh2D.cpp
   ${SRC_DIR}/Mesh2DGenerateGlobal.cpp
   ${SRC_DIR}/Mesh2DIntersections.cpp
   ${SRC_DIR}/Mesh2DToCurvilinear.cpp
-  ${SRC_DIR}/MeshTriangulation.cpp
+  ${SRC_DIR}/MeshEdgeCenters.cpp
+  ${SRC_DIR}/MeshFaceCenters.cpp
+  ${SRC_DIR}/MeshOrthogonality.cpp
   ${SRC_DIR}/MeshRefinement.cpp
+  ${SRC_DIR}/MeshSmoothness.cpp
+  ${SRC_DIR}/MeshTriangulation.cpp
   ${SRC_DIR}/Network1D.cpp
   ${SRC_DIR}/Operations.cpp
   ${SRC_DIR}/OrthogonalizationAndSmoothing.cpp
@@ -59,6 +65,9 @@ set(
   ${SRC_DIR}/PolygonalEnclosure.cpp
   ${SRC_DIR}/Polygons.cpp
   ${SRC_DIR}/RemoveDisconnectedRegions.cpp
+  ${SRC_DIR}/SampleAveragingInterpolator.cpp
+  ${SRC_DIR}/SampleInterpolator.cpp
+  ${SRC_DIR}/SampleTriangulationInterpolator.cpp
   ${SRC_DIR}/SamplesHessianCalculator.cpp
   ${SRC_DIR}/SampleAveragingInterpolator.cpp
   ${SRC_DIR}/SampleInterpolator.cpp
@@ -151,6 +160,7 @@ set(
   ${DOMAIN_INC_DIR}/AveragingInterpolation.hpp
   ${DOMAIN_INC_DIR}/BilinearInterpolationOnGriddedSamples.hpp
   ${DOMAIN_INC_DIR}/BoundingBox.hpp
+  ${DOMAIN_INC_DIR}/Cartesian3DPoint.hpp
   ${DOMAIN_INC_DIR}/CasulliDeRefinement.hpp
   ${DOMAIN_INC_DIR}/CasulliRefinement.hpp
   ${DOMAIN_INC_DIR}/ConnectMeshes.hpp
@@ -165,16 +175,21 @@ set(
   ${DOMAIN_INC_DIR}/LandBoundaries.hpp
   ${DOMAIN_INC_DIR}/LandBoundary.hpp
   ${DOMAIN_INC_DIR}/Mesh.hpp
+  ${DOMAIN_INC_DIR}/MeshEdgeLength.hpp
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
   ${DOMAIN_INC_DIR}/Mesh2DGenerateGlobal.hpp
   ${DOMAIN_INC_DIR}/Mesh2DIntersections.hpp
   ${DOMAIN_INC_DIR}/Mesh2DToCurvilinear.hpp
+  ${DOMAIN_INC_DIR}/MeshFaceCenters.hpp
   ${DOMAIN_INC_DIR}/MeshConversion.hpp
+  ${DOMAIN_INC_DIR}/MeshEdgeCenters.hpp
   ${DOMAIN_INC_DIR}/MeshInterpolation.hpp
-  ${DOMAIN_INC_DIR}/MeshTriangulation.hpp
+  ${DOMAIN_INC_DIR}/MeshOrthogonality.hpp
   ${DOMAIN_INC_DIR}/MeshRefinement.hpp
+  ${DOMAIN_INC_DIR}/MeshSmoothness.hpp
   ${DOMAIN_INC_DIR}/MeshTransformation.hpp
+  ${DOMAIN_INC_DIR}/MeshTriangulation.hpp
   ${DOMAIN_INC_DIR}/Network1D.hpp
   ${DOMAIN_INC_DIR}/Operations.hpp
   ${DOMAIN_INC_DIR}/OrthogonalizationAndSmoothing.hpp
@@ -187,6 +202,9 @@ set(
   ${DOMAIN_INC_DIR}/ProjectionConversions.hpp
   ${DOMAIN_INC_DIR}/RangeCheck.hpp
   ${DOMAIN_INC_DIR}/RemoveDisconnectedRegions.hpp
+  ${DOMAIN_INC_DIR}/SampleAveragingInterpolator.hpp
+  ${DOMAIN_INC_DIR}/SampleInterpolator.hpp
+  ${DOMAIN_INC_DIR}/SampleTriangulationInterpolator.hpp
   ${DOMAIN_INC_DIR}/SamplesHessianCalculator.hpp
   ${DOMAIN_INC_DIR}/SampleAveragingInterpolator.hpp
   ${DOMAIN_INC_DIR}/SampleInterpolator.hpp

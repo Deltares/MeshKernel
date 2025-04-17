@@ -52,18 +52,27 @@ namespace meshkernel
         /// @param[in] secondCornerPoint           The second point defining the bounding box
         void SetBlock(Point const& firstCornerPoint, Point const& secondCornerPoint);
 
+        /// @brief Sets a block using curvilinear node indices
+        /// @param[in] firstCornerPoint            The curvilinear grid index defining the lower left corner of the bounding box
+        /// @param[in] secondCornerPoint           The curvilinear grid index defining the upper right corner of the bounding box
+        void SetBlock(CurvilinearGridNodeIndices const& firstCornerPoint, CurvilinearGridNodeIndices const& secondCornerPoint);
+
         /// @brief Sets a line, applicable to algorithms such as directional smoothing,
         /// freeze a line in curvilinear grid orthogonalization and line shift
         /// @param[in] firstPoint The point containing the first point of the line to freeze
         /// @param[in] secondPoint The point containing the second point of the line to freeze
         void SetLine(Point const& firstPoint, Point const& secondPoint);
 
+        /// @brief Fills the frozen nodes mask using the frozen lines
+        void ComputeFrozenNodes();
+
         /// @brief Virtual destructor
         virtual ~CurvilinearGridAlgorithm() = default;
 
         CurvilinearGrid& m_grid;                  ///< A reference of the grid, modified by the algorithms
-        std::vector<CurvilinearGridLine> m_lines; ///< Selected grid lines
+        std::vector<CurvilinearGridLine> m_lines; ///< Selected frozen grid lines (need to change)
         CurvilinearGridNodeIndices m_lowerLeft;   ///< The lower left corner of the block
         CurvilinearGridNodeIndices m_upperRight;  ///< The upper right corner of the block
+        lin_alg::Matrix<bool> m_isGridNodeFrozen; ///< A mask for setting some of the grid nodes frozen
     };
 } // namespace meshkernel

@@ -1,10 +1,36 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #include <algorithm>
 #include <gtest/gtest.h>
 #include <random>
 
 #include "MeshKernel/Parameters.hpp"
 #include "MeshKernelApi/BoundingBox.hpp"
-#include "MeshKernelApi/Mesh2D.hpp"
 #include "MeshKernelApi/MeshKernel.hpp"
 
 #include "TestUtils/MakeMeshes.hpp"
@@ -235,8 +261,7 @@ TEST(CurvilinearGridUndoTests, Smoothing)
     constexpr double upperBoundValue = static_cast<double>(upperBoundIndex);
 
     // apply smoothing
-    errorCode = meshkernelapi::mkernel_curvilinear_smoothing(meshKernelId, 1 /* smoothingIterations */,
-                                                             lowerBoundValue, lowerBoundValue, upperBoundValue, upperBoundValue);
+    errorCode = meshkernelapi::mkernel_curvilinear_smoothing(meshKernelId, 1, lowerBoundValue, lowerBoundValue, upperBoundValue, upperBoundValue);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Get the current state of the curvilinear grid
@@ -690,9 +715,10 @@ TEST(CurvilinearGridUndoTests, Derefine)
     std::vector<double> originalNodeX(node_x);
     std::vector<double> originalNodeY(node_y);
 
-    errorCode = meshkernelapi::mkernel_curvilinear_derefine(meshKernelId,
-                                                            10.0, 20.0,
-                                                            20.0, 20.0);
+    errorCode = meshkernelapi::mkernel_curvilinear_refine(meshKernelId,
+                                                          10.0, 20.0,
+                                                          20.0, 20.0,
+                                                          -10);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid refinedGrid{};
@@ -958,7 +984,7 @@ TEST(CurvilinearGridUndoTests, LineMirror)
     constexpr double tolerance = 1.0e-10;
 
     // Add an extra column on the left of the domain
-    errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId, delta, 0.0, 0.0, 0.0, 30.0);
+    errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId, delta, 1, 0.0, 0.0, 0.0, 30.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::CurvilinearGrid extendedGrid{};
@@ -1042,9 +1068,9 @@ TEST(CurvilinearGridUndoTests, LineAttractionRepulsion)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Check some nodes
-    ASSERT_NEAR(17.5, curvilinearGrid.node_x[2], tolerance);
+    ASSERT_NEAR(22.5, curvilinearGrid.node_x[2], tolerance);
     ASSERT_NEAR(0.0, curvilinearGrid.node_y[2], tolerance);
-    ASSERT_NEAR(42.5, curvilinearGrid.node_x[4], tolerance);
+    ASSERT_NEAR(37.5, curvilinearGrid.node_x[4], tolerance);
     ASSERT_NEAR(0.0, curvilinearGrid.node_y[4], tolerance);
 
     bool didUndoOfInsertLine = false;
@@ -1126,20 +1152,13 @@ TEST(CurvilinearGridUndoTests, OrthogonaliseEntireGrid)
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
 
     //--------------------------------
-
-    // set up orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    errorCode = meshkernelapi::mkernel_curvilinear_set_block_orthogonalize(meshKernelId, 0.0, 0.0, 30.0, 30.0);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
     // apply orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // finalise orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_finalize_orthogonalize(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId,
+                                                                 orthogonalizationParameters,
+                                                                 0.0,
+                                                                 0.0,
+                                                                 30.0,
+                                                                 30.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     //--------------------------------
@@ -1258,19 +1277,13 @@ TEST(CurvilinearGridUndoTests, RefineAndOrthogonalise)
     orthogonalizationParameters.inner_iterations = 25;
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
 
-    // set up orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    errorCode = meshkernelapi::mkernel_curvilinear_set_block_orthogonalize(meshKernelId, 0.0, 0.0, 30.0, 30.0);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
     // apply orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // finalise orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_finalize_orthogonalize(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId,
+                                                                 orthogonalizationParameters,
+                                                                 0.0,
+                                                                 0.0,
+                                                                 30.0,
+                                                                 30.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     //--------------------------------
@@ -1395,19 +1408,12 @@ TEST(CurvilinearGridUndoTests, RefineUndoThenOrthogonalise)
     orthogonalizationParameters.inner_iterations = 25;
     orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
 
-    // set up orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_initialize_orthogonalize(meshKernelId, orthogonalizationParameters);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    errorCode = meshkernelapi::mkernel_curvilinear_set_block_orthogonalize(meshKernelId, 0.0, 0.0, 30.0, 30.0);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
     // apply orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    // finalise orthogonalisation
-    errorCode = meshkernelapi::mkernel_curvilinear_finalize_orthogonalize(meshKernelId);
+    errorCode = meshkernelapi::mkernel_curvilinear_orthogonalize(meshKernelId,
+                                                                 orthogonalizationParameters, 0.0,
+                                                                 0.0,
+                                                                 30.0,
+                                                                 30.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     //--------------------------------
@@ -1516,7 +1522,7 @@ TEST(CurvilinearGridUndoTests, InsertFaceUndoThenMirrorLine)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Add an extra column on the left of the domain
-    errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId, delta, 0.0, 0.0, 0.0, 30.0);
+    errorCode = meshkernelapi::mkernel_curvilinear_line_mirror(meshKernelId, delta, 1, 0.0, 0.0, 0.0, 30.0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     errorCode = meshkernelapi::mkernel_curvilinear_get_dimensions(meshKernelId, updatedGrid);
@@ -1719,4 +1725,141 @@ TEST(CurvilinearGridUndoTests, MultiStepUndoTest)
         EXPECT_NEAR(curvilinearGrid.node_x[i], originalNodeX[i], tolerance);
         EXPECT_NEAR(curvilinearGrid.node_y[i], originalNodeY[i], tolerance);
     }
+}
+
+TEST(CurvilinearGridUndoTests, AddFrozenLineUndoTest)
+{
+    // 1. Add curvilinear grid
+    // 2. Add frozen line
+    // 3. Undo frozen line addition
+    // 4. Redo frozen line addition
+
+    int meshKernelId;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    constexpr double delta = 1.0;
+
+    makeGridParameters.num_columns = 30;
+    makeGridParameters.num_rows = 30;
+    makeGridParameters.angle = 0.0;
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = delta;
+    makeGridParameters.block_size_y = delta;
+
+    // Generate curvilinear grid
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Add Frozen line
+    double xFirstGridLineNode = 10;
+    double yFirstGridLineNode = 0;
+    double xSecondGridLineNode = 10;
+    double ySecondGridLineNode = 30;
+    int frozenLineId;
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_add(meshKernelId,
+                                                                   xFirstGridLineNode,
+                                                                   yFirstGridLineNode,
+                                                                   xSecondGridLineNode,
+                                                                   ySecondGridLineNode,
+                                                                   frozenLineId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Perform undo
+    bool didUndo = false;
+    int undoId;
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo, undoId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+    ASSERT_EQ(meshKernelId, undoId);
+
+    int numFrozenLines = -1;
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_lines_get_count(meshKernelId, numFrozenLines);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(0, numFrozenLines);
+
+    // Perform redo
+    bool didRedo = false;
+    errorCode = meshkernelapi::mkernel_redo_state(didRedo, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didRedo);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_lines_get_count(meshKernelId, numFrozenLines);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(1, numFrozenLines);
+}
+
+TEST(CurvilinearGridUndoTests, RemoveFrozenLineUndoTest)
+{
+    // 1. Add curvilinear grid
+    // 2. Add frozen line
+    // 3. Undo frozen line addition
+    // 4. Redo frozen line addition
+
+    int meshKernelId;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernel::MakeGridParameters makeGridParameters;
+
+    constexpr double delta = 1.0;
+
+    makeGridParameters.num_columns = 30;
+    makeGridParameters.num_rows = 30;
+    makeGridParameters.angle = 0.0;
+    makeGridParameters.origin_x = 0.0;
+    makeGridParameters.origin_y = 0.0;
+    makeGridParameters.block_size_x = delta;
+    makeGridParameters.block_size_y = delta;
+
+    // Generate curvilinear grid
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid(meshKernelId, makeGridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Add Frozen line
+    double xFirstGridLineNode = 10;
+    double yFirstGridLineNode = 0;
+    double xSecondGridLineNode = 10;
+    double ySecondGridLineNode = 30;
+    int frozenLineId;
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_add(meshKernelId,
+                                                                   xFirstGridLineNode,
+                                                                   yFirstGridLineNode,
+                                                                   xSecondGridLineNode,
+                                                                   ySecondGridLineNode,
+                                                                   frozenLineId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_line_delete(meshKernelId, frozenLineId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    int numFrozenLines = -1;
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_lines_get_count(meshKernelId, numFrozenLines);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(errorCode, 0);
+
+    // Perform undo
+    bool didUndo = false;
+    int undoId;
+    errorCode = meshkernelapi::mkernel_undo_state(didUndo, undoId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didUndo);
+    ASSERT_EQ(meshKernelId, undoId);
+
+    numFrozenLines = -1;
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_lines_get_count(meshKernelId, numFrozenLines);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(1, numFrozenLines);
+
+    // Perform redo
+    bool didRedo = false;
+    errorCode = meshkernelapi::mkernel_redo_state(didRedo, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    EXPECT_TRUE(didRedo);
+
+    errorCode = meshkernelapi::mkernel_curvilinear_frozen_lines_get_count(meshKernelId, numFrozenLines);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(0, numFrozenLines);
 }

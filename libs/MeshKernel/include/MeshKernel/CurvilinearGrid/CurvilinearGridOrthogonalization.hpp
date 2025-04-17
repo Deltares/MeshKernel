@@ -62,9 +62,6 @@ namespace meshkernel
         /// @brief Project the n boundary nodes onto the original grid (BNDSMT)
         void ProjectVerticalBoundariesGridNodes();
 
-        /// @brief Compute frozen grid points (FIXDDBOUNDARIES)
-        void ComputeFrozenGridPoints();
-
         /// @brief Computes the matrix coefficients (ATPPAR)
         void ComputeCoefficients();
 
@@ -123,9 +120,6 @@ namespace meshkernel
         };
 
         OrthogonalizationEquationTerms m_orthoEqTerms;
-
-        lin_alg::Matrix<bool> m_isGridNodeFrozen; ///< A mask for setting some of the grid nodes frozen
-
         Splines m_splines; ///< The grid lines stored as splines
     };
 } // namespace meshkernel

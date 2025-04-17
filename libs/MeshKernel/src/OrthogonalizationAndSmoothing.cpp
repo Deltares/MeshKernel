@@ -25,6 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
+#include <MeshKernel/Cartesian3DPoint.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
@@ -40,15 +41,13 @@ using meshkernel::Mesh2D;
 using meshkernel::OrthogonalizationAndSmoothing;
 
 OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(Mesh2D& mesh,
-                                                             std::unique_ptr<Smoother> smoother,
-                                                             std::unique_ptr<Orthogonalizer> orthogonalizer,
                                                              std::unique_ptr<Polygons> polygon,
                                                              std::unique_ptr<LandBoundaries> landBoundaries,
                                                              LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
                                                              const OrthogonalizationParameters& orthogonalizationParameters)
     : m_mesh(mesh),
-      m_smoother(std::move(smoother)),
-      m_orthogonalizer(std::move(orthogonalizer)),
+      m_smoother(mesh, m_nodesTypes),
+      m_orthogonalizer(mesh, m_nodesNodes, m_nodesTypes),
       m_polygons(std::move(polygon)),
       m_landBoundaries(std::move(landBoundaries)),
       m_projectToLandBoundaryOption(projectToLandBoundaryOption)
@@ -59,11 +58,14 @@ OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(Mesh2D& mesh,
 
 std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initialize()
 {
+    UInt maxNumNeighbours = 0;
     // Sets the node mask
     m_mesh.Administrate();
+    m_mesh.ComputeNodeNeighbours(m_nodesNodes, maxNumNeighbours);
     const auto nodeMask = m_mesh.NodeMaskFromPolygon(*m_polygons, true);
+    m_mesh.GetNodeTypes(m_nodesTypes);
 
-    std::vector<UInt> nodeIndices(m_mesh.GetNumNodes(), constants::missing::uintValue);
+    std::vector nodeIndices(m_mesh.GetNumNodes(), constants::missing::uintValue);
     UInt nodesMovedCount = 0;
 
     // Flag nodes outside the polygon as corner points
@@ -71,7 +73,7 @@ std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initializ
     {
         if (nodeMask[n] == 0)
         {
-            m_mesh.m_nodesTypes[n] = 3;
+            m_nodesTypes[n] = MeshNodeType::Corner;
         }
         else
         {
@@ -106,7 +108,7 @@ std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initializ
         m_localCoordinatesIndices[0] = 1;
         for (UInt n = 0; n < m_mesh.GetNumNodes(); ++n)
         {
-            m_localCoordinatesIndices[n + 1] = m_localCoordinatesIndices[n] + std::max(m_mesh.m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
+            m_localCoordinatesIndices[n + 1] = m_localCoordinatesIndices[n] + std::max(m_mesh.GetNumNodesEdges(n) + 1u, m_smoother.GetNumConnectedNodes(n));
         }
 
         m_localCoordinates.resize(m_localCoordinatesIndices.back() - 1, {constants::missing::doubleValue, constants::missing::doubleValue});
@@ -117,6 +119,7 @@ std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initializ
 
 void OrthogonalizationAndSmoothing::Compute()
 {
+
     for (auto outerIter = 0; outerIter < m_orthogonalizationParameters.outer_iterations; outerIter++)
     {
         PrepareOuterIteration();
@@ -137,10 +140,10 @@ void OrthogonalizationAndSmoothing::Compute()
 void OrthogonalizationAndSmoothing::PrepareOuterIteration()
 {
     // compute weights and rhs of orthogonalizer
-    m_orthogonalizer->Compute();
+    m_orthogonalizer.Compute();
 
     // computes the smoother weights
-    m_smoother->Compute();
+    m_smoother.Compute();
 
     // allocate linear system for smoother and orthogonalizer
     AllocateLinearSystem();
@@ -166,7 +169,7 @@ void OrthogonalizationAndSmoothing::AllocateLinearSystem()
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
         m_compressedEndNodeIndex[n] = nodeCacheSize;
-        nodeCacheSize += std::max(m_mesh.m_nodesNumEdges[n] + 1, m_smoother->GetNumConnectedNodes(n));
+        nodeCacheSize += std::max(m_mesh.GetNumNodesEdges(n) + 1, m_smoother.GetNumConnectedNodes(n));
         m_compressedStartNodeIndex[n] = nodeCacheSize;
     }
 
@@ -191,12 +194,12 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
 #pragma omp parallel for
     for (int n = 0; n < static_cast<int>(m_mesh.GetNumNodes()); n++)
     {
-        if ((m_mesh.m_nodesTypes[n] != 1 && m_mesh.m_nodesTypes[n] != 2) || m_mesh.m_nodesNumEdges[n] < 2)
+        if ((GetNodeType(n) != MeshNodeType::Internal && GetNodeType(n) != MeshNodeType::Boundary) || m_mesh.GetNumNodesEdges(n) < 2)
         {
             continue;
         }
 
-        const double atpfLoc = m_mesh.m_nodesTypes[n] == 2 ? max_aptf : m_orthogonalizationParameters.orthogonalization_to_smoothing_factor;
+        const double atpfLoc = GetNodeType(n) == MeshNodeType::Boundary ? max_aptf : m_orthogonalizationParameters.orthogonalization_to_smoothing_factor;
         const double atpf1Loc = 1.0 - atpfLoc;
         const auto maxnn = m_compressedStartNodeIndex[n] - m_compressedEndNodeIndex[n];
 
@@ -208,22 +211,22 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
             double wwy = 0.0;
 
             // Smoother
-            if (atpf1Loc > 0.0 && m_mesh.m_nodesTypes[n] == 1)
+            if (atpf1Loc > 0.0 && GetNodeType(n) == MeshNodeType::Internal)
             {
-                wwx = atpf1Loc * m_smoother->GetWeight(n, nn);
-                wwy = atpf1Loc * m_smoother->GetWeight(n, nn);
+                wwx = atpf1Loc * m_smoother.GetWeight(n, nn);
+                wwy = atpf1Loc * m_smoother.GetWeight(n, nn);
             }
 
             // Orthogonalizer
-            if (nn < static_cast<int>(m_mesh.m_nodesNumEdges[n]) + 1)
+            if (nn < static_cast<int>(m_mesh.GetNumNodesEdges(n)) + 1)
             {
-                wwx += atpfLoc * m_orthogonalizer->GetWeight(n, nn - 1);
-                wwy += atpfLoc * m_orthogonalizer->GetWeight(n, nn - 1);
-                m_compressedNodesNodes[cacheIndex] = m_mesh.m_nodesNodes[n][nn - 1];
+                wwx += atpfLoc * m_orthogonalizer.GetWeight(n, nn - 1);
+                wwy += atpfLoc * m_orthogonalizer.GetWeight(n, nn - 1);
+                m_compressedNodesNodes[cacheIndex] = m_nodesNodes[n][nn - 1];
             }
             else
             {
-                m_compressedNodesNodes[cacheIndex] = m_smoother->GetConnectedNodeIndex(n, nn);
+                m_compressedNodesNodes[cacheIndex] = m_smoother.GetConnectedNodeIndex(n, nn);
             }
 
             m_compressedWeightX[cacheIndex] = wwx;
@@ -231,8 +234,8 @@ void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
             cacheIndex++;
         }
         const UInt firstCacheIndex = n * 2;
-        m_compressedRhs[firstCacheIndex] = atpfLoc * m_orthogonalizer->GetRightHandSide(n, 0);
-        m_compressedRhs[firstCacheIndex + 1] = atpfLoc * m_orthogonalizer->GetRightHandSide(n, 1);
+        m_compressedRhs[firstCacheIndex] = atpfLoc * m_orthogonalizer.GetRightHandSide(n, 0);
+        m_compressedRhs[firstCacheIndex + 1] = atpfLoc * m_orthogonalizer.GetRightHandSide(n, 1);
     }
 }
 
@@ -264,7 +267,7 @@ void OrthogonalizationAndSmoothing::FindNeighbouringBoundaryNodes(const UInt nod
                                                                   UInt& rightNode) const
 {
     UInt numNodes = 0;
-    const auto numEdges = m_mesh.m_nodesNumEdges[nearestPointIndex];
+    const auto numEdges = m_mesh.GetNumNodesEdges(nearestPointIndex);
 
     leftNode = constants::missing::uintValue;
     rightNode = constants::missing::uintValue;
@@ -278,7 +281,7 @@ void OrthogonalizationAndSmoothing::FindNeighbouringBoundaryNodes(const UInt nod
 
             if (numNodes == 1)
             {
-                leftNode = m_mesh.m_nodesNodes[nodeId][nn];
+                leftNode = m_nodesNodes[nodeId][nn];
 
                 if (leftNode == constants::missing::uintValue)
                 {
@@ -287,7 +290,7 @@ void OrthogonalizationAndSmoothing::FindNeighbouringBoundaryNodes(const UInt nod
             }
             else if (numNodes == 2)
             {
-                rightNode = m_mesh.m_nodesNodes[nodeId][nn];
+                rightNode = m_nodesNodes[nodeId][nn];
 
                 if (rightNode == constants::missing::uintValue)
                 {
@@ -307,7 +310,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
     for (UInt n = 0; n < m_mesh.GetNumNodes(); n++)
     {
         const auto nearestPointIndex = nearestPoints[n];
-        if (m_mesh.m_nodesTypes[n] == 2 && m_mesh.m_nodesNumEdges[n] > 0 && m_mesh.m_nodesNumEdges[nearestPointIndex] > 0)
+        if (GetNodeType(n) == MeshNodeType::Boundary && m_mesh.GetNumNodesEdges(n) > 0 && m_mesh.GetNumNodesEdges(nearestPointIndex) > 0)
         {
             Point firstPoint = m_mesh.Node(n);
             if (!firstPoint.IsValid())
@@ -351,7 +354,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                 // Copy nodes at start, then set all nodes at once (SetNodes, this has no associated action yet).
                 [[maybe_unused]] auto action = m_mesh.ResetNode(n, normalSecondPoint);
 
-                if (ratioSecondPoint > 0.5 && m_mesh.m_nodesTypes[n] != 3)
+                if (ratioSecondPoint > 0.5 && GetNodeType(n) != MeshNodeType::Corner)
                 {
                     nearestPoints[n] = leftNode;
                 }
@@ -361,7 +364,7 @@ void OrthogonalizationAndSmoothing::SnapMeshToOriginalMeshBoundary()
                 // TODO may need to refactor this (undo action allocation), if performance becomes a problem
                 [[maybe_unused]] auto action = m_mesh.ResetNode(n, normalThirdPoint);
 
-                if (ratioThirdPoint > 0.5 && m_mesh.m_nodesTypes[n] != 3)
+                if (ratioThirdPoint > 0.5 && GetNodeType(n) != MeshNodeType::Corner)
                 {
                     nearestPoints[n] = rightNode;
                 }
@@ -440,6 +443,12 @@ void OrthogonalizationAndSmoothing::ComputeLocalIncrements(UInt nodeIndex, doubl
         const auto wwx = m_compressedWeightX[cacheIndex];
         const auto wwy = m_compressedWeightY[cacheIndex];
         const auto currentNode = m_compressedNodesNodes[cacheIndex];
+
+        if (currentNode == constants::missing::uintValue)
+        {
+            continue;
+        }
+
         cacheIndex++;
 
         if (m_mesh.m_projection == Projection::cartesian)

@@ -27,8 +27,11 @@
 
 #pragma once
 
+#include <MeshKernel/Definitions.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
+#include <MeshKernel/Orthogonalizer.hpp>
 #include <MeshKernel/Parameters.hpp>
+#include <MeshKernel/Smoother.hpp>
 #include <MeshKernel/UndoActions/UndoAction.hpp>
 
 namespace meshkernel
@@ -36,8 +39,6 @@ namespace meshkernel
     // Forward declare everything to reduce compile time dependency
     class Point;
     class Mesh2D;
-    class Smoother;
-    class Orthogonalizer;
     class Polygons;
     enum class Projection;
 
@@ -84,15 +85,11 @@ namespace meshkernel
     public:
         /// Set the parameters
         /// @param[in] mesh The mesh to orthogonalize
-        /// @param[in] smoother The mesh to smoother
-        /// @param[in] orthogonalizer The mesh to orthogonalizer
         /// @param[in] polygon The polygon where orthogonalization should occur
         /// @param[in] landBoundaries The land boundaries
         /// @param[in] projectToLandBoundaryOption Snap to land boundaries (1) or not (0)
         /// @param[in] orthogonalizationParameters The orthogonalization parameters
         OrthogonalizationAndSmoothing(Mesh2D& mesh,
-                                      std::unique_ptr<Smoother> smoother,
-                                      std::unique_ptr<Orthogonalizer> orthogonalizer,
                                       std::unique_ptr<Polygons> polygon,
                                       std::unique_ptr<LandBoundaries> landBoundaries,
                                       LandBoundaries::ProjectToLandBoundaryOption projectToLandBoundaryOption,
@@ -114,6 +111,9 @@ namespace meshkernel
         void FinalizeOuterIteration();
 
     private:
+        /// @brief Get the node type
+        MeshNodeType GetNodeType(const UInt nodeId) const { return m_nodesTypes[nodeId]; }
+
         /// @brief Find the id's of the neighbouring boundary nodes.
         void FindNeighbouringBoundaryNodes(const UInt nodeId,
                                            const UInt nearestPointIndex,
@@ -146,9 +146,12 @@ namespace meshkernel
         /// @brief Compute nodes local coordinates (comp_local_coords)
         void ComputeCoordinates() const;
 
+        std::vector<std::vector<UInt>> m_nodesNodes; ///< Node to node connectivity
+        std::vector<MeshNodeType> m_nodesTypes;      ///< The node types
+
         Mesh2D& m_mesh;                                                            ///< A reference to mesh
-        std::unique_ptr<Smoother> m_smoother;                                      ///< A pointer to the smoother
-        std::unique_ptr<Orthogonalizer> m_orthogonalizer;                          ///< A pointer to the orthogonalizer
+        Smoother m_smoother;                                                       ///< The smoother
+        Orthogonalizer m_orthogonalizer;                                           ///< The orthogonalizer
         std::unique_ptr<Polygons> m_polygons;                                      ///< The polygon pointer where to perform the orthogonalization
         std::unique_ptr<LandBoundaries> m_landBoundaries;                          ///< The land boundaries pointer
         LandBoundaries::ProjectToLandBoundaryOption m_projectToLandBoundaryOption; ///< The project to land boundary option

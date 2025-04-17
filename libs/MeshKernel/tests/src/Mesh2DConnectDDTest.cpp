@@ -1,3 +1,30 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #include <chrono>
 #include <gtest/gtest.h>
 #include <string>
@@ -165,7 +192,7 @@ void CheckConnectGrids(const std::string& unconnectedGridName, const std::string
 std::shared_ptr<meshkernel::Mesh2D> generateMesh(const meshkernel::Point& origin, const meshkernel::Vector& delta, const int n, const int m)
 {
     double dimX = static_cast<double>(n - 1) * delta.x();
-    double dimY = static_cast<double>(n - 1) * delta.y();
+    double dimY = static_cast<double>(m - 1) * delta.y();
     return MakeRectangularMeshForTesting(n, m, dimX, dimY, meshkernel::Projection::cartesian, origin);
 }
 
@@ -395,9 +422,9 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallNegativeOffset)
     EXPECT_NEAR(mergedMesh->Node(10).y, 10.0, tolerance);
     EXPECT_NEAR(mergedMesh->Node(11).y, 20.0, tolerance);
 
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[9], 3);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[10], 4);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[11], 3);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(9), 3);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(10), 4);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(11), 3);
 
     // Test the undo action has been computed correctly
     undoAction->Restore();
@@ -473,9 +500,9 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesNoOffset)
     EXPECT_NEAR(mergedMesh->Node(10).y, 10.0, tolerance);
     EXPECT_NEAR(mergedMesh->Node(11).y, 20.0, tolerance);
 
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[9], 3);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[10], 4);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[11], 3);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(9), 3);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(10), 4);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(11), 3);
 
     // Test the undo action has been computed correctly
     undoAction->Restore();
@@ -551,9 +578,9 @@ TEST(Mesh2DConnectDD, MergeTwoSameMeshesSmallPositiveOffset)
     EXPECT_NEAR(mergedMesh->Node(10).y, 10.0, tolerance);
     EXPECT_NEAR(mergedMesh->Node(11).y, 20.0, tolerance);
 
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[9], 3);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[10], 4);
-    EXPECT_EQ(mergedMesh->m_nodesNumEdges[11], 3);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(9), 3);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(10), 4);
+    EXPECT_EQ(mergedMesh->GetNumNodesEdges(11), 3);
 
     // Test the undo action has been computed correctly
     undoAction->Restore();
@@ -1028,4 +1055,48 @@ TEST(Mesh2DConnectDD, MergeTwoMeshesErrorInSeparationFraction)
     EXPECT_THROW([[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh, 1.5), meshkernel::RangeError);
     EXPECT_THROW([[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh, -0.5), meshkernel::RangeError);
     EXPECT_THROW([[maybe_unused]] auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh, 0.0), meshkernel::RangeError);
+}
+
+TEST(Mesh2DConnectDD, SimpleMergeMeshes)
+{
+
+    // Should only concatinate the node and edge arrays.
+
+    meshkernel::Point origin{0.0, 0.0};
+    meshkernel::Vector delta{10.0, 10.0};
+
+    std::shared_ptr<meshkernel::Mesh2D> mesh1 = generateMesh(origin, delta, 3, 3);
+
+    origin.x += 2.0 * delta.x();
+
+    delta = meshkernel::Vector{4.0, 4.0};
+    std::shared_ptr<meshkernel::Mesh2D> mesh2 = generateMesh(origin, delta, 3, 5);
+
+    const auto mergedMesh = meshkernel::Mesh2D::Merge(mesh1->Nodes(), mesh1->Edges(),
+                                                      mesh2->Nodes(), mesh2->Edges(),
+                                                      mesh1->m_projection);
+
+    const std::vector<meshkernel::Point> expectedNodes{{0, 0}, {0, 10}, {0, 20}, {10, 0}, {10, 10}, {10, 20}, {20, 0}, {20, 10}, {20, 20}, {20, 0}, {20, 4}, {20, 8}, {20, 12}, {20, 16}, {24, 0}, {24, 4}, {24, 8}, {24, 12}, {24, 16}, {28, 0}, {28, 4}, {28, 8}, {28, 12}, {28, 16}};
+
+    const std::vector<meshkernel::Edge> expectedEdges{{0, 3}, {1, 4}, {2, 5}, {3, 6}, {4, 7}, {5, 8}, {1, 0}, {2, 1}, {4, 3}, {5, 4}, {7, 6}, {8, 7}, {9, 14}, {10, 15}, {11, 16}, {12, 17}, {13, 18}, {14, 19}, {15, 20}, {16, 21}, {17, 22}, {18, 23}, {10, 9}, {11, 10}, {12, 11}, {13, 12}, {15, 14}, {16, 15}, {17, 16}, {18, 17}, {20, 19}, {21, 20}, {22, 21}, {23, 22}};
+
+    const auto& nodes = mergedMesh->Nodes();
+    const auto& edges = mergedMesh->Edges();
+
+    ASSERT_EQ(expectedNodes.size(), nodes.size());
+    ASSERT_EQ(expectedEdges.size(), edges.size());
+
+    const double tolerance = 1.0e-10;
+
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        EXPECT_NEAR(expectedNodes[i].x, nodes[i].x, tolerance);
+        EXPECT_NEAR(expectedNodes[i].y, nodes[i].y, tolerance);
+    }
+
+    for (size_t i = 0; i < edges.size(); ++i)
+    {
+        EXPECT_EQ(expectedEdges[i].first, edges[i].first);
+        EXPECT_EQ(expectedEdges[i].second, edges[i].second);
+    }
 }

@@ -1,20 +1,45 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #include <gtest/gtest.h>
 
-#include <MeshKernel/Constants.hpp>
-#include <MeshKernel/Entities.hpp>
-#include <MeshKernel/FlipEdges.hpp>
-#include <MeshKernel/LandBoundaries.hpp>
-#include <MeshKernel/Mesh2D.hpp>
-#include <MeshKernel/MeshRefinement.hpp>
-#include <MeshKernel/Operations.hpp>
-#include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
-#include <MeshKernel/Orthogonalizer.hpp>
-#include <MeshKernel/Polygons.hpp>
-#include <MeshKernel/Smoother.hpp>
-#include <MeshKernel/UndoActions/UndoAction.hpp>
-#include <MeshKernel/Utilities/Utilities.hpp>
-#include <TestUtils/Definitions.hpp>
-#include <TestUtils/MakeMeshes.hpp>
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Entities.hpp"
+#include "MeshKernel/FlipEdges.hpp"
+#include "MeshKernel/LandBoundaries.hpp"
+#include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/MeshRefinement.hpp"
+#include "MeshKernel/Operations.hpp"
+#include "MeshKernel/OrthogonalizationAndSmoothing.hpp"
+#include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
+#include "MeshKernel/Utilities/Utilities.hpp"
+#include "TestUtils/Definitions.hpp"
+#include "TestUtils/MakeMeshes.hpp"
 
 using namespace meshkernel;
 
@@ -45,16 +70,12 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
 
     // Execute
     auto mesh = Mesh2D(edges, nodes, Projection::cartesian);
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(mesh);
-    auto smoother = std::make_unique<Smoother>(mesh);
     auto polygon = std::make_unique<Polygons>();
 
     std::vector<Point> landBoundary{};
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, mesh, *polygon);
 
     OrthogonalizationAndSmoothing orthogonalization(mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -92,16 +113,12 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
     orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 1.0;
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
     auto polygon = std::make_unique<Polygons>();
 
     std::vector<Point> landBoundary;
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -150,16 +167,12 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGridAsNcFile
     orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 1.0;
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
     auto polygon = std::make_unique<Polygons>();
 
     std::vector<Point> landBoundary;
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -220,16 +233,11 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithPol
                              {343.288422, 471.722809},
                              {342.987518, 471.121002}};
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
-
     std::vector<Point> landBoundary;
     auto polygon = std::make_unique<Polygons>(nodes, Projection::cartesian);
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -288,8 +296,6 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithUnd
     orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 0.5;
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
     auto polygon = std::make_unique<Polygons>();
     std::vector<Point> landBoundary;
     auto landBoundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
@@ -297,8 +303,6 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationMediumTriangularGridWithUnd
     const std::vector<meshkernel::Point> meshNodes = mesh->Nodes();
 
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landBoundaries),
                                                     projectToLandBoundaryOption,
@@ -360,11 +364,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationFourQuads)
     std::vector<Point> landBoundary{};
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -407,11 +407,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizeAndSnapToLandBoundaries)
     auto polygon = std::make_unique<Polygons>();
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -459,16 +455,11 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSphericalRectangular)
     orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 1.0;
     orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
-
     auto polygon = std::make_unique<Polygons>();
     std::vector<Point> landBoundary{};
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -552,12 +543,7 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
     std::vector<Point> landBoundary{};
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
-
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -613,14 +599,9 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangulargridSpherica
     std::vector<Point> landBoundary{};
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
-
     const std::vector<meshkernel::Point> meshNodes = mesh->Nodes();
 
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(polygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -709,11 +690,7 @@ TEST(OrthogonalizationAndSmoothing, RefineUndoThenOrthogonalise)
     std::vector<Point> landBoundary{};
     auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
 
-    auto orthogonalizer = std::make_unique<Orthogonalizer>(*mesh);
-    auto smoother = std::make_unique<Smoother>(*mesh);
     OrthogonalizationAndSmoothing orthogonalization(*mesh,
-                                                    std::move(smoother),
-                                                    std::move(orthogonalizer),
                                                     std::move(orthogonalisationPolygon),
                                                     std::move(landboundaries),
                                                     projectToLandBoundaryOption,
@@ -755,27 +732,22 @@ TEST(OrthogonalizationAndSmoothing, RefineUndoThenOrthogonalise)
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
 {
 
-    std::vector<Point> polygonPoints{{0.0, 0.0}, {100.0, 20.0}, {150.0, 50.0}, {75.0, 75.0}, {-20.0, 30.0}, {0.0, 0.0}};
+    std::vector<Point> polygonPoints{{0, 0}, {25, 5}, {50, 10}, {75, 15}, {100, 20}, {125, 35}, {150, 50}, {125, 58.33333333333334}, {100, 66.66666666666667}, {75, 75}, {51.25, 63.75}, {27.5, 52.5}, {3.75, 41.25}, {-20, 30}, {0, 0}};
 
-    const Polygons polygon(polygonPoints, Projection::cartesian);
-
-    std::vector<Point> refinedPolygonPoints = polygon.RefinePolygon(0, 0, 5, 25.0);
-
-    std::unique_ptr<Polygons> refinedPolygon = std::make_unique<Polygons>(refinedPolygonPoints, Projection::cartesian);
+    std::unique_ptr<Polygons> polygon = std::make_unique<Polygons>(polygonPoints, Projection::cartesian);
 
     // generate samples in all polygons
-    const std::vector<std::vector<Point>> generatedPoints = refinedPolygon->ComputePointsInPolygons();
+    const std::vector<std::vector<Point>> generatedPoints = polygon->ComputePointsInPolygons();
 
-    meshkernel::Mesh2D mesh(generatedPoints[0], *refinedPolygon, Projection::cartesian);
+    meshkernel::Mesh2D mesh(generatedPoints[0], *polygon, Projection::cartesian);
 
     // Create some gaps in the node and edge arrays
     auto [nodeId, nodeInsertUndo] = mesh.InsertNode({0.5, 0.5});
     auto originNodeId = mesh.FindNodeCloseToAPoint({0.0, 0.0}, 0.1);
     [[maybe_unused]] auto [edgeId, edgeInsertUndo] = mesh.ConnectNodes(nodeId, originNodeId);
     [[maybe_unused]] auto nodeRemovaUndo = mesh.DeleteNode(nodeId);
-    mesh.Administrate();
 
-    std::unique_ptr<LandBoundaries> boundary = std::make_unique<LandBoundaries>(refinedPolygonPoints, mesh, *refinedPolygon);
+    std::unique_ptr<LandBoundaries> boundary = std::make_unique<LandBoundaries>(polygonPoints, mesh, *polygon);
 
     FlipEdges flipEdges1(mesh, *boundary, true, false);
 
@@ -791,62 +763,28 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
     FlipEdges flipEdges(mesh, *boundary, true, false);
 
     OrthogonalizationAndSmoothing orthogonalization(mesh,
-                                                    std::make_unique<Smoother>(mesh),
-                                                    std::make_unique<Orthogonalizer>(mesh),
-                                                    std::move(refinedPolygon),
+                                                    std::move(polygon),
                                                     std::move(boundary),
                                                     projectToLandBoundaryOption,
                                                     orthogonalizationParameters);
 
-    const std::vector<double> expectedX{25.0800705723722,
-                                        42.317662650388,
-                                        65.4076069697485,
-                                        90.1058019292434,
-                                        120.558686253752,
-                                        150.0,
-                                        121.059743084289,
-                                        95.1726727500558,
-                                        72.1931604613651,
-                                        47.4190144307411,
-                                        25.2372847856225,
-                                        5.68099647107239,
-                                        -20,
-                                        4.58504074822491,
-                                        14.9038474210351,
-                                        27.1345108996488,
-                                        80.0992228898113,
-                                        99.6419675416531,
-                                        41.6528740558509,
-                                        60.6207362548768,
-                                        54.0359431801395,
-                                        79.4201977834984,
-                                        36.6509101374463,
-                                        -999.0};
+    const std::vector<double> expectedX{24.9835753034083, 45.7888024937107, 70.0728593318696,
+                                        96.4736020240226, 123.464866047009, 150.0,
+                                        123.690307803787, 98.5465046861055, 74.1522156841494,
+                                        49.2936207530967, 26.9588231383586, 5.10554425586482,
+                                        -20.0, 2.53218892861755, 12.2603085772356,
+                                        30.0247966898692, 83.3308053183758, 104.729358926806,
+                                        43.9223120527096, 62.551166421051, 57.2356630362903,
+                                        87.5391262898118, 41.1303589083358, -999.0};
 
-    const std::vector<double> expectedY{5.01601411447445,
-                                        8.4635325300776,
-                                        13.0815213939497,
-                                        18.0211603858487,
-                                        32.3352117522512,
-                                        50.0,
-                                        59.6467523052371,
-                                        68.2757757499814,
-                                        73.6704444290677,
-                                        61.9353226250879,
-                                        51.4281875300317,
-                                        42.164682538929,
-                                        30.0,
-                                        0.917008149644981,
-                                        21.0550841422499,
-                                        34.910733978114,
-                                        51.5236060545154,
-                                        44.9951979924611,
-                                        42.223424366405,
-                                        47.4725501580611,
-                                        27.7287089020759,
-                                        33.7364202545338,
-                                        22.785807215113,
-                                        -999.0};
+    const std::vector<double> expectedY{4.99671506068165, 9.15776049874214, 14.0145718663739,
+                                        19.2947204048045, 34.0789196282053, 50.0,
+                                        58.7698973987377, 67.1511651046315, 74.5984179556497,
+                                        62.8232940409406, 52.2436530655383, 41.8920999106728,
+                                        30.0, 0.506437785723511, 19.9059354533534,
+                                        33.9652316161109, 49.6795938035325, 45.9248709417029,
+                                        43.1509423611897, 47.6054287440074, 28.1281033458494,
+                                        34.0734735937222, 22.8901803546926, -999.0};
 
     const std::vector<meshkernel::UInt> edgeFirst{13, 14, 12, 13, 0, 22, 0, 0, 20, 18, 22, 15,
                                                   22, 1, 14, 11, 10, 11, 15, 18, 9, 10, 18, 19,
@@ -860,14 +798,10 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
                                                    3, 17, 16, 17, 8, 19, 7, 8, 9, 6, 17, 5, 6, 7, 17,
                                                    meshkernel::constants::missing::uintValue};
 
-    [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
+    [[maybe_unused]] auto flipUndoAction = flipEdges.Compute();
+    [[maybe_unused]] auto orthogUndoAction = orthogonalization.Initialize();
 
-    for (int i = 1; i <= 10; ++i)
-    {
-        auto flipUndoAction = flipEdges.Compute();
-
-        orthogonalization.Compute();
-    }
+    orthogonalization.Compute();
 
     const double tolerance = 1.0e-8;
 

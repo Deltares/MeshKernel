@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernel/Operations.hpp"
+#include "MeshKernel/Cartesian3DPoint.hpp"
 #include "MeshKernel/Mesh.hpp"
 
 namespace meshkernel::impl
@@ -140,18 +141,6 @@ namespace meshkernel::impl
 
 namespace meshkernel
 {
-    Cartesian3DPoint VectorProduct(const Cartesian3DPoint& a, const Cartesian3DPoint& b)
-    {
-        return Cartesian3DPoint{
-            a.y * b.z - a.z * b.y,
-            a.z * b.x - a.x * b.z,
-            a.x * b.y - a.y * b.x};
-    }
-
-    double InnerProduct(const Cartesian3DPoint& a, const Cartesian3DPoint& b)
-    {
-        return a.x * b.x + a.y * b.y + a.z * b.z;
-    }
 
     std::vector<std::pair<UInt, UInt>> FindIndices(const std::vector<Point>& vec,
                                                    size_t start,
@@ -256,25 +245,6 @@ namespace meshkernel
     bool IsPointOnPole(const Point& point)
     {
         return std::abs(std::abs(point.y) - 90.0) < constants::geometric::absLatitudeAtPoles;
-    }
-
-    Cartesian3DPoint SphericalToCartesian3D(const Point& sphericalPoint)
-    {
-        Cartesian3DPoint result;
-        result.z = constants::geometric::earth_radius * sin(sphericalPoint.y * constants::conversion::degToRad);
-        const double rr = constants::geometric::earth_radius * cos(sphericalPoint.y * constants::conversion::degToRad);
-        result.x = rr * cos(sphericalPoint.x * constants::conversion::degToRad);
-        result.y = rr * sin(sphericalPoint.x * constants::conversion::degToRad);
-        return result;
-    }
-
-    Point Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude)
-    {
-        Point sphericalPoint;
-        const double angle = atan2(cartesianPoint.y, cartesianPoint.x) * constants::conversion::radToDeg;
-        sphericalPoint.y = atan2(cartesianPoint.z, sqrt(cartesianPoint.x * cartesianPoint.x + cartesianPoint.y * cartesianPoint.y)) * constants::conversion::radToDeg;
-        sphericalPoint.x = angle + static_cast<double>(std::lround((referenceLongitude - angle) / 360.0)) * 360.0;
-        return sphericalPoint;
     }
 
     double crossProduct(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFirstPoint, const Point& secondSegmentSecondPoint, const Projection& projection)
@@ -428,8 +398,7 @@ namespace meshkernel
             return true;
         }
 
-        const auto currentPolygonSize = endNode - startNode + 1;
-        if (currentPolygonSize < constants::geometric::numNodesInTriangle || polygonNodes.size() < currentPolygonSize)
+        if (const auto currentPolygonSize = endNode - startNode + 1; currentPolygonSize < constants::geometric::numNodesInTriangle || polygonNodes.size() < currentPolygonSize)
         {
             return false;
         }
@@ -1261,6 +1230,140 @@ namespace meshkernel
             // TODO: compute in case of spherical accurate (comp_circumcenter3D)
         }
         return circumcenter;
+    }
+
+    UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, UInt numEdges)
+    {
+        if (numEdges > edgesNumFaces.size())
+        {
+            throw ConstraintError("Invalid range for array: {} > {}", numEdges, edgesNumFaces.size());
+        }
+
+        return static_cast<UInt>(std::count(edgesNumFaces.begin(), edgesNumFaces.begin() + numEdges, 2));
+    }
+
+    void ComputeMidPointsAndNormals(const std::vector<Point>& polygon,
+                                    const std::vector<UInt>& edgesNumFaces,
+                                    const UInt numNodes,
+                                    std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
+                                    std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
+                                    UInt& pointCount,
+                                    const Projection& projection)
+    {
+        for (UInt n = 0; n < numNodes; n++)
+        {
+            if (edgesNumFaces[n] != 2)
+            {
+                continue;
+            }
+
+            const auto nextNode = NextCircularForwardIndex(n, numNodes);
+
+            middlePoints[pointCount] = ((polygon[n] + polygon[nextNode]) * 0.5);
+            normals[pointCount] = NormalVector(polygon[n], polygon[nextNode], middlePoints[pointCount], projection);
+            ++pointCount;
+        }
+    }
+
+    Point ComputeCircumCenter(const Point& centerOfMass,
+                              const UInt pointCount,
+                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
+                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
+                              const Projection& projection)
+    {
+        const UInt maximumNumberCircumcenterIterations = 100;
+        const double eps = projection == Projection::cartesian ? 1e-3 : 9e-10; // 111km = 0-e digit.
+
+        Point estimatedCircumCenter = centerOfMass;
+
+        for (UInt iter = 0; iter < maximumNumberCircumcenterIterations; ++iter)
+        {
+            const Point previousCircumCenter = estimatedCircumCenter;
+            for (UInt n = 0; n < pointCount; n++)
+            {
+                const Point delta{GetDx(middlePoints[n], estimatedCircumCenter, projection), GetDy(middlePoints[n], estimatedCircumCenter, projection)};
+                const auto increment = -0.1 * dot(delta, normals[n]);
+                AddIncrementToPoint(normals[n], increment, centerOfMass, projection, estimatedCircumCenter);
+            }
+            if (iter > 0 &&
+                abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps &&
+                abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
+            {
+                break;
+            }
+        }
+
+        return estimatedCircumCenter;
+    }
+
+    Point ComputeFaceCircumenter(std::vector<Point>& polygon,
+                                 const std::vector<UInt>& edgesNumFaces,
+                                 const Projection& projection)
+    {
+        static constexpr double weightCircumCenter = 1.0; ///< Weight circum center
+
+        std::array<Point, constants::geometric::maximumNumberOfNodesPerFace> middlePoints;
+        std::array<Point, constants::geometric::maximumNumberOfNodesPerFace> normals;
+        UInt pointCount = 0;
+
+        const auto numNodes = static_cast<UInt>(polygon.size()) - 1;
+
+        Point centerOfMass{0.0, 0.0};
+        for (UInt n = 0; n < numNodes; ++n)
+        {
+            centerOfMass.x += polygon[n].x;
+            centerOfMass.y += polygon[n].y;
+        }
+
+        centerOfMass /= static_cast<double>(numNodes);
+
+        auto result = centerOfMass;
+        if (numNodes == constants::geometric::numNodesInTriangle)
+        {
+            result = CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], projection);
+        }
+        else if (!edgesNumFaces.empty())
+        {
+            UInt numValidEdges = CountNumberOfValidEdges(edgesNumFaces, numNodes);
+
+            if (numValidEdges > 1)
+            {
+                ComputeMidPointsAndNormals(polygon, edgesNumFaces, numNodes, middlePoints, normals, pointCount, projection);
+                result = ComputeCircumCenter(centerOfMass, pointCount, middlePoints, normals, projection);
+            }
+        }
+
+        for (UInt n = 0; n < numNodes; ++n)
+        {
+            polygon[n] = weightCircumCenter * polygon[n] + (1.0 - weightCircumCenter) * centerOfMass;
+        }
+
+        // The circumcenter is included in the face, then return the calculated circumcenter
+        if (IsPointInPolygonNodes(result, polygon, projection))
+        {
+            return result;
+        }
+
+        // If the circumcenter is not included in the face,
+        // the circumcenter will be placed at the intersection between an edge and the segment connecting the mass center with the circumcenter.
+        for (UInt n = 0; n < numNodes; ++n)
+        {
+            const auto nextNode = NextCircularForwardIndex(n, numNodes);
+
+            const auto [areLineCrossing,
+                        intersection,
+                        crossProduct,
+                        firstRatio,
+                        secondRatio] = AreSegmentsCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, projection);
+
+            if (areLineCrossing)
+            {
+                result = intersection;
+                break;
+            }
+        }
+
+        return result;
     }
 
     std::tuple<bool, Point, double, double, double> AreSegmentsCrossing(const Point& firstSegmentFirstPoint,

@@ -124,22 +124,6 @@ namespace meshkernel
         /// @param [in, out] nodeMask Node mask information
         static void InitialiseFaceNodes(const Mesh2D& mesh, std::vector<NodeMask>& nodeMask);
 
-        /// @brief Initialise the node mask using depth data
-        static std::vector<NodeMask> InitialiseDepthBasedNodeMask(const Mesh2D& mesh,
-                                                                  const Polygons& polygon,
-                                                                  const std::vector<double>& depthValues,
-                                                                  const MeshRefinementParameters& refinementParameters,
-                                                                  const double minimumDepthRefinement,
-                                                                  bool& refinementRequested);
-
-        /// @brief Refine the node mask using depth data.
-        static void RefineNodeMaskBasedOnDepths(const Mesh2D& mesh,
-                                                const std::vector<double>& depthValues,
-                                                const MeshRefinementParameters& refinementParameters,
-                                                const double minimumDepthRefinement,
-                                                std::vector<NodeMask>& nodeMask,
-                                                bool& refinementRequested);
-
         /// @brief Set the node mask based on point contained in a polygon
         static void RegisterNodesInsidePolygon(const Mesh2D& mesh,
                                                const Polygons& polygon,
@@ -150,6 +134,24 @@ namespace meshkernel
         /// @param [in] mesh Mesh used to initialise the node mask
         /// @param [in] polygon Only nodes inside the polygon are to be considered
         static std::vector<NodeMask> InitialiseNodeMask(const Mesh2D& mesh, const Polygons& polygon);
+
+        /// @brief Initialise the node mask array based on depths
+        ///
+        /// These depths may be interplated
+        static std::vector<NodeMask> InitialiseDepthBasedNodeMask(const Mesh2D& mesh,
+                                                                  const Polygons& polygon,
+                                                                  const std::vector<double>& depthValues,
+                                                                  const MeshRefinementParameters& refinementParameters,
+                                                                  const double minimumDepthRefinement,
+                                                                  bool& refinementRequested);
+
+        /// @brief Refine
+        static void RefineNodeMaskBasedOnDepths(const Mesh2D& mesh,
+                                                const std::vector<double>& depthValues,
+                                                const MeshRefinementParameters& refinementParameters,
+                                                const double minimumDepthRefinement,
+                                                std::vector<NodeMask>& nodeMask,
+                                                bool& refinementRequested);
 
         /// @brief Create any new nodes that need to be generated.
         ///

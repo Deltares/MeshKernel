@@ -1,3 +1,30 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation version 3.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// contact: delft3d.support@deltares.nl
+// Stichting Deltares
+// P.O. Box 177
+// 2600 MH Delft, The Netherlands
+//
+// All indications and logos of, and references to, "Delft3D" and "Deltares"
+// are registered trademarks of Stichting Deltares, and remain the property of
+// Stichting Deltares. All rights reserved.
+//
+//------------------------------------------------------------------------------
+
 #include <ranges>
 
 #include "MeshKernel/Exceptions.hpp"
@@ -34,6 +61,8 @@ Mesh2DIntersections::Mesh2DIntersections(Mesh2D& mesh) : m_mesh(mesh)
 
 std::tuple<UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh2D& mesh,
                                                                 const std::vector<Point>& polyLine,
+                                                                const UInt polygonIndexStart,
+                                                                const bool checkOnlyBoundarySegments,
                                                                 const std::vector<BoundingBox>& polyLineBoundingBoxes,
                                                                 const std::vector<bool>& vistedEdges) const
 {
@@ -42,12 +71,17 @@ std::tuple<UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh2D& me
     bool isSeedFound = false;
 
     // Find starting edge and segment
-    for (UInt segmentIndex = 0; segmentIndex < polyLine.size() - 1; ++segmentIndex)
+    for (UInt segmentIndex = polygonIndexStart; segmentIndex < polyLine.size() - 1; ++segmentIndex)
     {
         for (UInt edgeIndex = 0; edgeIndex < mesh.GetNumEdges(); ++edgeIndex)
         {
             // edge already crossed, nothing to do
             if (vistedEdges[edgeIndex])
+            {
+                continue;
+            }
+
+            if (checkOnlyBoundarySegments && !mesh.IsEdgeOnBoundary(edgeIndex))
             {
                 continue;
             }
@@ -268,6 +302,11 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
     std::vector<bool> vistedEdges(m_mesh.GetNumEdges(), false);
     std::vector<bool> vistedFaces(m_mesh.GetNumEdges(), false);
 
+    // Keep a track of the last polygon segment that checked
+    UInt polygonIndexStart = 0;
+    // The first check for intersection seed must check all edges in the mesh, so initialise to false.
+    bool checkOnlyBoundarySegments = false;
+
     // keep traversing the polyline as long crossed edges are found
     while (true)
     {
@@ -275,8 +314,14 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
         const auto [crossedEdgeIndex, crossedSegmentIndex] = GetIntersectionSeed(
             m_mesh,
             polyLine,
+            polygonIndexStart,
+            checkOnlyBoundarySegments,
             polyLineBoundingBoxes,
             vistedEdges);
+
+        polygonIndexStart = crossedSegmentIndex;
+        // If polygon line exits the mesh, then it can enter again only via a boundary element.
+        checkOnlyBoundarySegments = true;
 
         // no valid seed found in the entire mesh, we are done
         if (crossedEdgeIndex == constants::missing::uintValue)
