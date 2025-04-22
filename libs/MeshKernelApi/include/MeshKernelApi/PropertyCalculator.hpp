@@ -37,7 +37,7 @@ namespace meshkernelapi
 {
 
     /// @brief Forward declaration of MeshKernelState
-    class MeshKernelState;
+    struct MeshKernelState;
 
     /// @brief Base class for calculating properties for a mesh
     class PropertyCalculator
