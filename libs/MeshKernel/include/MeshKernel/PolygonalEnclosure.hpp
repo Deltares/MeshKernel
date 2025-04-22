@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "MeshKernel/BoundingBox.hpp"
+#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Point.hpp"
 #include "MeshKernel/Polygon.hpp"
@@ -103,6 +104,10 @@ namespace meshkernel
         /// @note Order of result is outward offset first, inward offset second, this may be nullptr.
         /// @return The new offset polygon(s), may be nullptr if outwardsAndInwards is false, i.e. only outwards required.
         std::tuple<std::unique_ptr<PolygonalEnclosure>, std::unique_ptr<PolygonalEnclosure>> OffsetCopy(double distance, bool outwardsAndInwards) const;
+
+        /// @brief Generate set of points inside the polygon using triangulation.
+        /// @returns The generated points
+        std::vector<Point> GeneratePoints (const double scaleFactor = constants::missing::doubleValue) const;
 
     private:
         /// @typedef IndexRange

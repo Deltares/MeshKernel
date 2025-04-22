@@ -26,9 +26,11 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernel/PolygonalEnclosure.hpp"
+#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/LandBoundary.hpp"
 #include "MeshKernel/Operations.hpp"
+#include "MeshKernel/TriangulationWrapper.hpp"
 
 meshkernel::PolygonalEnclosure::PolygonalEnclosure(const std::vector<Point>& points,
                                                    Projection projection)
@@ -268,4 +270,43 @@ meshkernel::PolygonalEnclosure::OffsetCopy(const double distance, const bool out
     }
 
     return {std::move(outwardOffset), std::move(inwardOffset)};
+}
+
+std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::GeneratePoints(const double scaleFactor) const
+{
+    TriangulationWrapper triangulationWrapper;
+
+    const auto [localPolygonArea, centerOfMass, direction] = m_outer.FaceAreaAndCenterOfMass();
+
+    // average triangle size
+    const auto averageEdgeLength = m_outer.PerimeterLength() / static_cast<double>(m_outer.Size());
+    const auto [minimumSegmentLength, maximumSegmentLength] = m_outer.SegmentLengthExtrema();
+
+    double averageTriangleArea = 0.25 * std::numbers::sqrt3 * averageEdgeLength * averageEdgeLength;
+
+    // estimated number of triangles
+    constexpr UInt SafetySize = 11;
+    const auto numberOfTriangles = static_cast<UInt>(SafetySize * std::max(1.0, localPolygonArea / averageTriangleArea));
+
+    if (numberOfTriangles == 0)
+    {
+        throw AlgorithmError("The number of triangles = 0.");
+    }
+
+    if (scaleFactor == constants::missing::doubleValue)
+    {
+        const double segmentRatio = (minimumSegmentLength == constants::missing::doubleValue || minimumSegmentLength == 0.0 ? 2.0 : maximumSegmentLength / minimumSegmentLength);
+        averageTriangleArea *= 0.5 * segmentRatio * segmentRatio;
+    }
+    else
+    {
+        averageTriangleArea *= scaleFactor;
+    }
+
+    triangulationWrapper.Compute(m_outer.Nodes(),
+                                 TriangulationWrapper::TriangulationOptions::GeneratePoints,
+                                 averageTriangleArea,
+                                 numberOfTriangles);
+
+    return triangulationWrapper.SelectNodes(*this);
 }

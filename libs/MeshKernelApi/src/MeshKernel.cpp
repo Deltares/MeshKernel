@@ -1819,7 +1819,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_make_triangular_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints)
+    MKERNEL_API int mkernel_mesh2d_make_triangular_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints, const double scaleFactor)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -1833,10 +1833,10 @@ namespace meshkernelapi
 
             const meshkernel::Polygons polygon(polygonPointsVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            // generate samples in all polygons
-            auto const generatedPoints = polygon.ComputePointsInPolygons();
+            // generate samples in the first polygonal enclosure
+            auto const generatedPoints = polygon.Enclosure (0).GeneratePoints(scaleFactor < 0.0 ? meshkernel::constants::missing::doubleValue : scaleFactor);
 
-            const meshkernel::Mesh2D mesh(generatedPoints[0], polygon, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const meshkernel::Mesh2D mesh(generatedPoints, polygon, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(mesh), meshKernelId);
         }
         catch (...)
