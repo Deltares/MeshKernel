@@ -27,11 +27,11 @@
 
 #include <numbers>
 
-#include "MeshKernel/PolygonalEnclosure.hpp"
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/LandBoundary.hpp"
 #include "MeshKernel/Operations.hpp"
+#include "MeshKernel/PolygonalEnclosure.hpp"
 #include "MeshKernel/TriangulationWrapper.hpp"
 
 meshkernel::PolygonalEnclosure::PolygonalEnclosure(const std::vector<Point>& points,
