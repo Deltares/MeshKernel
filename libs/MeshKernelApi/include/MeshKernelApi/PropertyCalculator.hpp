@@ -97,7 +97,7 @@ namespace meshkernelapi
         /// @brief Constructor
         InterpolatedSamplePropertyCalculator(const GeometryList& sampleData,
                                              const meshkernel::Projection projection,
-                                             const int interpolationType,
+                                             const meshkernel::InterpolationParameters& interpolationParameters,
                                              const int propertyId);
 
         /// @brief Determine is the calculator can interpolate depth values correctly

@@ -26,10 +26,12 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernelApi/PropertyCalculator.hpp"
+#include "MeshKernelApi/State.hpp"
 
+#include "MeshKernel/MeshEdgeLength.hpp"
+#include "MeshKernel/MeshOrthogonality.hpp"
 #include "MeshKernel/SampleAveragingInterpolator.hpp"
 #include "MeshKernel/SampleTriangulationInterpolator.hpp"
-#include "MeshKernelApi/State.hpp"
 
 #include <algorithm>
 #include <functional>

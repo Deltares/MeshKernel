@@ -115,12 +115,12 @@
 
 namespace meshkernelapi
 {
-    std::map<int, std::unique_ptr<PropertyCalculator>> allocateDefaultPropertyCalculators();
+    std::map<int, std::shared_ptr<PropertyCalculator>> allocateDefaultPropertyCalculators();
 
     // The state held by MeshKernel
     static std::unordered_map<int, MeshKernelState> meshKernelState;
     /// @brief Map of property calculators, from an property identifier to the calculator.
-    static std::map<int, std::unique_ptr<PropertyCalculator>> propertyCalculators = allocateDefaultPropertyCalculators();
+    static std::map<int, std::shared_ptr<PropertyCalculator>> propertyCalculators = allocateDefaultPropertyCalculators();
     static int meshKernelStateCounter = 0;
 
     // Error state
@@ -1644,12 +1644,6 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->IsValid(meshKernelState[meshKernelId], location))
             {
-
-                if (location == meshkernel::Location::Edges && meshKernelState[meshKernelId].m_mesh2d->m_edgesCenters.size() == 0)
-                {
-                    meshKernelState[meshKernelId].m_mesh2d->ComputeEdgesCenters();
-                }
-
                 meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->Calculate(meshKernelState[meshKernelId], location, geometryList);
             }
             else
@@ -1712,10 +1706,13 @@ namespace meshkernelapi
                 return lastExitCode;
             }
 
-            // TODO try to use span here to save copying, probably the same for other properties
-            const auto result = meshKernelState[meshKernelId].m_mesh2d->GetSmoothness();
+            // // TODO try to use span here to save copying, probably the same for other properties
+            // const auto result = meshKernelState[meshKernelId].m_mesh2d->GetSmoothness();
 
-            std::ranges::copy(result, geometryList.values);
+            std::span<double> smoothness (geometryList.values, meshKernelState[meshKernelId].m_mesh2d->GetNumEdges());
+            meshkernel::MeshSmoothness::Compute (*meshKernelState[meshKernelId].m_mesh2d, smoothness);
+
+            // std::ranges::copy(result, geometryList.values);
         }
         catch (...)
         {

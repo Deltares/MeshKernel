@@ -126,7 +126,7 @@ TEST(SampleInterpolationTests, AveragingInterpolationWithMesh)
         y += delta;
     }
 
-    mk::InterpolationParameters params{.m_absoluteSearchRadius = 3.0 * delta, .m_minimumNumberOfSamples = 1};
+    mk::InterpolationParameters params{.absolute_search_radius = 3.0 * delta, .minimum_number_of_samples = 1};
     mk::SampleAveragingInterpolator interpolator(samplePoints, mk::Projection::cartesian, params);
 
     ASSERT_EQ(static_cast<size_t>(interpolator.Size()), samplePoints.size());

@@ -1655,14 +1655,6 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_set(int meshKernelId, const Mesh2D& mesh2d);
 
-        /// @brief Sets the property data for the mesh, the sample data points do not have to match the mesh2d nodes.
-        /// @param[in] projectionType The projection type used by the sample data
-        /// @param[in] interpolationType The type of interpolation required, triangulation (0) or averaging (1) (for now)
-        /// @param[in] sampleData   The sample data and associated sample data points.
-        /// @param[out] propertyId The id of the property
-        /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_set_property(int projectionType, int interpolationType, const GeometryList& sampleData, int& propertyId);
-
         /// @brief Snaps a mesh to a land boundary.
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] selectingPolygon The polygon where to perform the snapping
