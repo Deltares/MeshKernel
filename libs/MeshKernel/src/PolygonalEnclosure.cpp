@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include <numbers>
+
 #include "MeshKernel/PolygonalEnclosure.hpp"
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Exceptions.hpp"

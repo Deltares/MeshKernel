@@ -107,7 +107,7 @@ namespace meshkernel
 
         /// @brief Generate set of points inside the polygon using triangulation.
         /// @returns The generated points
-        std::vector<Point> GeneratePoints (const double scaleFactor = constants::missing::doubleValue) const;
+        std::vector<Point> GeneratePoints(const double scaleFactor = constants::missing::doubleValue) const;
 
     private:
         /// @typedef IndexRange
