@@ -274,7 +274,7 @@ meshkernel::PolygonalEnclosure::OffsetCopy(const double distance, const bool out
     return {std::move(outwardOffset), std::move(inwardOffset)};
 }
 
-std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::GeneratePoints(const double scaleFactor) const
+std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::GeneratePoints(double scaleFactor) const
 {
     TriangulationWrapper triangulationWrapper;
 
@@ -297,13 +297,19 @@ std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::GeneratePoints(co
     if (scaleFactor == constants::missing::doubleValue)
     {
         const auto [minimumSegmentLength, maximumSegmentLength] = m_outer.SegmentLengthExtrema();
-        const double segmentRatio = (minimumSegmentLength == constants::missing::doubleValue || minimumSegmentLength == 0.0 ? std::numbers::sqrt2 : maximumSegmentLength / minimumSegmentLength);
-        averageTriangleArea *= 0.5 * segmentRatio * segmentRatio;
+
+        if (minimumSegmentLength == constants::missing::doubleValue || minimumSegmentLength == 0.0)
+        {
+            scaleFactor = 1.0;
+        }
+        else
+        {
+            const double segmentRatio = maximumSegmentLength / minimumSegmentLength;
+            scaleFactor = 0.5 * segmentRatio * segmentRatio;
+        }
     }
-    else
-    {
-        averageTriangleArea *= scaleFactor;
-    }
+
+    averageTriangleArea *= scaleFactor;
 
     triangulationWrapper.Compute(m_outer.Nodes(),
                                  TriangulationWrapper::TriangulationOptions::GeneratePoints,
