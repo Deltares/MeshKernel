@@ -169,9 +169,9 @@ namespace meshkernel
         constexpr double latitudeCloseToPoles = 88.0; // The latitude defining close to poles
         constexpr double minimumDistance = 2000;      // When the real distance along the latitude becomes smaller than minimumDistance and the location is close to the poles, snap the next point to the poles.
 
-        const auto latitudeInRadiants = std::cos(constants::conversion::degToRad * latitude);
-        const auto asp = latitudeInRadiants + (1.0 - latitudeInRadiants) * 0.3;
-        const auto dy = blockSize * latitudeInRadiants * asp;
+        const auto latitudeInRadians = std::cos(constants::conversion::degToRad * latitude);
+        const auto asp = latitudeInRadians + (1.0 - latitudeInRadians) * 0.3;
+        const auto dy = blockSize * latitudeInRadians * asp;
 
         double result = latitude + dy;
         // prevent too small dy increments in case we are on the poles
