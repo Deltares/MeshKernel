@@ -36,6 +36,9 @@
 #include <MeshKernel/Polygons.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
 
+#include <MeshKernel/ProjectionConversions.hpp>
+#include <MeshKernel/Utilities/Utilities.hpp>
+
 using namespace meshkernel;
 
 TEST(CurvilinearGridUniform, CurvilinearGridRectangular_WithPolygon_ShouldComputeCurvilinearGrid)
@@ -680,3 +683,103 @@ TEST_P(CurvilinearGridUniformTests, parameters)
     ASSERT_EQ(numValidNodes, expectedNumNodes);
 }
 INSTANTIATE_TEST_SUITE_P(curvilinearGridDeletionTests, CurvilinearGridUniformTests, ::testing::ValuesIn(CurvilinearGridUniformTests::GetData()));
+
+TEST(CurvilinearGridUniform, WTF)
+{
+
+    // 1 Setup
+    const double angle = 0.0;
+    const double originX = -8.0;
+    const double originY = 46.0;
+
+    const double maxX = 3.0;
+    const double maxY = 52.0;
+
+    const double blockSizeX = 20.0 / 60.0; // resolution in meters (when using spherical coordinates distances are usually much larger)
+    const double blockSizeY = 20.0 / 60.0;
+    const int numColumns = static_cast<int>((maxX - originX) / blockSizeX);
+    const int numRows = static_cast<int>((maxY - originY) / blockSizeY);
+
+    // const double angle = 0.0;
+    // const double originX = 0.0;
+    // const double originY = 0.0;
+    // const int numColumns = 30;
+    // const int numRows = 20;
+    // const double blockSizeX = 1.0; // resolution in meters (when using spherical coordinates distances are usually much larger)
+    // const double blockSizeY = 1.0;
+
+    // 2 Execution
+    CurvilinearGridRectangular const curvilinearGridCreateRectangular(Projection::spherical);
+    const auto curvilinearGrid = curvilinearGridCreateRectangular.Compute(numColumns,
+                                                                          numRows,
+                                                                          originX,
+                                                                          originY,
+                                                                          angle,
+                                                                          blockSizeX,
+                                                                          blockSizeY);
+    //--------------------------------
+
+    // // Setup
+    // std::vector<Point> polygonNodes{{302.002502, 472.130371},
+    //                                 {144.501526, 253.128174},
+    //                                 {368.752930, 112.876755},
+    //                                 {707.755005, 358.879242},
+    //                                 {301.252502, 471.380371},
+    //                                 {302.002502, 472.130371}};
+
+    // const auto polygons = std::make_shared<Polygons>(polygonNodes, Projection::spherical);
+
+    // const double angle = 0.0;
+    // const double blockSizeX = 100.0; // resolution in degree
+    // const double blockSizeY = 100.0;
+
+    // // Execution: function not producing grid points because too large block size
+    // CurvilinearGridRectangular curvilinearGridCreateRectangular(Projection::spherical);
+    // const auto curvilinearGrid = curvilinearGridCreateRectangular.Compute(angle,
+    //                                                                       blockSizeX,
+    //                                                                       blockSizeY,
+    //                                                                       polygons,
+    //                                                                       0);
+
+    //--------------------------------
+
+    // // Setup
+    // std::vector<Point> polygonNodes{{0.5, 2.5},
+    //                                 {2.5, 0.5},
+    //                                 {5.5, 3.0},
+    //                                 {3.5, 5.0},
+    //                                 {0.5, 2.5}};
+
+    // const auto polygons = std::make_shared<Polygons>(polygonNodes, Projection::cartesian);
+
+    // const double angle = 0.0;
+    // const double blockSizeX = 0.05;
+    // const double blockSizeY = 0.05;
+
+    // // Execution
+    // CurvilinearGridRectangular const curvilinearGridRectangular(Projection::cartesian);
+    // const auto curvilinearGrid = curvilinearGridRectangular.Compute(angle,
+    //                                                                 blockSizeX,
+    //                                                                 blockSizeY,
+    //                                                                 polygons,
+    //                                                                 0);
+
+    // meshkernel::ConvertSphericalToCartesianEPSG<4236> conversion;
+
+    // for (meshkernel::UInt n = 0; n < curvilinearGrid->NumN(); ++n)
+    // {
+    //     for (meshkernel::UInt m = 0; m < curvilinearGrid->NumM(); ++m)
+    //     {
+    //         if (curvilinearGrid->GetNode(n, m).IsValid())
+    //         {
+    //             curvilinearGrid->GetNode(n, m) = conversion(curvilinearGrid->GetNode(n, m));
+    //         }
+    //     }
+    // }
+
+    meshkernel::Print(curvilinearGrid->ComputeNodes(), curvilinearGrid->ComputeEdges());
+
+    // // Assert, also invalid nodes and edges are included in the curvilinear grid
+    // auto const numValidNodes = CurvilinearGridCountValidNodes(*curvilinearGrid);
+    // ASSERT_EQ(9, numValidNodes);
+}
