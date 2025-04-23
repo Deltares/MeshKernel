@@ -282,7 +282,6 @@ std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::GeneratePoints(co
 
     // average triangle size
     const auto averageEdgeLength = m_outer.PerimeterLength() / static_cast<double>(m_outer.Size());
-    const auto [minimumSegmentLength, maximumSegmentLength] = m_outer.SegmentLengthExtrema();
 
     double averageTriangleArea = 0.25 * std::numbers::sqrt3 * averageEdgeLength * averageEdgeLength;
 
@@ -297,7 +296,8 @@ std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::GeneratePoints(co
 
     if (scaleFactor == constants::missing::doubleValue)
     {
-        const double segmentRatio = (minimumSegmentLength == constants::missing::doubleValue || minimumSegmentLength == 0.0 ? 2.0 : maximumSegmentLength / minimumSegmentLength);
+        const auto [minimumSegmentLength, maximumSegmentLength] = m_outer.SegmentLengthExtrema();
+        const double segmentRatio = (minimumSegmentLength == constants::missing::doubleValue || minimumSegmentLength == 0.0 ? std::numbers::sqrt2 : maximumSegmentLength / minimumSegmentLength);
         averageTriangleArea *= 0.5 * segmentRatio * segmentRatio;
     }
     else
