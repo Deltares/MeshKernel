@@ -265,7 +265,6 @@ namespace meshkernel
         range_check::CheckInClosedInterval(parameters.areal_to_angle_smoothing_factor, {0.0, 1.0}, "area to angle smoothing factor");
     }
 
-
     /// @brief Parameters used by the sample interpolation
     struct InterpolationParameters
     {
@@ -292,16 +291,8 @@ namespace meshkernel
         int minimum_number_of_samples = 10;
     };
 
-    inline static void CheckInterpolationParameters (const InterpolationParameters& parameters)
+    inline static void CheckInterpolationParameters(const InterpolationParameters& parameters)
     {
-        // int lowerBound = static_cast<int>(AveragingInterpolation::Method::SimpleAveraging);
-        // int upperBound = static_cast<int>(AveragingInterpolation::Method::MinAbsValue);
-        // range_check::CheckInClosed(parameters.method, {lowerBound, upperBound}, "Method");
-
-        // lowerBound = static_cast<int>(InterpolationType::Triangulation);
-        // upperBound = static_cast<int>(InterpolationType::Averaging);
-        // range_check::CheckInClosed(parameters.interpolation_type, {lowerBound, upperBound}, "Interpolation type");
-
         range_check::CheckGreater(parameters.absolute_search_radius, 0.0, "Absolute search radius");
         range_check::CheckGreater(parameters.relative_search_radius, 0.0, "Relative search radius");
         range_check::CheckGreater(parameters.minimum_number_of_samples, 0, "Minimum number of samples");

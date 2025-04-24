@@ -1709,8 +1709,8 @@ namespace meshkernelapi
             // // TODO try to use span here to save copying, probably the same for other properties
             // const auto result = meshKernelState[meshKernelId].m_mesh2d->GetSmoothness();
 
-            std::span<double> smoothness (geometryList.values, meshKernelState[meshKernelId].m_mesh2d->GetNumEdges());
-            meshkernel::MeshSmoothness::Compute (*meshKernelState[meshKernelId].m_mesh2d, smoothness);
+            std::span<double> smoothness(geometryList.values, meshKernelState[meshKernelId].m_mesh2d->GetNumEdges());
+            meshkernel::MeshSmoothness::Compute(*meshKernelState[meshKernelId].m_mesh2d, smoothness);
 
             // std::ranges::copy(result, geometryList.values);
         }
