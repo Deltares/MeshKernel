@@ -1020,11 +1020,11 @@ namespace meshkernelapi
         /// @param[in] meshRefinementParameters Parameters indicating how the mesh is to be refined
         /// @param[in] minimumRefinementDepth Nodes with depth value less than this value will not be marked for refinement
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_casulli_refinement_wrt_depths(int meshKernelId,
-                                                                     const GeometryList& polygons,
-                                                                     int propertyId,
-                                                                     const meshkernel::MeshRefinementParameters& meshRefinementParameters,
-                                                                     const double minimumRefinementDepth);
+        MKERNEL_API int mkernel_mesh2d_casulli_refinement_based_on_depths(int meshKernelId,
+                                                                          const GeometryList& polygons,
+                                                                          int propertyId,
+                                                                          const meshkernel::MeshRefinementParameters& meshRefinementParameters,
+                                                                          const double minimumRefinementDepth);
 
         /// The function modifies the mesh for achieving orthogonality between the edges and the segments connecting the face circumcenters.
         /// The amount of orthogonality is traded against the mesh smoothing (in this case the equality of face areas).

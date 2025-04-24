@@ -3225,11 +3225,11 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_casulli_refinement_wrt_depths(int meshKernelId,
-                                                                 const GeometryList& polygons,
-                                                                 int propertyId,
-                                                                 const meshkernel::MeshRefinementParameters& meshRefinementParameters,
-                                                                 const double minimumRefinementDepth)
+    MKERNEL_API int mkernel_mesh2d_casulli_refinement_based_on_depths(int meshKernelId,
+                                                                      const GeometryList& polygons,
+                                                                      int propertyId,
+                                                                      const meshkernel::MeshRefinementParameters& meshRefinementParameters,
+                                                                      const double minimumRefinementDepth)
     {
         lastExitCode = meshkernel::ExitCode::Success;
 
