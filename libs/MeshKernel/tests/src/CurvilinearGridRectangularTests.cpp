@@ -689,14 +689,25 @@ TEST(CurvilinearGridUniform, WTF)
 
     // 1 Setup
     const double angle = 0.0;
-    const double originX = -8.0;
-    const double originY = 46.0;
+    const double originX = 0.0;
+    const double originY = 0.0;
 
-    const double maxX = 3.0;
-    const double maxY = 52.0;
+    const double maxX = 85.0;
+    const double maxY = 85.0;
 
-    const double blockSizeX = 20.0 / 60.0; // resolution in meters (when using spherical coordinates distances are usually much larger)
-    const double blockSizeY = 20.0 / 60.0;
+    const double blockSizeX = 6.0; // 60.0 / 60.0; // resolution in meters (when using spherical coordinates distances are usually much larger)
+    const double blockSizeY = 6.0; // 60.0 / 60.0;
+
+    // const double angle = 0.0;
+    // const double originX = -8.0;
+    // const double originY = 46.0;
+
+    // const double maxX = 3.0;
+    // const double maxY = 52.0;
+
+    // const double blockSizeX = 20.0 / 60.0; // resolution in meters (when using spherical coordinates distances are usually much larger)
+    // const double blockSizeY = 20.0 / 60.0;
+
     const int numColumns = static_cast<int>((maxX - originX) / blockSizeX);
     const int numRows = static_cast<int>((maxY - originY) / blockSizeY);
 
@@ -776,6 +787,17 @@ TEST(CurvilinearGridUniform, WTF)
     //         }
     //     }
     // }
+
+    for (meshkernel::UInt n = 0; n < curvilinearGrid->NumN(); ++n)
+    {
+        for (meshkernel::UInt m = 0; m < curvilinearGrid->NumM(); ++m)
+        {
+            if (curvilinearGrid->GetNode(n, m).IsValid())
+            {
+                curvilinearGrid->GetNode(n, m).TransformSphericalToCartesian(curvilinearGrid->GetNode(n, m).y);
+            }
+        }
+    }
 
     meshkernel::Print(curvilinearGrid->ComputeNodes(), curvilinearGrid->ComputeEdges());
 

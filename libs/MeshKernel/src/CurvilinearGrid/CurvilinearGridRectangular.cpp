@@ -125,6 +125,8 @@ namespace meshkernel
                                                                         const double blockSizeX,
                                                                         const double blockSizeY)
     {
+        // double apsectRatio = blockSizeX / blockSizeY;
+
         lin_alg::Matrix<Point> result = ComputeCartesian(numColumns,
                                                          numRows,
                                                          originX,
@@ -137,6 +139,32 @@ namespace meshkernel
         const auto numN = result.rows();
         bool onPoles = false;
         constexpr double latitudePoles = 90.0;
+
+        // for (Eigen::Index n = 1; n < numN; ++n)
+        // {
+        //     Eigen::Index lastRowOnPole = numM;
+
+        //     for (Eigen::Index m = 0; m < numM; ++m)
+        //     {
+        //         const double adjustedLatitude = ComputeLatitudeIncrementWithAdjustment(blockSizeY, result(n - 1, m).y);
+        //         result(n, m).y = adjustedLatitude;
+
+        //         if (IsEqual(std::abs(adjustedLatitude), latitudePoles))
+        //         {
+        //             onPoles = true;
+        //             lastRowOnPole = n;
+        //         }
+        //     }
+
+        //     if (onPoles)
+        //     {
+        //         if (lastRowOnPole + 1 < result.rows())
+        //         {
+        //             lin_alg::EraseRows(result, lastRowOnPole + 1, result.rows() - 1);
+        //         }
+        //         break;
+        //     }
+        // }
 
         for (Eigen::Index n = 1; n < numN; ++n)
         {
@@ -161,6 +189,7 @@ namespace meshkernel
                 break;
             }
         }
+
         return result;
     }
 
