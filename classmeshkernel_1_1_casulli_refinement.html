@@ -101,12 +101,18 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a1c91128f9e4fee35f9d322a186a072fe" id="r_a1c91128f9e4fee35f9d322a186a072fe"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; meshkernel::UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_casulli_refinement.html#a1c91128f9e4fee35f9d322a186a072fe">Compute</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon)</td></tr>
 <tr class="memdesc:a1c91128f9e4fee35f9d322a186a072fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the Casulli refinement for the part of the mesh inside the polygon.  <br /></td></tr>
 <tr class="separator:a1c91128f9e4fee35f9d322a186a072fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa07486e028ddc505da3f986d8f28425e" id="r_aa07486e028ddc505da3f986d8f28425e"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; meshkernel::UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_casulli_refinement.html#aa07486e028ddc505da3f986d8f28425e">Compute</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon, const std::vector&lt; double &gt; &amp;depthValues, const <a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a> &amp;refinementParameters, const double minimumDepthRefinement)</td></tr>
+<tr class="memdesc:aa07486e028ddc505da3f986d8f28425e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the Casulli refinement for the part of the mesh inside the polygon.  <br /></td></tr>
+<tr class="separator:aa07486e028ddc505da3f986d8f28425e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a883584af738a79f5a98fd0e501da8892" id="r_a883584af738a79f5a98fd0e501da8892"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; meshkernel::UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_casulli_refinement.html#a883584af738a79f5a98fd0e501da8892">Compute</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon, const <a class="el" href="classmeshkernel_1_1_sample_interpolator.html">SampleInterpolator</a> &amp;interpolator, const int propertyId, const <a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a> &amp;refinementParameters, const double minimumDepthRefinement)</td></tr>
+<tr class="memdesc:a883584af738a79f5a98fd0e501da8892"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the Casulli refinement for the part of the mesh inside the polygon.  <br /></td></tr>
+<tr class="separator:a883584af738a79f5a98fd0e501da8892"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Compute the Casulli refinement for a mesh. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a988a3c89b2eaca8ebf843dd481606e9e" name="a988a3c89b2eaca8ebf843dd481606e9e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a988a3c89b2eaca8ebf843dd481606e9e">&#9670;&#160;</a></span>Compute() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a988a3c89b2eaca8ebf843dd481606e9e">&#9670;&#160;</a></span>Compute() <span class="overload">[1/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -140,7 +146,7 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <a id="a1c91128f9e4fee35f9d322a186a072fe" name="a1c91128f9e4fee35f9d322a186a072fe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1c91128f9e4fee35f9d322a186a072fe">&#9670;&#160;</a></span>Compute() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c91128f9e4fee35f9d322a186a072fe">&#9670;&#160;</a></span>Compute() <span class="overload">[2/4]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -178,6 +184,145 @@ Static Public Member Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">mesh</td><td><a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> to be refined </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">polygon</td><td>Area within which the mesh will be refined </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a883584af738a79f5a98fd0e501da8892" name="a883584af738a79f5a98fd0e501da8892"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a883584af738a79f5a98fd0e501da8892">&#9670;&#160;</a></span>Compute() <span class="overload">[3/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::unique_ptr&lt; meshkernel::UndoAction &gt; meshkernel::CasulliRefinement::Compute </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_sample_interpolator.html">SampleInterpolator</a> &amp;&#160;</td>
+          <td class="paramname"><em>interpolator</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>propertyId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>refinementParameters</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>minimumDepthRefinement</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the Casulli refinement for the part of the mesh inside the polygon. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">mesh</td><td><a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> to be refined </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygon</td><td>Area within which the mesh will be refined </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">interpolator</td><td>The interpolator of the values </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">propertyId</td><td>The identifier used by the interpolator </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">refinementParameters</td><td><a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> refinement parameters </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">minimumDepthRefinement</td><td>Nodes with depth value less than this value will not be marked for refinement </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aa07486e028ddc505da3f986d8f28425e" name="aa07486e028ddc505da3f986d8f28425e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa07486e028ddc505da3f986d8f28425e">&#9670;&#160;</a></span>Compute() <span class="overload">[4/4]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::unique_ptr&lt; meshkernel::UndoAction &gt; meshkernel::CasulliRefinement::Compute </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; double &gt; &amp;&#160;</td>
+          <td class="paramname"><em>depthValues</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html">MeshRefinementParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>refinementParameters</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>minimumDepthRefinement</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Compute the Casulli refinement for the part of the mesh inside the polygon. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">mesh</td><td><a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> to be refined </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygon</td><td>Area within which the mesh will be refined </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">depthValues</td><td>The depth values at nodes </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">refinementParameters</td><td><a class="el" href="classmeshkernel_1_1_mesh.html" title="A class describing an unstructured mesh. This class contains the shared functionality between 1d or 2...">Mesh</a> refinement parameters </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">minimumDepthRefinement</td><td>Nodes with depth value less than this value will not be marked for refinement </td></tr>
   </table>
   </dd>
 </dl>

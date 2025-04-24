@@ -9,6 +9,7 @@ var searchData=
   ['upper_5fright_5fx_6',['upper_right_x',['../structmeshkernel_1_1_make_grid_parameters.html#a3e6b4be2a2c9f6fc35c5446252587f16',1,'meshkernel::MakeGridParameters']]],
   ['upper_5fright_5fy_7',['upper_right_y',['../structmeshkernel_1_1_make_grid_parameters.html#ada89a8003178c7cd3db3ffbb1434880f',1,'meshkernel::MakeGridParameters']]],
   ['upperright_8',['upperRight',['../classmeshkernel_1_1_bounding_box.html#af82ac28918a58866e67c796884b3ae32',1,'meshkernel::BoundingBox']]],
-  ['use_5fmass_5fcenter_5fwhen_5frefining_9',['use_mass_center_when_refining',['../structmeshkernel_1_1_mesh_refinement_parameters.html#a4a39fcca4669fa55c513a71ba798c91a',1,'meshkernel::MeshRefinementParameters']]],
-  ['utm_10',['utm',['../classmeshkernel_1_1_convert_spherical_to_cartesian_base.html#a934004359d25af1c53a80d21cb76d609',1,'meshkernel::ConvertSphericalToCartesianBase::UTM'],['../classmeshkernel_1_1_convert_cartesian_to_spherical_base.html#ad15d2ec3130b33e3f82465b1449e128f',1,'meshkernel::ConvertCartesianToSphericalBase::UTM']]]
+  ['use_5fclosest_5fif_5fnone_5ffound_9',['use_closest_if_none_found',['../structmeshkernel_1_1_interpolation_parameters.html#a185f107fa695704f29eb39abb9524abc',1,'meshkernel::InterpolationParameters']]],
+  ['use_5fmass_5fcenter_5fwhen_5frefining_10',['use_mass_center_when_refining',['../structmeshkernel_1_1_mesh_refinement_parameters.html#a4a39fcca4669fa55c513a71ba798c91a',1,'meshkernel::MeshRefinementParameters']]],
+  ['utm_11',['utm',['../classmeshkernel_1_1_convert_spherical_to_cartesian_base.html#a934004359d25af1c53a80d21cb76d609',1,'meshkernel::ConvertSphericalToCartesianBase::UTM'],['../classmeshkernel_1_1_convert_cartesian_to_spherical_base.html#ad15d2ec3130b33e3f82465b1449e128f',1,'meshkernel::ConvertCartesianToSphericalBase::UTM']]]
 ];

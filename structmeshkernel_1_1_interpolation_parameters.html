@@ -88,38 +88,75 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>Parameters used by the averaging interpolation.  
+<p>Parameters used by the sample interpolation.  
  <a href="structmeshkernel_1_1_interpolation_parameters.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="_sample_averaging_interpolator_8hpp_source.html">SampleAveragingInterpolator.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="_parameters_8hpp_source.html">Parameters.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a9fe7ac32448b7c34cddb5071040c47c5" id="r_a9fe7ac32448b7c34cddb5071040c47c5"><td class="memItemLeft" align="right" valign="top"><a id="a9fe7ac32448b7c34cddb5071040c47c5" name="a9fe7ac32448b7c34cddb5071040c47c5"></a>
-<a class="el" href="classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0">AveragingInterpolation::Method</a>&#160;</td><td class="memItemRight" valign="bottom"><b>m_method</b> = <a class="el" href="classmeshkernel_1_1_averaging_interpolation.html#a972b7df6ae79caf25d17f2259bfc74e0a6b3fcde058ff09e647354f7334491f08">AveragingInterpolation::Method::SimpleAveraging</a></td></tr>
-<tr class="memdesc:a9fe7ac32448b7c34cddb5071040c47c5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which averaging method should be used. <br /></td></tr>
-<tr class="separator:a9fe7ac32448b7c34cddb5071040c47c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af715622b45c308a7b8619c336cae5eb0" id="r_af715622b45c308a7b8619c336cae5eb0"><td class="memItemLeft" align="right" valign="top"><a id="af715622b45c308a7b8619c336cae5eb0" name="af715622b45c308a7b8619c336cae5eb0"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>m_absoluteSearchRadius</b> = 100.0</td></tr>
-<tr class="memdesc:af715622b45c308a7b8619c336cae5eb0"><td class="mdescLeft">&#160;</td><td class="mdescRight">The absolute search radius. <br /></td></tr>
-<tr class="separator:af715622b45c308a7b8619c336cae5eb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a750c73449c862e377ca44ced84fbd214" id="r_a750c73449c862e377ca44ced84fbd214"><td class="memItemLeft" align="right" valign="top"><a id="a750c73449c862e377ca44ced84fbd214" name="a750c73449c862e377ca44ced84fbd214"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>m_relativeSearchRadius</b> = 1.0</td></tr>
-<tr class="memdesc:a750c73449c862e377ca44ced84fbd214"><td class="mdescLeft">&#160;</td><td class="mdescRight">The relative search radius. <br /></td></tr>
-<tr class="separator:a750c73449c862e377ca44ced84fbd214"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab0d8c641d724163ab1a23ca332f542d7" id="r_ab0d8c641d724163ab1a23ca332f542d7"><td class="memItemLeft" align="right" valign="top"><a id="ab0d8c641d724163ab1a23ca332f542d7" name="ab0d8c641d724163ab1a23ca332f542d7"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>m_useClosestIfNoneFound</b> = true</td></tr>
-<tr class="memdesc:ab0d8c641d724163ab1a23ca332f542d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">If no point is found in polygon then just used the closest point. <br /></td></tr>
-<tr class="separator:ab0d8c641d724163ab1a23ca332f542d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f3a08c49def8d5e9c59964c126f6d6c" id="r_a9f3a08c49def8d5e9c59964c126f6d6c"><td class="memItemLeft" align="right" valign="top"><a id="a9f3a08c49def8d5e9c59964c126f6d6c" name="a9f3a08c49def8d5e9c59964c126f6d6c"></a>
-<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><b>m_minimumNumberOfSamples</b> = 10</td></tr>
-<tr class="memdesc:a9f3a08c49def8d5e9c59964c126f6d6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The minimum number of samples for several averaging methods. <br /></td></tr>
-<tr class="separator:a9f3a08c49def8d5e9c59964c126f6d6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e78daa69b34da4016ba906fbdd8f130" id="r_a3e78daa69b34da4016ba906fbdd8f130"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_interpolation_parameters.html#a3e78daa69b34da4016ba906fbdd8f130">interpolation_type</a> = 1</td></tr>
+<tr class="memdesc:a3e78daa69b34da4016ba906fbdd8f130"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which interpolation type is to be used.  <br /></td></tr>
+<tr class="separator:a3e78daa69b34da4016ba906fbdd8f130"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7287cee4d90cb87498df4192cea3d31" id="r_ae7287cee4d90cb87498df4192cea3d31"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernel_1_1_interpolation_parameters.html#ae7287cee4d90cb87498df4192cea3d31">method</a> = 1</td></tr>
+<tr class="memdesc:ae7287cee4d90cb87498df4192cea3d31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Which averaging method should be used.  <br /></td></tr>
+<tr class="separator:ae7287cee4d90cb87498df4192cea3d31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a166c10f4d5e8447cd46a713c42fb6082" id="r_a166c10f4d5e8447cd46a713c42fb6082"><td class="memItemLeft" align="right" valign="top"><a id="a166c10f4d5e8447cd46a713c42fb6082" name="a166c10f4d5e8447cd46a713c42fb6082"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>absolute_search_radius</b> = 100.0</td></tr>
+<tr class="memdesc:a166c10f4d5e8447cd46a713c42fb6082"><td class="mdescLeft">&#160;</td><td class="mdescRight">The absolute search radius. <br /></td></tr>
+<tr class="separator:a166c10f4d5e8447cd46a713c42fb6082"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad17c9b443b41654d0c2af46850e4a688" id="r_ad17c9b443b41654d0c2af46850e4a688"><td class="memItemLeft" align="right" valign="top"><a id="ad17c9b443b41654d0c2af46850e4a688" name="ad17c9b443b41654d0c2af46850e4a688"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>relative_search_radius</b> = 1.0</td></tr>
+<tr class="memdesc:ad17c9b443b41654d0c2af46850e4a688"><td class="mdescLeft">&#160;</td><td class="mdescRight">The relative search radius. <br /></td></tr>
+<tr class="separator:ad17c9b443b41654d0c2af46850e4a688"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a185f107fa695704f29eb39abb9524abc" id="r_a185f107fa695704f29eb39abb9524abc"><td class="memItemLeft" align="right" valign="top"><a id="a185f107fa695704f29eb39abb9524abc" name="a185f107fa695704f29eb39abb9524abc"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>use_closest_if_none_found</b> = true</td></tr>
+<tr class="memdesc:a185f107fa695704f29eb39abb9524abc"><td class="mdescLeft">&#160;</td><td class="mdescRight">If no point is found in polygon then just used the closest point. <br /></td></tr>
+<tr class="separator:a185f107fa695704f29eb39abb9524abc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcce3e07ab4c61c6c1593f2b5707bf01" id="r_abcce3e07ab4c61c6c1593f2b5707bf01"><td class="memItemLeft" align="right" valign="top"><a id="abcce3e07ab4c61c6c1593f2b5707bf01" name="abcce3e07ab4c61c6c1593f2b5707bf01"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>minimum_number_of_samples</b> = 10</td></tr>
+<tr class="memdesc:abcce3e07ab4c61c6c1593f2b5707bf01"><td class="mdescLeft">&#160;</td><td class="mdescRight">The minimum number of samples for several averaging methods. <br /></td></tr>
+<tr class="separator:abcce3e07ab4c61c6c1593f2b5707bf01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Parameters used by the averaging interpolation. </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/runner/work/MeshKernel/MeshKernel/libs/MeshKernel/include/MeshKernel/<a class="el" href="_sample_averaging_interpolator_8hpp_source.html">SampleAveragingInterpolator.hpp</a></li>
+<div class="textblock"><p>Parameters used by the sample interpolation. </p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="a3e78daa69b34da4016ba906fbdd8f130" name="a3e78daa69b34da4016ba906fbdd8f130"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e78daa69b34da4016ba906fbdd8f130">&#9670;&#160;</a></span>interpolation_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int meshkernel::InterpolationParameters::interpolation_type = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Which interpolation type is to be used. </p>
+<p>Default is to use sample averaging </p>
+
+</div>
+</div>
+<a id="ae7287cee4d90cb87498df4192cea3d31" name="ae7287cee4d90cb87498df4192cea3d31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae7287cee4d90cb87498df4192cea3d31">&#9670;&#160;</a></span>method</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int meshkernel::InterpolationParameters::method = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Which averaging method should be used. </p>
+<p>The default is to use simple averaging </p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/runner/work/MeshKernel/MeshKernel/libs/MeshKernel/include/MeshKernel/<a class="el" href="_parameters_8hpp_source.html">Parameters.hpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

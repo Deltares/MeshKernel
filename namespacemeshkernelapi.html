@@ -342,9 +342,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <tr class="memitem:a41794e15c663467d71e75c78fa30dd26" id="r_a41794e15c663467d71e75c78fa30dd26"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a41794e15c663467d71e75c78fa30dd26">mkernel_curvilinear_snap_to_spline</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;spline, double sectionControlPoint1x, double sectionControlPoint1y, double sectionControlPoint2x, double sectionControlPoint2y, double regionControlPointX=<a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a>(), double regionControlPointY=<a class="el" href="namespacemeshkernelapi.html#a0fa4028baafe51cdd5e87fe898b4a426">mkernel_get_separator</a>())</td></tr>
 <tr class="memdesc:a41794e15c663467d71e75c78fa30dd26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the curvilinear grid.  <br /></td></tr>
 <tr class="separator:a41794e15c663467d71e75c78fa30dd26"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54655bc724e99cb7447d35743525f12a" id="r_a54655bc724e99cb7447d35743525f12a"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a54655bc724e99cb7447d35743525f12a">mkernel_deallocate_property</a> (int propertyId)</td></tr>
-<tr class="memdesc:a54655bc724e99cb7447d35743525f12a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocate property calculator.  <br /></td></tr>
-<tr class="separator:a54655bc724e99cb7447d35743525f12a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0969878ba7b6ef6b477f6659a8eacf1" id="r_aa0969878ba7b6ef6b477f6659a8eacf1"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa0969878ba7b6ef6b477f6659a8eacf1">mkernel_deallocate_property</a> (int meshKernelId, int propertyId)</td></tr>
+<tr class="memdesc:aa0969878ba7b6ef6b477f6659a8eacf1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocate property calculator.  <br /></td></tr>
+<tr class="separator:aa0969878ba7b6ef6b477f6659a8eacf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57d1b16ba8121e1f11b1692b755647c3" id="r_a57d1b16ba8121e1f11b1692b755647c3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a57d1b16ba8121e1f11b1692b755647c3">mkernel_deallocate_state</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:a57d1b16ba8121e1f11b1692b755647c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deallocate mesh state.  <br /></td></tr>
 <tr class="separator:a57d1b16ba8121e1f11b1692b755647c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -465,6 +465,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <tr class="memitem:a91a3589ccdc1570cb64308aef54deb7d" id="r_a91a3589ccdc1570cb64308aef54deb7d"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a91a3589ccdc1570cb64308aef54deb7d">mkernel_mesh2d_rotate</a> (int meshKernelId, double centreX, double centreY, double theta)</td></tr>
 <tr class="memdesc:a91a3589ccdc1570cb64308aef54deb7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Rotate a mesh2d about a point.  <br /></td></tr>
 <tr class="separator:a91a3589ccdc1570cb64308aef54deb7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc2df26eac8d967042259d9c1688d17b" id="r_abc2df26eac8d967042259d9c1688d17b"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#abc2df26eac8d967042259d9c1688d17b">mkernel_mesh2d_set_property</a> (int meshKernelId, const <a class="el" href="structmeshkernel_1_1_interpolation_parameters.html">meshkernel::InterpolationParameters</a> &amp;interpolationParameters, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;sampleData, int &amp;propertyId)</td></tr>
+<tr class="memdesc:abc2df26eac8d967042259d9c1688d17b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the property data for the mesh, the sample data points do not have to match the mesh2d nodes.  <br /></td></tr>
+<tr class="separator:abc2df26eac8d967042259d9c1688d17b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af0a396a0ad56ec345564e4ae9db73e11" id="r_af0a396a0ad56ec345564e4ae9db73e11"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#af0a396a0ad56ec345564e4ae9db73e11">mkernel_splines_snap_to_landboundary</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;land, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;splines, int startSplineIndex, int endSplineIndex)</td></tr>
 <tr class="memdesc:af0a396a0ad56ec345564e4ae9db73e11"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snaps the spline (or splines) to the land boundary.  <br /></td></tr>
 <tr class="separator:af0a396a0ad56ec345564e4ae9db73e11"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -489,6 +492,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <tr class="memitem:a70d6d63626c31eb93ebb68f020f563fd" id="r_a70d6d63626c31eb93ebb68f020f563fd"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a70d6d63626c31eb93ebb68f020f563fd">mkernel_mesh2d_casulli_refinement_on_polygon</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygons)</td></tr>
 <tr class="memdesc:a70d6d63626c31eb93ebb68f020f563fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine mesh using the Casulli refinement algorithm.  <br /></td></tr>
 <tr class="separator:a70d6d63626c31eb93ebb68f020f563fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad56c9f6e712f5970f88b864f997663fa" id="r_ad56c9f6e712f5970f88b864f997663fa"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ad56c9f6e712f5970f88b864f997663fa">mkernel_mesh2d_casulli_refinement_based_on_depths</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygons, int propertyId, const <a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html">meshkernel::MeshRefinementParameters</a> &amp;meshRefinementParameters, const double minimumRefinementDepth)</td></tr>
+<tr class="memdesc:ad56c9f6e712f5970f88b864f997663fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine mesh using the Casulli refinement algorithm based on the depth values.  <br /></td></tr>
+<tr class="separator:ad56c9f6e712f5970f88b864f997663fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a156192886c65dcffa89cad36a5c78045" id="r_a156192886c65dcffa89cad36a5c78045"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a156192886c65dcffa89cad36a5c78045">mkernel_mesh2d_compute_orthogonalization</a> (int meshKernelId, int projectToLandBoundaryOption, const <a class="el" href="structmeshkernel_1_1_orthogonalization_parameters.html">meshkernel::OrthogonalizationParameters</a> &amp;orthogonalizationParameters, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;selectingPolygon, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;landBoundaries)</td></tr>
 <tr class="separator:a156192886c65dcffa89cad36a5c78045"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ce7996ae5eae6bdf137fe9f06d724b1" id="r_a2ce7996ae5eae6bdf137fe9f06d724b1"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a2ce7996ae5eae6bdf137fe9f06d724b1">mkernel_mesh2d_connect_meshes</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d, double searchFraction, bool connect)</td></tr>
@@ -674,9 +680,6 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <tr class="memitem:aa8871161744c899f45413808e2ebbbfb" id="r_aa8871161744c899f45413808e2ebbbfb"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa8871161744c899f45413808e2ebbbfb">mkernel_mesh2d_set</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
 <tr class="memdesc:aa8871161744c899f45413808e2ebbbfb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the <a class="el" href="classmeshkernel_1_1_mesh2_d.html" title="A class derived from Mesh, which describes unstructures 2d meshes.">meshkernel::Mesh2D</a> state.  <br /></td></tr>
 <tr class="separator:aa8871161744c899f45413808e2ebbbfb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07556a2e2ed6373cc65d5d2aedf1ebf3" id="r_a07556a2e2ed6373cc65d5d2aedf1ebf3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a07556a2e2ed6373cc65d5d2aedf1ebf3">mkernel_mesh2d_set_property</a> (int projectionType, int interpolationType, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;sampleData, int &amp;propertyId)</td></tr>
-<tr class="memdesc:a07556a2e2ed6373cc65d5d2aedf1ebf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the property data for the mesh, the sample data points do not have to match the mesh2d nodes.  <br /></td></tr>
-<tr class="separator:a07556a2e2ed6373cc65d5d2aedf1ebf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3189a745b36940d51c81b607cf85ee4" id="r_ac3189a745b36940d51c81b607cf85ee4"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac3189a745b36940d51c81b607cf85ee4">mkernel_mesh2d_snap_to_landboundary</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;selectingPolygon, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;landBoundaries)</td></tr>
 <tr class="memdesc:ac3189a745b36940d51c81b607cf85ee4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Snaps a mesh to a land boundary.  <br /></td></tr>
 <tr class="separator:ac3189a745b36940d51c81b607cf85ee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -3597,8 +3600,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 
 </div>
 </div>
-<a id="a54655bc724e99cb7447d35743525f12a" name="a54655bc724e99cb7447d35743525f12a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a54655bc724e99cb7447d35743525f12a">&#9670;&#160;</a></span>mkernel_deallocate_property()</h2>
+<a id="aa0969878ba7b6ef6b477f6659a8eacf1" name="aa0969878ba7b6ef6b477f6659a8eacf1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0969878ba7b6ef6b477f6659a8eacf1">&#9670;&#160;</a></span>mkernel_deallocate_property()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3607,8 +3610,18 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
           <td class="memname">MKERNEL_API int meshkernelapi::mkernel_deallocate_property </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>propertyId</em></td><td>)</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>propertyId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -3616,6 +3629,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <p>Deallocate property calculator. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">propertyId</td><td>The id of the property </td></tr>
   </table>
   </dd>
@@ -5072,6 +5086,65 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 
 </div>
 </div>
+<a id="ad56c9f6e712f5970f88b864f997663fa" name="ad56c9f6e712f5970f88b864f997663fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad56c9f6e712f5970f88b864f997663fa">&#9670;&#160;</a></span>mkernel_mesh2d_casulli_refinement_based_on_depths()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_casulli_refinement_based_on_depths </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygons</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>propertyId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html">meshkernel::MeshRefinementParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>meshRefinementParameters</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>minimumRefinementDepth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Refine mesh using the Casulli refinement algorithm based on the depth values. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygons</td><td>The polygon within which the refinement is computed. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">propertyId</td><td>The identifier of the interpolator to be used </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshRefinementParameters</td><td>Parameters indicating how the mesh is to be refined </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">minimumRefinementDepth</td><td>Nodes with depth value less than this value will not be marked for refinement </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
 <a id="a70d6d63626c31eb93ebb68f020f563fd" name="a70d6d63626c31eb93ebb68f020f563fd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a70d6d63626c31eb93ebb68f020f563fd">&#9670;&#160;</a></span>mkernel_mesh2d_casulli_refinement_on_polygon()</h2>
 
@@ -5288,6 +5361,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>After conversion all non-default property calculators will be deleted. </dd></dl>
 
 </div>
 </div>
@@ -8186,8 +8260,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 
 </div>
 </div>
-<a id="a07556a2e2ed6373cc65d5d2aedf1ebf3" name="a07556a2e2ed6373cc65d5d2aedf1ebf3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a07556a2e2ed6373cc65d5d2aedf1ebf3">&#9670;&#160;</a></span>mkernel_mesh2d_set_property()</h2>
+<a id="abc2df26eac8d967042259d9c1688d17b" name="abc2df26eac8d967042259d9c1688d17b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc2df26eac8d967042259d9c1688d17b">&#9670;&#160;</a></span>mkernel_mesh2d_set_property()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -8196,13 +8270,13 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
           <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_set_property </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>projectionType</em>, </td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>interpolationType</em>, </td>
+          <td class="paramtype">const <a class="el" href="structmeshkernel_1_1_interpolation_parameters.html">meshkernel::InterpolationParameters</a> &amp;&#160;</td>
+          <td class="paramname"><em>interpolationParameters</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -8227,8 +8301,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <p>Sets the property data for the mesh, the sample data points do not have to match the mesh2d nodes. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">projectionType</td><td>The projection type used by the sample data </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">interpolationType</td><td>The type of interpolation required, triangulation (0) or averaging (1) (for now) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">interpolationParameters</td><td>The parameters required for the interpolation </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">sampleData</td><td>The sample data and associated sample data points. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">propertyId</td><td>The id of the property </td></tr>
   </table>

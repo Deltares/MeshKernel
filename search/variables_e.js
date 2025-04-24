@@ -4,5 +4,6 @@ var searchData=
   ['uniform_5frows_5ffraction_1',['uniform_rows_fraction',['../structmeshkernel_1_1_make_grid_parameters.html#a986ab081ccbb94bbba7ea3f674a20120',1,'meshkernel::MakeGridParameters']]],
   ['upper_5fright_5fx_2',['upper_right_x',['../structmeshkernel_1_1_make_grid_parameters.html#a3e6b4be2a2c9f6fc35c5446252587f16',1,'meshkernel::MakeGridParameters']]],
   ['upper_5fright_5fy_3',['upper_right_y',['../structmeshkernel_1_1_make_grid_parameters.html#ada89a8003178c7cd3db3ffbb1434880f',1,'meshkernel::MakeGridParameters']]],
-  ['use_5fmass_5fcenter_5fwhen_5frefining_4',['use_mass_center_when_refining',['../structmeshkernel_1_1_mesh_refinement_parameters.html#a4a39fcca4669fa55c513a71ba798c91a',1,'meshkernel::MeshRefinementParameters']]]
+  ['use_5fclosest_5fif_5fnone_5ffound_4',['use_closest_if_none_found',['../structmeshkernel_1_1_interpolation_parameters.html#a185f107fa695704f29eb39abb9524abc',1,'meshkernel::InterpolationParameters']]],
+  ['use_5fmass_5fcenter_5fwhen_5frefining_5',['use_mass_center_when_refining',['../structmeshkernel_1_1_mesh_refinement_parameters.html#a4a39fcca4669fa55c513a71ba798c91a',1,'meshkernel::MeshRefinementParameters']]]
 ];
