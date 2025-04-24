@@ -703,9 +703,10 @@ namespace meshkernelapi
                                                            double regionControlPointY = mkernel_get_separator());
 
         /// @brief Deallocate property calculator
+        /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] propertyId The id of the property
         /// @returns Error code
-        MKERNEL_API int mkernel_deallocate_property(int propertyId);
+        MKERNEL_API int mkernel_deallocate_property(int meshKernelId, int propertyId);
 
         /// @brief Deallocate mesh state
         /// @param[in] meshKernelId The id of the mesh state
@@ -944,6 +945,17 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_rotate(int meshKernelId, double centreX, double centreY, double theta);
 
+        /// @brief Sets the property data for the mesh, the sample data points do not have to match the mesh2d nodes.
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] interpolationParameters The parameters required for the interpolation
+        /// @param[in] sampleData   The sample data and associated sample data points.
+        /// @param[out] propertyId The id of the property
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_set_property(int meshKernelId,
+                                                    const meshkernel::InterpolationParameters& interpolationParameters,
+                                                    const GeometryList& sampleData,
+                                                    int& propertyId);
+
         /// @brief Snaps the spline (or splines) to the land boundary
         ///
         /// @param[in] meshKernelId     The id of the mesh state
@@ -1001,6 +1013,19 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_casulli_refinement_on_polygon(int meshKernelId, const GeometryList& polygons);
 
+        /// @brief Refine mesh using the Casulli refinement algorithm based on the depth values
+        /// @param[in] meshKernelId  The id of the mesh state
+        /// @param[in] polygons The polygon within which the refinement is computed.
+        /// @param[in] propertyId The identifier of the interpolator to be used
+        /// @param[in] meshRefinementParameters Parameters indicating how the mesh is to be refined
+        /// @param[in] minimumRefinementDepth Nodes with depth value less than this value will not be marked for refinement
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_casulli_refinement_based_on_depths(int meshKernelId,
+                                                                          const GeometryList& polygons,
+                                                                          int propertyId,
+                                                                          const meshkernel::MeshRefinementParameters& meshRefinementParameters,
+                                                                          const double minimumRefinementDepth);
+
         /// The function modifies the mesh for achieving orthogonality between the edges and the segments connecting the face circumcenters.
         /// The amount of orthogonality is traded against the mesh smoothing (in this case the equality of face areas).
         /// The parameter to regulate the amount of orthogonalization is contained in  \ref meshkernel::OrthogonalizationParameters::orthogonalization_to_smoothing_factor
@@ -1030,6 +1055,7 @@ namespace meshkernelapi
         /// @param[in] projectionType The new projection for the mesh
         /// @param[in] zoneString The UTM zone and information string
         /// @returns Error code
+        /// @note After conversion all non-default property calculators will be deleted.
         MKERNEL_API int mkernel_mesh2d_convert_projection(int meshKernelId, int projectionType, const char* const zoneString);
 
         /// @brief Converts a mesh to a curvilinear mesh
@@ -1628,14 +1654,6 @@ namespace meshkernelapi
         /// @param[in] mesh2d       The Mesh2D data
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_set(int meshKernelId, const Mesh2D& mesh2d);
-
-        /// @brief Sets the property data for the mesh, the sample data points do not have to match the mesh2d nodes.
-        /// @param[in] projectionType The projection type used by the sample data
-        /// @param[in] interpolationType The type of interpolation required, triangulation (0) or averaging (1) (for now)
-        /// @param[in] sampleData   The sample data and associated sample data points.
-        /// @param[out] propertyId The id of the property
-        /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_set_property(int projectionType, int interpolationType, const GeometryList& sampleData, int& propertyId);
 
         /// @brief Snaps a mesh to a land boundary.
         /// @param[in] meshKernelId The id of the mesh state

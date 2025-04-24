@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernelApi/PropertyCalculator.hpp"
+#include "MeshKernelApi/State.hpp"
 
 #include "MeshKernel/MeshEdgeLength.hpp"
 #include "MeshKernel/MeshOrthogonality.hpp"
@@ -83,7 +84,7 @@ int meshkernelapi::EdgeLengthPropertyCalculator::Size(const MeshKernelState& sta
 
 meshkernelapi::InterpolatedSamplePropertyCalculator::InterpolatedSamplePropertyCalculator(const GeometryList& sampleData,
                                                                                           const meshkernel::Projection projection,
-                                                                                          const int interpolationType,
+                                                                                          const meshkernel::InterpolationParameters& interpolationParameters,
                                                                                           const int propertyId)
     : m_projection(projection),
       m_propertyId(propertyId)
@@ -91,14 +92,13 @@ meshkernelapi::InterpolatedSamplePropertyCalculator::InterpolatedSamplePropertyC
     std::span<const double> xNodes(sampleData.coordinates_x, sampleData.num_coordinates);
     std::span<const double> yNodes(sampleData.coordinates_y, sampleData.num_coordinates);
 
-    if (interpolationType == 0)
+    if (interpolationParameters.interpolation_type == 0)
     {
         m_sampleInterpolator = std::make_unique<meshkernel::SampleTriangulationInterpolator>(xNodes, yNodes, m_projection);
     }
-    else if (interpolationType == 1)
+    else if (interpolationParameters.interpolation_type == 1)
     {
         // Need to pass from api.
-        meshkernel::InterpolationParameters interpolationParameters{};
         m_sampleInterpolator = std::make_unique<meshkernel::SampleAveragingInterpolator>(xNodes, yNodes, m_projection, interpolationParameters);
     }
 

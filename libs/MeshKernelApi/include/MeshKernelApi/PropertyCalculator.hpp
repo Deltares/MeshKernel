@@ -28,13 +28,16 @@
 #pragma once
 
 #include "MeshKernel/Definitions.hpp"
+#include "MeshKernel/Parameters.hpp"
 #include "MeshKernel/SampleInterpolator.hpp"
 
 #include "MeshKernelApi/GeometryList.hpp"
-#include "MeshKernelApi/State.hpp"
 
 namespace meshkernelapi
 {
+
+    /// @brief Forward declaration of MeshKernelState
+    struct MeshKernelState;
 
     /// @brief Base class for calculating properties for a mesh
     class PropertyCalculator
@@ -94,7 +97,7 @@ namespace meshkernelapi
         /// @brief Constructor
         InterpolatedSamplePropertyCalculator(const GeometryList& sampleData,
                                              const meshkernel::Projection projection,
-                                             const int interpolationType,
+                                             const meshkernel::InterpolationParameters& interpolationParameters,
                                              const int propertyId);
 
         /// @brief Determine is the calculator can interpolate depth values correctly

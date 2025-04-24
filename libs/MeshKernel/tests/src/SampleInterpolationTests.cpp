@@ -70,9 +70,8 @@ TEST(SampleInterpolationTests, AveragingInterpolationWithPoints)
         y += delta;
     }
 
-    mk::InterpolationParameters params{.m_absoluteSearchRadius = 3.0 * delta};
+    mk::InterpolationParameters params{.absolute_search_radius = 3.0 * delta};
     mk::SampleAveragingInterpolator interpolator(xPoints, yPoints, mk::Projection::cartesian, params);
-
     ASSERT_EQ(static_cast<size_t>(interpolator.Size()), xPoints.size());
 
     int propertyId = 1;
@@ -127,7 +126,7 @@ TEST(SampleInterpolationTests, AveragingInterpolationWithMesh)
         y += delta;
     }
 
-    mk::InterpolationParameters params{.m_absoluteSearchRadius = 3.0 * delta, .m_minimumNumberOfSamples = 1};
+    mk::InterpolationParameters params{.absolute_search_radius = 3.0 * delta, .minimum_number_of_samples = 1};
     mk::SampleAveragingInterpolator interpolator(samplePoints, mk::Projection::cartesian, params);
 
     ASSERT_EQ(static_cast<size_t>(interpolator.Size()), samplePoints.size());
@@ -239,7 +238,18 @@ TEST(SampleInterpolationTests, TriangulationInterpolationWithPoints)
         y += delta;
     }
 
-    mk::SampleTriangulationInterpolator interpolator(xPoints, yPoints, mk::Projection::cartesian);
+    mk::InterpolationParameters params{.absolute_search_radius = 3.0 * delta, .minimum_number_of_samples = 1};
+    mk::SampleAveragingInterpolator interpolator(xPoints, yPoints, mk::Projection::cartesian, params);
+
+    const mk::UInt meshPointsX = 3;
+    const mk::UInt meshPointsY = 3;
+
+    const auto mesh = MakeRectangularMeshForTesting(meshPointsX,
+                                                    meshPointsY,
+                                                    3.0 * delta,
+                                                    3.0 * delta,
+                                                    mk::Projection::cartesian,
+                                                    {0.5 * delta, 0.5 * delta});
 
     ASSERT_EQ(static_cast<size_t>(interpolator.Size()), xPoints.size());
 
@@ -249,16 +259,15 @@ TEST(SampleInterpolationTests, TriangulationInterpolationWithPoints)
     // Execute
     ASSERT_EQ(interpolator.Size(), numberOfPoints);
 
-    std::vector<mk::Point> interpolationPoints{{0.5 * delta, 0.5 * delta}, {9.5 * delta, 9.5 * delta}, {11.0 * delta, 11.0 * delta}};
     const double initialValue = -1.0e20;
-    std::vector<double> interpolationResult(interpolationPoints.size(), initialValue);
-    std::vector<double> expectedResult{500.0, 9500.0, mk::constants::missing::doubleValue};
+    std::vector<double> interpolationResult(mesh->GetNumNodes(), initialValue);
+    std::vector<double> expectedResult{1000.0, 1000.0, 1000.0, 2000.0, 2000.0, 2000.0, 3000.0, 3000.0, 3000.0};
 
-    interpolator.Interpolate(propertyId, interpolationPoints, interpolationResult);
+    interpolator.Interpolate(propertyId, *mesh, mk::Location::Nodes, interpolationResult);
 
     const double tolerance = 1.0e-8;
 
-    for (size_t i = 0; i < interpolationResult.size(); ++i)
+    for (size_t i = 0; i < expectedResult.size(); ++i)
     {
         EXPECT_NEAR(expectedResult[i], interpolationResult[i], tolerance);
     }

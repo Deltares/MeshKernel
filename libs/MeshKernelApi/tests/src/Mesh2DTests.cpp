@@ -196,8 +196,12 @@ TEST(Mesh2DTests, Mesh2DGetPropertyTest)
     errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
+    int orthogonalityId = -1;
+    errorCode = meshkernelapi::mkernel_mesh2d_get_orthogonality_property_type(orthogonalityId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
     int geometryListDimension = -1;
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, 0, geometryListDimension);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, orthogonalityId, geometryListDimension);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Execute
@@ -207,7 +211,7 @@ TEST(Mesh2DTests, Mesh2DGetPropertyTest)
     propertyvalues.geometry_separator = meshkernel::constants::missing::doubleValue;
     std::vector<double> values(geometryListDimension);
     propertyvalues.values = values.data();
-    errorCode = mkernel_mesh2d_get_property(meshKernelId, 0, locationId, propertyvalues);
+    errorCode = mkernel_mesh2d_get_property(meshKernelId, orthogonalityId, locationId, propertyvalues);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert

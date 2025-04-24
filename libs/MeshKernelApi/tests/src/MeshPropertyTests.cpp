@@ -43,8 +43,6 @@ namespace mkapi = meshkernelapi;
 
 TEST(MeshPropertyTests, BathymetryTest)
 {
-    const int projectionType = 0;
-
     const int numXCoords = 4;
     const int numYCoords = 4;
     const int numberOfEdges = (numXCoords - 1) * numYCoords + numXCoords * (numYCoords - 1);
@@ -137,7 +135,9 @@ TEST(MeshPropertyTests, BathymetryTest)
     sampleData.coordinates_x = bathymetryXNodes.data();
     sampleData.coordinates_y = bathymetryYNodes.data();
 
-    errorCode = mkapi::mkernel_mesh2d_set_property(projectionType, 0 /*use interpolation based on triangulation*/, sampleData, bathymetryPropertyId);
+    meshkernel::InterpolationParameters interpolationParameters{.interpolation_type = 0};
+
+    errorCode = mkapi::mkernel_mesh2d_set_property(meshKernelId, interpolationParameters, sampleData, bathymetryPropertyId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     const double tolerance = 1.0e-13;
@@ -155,7 +155,7 @@ TEST(MeshPropertyTests, BathymetryTest)
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     ASSERT_EQ(sampleDataSize, numberOfEdges);
 
-    auto locationId = static_cast<int>(meshkernel::Location::Edges);
+    int locationId = static_cast<int>(meshkernel::Location::Edges);
 
     mkapi::GeometryList propertyData{};
     std::vector<double> retrievedPropertyData(numberOfEdges, -1.0);
@@ -173,18 +173,15 @@ TEST(MeshPropertyTests, BathymetryTest)
 
     //--------------------------------
     // Remove kernel and property id from state.
-
-    errorCode = mkapi::mkernel_expunge_state(meshKernelId);
+    errorCode = mkapi::mkernel_deallocate_property(meshKernelId, bathymetryPropertyId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
-    errorCode = mkapi::mkernel_deallocate_property(bathymetryPropertyId);
+    errorCode = mkapi::mkernel_expunge_state(meshKernelId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 }
 
 TEST(MeshPropertyTests, PropertyFailureTest)
 {
-    const int projectionType = 0;
-
     const int numXCoords = 4;
     const int numYCoords = 4;
     const int numberOfCoordinates = numXCoords * numYCoords;
@@ -277,14 +274,16 @@ TEST(MeshPropertyTests, PropertyFailureTest)
     sampleData.coordinates_x = bathymetryXNodes.data();
     sampleData.coordinates_y = bathymetryYNodes.data();
 
-    auto locationId = static_cast<int>(meshkernel::Location::Edges);
+    int locationId = static_cast<int>(meshkernel::Location::Edges);
     bool hasBathymetryData = false;
 
     errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, bathymetryPropertyId, locationId, hasBathymetryData);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     EXPECT_FALSE(hasBathymetryData);
 
-    errorCode = mkapi::mkernel_mesh2d_set_property(projectionType, 0 /*use interpolation based on triangulation*/, sampleData, bathymetryPropertyId);
+    meshkernel::InterpolationParameters interpolationParameters{.interpolation_type = 0};
+
+    errorCode = mkapi::mkernel_mesh2d_set_property(meshKernelId, interpolationParameters, sampleData, bathymetryPropertyId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, bathymetryPropertyId, locationId, hasBathymetryData);
@@ -323,7 +322,7 @@ TEST(MeshPropertyTests, PropertyFailureTest)
     //--------------------------------
     // Remove kernel and property id from state.
 
-    errorCode = mkapi::mkernel_deallocate_property(bathymetryPropertyId);
+    errorCode = mkapi::mkernel_deallocate_property(meshKernelId, bathymetryPropertyId);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     errorCode = mkapi::mkernel_mesh2d_is_valid_property(meshKernelId, bathymetryPropertyId, locationId, hasBathymetryData);

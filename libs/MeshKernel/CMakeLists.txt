@@ -69,6 +69,9 @@ set(
   ${SRC_DIR}/SampleInterpolator.cpp
   ${SRC_DIR}/SampleTriangulationInterpolator.cpp
   ${SRC_DIR}/SamplesHessianCalculator.cpp
+  ${SRC_DIR}/SampleAveragingInterpolator.cpp
+  ${SRC_DIR}/SampleInterpolator.cpp
+  ${SRC_DIR}/SampleTriangulationInterpolator.cpp
   ${SRC_DIR}/Smoother.cpp
   ${SRC_DIR}/SplineAlgorithms.cpp
   ${SRC_DIR}/Splines.cpp
@@ -205,6 +208,9 @@ set(
   ${DOMAIN_INC_DIR}/SampleInterpolator.hpp
   ${DOMAIN_INC_DIR}/SampleTriangulationInterpolator.hpp
   ${DOMAIN_INC_DIR}/SamplesHessianCalculator.hpp
+  ${DOMAIN_INC_DIR}/SampleAveragingInterpolator.hpp
+  ${DOMAIN_INC_DIR}/SampleInterpolator.hpp
+  ${DOMAIN_INC_DIR}/SampleTriangulationInterpolator.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
   ${DOMAIN_INC_DIR}/SplineAlgorithms.hpp
   ${DOMAIN_INC_DIR}/Splines.hpp

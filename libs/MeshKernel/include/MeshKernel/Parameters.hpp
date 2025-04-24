@@ -265,4 +265,37 @@ namespace meshkernel
         range_check::CheckInClosedInterval(parameters.areal_to_angle_smoothing_factor, {0.0, 1.0}, "area to angle smoothing factor");
     }
 
+    /// @brief Parameters used by the sample interpolation
+    struct InterpolationParameters
+    {
+        /// @brief Which interpolation type is to be used.
+        ///
+        /// Default is to use sample averaging
+        int interpolation_type = 1;
+
+        /// @brief Which averaging method should be used
+        ///
+        /// The default is to use simple averaging
+        int method = 1;
+
+        /// @brief The absolute search radius
+        double absolute_search_radius = 100.0;
+
+        /// @brief The relative search radius
+        double relative_search_radius = 1.0;
+
+        /// @brief If no point is found in polygon then just used the closest point
+        bool use_closest_if_none_found = true;
+
+        /// @brief The minimum number of samples for several averaging methods.
+        int minimum_number_of_samples = 10;
+    };
+
+    inline static void CheckInterpolationParameters(const InterpolationParameters& parameters)
+    {
+        range_check::CheckGreater(parameters.absolute_search_radius, 0.0, "Absolute search radius");
+        range_check::CheckGreater(parameters.relative_search_radius, 0.0, "Relative search radius");
+        range_check::CheckGreater(parameters.minimum_number_of_samples, 0, "Minimum number of samples");
+    }
+
 } // namespace meshkernel

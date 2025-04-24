@@ -34,6 +34,7 @@
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Parameters.hpp"
 #include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/SampleInterpolator.hpp"
 #include "MeshKernel/UndoActions/UndoAction.hpp"
 
 namespace meshkernel
@@ -52,6 +53,34 @@ namespace meshkernel
         /// @param [in, out] mesh Mesh to be refined
         /// @param [in] polygon Area within which the mesh will be refined
         [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh, const Polygons& polygon);
+
+        /// @brief Compute the Casulli refinement for the part of the mesh inside the polygon
+        ///
+        /// @param [in, out] mesh Mesh to be refined
+        /// @param [in] polygon Area within which the mesh will be refined
+        /// @param [in] depthValues The depth values at nodes
+        /// @param [in] refinementParameters Mesh refinement parameters
+        /// @param [in] minimumDepthRefinement Nodes with depth value less than this value will not be marked for refinement
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh,
+                                                                             const Polygons& polygon,
+                                                                             const std::vector<double>& depthValues,
+                                                                             const MeshRefinementParameters& refinementParameters,
+                                                                             const double minimumDepthRefinement);
+
+        /// @brief Compute the Casulli refinement for the part of the mesh inside the polygon
+        ///
+        /// @param [in, out] mesh Mesh to be refined
+        /// @param [in] polygon Area within which the mesh will be refined
+        /// @param [in] interpolator The interpolator of the values
+        /// @param [in] propertyId The identifier used by the interpolator
+        /// @param [in] refinementParameters Mesh refinement parameters
+        /// @param [in] minimumDepthRefinement Nodes with depth value less than this value will not be marked for refinement
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh,
+                                                                             const Polygons& polygon,
+                                                                             const SampleInterpolator& interpolator,
+                                                                             const int propertyId,
+                                                                             const MeshRefinementParameters& refinementParameters,
+                                                                             const double minimumDepthRefinement);
 
     private:
         ///@brief Indicates status of a node.
@@ -105,6 +134,24 @@ namespace meshkernel
         /// @param [in] mesh Mesh used to initialise the node mask
         /// @param [in] polygon Only nodes inside the polygon are to be considered
         static std::vector<NodeMask> InitialiseNodeMask(const Mesh2D& mesh, const Polygons& polygon);
+
+        /// @brief Initialise the node mask array based on depths
+        ///
+        /// These depths may be interplated
+        static std::vector<NodeMask> InitialiseDepthBasedNodeMask(const Mesh2D& mesh,
+                                                                  const Polygons& polygon,
+                                                                  const std::vector<double>& depthValues,
+                                                                  const MeshRefinementParameters& refinementParameters,
+                                                                  const double minimumDepthRefinement,
+                                                                  bool& refinementRequested);
+
+        /// @brief Refine
+        static void RefineNodeMaskBasedOnDepths(const Mesh2D& mesh,
+                                                const std::vector<double>& depthValues,
+                                                const MeshRefinementParameters& refinementParameters,
+                                                const double minimumDepthRefinement,
+                                                std::vector<NodeMask>& nodeMask,
+                                                bool& refinementRequested);
 
         /// @brief Create any new nodes that need to be generated.
         ///

@@ -42,31 +42,13 @@
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/MeshTriangulation.hpp"
 #include "MeshKernel/Operations.hpp"
+#include "MeshKernel/Parameters.hpp"
 #include "MeshKernel/Point.hpp"
 #include "MeshKernel/SampleInterpolator.hpp"
 #include "MeshKernel/Utilities/RTreeFactory.hpp"
 
 namespace meshkernel
 {
-
-    /// @brief Parameters used by the averaging interpolation
-    struct InterpolationParameters
-    {
-        /// @brief Which averaging method should be used
-        AveragingInterpolation::Method m_method = AveragingInterpolation::Method::SimpleAveraging;
-
-        /// @brief The absolute search radius
-        double m_absoluteSearchRadius = 100.0;
-
-        /// @brief The relative search radius
-        double m_relativeSearchRadius = 1.0;
-
-        /// @brief If no point is found in polygon then just used the closest point
-        bool m_useClosestIfNoneFound = true;
-
-        /// @brief The minimum number of samples for several averaging methods.
-        UInt m_minimumNumberOfSamples = 10;
-    };
 
     /// @brief Interpolator for sample data using an averaging scheme
     class SampleAveragingInterpolator : public SampleInterpolator
