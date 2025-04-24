@@ -44,8 +44,6 @@
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/RemoveDisconnectedRegions.hpp"
 #include "MeshKernel/SampleAveragingInterpolator.hpp"
-#include "MeshKernel/SampleInterpolator.hpp"
-#include "MeshKernel/SampleTriangulationInterpolator.hpp"
 #include "MeshKernel/SamplesHessianCalculator.hpp"
 #include "MeshKernel/SplitRowColumnOfMesh.hpp"
 #include "MeshKernel/UndoActions/UndoActionStack.hpp"
@@ -54,8 +52,6 @@
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeCurvilinearGrids.hpp"
 #include "TestUtils/MakeMeshes.hpp"
-#include "TestUtils/MeshReaders.hpp"
-#include "TestUtils/PolygonReader.hpp"
 #include "TestUtils/SampleFileReader.hpp"
 #include "TestUtils/SampleGenerator.hpp"
 
