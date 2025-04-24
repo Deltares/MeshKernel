@@ -40,6 +40,11 @@ namespace meshkernel
         double z; ///< Z-coordinate
     };
 
+    /// @brief Converts geographic coordinates (latitude and longitude) to 3D spherical Cartesian coordinates.
+    /// @param[in] point The input point specified in latitude and longitude (in degrees).
+    /// @return A tuple containing the corresponding (x, y, z) coordinates on the sphere.
+    std::tuple<double, double, double> ComputeSphericalCoordinatesFromLatitudeAndLongitude(const Point& point);
+
     /// @brief Defines vector product for cartesian 3D-space
     /// @param[in] a The first cartesian 3D point
     /// @param[in] b The second cartesian 3D point

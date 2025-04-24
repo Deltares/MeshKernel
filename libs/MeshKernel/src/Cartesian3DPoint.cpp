@@ -30,22 +30,21 @@
 #include "MeshKernel/Cartesian3DPoint.hpp"
 #include "MeshKernel/Constants.hpp"
 
+std::tuple<double, double, double> meshkernel::ComputeSphericalCoordinatesFromLatitudeAndLongitude(const Point& point)
+{
+    const double z = constants::geometric::earth_radius * std::sin(point.y * constants::conversion::degToRad);
+    const double rr = constants::geometric::earth_radius * std::cos(point.y * constants::conversion::degToRad);
+    const double x = rr * std::cos(point.x * constants::conversion::degToRad);
+    const double y = rr * std::sin(point.x * constants::conversion::degToRad);
+    return {x, y, z};
+}
+
 meshkernel::Cartesian3DPoint meshkernel::VectorProduct(const Cartesian3DPoint& a, const Cartesian3DPoint& b)
 {
     return Cartesian3DPoint{
         a.y * b.z - a.z * b.y,
         a.z * b.x - a.x * b.z,
         a.x * b.y - a.y * b.x};
-}
-
-meshkernel::Cartesian3DPoint meshkernel::SphericalToCartesian3D(const Point& sphericalPoint)
-{
-    Cartesian3DPoint result;
-    result.z = constants::geometric::earth_radius * std::sin(sphericalPoint.y * constants::conversion::degToRad);
-    const double rr = constants::geometric::earth_radius * std::cos(sphericalPoint.y * constants::conversion::degToRad);
-    result.x = rr * std::cos(sphericalPoint.x * constants::conversion::degToRad);
-    result.y = rr * std::sin(sphericalPoint.x * constants::conversion::degToRad);
-    return result;
 }
 
 meshkernel::Point meshkernel::Cartesian3DToSpherical(const Cartesian3DPoint& cartesianPoint, double referenceLongitude)
@@ -55,4 +54,11 @@ meshkernel::Point meshkernel::Cartesian3DToSpherical(const Cartesian3DPoint& car
     sphericalPoint.y = std::atan2(cartesianPoint.z, sqrt(cartesianPoint.x * cartesianPoint.x + cartesianPoint.y * cartesianPoint.y)) * constants::conversion::radToDeg;
     sphericalPoint.x = angle + static_cast<double>(std::lround((referenceLongitude - angle) / 360.0)) * 360.0;
     return sphericalPoint;
+}
+
+meshkernel::Cartesian3DPoint meshkernel::SphericalToCartesian3D(const Point& sphericalPoint)
+{
+    Cartesian3DPoint result;
+    std::tie(result.x, result.y, result.z) = meshkernel::ComputeSphericalCoordinatesFromLatitudeAndLongitude(sphericalPoint);
+    return result;
 }
