@@ -30,6 +30,7 @@
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRectangular.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/Operations.hpp>
 #include <MeshKernel/RangeCheck.hpp>
 
 #include <cmath>
@@ -169,9 +170,11 @@ namespace meshkernel
         for (Eigen::Index n = 1; n < numN; ++n)
         {
             Eigen::Index lastRowOnPole = numM;
+
             for (Eigen::Index m = 0; m < numM; ++m)
             {
                 const double adjustedLatitude = ComputeLatitudeIncrementWithAdjustment(blockSizeY, result(n - 1, m).y);
+
                 result(n, m).y = adjustedLatitude;
 
                 if (IsEqual(std::abs(adjustedLatitude), latitudePoles))
@@ -179,7 +182,9 @@ namespace meshkernel
                     onPoles = true;
                     lastRowOnPole = n;
                 }
+
             }
+
             if (onPoles)
             {
                 if (lastRowOnPole + 1 < result.rows())

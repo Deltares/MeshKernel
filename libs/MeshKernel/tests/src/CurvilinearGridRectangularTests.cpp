@@ -25,6 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
+#include <iomanip>
 #include <gtest/gtest.h>
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteExterior.hpp"
@@ -35,6 +36,8 @@
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
+
+#include <MeshKernel/Cartesian3DPoint.hpp>
 
 #include <MeshKernel/ProjectionConversions.hpp>
 #include <MeshKernel/Utilities/Utilities.hpp>
@@ -692,8 +695,8 @@ TEST(CurvilinearGridUniform, WTF)
     const double originX = 0.0;
     const double originY = 0.0;
 
-    const double maxX = 85.0;
-    const double maxY = 85.0;
+    const double maxX = 89.0;
+    const double maxY = 89.0;
 
     const double blockSizeX = 6.0; // 60.0 / 60.0; // resolution in meters (when using spherical coordinates distances are usually much larger)
     const double blockSizeY = 6.0; // 60.0 / 60.0;
@@ -787,6 +790,74 @@ TEST(CurvilinearGridUniform, WTF)
     //         }
     //     }
     // }
+
+    // for (meshkernel::UInt n = 0; n < curvilinearGrid->NumN(); ++n)
+    // {
+    //     for (meshkernel::UInt m = 0; m < curvilinearGrid->NumM(); ++m)
+    //     {
+    //         if (curvilinearGrid->GetNode(n, m).IsValid())
+    //         {
+    //             curvilinearGrid->GetNode(n, m).TransformSphericalToCartesian(curvilinearGrid->GetNode(n, m).y);
+    //         }
+    //     }
+    // }
+
+
+    auto distance = [](const meshkernel::Point& p1, const meshkernel::Point& p2)
+        {
+            double lon1 = p1.x * meshkernel::constants::conversion::degToRad;
+            double lon2 = p2.x * meshkernel::constants::conversion::degToRad;
+
+            double lat1 = p1.y * meshkernel::constants::conversion::degToRad;
+            double lat2 = p2.y * meshkernel::constants::conversion::degToRad;
+
+            double dlon = std::abs (lon2 - lon1);
+            double dlat = std::abs (lat2 - lat1);
+
+            double a = std::pow (std::sin (dlat / 2.0), 2) + std::cos (lat1) * std::cos (lat2) * std::pow(std::sin (dlon /2.0), 2);
+            double c = 2.0 * std::asin (std::sqrt (a));
+            double dist = meshkernel::constants::geometric::earth_radius * c;
+
+            return dist;
+        };
+
+    for (meshkernel::UInt n = 0; n < curvilinearGrid->NumN()-1; ++n)
+    {
+
+        for (meshkernel::UInt m = 0; m < curvilinearGrid->NumM()-1; ++m)
+        {
+            double dx = distance  (curvilinearGrid->GetNode(n, m), curvilinearGrid->GetNode(n, m +1));
+            double dy = distance  (curvilinearGrid->GetNode(n, m), curvilinearGrid->GetNode(n+1, m));
+
+            double dx1 = meshkernel::ComputeDistance  (curvilinearGrid->GetNode(n, m), curvilinearGrid->GetNode(n, m +1), Projection::spherical);
+            double dy1 = meshkernel::ComputeDistance  (curvilinearGrid->GetNode(n, m), curvilinearGrid->GetNode(n+1, m), Projection::spherical);
+
+            auto cp1 = meshkernel::SphericalToCartesian3D (curvilinearGrid->GetNode(n, m));
+            auto cp2 = meshkernel::SphericalToCartesian3D (curvilinearGrid->GetNode(n, m + 1));
+            auto cp3 = meshkernel::SphericalToCartesian3D (curvilinearGrid->GetNode(n + 1, m));
+
+            double dx2 = meshkernel::separationDistance (cp1, cp2);
+            double dy2 = meshkernel::separationDistance (cp1, cp3);
+
+            std::cout << "ratio: "
+                      << std::setw (15) << curvilinearGrid->GetNode(n, m).x << "  "
+                      << std::setw (15) << curvilinearGrid->GetNode(n, m).y << "  "
+                      << std::setw (15) << dx << "  "
+                      << std::setw (15) << dy << "  "
+                      << std::setw (15) << dx / dy
+                      << std::setw (15) << dx1 << "  "
+                      << std::setw (15) << dy1 << "  "
+                      << std::setw (15) << dx1 / dy1
+                      << std::setw (15) << dx2 << "  "
+                      << std::setw (15) << dy2 << "  "
+                      << std::setw (15) << dx2 / dy2
+                      << "  " << std::endl;
+        }
+
+        std::cout << std::endl;
+    }
+
+
 
     for (meshkernel::UInt n = 0; n < curvilinearGrid->NumN(); ++n)
     {

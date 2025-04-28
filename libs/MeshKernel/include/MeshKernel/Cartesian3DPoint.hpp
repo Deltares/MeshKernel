@@ -40,6 +40,13 @@ namespace meshkernel
         double z; ///< Z-coordinate
     };
 
+    inline double separationDistance (const Cartesian3DPoint& p1, const Cartesian3DPoint& p2) {
+        double dx = p1.x - p2.x;
+        double dy = p1.y - p2.y;
+        double dz = p1.z - p2.z;
+        return std::sqrt ( dx * dx + dy * dy + dz * dz);
+    }
+
     /// @brief Converts geographic coordinates (latitude and longitude) to 3D spherical Cartesian coordinates.
     /// @param[in] point The input point specified in latitude and longitude (in degrees).
     /// @return A tuple containing the corresponding (x, y, z) coordinates on the sphere.
