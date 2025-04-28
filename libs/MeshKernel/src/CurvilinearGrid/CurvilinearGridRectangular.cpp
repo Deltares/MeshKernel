@@ -29,8 +29,8 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridRectangular.hpp>
-#include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Polygons.hpp>
 #include <MeshKernel/RangeCheck.hpp>
 
 #include <cmath>
@@ -126,8 +126,6 @@ namespace meshkernel
                                                                         const double blockSizeX,
                                                                         const double blockSizeY)
     {
-        // double apsectRatio = blockSizeX / blockSizeY;
-
         lin_alg::Matrix<Point> result = ComputeCartesian(numColumns,
                                                          numRows,
                                                          originX,
@@ -138,51 +136,30 @@ namespace meshkernel
 
         const auto numM = result.cols();
         const auto numN = result.rows();
+        const double latitudePoles = 90.0;
+        const double aspectRatio = blockSizeY / blockSizeX;
+
         bool onPoles = false;
-        constexpr double latitudePoles = 90.0;
-
-        // for (Eigen::Index n = 1; n < numN; ++n)
-        // {
-        //     Eigen::Index lastRowOnPole = numM;
-
-        //     for (Eigen::Index m = 0; m < numM; ++m)
-        //     {
-        //         const double adjustedLatitude = ComputeLatitudeIncrementWithAdjustment(blockSizeY, result(n - 1, m).y);
-        //         result(n, m).y = adjustedLatitude;
-
-        //         if (IsEqual(std::abs(adjustedLatitude), latitudePoles))
-        //         {
-        //             onPoles = true;
-        //             lastRowOnPole = n;
-        //         }
-        //     }
-
-        //     if (onPoles)
-        //     {
-        //         if (lastRowOnPole + 1 < result.rows())
-        //         {
-        //             lin_alg::EraseRows(result, lastRowOnPole + 1, result.rows() - 1);
-        //         }
-        //         break;
-        //     }
-        // }
+        double longitude = originX;
+        Eigen::Index lastRowOnPole = numM;
 
         for (Eigen::Index n = 1; n < numN; ++n)
         {
-            Eigen::Index lastRowOnPole = numM;
+            longitude = originX;
 
             for (Eigen::Index m = 0; m < numM; ++m)
             {
-                const double adjustedLatitude = ComputeLatitudeIncrementWithAdjustment(blockSizeY, result(n - 1, m).y);
+                double latitude = ComputeLatitudeIncrementWithAdjustment(blockSizeX, result(n - 1, m).y, aspectRatio);
 
-                result(n, m).y = adjustedLatitude;
+                result(n, m).x = longitude;
+                result(n, m).y = latitude;
+                longitude += blockSizeX;
 
-                if (IsEqual(std::abs(adjustedLatitude), latitudePoles))
+                if (IsEqual(std::abs(latitude), latitudePoles))
                 {
                     onPoles = true;
                     lastRowOnPole = n;
                 }
-
             }
 
             if (onPoles)
@@ -198,29 +175,35 @@ namespace meshkernel
         return result;
     }
 
-    double CurvilinearGridRectangular::ComputeLatitudeIncrementWithAdjustment(double blockSize, double latitude)
+    double CurvilinearGridRectangular::ComputeLatitudeIncrementWithAdjustment(double blockSize, double latitude, double aspectRatio)
     {
-        constexpr double latitudeCloseToPoles = 88.0; // The latitude defining close to poles
-        constexpr double minimumDistance = 2000;      // When the real distance along the latitude becomes smaller than minimumDistance and the location is close to the poles, snap the next point to the poles.
+        // The haversine function is defined as:
+        //
+        // dlon = abs(lon2 - lon1)
+        // dlat = abs(lat2 - lat1)
+        // a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+        // c = 2 * asin(sqrt(a))
+        // dist = radius * c
+        //
+        // Now, assuming the angle with which the mesh is to be rotated is zero
+        // the longitudes lon1 and lon2 are the separated by the blockSizeX
+        // the latitudes of the two points are the same, so lat1 - lat2 = 0 => sin (dlat / 2) = 0
+        // We use the current latitude to compute the distance to the next point
 
-        const auto latitudeInRadians = std::cos(constants::conversion::degToRad * latitude);
-        const auto asp = latitudeInRadians + (1.0 - latitudeInRadians) * 0.3;
-        const auto dy = blockSize * latitudeInRadians * asp;
+        double sinLon = std::sin(0.5 * blockSize * constants::conversion::degToRad);
+        double cosLat = std::cos(latitude * constants::conversion::degToRad);
+        double a = sinLon * sinLon * cosLat * cosLat;
+        double c = 2.0 * std::asin(std::sqrt(a));
+        c *= aspectRatio;
 
-        double result = latitude + dy;
-        // prevent too small dy increments in case we are on the poles
-        const double difference = dy * constants::conversion::degToRad * constants::geometric::earth_radius;
-        if (abs(result) > latitudeCloseToPoles && difference < minimumDistance)
-        {
-            const double sign = result < 0 ? -1.0 : 1.0;
-            result = 90.0 * sign;
-        }
+        double computedLatitude = c * constants::conversion::radToDeg + latitude;
 
-        return result;
+        return computedLatitude;
     }
 
     int CurvilinearGridRectangular::ComputeNumRows(double minY,
                                                    double maxY,
+                                                   double blockSizeX,
                                                    double blockSizeY,
                                                    Projection projection)
     {
@@ -239,9 +222,12 @@ namespace meshkernel
         int result = 0;
         constexpr double latitudePoles = 90.0;
 
+        double aspectRatio = blockSizeY / blockSizeX;
+
         while (currentLatitude < maxY)
         {
-            currentLatitude = ComputeLatitudeIncrementWithAdjustment(blockSizeY, currentLatitude);
+            currentLatitude = ComputeLatitudeIncrementWithAdjustment(blockSizeX, currentLatitude, aspectRatio);
+
             result += 1;
 
             if (IsEqual(abs(currentLatitude), latitudePoles))
@@ -289,7 +275,7 @@ namespace meshkernel
 
         // Compute the number of rows and columns
         const int numColumns = std::max(static_cast<int>(std::ceil(std::abs(upperRight.x - lowerLeft.x) / blockSizeX)), 1);
-        const int numRows = ComputeNumRows(lowerLeft.y, upperRight.y, blockSizeY, m_projection);
+        const int numRows = ComputeNumRows(lowerLeft.y, upperRight.y, blockSizeX, blockSizeY, m_projection);
 
         // Rotated the lower left corner
         const auto lowerLeftMergedRotated = Rotate(lowerLeft, angle, referencePoint);
@@ -344,7 +330,7 @@ namespace meshkernel
             throw AlgorithmError("Number of columns cannot be <= 0");
         }
 
-        const int numRows = ComputeNumRows(originY, upperRightY, blockSizeY, m_projection);
+        const int numRows = ComputeNumRows(originY, upperRightY, blockSizeX, blockSizeY, m_projection);
 
         if (m_projection == Projection::spherical)
         {
