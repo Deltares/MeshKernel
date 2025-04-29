@@ -179,10 +179,10 @@ namespace meshkernel
     {
         // When the real distance along the latitude becomes smaller than minimumDistance
         // and the location is close to the poles, snap the next point to the poles.
-        const double minimumDistance = 2000.0;
+        const double minimumDistance = 1000.0;
 
         // The latitude defining close to poles
-        const double latitudeCloseToPole = 88.0;
+        const double latitudeCloseToPole = 89.0;
 
         // The haversine function is defined as:
         //
