@@ -115,12 +115,12 @@
 
 namespace meshkernelapi
 {
-    std::map<int, std::unique_ptr<PropertyCalculator>> allocatePropertyCalculators();
+    std::map<int, std::shared_ptr<PropertyCalculator>> allocateDefaultPropertyCalculators();
 
     // The state held by MeshKernel
     static std::unordered_map<int, MeshKernelState> meshKernelState;
     /// @brief Map of property calculators, from an property identifier to the calculator.
-    static std::map<int, std::unique_ptr<PropertyCalculator>> propertyCalculators = allocatePropertyCalculators();
+    static std::map<int, std::shared_ptr<PropertyCalculator>> propertyCalculators = allocateDefaultPropertyCalculators();
     static int meshKernelStateCounter = 0;
 
     // Error state
@@ -143,15 +143,15 @@ namespace meshkernelapi
         return ++currentPropertyId;
     }
 
-    std::map<int, std::unique_ptr<PropertyCalculator>> allocatePropertyCalculators()
+    std::map<int, std::shared_ptr<PropertyCalculator>> allocateDefaultPropertyCalculators()
     {
-        std::map<int, std::unique_ptr<PropertyCalculator>> propertyMap;
+        std::map<int, std::shared_ptr<PropertyCalculator>> propertyMap;
 
         int propertyId = static_cast<int>(meshkernel::Mesh2D::Property::Orthogonality);
-        propertyMap.emplace(propertyId, std::make_unique<OrthogonalityPropertyCalculator>());
+        propertyMap.emplace(propertyId, std::make_shared<OrthogonalityPropertyCalculator>());
 
         propertyId = static_cast<int>(meshkernel::Mesh2D::Property::EdgeLength);
-        propertyMap.emplace(propertyId, std::make_unique<EdgeLengthPropertyCalculator>());
+        propertyMap.emplace(propertyId, std::make_shared<EdgeLengthPropertyCalculator>());
 
         return propertyMap;
     }
@@ -195,6 +195,7 @@ namespace meshkernelapi
             meshkernel::range_check::CheckOneOf<int>(projectionType, meshkernel::GetValidProjections(), "Projection");
             auto const projection = static_cast<meshkernel::Projection>(projectionType);
             meshKernelState.insert({meshKernelId, MeshKernelState(projection)});
+            meshKernelState[meshKernelId].m_propertyCalculators = allocateDefaultPropertyCalculators();
         }
         catch (...)
         {
@@ -516,18 +517,23 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_deallocate_property(int propertyId)
+    MKERNEL_API int mkernel_deallocate_property(int meshKernelId, int propertyId)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
         {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
 
-            if (!propertyCalculators.contains(propertyId) || propertyCalculators[propertyId] == nullptr)
+            if (!meshKernelState.at(meshKernelId).m_propertyCalculators.contains(propertyId) ||
+                meshKernelState.at(meshKernelId).m_propertyCalculators[propertyId] == nullptr)
             {
                 throw meshkernel::MeshKernelError("The property id does not exist: {}.", propertyId);
             }
 
-            propertyCalculators.erase(propertyId);
+            meshKernelState.at(meshKernelId).m_propertyCalculators.erase(propertyId);
         }
         catch (...)
         {
@@ -544,9 +550,9 @@ namespace meshkernelapi
         {
             const meshkernel::Location location = static_cast<meshkernel::Location>(locationId);
             propertyIsAvailable = meshKernelState.contains(meshKernelId) &&
-                                  propertyCalculators.contains(propertyId) &&
-                                  propertyCalculators[propertyId] != nullptr &&
-                                  propertyCalculators[propertyId]->IsValid(meshKernelState.at(meshKernelId), location);
+                                  meshKernelState.at(meshKernelId).m_propertyCalculators.contains(propertyId) &&
+                                  meshKernelState.at(meshKernelId).m_propertyCalculators[propertyId] != nullptr &&
+                                  meshKernelState.at(meshKernelId).m_propertyCalculators[propertyId]->IsValid(meshKernelState.at(meshKernelId), location);
         }
         catch (...)
         {
@@ -555,26 +561,37 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_set_property(int projectionType, int interpolationType, const GeometryList& sampleData, int& propertyId)
+    MKERNEL_API int mkernel_mesh2d_set_property(int meshKernelId, const meshkernel::InterpolationParameters& interpolationParameters, const GeometryList& sampleData, int& propertyId)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         propertyId = -1;
 
         try
         {
-            meshkernel::range_check::CheckOneOf<int>(projectionType, meshkernel::GetValidProjections(), "Projection");
-            auto const projection = static_cast<meshkernel::Projection>(projectionType);
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
 
-            meshkernel::range_check::CheckOneOf<int>(interpolationType, {0, 1}, "InterpolationType");
+            if (meshKernelState[meshKernelId].m_mesh2d == nullptr)
+            {
+                throw meshkernel::MeshKernelError("The selected mesh not exist.");
+            }
+
+            meshkernel::range_check::CheckOneOf<int>(interpolationParameters.interpolation_type, {0, 1}, "interpolation_type");
 
             int localPropertyId = GeneratePropertyId();
 
-            if (propertyCalculators.contains(localPropertyId))
+            if (meshKernelState[meshKernelId].m_propertyCalculators.contains(localPropertyId))
             {
                 throw meshkernel::ConstraintError("The property id already exists: id = {}.", localPropertyId);
             }
 
-            propertyCalculators.try_emplace(localPropertyId, std::make_unique<InterpolatedSamplePropertyCalculator>(sampleData, projection, interpolationType, localPropertyId));
+            meshKernelState[meshKernelId].m_propertyCalculators.try_emplace(localPropertyId,
+                                                                            std::make_unique<InterpolatedSamplePropertyCalculator>(sampleData,
+                                                                                                                                   meshKernelState[meshKernelId].m_projection,
+                                                                                                                                   interpolationParameters,
+                                                                                                                                   localPropertyId));
             propertyId = localPropertyId;
         }
         catch (...)
@@ -1235,6 +1252,9 @@ namespace meshkernelapi
                                                       meshkernel::ProjectionToString(sourceProjection),
                                                       meshkernel::ProjectionToString(targetProjection));
                 }
+
+                meshKernelState[meshKernelId].m_propertyCalculators.clear();
+                meshKernelState[meshKernelId].m_propertyCalculators = allocateDefaultPropertyCalculators();
             }
         }
         catch (...)
@@ -1602,18 +1622,19 @@ namespace meshkernelapi
                 return lastExitCode;
             }
 
-            if (!propertyCalculators.contains(propertyValue) || propertyCalculators[propertyValue] == nullptr)
+            if (!meshKernelState[meshKernelId].m_propertyCalculators.contains(propertyValue) ||
+                meshKernelState[meshKernelId].m_propertyCalculators[propertyValue] == nullptr)
             {
                 throw meshkernel::MeshKernelError("The property calculator does not exist.");
             }
 
             const meshkernel::Location location = static_cast<meshkernel::Location>(locationId);
 
-            if (geometryList.num_coordinates < propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), location))
+            if (geometryList.num_coordinates < meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), location))
             {
                 throw meshkernel::ConstraintError("Array size too small to store property values {} < {}.",
                                                   geometryList.num_coordinates,
-                                                  propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), location));
+                                                  meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), location));
             }
 
             if (geometryList.values == nullptr)
@@ -1621,9 +1642,9 @@ namespace meshkernelapi
                 throw meshkernel::ConstraintError("The property values are null.");
             }
 
-            if (propertyCalculators[propertyValue]->IsValid(meshKernelState[meshKernelId], location))
+            if (meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->IsValid(meshKernelState[meshKernelId], location))
             {
-                propertyCalculators[propertyValue]->Calculate(meshKernelState[meshKernelId], location, geometryList);
+                meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->Calculate(meshKernelState[meshKernelId], location, geometryList);
             }
             else
             {
@@ -1654,9 +1675,9 @@ namespace meshkernelapi
                 return lastExitCode;
             }
 
-            if (propertyCalculators.contains(propertyValue) && propertyCalculators[propertyValue] != nullptr)
+            if (meshKernelState[meshKernelId].m_propertyCalculators.contains(propertyValue) && meshKernelState[meshKernelId].m_propertyCalculators[propertyValue] != nullptr)
             {
-                dimension = propertyCalculators[propertyValue]->Size(meshKernelState[meshKernelId], meshkernel::Location::Edges);
+                dimension = meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->Size(meshKernelState[meshKernelId], meshkernel::Location::Edges);
             }
             else
             {
@@ -1685,7 +1706,7 @@ namespace meshkernelapi
                 return lastExitCode;
             }
 
-            std::span<double> smoothness(geometryList.values, geometryList.num_coordinates);
+            std::span<double> smoothness(geometryList.values, meshKernelState[meshKernelId].m_mesh2d->GetNumEdges());
             meshkernel::MeshSmoothness::Compute(*meshKernelState[meshKernelId].m_mesh2d, smoothness);
         }
         catch (...)
@@ -2396,9 +2417,11 @@ namespace meshkernelapi
             const auto newEdgeLength = ComputeDistance(firstNodeCoordinates, secondNodeCoordinates, meshKernelState[meshKernelId].m_projection);
 
             std::vector<double> edgeLengths(meshkernel::algo::ComputeMeshEdgeLength(*meshKernelState[meshKernelId].m_mesh2d));
-            constexpr auto lengthFraction = 0.01;
 
-            const auto minMeshEdgeLength = edgeLengths.empty() ? newEdgeLength : *std::ranges::min_element(edgeLengths);
+            const auto minValueOpt = MinValidElement(edgeLengths);
+            const auto minMeshEdgeLength = minValueOpt.has_value() ? minValueOpt.value() : newEdgeLength;
+
+            constexpr double lengthFraction = 0.01;
             const auto searchRadius = std::min(newEdgeLength * lengthFraction, minMeshEdgeLength * lengthFraction);
 
             if (searchRadius <= 0.0)
@@ -3197,6 +3220,54 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_mesh2d_casulli_refinement_based_on_depths(int meshKernelId,
+                                                                      const GeometryList& polygons,
+                                                                      int propertyId,
+                                                                      const meshkernel::MeshRefinementParameters& meshRefinementParameters,
+                                                                      const double minimumRefinementDepth)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            std::vector<double> depthValues(meshKernelState[meshKernelId].m_mesh2d->GetNumEdges());
+            GeometryList depthGeomValues;
+            depthGeomValues.num_coordinates = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumEdges());
+            depthGeomValues.values = depthValues.data();
+            const int locationId = static_cast<int>(meshkernel::Location::Edges);
+
+            // lastExitCode will be set here if there is an exception when computing the property.
+            int error = mkernel_mesh2d_get_property(meshKernelId, propertyId, locationId, depthGeomValues);
+
+            if (error == 0)
+            {
+                // Convert polygon date from GeometryList to Polygons
+                auto polygonPoints = ConvertGeometryListToPointVector(polygons);
+                const meshkernel::Polygons meshKernelPolygons(polygonPoints,
+                                                              meshKernelState[meshKernelId].m_mesh2d->m_projection);
+
+                // Compute Casulli refinement based on the interpolated depth values.
+                auto undoAction = meshkernel::CasulliRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d,
+                                                                         meshKernelPolygons,
+                                                                         depthValues,
+                                                                         meshRefinementParameters,
+                                                                         minimumRefinementDepth);
+
+                meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
+            }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_mesh2d_casulli_derefinement_elements(int meshKernelId, GeometryList& elements)
     {
         lastExitCode = meshkernel::ExitCode::Success;
@@ -3910,7 +3981,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d, double searchFraction)
+    MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d, double searchFraction, bool connect)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -3934,8 +4005,13 @@ namespace meshkernelapi
                                                                 meshKernelState[meshKernelId].m_projection);
             // Keep existing mesh to restore with undo
             auto undoAction = meshkernel::FullUnstructuredGridUndo::Create(*meshKernelState[meshKernelId].m_mesh2d);
-            // The undo information collected from the ConnectMeshes::Compute is not needed here.
-            [[maybe_unused]] auto undo = meshkernel::ConnectMeshes::Compute(*mergedMeshes, searchFraction);
+
+            if (connect)
+            {
+                // The undo information collected from the ConnectMeshes::Compute is not needed here.
+                [[maybe_unused]] auto undo = meshkernel::ConnectMeshes::Compute(*mergedMeshes, searchFraction);
+            }
+
             meshKernelState[meshKernelId].m_mesh2d->SetNodes(mergedMeshes->Nodes());
             meshKernelState[meshKernelId].m_mesh2d->SetEdges(mergedMeshes->Edges());
             meshKernelState[meshKernelId].m_mesh2d->Administrate();

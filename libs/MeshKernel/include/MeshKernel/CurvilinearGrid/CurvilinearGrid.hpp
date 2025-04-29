@@ -120,12 +120,12 @@ namespace meshkernel
             return NumM() > 1 && NumN() > 1;
         }
 
-        /// @brief Gets a reference to the grid node at the (m,n) location
+        /// @brief Gets a reference to the grid node at the (n,m) location
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
         [[nodiscard]] inline Point& GetNode(const UInt n, const UInt m);
 
-        /// @brief Gets a constant reference to the grid node at the (m,n) location
+        /// @brief Gets a constant reference to the grid node at the (n,m) location
         /// @param[in] n The n-dimension index
         /// @param[in] m The m-dimension index
         [[nodiscard]] inline Point const& GetNode(const UInt n, const UInt m) const;
@@ -311,10 +311,11 @@ namespace meshkernel
         /// @brief Allocates a new grid line at the boundary of the curvilinear grid if needed.
         /// @param firstNode The first node of the boundary grid line.
         /// @param secondNode The second node of the boundary grid line.
-        /// @return If a new grid line has been allocated
-        std::tuple<int, UndoActionPtr> AddGridLinesAtBoundary(CurvilinearGridNodeIndices const& firstNode,
-                                                              CurvilinearGridNodeIndices const& secondNode,
-                                                              int numLines);
+        /// @param numLines The number of gridlines required to be added.
+        /// @return The number of new rows/columns added, the boundary on which they were added and the undo action
+        std::tuple<int, BoundaryGridLineType, UndoActionPtr> AddGridLinesAtBoundary(CurvilinearGridNodeIndices const& firstNode,
+                                                                                    CurvilinearGridNodeIndices const& secondNode,
+                                                                                    int numLines);
 
         /// @brief Get the boundary grid line type: left, right, bottom or up
         /// @param[in] firstNode The first node of the grid line

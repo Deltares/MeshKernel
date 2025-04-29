@@ -69,6 +69,9 @@ set(
   ${SRC_DIR}/SampleInterpolator.cpp
   ${SRC_DIR}/SampleTriangulationInterpolator.cpp
   ${SRC_DIR}/SamplesHessianCalculator.cpp
+  ${SRC_DIR}/SampleAveragingInterpolator.cpp
+  ${SRC_DIR}/SampleInterpolator.cpp
+  ${SRC_DIR}/SampleTriangulationInterpolator.cpp
   ${SRC_DIR}/Smoother.cpp
   ${SRC_DIR}/SplineAlgorithms.cpp
   ${SRC_DIR}/Splines.cpp
@@ -98,6 +101,8 @@ set(
 set(
   UTILITIES_SRC_LIST
   ${UTILITIES_SRC_DIR}/Utilities.cpp
+  ${UTILITIES_SRC_DIR}/RTreeFactory.cpp
+  ${UTILITIES_SRC_DIR}/RTreeSphericalToCartesian.cpp
 )
 
 set(
@@ -203,6 +208,9 @@ set(
   ${DOMAIN_INC_DIR}/SampleInterpolator.hpp
   ${DOMAIN_INC_DIR}/SampleTriangulationInterpolator.hpp
   ${DOMAIN_INC_DIR}/SamplesHessianCalculator.hpp
+  ${DOMAIN_INC_DIR}/SampleAveragingInterpolator.hpp
+  ${DOMAIN_INC_DIR}/SampleInterpolator.hpp
+  ${DOMAIN_INC_DIR}/SampleTriangulationInterpolator.hpp
   ${DOMAIN_INC_DIR}/Smoother.hpp
   ${DOMAIN_INC_DIR}/SplineAlgorithms.hpp
   ${DOMAIN_INC_DIR}/Splines.hpp
@@ -292,6 +300,7 @@ set(
   ${UTILITIES_INC_DIR}/RTree.hpp
   ${UTILITIES_INC_DIR}/RTreeBase.hpp
   ${UTILITIES_INC_DIR}/RTreeFactory.hpp
+  ${UTILITIES_INC_DIR}/RTreeSphericalToCartesian.hpp
   ${UTILITIES_INC_DIR}/Utilities.hpp
 )
 

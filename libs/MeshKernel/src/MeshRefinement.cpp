@@ -894,6 +894,11 @@ void MeshRefinement::ComputeRefinementMasksFromSamples()
     // Compute all interpolated values
     m_interpolant->Compute();
 
+    if (m_useNodalRefinement && m_refinementType == RefinementType::WaveCourant)
+    {
+        ComputeFaceLocationTypes();
+    }
+
     for (UInt f = 0; f < m_mesh.GetNumFaces(); f++)
     {
         FindHangingNodes(f);
@@ -1100,10 +1105,6 @@ void MeshRefinement::ComputeRefinementMasksForWaveCourant(UInt face,
                                                           size_t& numberOfEdgesToRefine,
                                                           std::vector<UInt>& edgeToRefine)
 {
-    if (m_useNodalRefinement)
-    {
-        ComputeFaceLocationTypes();
-    }
     for (size_t e = 0; e < m_mesh.GetNumFaceEdges(face); ++e)
     {
         const auto edge = m_mesh.m_facesEdges[face][e];
@@ -1253,6 +1254,11 @@ void MeshRefinement::ComputeEdgeBelowMinSizeAfterRefinement()
     m_isEdgeBelowMinSizeAfterRefinement.resize(m_mesh.GetNumEdges());
     for (UInt e = 0; e < m_mesh.GetNumEdges(); e++)
     {
+        if (IsEqual(m_edgeLengths[e], constants::missing::doubleValue))
+        {
+            m_isEdgeBelowMinSizeAfterRefinement[e] = true; // The invalid edge will not be refined
+            continue;
+        }
         const double newEdgeLength = 0.5 * m_edgeLengths[e];
         m_isEdgeBelowMinSizeAfterRefinement[e] = newEdgeLength < m_meshRefinementParameters.min_edge_size;
     }

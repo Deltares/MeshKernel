@@ -45,6 +45,7 @@
 #include "MeshKernel/Utilities/Utilities.hpp"
 
 #include "TestUtils/Definitions.hpp"
+#include "TestUtils/MakeCurvilinearGrids.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 
 TEST(Mesh2D, OneQuadTestConstructor)

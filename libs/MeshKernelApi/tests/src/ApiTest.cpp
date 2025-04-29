@@ -340,8 +340,8 @@ TEST_F(CartesianApiTestFixture, GenerateTriangularGridThroughApi)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(42, mesh2d.num_nodes);
-    ASSERT_EQ(107, mesh2d.num_edges);
+    ASSERT_EQ(23, mesh2d.num_nodes);
+    ASSERT_EQ(50, mesh2d.num_edges);
 }
 
 TEST_F(CartesianApiTestFixture, GenerateTriangularGridFromSamplesThroughApi)
@@ -2166,6 +2166,54 @@ TEST_F(CartesianApiTestFixture, InsertEdgeFromCoordinates_OnNonEmptyMesh_ShouldI
     ASSERT_EQ(25, secondNodeIndex);
 
     ASSERT_EQ(26, mesh2d.num_nodes);
+    ASSERT_EQ(41, mesh2d.num_edges);
+}
+
+TEST_F(CartesianApiTestFixture, InsertEdgeFromCoordinates_OnMeshWithAnHole_ShouldInsertNewEdge)
+{
+    // Prepare
+    MakeMesh(4, 4, 2);
+    auto const meshKernelId = GetMeshKernelId();
+
+    // Delete internal node
+    int nodeIndex = 0;
+    auto errorCode = meshkernelapi::mkernel_mesh2d_get_node_index(meshKernelId,
+                                                                  4.0,
+                                                                  4.0,
+                                                                  0.1,
+                                                                  0.0,
+                                                                  0.0,
+                                                                  10.0,
+                                                                  10.0,
+                                                                  nodeIndex);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = meshkernelapi::mkernel_mesh2d_delete_node(meshKernelId, nodeIndex);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    int firstNodeIndex;
+    int secondNodeIndex;
+    int edgeIndex;
+    errorCode = meshkernelapi::mkernel_mesh2d_insert_edge_from_coordinates(meshKernelId,
+                                                                           4,
+                                                                           4,
+                                                                           3,
+                                                                           3,
+                                                                           firstNodeIndex,
+                                                                           secondNodeIndex,
+                                                                           edgeIndex);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert
+    ASSERT_EQ(40, edgeIndex);
+    ASSERT_EQ(25, firstNodeIndex);
+    ASSERT_EQ(26, secondNodeIndex);
+
+    ASSERT_EQ(27, mesh2d.num_nodes);
     ASSERT_EQ(41, mesh2d.num_edges);
 }
 

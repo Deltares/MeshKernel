@@ -47,6 +47,7 @@
 
 #include "MeshKernelApi/CurvilinearGrid.hpp"
 
+#include <optional>
 #include <span>
 #include <stdexcept>
 #include <vector>
@@ -618,6 +619,21 @@ namespace meshkernelapi
             facePolygons.coordinates_y[count] = currentNode.y;
             count++;
         }
+    }
+
+    static std::optional<double> MinValidElement(const std::vector<double>& values)
+    {
+        auto filtered = values | std::views::filter([](const double& v)
+                                                    { return v != meshkernel::constants::missing::doubleValue; });
+        auto begin = std::ranges::begin(filtered);
+        auto end = std::ranges::end(filtered);
+
+        if (begin == end)
+        {
+            return std::nullopt; // No valid elements
+        }
+
+        return *std::ranges::min_element(filtered);
     }
 
 } // namespace meshkernelapi

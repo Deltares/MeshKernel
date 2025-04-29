@@ -31,7 +31,6 @@
 
 #include "MeshKernel/Parameters.hpp"
 #include "MeshKernelApi/BoundingBox.hpp"
-#include "MeshKernelApi/Mesh2D.hpp"
 #include "MeshKernelApi/MeshKernel.hpp"
 
 #include "TestUtils/MakeMeshes.hpp"

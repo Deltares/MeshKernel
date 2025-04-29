@@ -135,6 +135,12 @@ namespace meshkernel
         /// @brief Get the projection used.
         Projection GetProjection() const;
 
+        /// @brief Compute the minimum and maximum segment lengths.
+        ///
+        /// If the number of points in the polygon is 1 or less, then the invalid values will be returned for both.
+        /// Returns {minimum-segment-length, maximum-segment-length}
+        std::tuple<double, double> SegmentLengthExtrema() const;
+
     private:
         /// @brief Refines the segment between two polygon nodes.
         ///
