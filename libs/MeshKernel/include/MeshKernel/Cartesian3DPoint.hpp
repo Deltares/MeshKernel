@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <cmath>
+
 #include "MeshKernel/Point.hpp"
 
 namespace meshkernel
@@ -40,12 +42,8 @@ namespace meshkernel
         double z; ///< Z-coordinate
     };
 
-    inline double separationDistance (const Cartesian3DPoint& p1, const Cartesian3DPoint& p2) {
-        double dx = p1.x - p2.x;
-        double dy = p1.y - p2.y;
-        double dz = p1.z - p2.z;
-        return std::sqrt ( dx * dx + dy * dy + dz * dz);
-    }
+    /// @brief Compute the separation distance of two points in 3D Cartesian coordinate system,
+    double separationDistance(const Cartesian3DPoint& p1, const Cartesian3DPoint& p2);
 
     /// @brief Converts geographic coordinates (latitude and longitude) to 3D spherical Cartesian coordinates.
     /// @param[in] point The input point specified in latitude and longitude (in degrees).
@@ -120,4 +118,12 @@ inline meshkernel::Cartesian3DPoint meshkernel::operator*(const Cartesian3DPoint
 inline double meshkernel::InnerProduct(const Cartesian3DPoint& a, const Cartesian3DPoint& b)
 {
     return a.x * b.x + a.y * b.y + a.z * b.z;
+}
+
+inline double meshkernel::separationDistance(const Cartesian3DPoint& p1, const Cartesian3DPoint& p2)
+{
+    double dx = p1.x - p2.x;
+    double dy = p1.y - p2.y;
+    double dz = p1.z - p2.z;
+    return std::sqrt(dx * dx + dy * dy + dz * dz);
 }
