@@ -140,20 +140,16 @@ namespace meshkernel
         const double aspectRatio = blockSizeY / blockSizeX;
 
         bool onPoles = false;
-        double longitude = originX;
         Eigen::Index lastRowOnPole = numM;
 
         for (Eigen::Index n = 1; n < numN; ++n)
         {
-            longitude = originX;
 
             for (Eigen::Index m = 0; m < numM; ++m)
             {
                 double latitude = ComputeLatitudeIncrementWithAdjustment(blockSizeX, aspectRatio, result(n - 1, m).y);
 
-                result(n, m).x = longitude;
                 result(n, m).y = latitude;
-                longitude += blockSizeX;
 
                 if (const double latitudeAbs = std::abs(latitude); IsEqual(latitudeAbs, latitudePoles) || latitudeAbs >= latitudePoles)
                 {
@@ -177,6 +173,7 @@ namespace meshkernel
 
     double CurvilinearGridRectangular::ComputeLatitudeIncrementWithAdjustment(double blockSize, double aspectRatio, double latitude)
     {
+
         // When the real distance along the latitude becomes smaller than minimumDistance
         // and the location is close to the poles, snap the next point to the poles.
         const double minimumDistance = 1000.0;
