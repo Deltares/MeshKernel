@@ -149,13 +149,13 @@ namespace meshkernel
 
             for (Eigen::Index m = 0; m < numM; ++m)
             {
-                double latitude = ComputeLatitudeIncrementWithAdjustment(blockSizeX, result(n - 1, m).y, aspectRatio);
+                double latitude = ComputeLatitudeIncrementWithAdjustment(blockSizeX, aspectRatio, result(n - 1, m).y);
 
                 result(n, m).x = longitude;
                 result(n, m).y = latitude;
                 longitude += blockSizeX;
 
-                if (IsEqual(std::abs(latitude), latitudePoles))
+                if (const double latitudeAbs = std::abs(latitude); IsEqual(latitudeAbs, latitudePoles) || latitudeAbs >= latitudePoles)
                 {
                     onPoles = true;
                     lastRowOnPole = n;
@@ -175,8 +175,15 @@ namespace meshkernel
         return result;
     }
 
-    double CurvilinearGridRectangular::ComputeLatitudeIncrementWithAdjustment(double blockSize, double latitude, double aspectRatio)
+    double CurvilinearGridRectangular::ComputeLatitudeIncrementWithAdjustment(double blockSize, double aspectRatio, double latitude)
     {
+        // When the real distance along the latitude becomes smaller than minimumDistance
+        // and the location is close to the poles, snap the next point to the poles.
+        const double minimumDistance = 2000.0;
+
+        // The latitude defining close to poles
+        const double latitudeCloseToPole = 88.0;
+
         // The haversine function is defined as:
         //
         // dlon = abs(lon2 - lon1)
@@ -196,7 +203,14 @@ namespace meshkernel
         double c = 2.0 * std::asin(std::sqrt(a));
         c *= aspectRatio;
 
+        double distance = c * constants::geometric::earth_radius;
+
         double computedLatitude = c * constants::conversion::radToDeg + latitude;
+
+        if (std::abs(computedLatitude) > latitudeCloseToPole && distance < minimumDistance)
+        {
+            computedLatitude = std::copysign(1.0, computedLatitude) * 90.0;
+        }
 
         return computedLatitude;
     }
@@ -220,17 +234,17 @@ namespace meshkernel
 
         double currentLatitude = minY;
         int result = 0;
-        constexpr double latitudePoles = 90.0;
+        const double latitudePoles = 90.0;
 
         double aspectRatio = blockSizeY / blockSizeX;
 
         while (currentLatitude < maxY)
         {
-            currentLatitude = ComputeLatitudeIncrementWithAdjustment(blockSizeX, currentLatitude, aspectRatio);
+            currentLatitude = ComputeLatitudeIncrementWithAdjustment(blockSizeX, aspectRatio, currentLatitude);
 
             result += 1;
 
-            if (IsEqual(abs(currentLatitude), latitudePoles))
+            if (IsEqual(std::abs(currentLatitude), latitudePoles))
             {
                 break;
             }
