@@ -4,7 +4,7 @@
 
 #include <cmath>
 
-meshkernel::RTreeSphericalToCartesian::Point2D meshkernel::RTreeSphericalToCartesian::convert(const Point& node) const
+meshkernel::RTreeSphericalToCartesian::Point3D meshkernel::RTreeSphericalToCartesian::convert(const Point& node) const
 {
     const auto [x, y, z] = ComputeSphericalCoordinatesFromLatitudeAndLongitude(node);
     return {x, y, z};
@@ -20,22 +20,22 @@ void meshkernel::RTreeSphericalToCartesian::Search(Point const& node, double sea
     m_queryCache.reserve(m_queryVectorCapacity);
     m_queryCache.clear();
 
-    const Point2D nodeSought = convert(node);
+    const Point3D nodeSought = convert(node);
     const auto searchRadius = std::sqrt(searchRadiusSquared);
-    Box2D const box(Point2D(bg::get<0>(nodeSought) - searchRadius, bg::get<1>(nodeSought) - searchRadius, bg::get<2>(nodeSought) - searchRadius),
-                    Point2D(bg::get<0>(nodeSought) + searchRadius, bg::get<1>(nodeSought) + searchRadius, bg::get<2>(nodeSought) + searchRadius));
+    Box3D const box(Point3D(bg::get<0>(nodeSought) - searchRadius, bg::get<1>(nodeSought) - searchRadius, bg::get<2>(nodeSought) - searchRadius),
+                    Point3D(bg::get<0>(nodeSought) + searchRadius, bg::get<1>(nodeSought) + searchRadius, bg::get<2>(nodeSought) + searchRadius));
 
-    auto pointIsNearby = [&nodeSought, &searchRadiusSquared](Value2D const& v)
+    auto pointIsNearby = [&nodeSought, &searchRadiusSquared](Value3D const& v)
     { return bg::comparable_distance(v.first, nodeSought) <= searchRadiusSquared; };
 
     if (findNearest)
     {
-        m_rtree2D.query(bgi::within(box) && bgi::satisfies(pointIsNearby) && bgi::nearest(nodeSought, 1),
+        m_rtree3D.query(bgi::within(box) && bgi::satisfies(pointIsNearby) && bgi::nearest(nodeSought, 1),
                         std::back_inserter(m_queryCache));
     }
     else
     {
-        m_rtree2D.query(bgi::within(box) && bgi::satisfies(pointIsNearby),
+        m_rtree3D.query(bgi::within(box) && bgi::satisfies(pointIsNearby),
                         std::back_inserter(m_queryCache));
     }
 
@@ -74,8 +74,8 @@ void meshkernel::RTreeSphericalToCartesian::SearchNearestPoint(Point const& node
     m_queryCache.reserve(m_queryVectorCapacity);
     m_queryCache.clear();
 
-    const Point2D nodeSought = convert(node);
-    m_rtree2D.query(bgi::nearest(nodeSought, 1), std::back_inserter(m_queryCache));
+    const Point3D nodeSought = convert(node);
+    m_rtree3D.query(bgi::nearest(nodeSought, 1), std::back_inserter(m_queryCache));
 
     if (!m_queryCache.empty())
     {
@@ -91,9 +91,9 @@ void meshkernel::RTreeSphericalToCartesian::DeleteNode(UInt position)
         throw AlgorithmError("RTree is empty, deletion cannot performed");
     }
 
-    if (const auto numberRemoved = m_rtree2D.remove(m_points[position]); numberRemoved != 1)
+    if (const auto numberRemoved = m_rtree3D.remove(m_points[position]); numberRemoved != 1)
     {
         return;
     }
-    m_points[position] = {Point2D{constants::missing::doubleValue, constants::missing::doubleValue, constants::missing::doubleValue}, std::numeric_limits<UInt>::max()};
+    m_points[position] = {Point3D{constants::missing::doubleValue, constants::missing::doubleValue, constants::missing::doubleValue}, std::numeric_limits<UInt>::max()};
 }
