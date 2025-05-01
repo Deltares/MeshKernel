@@ -86,10 +86,10 @@ namespace meshkernel
     /// For more details on available query methods, refer to the base class documentation: meshkernel::RTreeBase.
     class RTreeSphericalToCartesian : public RTreeBase
     {
-        using Point2D = bg::model::point<double, 3, bg::cs::cartesian>; ///< Typedef for Point2D
-        using Box2D = bg::model::box<Point2D>;                          ///< Typedef for box of Point2D
-        using Value2D = std::pair<Point2D, UInt>;                       ///< Typedef of pair of Point2D and UInt
-        using RTree2D = bgi::rtree<Value2D, bgi::linear<16>>;           ///< Typedef for a 2D RTree
+        using Point3D = bg::model::point<double, 3, bg::cs::cartesian>; ///< Typedef for Point3D
+        using Box3D = bg::model::box<Point3D>;                          ///< Typedef for box of Point3D
+        using Value3D = std::pair<Point3D, UInt>;                       ///< Typedef of pair of Point3D and UInt
+        using RTree3D = bgi::rtree<Value3D, bgi::linear<16>>;           ///< Typedef for a 3D RTree
 
         /// @brief Ninety degrees
         static constexpr double NinetyDegrees = 90.0;
@@ -144,10 +144,10 @@ namespace meshkernel
         void DeleteNode(UInt position) override;
 
         /// @brief Determines size of the RTree
-        [[nodiscard]] UInt Size() const override { return static_cast<UInt>(m_rtree2D.size()); };
+        [[nodiscard]] UInt Size() const override { return static_cast<UInt>(m_rtree3D.size()); };
 
         /// @brief Determines if the RTree is empty
-        [[nodiscard]] bool Empty() const override { return m_rtree2D.empty(); }
+        [[nodiscard]] bool Empty() const override { return m_rtree3D.empty(); }
 
         /// @brief Gets the size of the query
         [[nodiscard]] UInt GetQueryResultSize() const override { return static_cast<UInt>(m_queryCache.size()); }
@@ -160,14 +160,14 @@ namespace meshkernel
 
     private:
         /// @brief Convert 2d point in spherical coordinates to 3d point in Cartesian coordinates.
-        Point2D convert(const Point& p) const;
+        Point3D convert(const Point& p) const;
 
         /// @brief Builds the tree from a vector of types derived from Point
         template <std::derived_from<Point> T>
         void BuildTreeFromVector(const std::vector<T>& nodes)
         {
             m_points.clear();
-            m_rtree2D.clear();
+            m_rtree3D.clear();
 
             for (UInt n = 0; n < nodes.size(); ++n)
             {
@@ -176,7 +176,7 @@ namespace meshkernel
                     m_points.emplace_back(convert(nodes[n]), n);
                 }
             }
-            m_rtree2D = RTree2D(m_points);
+            m_rtree3D = RTree3D(m_points);
         }
 
         /// @brief Builds the tree from a vector of types derived from Point within a bounding box
@@ -184,7 +184,7 @@ namespace meshkernel
         void BuildTreeFromVectorWithinBoundingBox(const std::vector<T>& nodes, const BoundingBox& boundingBox)
         {
             m_points.clear();
-            m_rtree2D.clear();
+            m_rtree3D.clear();
 
             for (UInt n = 0; n < nodes.size(); ++n)
             {
@@ -198,7 +198,7 @@ namespace meshkernel
                     m_points.emplace_back(convert(nodes[n]), n);
                 }
             }
-            m_rtree2D = RTree2D(m_points);
+            m_rtree3D = RTree3D(m_points);
         }
 
         /// @brief Performs a spatial search within a search radius
@@ -207,9 +207,9 @@ namespace meshkernel
         /// @param[in] findNearest If true, finds the nearest point; otherwise, finds all points within the radius.
         void Search(Point const& node, double searchRadiusSquared, bool findNearest);
 
-        RTree2D m_rtree2D;                              ///< The 2D RTree
-        std::vector<std::pair<Point2D, UInt>> m_points; ///< The points
-        std::vector<Value2D> m_queryCache;              ///< The query cache
+        RTree3D m_rtree3D;                              ///< The 3D RTree
+        std::vector<std::pair<Point3D, UInt>> m_points; ///< The points
+        std::vector<Value3D> m_queryCache;              ///< The query cache
         std::vector<UInt> m_queryIndices;               ///< The query indices
         UInt m_queryVectorCapacity = 100;               ///< Capacity of the query vector
     };
