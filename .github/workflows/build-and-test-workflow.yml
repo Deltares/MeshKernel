@@ -101,6 +101,7 @@ jobs:
       #       Works if runner.os == 'Linux' or runner.os == 'macOS'
       #       if runner.os == 'Windows',  /inputs.build_type needs to be inserted before /tests
       - name: Test
+        timeout-minutes: 2 # Set timeout to 90 minutes
         run: |
           echo -e "\n***************   MeshKernel Tests   ***************\n"
           ${{ steps.paths.outputs.build_dir }}/libs/MeshKernel/tests/MeshKernelUnitTests
