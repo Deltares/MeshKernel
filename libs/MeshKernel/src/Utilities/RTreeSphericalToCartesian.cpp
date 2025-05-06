@@ -4,7 +4,7 @@
 
 #include <cmath>
 
-meshkernel::RTreeSphericalToCartesian::Point3D meshkernel::RTreeSphericalToCartesian::convert(const Point& node) const
+meshkernel::RTreeSphericalToCartesian::Point3D meshkernel::RTreeSphericalToCartesian::convert(const Point& node)
 {
     const auto [x, y, z] = ComputeSphericalCoordinatesFromLatitudeAndLongitude(node);
     return {x, y, z};
