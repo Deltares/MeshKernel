@@ -692,7 +692,7 @@ TEST(CasulliRefinement, CurvilinearRefinementBasedOnDepths)
     meshkernel::MakeGridParameters makeGridParameters;
 
     const int numberOfNodes = 11;
-    const double delta = 10.0;
+    const double delta = 30.0;
 
     makeGridParameters.origin_x = 0.0;
     makeGridParameters.origin_y = 0.0;
