@@ -101,8 +101,9 @@ namespace meshkernel
         /// @param[in] nodes The vector of nodes
         void BuildTree(const std::vector<Point>& nodes) override
         {
-            BuildTreeFromVector(nodes, m_points2D, [](const Point& p)
-                                { return Point2D(p.x, p.y); });
+            auto convert = [](const Point& p)
+            { return Point2D(p.x, p.y); };
+            BuildTreeFromVector(nodes, m_points2D, convert);
             m_rtree2D = RTree2D(m_points2D);
         }
 
@@ -110,8 +111,9 @@ namespace meshkernel
         /// @param[in] samples The vector of samples
         void BuildTree(const std::vector<Sample>& samples) override
         {
-            BuildTreeFromVector(samples, m_points2D, [](const Point& p)
-                                { return Point2D(p.x, p.y); });
+            auto convert = [](const Point& p)
+            { return Point2D(p.x, p.y); };
+            BuildTreeFromVector(samples, m_points2D, convert);
             m_rtree2D = RTree2D(m_points2D);
         }
 
@@ -120,8 +122,9 @@ namespace meshkernel
         /// @param[in] boundingBox The vector bounding box
         void BuildTree(const std::vector<Point>& nodes, const BoundingBox& boundingBox) override
         {
-            BuildTreeFromVectorWithinBoundingBox(nodes, m_points2D, [](const Point& p)
-                                                 { return Point2D(p.x, p.y); }, boundingBox);
+            auto convert = [](const Point& p)
+            { return Point2D(p.x, p.y); };
+            BuildTreeFromVectorWithinBoundingBox(nodes, m_points2D, convert, boundingBox);
             m_rtree2D = RTree2D(m_points2D);
         }
 
@@ -130,8 +133,9 @@ namespace meshkernel
         /// @param[in] boundingBox The vector bounding box
         void BuildTree(const std::vector<Sample>& samples, const BoundingBox& boundingBox) override
         {
-            BuildTreeFromVectorWithinBoundingBox(samples, m_points2D, [](const Point& p)
-                                                 { return Point2D(p.x, p.y); }, boundingBox);
+            auto convert = [](const Point& p)
+            { return Point2D(p.x, p.y); };
+            BuildTreeFromVectorWithinBoundingBox(samples, m_points2D, convert, boundingBox);
             m_rtree2D = RTree2D(m_points2D);
         }
 
