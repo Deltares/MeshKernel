@@ -175,11 +175,11 @@ namespace meshkernel
         /// @param[in] findNearest If true, finds the nearest point; otherwise, finds all points within the radius.
         void Search(Point const& node, double searchRadiusSquared, bool findNearest);
 
-        RTree2D m_rtree2D;                              ///< The 2D RTree
+        RTree2D m_rtree2D;                                ///< The 2D RTree
         std::vector<std::pair<Point2D, UInt>> m_points2D; ///< The points
-        std::vector<Value2D> m_queryCache;              ///< The query cache
-        std::vector<UInt> m_queryIndices;               ///< The query indices
-        UInt m_queryVectorCapacity = 100;               ///< Capacity of the query vector
+        std::vector<Value2D> m_queryCache;                ///< The query cache
+        std::vector<UInt> m_queryIndices;                 ///< The query indices
+        UInt m_queryVectorCapacity = 100;                 ///< Capacity of the query vector
     };
 
     template <typename projection>
