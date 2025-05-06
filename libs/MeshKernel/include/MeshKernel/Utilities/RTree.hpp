@@ -101,18 +101,18 @@ namespace meshkernel
         /// @param[in] nodes The vector of nodes
         void BuildTree(const std::vector<Point>& nodes) override
         {
-            BuildTreeFromVector(nodes, m_points, [](const Point& p)
+            BuildTreeFromVector(nodes, m_points2D, [](const Point& p)
                                 { return Point2D(p.x, p.y); });
-            m_rtree2D = RTree2D(m_points);
+            m_rtree2D = RTree2D(m_points2D);
         }
 
         /// @brief Builds the tree from a vector of samples
         /// @param[in] samples The vector of samples
         void BuildTree(const std::vector<Sample>& samples) override
         {
-            BuildTreeFromVector(samples, m_points, [](const Point& p)
+            BuildTreeFromVector(samples, m_points2D, [](const Point& p)
                                 { return Point2D(p.x, p.y); });
-            m_rtree2D = RTree2D(m_points);
+            m_rtree2D = RTree2D(m_points2D);
         }
 
         /// @brief Builds the tree from a vector of points within a bounding box
@@ -120,9 +120,9 @@ namespace meshkernel
         /// @param[in] boundingBox The vector bounding box
         void BuildTree(const std::vector<Point>& nodes, const BoundingBox& boundingBox) override
         {
-            BuildTreeFromVectorWithinBoundingBox(nodes, m_points, [](const Point& p)
+            BuildTreeFromVectorWithinBoundingBox(nodes, m_points2D, [](const Point& p)
                                                  { return Point2D(p.x, p.y); }, boundingBox);
-            m_rtree2D = RTree2D(m_points);
+            m_rtree2D = RTree2D(m_points2D);
         }
 
         /// @brief Builds the tree from a vector of samples within a bounding box
@@ -130,9 +130,9 @@ namespace meshkernel
         /// @param[in] boundingBox The vector bounding box
         void BuildTree(const std::vector<Sample>& samples, const BoundingBox& boundingBox) override
         {
-            BuildTreeFromVectorWithinBoundingBox(samples, m_points, [](const Point& p)
+            BuildTreeFromVectorWithinBoundingBox(samples, m_points2D, [](const Point& p)
                                                  { return Point2D(p.x, p.y); }, boundingBox);
-            m_rtree2D = RTree2D(m_points);
+            m_rtree2D = RTree2D(m_points2D);
         }
 
         /// @brief Finds all nodes in the search radius and stores the results in the query cache, to be inquired later
@@ -150,7 +150,7 @@ namespace meshkernel
         void SearchNearestPoint(Point const& node) override;
 
         /// @brief Deletes a node
-        /// @param[in] position The index of the point to remove in m_points
+        /// @param[in] position The index of the point to remove in m_points2D
         void DeleteNode(UInt position) override;
 
         /// @brief Determines size of the RTree
@@ -176,7 +176,7 @@ namespace meshkernel
         void Search(Point const& node, double searchRadiusSquared, bool findNearest);
 
         RTree2D m_rtree2D;                              ///< The 2D RTree
-        std::vector<std::pair<Point2D, UInt>> m_points; ///< The points
+        std::vector<std::pair<Point2D, UInt>> m_points2D; ///< The points
         std::vector<Value2D> m_queryCache;              ///< The query cache
         std::vector<UInt> m_queryIndices;               ///< The query indices
         UInt m_queryVectorCapacity = 100;               ///< Capacity of the query vector
@@ -293,11 +293,11 @@ namespace meshkernel
             throw AlgorithmError("RTree is empty, deletion cannot performed");
         }
 
-        if (const auto numberRemoved = m_rtree2D.remove(m_points[position]); numberRemoved != 1)
+        if (const auto numberRemoved = m_rtree2D.remove(m_points2D[position]); numberRemoved != 1)
         {
             return;
         }
-        m_points[position] = {Point2D{constants::missing::doubleValue, constants::missing::doubleValue}, std::numeric_limits<UInt>::max()};
+        m_points2D[position] = {Point2D{constants::missing::doubleValue, constants::missing::doubleValue}, std::numeric_limits<UInt>::max()};
     }
 
 } // namespace meshkernel
