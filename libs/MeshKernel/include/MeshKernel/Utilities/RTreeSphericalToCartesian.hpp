@@ -99,14 +99,20 @@ namespace meshkernel
         /// @param[in] nodes The vector of nodes
         void BuildTree(const std::vector<Point>& nodes) override
         {
-            BuildTreeFromVector(nodes);
+            auto conversion = [](const Point& p)
+            { return convert(p); };
+            BuildTreeFromVector(nodes, m_points, conversion);
+            m_rtree3D = RTree3D(m_points);
         }
 
         /// @brief Builds the tree from a vector of samples
         /// @param[in] samples The vector of samples
         void BuildTree(const std::vector<Sample>& samples) override
         {
-            BuildTreeFromVector(samples);
+            auto conversion = [](const Point& p)
+            { return convert(p); };
+            BuildTreeFromVector(samples, m_points, conversion);
+            m_rtree3D = RTree3D(m_points);
         }
 
         /// @brief Builds the tree from a vector of points within a bounding box
@@ -114,7 +120,10 @@ namespace meshkernel
         /// @param[in] boundingBox The vector bounding box
         void BuildTree(const std::vector<Point>& nodes, const BoundingBox& boundingBox) override
         {
-            BuildTreeFromVectorWithinBoundingBox(nodes, boundingBox);
+            auto conversion = [](const Point& p)
+            { return convert(p); };
+            BuildTreeFromVectorWithinBoundingBox(nodes, m_points, conversion, boundingBox);
+            m_rtree3D = RTree3D(m_points);
         }
 
         /// @brief Builds the tree from a vector of samples within a bounding box
@@ -122,7 +131,10 @@ namespace meshkernel
         /// @param[in] boundingBox The vector bounding box
         void BuildTree(const std::vector<Sample>& samples, const BoundingBox& boundingBox) override
         {
-            BuildTreeFromVectorWithinBoundingBox(samples, boundingBox);
+            auto conversion = [](const Point& p)
+            { return convert(p); };
+            BuildTreeFromVectorWithinBoundingBox(samples, m_points, conversion, boundingBox);
+            m_rtree3D = RTree3D(m_points);
         }
 
         /// @brief Finds all nodes in the search radius and stores the results in the query cache, to be inquired later
@@ -160,46 +172,7 @@ namespace meshkernel
 
     private:
         /// @brief Convert 2d point in spherical coordinates to 3d point in Cartesian coordinates.
-        Point3D convert(const Point& p) const;
-
-        /// @brief Builds the tree from a vector of types derived from Point
-        template <std::derived_from<Point> T>
-        void BuildTreeFromVector(const std::vector<T>& nodes)
-        {
-            m_points.clear();
-            m_rtree3D.clear();
-
-            for (UInt n = 0; n < nodes.size(); ++n)
-            {
-                if (nodes[n].x != constants::missing::doubleValue && nodes[n].y != constants::missing::doubleValue)
-                {
-                    m_points.emplace_back(convert(nodes[n]), n);
-                }
-            }
-            m_rtree3D = RTree3D(m_points);
-        }
-
-        /// @brief Builds the tree from a vector of types derived from Point within a bounding box
-        template <std::derived_from<Point> T>
-        void BuildTreeFromVectorWithinBoundingBox(const std::vector<T>& nodes, const BoundingBox& boundingBox)
-        {
-            m_points.clear();
-            m_rtree3D.clear();
-
-            for (UInt n = 0; n < nodes.size(); ++n)
-            {
-                if (!boundingBox.Contains(nodes[n]))
-                {
-                    continue;
-                }
-
-                if (nodes[n].x != constants::missing::doubleValue && nodes[n].y != constants::missing::doubleValue)
-                {
-                    m_points.emplace_back(convert(nodes[n]), n);
-                }
-            }
-            m_rtree3D = RTree3D(m_points);
-        }
+        static Point3D convert(const Point& p);
 
         /// @brief Performs a spatial search within a search radius
         /// @param[in] node The reference point for the search.
