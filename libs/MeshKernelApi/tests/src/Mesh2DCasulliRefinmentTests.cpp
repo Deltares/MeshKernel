@@ -692,7 +692,7 @@ TEST(CasulliRefinement, CurvilinearRefinementBasedOnDepths)
     meshkernel::MakeGridParameters makeGridParameters;
 
     const int numberOfNodes = 11;
-    const double delta = 10.0;
+    const double delta = 30.0;
 
     makeGridParameters.origin_x = 0.0;
     makeGridParameters.origin_y = 0.0;
@@ -740,7 +740,7 @@ TEST(CasulliRefinement, CurvilinearRefinementBasedOnDepths)
             sampleXNodes[sampleCount] = xCoord;
             sampleYNodes[sampleCount] = yCoord;
             // SHould create a zero line double the middle of the sample data set
-            sampleDataValues[sampleCount] = 0.5 * (xCoord - 0.5 * static_cast<double>(numberOfNodes - 1) * delta);
+            sampleDataValues[sampleCount] = 0.5 * (xCoord - 0.5 * static_cast<double>(numberOfNodes - 1) * delta) * 3.0;
             ++sampleCount;
             xCoord += sampleDelta;
         }
