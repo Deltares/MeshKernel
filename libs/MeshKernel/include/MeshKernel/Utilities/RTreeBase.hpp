@@ -89,6 +89,49 @@ namespace meshkernel
 
         /// @brief True if a query has results, false otherwise
         virtual bool HasQueryResults() const = 0;
+
+    protected:
+        /// @brief Builds the tree from a vector of types derived from Point
+        template <std::derived_from<Point> SourcePoint, typename TargetPoint, typename Conversion>
+        static void BuildTreeFromVector(const std::vector<SourcePoint>& sourcePoints,
+                                        std::vector<std::pair<TargetPoint, UInt>>& targetPoints,
+                                        Conversion convert)
+        {
+            targetPoints.clear();
+
+            for (UInt n = 0; n < sourcePoints.size(); ++n)
+            {
+                if (sourcePoints[n].x != constants::missing::doubleValue &&
+                    sourcePoints[n].y != constants::missing::doubleValue)
+                {
+                    targetPoints.emplace_back(convert(sourcePoints[n]), n);
+                }
+            }
+        }
+
+        /// @brief Builds the tree from a vector of types derived from Point within a bounding box
+        template <std::derived_from<Point> SourcePoint, typename TargetPoint, typename Conversion>
+        static void BuildTreeFromVectorWithinBoundingBox(const std::vector<SourcePoint>& sourcePoints,
+                                                         std::vector<std::pair<TargetPoint, UInt>>& targetPoints,
+                                                         Conversion convert,
+                                                         const BoundingBox& boundingBox)
+        {
+            targetPoints.clear();
+
+            for (UInt n = 0; n < sourcePoints.size(); ++n)
+            {
+                if (!boundingBox.Contains(sourcePoints[n]))
+                {
+                    continue;
+                }
+
+                if (sourcePoints[n].x != constants::missing::doubleValue &&
+                    sourcePoints[n].y != constants::missing::doubleValue)
+                {
+                    targetPoints.emplace_back(convert(sourcePoints[n]), n);
+                }
+            }
+        }
     };
 
 } // namespace meshkernel

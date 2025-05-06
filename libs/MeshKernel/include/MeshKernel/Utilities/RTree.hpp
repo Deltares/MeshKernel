@@ -101,14 +101,18 @@ namespace meshkernel
         /// @param[in] nodes The vector of nodes
         void BuildTree(const std::vector<Point>& nodes) override
         {
-            BuildTreeFromVector(nodes);
+            BuildTreeFromVector(nodes, m_points, [](const Point& p)
+                                { return Point2D(p.x, p.y); });
+            m_rtree2D = RTree2D(m_points);
         }
 
         /// @brief Builds the tree from a vector of samples
         /// @param[in] samples The vector of samples
         void BuildTree(const std::vector<Sample>& samples) override
         {
-            BuildTreeFromVector(samples);
+            BuildTreeFromVector(samples, m_points, [](const Point& p)
+                                { return Point2D(p.x, p.y); });
+            m_rtree2D = RTree2D(m_points);
         }
 
         /// @brief Builds the tree from a vector of points within a bounding box
@@ -116,7 +120,9 @@ namespace meshkernel
         /// @param[in] boundingBox The vector bounding box
         void BuildTree(const std::vector<Point>& nodes, const BoundingBox& boundingBox) override
         {
-            BuildTreeFromVectorWithinBoundingBox(nodes, boundingBox);
+            BuildTreeFromVectorWithinBoundingBox(nodes, m_points, [](const Point& p)
+                                                 { return Point2D(p.x, p.y); }, boundingBox);
+            m_rtree2D = RTree2D(m_points);
         }
 
         /// @brief Builds the tree from a vector of samples within a bounding box
@@ -124,7 +130,9 @@ namespace meshkernel
         /// @param[in] boundingBox The vector bounding box
         void BuildTree(const std::vector<Sample>& samples, const BoundingBox& boundingBox) override
         {
-            BuildTreeFromVectorWithinBoundingBox(samples, boundingBox);
+            BuildTreeFromVectorWithinBoundingBox(samples, m_points, [](const Point& p)
+                                                 { return Point2D(p.x, p.y); }, boundingBox);
+            m_rtree2D = RTree2D(m_points);
         }
 
         /// @brief Finds all nodes in the search radius and stores the results in the query cache, to be inquired later
@@ -161,45 +169,6 @@ namespace meshkernel
         [[nodiscard]] bool HasQueryResults() const override { return !m_queryCache.empty(); }
 
     private:
-        /// @brief Builds the tree from a vector of types derived from Point
-        template <std::derived_from<Point> T>
-        void BuildTreeFromVector(const std::vector<T>& nodes)
-        {
-            m_points.clear();
-            m_rtree2D.clear();
-
-            for (UInt n = 0; n < nodes.size(); ++n)
-            {
-                if (nodes[n].x != constants::missing::doubleValue && nodes[n].y != constants::missing::doubleValue)
-                {
-                    m_points.emplace_back(Point2D{nodes[n].x, nodes[n].y}, n);
-                }
-            }
-            m_rtree2D = RTree2D(m_points);
-        }
-
-        /// @brief Builds the tree from a vector of types derived from Point within a bounding box
-        template <std::derived_from<Point> T>
-        void BuildTreeFromVectorWithinBoundingBox(const std::vector<T>& nodes, const BoundingBox& boundingBox)
-        {
-            m_points.clear();
-            m_rtree2D.clear();
-
-            for (UInt n = 0; n < nodes.size(); ++n)
-            {
-                if (!boundingBox.Contains(nodes[n]))
-                {
-                    continue;
-                }
-
-                if (nodes[n].x != constants::missing::doubleValue && nodes[n].y != constants::missing::doubleValue)
-                {
-                    m_points.emplace_back(Point2D{nodes[n].x, nodes[n].y}, n);
-                }
-            }
-            m_rtree2D = RTree2D(m_points);
-        }
-
         /// @brief Performs a spatial search within a search radius
         /// @param[in] node The reference point for the search.
         /// @param[in] searchRadiusSquared The squared search radius.
