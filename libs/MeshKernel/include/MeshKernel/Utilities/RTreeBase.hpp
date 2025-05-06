@@ -109,7 +109,6 @@ namespace meshkernel
                 }
             }
 
-            targetPoints.shrink_to_fit ();
         }
 
         /// @brief Builds the tree from a vector of types derived from Point within a bounding box
@@ -136,7 +135,6 @@ namespace meshkernel
                 }
             }
 
-            targetPoints.shrink_to_fit ();
         }
     };
 
