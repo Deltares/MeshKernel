@@ -91,9 +91,9 @@ void meshkernel::RTreeSphericalToCartesian::DeleteNode(UInt position)
         throw AlgorithmError("RTree is empty, deletion cannot performed");
     }
 
-    if (const auto numberRemoved = m_rtree3D.remove(m_points[position]); numberRemoved != 1)
+    if (const auto numberRemoved = m_rtree3D.remove(m_points3D[position]); numberRemoved != 1)
     {
         return;
     }
-    m_points[position] = {Point3D{constants::missing::doubleValue, constants::missing::doubleValue, constants::missing::doubleValue}, std::numeric_limits<UInt>::max()};
+    m_points3D[position] = {Point3D{constants::missing::doubleValue, constants::missing::doubleValue, constants::missing::doubleValue}, std::numeric_limits<UInt>::max()};
 }

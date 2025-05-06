@@ -101,8 +101,8 @@ namespace meshkernel
         {
             auto conversion = [](const Point& p)
             { return convert(p); };
-            BuildTreeFromVector(nodes, m_points, conversion);
-            m_rtree3D = RTree3D(m_points);
+            BuildTreeFromVector(nodes, m_points3D, conversion);
+            m_rtree3D = RTree3D(m_points3D);
         }
 
         /// @brief Builds the tree from a vector of samples
@@ -111,8 +111,8 @@ namespace meshkernel
         {
             auto conversion = [](const Point& p)
             { return convert(p); };
-            BuildTreeFromVector(samples, m_points, conversion);
-            m_rtree3D = RTree3D(m_points);
+            BuildTreeFromVector(samples, m_points3D, conversion);
+            m_rtree3D = RTree3D(m_points3D);
         }
 
         /// @brief Builds the tree from a vector of points within a bounding box
@@ -122,8 +122,8 @@ namespace meshkernel
         {
             auto conversion = [](const Point& p)
             { return convert(p); };
-            BuildTreeFromVectorWithinBoundingBox(nodes, m_points, conversion, boundingBox);
-            m_rtree3D = RTree3D(m_points);
+            BuildTreeFromVectorWithinBoundingBox(nodes, m_points3D, conversion, boundingBox);
+            m_rtree3D = RTree3D(m_points3D);
         }
 
         /// @brief Builds the tree from a vector of samples within a bounding box
@@ -133,8 +133,8 @@ namespace meshkernel
         {
             auto conversion = [](const Point& p)
             { return convert(p); };
-            BuildTreeFromVectorWithinBoundingBox(samples, m_points, conversion, boundingBox);
-            m_rtree3D = RTree3D(m_points);
+            BuildTreeFromVectorWithinBoundingBox(samples, m_points3D, conversion, boundingBox);
+            m_rtree3D = RTree3D(m_points3D);
         }
 
         /// @brief Finds all nodes in the search radius and stores the results in the query cache, to be inquired later
@@ -152,7 +152,7 @@ namespace meshkernel
         void SearchNearestPoint(Point const& node) override;
 
         /// @brief Deletes a node
-        /// @param[in] position The index of the point to remove in m_points
+        /// @param[in] position The index of the point to remove in m_points3D
         void DeleteNode(UInt position) override;
 
         /// @brief Determines size of the RTree
@@ -181,7 +181,7 @@ namespace meshkernel
         void Search(Point const& node, double searchRadiusSquared, bool findNearest);
 
         RTree3D m_rtree3D;                              ///< The 3D RTree
-        std::vector<std::pair<Point3D, UInt>> m_points; ///< The points
+        std::vector<std::pair<Point3D, UInt>> m_points3D; ///< The points
         std::vector<Value3D> m_queryCache;              ///< The query cache
         std::vector<UInt> m_queryIndices;               ///< The query indices
         UInt m_queryVectorCapacity = 100;               ///< Capacity of the query vector
