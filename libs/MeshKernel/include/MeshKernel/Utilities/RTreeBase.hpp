@@ -98,7 +98,7 @@ namespace meshkernel
                                         Conversion convert)
         {
             targetPoints.clear();
-            targetPoints.reserve (sourcePoints.size());
+            targetPoints.reserve(sourcePoints.size());
 
             for (UInt n = 0; n < sourcePoints.size(); ++n)
             {
@@ -108,7 +108,6 @@ namespace meshkernel
                     targetPoints.emplace_back(convert(sourcePoints[n]), n);
                 }
             }
-
         }
 
         /// @brief Builds the tree from a vector of types derived from Point within a bounding box
@@ -119,7 +118,7 @@ namespace meshkernel
                                                          const BoundingBox& boundingBox)
         {
             targetPoints.clear();
-            targetPoints.reserve (sourcePoints.size());
+            targetPoints.reserve(sourcePoints.size());
 
             for (UInt n = 0; n < sourcePoints.size(); ++n)
             {
@@ -134,7 +133,6 @@ namespace meshkernel
                     targetPoints.emplace_back(convert(sourcePoints[n]), n);
                 }
             }
-
         }
     };
 
