@@ -140,3 +140,133 @@ TEST(RTree, BuildTree_WithBoundigBox_MustCreateaSmallerTree)
     // 3 Assert
     ASSERT_EQ(3, rtree->Size());
 }
+
+// namespace SphericalRTreeTest
+// {
+
+//     template<typename >
+
+// }
+
+TEST(RTree, SphericalRTreeBasicTests)
+{
+    const int n = 11; // x
+    const int m = 11; // y
+
+    std::vector<meshkernel::Point> nodes(n * m);
+    std::size_t nodeIndex = 0;
+
+    double latitude = 0.0;
+
+    double latitudeDelta = 0.1;
+    double longitudeDelta = 0.1;
+
+    for (auto j = 0; j < m; ++j)
+    {
+        double longitude = 0.0;
+
+        for (auto i = 0; i < n; ++i)
+        {
+            nodes[nodeIndex] = {longitude, latitude};
+            nodeIndex++;
+            longitude += longitudeDelta;
+        }
+
+        latitude += latitudeDelta;
+    }
+
+    const auto rtree = meshkernel::RTreeFactory::Create(meshkernel::Projection::spherical);
+    rtree->BuildTree(nodes);
+    EXPECT_EQ(rtree->Size(), n * m);
+    EXPECT_FALSE(rtree->Empty());
+
+    meshkernel::Point centre(0.5, 0.5);
+    /// 0.1 degrees is approx 11.1 km
+    double searchRadius = 33400.0;
+    rtree->SearchPoints(centre, searchRadius * searchRadius);
+    EXPECT_EQ(rtree->GetQueryResultSize(), 29);
+    EXPECT_TRUE(rtree->HasQueryResults());
+
+    rtree->SearchNearestPoint(centre, searchRadius * searchRadius);
+    EXPECT_TRUE(rtree->HasQueryResults());
+    ASSERT_EQ(rtree->GetQueryResultSize(), 1);
+
+    // meshkernel::Point expectedNearestPoint;
+    meshkernel::UInt nearestPointIndex = rtree->GetQueryResult(0);
+    meshkernel::Point nearestPoint = nodes[nearestPointIndex];
+
+    const double tolerance = 1.0e-10;
+
+    EXPECT_EQ(nearestPointIndex, 60);
+    EXPECT_NEAR(nearestPoint.x, centre.x, tolerance);
+    EXPECT_NEAR(nearestPoint.y, centre.y, tolerance);
+
+    rtree->DeleteNode(nearestPointIndex);
+    meshkernel::Point nearCentre(0.51, 0.52);
+
+    rtree->SearchNearestPoint(nearCentre, searchRadius * searchRadius);
+    EXPECT_TRUE(rtree->HasQueryResults());
+    ASSERT_EQ(rtree->GetQueryResultSize(), 1);
+
+    nearestPointIndex = rtree->GetQueryResult(0);
+    nearestPoint = nodes[nearestPointIndex];
+
+    EXPECT_EQ(nearestPointIndex, 71);
+    EXPECT_NEAR(nearestPoint.x, nodes[nearestPointIndex].x, tolerance);
+    EXPECT_NEAR(nearestPoint.y, nodes[nearestPointIndex].y, tolerance);
+}
+
+TEST(RTree, SphericalRTreeBoundedBoxBasicTests)
+{
+    const int n = 11; // x
+    const int m = 11; // y
+
+    std::vector<meshkernel::Point> nodes(n * m);
+    std::size_t nodeIndex = 0;
+
+    meshkernel::BoundingBox boundingBox({0.2, 0.2}, {0.8, 0.8});
+
+    double latitude = 0.0;
+
+    double latitudeDelta = 0.1;
+    double longitudeDelta = 0.1;
+
+    for (auto j = 0; j < m; ++j)
+    {
+        double longitude = 0.0;
+
+        for (auto i = 0; i < n; ++i)
+        {
+            nodes[nodeIndex] = {longitude, latitude};
+            nodeIndex++;
+            longitude += longitudeDelta;
+        }
+
+        latitude += latitudeDelta;
+    }
+
+    const auto rtree = meshkernel::RTreeFactory::Create(meshkernel::Projection::spherical);
+    rtree->BuildTree(nodes, boundingBox);
+    EXPECT_EQ(rtree->Size(), (n - 4) * (m - 4));
+    EXPECT_FALSE(rtree->Empty());
+
+    meshkernel::Point centre(0.5, 0.5);
+    /// 0.1 degrees is approx 11.1 km
+    double searchRadius = 33400.0;
+    rtree->SearchPoints(centre, searchRadius * searchRadius);
+    EXPECT_EQ(rtree->GetQueryResultSize(), 29);
+    EXPECT_TRUE(rtree->HasQueryResults());
+
+    rtree->SearchNearestPoint(centre, searchRadius * searchRadius);
+    EXPECT_TRUE(rtree->HasQueryResults());
+    ASSERT_EQ(rtree->GetQueryResultSize(), 1);
+
+    meshkernel::UInt nearestPointIndex = rtree->GetQueryResult(0);
+    meshkernel::Point nearestPoint = nodes[nearestPointIndex];
+
+    const double tolerance = 1.0e-10;
+
+    EXPECT_EQ(nearestPointIndex, 60);
+    EXPECT_NEAR(nearestPoint.x, centre.x, tolerance);
+    EXPECT_NEAR(nearestPoint.y, centre.y, tolerance);
+}
