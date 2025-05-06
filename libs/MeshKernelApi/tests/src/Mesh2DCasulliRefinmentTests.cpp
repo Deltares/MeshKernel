@@ -740,7 +740,7 @@ TEST(CasulliRefinement, CurvilinearRefinementBasedOnDepths)
             sampleXNodes[sampleCount] = xCoord;
             sampleYNodes[sampleCount] = yCoord;
             // Should create a zero line double the middle of the sample data set
-            sampleDataValues[sampleCount] = 0.5 * (xCoord - 0.5 * static_cast<double>(numberOfNodes - 1) * delta);
+            sampleDataValues[sampleCount] = 0.5 * (xCoord - 0.5 * static_cast<double>(numberOfNodes - 1) * delta) * 3.0;
             ++sampleCount;
             xCoord += sampleDelta;
         }
