@@ -33,6 +33,7 @@
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Point.hpp"
+#include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/Utilities/RTreeBase.hpp"
 
 namespace meshkernel
@@ -61,6 +62,14 @@ namespace meshkernel
         /// @note separationFraction should be in the interval (0, max], where max = DefaultMaximumSeparationFraction,
         /// If the value is outside of this range then a RangeError will be thrown.
         [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh, const double separationFraction = DefaultMaximumSeparationFraction);
+
+        /// @brief Connect grids.
+        ///
+        /// @param [in,out] mesh The mesh
+        /// @param [in] separationFraction The fraction of the shortest edge to use when determining neighbour edge closeness
+        /// @note separationFraction should be in the interval (0, max], where max = DefaultMaximumSeparationFraction,
+        /// If the value is outside of this range then a RangeError will be thrown.
+        [[nodiscard]] static std::unique_ptr<meshkernel::UndoAction> Compute(Mesh2D& mesh, const Polygons& polygon, const double separationFraction = DefaultMaximumSeparationFraction);
 
     private:
         /// @brief The edge length tolerance, minimum size for which an edge will be considered.
@@ -125,10 +134,12 @@ namespace meshkernel
         /// @brief Find all quadrilateral elements that do no have a neighbour across any of edges.
         ///
         /// @param [in] mesh The mesh
+        /// @param [in] nodeInsidePolygon Determine if the node is inside the polgon
         /// @param [in,out] elementsOnDomainBoundary List of elements that do not have neighbour
         /// @param [out] edgesOnDomainBoundary List of edges that do have elements on one side only
         /// @param [out] edgeLengths The length of each edge that has been added, indexed by the edge id
         static void GetQuadrilateralElementsOnDomainBoundary(const Mesh2D& mesh,
+                                                             const std::vector<Boolean>& nodeInsidePolygon,
                                                              std::vector<UInt>& elementsOnDomainBoundary,
                                                              std::vector<UInt>& edgesOnDomainBoundary,
                                                              std::vector<double>& edgeLengths);
