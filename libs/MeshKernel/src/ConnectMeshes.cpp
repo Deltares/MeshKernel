@@ -111,6 +111,7 @@ void meshkernel::ConnectMeshes::AreEdgesAdjacent(const Mesh2D& mesh,
 }
 
 void meshkernel::ConnectMeshes::GetQuadrilateralElementsOnDomainBoundary(const Mesh2D& mesh,
+                                                                         const std::vector<Boolean>& nodeInsidePolygon,
                                                                          std::vector<UInt>& elementsOnDomainBoundary,
                                                                          std::vector<UInt>& edgesOnDomainBoundary,
                                                                          std::vector<double>& edgeLengths)
@@ -120,12 +121,13 @@ void meshkernel::ConnectMeshes::GetQuadrilateralElementsOnDomainBoundary(const M
         if (mesh.GetNumEdgesFaces(i) == 1)
         {
             const UInt faceId = mesh.m_edgesFaces[i][0];
+            const Edge edge = mesh.GetEdge(i);
 
             // Only store quadrilateral elements
-            if (mesh.m_numFacesNodes[faceId] == constants::geometric::numNodesInQuadrilateral)
+            if (mesh.m_numFacesNodes[faceId] == constants::geometric::numNodesInQuadrilateral && nodeInsidePolygon[edge.first] && nodeInsidePolygon[edge.second])
             {
-                double edgeLength = ComputeDistance(mesh.Node(mesh.GetEdge(i).first),
-                                                    mesh.Node(mesh.GetEdge(i).second),
+                double edgeLength = ComputeDistance(mesh.Node(edge.first),
+                                                    mesh.Node(edge.second),
                                                     mesh.m_projection);
 
                 // Only store edge info for edges that have a size strictly greater than EdgeLengthTolerance
@@ -238,6 +240,13 @@ void meshkernel::ConnectMeshes::GatherHangingNodes(const UInt primaryStartNode,
 
 std::unique_ptr<meshkernel::UndoAction> meshkernel::ConnectMeshes::Compute(Mesh2D& mesh, const double separationFraction)
 {
+    // Create an empty polygon
+    Polygons polygon;
+    return Compute(mesh, polygon, separationFraction);
+}
+
+std::unique_ptr<meshkernel::UndoAction> meshkernel::ConnectMeshes::Compute(Mesh2D& mesh, const Polygons& polygon, const double separationFraction)
+{
     // Check that the separationFraction is in correct range (0.0, max]
     range_check::CheckInLeftHalfOpenInterval(separationFraction, 0.0, DefaultMaximumSeparationFraction, "Separation Fraction");
 
@@ -254,7 +263,9 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::ConnectMeshes::Compute(Mesh2
     edgesOnDomainBoundary.reserve(numberOfEdges);
     std::vector<double> edgeLengths(numberOfEdges, constants::missing::doubleValue);
 
-    GetQuadrilateralElementsOnDomainBoundary(mesh, elementsOnDomainBoundary, edgesOnDomainBoundary, edgeLengths);
+    std::vector<Boolean> nodeInsidePolygon(mesh.IsLocationInPolygon(polygon, Location::Nodes));
+
+    GetQuadrilateralElementsOnDomainBoundary(mesh, nodeInsidePolygon, elementsOnDomainBoundary, edgesOnDomainBoundary, edgeLengths);
 
     std::vector<NodesToMerge> nodesToMerge;
 
