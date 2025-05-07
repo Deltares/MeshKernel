@@ -185,40 +185,36 @@ TEST(FlipEdges, FlipEdgesInPolygonMediumTriangularMesh)
     // execute flipedges
     meshkernel::FlipEdges flipEdges(*mesh, landBoundaries, true, false);
 
-    [[maybe_unused]]meshkernel::Polygons polygon ({{400.0, 900.0}, {1300.0, 900.0}, {1200.0, 1300.0}, {300.0, 1200.0}, {400.0, 900.0}}, mesh->m_projection);
+    meshkernel::Polygons polygon ({{400.0, 900.0}, {1300.0, 900.0}, {1200.0, 1300.0}, {300.0, 1200.0}, {400.0, 900.0}}, mesh->m_projection);
 
-    auto undoAction = flipEdges.Compute();
-
-    meshkernel::Print (mesh->Nodes (), mesh->Edges ());
-
-    return;
+    auto undoAction = flipEdges.Compute(polygon);
 
     // get the number of edges
-    ASSERT_EQ(697, mesh->GetNumEdges());
+    EXPECT_EQ(697, mesh->GetNumEdges());
 
     // check the values of flipped edges
-    ASSERT_EQ(183, mesh->GetEdge(14).first);
-    ASSERT_EQ(227, mesh->GetEdge(14).second);
+    EXPECT_EQ(36, mesh->GetEdge(14).first);
+    EXPECT_EQ(185, mesh->GetEdge(14).second);
 
-    ASSERT_EQ(58, mesh->GetEdge(33).first);
-    ASSERT_EQ(141, mesh->GetEdge(33).second);
+    EXPECT_EQ(184, mesh->GetEdge(33).first);
+    EXPECT_EQ(228, mesh->GetEdge(33).second);
 
-    ASSERT_EQ(147, mesh->GetEdge(46).first);
-    ASSERT_EQ(145, mesh->GetEdge(46).second);
+    EXPECT_EQ(38, mesh->GetEdge(46).first);
+    EXPECT_EQ(66, mesh->GetEdge(46).second);
 
-    ASSERT_EQ(147, mesh->GetEdge(49).first);
-    ASSERT_EQ(148, mesh->GetEdge(49).second);
+    EXPECT_EQ(66, mesh->GetEdge(49).first);
+    EXPECT_EQ(145, mesh->GetEdge(49).second);
 
-    ASSERT_EQ(242, mesh->GetEdge(68).first);
-    ASSERT_EQ(148, mesh->GetEdge(68).second);
+    EXPECT_EQ(80, mesh->GetEdge(68).first);
+    EXPECT_EQ(148, mesh->GetEdge(68).second);
 
     // Test the undo action has been computed correctly
     undoAction->Restore();
     // Recompute faces
     mesh->Administrate();
 
-    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
-    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+    EXPECT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    EXPECT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
     meshkernel::UInt count = 0;
 
