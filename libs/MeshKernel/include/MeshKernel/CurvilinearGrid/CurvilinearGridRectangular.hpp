@@ -130,17 +130,21 @@ namespace meshkernel
 
         /// @brief Compute the adjusted latitude for keeping an aspect ratio of 1, considering the spherical coordinates
         /// @param[in] blockSize The grid block size in y dimension
+        /// @param[in] aspectRatio The expected element aspect ratio, defined as being: blockSizeY / blockSizeX
         /// @param[in] latitude The current latitude
         /// @returns[in] The adjusted latitude
-        static double ComputeLatitudeIncrementWithAdjustment(double blockSize, double latitude);
+        static double ComputeLatitudeIncrementWithAdjustment(double blockSize, double aspectRatio, double latitude);
 
         /// @brief Compute the number of rows required to generate a grid from minY to maxY
         /// @param[in] minY The min latitude
         /// @param[in] maxY The max latitude
+        /// @param[in] blockSizeX Size of element in x-direction
+        /// @param[in] blockSizeY Size of element in y-direction
         /// @param[in] projection The projection to use
         /// @returns[in] The number of rows
         static int ComputeNumRows(double minY,
                                   double maxY,
+                                  double blockSizeX,
                                   double blockSizeY,
                                   Projection projection);
 
