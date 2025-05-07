@@ -53,6 +53,13 @@ FlipEdges::FlipEdges(Mesh2D& mesh,
 
 std::unique_ptr<meshkernel::UndoAction> FlipEdges::Compute() const
 {
+    // Defined empty polygon
+    Polygons polygon;
+    return Compute(polygon);
+}
+
+std::unique_ptr<meshkernel::UndoAction> FlipEdges::Compute(const Polygons& polygon) const
+{
     std::unique_ptr<CompoundUndoAction> action = CompoundUndoAction::Create();
 
     m_mesh.Administrate(action.get());
@@ -66,6 +73,7 @@ std::unique_ptr<meshkernel::UndoAction> FlipEdges::Compute() const
     const UInt MaxIter = 10;
     const auto numEdges = m_mesh.GetNumEdges();
     UInt numFlippedEdges = constants::missing::uintValue;
+    std::vector<Boolean> nodeInsidePolygon(m_mesh.IsLocationInPolygon(polygon, Location::Nodes));
 
     for (UInt iteration = 0; iteration < MaxIter; ++iteration)
     {
@@ -79,6 +87,13 @@ std::unique_ptr<meshkernel::UndoAction> FlipEdges::Compute() const
         {
 
             if (m_mesh.IsEdgeOnBoundary(e))
+            {
+                continue;
+            }
+
+            const Edge& edge = m_mesh.GetEdge(e);
+
+            if (!nodeInsidePolygon[edge.first] || !nodeInsidePolygon[edge.second])
             {
                 continue;
             }
