@@ -30,7 +30,8 @@
 #include <memory>
 
 #include "MeshKernel/Constants.hpp"
-#include <MeshKernel/UndoActions/UndoAction.hpp>
+#include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 namespace meshkernel
 {
@@ -60,7 +61,11 @@ namespace meshkernel
         /// @brief Flip the edges
         [[nodiscard]] std::unique_ptr<UndoAction> Compute() const;
 
+        /// @brief Flip the edges inside a polygon
+        [[nodiscard]] std::unique_ptr<UndoAction> Compute(const Polygons& polygon) const;
+
     private:
+
         /// @brief Computes the change in topology functional and gets the nodes involved (comp_ntopo)
         /// @param[in]  edge      The current edge
         /// @param[out] nodeLeft  The node at the left side of the edge

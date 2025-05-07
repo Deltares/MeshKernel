@@ -36,6 +36,8 @@
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
+#include <MeshKernel/Utilities/Utilities.hpp>
+
 TEST(FlipEdges, FlipEdgesWithLandBoundary)
 {
     // 1 Setup
@@ -112,6 +114,84 @@ TEST(FlipEdges, FlipEdgesMediumTriangularMesh)
     meshkernel::FlipEdges flipEdges(*mesh, landBoundaries, true, false);
 
     auto undoAction = flipEdges.Compute();
+
+    // get the number of edges
+    ASSERT_EQ(697, mesh->GetNumEdges());
+
+    // check the values of flipped edges
+    ASSERT_EQ(183, mesh->GetEdge(14).first);
+    ASSERT_EQ(227, mesh->GetEdge(14).second);
+
+    ASSERT_EQ(58, mesh->GetEdge(33).first);
+    ASSERT_EQ(141, mesh->GetEdge(33).second);
+
+    ASSERT_EQ(147, mesh->GetEdge(46).first);
+    ASSERT_EQ(145, mesh->GetEdge(46).second);
+
+    ASSERT_EQ(147, mesh->GetEdge(49).first);
+    ASSERT_EQ(148, mesh->GetEdge(49).second);
+
+    ASSERT_EQ(242, mesh->GetEdge(68).first);
+    ASSERT_EQ(148, mesh->GetEdge(68).second);
+
+    // Test the undo action has been computed correctly
+    undoAction->Restore();
+    // Recompute faces
+    mesh->Administrate();
+
+    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+
+    meshkernel::UInt count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Nodes().size(); ++i)
+    {
+        if (mesh->Node(i).IsValid())
+        {
+            // Check valid nodes
+            EXPECT_EQ(originalNodes[count].x, mesh->Node(i).x);
+            EXPECT_EQ(originalNodes[count].y, mesh->Node(i).y);
+            ++count;
+        }
+    }
+
+    count = 0;
+
+    for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
+    {
+        if (mesh->IsValidEdge(i))
+        {
+            EXPECT_EQ(originalEdges[count].first, mesh->GetEdge(i).first);
+            EXPECT_EQ(originalEdges[count].second, mesh->GetEdge(i).second);
+            ++count;
+        }
+    }
+}
+
+TEST(FlipEdges, FlipEdgesInPolygonMediumTriangularMesh)
+{
+    // 1 Setup
+    auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/TestOrthogonalizationMediumTriangularGrid_net.nc");
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
+    // set landboundaries
+    auto landBoundarypolygon = meshkernel::Polygons();
+
+    std::vector<meshkernel::Point> landBoundary;
+    auto landBoundaries = meshkernel::LandBoundaries(landBoundary, *mesh, landBoundarypolygon);
+
+    // execute flipedges
+    meshkernel::FlipEdges flipEdges(*mesh, landBoundaries, true, false);
+
+    [[maybe_unused]]meshkernel::Polygons polygon ({{400.0, 900.0}, {1300.0, 900.0}, {1200.0, 1300.0}, {300.0, 1200.0}, {400.0, 900.0}}, mesh->m_projection);
+
+    auto undoAction = flipEdges.Compute();
+
+    meshkernel::Print (mesh->Nodes (), mesh->Edges ());
+
+    return;
 
     // get the number of edges
     ASSERT_EQ(697, mesh->GetNumEdges());

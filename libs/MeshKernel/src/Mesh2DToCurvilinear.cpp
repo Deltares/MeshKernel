@@ -56,6 +56,12 @@ std::unique_ptr<CurvilinearGrid> Mesh2DToCurvilinear::Compute(const Point& point
     m_mesh.SetFacesRTreeRequiresUpdate(true);
     m_mesh.BuildTree(Location::Faces);
     const auto initialFaceIndex = m_mesh.FindLocationIndex(point, Location::Faces);
+
+    if (initialFaceIndex == constants::missing::uintValue)
+    {
+        throw AlgorithmError("The seed point does not lie within the mesh");
+    }
+
     if (m_mesh.GetNumFaceEdges(initialFaceIndex) != geometric::numNodesInQuadrilateral)
     {
         throw AlgorithmError("The initial face is not a quadrilateral");
@@ -68,6 +74,7 @@ std::unique_ptr<CurvilinearGrid> Mesh2DToCurvilinear::Compute(const Point& point
         const auto node = m_mesh.m_facesNodes[initialFaceIndex][n];
         polygonPoints.emplace_back(m_mesh.Node(node));
     }
+
     const auto node = m_mesh.m_facesNodes[initialFaceIndex][0];
     polygonPoints.emplace_back(m_mesh.Node(node));
 
