@@ -91,18 +91,18 @@ std::unique_ptr<meshkernel::UndoAction> FlipEdges::Compute(const Polygons& polyg
                 continue;
             }
 
-            const Edge& edge = m_mesh.GetEdge(e);
-
-            if (!nodeInsidePolygon[edge.first] || !nodeInsidePolygon[edge.second])
-            {
-                continue;
-            }
-
             // Triangles only
             auto const leftFace = m_mesh.m_edgesFaces[e][0];
             auto const rightFace = m_mesh.m_edgesFaces[e][1];
 
             if (leftFace == constants::missing::uintValue || rightFace == constants::missing::uintValue)
+            {
+                continue;
+            }
+
+            const Edge& edge = m_mesh.GetEdge(e);
+
+            if (!nodeInsidePolygon[edge.first] || !nodeInsidePolygon[edge.second])
             {
                 continue;
             }
