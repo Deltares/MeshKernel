@@ -25,10 +25,14 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernel/PolygonalEnclosure.hpp"
+#include <numbers>
+
+#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/LandBoundary.hpp"
 #include "MeshKernel/Operations.hpp"
+#include "MeshKernel/PolygonalEnclosure.hpp"
+#include "MeshKernel/TriangulationWrapper.hpp"
 
 meshkernel::PolygonalEnclosure::PolygonalEnclosure(const std::vector<Point>& points,
                                                    Projection projection)
@@ -268,4 +272,49 @@ meshkernel::PolygonalEnclosure::OffsetCopy(const double distance, const bool out
     }
 
     return {std::move(outwardOffset), std::move(inwardOffset)};
+}
+
+std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::GeneratePoints(double scaleFactor) const
+{
+    TriangulationWrapper triangulationWrapper;
+
+    const auto [localPolygonArea, centerOfMass, direction] = m_outer.FaceAreaAndCenterOfMass();
+
+    // average triangle size
+    const auto averageEdgeLength = m_outer.PerimeterLength() / static_cast<double>(m_outer.Size());
+
+    double averageTriangleArea = 0.25 * std::numbers::sqrt3 * averageEdgeLength * averageEdgeLength;
+
+    // estimated number of triangles
+    constexpr UInt SafetySize = 11;
+    const auto numberOfTriangles = static_cast<UInt>(SafetySize * std::max(1.0, localPolygonArea / averageTriangleArea));
+
+    if (numberOfTriangles == 0)
+    {
+        throw AlgorithmError("The number of triangles = 0.");
+    }
+
+    if (scaleFactor == constants::missing::doubleValue)
+    {
+        const auto [minimumSegmentLength, maximumSegmentLength] = m_outer.SegmentLengthExtrema();
+
+        if (minimumSegmentLength == constants::missing::doubleValue || minimumSegmentLength == 0.0)
+        {
+            scaleFactor = 1.0;
+        }
+        else
+        {
+            const double segmentRatio = maximumSegmentLength / minimumSegmentLength;
+            scaleFactor = 0.5 * segmentRatio * segmentRatio;
+        }
+    }
+
+    averageTriangleArea *= scaleFactor;
+
+    triangulationWrapper.Compute(m_outer.Nodes(),
+                                 TriangulationWrapper::TriangulationOptions::GeneratePoints,
+                                 averageTriangleArea,
+                                 numberOfTriangles);
+
+    return triangulationWrapper.SelectNodes(*this);
 }
