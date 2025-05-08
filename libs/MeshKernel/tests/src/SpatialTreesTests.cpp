@@ -141,13 +141,6 @@ TEST(RTree, BuildTree_WithBoundigBox_MustCreateaSmallerTree)
     ASSERT_EQ(3, rtree->Size());
 }
 
-// namespace SphericalRTreeTest
-// {
-
-//     template<typename >
-
-// }
-
 TEST(RTree, SphericalRTreeBasicTests)
 {
     const int n = 11; // x
@@ -191,7 +184,6 @@ TEST(RTree, SphericalRTreeBasicTests)
     EXPECT_TRUE(rtree->HasQueryResults());
     ASSERT_EQ(rtree->GetQueryResultSize(), 1);
 
-    // meshkernel::Point expectedNearestPoint;
     meshkernel::UInt nearestPointIndex = rtree->GetQueryResult(0);
     meshkernel::Point nearestPoint = nodes[nearestPointIndex];
 
