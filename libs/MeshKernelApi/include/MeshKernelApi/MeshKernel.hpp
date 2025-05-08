@@ -1044,10 +1044,11 @@ namespace meshkernelapi
         /// @brief Connect two or more disconnected regions along boundary
         /// @param[in]  meshKernelId  The id of the mesh states
         /// @param[in]  mesh2d  The mesh we want to connect to the main mesh
+        /// @param[in]  polygon The polygonal region(s) in which the meshes are to be connected (if connect is true)
         /// @param[in]  searchFraction  Fraction of the shortest edge (along an edge to be connected) to use when determining neighbour edge closeness
         /// @param[in]  connect Boolean value indicating whether or not the two meshes should be connected
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d, double searchFraction, bool connect);
+        MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d, const GeometryList& polygon, double searchFraction, bool connect);
 
         /// @brief Converts the projection of a mesh2d.
         ///

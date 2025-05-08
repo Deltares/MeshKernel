@@ -53,7 +53,7 @@ FlipEdges::FlipEdges(Mesh2D& mesh,
 
 std::unique_ptr<meshkernel::UndoAction> FlipEdges::Compute() const
 {
-    // Defined empty polygon
+    // Define empty polygon, all points are contained withing an empty polygon
     Polygons polygon;
     return Compute(polygon);
 }
@@ -370,7 +370,8 @@ int FlipEdges::ComputeTopologyFunctional(UInt edge,
 
     if (m_projectToLandBoundary && m_landBoundaries.GetNumNodes() > 0)
     {
-        if (m_landBoundaries.m_meshNodesLandBoundarySegments[firstNode] != constants::missing::uintValue && m_landBoundaries.m_meshNodesLandBoundarySegments[secondNode] != constants::missing::uintValue)
+        if (m_landBoundaries.m_meshNodesLandBoundarySegments[firstNode] != constants::missing::uintValue &&
+            m_landBoundaries.m_meshNodesLandBoundarySegments[secondNode] != constants::missing::uintValue)
         {
             // Edge is associated with a land boundary -> keep the edge
             return largeTopologyFunctionalValue;

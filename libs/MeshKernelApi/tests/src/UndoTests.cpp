@@ -832,8 +832,11 @@ TEST(UndoTests, UnstructuredGridConnection)
     errorCode = mkapi::mkernel_mesh2d_get_node_edge_data(meshKernelId1, mesh2d);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
+    // The polygon defining the region to be connected.
+    meshkernelapi::GeometryList selectedRegion;
+
     // Connect the meshes.
-    errorCode = mkapi::mkernel_mesh2d_connect_meshes(meshKernelId2, mesh2d, 0.1, true);
+    errorCode = mkapi::mkernel_mesh2d_connect_meshes(meshKernelId2, mesh2d, selectedRegion, 0.1, true);
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
     errorCode = mkapi::mkernel_mesh2d_get_dimensions(meshKernelId2, mesh2d);

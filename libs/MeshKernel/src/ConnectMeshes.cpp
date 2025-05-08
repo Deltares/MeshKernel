@@ -240,7 +240,7 @@ void meshkernel::ConnectMeshes::GatherHangingNodes(const UInt primaryStartNode,
 
 std::unique_ptr<meshkernel::UndoAction> meshkernel::ConnectMeshes::Compute(Mesh2D& mesh, const double separationFraction)
 {
-    // Create an empty polygon
+    // Define empty polygon, all points are contained withing an empty polygon
     Polygons polygon;
     return Compute(mesh, polygon, separationFraction);
 }
