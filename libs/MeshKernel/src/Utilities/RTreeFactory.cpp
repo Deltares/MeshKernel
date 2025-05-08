@@ -1,4 +1,5 @@
 #include "MeshKernel/Utilities/RTreeFactory.hpp"
+#include "MeshKernel/Utilities/RTree.hpp"
 #include "MeshKernel/Utilities/RTreeSphericalToCartesian.hpp"
 
 std::unique_ptr<meshkernel::RTreeBase> meshkernel::RTreeFactory::Create(Projection projection)

@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2021.
+// Copyright (C)  Stichting Deltares, 2011-2025.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -101,14 +101,20 @@ namespace meshkernel
         /// @param[in] nodes The vector of nodes
         void BuildTree(const std::vector<Point>& nodes) override
         {
-            BuildTreeFromVector(nodes);
+            auto convert = [](const Point& p)
+            { return Point2D(p.x, p.y); };
+            BuildTreeFromVector(nodes, m_points2D, convert);
+            m_rtree2D = RTree2D(m_points2D);
         }
 
         /// @brief Builds the tree from a vector of samples
         /// @param[in] samples The vector of samples
         void BuildTree(const std::vector<Sample>& samples) override
         {
-            BuildTreeFromVector(samples);
+            auto convert = [](const Point& p)
+            { return Point2D(p.x, p.y); };
+            BuildTreeFromVector(samples, m_points2D, convert);
+            m_rtree2D = RTree2D(m_points2D);
         }
 
         /// @brief Builds the tree from a vector of points within a bounding box
@@ -116,7 +122,10 @@ namespace meshkernel
         /// @param[in] boundingBox The vector bounding box
         void BuildTree(const std::vector<Point>& nodes, const BoundingBox& boundingBox) override
         {
-            BuildTreeFromVectorWithinBoundingBox(nodes, boundingBox);
+            auto convert = [](const Point& p)
+            { return Point2D(p.x, p.y); };
+            BuildTreeFromVectorWithinBoundingBox(nodes, m_points2D, convert, boundingBox);
+            m_rtree2D = RTree2D(m_points2D);
         }
 
         /// @brief Builds the tree from a vector of samples within a bounding box
@@ -124,7 +133,10 @@ namespace meshkernel
         /// @param[in] boundingBox The vector bounding box
         void BuildTree(const std::vector<Sample>& samples, const BoundingBox& boundingBox) override
         {
-            BuildTreeFromVectorWithinBoundingBox(samples, boundingBox);
+            auto convert = [](const Point& p)
+            { return Point2D(p.x, p.y); };
+            BuildTreeFromVectorWithinBoundingBox(samples, m_points2D, convert, boundingBox);
+            m_rtree2D = RTree2D(m_points2D);
         }
 
         /// @brief Finds all nodes in the search radius and stores the results in the query cache, to be inquired later
@@ -142,7 +154,7 @@ namespace meshkernel
         void SearchNearestPoint(Point const& node) override;
 
         /// @brief Deletes a node
-        /// @param[in] position The index of the point to remove in m_points
+        /// @param[in] position The index of the point to remove in m_points2D
         void DeleteNode(UInt position) override;
 
         /// @brief Determines size of the RTree
@@ -161,56 +173,17 @@ namespace meshkernel
         [[nodiscard]] bool HasQueryResults() const override { return !m_queryCache.empty(); }
 
     private:
-        /// @brief Builds the tree from a vector of types derived from Point
-        template <std::derived_from<Point> T>
-        void BuildTreeFromVector(const std::vector<T>& nodes)
-        {
-            m_points.clear();
-            m_rtree2D.clear();
-
-            for (UInt n = 0; n < nodes.size(); ++n)
-            {
-                if (nodes[n].x != constants::missing::doubleValue && nodes[n].y != constants::missing::doubleValue)
-                {
-                    m_points.emplace_back(Point2D{nodes[n].x, nodes[n].y}, n);
-                }
-            }
-            m_rtree2D = RTree2D(m_points);
-        }
-
-        /// @brief Builds the tree from a vector of types derived from Point within a bounding box
-        template <std::derived_from<Point> T>
-        void BuildTreeFromVectorWithinBoundingBox(const std::vector<T>& nodes, const BoundingBox& boundingBox)
-        {
-            m_points.clear();
-            m_rtree2D.clear();
-
-            for (UInt n = 0; n < nodes.size(); ++n)
-            {
-                if (!boundingBox.Contains(nodes[n]))
-                {
-                    continue;
-                }
-
-                if (nodes[n].x != constants::missing::doubleValue && nodes[n].y != constants::missing::doubleValue)
-                {
-                    m_points.emplace_back(Point2D{nodes[n].x, nodes[n].y}, n);
-                }
-            }
-            m_rtree2D = RTree2D(m_points);
-        }
-
         /// @brief Performs a spatial search within a search radius
         /// @param[in] node The reference point for the search.
         /// @param[in] searchRadiusSquared The squared search radius.
         /// @param[in] findNearest If true, finds the nearest point; otherwise, finds all points within the radius.
         void Search(Point const& node, double searchRadiusSquared, bool findNearest);
 
-        RTree2D m_rtree2D;                              ///< The 2D RTree
-        std::vector<std::pair<Point2D, UInt>> m_points; ///< The points
-        std::vector<Value2D> m_queryCache;              ///< The query cache
-        std::vector<UInt> m_queryIndices;               ///< The query indices
-        UInt m_queryVectorCapacity = 100;               ///< Capacity of the query vector
+        RTree2D m_rtree2D;                                ///< The 2D RTree
+        std::vector<std::pair<Point2D, UInt>> m_points2D; ///< The points
+        std::vector<Value2D> m_queryCache;                ///< The query cache
+        std::vector<UInt> m_queryIndices;                 ///< The query indices
+        UInt m_queryVectorCapacity = 100;                 ///< Capacity of the query vector
     };
 
     template <typename projection>
@@ -324,11 +297,11 @@ namespace meshkernel
             throw AlgorithmError("RTree is empty, deletion cannot performed");
         }
 
-        if (const auto numberRemoved = m_rtree2D.remove(m_points[position]); numberRemoved != 1)
+        if (const auto numberRemoved = m_rtree2D.remove(m_points2D[position]); numberRemoved != 1)
         {
             return;
         }
-        m_points[position] = {Point2D{constants::missing::doubleValue, constants::missing::doubleValue}, std::numeric_limits<UInt>::max()};
+        m_points2D[position] = {Point2D{constants::missing::doubleValue, constants::missing::doubleValue}, std::numeric_limits<UInt>::max()};
     }
 
 } // namespace meshkernel
