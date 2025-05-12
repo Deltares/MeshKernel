@@ -3597,13 +3597,14 @@ namespace meshkernelapi
 
             // construct all dependencies
             auto const polygon = meshkernel::Polygons(polygonNodesVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            auto landBoundary = meshkernel::LandBoundaries(landBoundariesNodeVector, *meshKernelState[meshKernelId].m_mesh2d, polygon);
+            meshkernel::Polygons emptyPolygon;
+            auto landBoundary = meshkernel::LandBoundaries(landBoundariesNodeVector, *meshKernelState[meshKernelId].m_mesh2d, emptyPolygon);
             const bool triangulateFaces = isTriangulationRequired != 0;
             const bool projectToLandBoundary = projectToLandBoundaryRequired != 0;
 
             const meshkernel::FlipEdges flipEdges(*meshKernelState[meshKernelId].m_mesh2d, landBoundary, triangulateFaces, projectToLandBoundary);
 
-            meshKernelUndoStack.Add(flipEdges.Compute(), meshKernelId);
+            meshKernelUndoStack.Add(flipEdges.Compute(polygon), meshKernelId);
         }
         catch (...)
         {
