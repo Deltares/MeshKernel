@@ -27,7 +27,8 @@
 
 #pragma once
 
-#include "MeshKernel/Utilities/RTree.hpp"
+#include "MeshKernel/Definitions.hpp"
+#include "MeshKernel/Utilities/RTreeBase.hpp"
 
 #define BOOST_ALLOW_DEPRECATED_HEADERS
 #include <boost/geometry.hpp>
