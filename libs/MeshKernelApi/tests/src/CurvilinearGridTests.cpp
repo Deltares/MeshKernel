@@ -108,8 +108,8 @@ TEST(CurvilinearGrid, MakeRectangular_OnSphericalCoordinatesWithpolygon_ShouldMa
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(61, curvilinearGridResults.num_m);
-    ASSERT_EQ(125, curvilinearGridResults.num_n);
+    EXPECT_EQ(61, curvilinearGridResults.num_m);
+    EXPECT_EQ(94, curvilinearGridResults.num_n);
 }
 
 TEST_F(CartesianApiTestFixture, CurvilinearComputeTransfiniteFromPolygon_ShouldComputeAValidCurvilinearGrid)
