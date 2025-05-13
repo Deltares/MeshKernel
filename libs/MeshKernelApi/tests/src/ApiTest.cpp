@@ -331,7 +331,7 @@ TEST_F(CartesianApiTestFixture, GenerateTriangularGridThroughApi)
     geometryListIn.num_coordinates = static_cast<int>(xCoordinates.size());
 
     // Execute
-    auto errorCode = mkernel_mesh2d_make_triangular_mesh_from_polygon(meshKernelId, geometryListIn);
+    auto errorCode = mkernel_mesh2d_make_triangular_mesh_from_polygon(meshKernelId, geometryListIn, meshkernel::constants::missing::doubleValue);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     // Get the new state
 
@@ -1843,7 +1843,7 @@ TEST_F(CartesianApiTestFixture, GenerateTriangularGridThroughApi_OnClockWisePoly
     geometryListIn.num_coordinates = static_cast<int>(xCoordinates.size());
 
     // Execute
-    auto errorCode = mkernel_mesh2d_make_triangular_mesh_from_polygon(meshKernelId, geometryListIn);
+    auto errorCode = mkernel_mesh2d_make_triangular_mesh_from_polygon(meshKernelId, geometryListIn, meshkernel::constants::missing::doubleValue);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     // Get the new state
 

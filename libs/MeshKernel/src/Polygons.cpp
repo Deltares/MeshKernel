@@ -105,38 +105,10 @@ Polygons::Polygons(const std::vector<Point>& polygon, Projection projection) : m
 std::vector<std::vector<meshkernel::Point>> Polygons::ComputePointsInPolygons() const
 {
     std::vector<std::vector<Point>> generatedPoints(GetNumPolygons(), std::vector<Point>());
-    TriangulationWrapper triangulationWrapper;
 
     for (UInt polygonIndex = 0; polygonIndex < m_enclosures.size(); ++polygonIndex)
     {
-        const PolygonalEnclosure& enclosure = m_enclosures[polygonIndex];
-        const Polygon& polygon = enclosure.Outer();
-
-        const auto [localPolygonArea, centerOfMass, direction] = polygon.FaceAreaAndCenterOfMass();
-
-        // average triangle size
-        const auto averageEdgeLength = polygon.PerimeterLength() / static_cast<double>(polygon.Size());
-        const auto [minimumSegmentLength, maximumSegmentLength] = polygon.SegmentLengthExtrema();
-
-        const double segmentRatio = (minimumSegmentLength == constants::missing::doubleValue ? 2.0 : maximumSegmentLength / minimumSegmentLength);
-        double averageTriangleArea = 0.25 * std::numbers::sqrt3 * averageEdgeLength * averageEdgeLength;
-
-        // estimated number of triangles
-        constexpr UInt SafetySize = 11;
-        const auto numberOfTriangles = static_cast<UInt>(SafetySize * std::max(1.0, localPolygonArea / averageTriangleArea));
-
-        if (numberOfTriangles == 0)
-        {
-            throw AlgorithmError("The number of triangles = 0.");
-        }
-
-        averageTriangleArea *= 0.5 * segmentRatio * segmentRatio;
-
-        triangulationWrapper.Compute(polygon.Nodes(),
-                                     TriangulationWrapper::TriangulationOptions::GeneratePoints,
-                                     averageTriangleArea,
-                                     numberOfTriangles);
-        generatedPoints[polygonIndex] = triangulationWrapper.SelectNodes(enclosure);
+        generatedPoints[polygonIndex] = m_enclosures[polygonIndex].GeneratePoints();
     }
 
     return generatedPoints;
