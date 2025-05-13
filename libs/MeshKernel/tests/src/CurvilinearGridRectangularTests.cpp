@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include <gtest/gtest.h>
+#include <iomanip>
 
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteExterior.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridDeleteInterior.hpp"
@@ -35,6 +36,11 @@
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
 #include <TestUtils/MakeCurvilinearGrids.hpp>
+
+#include <MeshKernel/Cartesian3DPoint.hpp>
+
+#include <MeshKernel/ProjectionConversions.hpp>
+#include <MeshKernel/Utilities/Utilities.hpp>
 
 using namespace meshkernel;
 

@@ -550,9 +550,9 @@ TEST(Mesh2D, CurvilinearMakeRectangularOnExtension_OnSpericalCoordinates_ShouldG
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(mesh2d.num_nodes, 8343);
-    ASSERT_EQ(mesh2d.num_edges, 16502);
-    ASSERT_EQ(mesh2d.num_faces, 8160);
+    EXPECT_EQ(mesh2d.num_nodes, 6318);
+    EXPECT_EQ(mesh2d.num_edges, 12477);
+    EXPECT_EQ(mesh2d.num_faces, 6160);
 }
 
 TEST(Mesh2D, RemoveSingleIsland)

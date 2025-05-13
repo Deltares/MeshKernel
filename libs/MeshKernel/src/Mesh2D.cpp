@@ -38,7 +38,7 @@
 #include "MeshKernel/Polygons.hpp"
 #include "MeshKernel/TriangulationWrapper.hpp"
 #include "MeshKernel/UndoActions/CompoundUndoAction.hpp"
-#include "MeshKernel/Utilities/RTree.hpp"
+#include "MeshKernel/Utilities/RTreeBase.hpp"
 
 using meshkernel::Mesh2D;
 
