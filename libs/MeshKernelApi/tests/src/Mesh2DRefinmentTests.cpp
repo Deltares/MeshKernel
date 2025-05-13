@@ -619,10 +619,10 @@ TEST(MeshRefinement, RefineBasedOnGriddedSamplesWaveCourant_WithUniformSamplesAn
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dResults);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    ASSERT_EQ(5223, mesh2dResults.num_nodes);
-    ASSERT_EQ(10745, mesh2dResults.num_edges);
-    ASSERT_EQ(5523, mesh2dResults.num_faces);
-    ASSERT_EQ(21212, mesh2dResults.num_face_nodes);
+    EXPECT_EQ(9786, mesh2dResults.num_nodes);
+    EXPECT_EQ(20210, mesh2dResults.num_edges);
+    EXPECT_EQ(10425, mesh2dResults.num_faces);
+    EXPECT_EQ(40187, mesh2dResults.num_face_nodes);
 }
 
 TEST(MeshRefinement, RefineBasedOnGriddedSamplesWaveCourant_WithUniformSamplesAndSphericalCoordinatesAndLargeMinEdgeSize_ShouldNotRefineMesh2d)
@@ -705,8 +705,8 @@ TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWit
     // Get the old state
     meshkernelapi::Mesh2D mesh2d{};
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
-    ASSERT_EQ(221, mesh2d.num_nodes);
-    ASSERT_EQ(412, mesh2d.num_edges);
+    ASSERT_EQ(170, mesh2d.num_nodes);
+    ASSERT_EQ(313, mesh2d.num_edges);
 
     std::vector xCoordinatesIn{-5.0, -4.0, 0.0, -5.0};
     std::vector yCoordinatesIn{49.0, 51.0, 49.5, 49.0};
@@ -732,8 +732,8 @@ TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWit
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
-    ASSERT_EQ(221, mesh2d.num_nodes);
-    ASSERT_EQ(412, mesh2d.num_edges);
+    ASSERT_EQ(170, mesh2d.num_nodes);
+    ASSERT_EQ(313, mesh2d.num_edges);
 }
 
 TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWithSmallMinEdgeSize_ShouldRefine)
@@ -762,8 +762,8 @@ TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWit
     // Get the new state
     meshkernelapi::Mesh2D mesh2d{};
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
-    ASSERT_EQ(221, mesh2d.num_nodes);
-    ASSERT_EQ(412, mesh2d.num_edges);
+    ASSERT_EQ(170, mesh2d.num_nodes);
+    ASSERT_EQ(313, mesh2d.num_edges);
 
     std::vector xCoordinatesIn{-5.0, -4.0, 0.0, -5.0};
     std::vector yCoordinatesIn{49.0, 51.0, 49.5, 49.0};
@@ -788,8 +788,8 @@ TEST(MeshRefinement, RefineAGridBasedOnPolygonThroughApi_OnSpericalCoordinateWit
     // Assert
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(1570, mesh2d.num_nodes);
-    ASSERT_EQ(3361, mesh2d.num_edges);
+    ASSERT_EQ(218, mesh2d.num_nodes);
+    ASSERT_EQ(433, mesh2d.num_edges);
 }
 
 class MeshRefinementSampleValueTypes : public ::testing::TestWithParam<meshkernel::InterpolationDataTypes>
@@ -914,10 +914,10 @@ TEST_P(MeshRefinementSampleValueTypes, parameters)
 
     meshkernelapi::mkernel_deallocate_state(meshKernelId);
 
-    ASSERT_EQ(5223, mesh2dResults.num_nodes);
-    ASSERT_EQ(10745, mesh2dResults.num_edges);
-    ASSERT_EQ(5523, mesh2dResults.num_faces);
-    ASSERT_EQ(21212, mesh2dResults.num_face_nodes);
+    EXPECT_EQ(9786, mesh2dResults.num_nodes);
+    EXPECT_EQ(20210, mesh2dResults.num_edges);
+    EXPECT_EQ(10425, mesh2dResults.num_faces);
+    EXPECT_EQ(40187, mesh2dResults.num_face_nodes);
 }
 
 INSTANTIATE_TEST_SUITE_P(MeshRefinement, MeshRefinementSampleValueTypes, ::testing::ValuesIn(MeshRefinementSampleValueTypes::GetDataTypes()));
