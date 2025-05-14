@@ -53,19 +53,27 @@ FlipEdges::FlipEdges(Mesh2D& mesh,
 
 std::unique_ptr<meshkernel::UndoAction> FlipEdges::Compute() const
 {
+    // Define empty polygon, all points are contained within an empty polygon
+    Polygons polygon;
+    return Compute(polygon);
+}
+
+std::unique_ptr<meshkernel::UndoAction> FlipEdges::Compute(const Polygons& polygon) const
+{
     std::unique_ptr<CompoundUndoAction> action = CompoundUndoAction::Create();
 
     m_mesh.Administrate(action.get());
 
     if (m_triangulateFaces)
     {
-        action->Add(m_mesh.TriangulateFaces());
+        action->Add(m_mesh.TriangulateFaces(polygon));
         m_mesh.Administrate(action.get());
     }
 
     const UInt MaxIter = 10;
     const auto numEdges = m_mesh.GetNumEdges();
     UInt numFlippedEdges = constants::missing::uintValue;
+    std::vector<Boolean> nodeInsidePolygon(m_mesh.IsLocationInPolygon(polygon, Location::Nodes));
 
     for (UInt iteration = 0; iteration < MaxIter; ++iteration)
     {
@@ -88,6 +96,13 @@ std::unique_ptr<meshkernel::UndoAction> FlipEdges::Compute() const
             auto const rightFace = m_mesh.m_edgesFaces[e][1];
 
             if (leftFace == constants::missing::uintValue || rightFace == constants::missing::uintValue)
+            {
+                continue;
+            }
+
+            const Edge& edge = m_mesh.GetEdge(e);
+
+            if (!nodeInsidePolygon[edge.first] || !nodeInsidePolygon[edge.second])
             {
                 continue;
             }
@@ -355,7 +370,8 @@ int FlipEdges::ComputeTopologyFunctional(UInt edge,
 
     if (m_projectToLandBoundary && m_landBoundaries.GetNumNodes() > 0)
     {
-        if (m_landBoundaries.m_meshNodesLandBoundarySegments[firstNode] != constants::missing::uintValue && m_landBoundaries.m_meshNodesLandBoundarySegments[secondNode] != constants::missing::uintValue)
+        if (m_landBoundaries.m_meshNodesLandBoundarySegments[firstNode] != constants::missing::uintValue &&
+            m_landBoundaries.m_meshNodesLandBoundarySegments[secondNode] != constants::missing::uintValue)
         {
             // Edge is associated with a land boundary -> keep the edge
             return largeTopologyFunctionalValue;

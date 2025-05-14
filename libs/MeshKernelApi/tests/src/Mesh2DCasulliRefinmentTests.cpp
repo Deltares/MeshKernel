@@ -134,12 +134,14 @@ TEST(CasulliRefinement, ConnectingTwoMeshesAfterCasulliRefinementDoesNotCrash)
 
     errorCode = mkernel_mesh2d_get_node_edge_data(meshKernelId2, mesh2d1);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // The polygon defining the region to be connected.
+    meshkernelapi::GeometryList selectedRegion;
 
     // Connect the two meshes
     // to note: the mesh associated with meshKernelId1 has gaps in the node and edge data arrays (with invalid data)
     // after the Casulli refinement. The mesh data, mesh2d1, does not have any such gaps.
     // The mesh with gaps in the data must appear first in the mesh connection.
-    errorCode = meshkernelapi::mkernel_mesh2d_connect_meshes(meshKernelId1, mesh2d1, 0.1, true);
+    errorCode = meshkernelapi::mkernel_mesh2d_connect_meshes(meshKernelId1, mesh2d1, selectedRegion, 0.1, true);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     //--------------------------------
