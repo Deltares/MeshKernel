@@ -66,7 +66,7 @@ std::unique_ptr<meshkernel::UndoAction> FlipEdges::Compute(const Polygons& polyg
 
     if (m_triangulateFaces)
     {
-        action->Add(m_mesh.TriangulateFaces());
+        action->Add(m_mesh.TriangulateFaces(polygon));
         m_mesh.Administrate(action.get());
     }
 

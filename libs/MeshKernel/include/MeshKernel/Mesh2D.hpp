@@ -232,8 +232,11 @@ namespace meshkernel
         /// @brief Deletes coinciding triangles
         [[nodiscard]] std::unique_ptr<UndoAction> DeleteDegeneratedTriangles();
 
-        /// @brief Transform non-triangular faces in triangular faces
+        /// @brief Transform non-triangular faces to triangular faces
         [[nodiscard]] std::unique_ptr<UndoAction> TriangulateFaces();
+
+        /// @brief Transform non-triangular faces inside a polygon to triangular faces
+        [[nodiscard]] std::unique_ptr<UndoAction> TriangulateFaces(const Polygons& polygon);
 
         /// @brief Make a dual face around the node, enlarged by a factor
         /// @param[in] edgeCentres Centre point of each of the edges.

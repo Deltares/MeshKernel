@@ -1434,13 +1434,38 @@ void Mesh2D::ComputeAspectRatios(std::vector<double>& aspectRatios) const
 
 std::unique_ptr<meshkernel::UndoAction> Mesh2D::TriangulateFaces()
 {
+    // Create empty polygon
+    Polygons polygon;
+    return TriangulateFaces(polygon);
+}
+
+std::unique_ptr<meshkernel::UndoAction> Mesh2D::TriangulateFaces(const Polygons& polygon)
+{
     std::unique_ptr<meshkernel::CompoundUndoAction> triangulationAction = CompoundUndoAction::Create();
+    std::vector<Boolean> nodeInsidePolygon(IsLocationInPolygon(polygon, Location::Nodes));
 
     for (UInt i = 0; i < GetNumFaces(); ++i)
     {
         const UInt NumEdges = GetNumFaceEdges(i);
 
         if (NumEdges < 4)
+        {
+            continue;
+        }
+
+        bool elementIsOutsidePolygon = false;
+
+        // Determine if any node is outside the polygon
+        for (UInt j = 0; j < m_facesNodes[i].size(); ++j)
+        {
+            if (!nodeInsidePolygon[m_facesNodes[i][j]])
+            {
+                elementIsOutsidePolygon = true;
+            }
+        }
+
+        // If any node of the element lies outside the polygon then do not triangulate.
+        if (elementIsOutsidePolygon)
         {
             continue;
         }
