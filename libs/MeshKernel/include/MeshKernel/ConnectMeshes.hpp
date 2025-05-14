@@ -66,6 +66,7 @@ namespace meshkernel
         /// @brief Connect grids.
         ///
         /// @param [in,out] mesh The mesh
+        /// @param [in] polygon Defines the region where the edges should be flipped
         /// @param [in] separationFraction The fraction of the shortest edge to use when determining neighbour edge closeness
         /// @note separationFraction should be in the interval (0, max], where max = DefaultMaximumSeparationFraction,
         /// If the value is outside of this range then a RangeError will be thrown.
@@ -134,7 +135,7 @@ namespace meshkernel
         /// @brief Find all quadrilateral elements that do no have a neighbour across any of edges.
         ///
         /// @param [in] mesh The mesh
-        /// @param [in] nodeInsidePolygon Determine if the node is inside the polgon
+        /// @param [in] nodeInsidePolygon Determine if the node is inside the polygon
         /// @param [in,out] elementsOnDomainBoundary List of elements that do not have neighbour
         /// @param [out] edgesOnDomainBoundary List of edges that do have elements on one side only
         /// @param [out] edgeLengths The length of each edge that has been added, indexed by the edge id
