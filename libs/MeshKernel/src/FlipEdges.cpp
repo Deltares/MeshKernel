@@ -53,7 +53,7 @@ FlipEdges::FlipEdges(Mesh2D& mesh,
 
 std::unique_ptr<meshkernel::UndoAction> FlipEdges::Compute() const
 {
-    // Define empty polygon, all points are contained withing an empty polygon
+    // Define empty polygon, all points are contained within an empty polygon
     Polygons polygon;
     return Compute(polygon);
 }
