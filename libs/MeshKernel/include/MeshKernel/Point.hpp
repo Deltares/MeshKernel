@@ -102,7 +102,10 @@ namespace meshkernel
         [[nodiscard]] Point operator*(int const& rhs) const { return Point(x * rhs, y * rhs); }
 
         /// @brief Type conversion operator
-        explicit operator Vector() const;
+        explicit operator Vector() const
+        {
+            return Vector(x, y);
+        }
 
         /// @brief Transforms spherical coordinates to cartesian
         void TransformSphericalToCartesian(double referenceLatitude)
@@ -343,11 +346,6 @@ inline meshkernel::Point& meshkernel::Point::operator*=(const double p)
     x *= p;
     y *= p;
     return *this;
-}
-
-inline meshkernel::Point::operator meshkernel::Vector() const
-{
-    return Vector(x, y);
 }
 
 inline double meshkernel::lengthSquared(const Point& p)
