@@ -93,14 +93,16 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTestingRand(
     double dim_x,
     double dim_y,
     meshkernel::Projection projection,
-    meshkernel::Point const& origin = {0.0, 0.0});
+    meshkernel::Point const& origin = {0.0, 0.0},
+    const double randomScaling = 0.25);
 
 std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTestingRand(
     meshkernel::UInt n,
     meshkernel::UInt m,
     double delta,
     meshkernel::Projection projection,
-    meshkernel::Point const& origin = {0.0, 0.0});
+    meshkernel::Point const& origin = {0.0, 0.0},
+    const double randomScaling = 0.25);
 
 std::unique_ptr<meshkernel::Mesh2D> ReadLegacyMesh2DFromFile(
     std::filesystem::path const& file_path,
