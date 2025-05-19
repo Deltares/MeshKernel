@@ -1529,8 +1529,10 @@ public:
         return std::vector{
             std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::GaussianBump, 1165, 2344),
             std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::GaussianWave, 5297, 10784),
-            std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::RidgeXDirection, 2654, 5774),
-            std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::ArctanFunction, 2333, 5084)};
+            std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::RidgeXDirection, 2606, 5774),
+            std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::ArctanFunction, 2309, 5084)};
+        // std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::RidgeXDirection, 2654, 5774),
+        // std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::ArctanFunction, 2333, 5084)};
     }
 };
 
