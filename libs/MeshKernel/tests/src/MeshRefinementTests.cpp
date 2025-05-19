@@ -1591,16 +1591,16 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
     auto undoAction = meshRefinement.Compute();
 
     // Assert
-    ASSERT_EQ(numNodes, mesh->GetNumNodes());
-    ASSERT_EQ(numEdges, mesh->GetNumEdges());
+    EXPECT_EQ(numNodes, mesh->GetNumNodes());
+    EXPECT_EQ(numEdges, mesh->GetNumEdges());
 
     // Test the undo action has been computed correctly
     undoAction->Restore();
     // Recompute faces
     mesh->Administrate();
 
-    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
-    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+    EXPECT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    EXPECT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
     meshkernel::UInt count = 0;
 
