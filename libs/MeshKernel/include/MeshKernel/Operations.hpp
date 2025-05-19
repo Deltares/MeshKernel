@@ -356,6 +356,9 @@ namespace meshkernel
     /// @return The Normal vector
     [[nodiscard]] Point NormalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, const Projection& projection);
 
+    /// @brief Compute the area of the polygon described by the closed sequence of points
+    double ComputeArea(const std::vector<Point>& polygon, const Projection projection);
+
     /// @brief Transforms vector with components in global spherical coordinate directions(xglob, yglob)
     ///       to local coordinate directions(xloc, yloc) around reference point(xref, yref)
     void TransformGlobalVectorToLocal(const Point& reference, const Point& globalCoordinates, const Point& globalComponents, const Projection& projection, Point& localComponents);
