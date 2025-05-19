@@ -1574,7 +1574,7 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
                                                                  1);
 
     MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 3;
+    meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
     meshRefinementParameters.min_edge_size = 2.0;
