@@ -1535,3 +1535,43 @@ TEST(Mesh2D, Mesh2DComputeAspectRatio)
         EXPECT_NEAR(aspectRatios[i], expectedAspectRatios[i], tolerance);
     }
 }
+
+TEST(Mesh2D, CentreOfMassTest)
+{
+    // Tests that the centre of masses are computed correctly
+
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 30.0, 30.0, meshkernel::Projection::cartesian, {0.0, 0.0});
+
+    [[maybe_unused]] auto undo = mesh->TriangulateFaces();
+    mesh->Administrate();
+
+    mesh->ComputeCircumcentersMassCentersAndFaceAreas(true);
+
+    std::vector<double> expectedCentresX{6.66666666666667, 3.33333333333333, 6.66666666666667,
+                                         3.33333333333333, 6.66666666666667, 3.33333333333333,
+                                         16.6666666666667, 13.3333333333333, 16.6666666666667,
+                                         13.3333333333333, 16.6666666666667, 13.3333333333333,
+                                         26.6666666666667, 23.3333333333333, 26.6666666666667,
+                                         23.3333333333333, 26.6666666666667, 23.3333333333333};
+
+    std::vector<double> expectedCentresY{3.33333333333333, 6.66666666666667, 13.3333333333333,
+                                         16.6666666666667, 23.3333333333333, 26.6666666666667,
+                                         3.33333333333333, 6.66666666666667, 13.3333333333333,
+                                         16.6666666666667, 23.3333333333333, 26.6666666666667,
+                                         3.33333333333333, 6.66666666666667, 13.3333333333333,
+                                         16.6666666666667, 23.3333333333333, 26.6666666666667};
+
+    ASSERT_EQ(expectedCentresX.size(), mesh->m_facesMassCenters.size());
+
+    const double tolerance = 1.0e-10;
+
+    for (size_t i = 0; i < mesh->m_facesMassCenters.size(); ++i)
+    {
+        EXPECT_NEAR(expectedCentresX[i], mesh->m_facesMassCenters[i].x, tolerance);
+    }
+
+    for (size_t i = 0; i < mesh->m_facesMassCenters.size(); ++i)
+    {
+        EXPECT_NEAR(expectedCentresY[i], mesh->m_facesMassCenters[i].y, tolerance);
+    }
+}
