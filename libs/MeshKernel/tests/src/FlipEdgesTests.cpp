@@ -255,10 +255,8 @@ TEST(FlipEdges, FlipEdgesInPolygonMediumTriangularMesh)
     const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     // set landboundaries
-    auto landBoundarypolygon = meshkernel::Polygons();
-
     std::vector<meshkernel::Point> landBoundary;
-    auto landBoundaries = meshkernel::LandBoundaries(landBoundary, *mesh, landBoundarypolygon);
+    auto landBoundaries = meshkernel::LandBoundaries(landBoundary, *mesh);
 
     // execute flipedges
     meshkernel::FlipEdges flipEdges(*mesh, landBoundaries, false, false);
