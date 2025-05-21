@@ -1535,3 +1535,87 @@ TEST(Mesh2D, Mesh2DComputeAspectRatio)
         EXPECT_NEAR(aspectRatios[i], expectedAspectRatios[i], tolerance);
     }
 }
+
+TEST(Mesh2D, MeshToCurvilinear_SingleElement)
+{
+    // Test steps
+    // - generate 3 x3 element mesh
+    // - triangulate all elements except the centre element
+    // - compute curvilinear grid with point in centre element, generated should be a single element
+    // - add some tests checking for expected failure cases
+
+    const int n = 4; // x
+    const int m = 4; // y
+
+    std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
+    std::vector<meshkernel::Point> nodes(n * m);
+    std::size_t nodeIndex = 0;
+    for (auto j = 0; j < m; ++j)
+    {
+        for (auto i = 0; i < n; ++i)
+        {
+            indicesValues[i][j] = i + j * n;
+            nodes[nodeIndex] = {(double)i, (double)j};
+            nodeIndex++;
+        }
+    }
+
+    std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
+    std::size_t edgeIndex = 0;
+    for (auto j = 0; j < m; ++j)
+    {
+        for (auto i = 0; i < n - 1; ++i)
+        {
+            edges[edgeIndex] = {indicesValues[i][j], indicesValues[i + 1][j]};
+            edgeIndex++;
+        }
+    }
+
+    for (auto j = 0; j < m - 1; ++j)
+    {
+        for (auto i = 0; i < n; ++i)
+        {
+            edges[edgeIndex] = {indicesValues[i][j + 1], indicesValues[i][j]};
+            edgeIndex++;
+        }
+    }
+
+    // leave centre quadrilateral element untouched, all others will be split into two triangles
+    std::vector<meshkernel::Edge> toConnect{{0, 5}, {1, 6}, {2, 7}, {4, 9}, {6, 11}, {8, 13}, {9, 14}, {10, 15}};
+
+    meshkernel::Mesh2D mesh(edges, nodes, meshkernel::Projection::cartesian);
+
+    for (size_t i = 0; i < toConnect.size(); ++i)
+    {
+        [[maybe_unused]] auto undo = mesh.ConnectNodes(toConnect[i].first, toConnect[i].second, false);
+    }
+
+    meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(mesh);
+
+    // Execute
+    const auto result = mesh2DToCurvilinear.Compute({1.5, 1.5});
+
+    // Assert
+    ASSERT_EQ(result->NumM(), 2);
+    ASSERT_EQ(result->NumN(), 2);
+
+    EXPECT_EQ(result->GetNode(0, 0).x, 2.0);
+    EXPECT_EQ(result->GetNode(0, 0).y, 1.0);
+
+    EXPECT_EQ(result->GetNode(0, 1).x, 2.0);
+    EXPECT_EQ(result->GetNode(0, 1).y, 2.0);
+
+    EXPECT_EQ(result->GetNode(1, 1).x, 1.0);
+    EXPECT_EQ(result->GetNode(1, 1).y, 2.0);
+
+    EXPECT_EQ(result->GetNode(1, 0).x, 1.0);
+    EXPECT_EQ(result->GetNode(1, 0).y, 1.0);
+
+    // Execute several expected failure tests
+    // Element is not quadrilateral
+    EXPECT_THROW([[maybe_unused]] auto result = mesh2DToCurvilinear.Compute({0.5, 0.45}), meshkernel::AlgorithmError);
+    EXPECT_THROW([[maybe_unused]] auto result = mesh2DToCurvilinear.Compute({2.5, 0.45}), meshkernel::AlgorithmError);
+    // Point is outside domain
+    EXPECT_THROW([[maybe_unused]] auto result = mesh2DToCurvilinear.Compute({-1.0, -1.0}), meshkernel::AlgorithmError);
+    EXPECT_THROW([[maybe_unused]] auto result = mesh2DToCurvilinear.Compute({4.0, 4.0}), meshkernel::AlgorithmError);
+}
