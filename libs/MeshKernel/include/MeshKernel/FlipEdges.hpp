@@ -51,8 +51,8 @@ namespace meshkernel
         /// @brief Constructor
         /// @param[in] mesh                  The input mesh
         /// @param[in] landBoundary          The land boundary
-        /// @param[in] triangulateFaces      Whether to triangulate all faces or not
-        /// @param[in] projectToLandBoundary Whether to project to land boundaries or not
+        /// @param[in] triangulateFaces      Whether or not to triangulate all faces before flipping edges
+        /// @param[in] projectToLandBoundary Whether or not to project to land boundaries
         FlipEdges(Mesh2D& mesh,
                   LandBoundaries& landBoundary,
                   bool triangulateFaces,
