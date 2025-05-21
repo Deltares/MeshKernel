@@ -63,6 +63,12 @@ namespace meshkernel
         /// @brief Default constructor
         LandBoundaries() = default;
 
+        /// @brief Constructor
+        /// @param[in] landBoundary A vector of points defining the land boundary.
+        /// @param[in] mesh         The current 2d mesh.
+        LandBoundaries(const std::vector<Point>& landBoundary,
+                       Mesh2D& mesh);
+
         /// @brief Default constructor
         /// @param[in] landBoundary A vector of points defining the land boundary.
         /// @param[in] mesh         The current 2d mesh.
