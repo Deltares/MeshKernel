@@ -35,6 +35,7 @@
 #include <MeshKernel/Mesh.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Operations.hpp>
+#include <MeshKernel/Utilities/Utilities.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
@@ -1079,6 +1080,54 @@ TEST(Mesh2DConnectDD, SimpleMergeMeshes)
     const std::vector<meshkernel::Point> expectedNodes{{0, 0}, {0, 10}, {0, 20}, {10, 0}, {10, 10}, {10, 20}, {20, 0}, {20, 10}, {20, 20}, {20, 0}, {20, 4}, {20, 8}, {20, 12}, {20, 16}, {24, 0}, {24, 4}, {24, 8}, {24, 12}, {24, 16}, {28, 0}, {28, 4}, {28, 8}, {28, 12}, {28, 16}};
 
     const std::vector<meshkernel::Edge> expectedEdges{{0, 3}, {1, 4}, {2, 5}, {3, 6}, {4, 7}, {5, 8}, {1, 0}, {2, 1}, {4, 3}, {5, 4}, {7, 6}, {8, 7}, {9, 14}, {10, 15}, {11, 16}, {12, 17}, {13, 18}, {14, 19}, {15, 20}, {16, 21}, {17, 22}, {18, 23}, {10, 9}, {11, 10}, {12, 11}, {13, 12}, {15, 14}, {16, 15}, {17, 16}, {18, 17}, {20, 19}, {21, 20}, {22, 21}, {23, 22}};
+
+    const auto& nodes = mergedMesh->Nodes();
+    const auto& edges = mergedMesh->Edges();
+
+    ASSERT_EQ(expectedNodes.size(), nodes.size());
+    ASSERT_EQ(expectedEdges.size(), edges.size());
+
+    const double tolerance = 1.0e-10;
+
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        EXPECT_NEAR(expectedNodes[i].x, nodes[i].x, tolerance);
+        EXPECT_NEAR(expectedNodes[i].y, nodes[i].y, tolerance);
+    }
+
+    for (size_t i = 0; i < edges.size(); ++i)
+    {
+        EXPECT_EQ(expectedEdges[i].first, edges[i].first);
+        EXPECT_EQ(expectedEdges[i].second, edges[i].second);
+    }
+}
+
+TEST(Mesh2DConnectDD, ConnectMesheInsidePolygon)
+{
+
+    // Should only concatinate the node and edge arrays.
+
+    meshkernel::Point origin{0.0, 0.0};
+    meshkernel::Vector delta{10.0, 10.0};
+
+    std::shared_ptr<meshkernel::Mesh2D> mesh1 = generateMesh(origin, delta, 5, 5);
+
+    origin.x += 4.0 * delta.x();
+
+    delta = meshkernel::Vector{2.5, 2.5};
+    std::shared_ptr<meshkernel::Mesh2D> mesh2 = generateMesh(origin, delta, 3, 17);
+
+    [[maybe_unused]] meshkernel::Polygons polygon({{35.0, -5.0}, {50.0, -5.0}, {50.0, 21.25}, {35.0, 21.25}, {35.0, -5.0}}, mesh1->m_projection);
+
+    const auto mergedMesh = meshkernel::Mesh2D::Merge(mesh1->Nodes(), mesh1->Edges(),
+                                                      mesh2->Nodes(), mesh2->Edges(),
+                                                      mesh1->m_projection);
+
+    auto undoAction = meshkernel::ConnectMeshes::Compute(*mergedMesh, polygon);
+
+    const std::vector<meshkernel::Point> expectedNodes{{0.0, 0.0}, {0.0, 10.0}, {0.0, 20.0}, {0.0, 30.0}, {0.0, 40.0}, {10.0, 0.0}, {10.0, 10.0}, {10.0, 20.0}, {10.0, 30.0}, {10.0, 40.0}, {20.0, 0.0}, {20.0, 10.0}, {20.0, 20.0}, {20.0, 30.0}, {20.0, 40.0}, {30.0, 0.0}, {30.0, 10.0}, {30.0, 20.0}, {30.0, 30.0}, {30.0, 40.0}, {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}, {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}, {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}, {40.0, 30.0}, {40.0, 40.0}, {40.0, 0.0}, {40.0, 2.5}, {40.0, 5.0}, {40.0, 7.5}, {40.0, 10.0}, {40.0, 12.5}, {40.0, 15.0}, {40.0, 17.5}, {40.0, 20.0}, {40.0, 22.5}, {40.0, 25.0}, {40.0, 27.5}, {40.0, 30.0}, {40.0, 32.5}, {40.0, 35.0}, {40.0, 37.5}, {40.0, 40.0}, {42.5, 0.0}, {42.5, 2.5}, {42.5, 5.0}, {42.5, 7.5}, {42.5, 10.0}, {42.5, 12.5}, {42.5, 15.0}, {42.5, 17.5}, {42.5, 20.0}, {42.5, 22.5}, {42.5, 25.0}, {42.5, 27.5}, {42.5, 30.0}, {42.5, 32.5}, {42.5, 35.0}, {42.5, 37.5}, {42.5, 40.0}, {45.0, 0.0}, {45.0, 2.5}, {45.0, 5.0}, {45.0, 7.5}, {45.0, 10.0}, {45.0, 12.5}, {45.0, 15.0}, {45.0, 17.5}, {45.0, 20.0}, {45.0, 22.5}, {45.0, 25.0}, {45.0, 27.5}, {45.0, 30.0}, {45.0, 32.5}, {45.0, 35.0}, {45.0, 37.5}, {45.0, 40.0}, {30.0, 5.0}, {30.0, 15.0}};
+
+    const std::vector<meshkernel::Edge> expectedEdges{{0, 5}, {1, 6}, {2, 7}, {3, 8}, {4, 9}, {5, 10}, {6, 11}, {7, 12}, {8, 13}, {9, 14}, {10, 15}, {11, 16}, {12, 17}, {13, 18}, {14, 19}, {15, 25}, {16, 29}, {17, 33}, {18, 23}, {19, 24}, {1, 0}, {2, 1}, {3, 2}, {4, 3}, {6, 5}, {7, 6}, {8, 7}, {9, 8}, {11, 10}, {12, 11}, {13, 12}, {14, 13}, {meshkernel::constants::missing::uintValue, meshkernel::constants::missing::uintValue}, {meshkernel::constants::missing::uintValue, meshkernel::constants::missing::uintValue}, {18, 17}, {19, 18}, {meshkernel::constants::missing::uintValue, meshkernel::constants::missing::uintValue}, {meshkernel::constants::missing::uintValue, meshkernel::constants::missing::uintValue}, {23, 33}, {24, 23}, {25, 42}, {26, 43}, {27, 44}, {28, 45}, {29, 46}, {30, 47}, {31, 48}, {32, 49}, {33, 50}, {34, 51}, {35, 52}, {36, 53}, {37, 54}, {38, 55}, {39, 56}, {40, 57}, {41, 58}, {42, 59}, {43, 60}, {44, 61}, {45, 62}, {46, 63}, {47, 64}, {48, 65}, {49, 66}, {50, 67}, {51, 68}, {52, 69}, {53, 70}, {54, 71}, {55, 72}, {56, 73}, {57, 74}, {58, 75}, {26, 25}, {27, 26}, {28, 27}, {29, 28}, {30, 29}, {31, 30}, {32, 31}, {33, 32}, {34, 33}, {35, 34}, {36, 35}, {37, 36}, {38, 37}, {39, 38}, {40, 39}, {41, 40}, {43, 42}, {44, 43}, {45, 44}, {46, 45}, {47, 46}, {48, 47}, {49, 48}, {50, 49}, {51, 50}, {52, 51}, {53, 52}, {54, 53}, {55, 54}, {56, 55}, {57, 56}, {58, 57}, {60, 59}, {61, 60}, {62, 61}, {63, 62}, {64, 63}, {65, 64}, {66, 65}, {67, 66}, {68, 67}, {69, 68}, {70, 69}, {71, 70}, {72, 71}, {73, 72}, {74, 73}, {75, 74}, {27, 76}, {76, 15}, {76, 16}, {28, 76}, {28, 16}, {26, 76}, {26, 15}, {76, 11}, {76, 10}, {31, 77}, {77, 16}, {77, 17}, {32, 77}, {32, 17}, {30, 77}, {30, 16}, {77, 12}, {77, 11}};
 
     const auto& nodes = mergedMesh->Nodes();
     const auto& edges = mergedMesh->Edges();
