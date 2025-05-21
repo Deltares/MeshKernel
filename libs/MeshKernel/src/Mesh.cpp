@@ -969,10 +969,18 @@ std::vector<meshkernel::Boolean> Mesh::IsLocationInPolygon(const Polygons& polyg
     const auto locations = ComputeLocations(location);
     std::vector<Boolean> result(locations.size());
 
-#pragma omp parallel for
-    for (int i = 0; i < static_cast<int>(result.size()); ++i)
+    if (polygon.IsEmpty())
     {
-        result[i] = polygon.IsPointInPolygon(locations[i], 0);
+        std::ranges::fill(result, true);
+    }
+    else
+    {
+
+#pragma omp parallel for
+        for (int i = 0; i < static_cast<int>(result.size()); ++i)
+        {
+            result[i] = polygon.IsPointInPolygon(locations[i], 0);
+        }
     }
 
     return result;
