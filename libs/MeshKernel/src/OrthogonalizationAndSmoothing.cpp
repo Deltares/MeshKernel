@@ -184,7 +184,7 @@ void OrthogonalizationAndSmoothing::AllocateLinearSystem()
 void OrthogonalizationAndSmoothing::FinalizeOuterIteration()
 {
     m_mu = std::min(2.0 * m_mu, m_mumax);
-    m_mesh.ComputeCircumcentersMassCentersAndFaceAreas(true);
+    m_mesh.ComputeFaceAreaAndMassCenters(true);
 }
 
 void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
