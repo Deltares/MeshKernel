@@ -41,17 +41,13 @@
 TEST(FlipEdges, FlipEdgesWithLandBoundary)
 {
     // 1 Setup
-    auto mesh = MakeRectangularMeshForTesting(6, 6, 4, meshkernel::Projection::cartesian, {0.0, 0.0});
+    auto mesh = MakeRectangularMeshForTesting(3, 3, 4, meshkernel::Projection::cartesian, {0.0, 0.0});
 
     const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
     const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
     // set landboundaries
     auto polygon = meshkernel::Polygons({{-1.0, 19.0}, {12.0, 19.0}, {12.0, 21.0}, {-1.0, 21.0}, {-1.0, 19.0}}, mesh->m_projection);
-
-    // std::vector<meshkernel::Point> landBoundary{{-1.369282, 20.5},
-    //                                             {20.885406, 20.5},
-    //                                             {meshkernel::constants::missing::doubleValue, meshkernel::constants::missing::doubleValue}};
 
     std::vector<meshkernel::Point> landBoundary{{-1.369282, 21.249086},
                                                 {20.885406, 21.539995},
@@ -63,9 +59,6 @@ TEST(FlipEdges, FlipEdgesWithLandBoundary)
     meshkernel::FlipEdges flipEdges(*mesh, landBoundaries, true, true);
 
     auto undoAction = flipEdges.Compute();
-
-    meshkernel::Print(mesh->Nodes(), mesh->Edges());
-    return;
 
     // check the values
     ASSERT_EQ(16, mesh->GetNumEdges());
