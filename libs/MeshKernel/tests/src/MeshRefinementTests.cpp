@@ -2093,7 +2093,7 @@ TEST(MeshRefinement, CasulliTwoPolygonDeRefinement)
     const std::vector<mk::Point> centreRefinedNodes(mesh.Nodes());
     const std::vector<mk::Edge> centreRefinedEdges(mesh.Edges());
 
-    mesh.ComputeCircumcentersMassCentersAndFaceAreas(true);
+    mesh.ComputeFaceAreaAndMassCenters(true);
 
     // Get the element centres of the elements to be deleted.
     std::vector<meshkernel::Point> toDelete(meshkernel::CasulliDeRefinement::ElementsToDelete(mesh, lowerPolygon));

@@ -1536,7 +1536,7 @@ TEST(Mesh2D, Mesh2DComputeAspectRatio)
     }
 }
 
-TEST(Mesh2D, CentreOfMassTest)
+TEST(Mesh2D, CircumcentreTest)
 {
     // Tests that the centre of masses are computed correctly
 
@@ -1545,7 +1545,7 @@ TEST(Mesh2D, CentreOfMassTest)
     [[maybe_unused]] auto undo = mesh->TriangulateFaces();
     mesh->Administrate();
 
-    mesh->ComputeCircumcentersMassCentersAndFaceAreas(true);
+    mesh->ComputeFaceAreaAndMassCenters(true);
 
     std::vector<double> expectedCentresX{6.66666666666667, 3.33333333333333, 6.66666666666667,
                                          3.33333333333333, 6.66666666666667, 3.33333333333333,
