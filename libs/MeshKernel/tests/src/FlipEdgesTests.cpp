@@ -41,7 +41,7 @@
 TEST(FlipEdges, FlipEdgesWithLandBoundary)
 {
     // 1 Setup
-    auto mesh = MakeRectangularMeshForTesting(3, 3, 4, meshkernel::Projection::cartesian, {0.0, 0.0});
+    auto mesh = MakeRectangularMeshForTesting(3, 3, 10, meshkernel::Projection::cartesian, {0.0, 0.0});
 
     const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
     const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
