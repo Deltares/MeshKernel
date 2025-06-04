@@ -1284,25 +1284,27 @@ namespace meshkernel
 
         const double den = dy2 * dx3 - dy3 * dx2;
         double z = 0.0;
+
         if (std::abs(den) > 0.0)
         {
             z = (dx2 * (dx2 - dx3) + dy2 * (dy2 - dy3)) / den;
         }
 
         Point circumcenter;
+
         if (projection == Projection::cartesian)
         {
             circumcenter.x = firstNode.x + 0.5 * (dx3 - z * dy3);
             circumcenter.y = firstNode.y + 0.5 * (dy3 + z * dx3);
         }
-        if (projection == Projection::spherical)
+        else if (projection == Projection::spherical)
         {
             const double phi = (firstNode.y + secondNode.y + thirdNode.y) * constants::numeric::oneThird;
             const double xf = 1.0 / cos(constants::conversion::degToRad * phi);
             circumcenter.x = firstNode.x + xf * 0.5 * (dx3 - z * dy3) * constants::conversion::radToDeg / constants::geometric::earth_radius;
             circumcenter.y = firstNode.y + 0.5 * (dy3 + z * dx3) * constants::conversion::radToDeg / constants::geometric::earth_radius;
         }
-        if (projection == Projection::sphericalAccurate)
+        else if (projection == Projection::sphericalAccurate)
         {
             // TODO: compute in case of spherical accurate (comp_circumcenter3D)
         }
@@ -1358,7 +1360,8 @@ namespace meshkernel
             const Point previousCircumCenter = estimatedCircumCenter;
             for (UInt n = 0; n < pointCount; n++)
             {
-                const Point delta{GetDx(middlePoints[n], estimatedCircumCenter, projection), GetDy(middlePoints[n], estimatedCircumCenter, projection)};
+                // const Point delta{GetDx(middlePoints[n], previousCircumCenter, projection), GetDy(middlePoints[n], previousCircumCenter, projection)};
+                const Vector delta{GetDelta(middlePoints[n], previousCircumCenter, projection)};
                 const auto increment = -0.1 * dot(delta, normals[n]);
                 AddIncrementToPoint(normals[n], increment, centerOfMass, projection, estimatedCircumCenter);
             }
@@ -1410,9 +1413,12 @@ namespace meshkernel
             }
         }
 
-        for (UInt n = 0; n < numNodes; ++n)
+        if (weightCircumCenter != 1.0)
         {
-            polygon[n] = weightCircumCenter * polygon[n] + (1.0 - weightCircumCenter) * centerOfMass;
+            for (UInt n = 0; n < numNodes; ++n)
+            {
+                polygon[n] = weightCircumCenter * polygon[n] + (1.0 - weightCircumCenter) * centerOfMass;
+            }
         }
 
         // The circumcenter is included in the face, then return the calculated circumcenter
