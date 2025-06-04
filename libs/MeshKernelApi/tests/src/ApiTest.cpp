@@ -1518,9 +1518,9 @@ TEST_F(CartesianApiTestFixture, Mesh2DCountObtuseTriangles_OnMesh2DWithOneObtuse
     ASSERT_EQ(1, numObtuseTriangles);
     const double tolerance = 1e-6;
     std::vector computedCoordinatesX(coordinatesObtuseTrianglesX.data(), coordinatesObtuseTrianglesX.data() + numObtuseTriangles);
-    ASSERT_NEAR(computedCoordinatesX[0], 0.51976223782641451, tolerance);
+    ASSERT_NEAR(computedCoordinatesX[0], 0.666666666666666, tolerance);
     std::vector computedCoordinatesY(coordinatesObtuseTrianglesY.data(), coordinatesObtuseTrianglesY.data() + numObtuseTriangles);
-    ASSERT_NEAR(computedCoordinatesY[0], 0.7855148461473761, tolerance);
+    ASSERT_NEAR(computedCoordinatesY[0], 0.666666666666666, tolerance);
 }
 
 TEST_F(CartesianApiTestFixture, Mesh2DDeleteSmallFlowEdgesAndSmallTriangles_OnMesh2DWithOneObtuseTriangle_ShouldDeleteOneEdge)
