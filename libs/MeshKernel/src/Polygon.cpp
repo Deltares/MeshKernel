@@ -785,7 +785,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
 
         double edgeVectorSumLength = edgeVectorSum.length();
 
-        for (UInt i = 1; i <= MaximumNumberOfCircumcentreIterations; ++i)
+        for (UInt i = 1; i <= constants::numeric::MaximumNumberOfCircumcentreIterations; ++i)
         {
             Vector delta1 = GetDelta(midPoint1, centreOfMass, projection);
             Vector delta2 = GetDelta(midPoint2, centreOfMass, projection);
@@ -801,7 +801,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
             centreOfMass.x -= updateStepSize * ds * edgeVectorSum.x() * xTransformation;
             centreOfMass.y -= updateStepSize * ds * edgeVectorSum.y();
 
-            if (ds * edgeVectorSumLength < circumcentreTolerance || i == MaximumNumberOfCircumcentreIterations)
+            if (ds * edgeVectorSumLength < circumcentreTolerance || i == constants::numeric::MaximumNumberOfCircumcentreIterations)
             {
                 break;
             }
@@ -834,7 +834,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
 
         double edgeVectorSumLength = edgeVectorSum.length();
 
-        for (UInt i = 1; i <= MaximumNumberOfCircumcentreIterations; ++i)
+        for (UInt i = 1; i <= constants::numeric::MaximumNumberOfCircumcentreIterations; ++i)
         {
             Vector delta1 = GetDelta(midPoint1, centreOfMass, projection);
             Vector delta2 = GetDelta(midPoint2, centreOfMass, projection);
@@ -859,7 +859,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
     }
     else
     {
-        for (UInt j = 1; j <= MaximumNumberOfCircumcentreIterations; ++j)
+        for (UInt j = 1; j <= constants::numeric::MaximumNumberOfCircumcentreIterations; ++j)
         {
             Vector edgeVectorSum(0.0, 0.0);
             double ds = 0.0;
@@ -885,7 +885,7 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
             centreOfMass.x -= updateStepSize * ds * edgeVectorSum.x() * xTransformation;
             centreOfMass.y -= updateStepSize * ds * edgeVectorSum.y();
 
-            if (ds * edgeVectorSum.length() < circumcentreTolerance)
+            if (j > 1 && ds * edgeVectorSum.length() < circumcentreTolerance)
             {
                 break;
             }
