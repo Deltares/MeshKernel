@@ -218,10 +218,10 @@ TEST(Mesh2DTests, Mesh2DGetPropertyTest)
     EXPECT_EQ(propertyvalues.num_coordinates, 12);
     const double tolerance = 1e-4;
 
-    EXPECT_NEAR(values[0], 0.055751274056612614, tolerance);
-    EXPECT_NEAR(values[1], 0.056220640190527582, tolerance);
-    EXPECT_NEAR(values[2], 0.051193798544321531, tolerance);
-    EXPECT_NEAR(values[3], 0.056591641726992326, tolerance);
+    EXPECT_NEAR(values[0], 0.053115002097392186, tolerance);
+    EXPECT_NEAR(values[1], 0.053447414050301602, tolerance);
+    EXPECT_NEAR(values[2], 0.053830968680574229, tolerance);
+    EXPECT_NEAR(values[3], 0.059369643517766427, tolerance);
 }
 
 TEST(Mesh2DTests, GetPolygonsOfDeletedFaces_WithPolygon_ShouldGetPolygonOfDeletedFaces)

@@ -2064,11 +2064,11 @@ TEST(MeshRefinement, CasulliTwoPolygonDeRefinement)
 
     // Centre of element to be deleted
     std::vector<double> elementCentreX{25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 45.0,
-                                       45.0, 45.0, 46.25, 65.0, 65.0, 66.25,
-                                       85.0, 103.75, 105.0, 125.0, 125.0};
+                                       45.0, 45.0, 46.666666666666, 65.0, 65.0, 66.666666666666,
+                                       85.0, 103.333333333333, 105.0, 125.0, 125.0};
     std::vector<double> elementCentreY{15.0, 35.0, 55.0, 75.0, 95.0, 115.0, 35.0,
-                                       55.0, 75.0, 96.25, 35.0, 55.0, 76.25,
-                                       55.0, 76.25, 55.0, 97.5, 75.0};
+                                       55.0, 75.0, 96.66666666666, 35.0, 55.0, 76.66666666666,
+                                       55.0, 76.66666666666, 55.0, 98.333333333333, 75.0};
 
     std::vector<Point> centrePoints{{55.0, 55.0}, {155.0, 105.0}, {175.0, 225.0}, {25.0, 274.0}, {55.0, 55.0}};
     meshkernel::Polygons centrePolygon(centrePoints, Projection::cartesian);
