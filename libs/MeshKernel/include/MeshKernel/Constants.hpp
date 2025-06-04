@@ -63,9 +63,10 @@ namespace meshkernel
         // often used values
         namespace numeric
         {
-            static double const squareRootOfThree = std::sqrt(3.0); ///< The result of sqrt(3)
-            constexpr double oneThird = 1.0 / 3.0;                  ///< The result of 1 / 3
-            constexpr int defaultSnappingIterations = 5;            ///< Default number of iterations to take in the spline snapping algorithm
+            static double const squareRootOfThree = std::sqrt(3.0);     ///< The result of sqrt(3)
+            constexpr double oneThird = 1.0 / 3.0;                      ///< The result of 1 / 3
+            constexpr int defaultSnappingIterations = 5;                ///< Default number of iterations to take in the spline snapping algorithm
+            constexpr UInt MaximumNumberOfCircumcentreIterations = 100; ///< The maximum number of iterations that can be executed when calculating the circumcentre of an element
 
         } // namespace numeric
 
