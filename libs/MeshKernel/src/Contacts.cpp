@@ -101,8 +101,6 @@ void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
         // connect faces crossing the left projected segment
         Connect1dNodesWithCrossingFaces(n, -projectionFactor);
     }
-
-    m_areComputed = true;
 }
 
 void Contacts::Connect1dNodesWithCrossingFaces(UInt node,
@@ -272,8 +270,6 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
             }
         }
     }
-
-    m_areComputed = true;
 }
 
 void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask,
@@ -343,8 +339,6 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
         m_mesh1dIndices.emplace_back(closest1dNodeIndices[polygonIndex]);
         m_mesh2dIndices.emplace_back(closest2dNodeIndices[polygonIndex]);
     }
-
-    m_areComputed = true;
 }
 
 void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
@@ -397,8 +391,6 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
         m_mesh1dIndices.emplace_back(rtree.GetQueryResult(0));
         m_mesh2dIndices.emplace_back(pointsFaceIndices[i]);
     }
-
-    m_areComputed = true;
 }
 
 void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
@@ -508,8 +500,6 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
             m_mesh2dIndices.emplace_back(f);
         }
     }
-
-    m_areComputed = true;
 }
 
 void Contacts::SetIndices(const std::vector<meshkernel::UInt>& mesh1dIndices,
@@ -534,7 +524,6 @@ void Contacts::SetIndices(const std::vector<meshkernel::UInt>& mesh1dIndices,
 
     m_mesh1dIndices = mesh1dIndices;
     m_mesh2dIndices = mesh2dIndices;
-    m_areComputed = true;
 }
 
 void Contacts::Validate() const
