@@ -432,3 +432,41 @@ TEST_F(ContactsTests, AllFalseNodeMask)
     ASSERT_EQ(m1dIndices.size(), 0);
     ASSERT_EQ(m2dIndices.size(), 0);
 }
+
+TEST_F(ContactsTests, AllTrueNodeMask)
+{
+
+    // Create 1d mesh
+
+    std::vector<Point> nodes{
+        {0.5, 0.5},
+        {1.5, 1.5},
+        {2.5, 2.5},
+        {3.5, 3.5},
+        {4.5, 4.5}};
+    std::vector<Edge> edges{{0, 1}, {1, 2}, {2, 3}, {3, 4}};
+
+    auto mesh1d = std::make_unique<Mesh1D>(edges, nodes, Projection::cartesian);
+
+    mesh1d->Administrate();
+
+    // Create 2d mesh
+    auto mesh2d = MakeRectangularMeshForTesting(5, 5, 1.0, Projection::cartesian, {0.0, 0.0}, true, true);
+    mesh2d->Administrate();
+
+    // Create contacts
+    std::vector<bool> onedNodeMask(mesh1d->GetNumNodes(), true);
+    Contacts contacts(*mesh1d, *mesh2d);
+
+    // Set the polygon where to generate the contacts
+    std::vector<Point> polygonPoints{{0.5, 2.5}, {3.5, 1.5}, {4.5, 2.5}};
+
+    // Execute
+    contacts.ComputeContactsWithPoints(onedNodeMask, polygonPoints);
+
+    auto m1dIndices = contacts.Mesh1dIndices();
+    auto m2dIndices = contacts.Mesh2dIndices();
+
+    ASSERT_EQ(m1dIndices.size(), 2);
+    ASSERT_EQ(m2dIndices.size(), 2);
+}
