@@ -471,14 +471,13 @@ TEST_F(ContactsTests, AllTrueNodeMask)
     ASSERT_EQ(m1dIndices.size(), 3);
     ASSERT_EQ(m2dIndices.size(), 3);
 
-    EXPECT_EQ (m1dIndices[0], 1);
-    EXPECT_EQ (m1dIndices[1], 2);
-    EXPECT_EQ (m1dIndices[2], 3);
+    EXPECT_EQ(m1dIndices[0], 1);
+    EXPECT_EQ(m1dIndices[1], 2);
+    EXPECT_EQ(m1dIndices[2], 3);
 
-    EXPECT_EQ (m2dIndices[0], 2);
-    EXPECT_EQ (m2dIndices[1], 16);
-    EXPECT_EQ (m2dIndices[2], 22);
-
+    EXPECT_EQ(m2dIndices[0], 2);
+    EXPECT_EQ(m2dIndices[1], 16);
+    EXPECT_EQ(m2dIndices[2], 22);
 }
 
 TEST_F(ContactsTests, AllMixedBooleanNodeMask)
@@ -508,8 +507,8 @@ TEST_F(ContactsTests, AllMixedBooleanNodeMask)
 
     // Create contacts
     std::vector<bool> onedNodeMask(mesh1d->GetNumNodes(), true);
-    onedNodeMask [1] = false;
-    onedNodeMask [2] = false;
+    onedNodeMask[1] = false;
+    onedNodeMask[2] = false;
     Contacts contacts(*mesh1d, *mesh2d);
 
     // Set the polygon where to generate the contacts
@@ -524,10 +523,9 @@ TEST_F(ContactsTests, AllMixedBooleanNodeMask)
     ASSERT_EQ(m1dIndices.size(), 2);
     ASSERT_EQ(m2dIndices.size(), 2);
 
-    EXPECT_EQ (m1dIndices[0], 1);
-    EXPECT_EQ (m1dIndices[1], 6);
+    EXPECT_EQ(m1dIndices[0], 1);
+    EXPECT_EQ(m1dIndices[1], 6);
 
-    EXPECT_EQ (m2dIndices[0], 2);
-    EXPECT_EQ (m2dIndices[1], 75);
-
+    EXPECT_EQ(m2dIndices[0], 2);
+    EXPECT_EQ(m2dIndices[1], 75);
 }
