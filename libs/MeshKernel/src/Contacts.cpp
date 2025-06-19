@@ -505,15 +505,6 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
 void Contacts::SetIndices(const std::vector<meshkernel::UInt>& mesh1dIndices,
                           const std::vector<meshkernel::UInt>& mesh2dIndices)
 {
-    if (mesh1dIndices.empty())
-    {
-        throw AlgorithmError("The 1d mesh indices vector is empty");
-    }
-
-    if (mesh2dIndices.empty())
-    {
-        throw AlgorithmError("The 2d mesh indices vector is empty");
-    }
 
     if (mesh1dIndices.size() != mesh2dIndices.size())
     {
