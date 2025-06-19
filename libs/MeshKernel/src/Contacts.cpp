@@ -366,6 +366,7 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
     // for each 1d node in the 2d mesh, find the closest 1d node.
     for (UInt i = 0; i < points.size(); ++i)
     {
+
         // Account for 1d node mask if present
         if (!oneDNodeMask.empty() && !oneDNodeMask[i])
         {
