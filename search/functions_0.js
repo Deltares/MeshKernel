@@ -9,7 +9,6 @@ var searchData=
   ['administrationrequired_6',['AdministrationRequired',['../classmeshkernel_1_1_mesh.html#a6cefdee88e13794b67efd4fb46da9d83',1,'meshkernel::Mesh']]],
   ['angle_7',['angle',['../classmeshkernel_1_1_rotation.html#a3a227d8d9b657f8bc0989dee2b483864',1,'meshkernel::Rotation']]],
   ['anglebetween_8',['angleBetween',['../namespacemeshkernel.html#afcf694c3695d9a1dbcbf31f8ef544e7a',1,'meshkernel']]],
-  ['arecomputed_9',['AreComputed',['../classmeshkernel_1_1_contacts.html#a0114f4c40a92aff503117d84bf795d70',1,'meshkernel::Contacts']]],
-  ['aresegmentscrossing_10',['AreSegmentsCrossing',['../namespacemeshkernel.html#acc1497cfee88e41f0c0faaf3e5cd40a1',1,'meshkernel']]],
-  ['averaginginterpolation_11',['AveragingInterpolation',['../classmeshkernel_1_1_averaging_interpolation.html#adb6c24e68b623555fda76e933ff0b4ae',1,'meshkernel::AveragingInterpolation']]]
+  ['aresegmentscrossing_9',['AreSegmentsCrossing',['../namespacemeshkernel.html#acc1497cfee88e41f0c0faaf3e5cd40a1',1,'meshkernel']]],
+  ['averaginginterpolation_10',['AveragingInterpolation',['../classmeshkernel_1_1_averaging_interpolation.html#adb6c24e68b623555fda76e933ff0b4ae',1,'meshkernel::AveragingInterpolation']]]
 ];
