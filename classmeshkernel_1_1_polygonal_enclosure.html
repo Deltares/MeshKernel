@@ -148,6 +148,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SnapToLandBoundary</b
 <tr class="memitem:a51953a2d89634b705072b9c88cb86f66" id="r_a51953a2d89634b705072b9c88cb86f66"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; std::unique_ptr&lt; <a class="el" href="classmeshkernel_1_1_polygonal_enclosure.html">PolygonalEnclosure</a> &gt;, std::unique_ptr&lt; <a class="el" href="classmeshkernel_1_1_polygonal_enclosure.html">PolygonalEnclosure</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygonal_enclosure.html#a51953a2d89634b705072b9c88cb86f66">OffsetCopy</a> (double distance, bool outwardsAndInwards) const</td></tr>
 <tr class="memdesc:a51953a2d89634b705072b9c88cb86f66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a new polygonal enclosure from an existing one, by offsetting it by a distance (copypol)  <br /></td></tr>
 <tr class="separator:a51953a2d89634b705072b9c88cb86f66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a340b46accbc63508b2ebdd5db7f00c48" id="r_a340b46accbc63508b2ebdd5db7f00c48"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_polygonal_enclosure.html#a340b46accbc63508b2ebdd5db7f00c48">GeneratePoints</a> (double scaleFactor=constants::missing::doubleValue) const</td></tr>
+<tr class="memdesc:a340b46accbc63508b2ebdd5db7f00c48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate set of points inside the polygon using triangulation.  <br /></td></tr>
+<tr class="separator:a340b46accbc63508b2ebdd5db7f00c48"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A region enclosed by a polygonal permieter. </p>
@@ -204,6 +207,27 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SnapToLandBoundary</b
 
 <p>Determine if the point lies in the polygon. </p>
 <p>If the point lies within the outer polygon but outside any inner polygons </p>
+
+</div>
+</div>
+<a id="a340b46accbc63508b2ebdd5db7f00c48" name="a340b46accbc63508b2ebdd5db7f00c48"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a340b46accbc63508b2ebdd5db7f00c48">&#9670;&#160;</a></span>GeneratePoints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; meshkernel::PolygonalEnclosure::GeneratePoints </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>scaleFactor</em> = <code>constants::missing::doubleValue</code></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generate set of points inside the polygon using triangulation. </p>
+<dl class="section return"><dt>Returns</dt><dd>The generated points </dd></dl>
 
 </div>
 </div>

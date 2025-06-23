@@ -182,7 +182,7 @@ var searchData=
   ['mkernel_5fmesh2d_5fmake_5frectangular_5fmesh_179',['mkernel_mesh2d_make_rectangular_mesh',['../namespacemeshkernelapi.html#a68a432823c03f75fefa35669bb712e0d',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fmake_5frectangular_5fmesh_5ffrom_5fpolygon_180',['mkernel_mesh2d_make_rectangular_mesh_from_polygon',['../namespacemeshkernelapi.html#a66b026000339c8b861a465a968794c24',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fmake_5frectangular_5fmesh_5fon_5fextension_181',['mkernel_mesh2d_make_rectangular_mesh_on_extension',['../namespacemeshkernelapi.html#a6d559487b89e3bde2ed59bb1c8b00031',1,'meshkernelapi']]],
-  ['mkernel_5fmesh2d_5fmake_5ftriangular_5fmesh_5ffrom_5fpolygon_182',['mkernel_mesh2d_make_triangular_mesh_from_polygon',['../namespacemeshkernelapi.html#a705012a0f338272507f22bb5832ad3be',1,'meshkernelapi']]],
+  ['mkernel_5fmesh2d_5fmake_5ftriangular_5fmesh_5ffrom_5fpolygon_182',['mkernel_mesh2d_make_triangular_mesh_from_polygon',['../namespacemeshkernelapi.html#a3ee665dc3a33259aaf26ddfe5d375a55',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fmake_5ftriangular_5fmesh_5ffrom_5fsamples_183',['mkernel_mesh2d_make_triangular_mesh_from_samples',['../namespacemeshkernelapi.html#a3459011bc43e11d1e6852914279eb0c3',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fmerge_5fnodes_184',['mkernel_mesh2d_merge_nodes',['../namespacemeshkernelapi.html#a06ff49944a2e931a0bf54b8cd7fe610e',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fmerge_5fnodes_5fwith_5fmerging_5fdistance_185',['mkernel_mesh2d_merge_nodes_with_merging_distance',['../namespacemeshkernelapi.html#aae177d47f9f0ae7eee4e51e7dfb47217',1,'meshkernelapi']]],

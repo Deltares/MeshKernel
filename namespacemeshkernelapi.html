@@ -632,9 +632,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <tr class="memitem:afc659490a272d015ea79215b27419243" id="r_afc659490a272d015ea79215b27419243"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#afc659490a272d015ea79215b27419243">mkernel_mesh2d_make_global</a> (int meshKernelId, int numLongitudeNodes, int numLatitudeNodes)</td></tr>
 <tr class="memdesc:afc659490a272d015ea79215b27419243"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the global mesh with a given number of points along the longitude and latitude directions.  <br /></td></tr>
 <tr class="separator:afc659490a272d015ea79215b27419243"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a705012a0f338272507f22bb5832ad3be" id="r_a705012a0f338272507f22bb5832ad3be"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a705012a0f338272507f22bb5832ad3be">mkernel_mesh2d_make_triangular_mesh_from_polygon</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygonPoints)</td></tr>
-<tr class="memdesc:a705012a0f338272507f22bb5832ad3be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a triangular mesh2d grid within a polygon. The size of the triangles is determined from the length of the polygon edges.  <br /></td></tr>
-<tr class="separator:a705012a0f338272507f22bb5832ad3be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ee665dc3a33259aaf26ddfe5d375a55" id="r_a3ee665dc3a33259aaf26ddfe5d375a55"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a3ee665dc3a33259aaf26ddfe5d375a55">mkernel_mesh2d_make_triangular_mesh_from_polygon</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygonPoints, const double scaleFactor)</td></tr>
+<tr class="memdesc:a3ee665dc3a33259aaf26ddfe5d375a55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generates a triangular mesh2d grid within a polygon. The size of the triangles is determined from the length of the polygon edges.  <br /></td></tr>
+<tr class="separator:a3ee665dc3a33259aaf26ddfe5d375a55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3459011bc43e11d1e6852914279eb0c3" id="r_a3459011bc43e11d1e6852914279eb0c3"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a3459011bc43e11d1e6852914279eb0c3">mkernel_mesh2d_make_triangular_mesh_from_samples</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;samples)</td></tr>
 <tr class="memdesc:a3459011bc43e11d1e6852914279eb0c3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes a triangular mesh from a set of samples, triangulating the sample points.  <br /></td></tr>
 <tr class="separator:a3459011bc43e11d1e6852914279eb0c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -7639,8 +7639,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 
 </div>
 </div>
-<a id="a705012a0f338272507f22bb5832ad3be" name="a705012a0f338272507f22bb5832ad3be"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a705012a0f338272507f22bb5832ad3be">&#9670;&#160;</a></span>mkernel_mesh2d_make_triangular_mesh_from_polygon()</h2>
+<a id="a3ee665dc3a33259aaf26ddfe5d375a55" name="a3ee665dc3a33259aaf26ddfe5d375a55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ee665dc3a33259aaf26ddfe5d375a55">&#9670;&#160;</a></span>mkernel_mesh2d_make_triangular_mesh_from_polygon()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -7655,7 +7655,13 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
-          <td class="paramname"><em>polygonPoints</em>&#160;</td>
+          <td class="paramname"><em>polygonPoints</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>scaleFactor</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -7670,6 +7676,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">polygonPoints</td><td>The polygon where to triangulate </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">scaleFactor</td><td>Average triangle size scaling factor, if value is less that 0.0 a value generated from the polygon will be used. </td></tr>
   </table>
   </dd>
 </dl>
