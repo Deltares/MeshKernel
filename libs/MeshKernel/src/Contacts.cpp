@@ -101,8 +101,6 @@ void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
         // connect faces crossing the left projected segment
         Connect1dNodesWithCrossingFaces(n, -projectionFactor);
     }
-
-    m_areComputed = true;
 }
 
 void Contacts::Connect1dNodesWithCrossingFaces(UInt node,
@@ -272,8 +270,6 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
             }
         }
     }
-
-    m_areComputed = true;
 }
 
 void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask,
@@ -343,8 +339,6 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
         m_mesh1dIndices.emplace_back(closest1dNodeIndices[polygonIndex]);
         m_mesh2dIndices.emplace_back(closest2dNodeIndices[polygonIndex]);
     }
-
-    m_areComputed = true;
 }
 
 void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
@@ -372,6 +366,13 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
     // for each 1d node in the 2d mesh, find the closest 1d node.
     for (UInt i = 0; i < points.size(); ++i)
     {
+
+        // Account for 1d node mask if present
+        if (!oneDNodeMask.empty() && !oneDNodeMask[i])
+        {
+            continue;
+        }
+
         // point not in the mesh
         if (pointsFaceIndices[i] == constants::missing::uintValue)
         {
@@ -391,8 +392,6 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
         m_mesh1dIndices.emplace_back(rtree.GetQueryResult(0));
         m_mesh2dIndices.emplace_back(pointsFaceIndices[i]);
     }
-
-    m_areComputed = true;
 }
 
 void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
@@ -502,22 +501,11 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
             m_mesh2dIndices.emplace_back(f);
         }
     }
-
-    m_areComputed = true;
 }
 
 void Contacts::SetIndices(const std::vector<meshkernel::UInt>& mesh1dIndices,
                           const std::vector<meshkernel::UInt>& mesh2dIndices)
 {
-    if (mesh1dIndices.empty())
-    {
-        throw AlgorithmError("The 1d mesh indices vector is empty");
-    }
-
-    if (mesh2dIndices.empty())
-    {
-        throw AlgorithmError("The 2d mesh indices vector is empty");
-    }
 
     if (mesh1dIndices.size() != mesh2dIndices.size())
     {
@@ -528,7 +516,6 @@ void Contacts::SetIndices(const std::vector<meshkernel::UInt>& mesh1dIndices,
 
     m_mesh1dIndices = mesh1dIndices;
     m_mesh2dIndices = mesh2dIndices;
-    m_areComputed = true;
 }
 
 void Contacts::Validate() const
