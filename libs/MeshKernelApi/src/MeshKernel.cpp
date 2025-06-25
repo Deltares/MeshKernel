@@ -3597,8 +3597,7 @@ namespace meshkernelapi
 
             // construct all dependencies
             auto const polygon = meshkernel::Polygons(polygonNodesVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            meshkernel::Polygons emptyPolygon;
-            auto landBoundary = meshkernel::LandBoundaries(landBoundariesNodeVector, *meshKernelState[meshKernelId].m_mesh2d, emptyPolygon);
+            auto landBoundary = meshkernel::LandBoundaries(landBoundariesNodeVector, *meshKernelState[meshKernelId].m_mesh2d, polygon);
             const bool triangulateFaces = isTriangulationRequired != 0;
             const bool projectToLandBoundary = projectToLandBoundaryRequired != 0;
 
