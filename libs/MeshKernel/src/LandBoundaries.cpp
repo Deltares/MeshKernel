@@ -38,6 +38,14 @@ using meshkernel::LandBoundaries;
 using meshkernel::Mesh2D;
 
 LandBoundaries::LandBoundaries(const std::vector<Point>& boundaryNodes,
+                               Mesh2D& mesh) : m_mesh(mesh),
+                                               m_polygons(std::vector<Point>(), mesh.m_projection),
+                                               m_landBoundary(boundaryNodes)
+{
+    m_polygonNodesCache.clear();
+}
+
+LandBoundaries::LandBoundaries(const std::vector<Point>& boundaryNodes,
                                Mesh2D& mesh,
                                const Polygons& polygons) : m_mesh(mesh),
                                                            m_polygons(polygons),
