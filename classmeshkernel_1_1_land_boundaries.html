@@ -115,6 +115,9 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>LandBoundaries</b> ()=default</td></tr>
 <tr class="memdesc:a84b2095aa34593790950362c082f6212"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor. <br /></td></tr>
 <tr class="separator:a84b2095aa34593790950362c082f6212"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac905321f4bdf521f7bfdca1ea6e7fcc1" id="r_ac905321f4bdf521f7bfdca1ea6e7fcc1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html#ac905321f4bdf521f7bfdca1ea6e7fcc1">LandBoundaries</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;landBoundary, <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh)</td></tr>
+<tr class="memdesc:ac905321f4bdf521f7bfdca1ea6e7fcc1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <br /></td></tr>
+<tr class="separator:ac905321f4bdf521f7bfdca1ea6e7fcc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a652ef2840cf3b59b78f6feab62858131" id="r_a652ef2840cf3b59b78f6feab62858131"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_land_boundaries.html#a652ef2840cf3b59b78f6feab62858131">LandBoundaries</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;landBoundary, <a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygons)</td></tr>
 <tr class="memdesc:a652ef2840cf3b59b78f6feab62858131"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <br /></td></tr>
 <tr class="separator:a652ef2840cf3b59b78f6feab62858131"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,8 +146,45 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413
 <div class="textblock"><p>A class describing land boundaries. These are used to visualise the land-water interface. </p>
 <p>The main responsibility of this class is to store the land boundary polygons, categorize them based on their proximity to a mesh and provide the functionality to assign each mesh node to the appropriate land boundary polyline. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="ac905321f4bdf521f7bfdca1ea6e7fcc1" name="ac905321f4bdf521f7bfdca1ea6e7fcc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac905321f4bdf521f7bfdca1ea6e7fcc1">&#9670;&#160;</a></span>LandBoundaries() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">meshkernel::LandBoundaries::LandBoundaries </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>landBoundary</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">landBoundary</td><td>A vector of points defining the land boundary. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>The current 2d mesh. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a652ef2840cf3b59b78f6feab62858131" name="a652ef2840cf3b59b78f6feab62858131"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a652ef2840cf3b59b78f6feab62858131">&#9670;&#160;</a></span>LandBoundaries()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a652ef2840cf3b59b78f6feab62858131">&#9670;&#160;</a></span>LandBoundaries() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">

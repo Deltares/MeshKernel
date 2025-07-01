@@ -102,6 +102,10 @@ Public Member Functions</h2></td></tr>
 std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Compute</b> () const</td></tr>
 <tr class="memdesc:a70241a360de8ea99938a53b1549a6584"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flip the edges. <br /></td></tr>
 <tr class="separator:a70241a360de8ea99938a53b1549a6584"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add93cf4f30225ad4de329fe529d5d868" id="r_add93cf4f30225ad4de329fe529d5d868"><td class="memItemLeft" align="right" valign="top"><a id="add93cf4f30225ad4de329fe529d5d868" name="add93cf4f30225ad4de329fe529d5d868"></a>
+std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Compute</b> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon) const</td></tr>
+<tr class="memdesc:add93cf4f30225ad4de329fe529d5d868"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flip the edges inside a polygon. <br /></td></tr>
+<tr class="separator:add93cf4f30225ad4de329fe529d5d868"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class used to improve mesh connectivity. </p>
@@ -150,8 +154,8 @@ std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="b
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>The input mesh </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">landBoundary</td><td>The land boundary </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">triangulateFaces</td><td>Whether to triangulate all faces or not </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">projectToLandBoundary</td><td>Whether to project to land boundaries or not </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">triangulateFaces</td><td>Whether or not to triangulate all faces before flipping edges </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">projectToLandBoundary</td><td>Whether or not to project to land boundaries </td></tr>
   </table>
   </dd>
 </dl>

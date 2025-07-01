@@ -100,6 +100,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a78184a34b8b771b42a5133dd89856ad2" id="r_a78184a34b8b771b42a5133dd89856ad2"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; meshkernel::UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_connect_meshes.html#a78184a34b8b771b42a5133dd89856ad2">Compute</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const double separationFraction=<a class="el" href="classmeshkernel_1_1_connect_meshes.html#afb1fd3338a7412c67e52e15d8f389441">DefaultMaximumSeparationFraction</a>)</td></tr>
 <tr class="memdesc:a78184a34b8b771b42a5133dd89856ad2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect grids.  <br /></td></tr>
 <tr class="separator:a78184a34b8b771b42a5133dd89856ad2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa202e3feb4ead04643a5fbbf95f4deb7" id="r_aa202e3feb4ead04643a5fbbf95f4deb7"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; meshkernel::UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_connect_meshes.html#aa202e3feb4ead04643a5fbbf95f4deb7">Compute</a> (<a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh, const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon, const double separationFraction=<a class="el" href="classmeshkernel_1_1_connect_meshes.html#afb1fd3338a7412c67e52e15d8f389441">DefaultMaximumSeparationFraction</a>)</td></tr>
+<tr class="memdesc:aa202e3feb4ead04643a5fbbf95f4deb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connect grids.  <br /></td></tr>
+<tr class="separator:aa202e3feb4ead04643a5fbbf95f4deb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -116,7 +119,7 @@ static constexpr double&#160;</td><td class="memItemRight" valign="bottom"><b>De
 <p>Can be connected with upto 5 elements or 4 hanging nodes along an edge. </p><dl class="section note"><dt>Note</dt><dd>Currently only works for quadrilateral elements. </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a78184a34b8b771b42a5133dd89856ad2" name="a78184a34b8b771b42a5133dd89856ad2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a78184a34b8b771b42a5133dd89856ad2">&#9670;&#160;</a></span>Compute()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a78184a34b8b771b42a5133dd89856ad2">&#9670;&#160;</a></span>Compute() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -153,6 +156,59 @@ static constexpr double&#160;</td><td class="memItemRight" valign="bottom"><b>De
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">mesh</td><td>The mesh </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">separationFraction</td><td>The fraction of the shortest edge to use when determining neighbour edge closeness </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>separationFraction should be in the interval (0, max], where max = DefaultMaximumSeparationFraction, If the value is outside of this range then a <a class="el" href="classmeshkernel_1_1_range_error.html" title="A class for throwing range error exceptions.">RangeError</a> will be thrown. </dd></dl>
+
+</div>
+</div>
+<a id="aa202e3feb4ead04643a5fbbf95f4deb7" name="aa202e3feb4ead04643a5fbbf95f4deb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa202e3feb4ead04643a5fbbf95f4deb7">&#9670;&#160;</a></span>Compute() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::unique_ptr&lt; meshkernel::UndoAction &gt; meshkernel::ConnectMeshes::Compute </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh2_d.html">Mesh2D</a> &amp;&#160;</td>
+          <td class="paramname"><em>mesh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>separationFraction</em> = <code><a class="el" href="classmeshkernel_1_1_connect_meshes.html#afb1fd3338a7412c67e52e15d8f389441">DefaultMaximumSeparationFraction</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Connect grids. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">mesh</td><td>The mesh </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygon</td><td>Defines the region where the edges should be flipped </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">separationFraction</td><td>The fraction of the shortest edge to use when determining neighbour edge closeness </td></tr>
   </table>
   </dd>

@@ -220,7 +220,7 @@ var searchData=
   ['mkernel_5fmesh2d_5fcasulli_5frefinement_5fon_5fpolygon_217',['mkernel_mesh2d_casulli_refinement_on_polygon',['../namespacemeshkernelapi.html#a70d6d63626c31eb93ebb68f020f563fd',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fcompute_5finner_5fortogonalization_5fiteration_218',['mkernel_mesh2d_compute_inner_ortogonalization_iteration',['../namespacemeshkernelapi.html#aa390097481a2f81487f41c5e46eaaaf6',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fcompute_5forthogonalization_219',['mkernel_mesh2d_compute_orthogonalization',['../namespacemeshkernelapi.html#a156192886c65dcffa89cad36a5c78045',1,'meshkernelapi']]],
-  ['mkernel_5fmesh2d_5fconnect_5fmeshes_220',['mkernel_mesh2d_connect_meshes',['../namespacemeshkernelapi.html#a2ce7996ae5eae6bdf137fe9f06d724b1',1,'meshkernelapi']]],
+  ['mkernel_5fmesh2d_5fconnect_5fmeshes_220',['mkernel_mesh2d_connect_meshes',['../namespacemeshkernelapi.html#a5d6bce9b843a195536f31cadca267e6a',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fconvert_5fprojection_221',['mkernel_mesh2d_convert_projection',['../namespacemeshkernelapi.html#a8a14647b813f56d13fdfc182a9f95011',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fconvert_5fto_5fcurvilinear_222',['mkernel_mesh2d_convert_to_curvilinear',['../namespacemeshkernelapi.html#a76a9720954ca157a1ba2ccfd35bbf183',1,'meshkernelapi']]],
   ['mkernel_5fmesh2d_5fcount_5fhanging_5fedges_223',['mkernel_mesh2d_count_hanging_edges',['../namespacemeshkernelapi.html#a00ba5182f31ea1567bc258bb95cad221',1,'meshkernelapi']]],
