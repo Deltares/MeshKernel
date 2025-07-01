@@ -706,6 +706,83 @@ namespace meshkernel
         return {constants::missing::doubleValue, constants::missing::doubleValue};
     }
 
+    double ComputeArea(const std::vector<Point>& polygon, const Projection projection)
+    {
+        const Point reference = ReferencePoint(polygon, projection);
+        const auto numberOfPointsOpenedPolygon = static_cast<UInt>(polygon.size()) - 1;
+
+        double area = 0.0;
+
+        const double minArea = 1e-8;
+
+        if (numberOfPointsOpenedPolygon == constants::geometric::numNodesInTriangle)
+        {
+            Vector delta1 = GetDelta(reference, polygon[0], projection);
+            Vector delta2 = GetDelta(reference, polygon[1], projection);
+            Vector delta3 = GetDelta(reference, polygon[2], projection);
+
+            Vector middle1 = 0.5 * (delta1 + delta2);
+            Vector middle2 = 0.5 * (delta2 + delta3);
+            Vector middle3 = 0.5 * (delta3 + delta1);
+
+            delta1 = GetDelta(polygon[0], polygon[1], projection);
+            delta2 = GetDelta(polygon[1], polygon[2], projection);
+            delta3 = GetDelta(polygon[2], polygon[0], projection);
+
+            double xds1 = delta1.y() * middle1.x() - delta1.x() * middle1.y();
+            double xds2 = delta2.y() * middle2.x() - delta2.x() * middle2.y();
+            double xds3 = delta3.y() * middle3.x() - delta3.x() * middle3.y();
+
+            area = 0.5 * (xds1 + xds2 + xds3);
+        }
+        else if (numberOfPointsOpenedPolygon == constants::geometric::numNodesInQuadrilateral)
+        {
+            Vector delta1 = GetDelta(reference, polygon[0], projection);
+            Vector delta2 = GetDelta(reference, polygon[1], projection);
+            Vector delta3 = GetDelta(reference, polygon[2], projection);
+            Vector delta4 = GetDelta(reference, polygon[3], projection);
+
+            Vector middle1 = 0.5 * (delta1 + delta2);
+            Vector middle2 = 0.5 * (delta2 + delta3);
+            Vector middle3 = 0.5 * (delta3 + delta4);
+            Vector middle4 = 0.5 * (delta4 + delta1);
+
+            delta1 = GetDelta(polygon[0], polygon[1], projection);
+            delta2 = GetDelta(polygon[1], polygon[2], projection);
+            delta3 = GetDelta(polygon[2], polygon[3], projection);
+            delta4 = GetDelta(polygon[3], polygon[0], projection);
+
+            double xds1 = delta1.y() * middle1.x() - delta1.x() * middle1.y();
+            double xds2 = delta2.y() * middle2.x() - delta2.x() * middle2.y();
+            double xds3 = delta3.y() * middle3.x() - delta3.x() * middle3.y();
+            double xds4 = delta4.y() * middle4.x() - delta4.x() * middle4.y();
+
+            area = 0.5 * (xds1 + xds2 + xds3 + xds4);
+        }
+        else
+        {
+
+            for (UInt n = 0; n < numberOfPointsOpenedPolygon; ++n)
+            {
+                const auto nextNode = NextCircularForwardIndex(n, numberOfPointsOpenedPolygon);
+
+                Vector delta = GetDelta(reference, polygon[n], projection);
+                Vector deltaNext = GetDelta(reference, polygon[nextNode], projection);
+                Vector middle = 0.5 * (delta + deltaNext);
+                delta = GetDelta(polygon[n], polygon[nextNode], projection);
+
+                // Rotate by 3pi/2
+                Vector normal(delta.y(), -delta.x());
+                double xds = dot(normal, middle);
+                area += 0.5 * xds;
+            }
+        }
+
+        area = std::abs(area) < minArea ? minArea : area;
+
+        return area;
+    }
+
     void TransformGlobalVectorToLocal(const Point& reference, const Point& globalCoordinates, const Point& globalComponents, const Projection& projection, Point& localComponents)
     {
         if (projection == Projection::sphericalAccurate)
@@ -1197,41 +1274,6 @@ namespace meshkernel
         return constants::missing::doubleValue;
     }
 
-    Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection& projection)
-    {
-        const double dx2 = GetDx(firstNode, secondNode, projection);
-        const double dy2 = GetDy(firstNode, secondNode, projection);
-
-        const double dx3 = GetDx(firstNode, thirdNode, projection);
-        const double dy3 = GetDy(firstNode, thirdNode, projection);
-
-        const double den = dy2 * dx3 - dy3 * dx2;
-        double z = 0.0;
-        if (std::abs(den) > 0.0)
-        {
-            z = (dx2 * (dx2 - dx3) + dy2 * (dy2 - dy3)) / den;
-        }
-
-        Point circumcenter;
-        if (projection == Projection::cartesian)
-        {
-            circumcenter.x = firstNode.x + 0.5 * (dx3 - z * dy3);
-            circumcenter.y = firstNode.y + 0.5 * (dy3 + z * dx3);
-        }
-        if (projection == Projection::spherical)
-        {
-            const double phi = (firstNode.y + secondNode.y + thirdNode.y) * constants::numeric::oneThird;
-            const double xf = 1.0 / cos(constants::conversion::degToRad * phi);
-            circumcenter.x = firstNode.x + xf * 0.5 * (dx3 - z * dy3) * constants::conversion::radToDeg / constants::geometric::earth_radius;
-            circumcenter.y = firstNode.y + 0.5 * (dy3 + z * dx3) * constants::conversion::radToDeg / constants::geometric::earth_radius;
-        }
-        if (projection == Projection::sphericalAccurate)
-        {
-            // TODO: compute in case of spherical accurate (comp_circumcenter3D)
-        }
-        return circumcenter;
-    }
-
     UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, UInt numEdges)
     {
         if (numEdges > edgesNumFaces.size())
@@ -1263,107 +1305,6 @@ namespace meshkernel
             normals[pointCount] = NormalVector(polygon[n], polygon[nextNode], middlePoints[pointCount], projection);
             ++pointCount;
         }
-    }
-
-    Point ComputeCircumCenter(const Point& centerOfMass,
-                              const UInt pointCount,
-                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
-                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
-                              const Projection& projection)
-    {
-        const UInt maximumNumberCircumcenterIterations = 100;
-        const double eps = projection == Projection::cartesian ? 1e-3 : 9e-10; // 111km = 0-e digit.
-
-        Point estimatedCircumCenter = centerOfMass;
-
-        for (UInt iter = 0; iter < maximumNumberCircumcenterIterations; ++iter)
-        {
-            const Point previousCircumCenter = estimatedCircumCenter;
-            for (UInt n = 0; n < pointCount; n++)
-            {
-                const Point delta{GetDx(middlePoints[n], estimatedCircumCenter, projection), GetDy(middlePoints[n], estimatedCircumCenter, projection)};
-                const auto increment = -0.1 * dot(delta, normals[n]);
-                AddIncrementToPoint(normals[n], increment, centerOfMass, projection, estimatedCircumCenter);
-            }
-            if (iter > 0 &&
-                abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps &&
-                abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
-            {
-                break;
-            }
-        }
-
-        return estimatedCircumCenter;
-    }
-
-    Point ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                 const std::vector<UInt>& edgesNumFaces,
-                                 const Projection& projection)
-    {
-        static constexpr double weightCircumCenter = 1.0; ///< Weight circum center
-
-        std::array<Point, constants::geometric::maximumNumberOfNodesPerFace> middlePoints;
-        std::array<Point, constants::geometric::maximumNumberOfNodesPerFace> normals;
-        UInt pointCount = 0;
-
-        const auto numNodes = static_cast<UInt>(polygon.size()) - 1;
-
-        Point centerOfMass{0.0, 0.0};
-        for (UInt n = 0; n < numNodes; ++n)
-        {
-            centerOfMass.x += polygon[n].x;
-            centerOfMass.y += polygon[n].y;
-        }
-
-        centerOfMass /= static_cast<double>(numNodes);
-
-        auto result = centerOfMass;
-        if (numNodes == constants::geometric::numNodesInTriangle)
-        {
-            result = CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], projection);
-        }
-        else if (!edgesNumFaces.empty())
-        {
-            UInt numValidEdges = CountNumberOfValidEdges(edgesNumFaces, numNodes);
-
-            if (numValidEdges > 1)
-            {
-                ComputeMidPointsAndNormals(polygon, edgesNumFaces, numNodes, middlePoints, normals, pointCount, projection);
-                result = ComputeCircumCenter(centerOfMass, pointCount, middlePoints, normals, projection);
-            }
-        }
-
-        for (UInt n = 0; n < numNodes; ++n)
-        {
-            polygon[n] = weightCircumCenter * polygon[n] + (1.0 - weightCircumCenter) * centerOfMass;
-        }
-
-        // The circumcenter is included in the face, then return the calculated circumcenter
-        if (IsPointInPolygonNodes(result, polygon, projection))
-        {
-            return result;
-        }
-
-        // If the circumcenter is not included in the face,
-        // the circumcenter will be placed at the intersection between an edge and the segment connecting the mass center with the circumcenter.
-        for (UInt n = 0; n < numNodes; ++n)
-        {
-            const auto nextNode = NextCircularForwardIndex(n, numNodes);
-
-            const auto [areLineCrossing,
-                        intersection,
-                        crossProduct,
-                        firstRatio,
-                        secondRatio] = AreSegmentsCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, projection);
-
-            if (areLineCrossing)
-            {
-                result = intersection;
-                break;
-            }
-        }
-
-        return result;
     }
 
     std::tuple<bool, Point, double, double, double> AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
