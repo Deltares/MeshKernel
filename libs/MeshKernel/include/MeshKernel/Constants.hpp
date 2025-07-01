@@ -84,6 +84,7 @@ namespace meshkernel
             constexpr double inverse_earth_radius = 1.0 / earth_radius;                     ///< One over constants::geometric::earth_radius(m-1);
             constexpr double absLatitudeAtPoles = 0.0001;                                   ///< Pole tolerance in degrees
             constexpr double refinementTolerance = 1.0e-2;                                  ///< Relative size of refinement.
+            constexpr double circumcentreTolerance = 1.0e-3;                                ///< Tolerance used when computing the circumcentre of an element
             constexpr UInt numNodesInQuadrilateral = 4;                                     ///< Number of nodes in a quadrilateral
             constexpr UInt numNodesInTriangle = 3;                                          ///< Number of nodes in a triangle
             constexpr UInt numNodesInPentagon = 5;                                          ///< Number of nodes in a pentagon
