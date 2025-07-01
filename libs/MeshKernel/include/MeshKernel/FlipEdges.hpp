@@ -30,7 +30,8 @@
 #include <memory>
 
 #include "MeshKernel/Constants.hpp"
-#include <MeshKernel/UndoActions/UndoAction.hpp>
+#include "MeshKernel/Polygons.hpp"
+#include "MeshKernel/UndoActions/UndoAction.hpp"
 
 namespace meshkernel
 {
@@ -50,8 +51,8 @@ namespace meshkernel
         /// @brief Constructor
         /// @param[in] mesh                  The input mesh
         /// @param[in] landBoundary          The land boundary
-        /// @param[in] triangulateFaces      Whether to triangulate all faces or not
-        /// @param[in] projectToLandBoundary Whether to project to land boundaries or not
+        /// @param[in] triangulateFaces      Whether or not to triangulate all faces before flipping edges
+        /// @param[in] projectToLandBoundary Whether or not to project to land boundaries
         FlipEdges(Mesh2D& mesh,
                   LandBoundaries& landBoundary,
                   bool triangulateFaces,
@@ -59,6 +60,9 @@ namespace meshkernel
 
         /// @brief Flip the edges
         [[nodiscard]] std::unique_ptr<UndoAction> Compute() const;
+
+        /// @brief Flip the edges inside a polygon
+        [[nodiscard]] std::unique_ptr<UndoAction> Compute(const Polygons& polygon) const;
 
     private:
         /// @brief Computes the change in topology functional and gets the nodes involved (comp_ntopo)

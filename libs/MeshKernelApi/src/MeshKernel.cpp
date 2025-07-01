@@ -3598,12 +3598,12 @@ namespace meshkernelapi
             // construct all dependencies
             auto const polygon = meshkernel::Polygons(polygonNodesVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
             auto landBoundary = meshkernel::LandBoundaries(landBoundariesNodeVector, *meshKernelState[meshKernelId].m_mesh2d, polygon);
-            bool const triangulateFaces = isTriangulationRequired == 0 ? false : true;
-            bool const projectToLandBoundary = projectToLandBoundaryRequired == 0 ? false : true;
+            const bool triangulateFaces = isTriangulationRequired != 0;
+            const bool projectToLandBoundary = projectToLandBoundaryRequired != 0;
 
             const meshkernel::FlipEdges flipEdges(*meshKernelState[meshKernelId].m_mesh2d, landBoundary, triangulateFaces, projectToLandBoundary);
 
-            meshKernelUndoStack.Add(flipEdges.Compute(), meshKernelId);
+            meshKernelUndoStack.Add(flipEdges.Compute(polygon), meshKernelId);
         }
         catch (...)
         {
@@ -3981,7 +3981,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d, double searchFraction, bool connect)
+    MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d, const GeometryList& polygon, double searchFraction, bool connect)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -4008,8 +4008,11 @@ namespace meshkernelapi
 
             if (connect)
             {
+                const std::vector<meshkernel::Point> polygonPoints = ConvertGeometryListToPointVector(polygon);
+                const meshkernel::Polygons meshKernelPolygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+
                 // The undo information collected from the ConnectMeshes::Compute is not needed here.
-                [[maybe_unused]] auto undo = meshkernel::ConnectMeshes::Compute(*mergedMeshes, searchFraction);
+                [[maybe_unused]] auto undo = meshkernel::ConnectMeshes::Compute(*mergedMeshes, meshKernelPolygon, searchFraction);
             }
 
             meshKernelState[meshKernelId].m_mesh2d->SetNodes(mergedMeshes->Nodes());

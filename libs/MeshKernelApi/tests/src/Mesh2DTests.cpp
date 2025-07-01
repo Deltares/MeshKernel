@@ -1282,7 +1282,10 @@ TEST(Mesh2D, UndoConnectMeshes)
     errorCode = meshkernelapi::mkernel_mesh2d_set(mk_id, mesh2d_1);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_mesh2d_connect_meshes(mk_id, mesh2d_2, 0.1, true);
+    // The polygon defining the region to be connected.
+    meshkernelapi::GeometryList selectedRegion;
+
+    errorCode = meshkernelapi::mkernel_mesh2d_connect_meshes(mk_id, mesh2d_2, selectedRegion, 0.1, true);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     bool didUndo = false;
@@ -1337,8 +1340,10 @@ TEST(Mesh2D, SimpleConnectMeshes)
     // first initialise using the first mesh, mesh2d_1
     errorCode = meshkernelapi::mkernel_mesh2d_set(mk_id, mesh2d_1);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    // The polygon defining the region to be connected.
+    meshkernelapi::GeometryList selectedRegion;
 
-    errorCode = meshkernelapi::mkernel_mesh2d_connect_meshes(mk_id, mesh2d_2, 0.1, false);
+    errorCode = meshkernelapi::mkernel_mesh2d_connect_meshes(mk_id, mesh2d_2, selectedRegion, 0.1, false);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2d_3{};
