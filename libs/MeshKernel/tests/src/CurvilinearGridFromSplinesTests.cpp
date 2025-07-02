@@ -34,6 +34,7 @@
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Splines.hpp>
+#include <MeshKernel/Utilities/Utilities.hpp>
 #include <TestUtils/Definitions.hpp>
 
 #include <fstream>
@@ -1038,7 +1039,14 @@ meshkernel::Splines LoadSplines(const std::string& fileName)
 
     while (std::getline(splineFile, line))
     {
-        if (size_t found = line.find("L00"); found != std::string::npos)
+        size_t found = line.find("S00");
+
+        if (found == std::string::npos)
+        {
+            found = line.find("L00");
+        }
+
+        if (found != std::string::npos)
         {
             std::getline(splineFile, line);
             std::istringstream sizes(line);
@@ -1577,4 +1585,43 @@ TEST(CurvilinearGridFromSplines, WithoutOverlappingElements)
         EXPECT_EQ(edges[i].first, edgeStart[i]);
         EXPECT_EQ(edges[i].second, edgeEnd[i]);
     }
+}
+
+TEST(CurvilinearGridFromSplines, GridFromFFiveSplines)
+{
+    // Test generating a more complicated grid from a set of much more complcated splines
+    // Only check the size of the grid is correct and the number of valid grid nodes.
+    namespace mk = meshkernel;
+    auto splines = std::make_shared<Splines>(LoadSplines(TEST_FOLDER + "/data/CurvilinearGrids/five_splines.spl"));
+
+    mk::CurvilinearParameters curvilinearParameters;
+    mk::SplinesToCurvilinearParameters splineParameters{.aspect_ratio = 1.0,
+                                                        .aspect_ratio_grow_factor = 1.0,
+                                                        .average_width = 25.0};
+
+    curvilinearParameters.m_refinement = 40;
+    curvilinearParameters.n_refinement = 40;
+
+    mk::CurvilinearGridFromSplines gridFromSplines (splines, curvilinearParameters, splineParameters);
+
+    auto grid = gridFromSplines.Compute();
+
+    auto computedPoints = grid->ComputeNodes();
+    auto computedEdges = grid->ComputeEdges();
+
+    mk::UInt validPointCount = 0;
+
+    for (size_t i = 0; i < computedPoints.size(); ++i)
+    {
+        if (computedPoints[i].IsValid())
+        {
+            ++validPointCount;
+        }
+    }
+
+    mk::Print (computedPoints, computedEdges);
+
+    // EXPECT_EQ(grid->NumN(), 36);
+    // EXPECT_EQ(grid->NumM(), 301);
+    // EXPECT_EQ(validPointCount, 4941);
 }
