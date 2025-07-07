@@ -381,11 +381,18 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
         // get the closest 1d node
         rtree.SearchNearestPoint(points[i]);
 
+        if (rtree.GetQueryResultSize() == 0)
+        {
+            continue;
+        }
+
+        UInt closest1dNodeindex = rtree.GetQueryResult(0);
+
         // form the 1d-2d contact
         // Account for 1d node mask
-        if (rtree.GetQueryResultSize() > 0 && rtree.GetQueryResult(0) != constants::missing::uintValue && oneDNodeMask[rtree.GetQueryResult(0)])
+        if (closest1dNodeindex != constants::missing::uintValue && oneDNodeMask[closest1dNodeindex])
         {
-            m_mesh1dIndices.emplace_back(rtree.GetQueryResult(0));
+            m_mesh1dIndices.emplace_back(closest1dNodeindex);
             m_mesh2dIndices.emplace_back(pointsFaceIndices[i]);
         }
     }
