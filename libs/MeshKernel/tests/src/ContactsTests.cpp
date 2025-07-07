@@ -561,7 +561,7 @@ TEST(Contacts, GenerateContactsMorePointsThanOneDMesh)
                              {9.0, 5.0}};
     std::vector<Edge> edges{nodes.size() - 1};
 
-    for (size_t i = 0; i < edges.size(); ++i)
+    for (meshkernel::UInt i = 0; i < edges.size(); ++i)
     {
         edges[i].first = i;
         edges[i].second = i + 1;
