@@ -32,14 +32,24 @@ std::unique_ptr<meshkernel::CurvilinearGridBlockUndoAction> meshkernel::Curvilin
                                                                                                                const CurvilinearGridNodeIndices& startOffset,
                                                                                                                const CurvilinearGridNodeIndices& endOffset)
 {
-    return std::make_unique<CurvilinearGridBlockUndoAction>(grid, startOffset, endOffset);
+    struct DerivedCurvilinearGridBlockUndoAction : public CurvilinearGridBlockUndoAction
+    {
+        DerivedCurvilinearGridBlockUndoAction(CurvilinearGrid& grid,
+                                              const CurvilinearGridNodeIndices& startOffset,
+                                              const CurvilinearGridNodeIndices& endOffset) : CurvilinearGridBlockUndoAction(grid, startOffset, endOffset) {}
+    };
+
+    UInt endMOffset = endOffset.m_m + (grid.NumM() == endOffset.m_m ? 0 : 1);
+    UInt endNOffset = endOffset.m_n + (grid.NumN() == endOffset.m_n ? 0 : 1);
+
+    CurvilinearGridNodeIndices endOffset2(endNOffset, endMOffset);
+
+    return std::make_unique<DerivedCurvilinearGridBlockUndoAction>(grid, startOffset, endOffset2);
 }
 
 std::unique_ptr<meshkernel::CurvilinearGridBlockUndoAction> meshkernel::CurvilinearGridBlockUndoAction::Create(CurvilinearGrid& grid)
 {
-    return std::make_unique<CurvilinearGridBlockUndoAction>(grid,
-                                                            CurvilinearGridNodeIndices(0, 0),
-                                                            CurvilinearGridNodeIndices(grid.NumN() - 1, grid.NumM() - 1));
+    return Create(grid, CurvilinearGridNodeIndices(0, 0), CurvilinearGridNodeIndices(grid.NumN(), grid.NumM()));
 }
 
 meshkernel::CurvilinearGridBlockUndoAction::CurvilinearGridBlockUndoAction(CurvilinearGrid& grid,

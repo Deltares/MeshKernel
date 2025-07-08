@@ -54,16 +54,18 @@ namespace meshkernel
         /// The entire grid is the block
         static std::unique_ptr<CurvilinearGridBlockUndoAction> Create(CurvilinearGrid& grid);
 
-        /// @brief Constructor, node values are copied from the grid for the block specified
-        CurvilinearGridBlockUndoAction(CurvilinearGrid& grid,
-                                       const CurvilinearGridNodeIndices& startOffset,
-                                       const CurvilinearGridNodeIndices& endOffset);
-
         /// @brief Swap the saved grid nodes with those from the mesh.
         void Swap(CurvilinearGrid& grid);
 
         /// \brief Compute the approximate amount of memory being used, in bytes.
         std::uint64_t MemorySize() const override;
+
+    protected :
+
+        /// @brief Constructor, node values are copied from the grid for the block specified
+        CurvilinearGridBlockUndoAction(CurvilinearGrid& grid,
+                                       const CurvilinearGridNodeIndices& startOffset,
+                                       const CurvilinearGridNodeIndices& endOffset);
 
     private:
         /// @brief The saved block of grid nodes.
