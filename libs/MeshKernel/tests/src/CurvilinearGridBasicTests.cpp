@@ -45,6 +45,7 @@
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/UndoActions/UndoActionStack.hpp"
 #include "MeshKernel/Utilities/LinearAlgebra.hpp"
+#include "MeshKernel/Utilities/Utilities.hpp"
 #include "TestUtils/MakeCurvilinearGrids.hpp"
 
 namespace mk = meshkernel;
@@ -1025,3 +1026,229 @@ INSTANTIATE_TEST_SUITE_P(
     CurvilinearGrid,
     CurvilinearSetGridTests,
     ::testing::Values(true, false));
+
+void CheckMeshAfterDeletion(const mk::CurvilinearGrid& grid,
+                            const std::vector<mk::UInt>& expectedInValidNIndex,
+                            const std::vector<mk::UInt>& expectedInValidMIndex)
+{
+
+    for (mk::UInt i = 0; i < expectedInValidNIndex.size(); ++i)
+    {
+        EXPECT_FALSE(grid.GetNode(expectedInValidNIndex[i], expectedInValidMIndex[i]).IsValid());
+    }
+
+    for (mk::UInt n = 0; n < grid.NumN(); ++n)
+    {
+        bool invalidNIndex = std::find(expectedInValidNIndex.begin(), expectedInValidNIndex.end(), n) != expectedInValidNIndex.end();
+
+        for (mk::UInt m = 0; m < grid.NumM(); ++m)
+        {
+            bool invalidMIndex = std::find(expectedInValidMIndex.begin(), expectedInValidMIndex.end(), m) != expectedInValidMIndex.end();
+
+            if (!invalidNIndex && !invalidMIndex)
+            {
+                EXPECT_TRUE(grid.GetNode(n, m).IsValid()) << " index: " << n << ", " << m;
+            }
+        }
+    }
+}
+
+void CheckMeshAfterUndoRedo(const mk::CurvilinearGrid& grid,
+                            const lin_alg::Matrix<mk::Point>& expectedNodes)
+{
+    ASSERT_EQ(expectedNodes.rows(), grid.NumN());
+    ASSERT_EQ(expectedNodes.cols(), grid.NumM());
+
+    for (auto i = 0; i < expectedNodes.rows(); ++i)
+    {
+        for (auto j = 0; j < expectedNodes.cols(); ++j)
+        {
+            EXPECT_EQ(expectedNodes(i, j).IsValid(), grid.GetNode(i, j).IsValid());
+            ASSERT_EQ(expectedNodes(i, j).x, grid.GetNode(i, j).x);
+            ASSERT_EQ(expectedNodes(i, j).y, grid.GetNode(i, j).y);
+        }
+    }
+}
+
+TEST(CurvilinearBasicTests, DeleteTwoBlocksTopRightRegion)
+{
+
+    // Tests deleting two blocks in the top right region
+    // 1. Check the correct nodes are valid and invalid
+    // 2. Perform undo, redo and final undo step
+    // 3. Again check the correct nodes are valid and invalid
+
+    constexpr double originX = 0.0;
+    constexpr double originY = 0.0;
+
+    constexpr double deltaX = 1.0;
+    constexpr double deltaY = 1.0;
+
+    constexpr size_t nx = 15;
+    constexpr size_t ny = 10;
+
+    meshkernel::UndoActionStack undoStack;
+
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    grid->ComputeGridNodeTypes();
+
+    mk::CurvilinearGridDeleteInterior deleteInterior1(*grid);
+    deleteInterior1.m_lowerLeft = {6, 6};
+    deleteInterior1.m_upperRight = {9, 10};
+    undoStack.Add(deleteInterior1.Compute());
+
+    // Get the nodes after a single block delete
+    lin_alg::Matrix<mk::Point> expectedNodes(grid->GetNodes());
+
+    mk::CurvilinearGridDeleteInterior deleteInterior2(*grid);
+    deleteInterior2.m_lowerLeft = {3, 8};
+    deleteInterior2.m_upperRight = {6, 14};
+    undoStack.Add(deleteInterior2.Compute());
+
+    std::vector<mk::UInt> expectedInValidNIndex{4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9};
+    std::vector<mk::UInt> expectedInValidMIndex{9, 10, 11, 12, 13, 14, 9, 10, 11, 12, 13, 14, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9};
+
+    CheckMeshAfterDeletion(*grid, expectedInValidNIndex, expectedInValidMIndex);
+
+    undoStack.Undo();
+    undoStack.Commit();
+    undoStack.Undo();
+
+    CheckMeshAfterUndoRedo(*grid, expectedNodes);
+}
+
+TEST(CurvilinearBasicTests, DeleteTwoBlocksBottomLeftRegion)
+{
+    // Tests deleting two blocks in the bottom left region
+    // 1. Check the correct nodes are valid and invalid
+    // 2. Perform undo, redo and final undo step
+    // 3. Again check the correct nodes are valid and invalid
+
+    constexpr double originX = 0.0;
+    constexpr double originY = 0.0;
+
+    constexpr double deltaX = 1.0;
+    constexpr double deltaY = 1.0;
+
+    constexpr size_t nx = 15;
+    constexpr size_t ny = 10;
+
+    meshkernel::UndoActionStack undoStack;
+
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    grid->ComputeGridNodeTypes();
+
+    mk::CurvilinearGridDeleteInterior deleteInterior1(*grid);
+    deleteInterior1.m_lowerLeft = {3, 0};
+    deleteInterior1.m_upperRight = {6, 6};
+    undoStack.Add(deleteInterior1.Compute());
+
+    // Get the nodes after a single block delete
+    lin_alg::Matrix<mk::Point> expectedNodes(grid->GetNodes());
+
+    mk::CurvilinearGridDeleteInterior deleteInterior2(*grid);
+    deleteInterior2.m_lowerLeft = {0, 3};
+    deleteInterior2.m_upperRight = {3, 8};
+    undoStack.Add(deleteInterior2.Compute());
+
+    std::vector<mk::UInt> expectedInValidNIndex{0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5};
+    std::vector<mk::UInt> expectedInValidMIndex{4, 5, 6, 7, 4, 5, 6, 7, 4, 5, 6, 7, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5};
+
+    CheckMeshAfterDeletion(*grid, expectedInValidNIndex, expectedInValidMIndex);
+
+    undoStack.Undo();
+    undoStack.Commit();
+    undoStack.Undo();
+
+    CheckMeshAfterUndoRedo(*grid, expectedNodes);
+}
+
+TEST(CurvilinearBasicTests, DeleteTwoBlocksBottomRightRegion)
+{
+    // Tests deleting two blocks in the bottom right region
+    // 1. Check the correct nodes are valid and invalid
+    // 2. Perform undo, redo and final undo step
+    // 3. Again check the correct nodes are valid and invalid
+
+    constexpr double originX = 0.0;
+    constexpr double originY = 0.0;
+
+    constexpr double deltaX = 1.0;
+    constexpr double deltaY = 1.0;
+
+    constexpr size_t nx = 15;
+    constexpr size_t ny = 10;
+
+    meshkernel::UndoActionStack undoStack;
+
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    grid->ComputeGridNodeTypes();
+
+    mk::CurvilinearGridDeleteInterior deleteInterior1(*grid);
+    deleteInterior1.m_lowerLeft = {3, 10};
+    deleteInterior1.m_upperRight = {6, 14};
+    undoStack.Add(deleteInterior1.Compute());
+
+    // Get the nodes after a single block delete
+    lin_alg::Matrix<mk::Point> expectedNodes(grid->GetNodes());
+
+    mk::CurvilinearGridDeleteInterior deleteInterior2(*grid);
+    deleteInterior2.m_lowerLeft = {0, 6};
+    deleteInterior2.m_upperRight = {3, 12};
+    undoStack.Add(deleteInterior2.Compute());
+
+    std::vector<mk::UInt> expectedInValidNIndex{0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 5, 5, 5, 5};
+    std::vector<mk::UInt> expectedInValidMIndex{7, 8, 9, 10, 11, 7, 8, 9, 10, 11, 7, 8, 9, 10, 11, 11, 11, 12, 13, 14, 11, 12, 13, 14};
+
+    CheckMeshAfterDeletion(*grid, expectedInValidNIndex, expectedInValidMIndex);
+
+    undoStack.Undo();
+    undoStack.Commit();
+    undoStack.Undo();
+    CheckMeshAfterUndoRedo(*grid, expectedNodes);
+}
+
+TEST(CurvilinearBasicTests, DeleteTwoBlocksTopLeftRegion)
+{
+    // Tests deleting two blocks in the top left region
+    // 1. Check the correct nodes are valid and invalid
+    // 2. Perform undo, redo and final undo step
+    // 3. Again check the correct nodes are valid and invalid
+
+    constexpr double originX = 0.0;
+    constexpr double originY = 0.0;
+
+    constexpr double deltaX = 1.0;
+    constexpr double deltaY = 1.0;
+
+    constexpr size_t nx = 15;
+    constexpr size_t ny = 10;
+
+    meshkernel::UndoActionStack undoStack;
+
+    std::unique_ptr<mk::CurvilinearGrid> grid = MakeCurvilinearGrid(originX, originY, deltaX, deltaY, nx, ny);
+    grid->ComputeGridNodeTypes();
+
+    mk::CurvilinearGridDeleteInterior deleteInterior1(*grid);
+    deleteInterior1.m_lowerLeft = {6, 3};
+    deleteInterior1.m_upperRight = {9, 7};
+    undoStack.Add(deleteInterior1.Compute());
+
+    // Get the nodes after a single block delete
+    lin_alg::Matrix<mk::Point> expectedNodes(grid->GetNodes());
+
+    mk::CurvilinearGridDeleteInterior deleteInterior2(*grid);
+    deleteInterior2.m_lowerLeft = {3, 0};
+    deleteInterior2.m_upperRight = {6, 5};
+    undoStack.Add(deleteInterior2.Compute());
+
+    std::vector<mk::UInt> expectedInValidNIndex{4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9};
+    std::vector<mk::UInt> expectedInValidMIndex{0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 4, 4, 5, 6, 4, 5, 6, 4, 5, 6};
+
+    CheckMeshAfterDeletion(*grid, expectedInValidNIndex, expectedInValidMIndex);
+
+    undoStack.Undo();
+    undoStack.Commit();
+    undoStack.Undo();
+    CheckMeshAfterUndoRedo(*grid, expectedNodes);
+}
