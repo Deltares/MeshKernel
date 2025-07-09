@@ -60,8 +60,7 @@ namespace meshkernel
         /// \brief Compute the approximate amount of memory being used, in bytes.
         std::uint64_t MemorySize() const override;
 
-    protected :
-
+    protected:
         /// @brief Constructor, node values are copied from the grid for the block specified
         CurvilinearGridBlockUndoAction(CurvilinearGrid& grid,
                                        const CurvilinearGridNodeIndices& startOffset,
