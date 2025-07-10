@@ -293,7 +293,33 @@ void TestDeleteInteriorNodes(meshkernel::CurvilinearGrid& curvilinearGrid,
     meshkernel::UInt lowerLimitJ = std::min(first.m_m, second.m_m) + 1;
     meshkernel::UInt upperLimitJ = std::max(first.m_m, second.m_m) - 1;
 
-    meshkernel::UInt expectedInvalidated = (upperLimitI - lowerLimitI + 1) * (upperLimitJ - lowerLimitJ + 1);
+    // Currently, in this series of tests there is only 1 test that has nodes on the boundary
+    // Other tests check this case more thoroughly
+
+    meshkernel::UInt numberOfBoundary1Nodes = lowerLimitI == 1 ? 1 : 0;
+    meshkernel::UInt numberOfBoundary2Nodes = upperLimitJ >= curvilinearGrid.NumM() - 1 ? 1 : 0;
+    meshkernel::UInt numberOfBoundary3Nodes = upperLimitI >= curvilinearGrid.NumN() - 1 ? 1 : 0;
+    meshkernel::UInt numberOfBoundary4Nodes = lowerLimitJ == 1 ? 1 : 0;
+
+    meshkernel::UInt numberOfBoundaryNodes = numberOfBoundary1Nodes + numberOfBoundary2Nodes + numberOfBoundary3Nodes + numberOfBoundary4Nodes;
+
+    auto IsInvalidBoundaryNode = [=](const meshkernel::UInt i, const meshkernel::UInt j) -> bool
+    {
+        if (numberOfBoundary1Nodes > 0)
+        {
+            return i == 0 && lowerLimitJ <= j && j <= upperLimitJ;
+        }
+        else if (numberOfBoundary4Nodes > 0)
+        {
+            return j == 0 && lowerLimitI <= i && i <= upperLimitI;
+        }
+        else
+        {
+            return false;
+        }
+    };
+
+    meshkernel::UInt expectedInvalidated = (upperLimitI - lowerLimitI + 1) * (upperLimitJ - lowerLimitJ + 1) + numberOfBoundaryNodes;
     const auto initialSize = static_cast<UInt>(CurvilinearGridCountValidNodes(curvilinearGrid));
     CurvilinearGridDeleteInterior curvilinearGridDeleteInterior(curvilinearGrid);
     curvilinearGridDeleteInterior.m_lowerLeft = {lowerLimitI - 1, lowerLimitJ - 1};
@@ -312,7 +338,7 @@ void TestDeleteInteriorNodes(meshkernel::CurvilinearGrid& curvilinearGrid,
     {
         for (meshkernel::UInt j = 0; j < curvilinearGrid.NumM(); ++j)
         {
-            if (inRange(i, lowerLimitI, upperLimitI) && inRange(j, lowerLimitJ, upperLimitJ))
+            if ((inRange(i, lowerLimitI, upperLimitI) && inRange(j, lowerLimitJ, upperLimitJ)) || IsInvalidBoundaryNode(i, j))
             {
                 EXPECT_FALSE(curvilinearGrid.GetNode(i, j).IsValid()) << "node should be false: " << i << "  " << j;
             }
