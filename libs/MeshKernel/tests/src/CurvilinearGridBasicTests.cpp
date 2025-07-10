@@ -1108,6 +1108,7 @@ TEST(CurvilinearBasicTests, DeleteTwoBlocksTopRightRegion)
     std::vector<mk::UInt> expectedInValidNIndex{4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9};
     std::vector<mk::UInt> expectedInValidMIndex{9, 10, 11, 12, 13, 14, 9, 10, 11, 12, 13, 14, 9, 7, 8, 9, 7, 8, 9, 7, 8, 9};
 
+    SCOPED_TRACE("DeleteTwoBlocksTopRightRegion");
     CheckMeshAfterDeletion(*grid, expectedInValidNIndex, expectedInValidMIndex);
 
     undoStack.Undo();
@@ -1154,6 +1155,7 @@ TEST(CurvilinearBasicTests, DeleteTwoBlocksBottomLeftRegion)
     std::vector<mk::UInt> expectedInValidNIndex{0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5};
     std::vector<mk::UInt> expectedInValidMIndex{4, 5, 6, 7, 4, 5, 6, 7, 4, 5, 6, 7, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5};
 
+    SCOPED_TRACE("DeleteTwoBlocksBottomLeftRegion");
     CheckMeshAfterDeletion(*grid, expectedInValidNIndex, expectedInValidMIndex);
 
     undoStack.Undo();
@@ -1200,6 +1202,7 @@ TEST(CurvilinearBasicTests, DeleteTwoBlocksBottomRightRegion)
     std::vector<mk::UInt> expectedInValidNIndex{0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 5, 5, 5, 5};
     std::vector<mk::UInt> expectedInValidMIndex{7, 8, 9, 10, 11, 7, 8, 9, 10, 11, 7, 8, 9, 10, 11, 11, 11, 12, 13, 14, 11, 12, 13, 14};
 
+    SCOPED_TRACE("DeleteTwoBlocksBottomRightRegion");
     CheckMeshAfterDeletion(*grid, expectedInValidNIndex, expectedInValidMIndex);
 
     undoStack.Undo();
@@ -1245,6 +1248,7 @@ TEST(CurvilinearBasicTests, DeleteTwoBlocksTopLeftRegion)
     std::vector<mk::UInt> expectedInValidNIndex{4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9};
     std::vector<mk::UInt> expectedInValidMIndex{0, 1, 2, 3, 4, 0, 1, 2, 3, 4, 4, 4, 5, 6, 4, 5, 6, 4, 5, 6};
 
+    SCOPED_TRACE("DeleteTwoBlocksTopLeftRegion");
     CheckMeshAfterDeletion(*grid, expectedInValidNIndex, expectedInValidMIndex);
 
     undoStack.Undo();
