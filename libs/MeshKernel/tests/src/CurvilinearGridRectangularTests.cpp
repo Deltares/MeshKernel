@@ -295,7 +295,7 @@ void TestDeleteInteriorNodes(meshkernel::CurvilinearGrid& curvilinearGrid,
     meshkernel::UInt lowerLimitJ = std::min(first.m_m, second.m_m) + 1;
     meshkernel::UInt upperLimitJ = std::max(first.m_m, second.m_m) - 1;
 
-    meshkernel::UInt expectedInvalidated = (upperLimitI - lowerLimitI + 1) * (upperLimitJ - lowerLimitJ + 1) + otherInvalid.size();
+    meshkernel::UInt expectedInvalidated = (upperLimitI - lowerLimitI + 1) * (upperLimitJ - lowerLimitJ + 1) + static_cast<meshkernel::UInt>(otherInvalid.size());
     const auto initialSize = static_cast<UInt>(CurvilinearGridCountValidNodes(curvilinearGrid));
     CurvilinearGridDeleteInterior curvilinearGridDeleteInterior(curvilinearGrid);
     curvilinearGridDeleteInterior.m_lowerLeft = {lowerLimitI - 1, lowerLimitJ - 1};
