@@ -352,6 +352,11 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
                              m_mesh1d.GetNumNodes());
     }
 
+    if (m_mesh1d.GetNumNodes() == 0)
+    {
+        return;
+    }
+
     // perform mesh1d administration (m_nodesRTree will also be build if necessary)
     m_mesh1d.AdministrateNodesEdges();
 
@@ -367,12 +372,6 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
     for (UInt i = 0; i < points.size(); ++i)
     {
 
-        // Account for 1d node mask if present
-        if (!oneDNodeMask.empty() && !oneDNodeMask[i])
-        {
-            continue;
-        }
-
         // point not in the mesh
         if (pointsFaceIndices[i] == constants::missing::uintValue)
         {
@@ -382,15 +381,20 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
         // get the closest 1d node
         rtree.SearchNearestPoint(points[i]);
 
-        // if nothing found continue
         if (rtree.GetQueryResultSize() == 0)
         {
             continue;
         }
 
+        UInt closest1dNodeindex = rtree.GetQueryResult(0);
+
         // form the 1d-2d contact
-        m_mesh1dIndices.emplace_back(rtree.GetQueryResult(0));
-        m_mesh2dIndices.emplace_back(pointsFaceIndices[i]);
+        // Account for 1d node mask
+        if (closest1dNodeindex != constants::missing::uintValue && oneDNodeMask[closest1dNodeindex])
+        {
+            m_mesh1dIndices.emplace_back(closest1dNodeindex);
+            m_mesh2dIndices.emplace_back(pointsFaceIndices[i]);
+        }
     }
 }
 
