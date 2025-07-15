@@ -68,13 +68,6 @@ namespace meshkernel
             FacesWithIncludedCircumcenters = 2
         };
 
-        /// Enumerator for different properties on a 2D mesh
-        enum class Property
-        {
-            Orthogonality = 0,
-            EdgeLength = 1
-        };
-
         /// @brief Default destructor
         ~Mesh2D() override = default;
 

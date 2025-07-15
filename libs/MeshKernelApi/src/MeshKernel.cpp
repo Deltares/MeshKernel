@@ -137,7 +137,7 @@ namespace meshkernelapi
     int GeneratePropertyId()
     {
         // The current property id, initialised with a value equal to the last enum in Mesh2D:::Property enum values
-        static int currentPropertyId = static_cast<int>(meshkernel::Mesh2D::Property::EdgeLength);
+        static int currentPropertyId = static_cast<int>(meshkernel::Property::FaceCircumcenter);
 
         // Increment and return the current property id value.
         return ++currentPropertyId;
@@ -147,11 +147,14 @@ namespace meshkernelapi
     {
         std::map<int, std::shared_ptr<PropertyCalculator>> propertyMap;
 
-        int propertyId = static_cast<int>(meshkernel::Mesh2D::Property::Orthogonality);
+        int propertyId = static_cast<int>(meshkernel::Property::Orthogonality);
         propertyMap.emplace(propertyId, std::make_shared<OrthogonalityPropertyCalculator>());
 
-        propertyId = static_cast<int>(meshkernel::Mesh2D::Property::EdgeLength);
+        propertyId = static_cast<int>(meshkernel::Property::EdgeLength);
         propertyMap.emplace(propertyId, std::make_shared<EdgeLengthPropertyCalculator>());
+
+        propertyId = static_cast<int>(meshkernel::Property::FaceCircumcenter);
+        propertyMap.emplace(propertyId, std::make_shared<FaceCircumcenterPropertyCalculator>());
 
         return propertyMap;
     }
@@ -927,10 +930,24 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_mesh2d_get_edge_length_property_type(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::Property::EdgeLength);
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_mesh2d_get_orthogonality_property_type(int& type)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        type = static_cast<int>(meshkernel::Mesh2D::Property::Orthogonality);
+        type = static_cast<int>(meshkernel::Property::Orthogonality);
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_get_face_circumcenter_property_type(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::Property::FaceCircumcenter);
         return lastExitCode;
     }
 
@@ -1637,10 +1654,10 @@ namespace meshkernelapi
                                                   meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), location));
             }
 
-            if (geometryList.values == nullptr)
-            {
-                throw meshkernel::ConstraintError("The property values are null.");
-            }
+            // if (geometryList.values == nullptr)
+            // {
+            //     throw meshkernel::ConstraintError("The property values are null.");
+            // }
 
             if (meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->IsValid(meshKernelState[meshKernelId], location))
             {
@@ -2700,7 +2717,7 @@ namespace meshkernelapi
 
             geometryListDimension = 0;
 
-            const auto filterEnum = static_cast<meshkernel::Mesh2D::Property>(propertyValue);
+            const auto filterEnum = static_cast<meshkernel::Property>(propertyValue);
             const auto filterMask = meshKernelState[meshKernelId].m_mesh2d->FilterBasedOnMetric(meshkernel::Location::Faces,
                                                                                                 filterEnum,
                                                                                                 minValue,

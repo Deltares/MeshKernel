@@ -224,6 +224,75 @@ TEST(Mesh2DTests, Mesh2DGetPropertyTest)
     EXPECT_NEAR(values[3], 0.056591641726992326, tolerance);
 }
 
+TEST(Mesh2DTests, Mesh2DGetCircumcenterPropertyTest)
+{
+    std::vector<double> nodesX{57.0, 49.1, 58.9, 66.7, 48.8, 65.9, 67.0, 49.1};
+    std::vector<double> nodesY{23.6, 14.0, 6.9, 16.2, 23.4, 24.0, 7.2, 6.7};
+
+    std::vector edges{
+        0, 1,
+        1, 2,
+        2, 3,
+        0, 3,
+        1, 4,
+        0, 4,
+        0, 5,
+        3, 5,
+        3, 6,
+        2, 6,
+        2, 7,
+        1, 7};
+
+    meshkernelapi::Mesh2D mesh2d;
+    mesh2d.edge_nodes = edges.data();
+    mesh2d.node_x = nodesX.data();
+    mesh2d.node_y = nodesY.data();
+    mesh2d.num_nodes = static_cast<int>(nodesX.size());
+    mesh2d.num_edges = static_cast<int>(edges.size() * 0.5);
+
+    int meshKernelId = -1;
+    auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = mkernel_mesh2d_set(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    int circumcenterId = -1;
+    errorCode = meshkernelapi::mkernel_mesh2d_get_face_circumcenter_property_type(circumcenterId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    int geometryListDimension = -1;
+    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, circumcenterId, geometryListDimension);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    int locationId = static_cast<int>(meshkernel::Location::Faces);
+    meshkernelapi::GeometryList propertyvalues{};
+    propertyvalues.num_coordinates = geometryListDimension;
+    propertyvalues.geometry_separator = meshkernel::constants::missing::doubleValue;
+    std::vector<double> xCoords(geometryListDimension);
+    std::vector<double> yCoords(geometryListDimension);
+    propertyvalues.coordinates_x = xCoords.data();
+    propertyvalues.coordinates_y = yCoords.data();
+    errorCode = mkernel_mesh2d_get_property(meshKernelId, circumcenterId, locationId, propertyvalues);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Assert
+    EXPECT_EQ(propertyvalues.num_coordinates, 5);
+    const double tolerance = 1e-4;
+
+    EXPECT_NEAR(xCoords[0], 61.8801441733, tolerance);
+    EXPECT_NEAR(xCoords[1], 53.0139097744, tolerance);
+    EXPECT_NEAR(xCoords[2], 53.9275510204, tolerance);
+    EXPECT_NEAR(xCoords[3], 62.7984959122, tolerance);
+    EXPECT_NEAR(xCoords[4], 57.9082712446, tolerance);
+
+    EXPECT_NEAR(yCoords[0], 19.8770034142, tolerance);
+    EXPECT_NEAR(yCoords[1], 18.8296992481, tolerance);
+    EXPECT_NEAR(yCoords[2], 10.35, tolerance);
+    EXPECT_NEAR(yCoords[3], 11.5482066645, tolerance);
+    EXPECT_NEAR(yCoords[4], 15.2402740785, tolerance);
+}
+
 TEST(Mesh2DTests, GetPolygonsOfDeletedFaces_WithPolygon_ShouldGetPolygonOfDeletedFaces)
 {
     // Prepare: set a mesh with two faces sharing an high orthogonality edge. 2 polygon faces should be return

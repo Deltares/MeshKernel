@@ -29,6 +29,7 @@
 #include "MeshKernelApi/State.hpp"
 
 #include "MeshKernel/MeshEdgeLength.hpp"
+#include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/MeshOrthogonality.hpp"
 #include "MeshKernel/SampleAveragingInterpolator.hpp"
 #include "MeshKernel/SampleTriangulationInterpolator.hpp"
@@ -80,6 +81,39 @@ void meshkernelapi::EdgeLengthPropertyCalculator::Calculate(const MeshKernelStat
 int meshkernelapi::EdgeLengthPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location [[maybe_unused]]) const
 {
     return static_cast<int>(state.m_mesh2d->GetNumEdges());
+}
+
+bool meshkernelapi::FaceCircumcenterPropertyCalculator::IsValid(const MeshKernelState& state, const meshkernel::Location location) const
+{
+    return state.m_mesh2d != nullptr && state.m_mesh2d->GetNumNodes() > 0 && location == meshkernel::Location::Faces;
+}
+
+void meshkernelapi::FaceCircumcenterPropertyCalculator::Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const
+{
+
+    if (static_cast<size_t>(geometryList.num_coordinates) < state.m_mesh2d->GetNumFaces())
+    {
+        throw meshkernel::ConstraintError("GeometryList with wrong dimensions, {} must be greater than or equal to {}",
+                                          geometryList.num_coordinates, Size(state, location));
+    }
+
+    std::vector<meshkernel::Point> faceCircumcentres(state.m_mesh2d->GetNumFaces());
+
+    std::span<double> xCoord(geometryList.coordinates_x, state.m_mesh2d->GetNumFaces());
+    std::span<double> yCoord(geometryList.coordinates_y, state.m_mesh2d->GetNumFaces());
+
+    meshkernel::algo::ComputeFaceCircumcenters(*state.m_mesh2d, faceCircumcentres);
+
+    for (size_t i = 0; i < faceCircumcentres.size(); ++i)
+    {
+        xCoord[i] = faceCircumcentres[i].x;
+        yCoord[i] = faceCircumcentres[i].y;
+    }
+}
+
+int meshkernelapi::FaceCircumcenterPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location [[maybe_unused]]) const
+{
+    return static_cast<int>(state.m_mesh2d->GetNumFaces());
 }
 
 meshkernelapi::InterpolatedSamplePropertyCalculator::InterpolatedSamplePropertyCalculator(const GeometryList& sampleData,
