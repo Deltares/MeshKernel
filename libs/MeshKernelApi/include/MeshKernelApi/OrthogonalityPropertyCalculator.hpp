@@ -25,14 +25,33 @@
 //
 //------------------------------------------------------------------------------
 
+#pragma once
+
+#include "MeshKernel/Definitions.hpp"
+#include "MeshKernel/Parameters.hpp"
+#include "MeshKernel/SampleInterpolator.hpp"
+
+#include "MeshKernelApi/GeometryList.hpp"
 #include "MeshKernelApi/PropertyCalculator.hpp"
-#include "MeshKernelApi/State.hpp"
 
-#include "MeshKernel/MeshEdgeLength.hpp"
-#include "MeshKernel/MeshFaceCenters.hpp"
-#include "MeshKernel/MeshOrthogonality.hpp"
-#include "MeshKernel/SampleAveragingInterpolator.hpp"
-#include "MeshKernel/SampleTriangulationInterpolator.hpp"
+namespace meshkernelapi
+{
 
-#include <algorithm>
-#include <functional>
+    /// @brief Calculator for orthogonality of a mesh.
+    class OrthogonalityPropertyCalculator : public PropertyCalculator
+    {
+    public:
+        /// @brief Determine is the calculator can compute the desired results correctly.
+        ///
+        /// This has a default of checking that the mesh2d is valid and the location is at edges
+        virtual bool IsValid(const MeshKernelState& state, const meshkernel::Location location) const override;
+
+        /// @brief Calculate the orthogonality for a mesh
+        void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const override;
+
+        /// @brief Determine the size of the orthogonality vector required
+        int Size(const MeshKernelState& state, const meshkernel::Location location) const override;
+    };
+
+
+} // namespace meshkernelapi

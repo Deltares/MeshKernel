@@ -103,6 +103,10 @@
 #include "MeshKernelApi/CurvilinearFrozenLinesAddUndoAction.hpp"
 #include "MeshKernelApi/CurvilinearFrozenLinesDeleteUndoAction.hpp"
 #include "MeshKernelApi/PropertyCalculator.hpp"
+#include "MeshKernelApi/EdgeLengthPropertyCalculator.hpp"
+#include "MeshKernelApi/FaceCircumcenterPropertyCalculator.hpp"
+#include "MeshKernelApi/OrthogonalityPropertyCalculator.hpp"
+#include "MeshKernelApi/InterpolatedSamplePropertyCalculator.hpp"
 #include "MeshKernelApi/State.hpp"
 #include "MeshKernelApi/Utils.hpp"
 
