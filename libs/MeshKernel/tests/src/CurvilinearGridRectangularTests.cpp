@@ -295,7 +295,7 @@ void TestDeleteInteriorNodes(meshkernel::CurvilinearGrid& curvilinearGrid,
     meshkernel::UInt lowerLimitJ = std::min(first.m_m, second.m_m) + 1;
     meshkernel::UInt upperLimitJ = std::max(first.m_m, second.m_m) - 1;
 
-    meshkernel::UInt expectedInvalidated = (upperLimitI - lowerLimitI + 1) * (upperLimitJ - lowerLimitJ + 1) + otherInvalid.size ();
+    meshkernel::UInt expectedInvalidated = (upperLimitI - lowerLimitI + 1) * (upperLimitJ - lowerLimitJ + 1) + otherInvalid.size();
     const auto initialSize = static_cast<UInt>(CurvilinearGridCountValidNodes(curvilinearGrid));
     CurvilinearGridDeleteInterior curvilinearGridDeleteInterior(curvilinearGrid);
     curvilinearGridDeleteInterior.m_lowerLeft = {lowerLimitI - 1, lowerLimitJ - 1};
@@ -321,7 +321,7 @@ void TestDeleteInteriorNodes(meshkernel::CurvilinearGrid& curvilinearGrid,
     {
         for (meshkernel::UInt j = 0; j < curvilinearGrid.NumM(); ++j)
         {
-            if ((inRange(i, lowerLimitI, upperLimitI) && inRange(j, lowerLimitJ, upperLimitJ)) || otherInvalidNodes (i,j))
+            if ((inRange(i, lowerLimitI, upperLimitI) && inRange(j, lowerLimitJ, upperLimitJ)) || otherInvalidNodes(i, j))
             {
                 EXPECT_FALSE(curvilinearGrid.GetNode(i, j).IsValid()) << "node should be false: " << i << "  " << j;
             }
@@ -675,7 +675,7 @@ public:
             std::make_tuple<Point, int>(Point{10.0, 30.0}, 14),
             std::make_tuple<Point, int>(Point{0.0, 30.0}, 15),
             std::make_tuple<Point, int>(Point{30.0, 30.0}, 15),
-            std::make_tuple<Point, int>(Point{10.0, 10.0}, 12),            std::make_tuple<Point, int>(Point{20.0, 10.0}, 12)};
+            std::make_tuple<Point, int>(Point{10.0, 10.0}, 12), std::make_tuple<Point, int>(Point{20.0, 10.0}, 12)};
     }
 };
 
