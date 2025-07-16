@@ -1628,9 +1628,9 @@ TEST(Mesh2D, CircumcentreTest)
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/bend_net.nc");
 
     // Create some triangles in the mesh
-    [[maybe_unused]] auto undoConnect1 = mesh->ConnectNodes(22, 28, false);
-    [[maybe_unused]] auto undoConnect2 = mesh->ConnectNodes(16, 22, false);
-    [[maybe_unused]] auto undoConnect3 = mesh->ConnectNodes(11, 17, false);
+    [[maybe_unused]] auto [edgeId1, undoConnect1] = mesh->ConnectNodes(22, 28, false);
+    [[maybe_unused]] auto [edgeId2, undoConnect2] = mesh->ConnectNodes(16, 22, false);
+    [[maybe_unused]] auto [edgeId3, undoConnect3] = mesh->ConnectNodes(11, 17, false);
 
     mesh->Administrate();
 
