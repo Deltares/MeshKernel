@@ -25,14 +25,34 @@
 //
 //------------------------------------------------------------------------------
 
+#include "MeshKernelApi/OrthogonalityPropertyCalculator.hpp"
 #include "MeshKernelApi/PropertyCalculator.hpp"
 #include "MeshKernelApi/State.hpp"
 
-#include "MeshKernel/MeshEdgeLength.hpp"
-#include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/MeshOrthogonality.hpp"
-#include "MeshKernel/SampleAveragingInterpolator.hpp"
-#include "MeshKernel/SampleTriangulationInterpolator.hpp"
 
 #include <algorithm>
 #include <functional>
+
+bool meshkernelapi::OrthogonalityPropertyCalculator::IsValid(const MeshKernelState& state, const meshkernel::Location location) const
+{
+    return state.m_mesh2d != nullptr && state.m_mesh2d->GetNumNodes() > 0 && location == meshkernel::Location::Edges;
+}
+
+void meshkernelapi::OrthogonalityPropertyCalculator::Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const
+{
+
+    if (geometryList.num_coordinates < static_cast<int>(state.m_mesh2d->GetNumEdges()))
+    {
+        throw meshkernel::ConstraintError("GeometryList with wrong dimensions, {} must be greater than or equal to {}",
+                                          geometryList.num_coordinates, Size(state, location));
+    }
+
+    std::span<double> orthogonality(geometryList.values, geometryList.num_coordinates);
+    meshkernel::MeshOrthogonality::Compute(*state.m_mesh2d, orthogonality);
+}
+
+int meshkernelapi::OrthogonalityPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location [[maybe_unused]]) const
+{
+    return static_cast<int>(state.m_mesh2d->GetNumEdges());
+}

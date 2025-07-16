@@ -26,6 +26,10 @@ set(SRC_LIST
   ${SRC_DIR}/MKStateUndoAction.cpp
   ${SRC_DIR}/MeshKernel.cpp
   ${SRC_DIR}/PropertyCalculator.cpp
+  ${SRC_DIR}/EdgeLengthPropertyCalculator.cpp
+  ${SRC_DIR}/FaceCircumcenterPropertyCalculator.cpp
+  ${SRC_DIR}/OrthogonalityPropertyCalculator.cpp
+  ${SRC_DIR}/InterpolatedSamplePropertyCalculator.cpp
 )
 
 set(CACHE_SRC_LIST
@@ -57,6 +61,10 @@ set(
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
   ${DOMAIN_INC_DIR}/MeshKernel.hpp
   ${DOMAIN_INC_DIR}/PropertyCalculator.hpp
+  ${DOMAIN_INC_DIR}/EdgeLengthPropertyCalculator.hpp
+  ${DOMAIN_INC_DIR}/FaceCircumcenterPropertyCalculator.hpp
+  ${DOMAIN_INC_DIR}/OrthogonalityPropertyCalculator.hpp
+  ${DOMAIN_INC_DIR}/InterpolatedSamplePropertyCalculator.hpp
   ${DOMAIN_INC_DIR}/State.hpp
   ${DOMAIN_INC_DIR}/Utils.hpp
   ${VERSION_INC_DIR}/Version/Version.hpp

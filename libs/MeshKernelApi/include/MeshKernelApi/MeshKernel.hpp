@@ -1223,10 +1223,20 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_data(int meshKernelId, Mesh2D& mesh2d);
 
+        /// @brief Gets an int indicating the edge length property type for mesh2d
+        /// @param[out] type The int indicating the edge length property type
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_edge_length_property_type(int& type);
+
         /// @brief Gets an int indicating the orthogonality property type for mesh2d
         /// @param[out] type The int indicating the orthogonality property type
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_orthogonality_property_type(int& type);
+
+        /// @brief Gets an int indicating the face circumcenter property type for mesh2d
+        /// @param[out] type The int indicating the face circumcenter property type
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_face_circumcenter_property_type(int& type);
 
         /// @brief Gets only the node and edge Mesh2D data
         ///
