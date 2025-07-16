@@ -53,5 +53,4 @@ namespace meshkernelapi
         int Size(const MeshKernelState& state, const meshkernel::Location location) const override;
     };
 
-
 } // namespace meshkernelapi
