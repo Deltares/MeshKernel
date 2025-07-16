@@ -37,6 +37,7 @@
 #include "MeshKernel/Mesh2DIntersections.hpp"
 #include "MeshKernel/Mesh2DToCurvilinear.hpp"
 #include "MeshKernel/MeshEdgeLength.hpp"
+#include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/MeshOrthogonality.hpp"
 #include "MeshKernel/MeshSmoothness.hpp"
 #include "MeshKernel/Operations.hpp"
@@ -1521,10 +1522,10 @@ TEST(Mesh2D, Mesh2DComputeAspectRatio)
 
     std::vector<double> aspectRatios;
     // Values calculated by the algorithm, not derived analytically
-    std::vector<double> expectedAspectRatios{0.909799624513058, 1.36963998294878, 1.08331064761803,
-                                             0.896631398796997, 0.839834200634414, 1.15475768474815,
-                                             0.832219560848176, 0.819704195029218, 1.11720404458871,
-                                             0.807269974963293, 0.972997967873087, 1.17917808082661};
+    std::vector<double> expectedAspectRatios{0.909873432321899, 1.36956868695895, 1.08336278844686,
+                                             0.896664584053244, 0.839534615157463, 1.15529513995042,
+                                             0.832436574406386, 0.81970228836466, 1.11708942468894,
+                                             0.807420719217234, 0.973005016614517, 1.17901223763961};
 
     mesh->ComputeAspectRatios(aspectRatios);
 
@@ -1618,4 +1619,51 @@ TEST(Mesh2D, MeshToCurvilinear_SingleElement)
     // Point is outside domain
     EXPECT_THROW([[maybe_unused]] auto result = mesh2DToCurvilinear.Compute({-1.0, -1.0}), meshkernel::AlgorithmError);
     EXPECT_THROW([[maybe_unused]] auto result = mesh2DToCurvilinear.Compute({4.0, 4.0}), meshkernel::AlgorithmError);
+}
+
+TEST(Mesh2D, CircumcentreTest)
+{
+    // Tests the circum centre are computed correctly
+    // Setup a mesh with 20 quadrilaterals on a bend
+    auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/bend_net.nc");
+
+    // Create some triangles in the mesh
+    [[maybe_unused]] auto [edgeId1, undoConnect1] = mesh->ConnectNodes(22, 28, false);
+    [[maybe_unused]] auto [edgeId2, undoConnect2] = mesh->ConnectNodes(16, 22, false);
+    [[maybe_unused]] auto [edgeId3, undoConnect3] = mesh->ConnectNodes(11, 17, false);
+
+    mesh->Administrate();
+
+    // This is required
+    mesh->ComputeFaceAreaAndMassCenters(true);
+
+    std::vector<meshkernel::Point> circumcentres(meshkernel::algo::ComputeFaceCircumcenters(*mesh));
+
+    std::vector<double> expectedCentresX{206.660451817758, 185.888995485133, 276.045461920919, 262.103773081694,
+                                         351.512547260357, 354.488336820198, 96.9057821605506, 74.139650060642,
+                                         64.9521150400979, 26.5193850779214, 143.773947886783, 126.140829602317,
+                                         119.140571110995, 95.2344804191452, 195.26948950604, 194.972002901377,
+                                         196.67077220983, 253.038332333396, 277.725432056083, 305.985424137459,
+                                         327.068944125115, 347.455772919182, 376.70237660149};
+
+    std::vector<double> expectedCentresY{416.300290705537, 420.104841429695, 368.791106258972, 390.312778220515,
+                                         283.461922195895, 288.010897902414, 267.184187763926, 275.571981947808,
+                                         279.59015036956, 293.865143028155, 368.39893765591, 380.315565887432,
+                                         387.675951330253, 416.01997987334, 399.080604846198, 430.106563115441,
+                                         477.611199943931, 365.195459544209, 387.971212251494, 417.968996300952,
+                                         266.714576206953, 280.533311526148, 300.712823947955};
+
+    ASSERT_EQ(expectedCentresX.size(), circumcentres.size());
+
+    const double tolerance = 1.0e-10;
+
+    for (size_t i = 0; i < circumcentres.size(); ++i)
+    {
+        EXPECT_NEAR(expectedCentresX[i], circumcentres[i].x, tolerance);
+    }
+
+    for (size_t i = 0; i < circumcentres.size(); ++i)
+    {
+        EXPECT_NEAR(expectedCentresY[i], circumcentres[i].y, tolerance);
+    }
 }

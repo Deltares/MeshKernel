@@ -32,6 +32,7 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/MeshEdgeLength.hpp>
+#include <MeshKernel/MeshFaceCenters.hpp>
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
@@ -689,9 +690,9 @@ void MeshRefinement::ComputeSplittingNode(const UInt faceId,
         facePolygonWithoutHangingNodes.emplace_back(facePolygonWithoutHangingNodes.front());
         localEdgesNumFaces.emplace_back(localEdgesNumFaces.front());
 
-        splittingNode = ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
-                                               localEdgesNumFaces,
-                                               m_mesh.m_projection);
+        splittingNode = algo::ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
+                                                     localEdgesNumFaces,
+                                                     m_mesh.m_projection);
 
         if (m_mesh.m_projection == Projection::spherical)
         {
