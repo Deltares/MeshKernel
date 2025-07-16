@@ -102,11 +102,11 @@
 
 #include "MeshKernelApi/CurvilinearFrozenLinesAddUndoAction.hpp"
 #include "MeshKernelApi/CurvilinearFrozenLinesDeleteUndoAction.hpp"
-#include "MeshKernelApi/PropertyCalculator.hpp"
 #include "MeshKernelApi/EdgeLengthPropertyCalculator.hpp"
 #include "MeshKernelApi/FaceCircumcenterPropertyCalculator.hpp"
-#include "MeshKernelApi/OrthogonalityPropertyCalculator.hpp"
 #include "MeshKernelApi/InterpolatedSamplePropertyCalculator.hpp"
+#include "MeshKernelApi/OrthogonalityPropertyCalculator.hpp"
+#include "MeshKernelApi/PropertyCalculator.hpp"
 #include "MeshKernelApi/State.hpp"
 #include "MeshKernelApi/Utils.hpp"
 
@@ -1657,11 +1657,6 @@ namespace meshkernelapi
                                                   geometryList.num_coordinates,
                                                   meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->Size(meshKernelState.at(meshKernelId), location));
             }
-
-            // if (geometryList.values == nullptr)
-            // {
-            //     throw meshkernel::ConstraintError("The property values are null.");
-            // }
 
             if (meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->IsValid(meshKernelState[meshKernelId], location))
             {
