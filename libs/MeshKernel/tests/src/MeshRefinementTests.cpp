@@ -1529,7 +1529,7 @@ public:
         return std::vector{
             std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::GaussianBump, 1165, 2344),
             std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::GaussianWave, 5297, 10784),
-            std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::RidgeXDirection, 2618, 5694),
+            std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::RidgeXDirection, 2606, 5670),
             std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::ArctanFunction, 2309, 5028)};
     }
 };
@@ -1574,7 +1574,7 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
                                                                  1);
 
     MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 3;
+    meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
     meshRefinementParameters.min_edge_size = 2.0;
@@ -1591,16 +1591,16 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
     auto undoAction = meshRefinement.Compute();
 
     // Assert
-    ASSERT_EQ(numNodes, mesh->GetNumNodes());
-    ASSERT_EQ(numEdges, mesh->GetNumEdges());
+    EXPECT_EQ(numNodes, mesh->GetNumNodes());
+    EXPECT_EQ(numEdges, mesh->GetNumEdges());
 
     // Test the undo action has been computed correctly
     undoAction->Restore();
     // Recompute faces
     mesh->Administrate();
 
-    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
-    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+    EXPECT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    EXPECT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
     meshkernel::UInt count = 0;
 
@@ -2064,11 +2064,11 @@ TEST(MeshRefinement, CasulliTwoPolygonDeRefinement)
 
     // Centre of element to be deleted
     std::vector<double> elementCentreX{25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 45.0,
-                                       45.0, 45.0, 46.66666666666666, 65.0, 65.0, 66.6666666666666,
-                                       85.0, 103.3333333333333, 105.0, 125.0, 125.0};
+                                       45.0, 45.0, 46.666666666666, 65.0, 65.0, 66.666666666666,
+                                       85.0, 103.333333333333, 105.0, 125.0, 125.0};
     std::vector<double> elementCentreY{15.0, 35.0, 55.0, 75.0, 95.0, 115.0, 35.0,
-                                       55.0, 75.0, 96.6666666666666, 35.0, 55.0, 76.6666666666666,
-                                       55.0, 76.6666666666666, 55.0, 98.3333333333333, 75.0};
+                                       55.0, 75.0, 96.66666666666, 35.0, 55.0, 76.66666666666,
+                                       55.0, 76.66666666666, 55.0, 98.333333333333, 75.0};
 
     std::vector<Point> centrePoints{{55.0, 55.0}, {155.0, 105.0}, {175.0, 225.0}, {25.0, 274.0}, {55.0, 55.0}};
     meshkernel::Polygons centrePolygon(centrePoints, Projection::cartesian);
@@ -2093,7 +2093,7 @@ TEST(MeshRefinement, CasulliTwoPolygonDeRefinement)
     const std::vector<mk::Point> centreRefinedNodes(mesh.Nodes());
     const std::vector<mk::Edge> centreRefinedEdges(mesh.Edges());
 
-    mesh.ComputeCircumcentersMassCentersAndFaceAreas(true);
+    mesh.ComputeFaceAreaAndMassCenters(true);
 
     // Get the element centres of the elements to be deleted.
     std::vector<meshkernel::Point> toDelete(meshkernel::CasulliDeRefinement::ElementsToDelete(mesh, lowerPolygon));

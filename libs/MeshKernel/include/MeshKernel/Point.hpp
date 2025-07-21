@@ -101,6 +101,12 @@ namespace meshkernel
         /// @brief Overloads multiplication with a integer
         [[nodiscard]] Point operator*(int const& rhs) const { return Point(x * rhs, y * rhs); }
 
+        /// @brief Type conversion operator
+        explicit operator Vector() const
+        {
+            return Vector(x, y);
+        }
+
         /// @brief Transforms spherical coordinates to cartesian
         void TransformSphericalToCartesian(double referenceLatitude)
         {
