@@ -1,3 +1,8 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation version 3.
 //
@@ -22,6 +27,7 @@
 
 #pragma once
 
+#include <array>
 #include <span>
 #include <vector>
 
@@ -36,5 +42,20 @@ namespace meshkernel::algo
 
     /// @brief Compute the circum-center point of each of the faces overwriting the values in an array
     void ComputeFaceCircumcenters(const Mesh& mesh, std::span<Point> faceCenters);
+
+    /// @brief Compute the circumcenter of a triangle element.
+    Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection projection);
+
+    /// @brief Compute the circumcenter of a polygon
+    Point ComputeFaceCircumenter(std::vector<Point>& polygon,
+                                 const std::vector<UInt>& edgesNumFaces,
+                                 const Projection projection);
+
+    /// @brief Compute circumcenter of face
+    Point ComputeCircumCenter(const Point& centerOfMass,
+                              const UInt pointCount,
+                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
+                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
+                              const Projection projection);
 
 } // namespace meshkernel::algo

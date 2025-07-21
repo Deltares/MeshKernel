@@ -263,13 +263,13 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
         nsIndexIncreasing);
 }
 
-std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTestingRand(
-    meshkernel::UInt n,
-    meshkernel::UInt m,
-    double dim_x,
-    double dim_y,
-    meshkernel::Projection projection,
-    meshkernel::Point const& origin)
+std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTestingRand(meshkernel::UInt n,
+                                                                      meshkernel::UInt m,
+                                                                      double dim_x,
+                                                                      double dim_y,
+                                                                      meshkernel::Projection projection,
+                                                                      meshkernel::Point const& origin,
+                                                                      const double randomScaling)
 {
     std::vector<std::vector<meshkernel::UInt>> node_indices(n, std::vector<meshkernel::UInt>(m));
     std::vector<meshkernel::Point> nodes(n * m);
@@ -277,7 +277,6 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTestingRand(
     // Create a uniform distribution in 0 .. 1.
     std::uniform_real_distribution<double> distribution(0.0, 1.0);
     std::default_random_engine engine;
-    const double randomScaling = 0.25;
 
     {
         meshkernel::UInt index = 0;
@@ -332,7 +331,8 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTestingRand(
     meshkernel::UInt m,
     double delta,
     meshkernel::Projection projection,
-    meshkernel::Point const& origin)
+    meshkernel::Point const& origin,
+    const double randomScaling)
 {
     double const dim_x = delta * static_cast<double>(n - 1);
     double const dim_y = delta * static_cast<double>(m - 1);
@@ -342,7 +342,8 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTestingRand(
         dim_x,
         dim_y,
         projection,
-        origin);
+        origin,
+        randomScaling);
 }
 
 std::tuple<meshkernel::UInt,

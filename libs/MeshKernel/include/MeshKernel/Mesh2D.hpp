@@ -107,8 +107,8 @@ namespace meshkernel
         /// @brief Perform complete administration
         void Administrate(CompoundUndoAction* undoAction = nullptr) override;
 
-        /// @brief Compute face circumcenters
-        void ComputeCircumcentersMassCentersAndFaceAreas(bool computeMassCenters = false);
+        /// @brief Compute face mass center
+        void ComputeFaceAreaAndMassCenters(bool computeMassCenters = false);
 
         /// @brief Constructs the face nodes mapping, face mass centers and areas
         void FindFaces();
@@ -141,13 +141,6 @@ namespace meshkernel
                                                        std::vector<Point>& polygonNodesCache,
                                                        std::vector<UInt>& localNodeIndicesCache,
                                                        std::vector<UInt>& globalEdgeIndicesCache) const;
-
-        /// @brief For a closed polygon, compute the circumcenter of a face (getcircumcenter)
-        /// @param[in,out] polygon       Cache storing the face nodes
-        /// @param[in]     edgesNumFaces For meshes, the number of faces sharing the edges
-        /// @returns       The computed circumcenter
-        [[nodiscard]] Point ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                                   const std::vector<UInt>& edgesNumFaces) const;
 
         /// @brief Gets the mass centers of obtuse triangles
         /// @returns The center of obtuse triangles
@@ -502,23 +495,6 @@ namespace meshkernel
 
         /// @brief Classify a single node
         MeshNodeType ClassifyNode(const UInt nodeId) const;
-
-        // /// @brief Count the number of valid edges in list
-        // UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, const UInt numNodes) const;
-
-        /// @brief Compute mid point and normal of polygon segment
-        void ComputeMidPointsAndNormals(const std::vector<Point>& polygon,
-                                        const std::vector<UInt>& edgesNumFaces,
-                                        const UInt numNodes,
-                                        std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
-                                        std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
-                                        UInt& pointCount) const;
-
-        /// @brief Compute circumcentre of face
-        Point ComputeCircumCentre(const Point& centerOfMass,
-                                  const UInt pointCount,
-                                  const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
-                                  const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals) const;
 
         /// @brief Compute edge and average flow length
         void ComputeAverageFlowEdgesLength(std::vector<double>& edgesLength,
