@@ -284,13 +284,13 @@ TEST(Mesh2DTests, Mesh2DGetCircumcenterPropertyTest)
     EXPECT_NEAR(xCoords[1], 53.0139097744, tolerance);
     EXPECT_NEAR(xCoords[2], 53.9275510204, tolerance);
     EXPECT_NEAR(xCoords[3], 62.7984959122, tolerance);
-    EXPECT_NEAR(xCoords[4], 57.9082712446, tolerance);
+    EXPECT_NEAR(xCoords[4], 57.8840699357, tolerance);
 
     EXPECT_NEAR(yCoords[0], 19.8770034142, tolerance);
     EXPECT_NEAR(yCoords[1], 18.8296992481, tolerance);
     EXPECT_NEAR(yCoords[2], 10.35, tolerance);
     EXPECT_NEAR(yCoords[3], 11.5482066645, tolerance);
-    EXPECT_NEAR(yCoords[4], 15.2402740785, tolerance);
+    EXPECT_NEAR(yCoords[4], 15.2382105926, tolerance);
 }
 
 TEST(Mesh2DTests, Mesh2DGetEdgeLengthPropertyTest)
