@@ -567,6 +567,10 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>OuterProductTwoSegm
 <tr class="memitem:a7d6e1aab3f39437c400e8b41f2672655" id="r_a7d6e1aab3f39437c400e8b41f2672655"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a7d6e1aab3f39437c400e8b41f2672655">NormalVector</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;insidePoint, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
 <tr class="memdesc:a7d6e1aab3f39437c400e8b41f2672655"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalized vector of a segment in direction 1 -&gt; 2 with the insidePoint orientation.  <br /></td></tr>
 <tr class="separator:a7d6e1aab3f39437c400e8b41f2672655"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d0b4c65c7b4df1da62858af37de7dd9" id="r_a1d0b4c65c7b4df1da62858af37de7dd9"><td class="memItemLeft" align="right" valign="top"><a id="a1d0b4c65c7b4df1da62858af37de7dd9" name="a1d0b4c65c7b4df1da62858af37de7dd9"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>ComputeArea</b> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> projection)</td></tr>
+<tr class="memdesc:a1d0b4c65c7b4df1da62858af37de7dd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the area of the polygon described by the closed sequence of points. <br /></td></tr>
+<tr class="separator:a1d0b4c65c7b4df1da62858af37de7dd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0627229f0f4bf223d00001cc39b8686" id="r_ae0627229f0f4bf223d00001cc39b8686"><td class="memItemLeft" align="right" valign="top"><a id="ae0627229f0f4bf223d00001cc39b8686" name="ae0627229f0f4bf223d00001cc39b8686"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>TransformGlobalVectorToLocal</b> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;reference, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;globalCoordinates, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;globalComponents, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;localComponents)</td></tr>
 <tr class="memdesc:ae0627229f0f4bf223d00001cc39b8686"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transforms vector with components in global spherical coordinate directions(xglob, yglob) to local coordinate directions(xloc, yloc) around reference point(xref, yref) <br /></td></tr>
@@ -604,9 +608,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>TransformGlobalVector
 <tr class="memitem:a753af36980a58942bff49dfd40f5edff" id="r_a753af36980a58942bff49dfd40f5edff"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a753af36980a58942bff49dfd40f5edff">NormalizedInnerProductTwoSegments</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstPointFirstSegment, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondPointFirstSegment, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstPointSecondSegment, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondPointSecondSegment, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
 <tr class="memdesc:a753af36980a58942bff49dfd40f5edff"><td class="mdescLeft">&#160;</td><td class="mdescRight">The normalized inner product of two segments (dcosphi)  <br /></td></tr>
 <tr class="separator:a753af36980a58942bff49dfd40f5edff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7dfde423e91be0793af4c40e98d6a5a1" id="r_a7dfde423e91be0793af4c40e98d6a5a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a7dfde423e91be0793af4c40e98d6a5a1">CircumcenterOfTriangle</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstNode, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondNode, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;thirdNode, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
-<tr class="memdesc:a7dfde423e91be0793af4c40e98d6a5a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the circumcenter of a triangle.  <br /></td></tr>
-<tr class="separator:a7dfde423e91be0793af4c40e98d6a5a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7ceb247d272a9df5424ca06447306bb" id="r_ad7ceb247d272a9df5424ca06447306bb"><td class="memItemLeft" align="right" valign="top"><a id="ad7ceb247d272a9df5424ca06447306bb" name="ad7ceb247d272a9df5424ca06447306bb"></a>
 <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&#160;</td><td class="memItemRight" valign="bottom"><b>CountNumberOfValidEdges</b> (const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;edgesNumFaces, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numNodes)</td></tr>
 <tr class="memdesc:ad7ceb247d272a9df5424ca06447306bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Count the number of valid edges in list. <br /></td></tr>
@@ -615,14 +616,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>TransformGlobalVector
 void&#160;</td><td class="memItemRight" valign="bottom"><b>ComputeMidPointsAndNormals</b> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon, const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;edgesNumFaces, const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numNodes, std::array&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a>, constants::geometric::maximumNumberOfNodesPerFace &gt; &amp;middlePoints, std::array&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a>, constants::geometric::maximumNumberOfNodesPerFace &gt; &amp;normals, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &amp;pointCount, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
 <tr class="memdesc:abb9b45f55d26db268e049602acdbd2e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute mid point and normal of polygon segment. <br /></td></tr>
 <tr class="separator:abb9b45f55d26db268e049602acdbd2e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e7f1a2423b6c83eacb7372a97095835" id="r_a2e7f1a2423b6c83eacb7372a97095835"><td class="memItemLeft" align="right" valign="top"><a id="a2e7f1a2423b6c83eacb7372a97095835" name="a2e7f1a2423b6c83eacb7372a97095835"></a>
-<a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ComputeCircumCenter</b> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;centerOfMass, const <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> pointCount, const std::array&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a>, constants::geometric::maximumNumberOfNodesPerFace &gt; &amp;middlePoints, const std::array&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a>, constants::geometric::maximumNumberOfNodesPerFace &gt; &amp;normals, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
-<tr class="memdesc:a2e7f1a2423b6c83eacb7372a97095835"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute circumcenter of face. <br /></td></tr>
-<tr class="separator:a2e7f1a2423b6c83eacb7372a97095835"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff199bb42d254889c515b8f597609445" id="r_aff199bb42d254889c515b8f597609445"><td class="memItemLeft" align="right" valign="top"><a id="aff199bb42d254889c515b8f597609445" name="aff199bb42d254889c515b8f597609445"></a>
-<a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ComputeFaceCircumenter</b> (std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon, const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;edgesNumFaces, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
-<tr class="memdesc:aff199bb42d254889c515b8f597609445"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the circumcenter for the face described by the polygon. <br /></td></tr>
-<tr class="separator:aff199bb42d254889c515b8f597609445"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc1497cfee88e41f0c0faaf3e5cd40a1" id="r_acc1497cfee88e41f0c0faaf3e5cd40a1"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; bool, <a class="el" href="classmeshkernel_1_1_point.html">Point</a>, double, double, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#acc1497cfee88e41f0c0faaf3e5cd40a1">AreSegmentsCrossing</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentFirstPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentSecondPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentFirstPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentSecondPoint, bool adimensionalCrossProduct, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
 <tr class="memdesc:acc1497cfee88e41f0c0faaf3e5cd40a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines if two segments are crossing (cross, cross3D)  <br /></td></tr>
 <tr class="separator:acc1497cfee88e41f0c0faaf3e5cd40a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1192,58 +1185,6 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>angleBetween</b> (c
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The spherical coordinate </dd></dl>
-
-</div>
-</div>
-<a id="a7dfde423e91be0793af4c40e98d6a5a1" name="a7dfde423e91be0793af4c40e98d6a5a1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7dfde423e91be0793af4c40e98d6a5a1">&#9670;&#160;</a></span>CircumcenterOfTriangle()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classmeshkernel_1_1_point.html">Point</a> meshkernel::CircumcenterOfTriangle </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
-          <td class="paramname"><em>firstNode</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
-          <td class="paramname"><em>secondNode</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;&#160;</td>
-          <td class="paramname"><em>thirdNode</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;&#160;</td>
-          <td class="paramname"><em>projection</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Computes the circumcenter of a triangle. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">firstNode</td><td>The first triangle node </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">secondNode</td><td>The second triangle node </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">thirdNode</td><td>The third triangle node </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">projection</td><td>The coordinate system projection </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The resulting circumcenter </dd></dl>
 
 </div>
 </div>

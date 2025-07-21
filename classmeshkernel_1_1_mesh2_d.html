@@ -149,10 +149,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a7bcb5177e39e5d5ce3b233a5942fe6c2" id="r_a7bcb5177e39e5d5ce3b233a5942fe6c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a7bcb5177e39e5d5ce3b233a5942fe6c2">Administrate</a> (CompoundUndoAction *undoAction=nullptr) override</td></tr>
 <tr class="memdesc:a7bcb5177e39e5d5ce3b233a5942fe6c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Perform complete administration.  <br /></td></tr>
 <tr class="separator:a7bcb5177e39e5d5ce3b233a5942fe6c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaf625bb91c465cf93bfed19ce43dad50" id="r_aaf625bb91c465cf93bfed19ce43dad50"><td class="memItemLeft" align="right" valign="top"><a id="aaf625bb91c465cf93bfed19ce43dad50" name="aaf625bb91c465cf93bfed19ce43dad50"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>ComputeCircumcentersMassCentersAndFaceAreas</b> (bool computeMassCenters=false)</td></tr>
-<tr class="memdesc:aaf625bb91c465cf93bfed19ce43dad50"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute face circumcenters. <br /></td></tr>
-<tr class="separator:aaf625bb91c465cf93bfed19ce43dad50"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f9837c012a30fab24e1d4058336309d" id="r_a9f9837c012a30fab24e1d4058336309d"><td class="memItemLeft" align="right" valign="top"><a id="a9f9837c012a30fab24e1d4058336309d" name="a9f9837c012a30fab24e1d4058336309d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ComputeFaceAreaAndMassCenters</b> (bool computeMassCenters=false)</td></tr>
+<tr class="memdesc:a9f9837c012a30fab24e1d4058336309d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute face mass center. <br /></td></tr>
+<tr class="separator:a9f9837c012a30fab24e1d4058336309d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b94a7acb30a64061a8767efec60811b" id="r_a5b94a7acb30a64061a8767efec60811b"><td class="memItemLeft" align="right" valign="top"><a id="a5b94a7acb30a64061a8767efec60811b" name="a5b94a7acb30a64061a8767efec60811b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>FindFaces</b> ()</td></tr>
 <tr class="memdesc:a5b94a7acb30a64061a8767efec60811b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs the face nodes mapping, face mass centers and areas. <br /></td></tr>
@@ -173,9 +173,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>CommitAction</b> (con
 <tr class="memitem:a35186078240ebfeac3c6bf9db8160cd2" id="r_a35186078240ebfeac3c6bf9db8160cd2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a35186078240ebfeac3c6bf9db8160cd2">ComputeFaceClosedPolygonWithLocalMappings</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> faceIndex, std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygonNodesCache, std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;localNodeIndicesCache, std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;globalEdgeIndicesCache) const</td></tr>
 <tr class="memdesc:a35186078240ebfeac3c6bf9db8160cd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a face create a closed polygon and fill local mapping caches (get_cellpolygon)  <br /></td></tr>
 <tr class="separator:a35186078240ebfeac3c6bf9db8160cd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4383fa3d1ca1d1aed4405a629330f4a1" id="r_a4383fa3d1ca1d1aed4405a629330f4a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classmeshkernel_1_1_point.html">Point</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a4383fa3d1ca1d1aed4405a629330f4a1">ComputeFaceCircumenter</a> (std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon, const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;edgesNumFaces) const</td></tr>
-<tr class="memdesc:a4383fa3d1ca1d1aed4405a629330f4a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a closed polygon, compute the circumcenter of a face (getcircumcenter)  <br /></td></tr>
-<tr class="separator:a4383fa3d1ca1d1aed4405a629330f4a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6aa28083ecf38015872214ecdbe09b3" id="r_ad6aa28083ecf38015872214ecdbe09b3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#ad6aa28083ecf38015872214ecdbe09b3">GetObtuseTrianglesCenters</a> ()</td></tr>
 <tr class="memdesc:ad6aa28083ecf38015872214ecdbe09b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mass centers of obtuse triangles.  <br /></td></tr>
 <tr class="separator:ad6aa28083ecf38015872214ecdbe09b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -963,44 +960,6 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The resulting polygon mesh boundary </dd></dl>
-
-</div>
-</div>
-<a id="a4383fa3d1ca1d1aed4405a629330f4a1" name="a4383fa3d1ca1d1aed4405a629330f4a1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4383fa3d1ca1d1aed4405a629330f4a1">&#9670;&#160;</a></span>ComputeFaceCircumenter()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classmeshkernel_1_1_point.html">Point</a> meshkernel::Mesh2D::ComputeFaceCircumenter </td>
-          <td>(</td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>polygon</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>edgesNumFaces</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>For a closed polygon, compute the circumcenter of a face (getcircumcenter) </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">polygon</td><td>Cache storing the face nodes </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">edgesNumFaces</td><td>For meshes, the number of faces sharing the edges </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The computed circumcenter </dd></dl>
 
 </div>
 </div>
