@@ -469,7 +469,7 @@ bool meshkernel::CasulliDeRefinement::DoDeRefinement(Mesh2D& mesh, const Polygon
     indirectlyConnected.reserve(maximumSize);
 
     std::vector<ElementType> faceMask(InitialiseElementType(mesh, nodeTypes));
-    mesh.ComputeCircumcentersMassCentersAndFaceAreas(true);
+    mesh.ComputeFaceAreaAndMassCenters(true);
 
     using enum ElementType;
 
