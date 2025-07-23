@@ -41,7 +41,7 @@ namespace meshkernel::algo
     std::vector<Point> ComputeFaceCircumcenters(const Mesh& mesh);
 
     /// @brief Compute the circum-center point of each of the faces overwriting the values in an array
-    void ComputeFaceCircumcenters(const Mesh& mesh, std::span<Point> edgeCenters);
+    void ComputeFaceCircumcenters(const Mesh& mesh, std::span<Point> faceCenters);
 
     /// @brief Compute the circumcenter of a triangle element.
     Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection projection);
