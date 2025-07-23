@@ -107,6 +107,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernelapi_1_1_edge_length_property_calculator.html">EdgeLengthPropertyCalculator</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculator for the edge lengths for a mesh.  <a href="classmeshkernelapi_1_1_edge_length_property_calculator.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernelapi_1_1_face_circumcenter_property_calculator.html">FaceCircumcenterPropertyCalculator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculator for the face circumcenter for a mesh.  <a href="classmeshkernelapi_1_1_face_circumcenter_property_calculator.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A struct used to describe a list of geometries in a C-compatible manner.  <a href="structmeshkernelapi_1_1_geometry_list.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -554,9 +557,15 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <tr class="memitem:a16c36845832e4dc42ce9437b844f5830" id="r_a16c36845832e4dc42ce9437b844f5830"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a16c36845832e4dc42ce9437b844f5830">mkernel_mesh2d_get_data</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
 <tr class="memdesc:a16c36845832e4dc42ce9437b844f5830"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> dimensions data.  <br /></td></tr>
 <tr class="separator:a16c36845832e4dc42ce9437b844f5830"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4254ba2504acd21cc53ba7bae0d99ca" id="r_ac4254ba2504acd21cc53ba7bae0d99ca"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac4254ba2504acd21cc53ba7bae0d99ca">mkernel_mesh2d_get_edge_length_property_type</a> (int &amp;type)</td></tr>
+<tr class="memdesc:ac4254ba2504acd21cc53ba7bae0d99ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an int indicating the edge length property type for mesh2d.  <br /></td></tr>
+<tr class="separator:ac4254ba2504acd21cc53ba7bae0d99ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac99b420d3c788df828c023e79f5c7c31" id="r_ac99b420d3c788df828c023e79f5c7c31"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac99b420d3c788df828c023e79f5c7c31">mkernel_mesh2d_get_orthogonality_property_type</a> (int &amp;type)</td></tr>
 <tr class="memdesc:ac99b420d3c788df828c023e79f5c7c31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an int indicating the orthogonality property type for mesh2d.  <br /></td></tr>
 <tr class="separator:ac99b420d3c788df828c023e79f5c7c31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a009ffb86f5a7f1e40281b21f175f96fe" id="r_a009ffb86f5a7f1e40281b21f175f96fe"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a009ffb86f5a7f1e40281b21f175f96fe">mkernel_mesh2d_get_face_circumcenter_property_type</a> (int &amp;type)</td></tr>
+<tr class="memdesc:a009ffb86f5a7f1e40281b21f175f96fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an int indicating the face circumcenter property type for mesh2d.  <br /></td></tr>
+<tr class="separator:a009ffb86f5a7f1e40281b21f175f96fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac69ba29d07c1fcbd9a1292693090eaef" id="r_ac69ba29d07c1fcbd9a1292693090eaef"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac69ba29d07c1fcbd9a1292693090eaef">mkernel_mesh2d_get_node_edge_data</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
 <tr class="memdesc:ac69ba29d07c1fcbd9a1292693090eaef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets only the node and edge <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> data.  <br /></td></tr>
 <tr class="separator:ac69ba29d07c1fcbd9a1292693090eaef"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -6264,6 +6273,60 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
     <tr><td class="paramdir">[in]</td><td class="paramname">xUpperRightBoundingBox</td><td>The x coordinate of the upper right corner of the bounding box </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">yUpperRightBoundingBox</td><td>The y coordinate of the upper right corner of the bounding box </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">edgeIndex</td><td>The found edge index </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="ac4254ba2504acd21cc53ba7bae0d99ca" name="ac4254ba2504acd21cc53ba7bae0d99ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac4254ba2504acd21cc53ba7bae0d99ca">&#9670;&#160;</a></span>mkernel_mesh2d_get_edge_length_property_type()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_get_edge_length_property_type </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets an int indicating the edge length property type for mesh2d. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">type</td><td>The int indicating the edge length property type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a009ffb86f5a7f1e40281b21f175f96fe" name="a009ffb86f5a7f1e40281b21f175f96fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a009ffb86f5a7f1e40281b21f175f96fe">&#9670;&#160;</a></span>mkernel_mesh2d_get_face_circumcenter_property_type()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_get_face_circumcenter_property_type </td>
+          <td>(</td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets an int indicating the face circumcenter property type for mesh2d. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">type</td><td>The int indicating the face circumcenter property type </td></tr>
   </table>
   </dd>
 </dl>

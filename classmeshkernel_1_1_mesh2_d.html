@@ -112,11 +112,6 @@ Public Types</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a41e7c8bf5e92fec3f46ba18204e8cc6e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerator describing the different options to delete a mesh. <br /></td></tr>
 <tr class="separator:a41e7c8bf5e92fec3f46ba18204e8cc6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5302769bc3f1dd3291f60b7bb62fe85c" id="r_a5302769bc3f1dd3291f60b7bb62fe85c"><td class="memItemLeft" align="right" valign="top"><a id="a5302769bc3f1dd3291f60b7bb62fe85c" name="a5302769bc3f1dd3291f60b7bb62fe85c"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a5302769bc3f1dd3291f60b7bb62fe85c">Property</a> { <b>Orthogonality</b> = 0
-, <b>EdgeLength</b> = 1
- }</td></tr>
-<tr class="memdesc:a5302769bc3f1dd3291f60b7bb62fe85c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enumerator for different properties on a 2D mesh. <br /></td></tr>
-<tr class="separator:a5302769bc3f1dd3291f60b7bb62fe85c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_types_classmeshkernel_1_1_mesh"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classmeshkernel_1_1_mesh')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classmeshkernel_1_1_mesh.html">meshkernel::Mesh</a></td></tr>
 <tr class="memitem:a2bdcf8039b306fc22ee56210ac137078 inherit pub_types_classmeshkernel_1_1_mesh" id="r_a2bdcf8039b306fc22ee56210ac137078"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh.html#a2bdcf8039b306fc22ee56210ac137078">Type</a> { <a class="el" href="classmeshkernel_1_1_mesh.html#a2bdcf8039b306fc22ee56210ac137078a1e137f21a2ff25f665e60ff9b84768dc">Mesh1D</a>
 , <a class="el" href="classmeshkernel_1_1_mesh.html#a2bdcf8039b306fc22ee56210ac137078ac2a2ccf2a6184eaa7693608895d88d13">Mesh2D</a>
@@ -244,7 +239,7 @@ std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="b
 <tr class="memitem:ab9aff255bad361448c527200cfe16e09" id="r_ab9aff255bad361448c527200cfe16e09"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#ab9aff255bad361448c527200cfe16e09">DeleteMesh</a> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon, <a class="el" href="classmeshkernel_1_1_mesh2_d.html#a41e7c8bf5e92fec3f46ba18204e8cc6e">DeleteMeshOptions</a> deletionOption, bool invertDeletion)</td></tr>
 <tr class="memdesc:ab9aff255bad361448c527200cfe16e09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a mesh in a polygon, using several options (delnet)  <br /></td></tr>
 <tr class="separator:ab9aff255bad361448c527200cfe16e09"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec6d18641ef8bbc49a66eb948b5669c8" id="r_aec6d18641ef8bbc49a66eb948b5669c8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#aec6d18641ef8bbc49a66eb948b5669c8">FilterBasedOnMetric</a> (<a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> location, <a class="el" href="classmeshkernel_1_1_mesh2_d.html#a5302769bc3f1dd3291f60b7bb62fe85c">Property</a> property, double minValue, double maxValue) const</td></tr>
+<tr class="memitem:aec6d18641ef8bbc49a66eb948b5669c8" id="r_aec6d18641ef8bbc49a66eb948b5669c8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#aec6d18641ef8bbc49a66eb948b5669c8">FilterBasedOnMetric</a> (<a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> location, <a class="el" href="namespacemeshkernel.html#a8d1bd683cd76de27086a293fb36a8b8a">Property</a> property, double minValue, double maxValue) const</td></tr>
 <tr class="memdesc:aec6d18641ef8bbc49a66eb948b5669c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">This method generates a mask indicating which locations are within the specified range of the given metric.  <br /></td></tr>
 <tr class="separator:aec6d18641ef8bbc49a66eb948b5669c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6364f16211c5e72047cfbbbd70f11768" id="r_a6364f16211c5e72047cfbbbd70f11768"><td class="memItemLeft" align="right" valign="top">std::tuple&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a6364f16211c5e72047cfbbbd70f11768">IsSegmentCrossingABoundaryEdge</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondPoint) const</td></tr>
@@ -1143,7 +1138,7 @@ Coincide circumcenter</div></div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a5302769bc3f1dd3291f60b7bb62fe85c">Property</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a8d1bd683cd76de27086a293fb36a8b8a">Property</a>&#160;</td>
           <td class="paramname"><em>property</em>, </td>
         </tr>
         <tr>

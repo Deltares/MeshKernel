@@ -17,7 +17,7 @@ var searchData=
   ['projection_14',['Projection',['../namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716',1,'meshkernel']]],
   ['projectiontostring_15',['ProjectionToString',['../namespacemeshkernel.html#aaf35f579fdef7b52609ba2a140f5a565',1,'meshkernel']]],
   ['projecttolandboundaryoption_16',['ProjectToLandBoundaryOption',['../classmeshkernel_1_1_land_boundaries.html#af722b430ae328691e49daaf616c90f29',1,'meshkernel::LandBoundaries']]],
-  ['property_17',['Property',['../classmeshkernel_1_1_mesh2_d.html#a5302769bc3f1dd3291f60b7bb62fe85c',1,'meshkernel::Mesh2D']]],
+  ['property_17',['Property',['../namespacemeshkernel.html#a8d1bd683cd76de27086a293fb36a8b8a',1,'meshkernel']]],
   ['propertycalculator_18',['PropertyCalculator',['../classmeshkernelapi_1_1_property_calculator.html',1,'meshkernelapi']]],
   ['push_5fback_19',['push_back',['../classmeshkernel_1_1_bounded_stack.html#a9de4c02efd860c60bf31b50fb5ca05ff',1,'meshkernel::BoundedStack']]]
 ];
