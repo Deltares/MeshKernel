@@ -87,8 +87,8 @@ void Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
 
         if (nodeIndices[n] == constants::missing::uintValue)
         {
-            auto [edgeId, nodeInsertionAction] = mesh.InsertNode(p);
-            nodeIndices[n] = edgeId;
+            auto [nodeId, nodeInsertionAction] = mesh.InsertNode(p);
+            nodeIndices[n] = nodeId;
         }
     }
 
@@ -105,7 +105,9 @@ void Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
 
         if (mesh.FindEdgeWithLinearSearch(firstNodeIndex, secondNodeIndex) == constants::missing::uintValue)
         {
-            auto [edgeId, connectionAction] = mesh.ConnectNodes(firstNodeIndex, secondNodeIndex);
+          [[maybe_unused]] auto [edgeId, connectionAction] = mesh.ConnectNodes(firstNodeIndex, secondNodeIndex, false);
+          // auto [edgeId, connectionAction] = mesh.ConnectNodes(secondNodeIndex, firstNodeIndex, false);
+          // auto [edgeId, connectionAction] = mesh.ConnectNodes(secondNodeIndex, firstNodeIndex);
         }
     }
 }
@@ -188,7 +190,7 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
                 numberOfPoints = 5;
             }
 
-            // TODO before merging with master is it possible to change which points get deleted in the Mesh::MergePointsInPolygon
+            // TODO before merging with master is it possible to change which points get deleted in the Mesh::MergeNodesInPolygon
             if (points[2].x < 180.0)
             {
                 pentagonFace = false;
@@ -224,6 +226,7 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
 
         const auto numEdgesFirstNode = mesh2d->GetNumNodesEdges(firstNode);
         const auto numEdgesSecondNode = mesh2d->GetNumNodesEdges(secondNode);
+
         if ((numEdgesFirstNode == constants::geometric::numNodesInPentagon ||
              numEdgesFirstNode == constants::geometric::numNodesInHexagon) &&
             (numEdgesSecondNode == constants::geometric::numNodesInPentagon ||

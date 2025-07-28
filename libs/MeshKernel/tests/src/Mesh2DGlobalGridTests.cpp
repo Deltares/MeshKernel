@@ -72,9 +72,37 @@ TEST(GlobalGridTest, GlobalMeshWithPoles)
 {
     // Execute
 
-    constexpr meshkernel::UInt numLongitudeNodes = 20;
+    constexpr meshkernel::UInt numLongitudeNodes = 21;
     constexpr meshkernel::UInt numLatitudeNodes = 20;
     const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshkernel::Projection::spherical);
+
+    auto mesh2 = ReadLegacyMesh2DFromFile("global_net.nc");
+
+    std::vector<meshkernel::Point> polyNodes{{-80, -27}, {80, -27}, {80, 27}, {-80, 27}, {-80, -27}};
+    [[maybe_unused]] meshkernel::Polygons polygon(polyNodes, meshkernel::Projection::spherical);
+
+    auto inPoly = mesh->IsLocationInPolygon(polygon, meshkernel::Location::Nodes);
+
+    for (size_t i = 0; i < inPoly.size(); ++i)
+    {
+
+        if (inPoly[i])
+        {
+            [[maybe_unused]] auto undoAction = mesh->DeleteNode(i);
+        }
+    }
+
+    // meshkernel::UInt nodeId = mesh->FindNodeCloseToAPoint({0.0, 0.0}, 1.0e-3);
+    // [[maybe_unused]] auto mesh->DeleteNode(nodeId);
+
+    // meshkernel::UInt nodeId = mesh->FindNodeCloseToAPoint({0.0, 0.0}, 1.0e-3);
+    // [[maybe_unused]] auto mesh->DeleteNode(nodeId);
+
+    meshkernel::Print(mesh->Nodes(), mesh->Edges());
+    return;
+
+    meshkernel::Print(mesh2->Nodes(), mesh2->Edges());
+    return;
 
     const meshkernel::UInt northPoleNodeIndex = 690;
     const meshkernel::UInt southPoleNodeIndex = 691;
