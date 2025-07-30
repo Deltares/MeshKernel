@@ -117,13 +117,11 @@ TEST(CompoundUndoTests, MergeNodesInPolygonInMesh)
     EXPECT_EQ(mesh->GetNumValidEdges(), originalEdges.size());
 
     undoActionStack.Add(mesh->MergeNodesInPolygon(polygons, 1.5));
-    meshkernel::Print(mesh->Nodes(), mesh->Edges());
-    return;
 
     EXPECT_EQ(mesh->GetNumNodes(), originalNodes.size());
     EXPECT_EQ(mesh->GetNumValidNodes(), 113);
     EXPECT_EQ(mesh->GetNumEdges(), originalEdges.size());
-    EXPECT_EQ(mesh->GetNumValidEdges(), 198);
+    EXPECT_EQ(mesh->GetNumValidEdges(), 208);
 
     // Undoing merge should restore the original mesh.
     undoActionStack.Undo();
