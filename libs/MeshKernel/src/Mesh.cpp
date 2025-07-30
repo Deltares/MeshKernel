@@ -454,9 +454,9 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeNodesInPolygon(const Polygons
     // merge the closest nodes
     auto const mergingDistanceSquared = mergingDistance * mergingDistance;
 
-    for (UInt ii = filteredNodes.size(); ii > 0; --ii)
+    for (size_t ii = filteredNodes.size(); ii > 0; --ii)
     {
-        const UInt i = ii - 1;
+        const UInt i = static_cast<UInt>(ii - 1);
 
         if (originalNodeIndices[i] == constants::missing::uintValue)
         {
