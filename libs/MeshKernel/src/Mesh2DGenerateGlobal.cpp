@@ -128,6 +128,8 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
         throw MeshKernelError("Unsupported projection. The projection is not spherical nor sphericalAccurate");
     }
 
+    const double eastBoundaryTolerance = 32.0 * std::numeric_limits<double>::epsilon();
+
     std::array<Point, 5> points;
     double deltaLongitude = 360.0 / static_cast<double>(numLongitudeNodes);
     double currentLatitude = 0.0;
@@ -189,8 +191,7 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
                 numberOfPoints = 5;
             }
 
-            // TODO before merging with master is it possible to change which points get deleted in the Mesh::MergeNodesInPolygon
-            if (points[2].x < 180.0)
+            if (points[2].x <= 180.0 * (1.0 + eastBoundaryTolerance))
             {
                 pentagonFace = false;
                 AddFace(*mesh2d, points, GridExpansionDirection::Northwards, numberOfPoints);
@@ -206,11 +207,11 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
         currentLatitude += deltaLatitude;
     }
 
-    constexpr double mergingDistance = 1e-3;
     const std::vector<Point> polygon;
     Polygons polygons(polygon, projection);
 
     // The merge action can be ignored in this case because we will not need to undo any merge operation
+    constexpr double mergingDistance = 1e-3;
     [[maybe_unused]] auto mergeAction = mesh2d->MergeNodesInPolygon(polygons, mergingDistance);
 
     constexpr double tolerance = 1.0e-6;
