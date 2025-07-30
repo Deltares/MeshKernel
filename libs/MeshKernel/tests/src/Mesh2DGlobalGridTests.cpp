@@ -103,7 +103,7 @@ TEST(GlobalGridTest, GlobalMeshWithPoles)
 
     auto inPoly = mesh->IsLocationInPolygon(polygon, meshkernel::Location::Nodes);
 
-    for (size_t i = 0; i < inPoly.size(); ++i)
+    for (meshkernel::UInt i = 0; i < inPoly.size(); ++i)
     {
 
         if (inPoly[i])
