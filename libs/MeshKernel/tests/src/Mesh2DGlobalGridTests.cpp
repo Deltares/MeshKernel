@@ -49,15 +49,37 @@ TEST(GlobalGridTest, Mesh2DGenerateGlobalCompute_ShouldGenerateMesh)
 
     const double tolerance = 1e-6;
 
-    EXPECT_NEAR(-161.05263157894737, mesh->Node(0).x, tolerance);
-    EXPECT_NEAR(-161.05263157894737, mesh->Node(1).x, tolerance);
-    EXPECT_NEAR(-161.05263157894737, mesh->Node(2).x, tolerance);
-    EXPECT_NEAR(-142.10526315789474, mesh->Node(3).x, tolerance);
+    // Set of nodes on the left (west) side of the mesh
 
-    EXPECT_NEAR(0.0000000000000000, mesh->Node(0).y, tolerance);
-    EXPECT_NEAR(18.695753703140564, mesh->Node(1).y, tolerance);
-    EXPECT_NEAR(-18.695753703140564, mesh->Node(2).y, tolerance);
-    EXPECT_NEAR(0.0000000000000000, mesh->Node(3).y, tolerance);
+    EXPECT_NEAR(-180, mesh->Node(0).x, tolerance);
+    EXPECT_NEAR(-161.052631578947, mesh->Node(1).x, tolerance);
+    EXPECT_NEAR(-161.052631578947, mesh->Node(2).x, tolerance);
+    EXPECT_NEAR(-180, mesh->Node(3).x, tolerance);
+    EXPECT_NEAR(-161.052631578947, mesh->Node(4).x, tolerance);
+    EXPECT_NEAR(-180, mesh->Node(5).x, tolerance);
+
+    EXPECT_NEAR(0, mesh->Node(0).y, tolerance);
+    EXPECT_NEAR(0, mesh->Node(1).y, tolerance);
+    EXPECT_NEAR(18.6957537031406, mesh->Node(2).y, tolerance);
+    EXPECT_NEAR(18.6957537031406, mesh->Node(3).y, tolerance);
+    EXPECT_NEAR(-18.6957537031406, mesh->Node(4).y, tolerance);
+    EXPECT_NEAR(-18.6957537031406, mesh->Node(5).y, tolerance);
+
+    // Set of nodes on the right (east) side of the mesh
+
+    EXPECT_NEAR(142.105263157895, mesh->Node(51).x, tolerance);
+    EXPECT_NEAR(142.105263157895, mesh->Node(52).x, tolerance);
+    EXPECT_NEAR(142.105263157895, mesh->Node(53).x, tolerance);
+    EXPECT_NEAR(161.052631578947, mesh->Node(54).x, tolerance);
+    EXPECT_NEAR(161.052631578947, mesh->Node(55).x, tolerance);
+    EXPECT_NEAR(161.052631578947, mesh->Node(56).x, tolerance);
+
+    EXPECT_NEAR(0, mesh->Node(51).y, tolerance);
+    EXPECT_NEAR(18.6957537031406, mesh->Node(52).y, tolerance);
+    EXPECT_NEAR(-18.6957537031406, mesh->Node(53).y, tolerance);
+    EXPECT_NEAR(0, mesh->Node(54).y, tolerance);
+    EXPECT_NEAR(18.6957537031406, mesh->Node(55).y, tolerance);
+    EXPECT_NEAR(-18.6957537031406, mesh->Node(56).y, tolerance);
 }
 
 TEST(GlobalGridTest, Mesh2DGenerateGlobalCompute_OnInvalidProjection_ShouldThrowAnException)
@@ -72,23 +94,67 @@ TEST(GlobalGridTest, GlobalMeshWithPoles)
 {
     // Execute
 
-    constexpr meshkernel::UInt numLongitudeNodes = 20;
+    constexpr meshkernel::UInt numLongitudeNodes = 21;
     constexpr meshkernel::UInt numLatitudeNodes = 20;
     const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshkernel::Projection::spherical);
 
-    const meshkernel::UInt northPoleNodeIndex = 690;
-    const meshkernel::UInt southPoleNodeIndex = 691;
+    std::vector<meshkernel::Point> polyNodes{{-80, -27}, {80, -27}, {80, 27}, {-80, 27}, {-80, -27}};
+    [[maybe_unused]] meshkernel::Polygons polygon(polyNodes, meshkernel::Projection::spherical);
 
-    ASSERT_EQ(mesh->GetNumNodes(), 692);
-    ASSERT_EQ(mesh->GetNumEdges(), 1333);
-    ASSERT_EQ(mesh->m_nodesEdges[northPoleNodeIndex].size(), 5);
-    ASSERT_EQ(mesh->m_nodesEdges[southPoleNodeIndex].size(), 5);
+    auto inPoly = mesh->IsLocationInPolygon(polygon, meshkernel::Location::Nodes);
+
+    for (meshkernel::UInt i = 0; i < inPoly.size(); ++i)
+    {
+
+        if (inPoly[i])
+        {
+            [[maybe_unused]] auto undoAction = mesh->DeleteNode(i);
+        }
+    }
+
+    const meshkernel::UInt northPoleNodeIndex = 727;
+    const meshkernel::UInt southPoleNodeIndex = 728;
+
+    ASSERT_EQ(mesh->GetNumNodes(), 729);
+    ASSERT_EQ(mesh->GetNumEdges(), 1443);
+    EXPECT_EQ(mesh->m_nodesEdges[northPoleNodeIndex].size(), 6);
+    EXPECT_EQ(mesh->m_nodesEdges[southPoleNodeIndex].size(), 6);
 
     const double tolerance = 1.0e-10;
 
-    ASSERT_NEAR(mesh->Node(northPoleNodeIndex).x, 108.0, tolerance);
-    ASSERT_NEAR(mesh->Node(northPoleNodeIndex).y, 90.0, tolerance);
+    EXPECT_NEAR(mesh->Node(northPoleNodeIndex).x, -111.428571428571, tolerance);
+    EXPECT_NEAR(mesh->Node(northPoleNodeIndex).y, 90.0, tolerance);
 
-    ASSERT_NEAR(mesh->Node(southPoleNodeIndex).x, 108.0, tolerance);
-    ASSERT_NEAR(mesh->Node(southPoleNodeIndex).y, -90.0, tolerance);
+    EXPECT_NEAR(mesh->Node(southPoleNodeIndex).x, -111.428571428571, tolerance);
+    EXPECT_NEAR(mesh->Node(southPoleNodeIndex).y, -90.0, tolerance);
+
+    // Now check that the nodes are connected "around the back" (the west side should be connected to the east side)
+
+    // Pick a random point along the left boundary north of the equator
+    const meshkernel::UInt westBoundaryNodeIndexNorth = 106;
+    // This east boundary node should be connected to the west boundary node above
+    const meshkernel::UInt eastBoundaryNodeIndexNorth = 145;
+
+    EXPECT_NEAR(mesh->Node(westBoundaryNodeIndexNorth).x, -180.0, tolerance);
+    EXPECT_NEAR(mesh->Node(westBoundaryNodeIndexNorth).y, 45.8153394766131, tolerance);
+
+    ASSERT_EQ(mesh->m_nodesEdges[westBoundaryNodeIndexNorth].size(), 4);
+    ASSERT_EQ(mesh->GetEdge(mesh->m_nodesEdges[westBoundaryNodeIndexNorth][2]).second, eastBoundaryNodeIndexNorth);
+
+    EXPECT_NEAR(mesh->Node(eastBoundaryNodeIndexNorth).x, 162.857142857143, tolerance);
+    EXPECT_NEAR(mesh->Node(eastBoundaryNodeIndexNorth).y, 45.8153394766131, tolerance);
+
+    // Pick a random point along the left boundary south of the equator
+    const meshkernel::UInt westBoundaryNodeIndexSouth = 108;
+    // This east boundary node should be connected to the west boundary node above
+    const meshkernel::UInt eastBoundaryNodeIndexSouth = 146;
+
+    EXPECT_NEAR(mesh->Node(westBoundaryNodeIndexSouth).x, -180.0, tolerance);
+    EXPECT_NEAR(mesh->Node(westBoundaryNodeIndexSouth).y, -45.8153394766131, tolerance);
+
+    ASSERT_EQ(mesh->m_nodesEdges[westBoundaryNodeIndexSouth].size(), 4);
+    ASSERT_EQ(mesh->GetEdge(mesh->m_nodesEdges[westBoundaryNodeIndexSouth][2]).second, eastBoundaryNodeIndexSouth);
+
+    EXPECT_NEAR(mesh->Node(eastBoundaryNodeIndexSouth).x, 162.857142857143, tolerance);
+    EXPECT_NEAR(mesh->Node(eastBoundaryNodeIndexSouth).y, -45.8153394766131, tolerance);
 }

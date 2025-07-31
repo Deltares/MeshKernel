@@ -87,8 +87,8 @@ void Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
 
         if (nodeIndices[n] == constants::missing::uintValue)
         {
-            auto [edgeId, nodeInsertionAction] = mesh.InsertNode(p);
-            nodeIndices[n] = edgeId;
+            auto [nodeId, nodeInsertionAction] = mesh.InsertNode(p);
+            nodeIndices[n] = nodeId;
         }
     }
 
@@ -100,12 +100,13 @@ void Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
         {
             nextNode = 0;
         }
+
         const auto& firstNodeIndex = nodeIndices[n];
         const auto& secondNodeIndex = nodeIndices[nextNode];
 
         if (mesh.FindEdgeWithLinearSearch(firstNodeIndex, secondNodeIndex) == constants::missing::uintValue)
         {
-            auto [edgeId, connectionAction] = mesh.ConnectNodes(firstNodeIndex, secondNodeIndex);
+            [[maybe_unused]] auto [edgeId, connectionAction] = mesh.ConnectNodes(firstNodeIndex, secondNodeIndex, false);
         }
     }
 }
@@ -126,6 +127,8 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
     {
         throw MeshKernelError("Unsupported projection. The projection is not spherical nor sphericalAccurate");
     }
+
+    const double eastBoundaryTolerance = 32.0 * std::numeric_limits<double>::epsilon();
 
     std::array<Point, 5> points;
     double deltaLongitude = 360.0 / static_cast<double>(numLongitudeNodes);
@@ -188,8 +191,7 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
                 numberOfPoints = 5;
             }
 
-            // TODO before merging with master is it possible to change which points get deleted in the Mesh::MergePointsInPolygon
-            if (points[2].x < 180.0)
+            if (points[2].x <= 180.0 * (1.0 + eastBoundaryTolerance))
             {
                 pentagonFace = false;
                 AddFace(*mesh2d, points, GridExpansionDirection::Northwards, numberOfPoints);
@@ -205,11 +207,11 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
         currentLatitude += deltaLatitude;
     }
 
-    constexpr double mergingDistance = 1e-3;
     const std::vector<Point> polygon;
     Polygons polygons(polygon, projection);
 
     // The merge action can be ignored in this case because we will not need to undo any merge operation
+    constexpr double mergingDistance = 1e-3;
     [[maybe_unused]] auto mergeAction = mesh2d->MergeNodesInPolygon(polygons, mergingDistance);
 
     constexpr double tolerance = 1.0e-6;
@@ -224,6 +226,7 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
 
         const auto numEdgesFirstNode = mesh2d->GetNumNodesEdges(firstNode);
         const auto numEdgesSecondNode = mesh2d->GetNumNodesEdges(secondNode);
+
         if ((numEdgesFirstNode == constants::geometric::numNodesInPentagon ||
              numEdgesFirstNode == constants::geometric::numNodesInHexagon) &&
             (numEdgesSecondNode == constants::geometric::numNodesInPentagon ||
