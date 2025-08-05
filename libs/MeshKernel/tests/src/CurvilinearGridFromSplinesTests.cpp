@@ -1602,7 +1602,7 @@ TEST(CurvilinearGridFromSplines, GridFromFFiveSplines)
     curvilinearParameters.m_refinement = 40;
     curvilinearParameters.n_refinement = 40;
 
-    mk::CurvilinearGridFromSplines gridFromSplines (splines, curvilinearParameters, splineParameters);
+    mk::CurvilinearGridFromSplines gridFromSplines(splines, curvilinearParameters, splineParameters);
 
     auto grid = gridFromSplines.Compute();
 
@@ -1619,7 +1619,7 @@ TEST(CurvilinearGridFromSplines, GridFromFFiveSplines)
         }
     }
 
-    mk::Print (computedPoints, computedEdges);
+    mk::Print(computedPoints, computedEdges);
 
     // EXPECT_EQ(grid->NumN(), 36);
     // EXPECT_EQ(grid->NumM(), 301);
