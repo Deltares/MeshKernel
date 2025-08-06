@@ -2888,7 +2888,10 @@ namespace meshkernelapi
                                                                                   transformSamples,
                                                                                   static_cast<meshkernel::UInt>(minimumNumSamples));
 
+            meshkernel::Polygons refinementPolygon({}, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+
             meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
+                                                      refinementPolygon,
                                                       std::move(averaging),
                                                       meshRefinementParameters);
             meshKernelUndoStack.Add(meshRefinement.Compute(), meshKernelId);
@@ -2940,7 +2943,10 @@ namespace meshkernelapi
                                                                                   false,
                                                                                   static_cast<meshkernel::UInt>(minimumNumSamples));
 
+            meshkernel::Polygons refinementPolygon({}, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+
             meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
+                                                      refinementPolygon,
                                                       std::move(averaging),
                                                       meshRefinementParameters);
             meshKernelUndoStack.Add(meshRefinement.Compute(), meshKernelId);
@@ -2971,7 +2977,10 @@ namespace meshkernelapi
 
             auto interpolant = CreateBilinearInterpolatorBasedOnType(griddedSamples, *meshKernelState[meshKernelId].m_mesh2d);
 
+            meshkernel::Polygons refinementPolygon({}, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+
             meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
+                                                      refinementPolygon,
                                                       std::move(interpolant),
                                                       meshRefinementParameters,
                                                       useNodalRefinement);
