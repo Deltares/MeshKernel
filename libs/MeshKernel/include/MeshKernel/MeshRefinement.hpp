@@ -95,6 +95,7 @@ namespace meshkernel
         /// @param[in] interpolant The averaging interpolation to use
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         MeshRefinement(Mesh2D& mesh,
+                       const Polygons& polygon,
                        std::unique_ptr<MeshInterpolation> interpolant,
                        const MeshRefinementParameters& meshRefinementParameters);
 
@@ -104,6 +105,7 @@ namespace meshkernel
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @param[in] useNodalRefinement Use nodal refinement
         MeshRefinement(Mesh2D& mesh,
+                       const Polygons& polygon,
                        std::unique_ptr<MeshInterpolation> interpolant,
                        const MeshRefinementParameters& meshRefinementParameters,
                        bool useNodalRefinement);

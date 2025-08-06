@@ -41,10 +41,12 @@ using meshkernel::Mesh2D;
 using meshkernel::MeshRefinement;
 
 MeshRefinement::MeshRefinement(Mesh2D& mesh,
+                               const Polygons& polygon,
                                std::unique_ptr<MeshInterpolation> interpolant,
                                const MeshRefinementParameters& meshRefinementParameters) : m_samplesRTree(RTreeFactory::Create(mesh.m_projection)),
                                                                                            m_mesh(mesh),
-                                                                                           m_interpolant(std::move(interpolant))
+                                                                                           m_interpolant(std::move(interpolant)),
+                                                                                           m_polygons(polygon)
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
     m_isRefinementBasedOnSamples = true;
@@ -53,11 +55,13 @@ MeshRefinement::MeshRefinement(Mesh2D& mesh,
 }
 
 MeshRefinement::MeshRefinement(Mesh2D& mesh,
+                               const Polygons& polygon,
                                std::unique_ptr<MeshInterpolation> interpolant,
                                const MeshRefinementParameters& meshRefinementParameters,
                                bool useNodalRefinement) : m_samplesRTree(RTreeFactory::Create(mesh.m_projection)),
                                                           m_mesh(mesh),
                                                           m_interpolant(std::move(interpolant)),
+                                                          m_polygons(polygon),
                                                           m_useNodalRefinement(useNodalRefinement)
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
@@ -131,6 +135,7 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::Compute()
     // get bounding box
     Point lowerLeft{constants::missing::doubleValue, constants::missing::doubleValue};
     Point upperRight{constants::missing::doubleValue, constants::missing::doubleValue};
+
     if (m_mesh.m_projection == Projection::spherical)
     {
         const auto boundingBox = BoundingBox(m_mesh.Nodes());
@@ -147,6 +152,11 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::Compute()
     else
     {
         m_nodeMask = m_mesh.NodeMaskFromPolygon(m_polygons, true);
+    }
+
+    for (size_t i = 0; i < m_nodeMask.size(); ++i)
+    {
+        std::cout << "m_nodeMask " << i << " = " << m_nodeMask[i] << std::endl;
     }
 
     FindBrotherEdges();

@@ -667,7 +667,10 @@ TEST(OrthogonalizationAndSmoothing, RefineUndoThenOrthogonalise)
     meshRefinementParameters.refinement_type = 2;
     meshRefinementParameters.smoothing_iterations = 0;
 
+    meshkernel::Polygons refinementPolygon({}, Projection::cartesian);
+
     MeshRefinement meshRefinement(*mesh,
+                                  refinementPolygon,
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
