@@ -92,6 +92,7 @@ namespace meshkernel
 
         /// @brief The constructor for refining based on samples
         /// @param[in] mesh The mesh to be refined
+        /// @param[in] polygon The region in which refinement is done, if empty the whole mesh will be considered
         /// @param[in] interpolant The averaging interpolation to use
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         MeshRefinement(Mesh2D& mesh,
@@ -101,6 +102,7 @@ namespace meshkernel
 
         /// @brief The constructor for refining based on samples
         /// @param[in] mesh The mesh to be refined
+        /// @param[in] polygon The region in which refinement is done, if empty the whole mesh will be considered
         /// @param[in] interpolant The averaging interpolation to use
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @param[in] useNodalRefinement Use nodal refinement

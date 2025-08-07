@@ -1600,7 +1600,8 @@ namespace meshkernelapi
         /// For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces),
         /// a value of 2 two splits (a quadrilateral face generates 16 faces).
         /// @param[in] meshKernelId             The id of the mesh state
-        /// @param[in] griddedSamples                  The gridded samples
+        /// @param[in] polygon                  The region in which refinement is done, if empty the whole mesh will be considered
+        /// @param[in] griddedSamples           The gridded samples
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @param[in] useNodalRefinement       Use nodal refinement
         /// @returns Error code
@@ -1612,6 +1613,7 @@ namespace meshkernelapi
 
         /// @brief Refines a mesh2d within a polygon. Refinement is achieved by splitting the edges contained in the polygon by two.
         /// @param[in] meshKernelId             The id of the mesh state
+        /// @param[in] polygon                  The region in which refinement is done, if empty the whole mesh will be considered
         /// @param[in] geometryList             The closed polygon where to perform the refinement
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @returns Error code
@@ -1625,6 +1627,7 @@ namespace meshkernelapi
         /// For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces),
         /// a value of 2 two splits (a quadrilateral face generates 16 faces).
         /// @param[in] meshKernelId             The id of the mesh state
+        /// @param[in] polygon                  The region in which refinement is done, if empty the whole mesh will be considered
         /// @param[in] samples                  The sample set
         /// @param[in] relativeSearchRadius     The relative search radius relative to the face size, used for some interpolation algorithms
         /// @param[in] minimumNumSamples        The minimum number of samples used for some averaging algorithms
@@ -1643,6 +1646,7 @@ namespace meshkernelapi
         /// For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces),
         /// a value of 2 two splits (a quadrilateral face generates 16 faces).
         /// @param[in] meshKernelId                The id of the mesh state
+        /// @param[in] polygon                     The region in which refinement is done, if empty the whole mesh will be considered
         /// @param[in] griddedSamples              The gridded samples
         /// @param[in] relativeSearchRadius        The relative search radius relative to the face size, used for some interpolation algorithms
         /// @param[in] minimumNumSamples           The minimum number of samples used for some averaging algorithms
