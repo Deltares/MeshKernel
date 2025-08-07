@@ -44,7 +44,7 @@ namespace meshkernelapi
         /// @brief Determine is the calculator can compute the desired results correctly.
         ///
         /// This has a default of checking that the mesh2d is valid and the location is at edges
-        virtual bool IsValid(const MeshKernelState& state, const meshkernel::Location location) const override;
+        bool IsValid(const MeshKernelState& state, const meshkernel::Location location) const override;
 
         /// @brief Calculate the edge-length for a mesh
         ///

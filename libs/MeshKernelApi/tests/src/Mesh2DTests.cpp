@@ -248,7 +248,7 @@ TEST(Mesh2DTests, Mesh2DGetCircumcenterPropertyTest)
     mesh2d.node_x = nodesX.data();
     mesh2d.node_y = nodesY.data();
     mesh2d.num_nodes = static_cast<int>(nodesX.size());
-    mesh2d.num_edges = static_cast<int>(edges.size() * 0.5);
+    mesh2d.num_edges = static_cast<int>(static_cast<double>(edges.size()) * 0.5);
 
     int meshKernelId = -1;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
@@ -317,7 +317,7 @@ TEST(Mesh2DTests, Mesh2DGetEdgeLengthPropertyTest)
     mesh2d.node_x = nodesX.data();
     mesh2d.node_y = nodesY.data();
     mesh2d.num_nodes = static_cast<int>(nodesX.size());
-    mesh2d.num_edges = static_cast<int>(edges.size() * 0.5);
+    mesh2d.num_edges = static_cast<int>(static_cast<double>(edges.size()) * 0.5);
 
     int meshKernelId = -1;
     auto errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
