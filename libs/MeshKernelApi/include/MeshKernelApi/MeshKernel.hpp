@@ -1605,6 +1605,7 @@ namespace meshkernelapi
         /// @param[in] useNodalRefinement       Use nodal refinement
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_refine_based_on_gridded_samples(int meshKernelId,
+                                                                       const GeometryList& polygon,
                                                                        const GriddedSamples& griddedSamples,
                                                                        const meshkernel::MeshRefinementParameters& meshRefinementParameters,
                                                                        bool useNodalRefinement);
@@ -1630,6 +1631,7 @@ namespace meshkernelapi
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_refine_based_on_samples(int meshKernelId,
+                                                               const GeometryList& polygon,
                                                                const GeometryList& samples,
                                                                double relativeSearchRadius,
                                                                int minimumNumSamples,
@@ -1648,6 +1650,7 @@ namespace meshkernelapi
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_refine_ridges_based_on_gridded_samples(int meshKernelId,
+                                                                              const GeometryList& polygon,
                                                                               const GriddedSamples& griddedSamples,
                                                                               double relativeSearchRadius,
                                                                               int minimumNumSamples,
