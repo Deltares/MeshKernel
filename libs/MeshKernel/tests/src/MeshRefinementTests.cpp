@@ -2716,29 +2716,26 @@ TEST(MeshRefinement, RowSplittingFailureTests)
     EXPECT_THROW([[maybe_unused]] auto undo4 = splitMeshRow.Compute(mesh, edgeId), ConstraintError);
 }
 
-TEST(MeshRefinement, OMG)
+TEST(MeshRefinement, MeshRefinementInsidePolygon_On21x21With50x50Samples_ShouldRefineMesh)
 {
-    auto mesh = MakeRectangularMeshForTesting(21, 21, 2.5, Projection::cartesian);
+    const meshkernel::UInt size = 21;
+    const double delta = 2.5;
+    const meshkernel::UInt sampleSize = 50;
+
+    auto mesh = MakeRectangularMeshForTesting(size, size, delta, Projection::cartesian);
 
     const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
     const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
 
-    // // sample points
-    // std::vector<Sample> samples{
-    //     {14.7153645, 14.5698833, 1.0},
-    //     {24.7033062, 14.4729137, 1.0},
-    //     {15.5396099, 24.2669525, 1.0},
-    //     {23.8305721, 23.9275551, 1.0}};
+    std::vector<meshkernel::Sample> samples;
 
-    std::vector<meshkernel::Sample> samples; // = ReadSampleFile(TEST_FOLDER + "/data/AveragingInterpolationTests/inTestAveragingInterpolation.xyz");
+    double sampleDelta = 52.0 / 49.0;
 
-    double delta = 52.0 / 49.0;
-
-    for (size_t i = 0; i < 50; ++i)
+    for (size_t i = 0; i < sampleSize; ++i)
     {
-        for (size_t j = 0; j < 50; ++j)
+        for (size_t j = 0; j < sampleSize; ++j)
         {
-            meshkernel::Sample samp(-1.0 + delta * i, -1.0 + delta * j, 100);
+            meshkernel::Sample samp(-1.0 + sampleDelta * static_cast<double>(i), -1.0 + sampleDelta * static_cast<double>(j), 100);
             samples.push_back(samp);
         }
     }
@@ -2753,7 +2750,7 @@ TEST(MeshRefinement, OMG)
                                                                                   1);
 
     MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 2;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
     meshRefinementParameters.min_edge_size = 1.0;
@@ -2762,9 +2759,8 @@ TEST(MeshRefinement, OMG)
     meshRefinementParameters.refinement_type = 2;
     meshRefinementParameters.smoothing_iterations = 0;
 
+    // Define two polygons
     std::vector<meshkernel::Point> polygonPoints{{1.9, 1.9}, {16.0, 1.9}, {16.0, 16.0}, {1.9, 16.0}, {1.9, 1.9}, {-999, -999}, {31.9, 31.9}, {46.0, 31.9}, {46.0, 46.0}, {31.9, 46.0}, {31.9, 31.9}};
-    // std::vector<meshkernel::Point> polygonPoints{{21.0, -1.0}, {55.0, -1.0}, {55.0, 25.0}, {21.0, 25.0}, {21.0, -1.0}};
-    // std::vector<meshkernel::Point> polygonPoints{{21.0, -1.0}, {55.0, -1.0}, {55.0, 55.0}, {21.0, 55.0}, {21.0, -1.0}};
     meshkernel::Polygons polygon(polygonPoints, Projection::cartesian);
 
     [[maybe_unused]] MeshRefinement meshRefinement(*mesh,
@@ -2773,5 +2769,11 @@ TEST(MeshRefinement, OMG)
                                                    meshRefinementParameters);
 
     [[maybe_unused]] auto undoAction = meshRefinement.Compute();
-    meshkernel::Print(mesh->Nodes(), mesh->Edges());
+
+    mesh->Administrate();
+
+    // Only check that the number of nodes, edges and faces is correct
+    ASSERT_EQ(mesh->GetNumNodes(), 611);
+    ASSERT_EQ(mesh->GetNumEdges(), 1240);
+    ASSERT_EQ(mesh->GetNumFaces(), 630);
 }

@@ -154,11 +154,6 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::Compute()
         m_nodeMask = m_mesh.NodeMaskFromPolygon(m_polygons, true);
     }
 
-    for (size_t i = 0; i < m_nodeMask.size(); ++i)
-    {
-        std::cout << "m_nodeMask " << i << " = " << m_nodeMask[i] << std::endl;
-    }
-
     FindBrotherEdges();
 
     // set_initial_mask
