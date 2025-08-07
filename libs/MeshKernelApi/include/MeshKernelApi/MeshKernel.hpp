@@ -1600,11 +1600,13 @@ namespace meshkernelapi
         /// For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces),
         /// a value of 2 two splits (a quadrilateral face generates 16 faces).
         /// @param[in] meshKernelId             The id of the mesh state
-        /// @param[in] griddedSamples                  The gridded samples
+        /// @param[in] polygon                  The region in which refinement is done, if empty the whole mesh will be considered
+        /// @param[in] griddedSamples           The gridded samples
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @param[in] useNodalRefinement       Use nodal refinement
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_refine_based_on_gridded_samples(int meshKernelId,
+                                                                       const GeometryList& polygon,
                                                                        const GriddedSamples& griddedSamples,
                                                                        const meshkernel::MeshRefinementParameters& meshRefinementParameters,
                                                                        bool useNodalRefinement);
@@ -1624,12 +1626,14 @@ namespace meshkernelapi
         /// For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces),
         /// a value of 2 two splits (a quadrilateral face generates 16 faces).
         /// @param[in] meshKernelId             The id of the mesh state
+        /// @param[in] polygon                  The region in which refinement is done, if empty the whole mesh will be considered
         /// @param[in] samples                  The sample set
         /// @param[in] relativeSearchRadius     The relative search radius relative to the face size, used for some interpolation algorithms
         /// @param[in] minimumNumSamples        The minimum number of samples used for some averaging algorithms
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_refine_based_on_samples(int meshKernelId,
+                                                               const GeometryList& polygon,
                                                                const GeometryList& samples,
                                                                double relativeSearchRadius,
                                                                int minimumNumSamples,
@@ -1641,6 +1645,7 @@ namespace meshkernelapi
         /// For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces),
         /// a value of 2 two splits (a quadrilateral face generates 16 faces).
         /// @param[in] meshKernelId                The id of the mesh state
+        /// @param[in] polygon                     The region in which refinement is done, if empty the whole mesh will be considered
         /// @param[in] griddedSamples              The gridded samples
         /// @param[in] relativeSearchRadius        The relative search radius relative to the face size, used for some interpolation algorithms
         /// @param[in] minimumNumSamples           The minimum number of samples used for some averaging algorithms
@@ -1648,6 +1653,7 @@ namespace meshkernelapi
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_refine_ridges_based_on_gridded_samples(int meshKernelId,
+                                                                              const GeometryList& polygon,
                                                                               const GriddedSamples& griddedSamples,
                                                                               double relativeSearchRadius,
                                                                               int minimumNumSamples,
