@@ -2841,6 +2841,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_mesh2d_refine_based_on_samples(int meshKernelId,
+                                                           const GeometryList& polygon,
                                                            const GeometryList& samples,
                                                            double relativeSearchRadius,
                                                            int minimumNumSamples,
@@ -2888,7 +2889,9 @@ namespace meshkernelapi
                                                                                   transformSamples,
                                                                                   static_cast<meshkernel::UInt>(minimumNumSamples));
 
-            meshkernel::Polygons refinementPolygon({}, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const auto polygonPoints = ConvertGeometryListToPointVector(polygon);
+            meshkernel::Polygons refinementPolygon(polygonPoints,
+                                                   meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
                                                       refinementPolygon,
@@ -2904,6 +2907,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_mesh2d_refine_ridges_based_on_gridded_samples(int meshKernelId,
+                                                                          const GeometryList& polygon,
                                                                           const GriddedSamples& samples,
                                                                           double relativeSearchRadius,
                                                                           int minimumNumSamples,
@@ -2943,7 +2947,9 @@ namespace meshkernelapi
                                                                                   false,
                                                                                   static_cast<meshkernel::UInt>(minimumNumSamples));
 
-            meshkernel::Polygons refinementPolygon({}, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const auto polygonPoints = ConvertGeometryListToPointVector(polygon);
+            meshkernel::Polygons refinementPolygon(polygonPoints,
+                                                   meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
                                                       refinementPolygon,
@@ -2959,6 +2965,7 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_mesh2d_refine_based_on_gridded_samples(int meshKernelId,
+                                                                   const GeometryList& polygon,
                                                                    const GriddedSamples& griddedSamples,
                                                                    const meshkernel::MeshRefinementParameters& meshRefinementParameters,
                                                                    bool useNodalRefinement)
@@ -2977,7 +2984,9 @@ namespace meshkernelapi
 
             auto interpolant = CreateBilinearInterpolatorBasedOnType(griddedSamples, *meshKernelState[meshKernelId].m_mesh2d);
 
-            meshkernel::Polygons refinementPolygon({}, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+            const auto polygonPoints = ConvertGeometryListToPointVector(polygon);
+            meshkernel::Polygons refinementPolygon(polygonPoints,
+                                                   meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
             meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d,
                                                       refinementPolygon,
