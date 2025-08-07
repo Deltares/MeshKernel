@@ -1613,7 +1613,6 @@ namespace meshkernelapi
 
         /// @brief Refines a mesh2d within a polygon. Refinement is achieved by splitting the edges contained in the polygon by two.
         /// @param[in] meshKernelId             The id of the mesh state
-        /// @param[in] polygon                  The region in which refinement is done, if empty the whole mesh will be considered
         /// @param[in] geometryList             The closed polygon where to perform the refinement
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @returns Error code
