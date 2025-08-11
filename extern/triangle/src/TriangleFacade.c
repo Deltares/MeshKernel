@@ -17,7 +17,7 @@
 #include "triangle.h"
 
 /**
-* Calls the triangulate() C-routine 
+* Calls the triangulate() C-routine
 *
 * Note: all output arrays should be preallocated by the caller!
 *
@@ -62,7 +62,7 @@ void Triangulation(int jatri,
                    double trisize)
 {
 
-    struct triangulateio in, mid, out, vorout;
+    struct triangulateio in, mid, vorout;
 
     int number, i, j, itri, maxnumtri;
     int *trinumedge;
@@ -81,7 +81,7 @@ void Triangulation(int jatri,
 
     in.numberofpointattributes = 0;
     number = in.numberofpoints * in.numberofpointattributes * sizeof(REAL);
-    in.pointattributelist = (REAL *)NULL; 
+    in.pointattributelist = (REAL *)NULL;
     in.pointmarkerlist = (int *)NULL;
 
     if (jatri == 1 || jatri == 3) {
@@ -130,14 +130,14 @@ void Triangulation(int jatri,
                                             /*   produce an edge list (e), a Voronoi diagram (v), and a triangle */
                                             /*   neighbor list (n).                                              */
 
-    if (jatri == 1) 
+    if (jatri == 1)
     {
         /* triangulate("pcAevnQP", &in, &mid, &vorout); */
 
         triangulate("-Qpc", &in, &mid, &vorout);
 
     }
-    else if (jatri == 3) 
+    else if (jatri == 3)
     {
         /* Also produce edge-to-node mapping and tri-to-edge mapping
         (uses quite a bit more memory!) */
@@ -165,7 +165,7 @@ void Triangulation(int jatri,
         }
         free(trinumedge);
     }
-    else 
+    else
     {
         i = sprintf(opties, "-Q-Y-q30.0-D-a%f", trisize);
 
@@ -193,7 +193,7 @@ void Triangulation(int jatri,
 
 
     *numtri = mid.numberoftriangles;
-    if (*numtri > maxnumtri) 
+    if (*numtri > maxnumtri)
     {
         printf("Triangulation: unsufficient mem for triangle nodes in index (%d > %d)\n", *numtri, maxnumtri);
         *numtri = -*numtri; // serves as error indicator
