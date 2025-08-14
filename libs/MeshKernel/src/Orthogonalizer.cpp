@@ -36,7 +36,11 @@ using meshkernel::Orthogonalizer;
 
 Orthogonalizer::Orthogonalizer(const Mesh2D& mesh,
                                const std::vector<std::vector<UInt>>& nodesNodes,
-                               const std::vector<MeshNodeType>& nodeType) : m_mesh(mesh), m_nodesNodes(nodesNodes), m_nodeType(nodeType)
+                               const std::vector<MeshNodeType>& nodeType,
+                               const std::vector<Point>& faceCircumCentres) : m_mesh(mesh),
+                                                                              m_nodesNodes(nodesNodes),
+                                                                              m_nodeType(nodeType),
+                                                                              m_faceCircumCentres(faceCircumCentres)
 {
 }
 
@@ -45,7 +49,8 @@ void Orthogonalizer::Compute()
     UInt maxNumNeighbours = *(std::max_element(m_mesh.m_nodesNumEdges.begin(), m_mesh.m_nodesNumEdges.end())) + 1;
 
     ResizeAndFill2DVector(m_weights, m_mesh.GetNumNodes(), maxNumNeighbours, true, 0.0);
-    ResizeAndFill2DVector(m_rhs, m_mesh.GetNumNodes(), 2, true, 0.0);
+    m_rhs.resize(m_mesh.GetNumNodes());
+    std::fill(m_rhs.begin(), m_rhs.end(), std::array<double, 2>{0.0, 0.0});
 
     // Compute mesh aspect ratios
     m_mesh.ComputeAspectRatios(m_aspectRatios);
@@ -64,7 +69,7 @@ void Orthogonalizer::Compute()
             const auto aspectRatio = m_aspectRatios[edgeIndex];
             m_weights[n][nn] = 0.0;
 
-            if (IsEqual(aspectRatio, constants::missing::doubleValue))
+            if (aspectRatio == constants::missing::doubleValue)
             {
                 continue;
             }
@@ -87,7 +92,10 @@ void Orthogonalizer::Compute()
             const auto leftFace = m_mesh.m_edgesFaces[edgeIndex][0];
             bool flippedNormal;
             Point normal;
-            NormalVectorInside(m_mesh.Node(n), neighbouringNode, m_mesh.m_facesMassCenters[leftFace], normal, flippedNormal, m_mesh.m_projection);
+            NormalVectorInside(m_mesh.Node(n), neighbouringNode, m_faceCircumCentres[leftFace], normal, flippedNormal, m_mesh.m_projection);
+            // NormalVectorInside(m_mesh.Node(n), neighbouringNode, m_mesh.m_facesMassCenters[leftFace], normal, flippedNormal, m_mesh.m_projection);
+
+            std::cout << "normal: " << normal.x << ", " << normal.y << "  " << std::boolalpha << flippedNormal << std::endl;
 
             if (m_mesh.m_projection == Projection::spherical && m_mesh.m_projection != Projection::sphericalAccurate)
             {

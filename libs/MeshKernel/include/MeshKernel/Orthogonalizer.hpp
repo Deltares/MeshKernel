@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <array>
 #include <vector>
 
 #include "MeshKernel/Definitions.hpp"
@@ -45,7 +46,8 @@ namespace meshkernel
         /// @brief Constructor
         explicit Orthogonalizer(const Mesh2D& mesh,
                                 const std::vector<std::vector<UInt>>& nodesNodes,
-                                const std::vector<MeshNodeType>& nodeTypes);
+                                const std::vector<MeshNodeType>& nodeTypes,
+                                const std::vector<Point>& faceCircumCentres);
 
         /// @brief Computes the smoother weights and the right hand side
         void Compute();
@@ -77,8 +79,9 @@ namespace meshkernel
         const Mesh2D& m_mesh;                               ///< A reference to mesh
         const std::vector<std::vector<UInt>>& m_nodesNodes; ///< Node-node connectivity
         const std::vector<MeshNodeType>& m_nodeType;        ///< Type of each node
+        const std::vector<Point>& m_faceCircumCentres;      ///< The circumcentre of each face in the mesh
         std::vector<double> m_aspectRatios;                 ///< Aspect ratios
         std::vector<std::vector<double>> m_weights;         ///< Weights
-        std::vector<std::vector<double>> m_rhs;             ///< Right hand side
+        std::vector<std::array<double, 2>> m_rhs;           ///< Right hand side
     };
 } // namespace meshkernel

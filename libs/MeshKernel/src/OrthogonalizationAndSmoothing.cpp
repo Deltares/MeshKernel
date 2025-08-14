@@ -30,6 +30,7 @@
 #include <MeshKernel/Exceptions.hpp>
 #include <MeshKernel/LandBoundaries.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/MeshFaceCenters.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
 #include <MeshKernel/Orthogonalizer.hpp>
@@ -40,6 +41,9 @@
 using meshkernel::Mesh2D;
 using meshkernel::OrthogonalizationAndSmoothing;
 
+// double lambda = 1.0;
+double lambda = 0.9999;
+
 OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(Mesh2D& mesh,
                                                              std::unique_ptr<Polygons> polygon,
                                                              std::unique_ptr<LandBoundaries> landBoundaries,
@@ -47,7 +51,7 @@ OrthogonalizationAndSmoothing::OrthogonalizationAndSmoothing(Mesh2D& mesh,
                                                              const OrthogonalizationParameters& orthogonalizationParameters)
     : m_mesh(mesh),
       m_smoother(mesh, m_nodesTypes),
-      m_orthogonalizer(mesh, m_nodesNodes, m_nodesTypes),
+      m_orthogonalizer(mesh, m_nodesNodes, m_nodesTypes, m_faceCircumCentres),
       m_polygons(std::move(polygon)),
       m_landBoundaries(std::move(landBoundaries)),
       m_projectToLandBoundaryOption(projectToLandBoundaryOption)
@@ -119,6 +123,23 @@ std::unique_ptr<meshkernel::UndoAction> OrthogonalizationAndSmoothing::Initializ
 
 void OrthogonalizationAndSmoothing::Compute()
 {
+    m_faceCircumCentres.resize(m_mesh.GetNumFaces());
+    algo::ComputeFaceCircumcenters(m_mesh, m_faceCircumCentres);
+    m_mesh.ComputeFaceAreaAndMassCenters(true);
+    // m_faceCircumCentres = m_mesh.m_facesMassCenters;
+
+    for (size_t i = 0; i < m_faceCircumCentres.size(); ++i)
+    {
+        m_faceCircumCentres[i] = lambda * m_faceCircumCentres[i] + (1.0 - lambda) * m_mesh.m_facesMassCenters[i];
+
+        //     // if (i == 0)
+        //     // {
+        //     //     m_faceCircumCentres[i].x -= 0.001;
+        //     //     m_faceCircumCentres[i].y -= 0.001;
+        //     // }
+
+        //     std::cout << " centre " << i + 1 << "  " << m_faceCircumCentres[i].x << ", " << m_faceCircumCentres[i].y << std::endl;
+    }
 
     for (auto outerIter = 0; outerIter < m_orthogonalizationParameters.outer_iterations; outerIter++)
     {
@@ -184,7 +205,23 @@ void OrthogonalizationAndSmoothing::AllocateLinearSystem()
 void OrthogonalizationAndSmoothing::FinalizeOuterIteration()
 {
     m_mu = std::min(2.0 * m_mu, m_mumax);
+    m_faceCircumCentres.resize(m_mesh.GetNumFaces());
+    algo::ComputeFaceCircumcenters(m_mesh, m_faceCircumCentres);
     m_mesh.ComputeFaceAreaAndMassCenters(true);
+    // m_faceCircumCentres = m_mesh.m_facesMassCenters;
+
+    for (size_t i = 0; i < m_faceCircumCentres.size(); ++i)
+    {
+        m_faceCircumCentres[i] = lambda * m_faceCircumCentres[i] + (1.0 - lambda) * m_mesh.m_facesMassCenters[i];
+
+        //     // if (i == 0)
+        //     // {
+        //     //     m_faceCircumCentres[i].x -= 0.001;
+        //     //     m_faceCircumCentres[i].y -= 0.001;
+        //     // }
+
+        //     std::cout << " centre " << i + 1 << "  " << m_faceCircumCentres[i].x << ", " << m_faceCircumCentres[i].y << std::endl;
+    }
 }
 
 void OrthogonalizationAndSmoothing::ComputeLinearSystemTerms()
@@ -409,6 +446,12 @@ void OrthogonalizationAndSmoothing::UpdateNodeCoordinates(UInt nodeIndex)
 
         m_orthogonalCoordinates[nodeIndex].x = relaxationFactor * x0 + relaxationFactorCoordinates * m_mesh.Node(nodeIndex).x;
         m_orthogonalCoordinates[nodeIndex].y = relaxationFactor * y0 + relaxationFactorCoordinates * m_mesh.Node(nodeIndex).y;
+        // std::cout << "updated coords: "
+        //           << dx0 << ", " << dy0 << " -- "
+        //           << x0 << ", " << y0 << " -- "
+        //           << m_orthogonalCoordinates[nodeIndex].x << ", " << m_orthogonalCoordinates[nodeIndex].y << " == "
+        //           << relaxationFactor
+        //           << std::endl;
     }
 
     if (m_mesh.m_projection == Projection::sphericalAccurate)

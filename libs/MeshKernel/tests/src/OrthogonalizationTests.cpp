@@ -86,17 +86,17 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationOneQuadOneTriangle)
 
     // Assert
     constexpr double tolerance = 1e-8;
-    ASSERT_NEAR(0.0, mesh.Node(0).x, tolerance);
-    ASSERT_NEAR(0.0, mesh.Node(1).x, tolerance);
-    ASSERT_NEAR(10.0, mesh.Node(2).x, tolerance);
-    ASSERT_NEAR(10.0, mesh.Node(3).x, tolerance);
-    ASSERT_NEAR(20.0, mesh.Node(4).x, tolerance);
+    EXPECT_NEAR(0.0, mesh.Node(0).x, tolerance);
+    EXPECT_NEAR(0.0, mesh.Node(1).x, tolerance);
+    EXPECT_NEAR(10.0, mesh.Node(2).x, tolerance);
+    EXPECT_NEAR(10.0, mesh.Node(3).x, tolerance);
+    EXPECT_NEAR(20.0, mesh.Node(4).x, tolerance);
 
-    ASSERT_NEAR(0.0, mesh.Node(0).y, tolerance);
-    ASSERT_NEAR(10.0, mesh.Node(1).y, tolerance);
-    ASSERT_NEAR(0.0, mesh.Node(2).y, tolerance);
-    ASSERT_NEAR(10.0, mesh.Node(3).y, tolerance);
-    ASSERT_NEAR(0.0, mesh.Node(4).y, tolerance);
+    EXPECT_NEAR(0.0, mesh.Node(0).y, tolerance);
+    EXPECT_NEAR(10.0, mesh.Node(1).y, tolerance);
+    EXPECT_NEAR(0.0, mesh.Node(2).y, tolerance);
+    EXPECT_NEAR(10.0, mesh.Node(3).y, tolerance);
+    EXPECT_NEAR(0.0, mesh.Node(4).y, tolerance);
 }
 
 TEST(OrthogonalizationAndSmoothing, OrthogonalizationSmallTriangularGrid)
@@ -819,4 +819,56 @@ TEST(OrthogonalizationAndSmoothing, OrthogonalizationWithGapsInNodeAndEdgeLists)
         EXPECT_EQ(edgeFirst[i], mesh.GetEdge(i).first);
         EXPECT_EQ(edgeSecond[i], mesh.GetEdge(i).second);
     }
+}
+
+TEST(OrthogonalizationAndSmoothing, WTF)
+{
+
+    // now build node-edge mapping
+    auto mesh = MakeRectangularMeshForTesting(3, 2, 10.0, Projection::cartesian);
+    // auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/three_elements_net.nc");
+    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    OrthogonalizationParameters orthogonalizationParameters;
+    orthogonalizationParameters.outer_iterations = 5;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.inner_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 1.0;
+    orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
+
+    auto polygon = std::make_unique<Polygons>();
+
+    auto node1 = mesh->FindNodeCloseToAPoint({0.0, 10.0}, 0.1);
+    auto node2 = mesh->FindNodeCloseToAPoint({10.0, 0.0}, 0.1);
+
+    auto node3 = mesh->FindNodeCloseToAPoint({10.0, 10.0}, 0.1);
+    auto node4 = mesh->FindNodeCloseToAPoint({20.0, 0.0}, 0.1);
+
+    [[maybe_unused]] auto node5 = mesh->FindNodeCloseToAPoint({0.0, 0.0}, 0.1);
+    //[[maybe_unused]] auto node5 = mesh->FindNodeCloseToAPoint({20.0, 10.0}, 0.1);
+
+    [[maybe_unused]] auto undo1 = mesh->ConnectNodes(node1, node2, false);
+    [[maybe_unused]] auto undo2 = mesh->ConnectNodes(node3, node4, false);
+
+    [[maybe_unused]] auto undo3 = mesh->DeleteNode(node5, false);
+    [[maybe_unused]] auto undo4 = mesh->MoveNode({5.0, 10.0}, node1);
+
+    [[maybe_unused]] auto undo5 = mesh->MoveNode({30.0, -10.0}, node4);
+
+    mesh->Administrate();
+
+    std::vector<Point> landBoundary;
+    auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, *mesh, *polygon);
+
+    meshkernel::Print(mesh->Nodes(), mesh->Edges());
+
+    OrthogonalizationAndSmoothing orthogonalization(*mesh,
+                                                    std::move(polygon),
+                                                    std::move(landboundaries),
+                                                    projectToLandBoundaryOption,
+                                                    orthogonalizationParameters);
+
+    [[maybe_unused]] auto undoAction = orthogonalization.Initialize();
+    orthogonalization.Compute();
+    meshkernel::Print(mesh->Nodes(), mesh->Edges());
 }

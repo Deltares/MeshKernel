@@ -815,6 +815,7 @@ namespace meshkernel
     void NormalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& normal, bool& flippedNormal, const Projection& projection)
     {
         normal = NormalVectorOutside(firstPoint, secondPoint, projection);
+
         Point thirdPoint;
         if (projection == Projection::cartesian || projection == Projection::spherical)
         {
@@ -847,7 +848,7 @@ namespace meshkernel
             thirdPoint = Cartesian3DToSpherical(rotatedPoint, firstPoint.x);
         }
 
-        if (OuterProductTwoSegments(firstPoint, thirdPoint, firstPoint, secondPoint, projection) * OuterProductTwoSegments(firstPoint, insidePoint, firstPoint, secondPoint, projection) > 0.0)
+        if (OuterProductTwoSegments(firstPoint, thirdPoint, firstPoint, secondPoint, projection) * OuterProductTwoSegments(firstPoint, insidePoint, firstPoint, secondPoint, projection) >= 0.0)
         {
             normal.x = -normal.x;
             normal.y = -normal.y;
