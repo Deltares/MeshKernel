@@ -29,6 +29,7 @@
 
 #include <MeshKernel/CurvilinearGrid/CurvilinearGrid.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp>
+#include <MeshKernel/CurvilinearGrid/CurvilinearGridFromSplinesTransfinite.hpp>
 #include <MeshKernel/CurvilinearGrid/CurvilinearGridSplineToGrid.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
@@ -1029,6 +1030,8 @@ TEST(CurvilinearGridFromSplines, Compute_ThreeLongitudinalSplinesTwoCrossingSpli
 meshkernel::Splines LoadSplines(const std::string& fileName)
 {
 
+    // TOOD add check if file exists
+
     std::ifstream splineFile;
     splineFile.open(fileName.c_str());
 
@@ -1045,6 +1048,8 @@ meshkernel::Splines LoadSplines(const std::string& fileName)
         {
             found = line.find("L00");
         }
+
+        std::cout << "found " << found << std::endl;
 
         if (found != std::string::npos)
         {
@@ -1069,6 +1074,7 @@ meshkernel::Splines LoadSplines(const std::string& fileName)
                 values >> x;
                 values >> y;
                 splinePoints.emplace_back(meshkernel::Point(x, y));
+                std::cout << "spline point " << splinePoints.size() << "  " << x << ", " << y << std::endl;
             }
 
             splines.AddSpline(splinePoints);
@@ -1587,27 +1593,49 @@ TEST(CurvilinearGridFromSplines, WithoutOverlappingElements)
     }
 }
 
-TEST(CurvilinearGridFromSplines, GridFromFFiveSplines)
+TEST(CurvilinearGridFromSplines, GridFromFiveSplines)
 {
     // Test generating a more complicated grid from a set of much more complcated splines
     // Only check the size of the grid is correct and the number of valid grid nodes.
     namespace mk = meshkernel;
-    auto splines = std::make_shared<Splines>(LoadSplines(TEST_FOLDER + "/data/CurvilinearGrids/five_splines.spl"));
+    // auto splines = std::make_shared<Splines>();
+
+    //     std::vector<Point> spl1{{0.0, -1.0}, {0.0, 5.0}, {0.0, 11.0}};
+    //     std::vector<Point> spl2{{10.0, -1.0}, {10.0, 5.0}, {10.0, 11.0}};
+    //     std::vector<Point> spl3{{5.0, -1.0}, {5.0, 5.0}, {5.0, 11.0}};
+
+    //     std::vector<Point> spl4{{-1.0, 0.0}, {11.0, 0.0}};
+    //     std::vector<Point> spl5{{-1.0, 10.0}, {11.0, 10.0}};
+
+    //     splines->AddSpline(spl1);
+    //     splines->AddSpline(spl2);
+    //     splines->AddSpline(spl3);
+    //     splines->AddSpline(spl4);
+    //     splines->AddSpline(spl5);
+    //
+    // auto splines = std::make_shared<Splines>(LoadSplines(TEST_FOLDER + "/data/CurvilinearGrids/five_splines.spl"));
+    // auto splines = std::make_shared<Splines>(LoadSplines(TEST_FOLDER + "/data/CurvilinearGrids/three_splines.spl"));
+    auto splines = std::make_shared<Splines>(LoadSplines(TEST_FOLDER + "/data/CurvilinearGrids/five_splines_square.spl"));
+    // auto splines = std::make_shared<Splines>(LoadSplines(TEST_FOLDER + "/data/CurvilinearGrids/four_splines.spl"));
 
     mk::CurvilinearParameters curvilinearParameters;
-    mk::SplinesToCurvilinearParameters splineParameters{.aspect_ratio = 1.0,
-                                                        .aspect_ratio_grow_factor = 1.0,
-                                                        .average_width = 25.0};
+    [[maybe_unused]] mk::SplinesToCurvilinearParameters splineParameters{.aspect_ratio = 1.0,
+                                                                         .aspect_ratio_grow_factor = 1.0,
+                                                                         .average_width = 2.5,
+                                                                         .check_front_collisions = 0};
 
     curvilinearParameters.m_refinement = 40;
     curvilinearParameters.n_refinement = 40;
 
+    // mk::CurvilinearGridFromSplinesTransfinite gridFromSplines(splines, curvilinearParameters);
     mk::CurvilinearGridFromSplines gridFromSplines(splines, curvilinearParameters, splineParameters);
 
     auto grid = gridFromSplines.Compute();
 
     auto computedPoints = grid->ComputeNodes();
     auto computedEdges = grid->ComputeEdges();
+
+    std::cout << "% dimensions: N = " << grid->NumN() << ",  M = " << grid->NumM() << std::endl;
 
     mk::UInt validPointCount = 0;
 
