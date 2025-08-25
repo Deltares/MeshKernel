@@ -671,18 +671,18 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <tr class="memitem:a3ef99054ee1c2c570e530c3dbb58ddcf" id="r_a3ef99054ee1c2c570e530c3dbb58ddcf"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a3ef99054ee1c2c570e530c3dbb58ddcf">mkernel_mesh2d_prepare_outer_iteration_orthogonalization</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:a3ef99054ee1c2c570e530c3dbb58ddcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepares an outer orthogonalization iteration, computing the new orthogonalization and smoothing weights from the modified mesh geometry (in interactive mode).  <br /></td></tr>
 <tr class="separator:a3ef99054ee1c2c570e530c3dbb58ddcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa40793b2bcadef556033eb378fe8dfc0" id="r_aa40793b2bcadef556033eb378fe8dfc0"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa40793b2bcadef556033eb378fe8dfc0">mkernel_mesh2d_refine_based_on_gridded_samples</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_gridded_samples.html">GriddedSamples</a> &amp;griddedSamples, const <a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html">meshkernel::MeshRefinementParameters</a> &amp;meshRefinementParameters, bool useNodalRefinement)</td></tr>
-<tr class="memdesc:aa40793b2bcadef556033eb378fe8dfc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine based on gridded samples.  <br /></td></tr>
-<tr class="separator:aa40793b2bcadef556033eb378fe8dfc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82d7771b04f5a8e82000737a605c2508" id="r_a82d7771b04f5a8e82000737a605c2508"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a82d7771b04f5a8e82000737a605c2508">mkernel_mesh2d_refine_based_on_gridded_samples</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygon, const <a class="el" href="structmeshkernelapi_1_1_gridded_samples.html">GriddedSamples</a> &amp;griddedSamples, const <a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html">meshkernel::MeshRefinementParameters</a> &amp;meshRefinementParameters, bool useNodalRefinement)</td></tr>
+<tr class="memdesc:a82d7771b04f5a8e82000737a605c2508"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refine based on gridded samples.  <br /></td></tr>
+<tr class="separator:a82d7771b04f5a8e82000737a605c2508"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa4e296f36170b57a36cea8efc3f2a365" id="r_aa4e296f36170b57a36cea8efc3f2a365"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#aa4e296f36170b57a36cea8efc3f2a365">mkernel_mesh2d_refine_based_on_polygon</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;geometryList, const <a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html">meshkernel::MeshRefinementParameters</a> &amp;meshRefinementParameters)</td></tr>
 <tr class="memdesc:aa4e296f36170b57a36cea8efc3f2a365"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a mesh2d within a polygon. Refinement is achieved by splitting the edges contained in the polygon by two.  <br /></td></tr>
 <tr class="separator:aa4e296f36170b57a36cea8efc3f2a365"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7dda13ff3814870fa33c6b06e01f7ccd" id="r_a7dda13ff3814870fa33c6b06e01f7ccd"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a7dda13ff3814870fa33c6b06e01f7ccd">mkernel_mesh2d_refine_based_on_samples</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;samples, double relativeSearchRadius, int minimumNumSamples, const <a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html">meshkernel::MeshRefinementParameters</a> &amp;meshRefinementParameters)</td></tr>
-<tr class="memdesc:a7dda13ff3814870fa33c6b06e01f7ccd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a mesh2d based on samples. Refinement is achieved by successive splits of the face edges.  <br /></td></tr>
-<tr class="separator:a7dda13ff3814870fa33c6b06e01f7ccd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8657de73c9b65364990432552ff825e2" id="r_a8657de73c9b65364990432552ff825e2"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a8657de73c9b65364990432552ff825e2">mkernel_mesh2d_refine_ridges_based_on_gridded_samples</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_gridded_samples.html">GriddedSamples</a> &amp;griddedSamples, double relativeSearchRadius, int minimumNumSamples, int numberOfSmoothingIterations, const <a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html">meshkernel::MeshRefinementParameters</a> &amp;meshRefinementParameters)</td></tr>
-<tr class="memdesc:a8657de73c9b65364990432552ff825e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a mesh2d based on samples with ridge refinement. This method automatically detects the ridges in a sample set.  <br /></td></tr>
-<tr class="separator:a8657de73c9b65364990432552ff825e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7dcad0b0efd5e3fce4d248420eb8be1" id="r_af7dcad0b0efd5e3fce4d248420eb8be1"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#af7dcad0b0efd5e3fce4d248420eb8be1">mkernel_mesh2d_refine_based_on_samples</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygon, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;samples, double relativeSearchRadius, int minimumNumSamples, const <a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html">meshkernel::MeshRefinementParameters</a> &amp;meshRefinementParameters)</td></tr>
+<tr class="memdesc:af7dcad0b0efd5e3fce4d248420eb8be1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a mesh2d based on samples. Refinement is achieved by successive splits of the face edges.  <br /></td></tr>
+<tr class="separator:af7dcad0b0efd5e3fce4d248420eb8be1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9bc9954dcb2cb74124c16d78c312cc01" id="r_a9bc9954dcb2cb74124c16d78c312cc01"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a9bc9954dcb2cb74124c16d78c312cc01">mkernel_mesh2d_refine_ridges_based_on_gridded_samples</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygon, const <a class="el" href="structmeshkernelapi_1_1_gridded_samples.html">GriddedSamples</a> &amp;griddedSamples, double relativeSearchRadius, int minimumNumSamples, int numberOfSmoothingIterations, const <a class="el" href="structmeshkernel_1_1_mesh_refinement_parameters.html">meshkernel::MeshRefinementParameters</a> &amp;meshRefinementParameters)</td></tr>
+<tr class="memdesc:a9bc9954dcb2cb74124c16d78c312cc01"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refines a mesh2d based on samples with ridge refinement. This method automatically detects the ridges in a sample set.  <br /></td></tr>
+<tr class="separator:a9bc9954dcb2cb74124c16d78c312cc01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51b8b6364302aacea2b8461008c91993" id="r_a51b8b6364302aacea2b8461008c91993"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a51b8b6364302aacea2b8461008c91993">mkernel_mesh2d_remove_disconnected_regions</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:a51b8b6364302aacea2b8461008c91993"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove any disconnected regions from a mesh2d.  <br /></td></tr>
 <tr class="separator:a51b8b6364302aacea2b8461008c91993"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -7999,8 +7999,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 
 </div>
 </div>
-<a id="aa40793b2bcadef556033eb378fe8dfc0" name="aa40793b2bcadef556033eb378fe8dfc0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa40793b2bcadef556033eb378fe8dfc0">&#9670;&#160;</a></span>mkernel_mesh2d_refine_based_on_gridded_samples()</h2>
+<a id="a82d7771b04f5a8e82000737a605c2508" name="a82d7771b04f5a8e82000737a605c2508"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82d7771b04f5a8e82000737a605c2508">&#9670;&#160;</a></span>mkernel_mesh2d_refine_based_on_gridded_samples()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -8010,6 +8010,12 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygon</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -8041,6 +8047,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <p>The number of successive splits is indicated on the sample value. For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces), a value of 2 two splits (a quadrilateral face generates 16 faces). </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygon</td><td>The region in which refinement is done, if empty the whole mesh will be considered </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">griddedSamples</td><td>The gridded samples </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">meshRefinementParameters</td><td>The mesh refinement parameters </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">useNodalRefinement</td><td>Use nodal refinement </td></tr>
@@ -8096,8 +8103,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 
 </div>
 </div>
-<a id="a7dda13ff3814870fa33c6b06e01f7ccd" name="a7dda13ff3814870fa33c6b06e01f7ccd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7dda13ff3814870fa33c6b06e01f7ccd">&#9670;&#160;</a></span>mkernel_mesh2d_refine_based_on_samples()</h2>
+<a id="af7dcad0b0efd5e3fce4d248420eb8be1" name="af7dcad0b0efd5e3fce4d248420eb8be1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7dcad0b0efd5e3fce4d248420eb8be1">&#9670;&#160;</a></span>mkernel_mesh2d_refine_based_on_samples()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -8107,6 +8114,12 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygon</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -8144,6 +8157,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <p>The number of successive splits is indicated on the sample value. For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces), a value of 2 two splits (a quadrilateral face generates 16 faces). </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygon</td><td>The region in which refinement is done, if empty the whole mesh will be considered </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">samples</td><td>The sample set </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">relativeSearchRadius</td><td>The relative search radius relative to the face size, used for some interpolation algorithms </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">minimumNumSamples</td><td>The minimum number of samples used for some averaging algorithms </td></tr>
@@ -8155,8 +8169,8 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 
 </div>
 </div>
-<a id="a8657de73c9b65364990432552ff825e2" name="a8657de73c9b65364990432552ff825e2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8657de73c9b65364990432552ff825e2">&#9670;&#160;</a></span>mkernel_mesh2d_refine_ridges_based_on_gridded_samples()</h2>
+<a id="a9bc9954dcb2cb74124c16d78c312cc01" name="a9bc9954dcb2cb74124c16d78c312cc01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9bc9954dcb2cb74124c16d78c312cc01">&#9670;&#160;</a></span>mkernel_mesh2d_refine_ridges_based_on_gridded_samples()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -8166,6 +8180,12 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygon</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -8209,6 +8229,7 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <p>The number of successive splits is indicated on the sample value. For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces), a value of 2 two splits (a quadrilateral face generates 16 faces). </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygon</td><td>The region in which refinement is done, if empty the whole mesh will be considered </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">griddedSamples</td><td>The gridded samples </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">relativeSearchRadius</td><td>The relative search radius relative to the face size, used for some interpolation algorithms </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">minimumNumSamples</td><td>The minimum number of samples used for some averaging algorithms </td></tr>
