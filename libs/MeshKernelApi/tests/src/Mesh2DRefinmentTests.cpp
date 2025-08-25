@@ -387,8 +387,10 @@ TEST_F(CartesianApiTestFixture, RefineBasedOnSamplesWaveCourant_OnAUniformMesh_s
     ASSERT_EQ(121, mesh2d.num_nodes);
     ASSERT_EQ(220, mesh2d.num_edges);
 
+    meshkernelapi::GeometryList polygon{};
+
     // Execute
-    errorCode = mkernel_mesh2d_refine_based_on_samples(meshKernelId, geometryListIn, 1.0, 1, meshRefinementParameters);
+    errorCode = mkernel_mesh2d_refine_based_on_samples(meshKernelId, polygon, geometryListIn, 1.0, 1, meshRefinementParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Get the new state
@@ -493,7 +495,9 @@ TEST(MeshRefinement, Mesh2DRefineBasedOnGriddedSamplesWaveCourant_WithGriddedSam
     meshRefinementParameters.account_for_samples_outside = 0;
     meshRefinementParameters.smoothing_iterations = 0;
 
-    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
+    meshkernelapi::GeometryList polygon{};
+
+    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, polygon, griddedSamples, meshRefinementParameters, true);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2dResults;
@@ -558,8 +562,9 @@ TEST_F(CartesianApiTestFixture, Mesh2DRefineBasedOnGriddedSamplesWaveCourant_Wit
     meshRefinementParameters.smoothing_iterations = 0;
     meshRefinementParameters.max_courant_time = 120.0;
     meshRefinementParameters.directional_refinement = 0;
+    meshkernelapi::GeometryList polygon{};
 
-    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
+    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, polygon, griddedSamples, meshRefinementParameters, true);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2dResults;
@@ -612,7 +617,9 @@ TEST(MeshRefinement, RefineBasedOnGriddedSamplesWaveCourant_WithUniformSamplesAn
     meshRefinementParameters.max_courant_time = 120;
     meshRefinementParameters.directional_refinement = 0;
 
-    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
+    meshkernelapi::GeometryList polygon{};
+
+    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, polygon, griddedSamples, meshRefinementParameters, true);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2dResults;
@@ -667,8 +674,9 @@ TEST(MeshRefinement, RefineBasedOnGriddedSamplesWaveCourant_WithUniformSamplesAn
 
     // Set a large value of min edge size
     meshRefinementParameters.min_edge_size = 1e9;
+    meshkernelapi::GeometryList polygon{};
 
-    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
+    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, polygon, griddedSamples, meshRefinementParameters, true);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2dResults;
@@ -904,8 +912,9 @@ TEST_P(MeshRefinementSampleValueTypes, parameters)
     meshRefinementParameters.smoothing_iterations = 5;
     meshRefinementParameters.max_courant_time = 120;
     meshRefinementParameters.directional_refinement = 0;
+    meshkernelapi::GeometryList polygon{};
 
-    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
+    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, polygon, griddedSamples, meshRefinementParameters, true);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     meshkernelapi::Mesh2D mesh2dResults;
@@ -976,7 +985,8 @@ TEST_F(CartesianApiTestFixture, RefineAMeshBasedOnRidgeRefinement_OnAUniformMesh
 
     // Execute
     const auto meshKernelId = GetMeshKernelId();
-    mkernel_mesh2d_refine_ridges_based_on_gridded_samples(meshKernelId, griddedSamples, 1.01, 1, 0, meshRefinementParameters);
+    meshkernelapi::GeometryList polygon{};
+    mkernel_mesh2d_refine_ridges_based_on_gridded_samples(meshKernelId, polygon, griddedSamples, 1.01, 1, 0, meshRefinementParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert on the mesh values
@@ -1130,7 +1140,8 @@ TEST(MeshRefinement, RefineAGridBasedOnSamplesThroughApi_OnSpericalCoordinateWit
     meshRefinementParameters.smoothing_iterations = 2;
     meshRefinementParameters.max_courant_time = 120;
 
-    errorCode = meshkernelapi::mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, griddedSamples, meshRefinementParameters, true);
+    meshkernelapi::GeometryList polygon{};
+    errorCode = meshkernelapi::mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, polygon, griddedSamples, meshRefinementParameters, true);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     // Get the new state
 
