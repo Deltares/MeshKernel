@@ -45,6 +45,9 @@
 #include "MeshKernel/MeshRefinement.hpp"
 #include "SampleGenerator.hpp"
 
+#include "MeshKernel/Utilities/Utilities.hpp"
+
+
 namespace fs = std::filesystem;
 
 TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApi)
@@ -372,8 +375,8 @@ TEST_F(CartesianApiTestFixture, RefineBasedOnSamplesWaveCourant_OnAUniformMesh_s
     geometryListIn.num_coordinates = static_cast<int>(valuesIn.size());
 
     meshkernel::MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 2;
-    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.refine_intersected = 1;
     meshRefinementParameters.min_edge_size = 0.5;
     meshRefinementParameters.refinement_type = 1;
     meshRefinementParameters.connect_hanging_nodes = 1;
@@ -387,7 +390,12 @@ TEST_F(CartesianApiTestFixture, RefineBasedOnSamplesWaveCourant_OnAUniformMesh_s
     ASSERT_EQ(121, mesh2d.num_nodes);
     ASSERT_EQ(220, mesh2d.num_edges);
 
+    std::vector<double> polyXCoords{49.0, 151.0, 151.0, 49.0, 49.0};
+    std::vector<double> polyYCoords{49.0, 49.0, 151.0, 151.0, 49.0};
     meshkernelapi::GeometryList polygon{};
+    polygon.coordinates_x = polyXCoords.data ();
+    polygon.coordinates_y = polyYCoords.data ();
+    polygon.num_coordinates = static_cast<int>(polyXCoords.size());
 
     // Execute
     errorCode = mkernel_mesh2d_refine_based_on_samples(meshKernelId, polygon, geometryListIn, 1.0, 1, meshRefinementParameters);
@@ -396,6 +404,20 @@ TEST_F(CartesianApiTestFixture, RefineBasedOnSamplesWaveCourant_OnAUniformMesh_s
     // Get the new state
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    std::vector<double> node_y(mesh2d.num_nodes);
+    std::vector<double> node_x(mesh2d.num_nodes);
+    std::vector<int> edge_nodes(mesh2d.num_edges * 2);
+
+    mesh2d.num_edges = static_cast<int>(mesh2d.num_edges);
+    mesh2d.num_nodes = static_cast<int>(mesh2d.num_nodes);
+    mesh2d.node_x = node_x.data();
+    mesh2d.node_y = node_y.data();
+    mesh2d.edge_nodes = edge_nodes.data();
+
+    errorCode = mkernel_mesh2d_get_node_edge_data(meshKernelId, mesh2d);
+
+    meshkernel::Print (node_x, node_y, edge_nodes);
 
     // Assert
     ASSERT_EQ(1626, mesh2d.num_nodes);

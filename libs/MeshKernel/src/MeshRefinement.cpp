@@ -154,6 +154,8 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::Compute()
         m_nodeMask = m_mesh.NodeMaskFromPolygon(m_polygons, true);
     }
 
+    // m_faceMask = m_mesh.ComputeFaceMask (m_nodeMask);
+
     FindBrotherEdges();
 
     // set_initial_mask
@@ -178,6 +180,29 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::Compute()
         }
 
         UpdateFaceMask(level);
+
+        std::cout << std::endl;
+        std::cout << "face mask ";
+        for (size_t i = 0; i < m_faceMask.size (); ++i)
+        {
+            std::cout << m_faceMask [i] << "   ";
+        }
+        std::cout << std::endl;
+        std::cout << std::endl;
+
+        std::cout << std::endl;
+        std::cout << "node mask ";
+
+        for (size_t i = 0; i < m_nodeMask.size (); ++i)
+        {
+            std::cout << m_nodeMask [i] << "   ";
+        }
+
+        std::cout << std::endl;
+        std::cout << std::endl;
+
+
+
         ComputeEdgesRefinementMask();
         ComputeIfFaceShouldBeSplit();
 
@@ -582,6 +607,8 @@ int MeshRefinement::DetermineNodeMaskValue(const int firstNodeMask, const int se
     {
         maskValue = -1;
     }
+
+    std::cout << " DetermineNodeMaskValue maskValue " << maskValue << std::endl;
 
     return maskValue;
 }
@@ -1154,7 +1181,6 @@ void MeshRefinement::ComputeRefinementMasksForRidgeDetection(UInt face,
 
     for (size_t i = 0; i < numEdges; ++i)
     {
-
         const auto& edgeIndex = m_mesh.m_facesEdges[face][i];
         const auto& [firstNode, secondNode] = m_mesh.GetEdge(edgeIndex);
         const auto distance = ComputeDistance(m_mesh.Node(firstNode), m_mesh.Node(secondNode), m_mesh.m_projection);
@@ -1181,7 +1207,19 @@ void MeshRefinement::ComputeRefinementMasksForRidgeDetection(UInt face,
 
 void MeshRefinement::ComputeRefinementMasksFromSamples(UInt face)
 {
-    if (IsEqual(m_interpolant->GetFaceResult(face), constants::missing::doubleValue))
+
+    bool refineFace = true;
+
+    for (UInt i = 0; i < m_mesh.m_facesNodes[face].size (); ++i)
+    {
+        if (m_nodeMask[m_mesh.m_facesNodes[face][i]] == 0)
+        {
+            refineFace = false;
+            break;
+        }
+    }
+
+    if (!refineFace || IsEqual(m_interpolant->GetFaceResult(face), constants::missing::doubleValue))
     {
         return;
     }

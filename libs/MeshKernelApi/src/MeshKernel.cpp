@@ -2890,6 +2890,7 @@ namespace meshkernelapi
                                                                                   static_cast<meshkernel::UInt>(minimumNumSamples));
 
             const auto polygonPoints = ConvertGeometryListToPointVector(polygon);
+
             meshkernel::Polygons refinementPolygon(polygonPoints,
                                                    meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
