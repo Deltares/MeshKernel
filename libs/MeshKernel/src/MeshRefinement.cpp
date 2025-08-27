@@ -1184,12 +1184,13 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(UInt face)
 {
     bool refineFace = false;
 
+    // If all nodes of the element are masked out then there is no need to check if refinement is necessary.
     for (UInt n = 0; n < m_mesh.m_facesNodes[face].size(); ++n)
     {
         if (m_nodeMask[m_mesh.m_facesNodes[face][n]] > 0)
         {
-            // Only check if refinement is needed if any node of element is not masked out
             refineFace = true;
+            break;
         }
     }
 
