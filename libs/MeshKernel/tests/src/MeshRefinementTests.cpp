@@ -2771,8 +2771,6 @@ TEST(MeshRefinement, MeshRefinementInsidePolygon_On21x21With50x50Samples_ShouldR
     [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
     mesh->Administrate();
-    meshkernel::Print (mesh->Nodes (), mesh->Edges ());
-    return;
 
     // Only check that the number of nodes, edges and faces is correct
     ASSERT_EQ(mesh->GetNumNodes(), 611);

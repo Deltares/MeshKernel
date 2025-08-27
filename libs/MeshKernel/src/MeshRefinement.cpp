@@ -1188,6 +1188,7 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(UInt face)
     {
         if (m_nodeMask[m_mesh.m_facesNodes[face][n]] > 0)
         {
+            // Only check if refinement is needed if any node of element is not masked out
             refineFace = true;
         }
     }
