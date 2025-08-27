@@ -67,21 +67,8 @@ void AveragingInterpolation::Compute()
         m_samplesRtree->BuildTree(m_samples);
     }
 
-
     if (m_interpolationLocation == Location::Nodes || m_interpolationLocation == Location::Edges)
     {
-        // std::vector<int> nodeMask (m_mesh.GetNumNodes ());
-
-        // if (m_interpolationLocation == Location::Edges)
-        // {
-        //     const auto edgeMask = m_mesh.MaskEdgesOfFacesInPolygon(polygon, false, true);
-        //     nodeMask = m_mesh.NodeMaskFromEdgeMask(edgeMask);
-        // }
-        // else
-        // {
-        //     nodeMask = m_mesh.NodeMaskFromPolygon(polygon, true);
-        // }
-
         m_nodeResults.resize(m_mesh.GetNumNodes(), constants::missing::doubleValue);
         std::ranges::fill(m_nodeResults, constants::missing::doubleValue);
 
@@ -90,12 +77,9 @@ void AveragingInterpolation::Compute()
         std::vector<Point> dualFacePolygon;
         for (UInt n = 0; n < m_mesh.GetNumNodes(); ++n)
         {
-            // if (nodeMask [n] > 0)
-            {
-                m_mesh.MakeDualFace(edgeCentres, n, m_relativeSearchRadius, dualFacePolygon);
-                const auto result = ComputeOnPolygon(dualFacePolygon, m_mesh.Node(n));
-                m_nodeResults[n] = result;
-            }
+            m_mesh.MakeDualFace(edgeCentres, n, m_relativeSearchRadius, dualFacePolygon);
+            const auto result = ComputeOnPolygon(dualFacePolygon, m_mesh.Node(n));
+            m_nodeResults[n] = result;
         }
     }
 
@@ -126,16 +110,8 @@ void AveragingInterpolation::Compute()
         m_faceResults.resize(m_mesh.GetNumFaces(), constants::missing::doubleValue);
         std::ranges::fill(m_faceResults, constants::missing::doubleValue);
 
-        // const auto nodeMask = m_mesh.NodeMaskFromPolygon(polygon, true);
-        // const auto faceMask = m_mesh.ComputeFaceMask(nodeMask);
-
         for (UInt f = 0; f < m_mesh.GetNumFaces(); ++f)
         {
-            // if (faceMask [f] == 0)
-            // {
-            //     continue;
-            // }
-
             polygonNodesCache.clear();
 
             for (UInt n = 0; n < m_mesh.GetNumFaceEdges(f); ++n)
@@ -262,6 +238,8 @@ double AveragingInterpolation::ComputeOnPolygon(const std::vector<Point>& polygo
     }
 
     m_samplesRtree->SearchPoints(interpolationPoint, searchRadiusSquared);
+
+    std::cout << " m_samplesRtree->GetQueryResultSize() " << m_samplesRtree->GetQueryResultSize() << std::endl;
 
     if (!m_samplesRtree->HasQueryResults() && m_useClosestSampleIfNoneAvailable)
     {

@@ -2000,28 +2000,6 @@ std::vector<int> Mesh2D::ComputeEdgeMask(const std::vector<int>& nodeMask,
     return edgeMask;
 }
 
-std::vector<int> Mesh2D::ComputeFaceMask(const std::vector<int>& nodeMask) const
-{
-    std::vector<int> faceMask(GetNumFaces (), 0);
-
-    for (UInt f = 0; f < GetNumFaces(); ++f)
-    {
-        int isFaceIncluded = 0;
-
-        for (UInt n = 0; n < m_facesNodes[f].size (); ++n)
-        {
-            if (nodeMask [m_facesNodes[f][n]] > 0)
-            {
-                isFaceIncluded = 1;
-            }
-        }
-
-        faceMask[f] = isFaceIncluded;
-    }
-
-    return faceMask;
-}
-
 void Mesh2D::RemoveIntersected(const std::vector<int>& edgeMask,
                                std::vector<int>& secondEdgeMask) const
 {

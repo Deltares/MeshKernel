@@ -306,9 +306,6 @@ namespace meshkernel
         /// @return The node mask
         [[nodiscard]] std::vector<int> NodeMaskFromPolygon(const Polygons& polygons, bool inside) const;
 
-        /// @brief Find faces contained within the polygon
-        std::vector<int> ComputeFaceMask(const std::vector<int>& nodeMask) const;
-
         /// @brief Find edge on the opposite side of the element
         /// @note Currently only valid of quadrilateral elements.
         /// Will throw exception NotImplementedError for non-quadrilateral element shapes.
