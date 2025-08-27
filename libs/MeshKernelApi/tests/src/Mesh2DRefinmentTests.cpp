@@ -417,8 +417,6 @@ TEST_F(CartesianApiTestFixture, RefineBasedOnSamplesWaveCourant_OnAUniformMesh_s
 
     errorCode = mkernel_mesh2d_get_node_edge_data(meshKernelId, mesh2d);
 
-    meshkernel::Print(node_x, node_y, edge_nodes);
-
     // Assert
     EXPECT_EQ(577, mesh2d.num_nodes);
     EXPECT_EQ(1208, mesh2d.num_edges);
@@ -510,16 +508,28 @@ TEST(MeshRefinement, Mesh2DRefineBasedOnGriddedSamplesWaveCourant_WithGriddedSam
     griddedSamples.y_coordinates = nullptr;
 
     meshkernel::MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 5;
+    meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.min_edge_size = 0.01;
     meshRefinementParameters.refinement_type = 1;
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.account_for_samples_outside = 0;
-    meshRefinementParameters.smoothing_iterations = 0;
+    meshRefinementParameters.smoothing_iterations = 1;
 
     meshkernelapi::GeometryList polygon{};
 
+    // Refine according to samples
+    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, polygon, griddedSamples, meshRefinementParameters, true);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    polygon.geometry_separator = meshkernel::constants::missing::doubleValue;
+    std::vector xPolygonCoord{-0.75, -0.35, -0.35, -0.75, -0.75};
+    std::vector yPolygonCoord{49.25, 49.25, 49.55, 49.55, 49.25};
+    polygon.coordinates_x = xPolygonCoord.data();
+    polygon.coordinates_y = yPolygonCoord.data();
+    polygon.num_coordinates = static_cast<int>(xPolygonCoord.size());
+
+    // Refine within polygon according to samples
     errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, polygon, griddedSamples, meshRefinementParameters, true);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
@@ -527,10 +537,10 @@ TEST(MeshRefinement, Mesh2DRefineBasedOnGriddedSamplesWaveCourant_WithGriddedSam
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2dResults);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    ASSERT_EQ(417, mesh2dResults.num_nodes);
-    ASSERT_EQ(988, mesh2dResults.num_edges);
-    ASSERT_EQ(572, mesh2dResults.num_faces);
-    ASSERT_EQ(1936, mesh2dResults.num_face_nodes);
+    EXPECT_EQ(492, mesh2dResults.num_nodes);
+    EXPECT_EQ(1091, mesh2dResults.num_edges);
+    EXPECT_EQ(600, mesh2dResults.num_faces);
+    EXPECT_EQ(2139, mesh2dResults.num_face_nodes);
 }
 
 TEST_F(CartesianApiTestFixture, Mesh2DRefineBasedOnGriddedSamplesWaveCourant_WithNotUniformlySpacedSamples_ShouldRefineMesh)
@@ -963,19 +973,21 @@ TEST_F(CartesianApiTestFixture, RefineAMeshBasedOnRidgeRefinement_OnAUniformMesh
     MakeMesh(nRows, nCols, 10.0);
 
     // Generate gridded samples, from a gaussian distribution
-    const int numSamplesXCoordinates = (nCols - 1) * 2 + 1;
-    const int numSamplesYCoordinates = (nRows * 1) * 2 + 1;
-    const double deltaX = 5.0;
-    const double deltaY = 5.0;
+    const int numSamplesXCoordinates = (nCols - 1) * 10 + 1;
+    const int numSamplesYCoordinates = (nRows - 1) * 10 + 1;
+    const double deltaX = 1.0;
+    const double deltaY = 1.0;
     const auto sampleData = generateSampleData(FunctionTestCase::GaussianBump, numSamplesXCoordinates, numSamplesYCoordinates, deltaX, deltaY);
 
     // Create an instance of gridded samples,
+    // Stretch the sample grid and shift the origin (due to the stretching)
+    // This gives a better Gaussian hump for testing the refinement
     meshkernelapi::GriddedSamples griddedSamples;
     griddedSamples.num_x = numSamplesXCoordinates;
     griddedSamples.num_y = numSamplesYCoordinates;
-    griddedSamples.x_origin = 0.0;
-    griddedSamples.y_origin = 0.0;
-    griddedSamples.cell_size = meshDelta * 0.1;
+    griddedSamples.x_origin = -800.0;
+    griddedSamples.y_origin = -400.0;
+    griddedSamples.cell_size = meshDelta * 0.5;
 
     // Flatten the values before passing them to Mesh Kernel
     meshkernel::UInt index = 0;
@@ -997,7 +1009,7 @@ TEST_F(CartesianApiTestFixture, RefineAMeshBasedOnRidgeRefinement_OnAUniformMesh
 
     // Create meshrefinement parameters
     meshkernel::MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 3;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
     meshRefinementParameters.min_edge_size = 2.0;
@@ -1009,6 +1021,15 @@ TEST_F(CartesianApiTestFixture, RefineAMeshBasedOnRidgeRefinement_OnAUniformMesh
     // Execute
     const auto meshKernelId = GetMeshKernelId();
     meshkernelapi::GeometryList polygon{};
+
+    // Chevron shaped polygon
+    polygon.geometry_separator = meshkernel::constants::missing::doubleValue;
+    std::vector<double> xPolygonCoord{125.0, 200.0, 275.0, 200.0, 125.0};
+    std::vector<double> yPolygonCoord{35.0, 60.0, 35.0, 160.0, 35.0};
+    polygon.coordinates_x = xPolygonCoord.data();
+    polygon.coordinates_y = yPolygonCoord.data();
+    polygon.num_coordinates = static_cast<int>(xPolygonCoord.size());
+
     mkernel_mesh2d_refine_ridges_based_on_gridded_samples(meshKernelId, polygon, griddedSamples, 1.01, 1, 0, meshRefinementParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
@@ -1016,8 +1037,21 @@ TEST_F(CartesianApiTestFixture, RefineAMeshBasedOnRidgeRefinement_OnAUniformMesh
     meshkernelapi::Mesh2D mesh2d{};
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-    ASSERT_EQ(956, mesh2d.num_nodes);
-    ASSERT_EQ(1872, mesh2d.num_edges);
+
+    std::vector<double> node_yres(mesh2d.num_nodes);
+    std::vector<double> node_xres(mesh2d.num_nodes);
+    std::vector<int> edge_nodesres(mesh2d.num_edges * 2);
+
+    mesh2d.num_edges = static_cast<int>(mesh2d.num_edges);
+    mesh2d.num_nodes = static_cast<int>(mesh2d.num_nodes);
+    mesh2d.node_x = node_xres.data();
+    mesh2d.node_y = node_yres.data();
+    mesh2d.edge_nodes = edge_nodesres.data();
+
+    errorCode = mkernel_mesh2d_get_node_edge_data(meshKernelId, mesh2d);
+
+    EXPECT_EQ(1094, mesh2d.num_nodes);
+    EXPECT_EQ(2174, mesh2d.num_edges);
 }
 
 TEST(MeshRefinement, RefineAGridBasedOnSamplesThroughApi_OnSpericalCoordinateWithRealSamples_ShouldRefine)
