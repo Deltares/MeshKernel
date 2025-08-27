@@ -1030,7 +1030,7 @@ TEST_F(CartesianApiTestFixture, RefineAMeshBasedOnRidgeRefinement_OnAUniformMesh
     polygon.coordinates_y = yPolygonCoord.data();
     polygon.num_coordinates = static_cast<int>(xPolygonCoord.size());
 
-    mkernel_mesh2d_refine_ridges_based_on_gridded_samples(meshKernelId, polygon, griddedSamples, 1.01, 1, 0, meshRefinementParameters);
+    errorCode = mkernel_mesh2d_refine_ridges_based_on_gridded_samples(meshKernelId, polygon, griddedSamples, 1.01, 1, 0, meshRefinementParameters);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert on the mesh values
