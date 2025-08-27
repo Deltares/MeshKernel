@@ -103,6 +103,7 @@ void MeshRefinement::UpdateFaceMask(const int level)
             }
         }
     }
+
     if (level > 0)
     {
         // if one face node is not in polygon disable refinement
@@ -154,8 +155,6 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::Compute()
         m_nodeMask = m_mesh.NodeMaskFromPolygon(m_polygons, true);
     }
 
-    // m_faceMask = m_mesh.ComputeFaceMask (m_nodeMask);
-
     FindBrotherEdges();
 
     // set_initial_mask
@@ -180,28 +179,6 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::Compute()
         }
 
         UpdateFaceMask(level);
-
-        std::cout << std::endl;
-        std::cout << "face mask ";
-        for (size_t i = 0; i < m_faceMask.size (); ++i)
-        {
-            std::cout << m_faceMask [i] << "   ";
-        }
-        std::cout << std::endl;
-        std::cout << std::endl;
-
-        std::cout << std::endl;
-        std::cout << "node mask ";
-
-        for (size_t i = 0; i < m_nodeMask.size (); ++i)
-        {
-            std::cout << m_nodeMask [i] << "   ";
-        }
-
-        std::cout << std::endl;
-        std::cout << std::endl;
-
-
 
         ComputeEdgesRefinementMask();
         ComputeIfFaceShouldBeSplit();
@@ -608,8 +585,6 @@ int MeshRefinement::DetermineNodeMaskValue(const int firstNodeMask, const int se
         maskValue = -1;
     }
 
-    std::cout << " DetermineNodeMaskValue maskValue " << maskValue << std::endl;
-
     return maskValue;
 }
 
@@ -935,7 +910,6 @@ void MeshRefinement::ComputeRefinementMasksFromSamples()
     for (UInt f = 0; f < m_mesh.GetNumFaces(); f++)
     {
         FindHangingNodes(f);
-
         ComputeRefinementMasksFromSamples(f);
     }
 
@@ -943,6 +917,7 @@ void MeshRefinement::ComputeRefinementMasksFromSamples()
     {
         edge = -edge;
     }
+
     SmoothRefinementMasks();
 }
 
@@ -1207,19 +1182,17 @@ void MeshRefinement::ComputeRefinementMasksForRidgeDetection(UInt face,
 
 void MeshRefinement::ComputeRefinementMasksFromSamples(UInt face)
 {
+    bool refineFace = false;
 
-    bool refineFace = true;
-
-    for (UInt i = 0; i < m_mesh.m_facesNodes[face].size (); ++i)
+    for (UInt n = 0; n < m_mesh.m_facesNodes[face].size(); ++n)
     {
-        if (m_nodeMask[m_mesh.m_facesNodes[face][i]] == 0)
+        if (m_nodeMask[m_mesh.m_facesNodes[face][n]] > 0)
         {
-            refineFace = false;
-            break;
+            refineFace = true;
         }
     }
 
-    if (!refineFace || IsEqual(m_interpolant->GetFaceResult(face), constants::missing::doubleValue))
+    if (!refineFace || m_interpolant->GetFaceResult(face) == constants::missing::doubleValue)
     {
         return;
     }
@@ -1255,6 +1228,7 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(UInt face)
             if (m_refineEdgeCache[n] == 1)
             {
                 const auto edgeIndex = m_mesh.m_facesEdges[face][n];
+
                 if (edgeIndex != constants::missing::uintValue)
                 {
                     m_edgeMask[edgeIndex] = 1;
