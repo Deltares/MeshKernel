@@ -405,18 +405,6 @@ TEST_F(CartesianApiTestFixture, RefineBasedOnSamplesWaveCourant_OnAUniformMesh_s
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    std::vector<double> node_y(mesh2d.num_nodes);
-    std::vector<double> node_x(mesh2d.num_nodes);
-    std::vector<int> edge_nodes(mesh2d.num_edges * 2);
-
-    mesh2d.num_edges = static_cast<int>(mesh2d.num_edges);
-    mesh2d.num_nodes = static_cast<int>(mesh2d.num_nodes);
-    mesh2d.node_x = node_x.data();
-    mesh2d.node_y = node_y.data();
-    mesh2d.edge_nodes = edge_nodes.data();
-
-    errorCode = mkernel_mesh2d_get_node_edge_data(meshKernelId, mesh2d);
-
     // Assert
     EXPECT_EQ(577, mesh2d.num_nodes);
     EXPECT_EQ(1208, mesh2d.num_edges);
@@ -1037,18 +1025,6 @@ TEST_F(CartesianApiTestFixture, RefineAMeshBasedOnRidgeRefinement_OnAUniformMesh
     meshkernelapi::Mesh2D mesh2d{};
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
-    std::vector<double> node_yres(mesh2d.num_nodes);
-    std::vector<double> node_xres(mesh2d.num_nodes);
-    std::vector<int> edge_nodesres(mesh2d.num_edges * 2);
-
-    mesh2d.num_edges = static_cast<int>(mesh2d.num_edges);
-    mesh2d.num_nodes = static_cast<int>(mesh2d.num_nodes);
-    mesh2d.node_x = node_xres.data();
-    mesh2d.node_y = node_yres.data();
-    mesh2d.edge_nodes = edge_nodesres.data();
-
-    errorCode = mkernel_mesh2d_get_node_edge_data(meshKernelId, mesh2d);
 
     EXPECT_EQ(1094, mesh2d.num_nodes);
     EXPECT_EQ(2174, mesh2d.num_edges);
