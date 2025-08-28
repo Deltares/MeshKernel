@@ -2763,10 +2763,10 @@ TEST(MeshRefinement, MeshRefinementInsidePolygon_On21x21With50x50Samples_ShouldR
     std::vector<meshkernel::Point> polygonPoints{{1.9, 1.9}, {16.0, 1.9}, {16.0, 16.0}, {1.9, 16.0}, {1.9, 1.9}, {-999, -999}, {31.9, 31.9}, {46.0, 31.9}, {46.0, 46.0}, {31.9, 46.0}, {31.9, 31.9}};
     meshkernel::Polygons polygon(polygonPoints, Projection::cartesian);
 
-    [[maybe_unused]] MeshRefinement meshRefinement(*mesh,
-                                                   polygon,
-                                                   std::move(interpolator),
-                                                   meshRefinementParameters);
+    MeshRefinement meshRefinement(*mesh,
+                                  polygon,
+                                  std::move(interpolator),
+                                  meshRefinementParameters);
 
     [[maybe_unused]] auto undoAction = meshRefinement.Compute();
 
