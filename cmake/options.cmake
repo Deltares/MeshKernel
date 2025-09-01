@@ -9,7 +9,7 @@ option(
 option(
   ENABLE_BENCHMARKING
   "Enables building the benchmark executable."
-  ON
+  OFF
 )
 
 # memory usgae reporting option
