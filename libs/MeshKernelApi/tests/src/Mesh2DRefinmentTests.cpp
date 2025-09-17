@@ -1337,8 +1337,8 @@ TEST(MeshRefinement, Mesh2DWithHoleRefineBasedOnGriddedSamplesWaveCourant_WithGr
     meshkernel::MakeGridParameters gridParameters;
     gridParameters.origin_x = 99.0;
     gridParameters.origin_y = -7.0;
-    gridParameters.block_size_x = 0.2;
-    gridParameters.block_size_y = 0.2;
+    gridParameters.block_size_x = 0.4;
+    gridParameters.block_size_y = 0.4;
     gridParameters.upper_right_x = 114.0;
     gridParameters.upper_right_y = 13.5;
 
