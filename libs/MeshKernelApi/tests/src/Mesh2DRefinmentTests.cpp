@@ -1324,3 +1324,58 @@ TEST(MeshRefinement, SplitAlongRow_FailureTests)
     errorCode = meshkernelapi::mkernel_mesh2d_split_row(meshKernelId, node1, node2);
     ASSERT_EQ(meshkernel::ExitCode::ConstraintErrorCode, errorCode);
 }
+
+TEST(MeshRefinement, Mesh2DWithHoleRefineBasedOnGriddedSamplesWaveCourant_WithGriddedSamples_ShouldRefineMesh)
+{
+    int meshKernelId = -1;
+    int errorCode = -1;
+
+    constexpr int isSpherical = 1;
+
+    meshkernelapi::mkernel_allocate_state(isSpherical, meshKernelId);
+
+    meshkernel::MakeGridParameters gridParameters;
+    gridParameters.origin_x = 99.0;
+    gridParameters.origin_y = -7.0;
+    gridParameters.block_size_x = 0.2;
+    gridParameters.block_size_y = 0.2;
+    gridParameters.upper_right_x = 114.0;
+    gridParameters.upper_right_y = 13.5;
+
+    errorCode = meshkernelapi::mkernel_curvilinear_compute_rectangular_grid_on_extension(meshKernelId, gridParameters);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = meshkernelapi::mkernel_curvilinear_convert_to_mesh2d(meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    std::vector<double> pxs{98.0, 107.5, 98.0, 98};
+    std::vector<double> pys{2.5, -7.5, -7.5, 2.5};
+    meshkernelapi::GeometryList polygon{};
+    polygon.coordinates_x = pxs.data();
+    polygon.coordinates_y = pys.data();
+    polygon.num_coordinates = static_cast<int>(pxs.size());
+    errorCode = mkernel_mesh2d_delete(meshKernelId, polygon, 0, 0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    std::vector<double> sampleDataXs{99.0, 114.0};
+    std::vector<double> sampleDataYs{-7.0, 13.5};
+    std::vector<double> sampleDataValues{-9999.0, -9999.0, -9999.0, -9999.0};
+
+    meshkernelapi::GriddedSamples sampleData;
+
+    sampleData.num_x = static_cast<int>(sampleDataXs.size());
+    sampleData.num_y = static_cast<int>(sampleDataYs.size());
+
+    sampleData.x_coordinates = sampleDataXs.data();
+    sampleData.y_coordinates = sampleDataYs.data();
+    sampleData.values = sampleDataValues.data();
+
+    meshkernel::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.min_edge_size = 1250.0;
+    meshRefinementParameters.refinement_type = 1; // WAVE_COURANT?
+    meshRefinementParameters.smoothing_iterations = 2;
+
+    meshkernelapi::GeometryList refPolygon{};
+
+    errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, refPolygon, sampleData, meshRefinementParameters, true);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+}
