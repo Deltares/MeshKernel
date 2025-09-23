@@ -23,8 +23,8 @@ jobs:
     # It seems like gcc and g++ are symbolic links to the default clang and clang++ compilers, respectively.
     # CMAKE_CXX_COMPILER_ID will evaluate to AppleClang rather than GNU on macos.
     env:
-      CC: gcc-13
-      CXX: g++-13
+      CC: gcc-12
+      CXX: g++-12
 
     # Build steps
     steps:
