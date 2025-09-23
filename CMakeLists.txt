@@ -16,6 +16,9 @@ include(cmake/options.cmake)
 include(cmake/compiler_config.cmake)
 
 # fetch dependencies, must appear after options.cmake
+include(cmake/fetch_contents.cmake)
+
+# fetch dependencies, must appear after options.cmake
 include(cmake/fetch_content.cmake)
 
 # organize targets into folders, can be remove in version > 3.26 (ON by default)
