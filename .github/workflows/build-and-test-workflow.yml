@@ -40,7 +40,7 @@ jobs:
       - name: Set paths
         id: paths
         run: |
-	  echo "gcc_output=$(gcc -mavx2 -dM -E - < /dev/null)" >>  $GITHUB_OUTPUT
+	  echo "$(gcc -mavx2 -dM -E - < /dev/null)" >>  $GITHUB_OUTPUT
           echo "build_dir=${{ github.workspace }}/build" >> $GITHUB_OUTPUT
           echo "ext_deps_dir=${{ github.workspace }}/external_dependencies" >> $GITHUB_OUTPUT
           echo "install_dir=${{ github.workspace }}/install" >> $GITHUB_OUTPUT
