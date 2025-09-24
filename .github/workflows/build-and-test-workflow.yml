@@ -36,7 +36,7 @@ jobs:
           fetch-depth: 0
 
       - name: gcc output
-        run: gcc -mavx2 -dM -E - < /dev/null
+        run:
 	  echo "gcc_output=$(gcc -mavx2 -dM -E - < /dev/null)" >>  $GITHUB_OUTPUT
 
       # Step: Set paths
