@@ -62,7 +62,7 @@ jobs:
         with:
           key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
           restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
-          path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
+          path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install
 
       # Step: Build and install user-provided dependencies, executes only if no cache restored
       - name: Build and install user-provided dependencies
