@@ -38,7 +38,7 @@ Param(
             zlib     = 'v1.3.1'; `
             curl     = 'curl-7_88_1'; `
             hdf5     = 'hdf5-1_14_0'; `
-            netcdf_c = 'v4.9.1'
+            netcdf_c = 'v4.9.3'
     },
     [Parameter(Mandatory = $false)] [ValidateRange(1, [int]::MaxValue)] [int] $ParallelJobs = 6,
     [Parameter(Mandatory = $false)] [Switch] $Clean = $False
