@@ -350,8 +350,6 @@ $NetCDFCMakeBuildOptions = @(`
         '-DENABLE_NETCDF_4=ON', `
         '-DENABLE_DAP=OFF', `
         '-DENABLE_BYTERANGE=OFF', `
-	'-DCMAKE_CXX_FLAGS="-Wno-error -D__FLT_EVAL_METHOD__=0"'
-	'-DCMAKE_C_FLAGS="-Wno-error -D__FLT_EVAL_METHOD__=0"'
     ('-DZLIB_ROOT={0}' -f $ZLIBInstallDir) `
 )
 if ($IsLinux -or $IsMacOS) {
