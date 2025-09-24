@@ -64,6 +64,10 @@ target_sources(
         ${INC_LIST}
 )
 
+if (APPLE)
+  set (netCDF_DIR "/Users/runner/work/MeshKernel/MeshKernel/external_dependencies/netcdf-c/install")
+endif ()
+
 # NetCDF
 find_package(netCDF REQUIRED COMPONENTS C)
 message(STATUS "Found NetCDF: in ${netCDF_INSTALL_PREFIX} (found version \"${NetCDFVersion}\")")
