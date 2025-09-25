@@ -290,7 +290,7 @@ Invoke-BuildAndInstall `
     -BuildDir $ZLIBBuildDir `
     -InstallDir $ZLIBInstallDir `
     -ParallelJobs $ParallelJobs `
-    -BuildType $BuildType `
+    -BuildType $BuildType
 $env:Path += (';' + $ZLIBInstallDir)
 
 # Curl
