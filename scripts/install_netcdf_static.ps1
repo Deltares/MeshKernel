@@ -35,7 +35,7 @@ Param(
     [Parameter(Mandatory = $true)] [string] $InstallDir,
     [Parameter(Mandatory = $false)] [ValidateSet('Release', 'Debug', 'RelWithDebInfo')] [string] $BuildType = 'Release',
     [Parameter(Mandatory = $false)] [hashtable]$GitTags = @{ `
-            zlib     = 'v1.2.13'; `
+            zlib     = 'v1.3'; `
             curl     = 'curl-7_88_1'; `
             hdf5     = 'hdf5-1_14_0'; `
             netcdf_c = 'v4.9.1'
@@ -291,7 +291,6 @@ Invoke-BuildAndInstall `
     -InstallDir $ZLIBInstallDir `
     -ParallelJobs $ParallelJobs `
     -BuildType $BuildType `
-    -Options -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 $env:Path += (';' + $ZLIBInstallDir)
 
 # Curl
