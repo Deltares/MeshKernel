@@ -290,7 +290,8 @@ Invoke-BuildAndInstall `
     -BuildDir $ZLIBBuildDir `
     -InstallDir $ZLIBInstallDir `
     -ParallelJobs $ParallelJobs `
-    -BuildType $BuildType
+    -BuildType $BuildType `
+    -Options -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 $env:Path += (';' + $ZLIBInstallDir)
 
 # Curl
