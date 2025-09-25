@@ -35,10 +35,10 @@ Param(
     [Parameter(Mandatory = $true)] [string] $InstallDir,
     [Parameter(Mandatory = $false)] [ValidateSet('Release', 'Debug', 'RelWithDebInfo')] [string] $BuildType = 'Release',
     [Parameter(Mandatory = $false)] [hashtable]$GitTags = @{ `
-            zlib     = 'v1.3'; `
+            zlib     = 'v1.2.13'; `
             curl     = 'curl-7_88_1'; `
             hdf5     = 'hdf5-1_14_0'; `
-            netcdf_c = 'v4.9.3'
+            netcdf_c = 'v4.9.1'
     },
     [Parameter(Mandatory = $false)] [ValidateRange(1, [int]::MaxValue)] [int] $ParallelJobs = 6,
     [Parameter(Mandatory = $false)] [Switch] $Clean = $False
