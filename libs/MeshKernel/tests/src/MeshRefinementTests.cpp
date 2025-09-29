@@ -49,6 +49,9 @@
 #include "MeshKernel/UndoActions/UndoActionStack.hpp"
 #include "MeshKernel/Utilities/Utilities.hpp"
 
+#include "MeshKernel/LandBoundaries.hpp"
+#include "MeshKernel/OrthogonalizationAndSmoothing.hpp"
+
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeCurvilinearGrids.hpp"
 #include "TestUtils/MakeMeshes.hpp"
@@ -2675,4 +2678,133 @@ TEST(MeshRefinement, RowSplittingFailureTests)
 
     // Invalid edge id
     EXPECT_THROW([[maybe_unused]] auto undo4 = splitMeshRow.Compute(mesh, edgeId), ConstraintError);
+}
+
+TEST(MeshRefinement, WTF)
+{
+    const size_t ExpectedNumberOfPoints = 184;
+    const size_t ExpectedNumberOfEdges = 360;
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 20.0, 20.0, 11, 11);
+    const auto edges = curviMesh->ComputeEdges();
+    const auto nodes = curviMesh->ComputeNodes();
+
+    Mesh2D mesh(edges, nodes, Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh.Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh.Edges());
+
+    std::vector<Point> patch{{45.0, 5.0},
+                             {155.0, 5.0},
+                             {155.0, 155.0},
+                             {45.0, 155.0},
+                             {45.0, 5.0},
+                             {constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                             {65.0, 65.0},
+                             {115.0, 65.0},
+                             {115.0, 115.0},
+                             {65.0, 115.0},
+                             {65.0, 65.0}};
+
+    std::vector<Point> expectedPoints(ExpectedNumberOfPoints);
+    std::vector<meshkernel::UInt> expectedEdgeStart(ExpectedNumberOfEdges);
+    std::vector<meshkernel::UInt> expectedEdgeEnd(ExpectedNumberOfEdges);
+
+    Polygons polygon(patch, Projection::cartesian);
+
+    auto undoAction = CasulliRefinement::Compute(mesh, polygon);
+
+    auto node11 = mesh.FindNodeCloseToAPoint({80.0, 0.0}, 1.0e-5);
+    auto node12 = mesh.FindNodeCloseToAPoint({85.0, 15.0}, 1.0e-5);
+    auto node13 = mesh.FindNodeCloseToAPoint({75.0, 15.0}, 1.0e-5);
+
+    auto node21 = mesh.FindNodeCloseToAPoint({180.0, 140.0}, 1.0e-5);
+    auto node22 = mesh.FindNodeCloseToAPoint({200.0, 140.0}, 1.0e-5);
+    auto node23 = mesh.FindNodeCloseToAPoint({200.0, 160.0}, 1.0e-5);
+    auto node24 = mesh.FindNodeCloseToAPoint({180.0, 160.0}, 1.0e-5);
+
+    std::cout << "nodes2: " << node21 << "  " << node22 << "  " << node23 << "  " << node24 << std::endl;
+
+    auto node31 = mesh.FindNodeCloseToAPoint({125.0, 125.0}, 1.0e-5);
+    auto node32 = mesh.FindNodeCloseToAPoint({135.0, 125.0}, 1.0e-5);
+    auto node33 = mesh.FindNodeCloseToAPoint({135.0, 135.0}, 1.0e-5);
+    auto node34 = mesh.FindNodeCloseToAPoint({125.0, 135.0}, 1.0e-5);
+
+    std::cout << "nodes3: " << node31 << "  " << node32 << "  " << node33 << "  " << node34 << std::endl;
+
+    std::vector<meshkernel::Point> polygonNodes;
+    auto boundaryNodes = mesh.ComputeBoundaryPolygons(polygonNodes);
+
+    // std::vector<meshkernel::Point> boundaryNodes = meshBoundaryPolygon.GatherAllEnclosureNodes();
+
+    std::vector<Point> elementNodes1{{constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                                     mesh.Node(node11),
+                                     mesh.Node(node12),
+                                     mesh.Node(node13),
+                                     mesh.Node(node11)};
+
+    std::vector<Point> elementNodes2{{constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                                     mesh.Node(node21),
+                                     mesh.Node(node22),
+                                     mesh.Node(node23),
+                                     mesh.Node(node24),
+                                     mesh.Node(node21)};
+
+    std::vector<Point> elementNodes3{{constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                                     mesh.Node(node31),
+                                     mesh.Node(node32),
+                                     mesh.Node(node33),
+                                     mesh.Node(node34),
+                                     mesh.Node(node31)};
+
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes1.begin(), elementNodes1.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes2.begin(), elementNodes2.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes3.begin(), elementNodes3.end());
+
+    [[maybe_unused]] Polygons boundaryWithMissingElement(boundaryNodes, Projection::cartesian);
+
+    // auto edge1 = mesh.FindEdge(node1, node2);
+    // auto edge2 = mesh.FindEdge(node2, node3);
+    // auto edge3 = mesh.FindEdge(node3, node1);
+
+    // auto undoAction3 = ::Compute(mesh, Polygons());
+
+    MeshRefinementParameters refParams;
+    refParams.max_num_refinement_iterations = 1;
+
+    MeshRefinement meshRefinement(mesh, Polygons(), refParams);
+    auto undoAction3 = meshRefinement.Compute();
+
+    //--------------------------------
+
+    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    OrthogonalizationParameters orthogonalizationParameters;
+    orthogonalizationParameters.inner_iterations = 2;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.outer_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 0.975;
+    orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
+
+    // Execute
+    auto orthoPolygon = std::make_unique<Polygons>();
+
+    std::vector<Point> landBoundary{};
+    auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, mesh, *orthoPolygon);
+
+    OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                    std::move(orthoPolygon),
+                                                    std::move(landboundaries),
+                                                    projectToLandBoundaryOption,
+                                                    orthogonalizationParameters);
+
+    [[maybe_unused]] auto undoActionOrtho = orthogonalization.Initialize();
+    orthogonalization.Compute();
+
+    //--------------------------------
+
+    auto undoAction2 = mesh.DeleteMeshFaces2(boundaryWithMissingElement, true);
+
+    meshkernel::SaveVtk(mesh.Nodes(), mesh.m_facesNodes, "/home/wcs1/MeshKernel/MeshKernel04/build_deb/mesh1.vtu");
+    // meshkernel::Print(mesh.Nodes(), mesh.Edges());
 }

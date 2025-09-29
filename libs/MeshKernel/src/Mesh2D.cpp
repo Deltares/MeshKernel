@@ -1870,6 +1870,117 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces(const Polygons& 
     return deleteMeshAction;
 }
 
+std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces2(const Polygons& polygon, bool invertDeletion)
+{
+    std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
+
+    Administrate(deleteMeshAction.get());
+    // std::vector<Point> faceCircumcenters = algo::ComputeFaceCircumcenters(*this);
+    std::vector<Point> faceCircumcenters = m_facesMassCenters;
+
+    bool isInPolygon;
+    UInt polygonIndex;
+
+    for (UInt f = 0u; f < GetNumFaces(); ++f)
+    {
+        isInPolygon = false;
+        polygonIndex = constants::missing::uintValue;
+
+        // const auto faceIndex = m_edgesFaces[e][f];
+
+        if (!faceCircumcenters[f].IsValid())
+        {
+            continue;
+        }
+
+        std::tie(isInPolygon, polygonIndex) = polygon.IsPointInPolygons(faceCircumcenters[f]);
+
+        std::cout << "centre is in polygon: " << f << "  " << std::boolalpha << isInPolygon << "  " << polygonIndex << "  " << faceCircumcenters[f].x << ", " << faceCircumcenters[f].y << std::endl;
+
+        if (invertDeletion)
+        {
+            isInPolygon = !isInPolygon;
+        }
+
+        if (isInPolygon)
+        {
+
+            for (UInt e = 0u; e < m_facesEdges[f].size(); ++e)
+            {
+                UInt edge = m_facesEdges[f][e];
+
+                if (m_edgesFaces[edge][0] == f)
+                {
+                    m_edgesFaces[edge][0] = constants::missing::uintValue;
+                    --m_edgesNumFaces[edge];
+                }
+                else if (m_edgesFaces[edge][1] == f)
+                {
+                    m_edgesFaces[edge][1] = constants::missing::uintValue;
+                    --m_edgesNumFaces[edge];
+                }
+            }
+
+            m_facesNodes[f].clear();
+            m_numFacesNodes[f] = 0;
+            m_facesEdges[f].clear();
+            m_facesMassCenters[f] = {constants::missing::doubleValue, constants::missing::doubleValue};
+            m_faceArea[f] = constants::missing::doubleValue;
+
+            // deleteMeshAction->Add(DeleteEdge(e));
+        }
+    }
+
+    // for (UInt e = 0u; e < GetNumEdges(); ++e)
+    // {
+    //     for (UInt f = 0u; f < GetNumEdgesFaces(e); ++f)
+    //     {
+    //         isInPolygon = false;
+    //         polygonIndex = constants::missing::uintValue;
+
+    //         const auto faceIndex = m_edgesFaces[e][f];
+    //         if (faceIndex == constants::missing::uintValue)
+    //         {
+    //             continue;
+    //         }
+
+    //         std::tie(isInPolygon, polygonIndex) = polygon.IsPointInPolygons(faceCircumcenters[faceIndex]);
+
+    //         std::cout << "centre is in polygon: " << std::boolalpha << isInPolygon << "  " << polygonIndex << "  " << faceCircumcenters[faceIndex].x << ", " << faceCircumcenters[faceIndex].y << std::endl;
+
+    //         if (invertDeletion)
+    //         {
+    //             isInPolygon = !isInPolygon;
+    //         }
+
+    //         if (isInPolygon)
+    //         {
+
+    //             if (m_edgesFaces[e][0] == f)
+    //             {
+    //                 m_edgesFaces[e][0] = constants::missing::uintValue;
+    //                 --m_edgesNumFaces[e];
+    //             }
+    //             else if (m_edgesFaces[e][1] == f)
+    //             {
+    //                 m_edgesFaces[e][1] = constants::missing::uintValue;
+    //                 --m_edgesNumFaces[e];
+    //             }
+
+    //             m_facesNodes[f].clear();
+    //             m_numFacesNodes[f] = 0;
+    //             m_facesEdges[f].clear();
+    //             m_facesMassCenters[f] = {constants::missing::doubleValue, constants::missing::doubleValue};
+    //             m_faceArea[f] = constants::missing::doubleValue;
+
+    //             // deleteMeshAction->Add(DeleteEdge(e));
+    //         }
+    //     }
+    // }
+
+    return deleteMeshAction;
+}
+
 std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteHangingEdges()
 {
     std::unique_ptr<meshkernel::CompoundUndoAction> deleteAction = CompoundUndoAction::Create();

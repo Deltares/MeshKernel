@@ -378,6 +378,8 @@ namespace meshkernel
         /// If no such element can be found then the null value will be returned.
         UInt FindCommonFace(const UInt edge1, const UInt edge2) const;
 
+        [[nodiscard]] std::unique_ptr<UndoAction> DeleteMeshFaces2(const Polygons& polygon, bool invertDeletion);
+
     private:
         // orthogonalization
         static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length
