@@ -244,15 +244,10 @@ namespace meshkernel
         /// @return The resulting polygon mesh boundary
         [[nodiscard]] std::vector<Point> ComputeBoundaryPolygons(const std::vector<Point>& polygon);
 
-        /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
-        /// @param[in] polygon The input polygon
-        /// @param[in,out] isVisited the visited mesh nodes
-        /// @param[in,out] currentNode the current node
-        /// @param[out] meshBoundaryPolygon The resulting polygon points
-        void WalkBoundaryFromNode(const Polygon& polygon,
-                                  std::vector<bool>& isVisited,
-                                  UInt& currentNode,
-                                  std::vector<Point>& meshBoundaryPolygon) const;
+        /// @brief Convert all mesh boundaries to a vector of polygon nodes
+        /// @param[in] polygon The polygon where the operation is performed
+        /// @return The resulting set of polygons, describing interior mesh boundaries
+        std::vector<Point> ComputeInnerBoundaryPolygons() const;
 
         /// @brief Gets the hanging edges
         /// @return A vector with the indices of the hanging edges
@@ -436,6 +431,27 @@ namespace meshkernel
 
         /// @brief Find the mesh faces that lie entirely within the polygon.
         std::vector<bool> FindFacesEntirelyInsidePolygon(const std::vector<bool>& isNodeInsidePolygon) const;
+
+        /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
+        void WalkBoundaryFromNode(const Polygon& polygon,
+                                  std::vector<bool>& isVisited,
+                                  UInt& currentNode,
+                                  std::vector<Point>& meshBoundaryPolygon) const;
+
+        /// @brief Constructs a polygon or polygons from the meshboundary, by walking through the mesh
+        ///
+        /// If there are multiple polygons connected by a single node, then these will be separated into indicidual polygons
+        void WalkBoundaryFromNode(std::vector<bool>& edgeIsVisited,
+                                  std::vector<bool>& nodeIsVisited,
+                                  UInt& currentNode,
+                                  std::vector<Point>& meshBoundaryPolygon,
+                                  std::vector<UInt>& nodeIds,
+                                  std::vector<Point>& subsSequence) const;
+
+        /// @brief Removes the outer domain boundary polygon from the set of polygons
+        ///
+        /// It is assumed that the outer domain polygon contains the most nodes
+        std::vector<Point> RemoveOuterDomainBoundaryPolygon(const std::vector<Point>& polygonNodes) const;
 
         /// @brief Deletes the mesh faces inside a polygon
         /// @param[in] polygon        The polygon where to perform the operation

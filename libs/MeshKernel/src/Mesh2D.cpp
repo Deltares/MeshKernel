@@ -1485,7 +1485,7 @@ std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector
     const Polygon polygon(polygonNodes, m_projection);
 
     // Find faces
-    Administrate();
+    // Administrate();
     std::vector<bool> isVisited(GetNumEdges(), false);
     std::vector<Point> meshBoundaryPolygon;
     meshBoundaryPolygon.reserve(GetNumNodes());
@@ -1513,6 +1513,7 @@ std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector
         // Start a new polyline
         if (!meshBoundaryPolygon.empty())
         {
+            // meshBoundaryPolygon.emplace_back(constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator);
             meshBoundaryPolygon.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
         }
 
@@ -1552,6 +1553,140 @@ std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector
     return meshBoundaryPolygon;
 }
 
+std::vector<meshkernel::Point> Mesh2D::ComputeInnerBoundaryPolygons() const
+{
+
+    std::vector<Point> meshBoundaryPolygon;
+    meshBoundaryPolygon.reserve(GetNumNodes());
+    std::vector<Point> subSqeuence;
+    subSqeuence.reserve(GetNumNodes());
+
+    std::vector<bool> edgeIsVisited(GetNumEdges(), false);
+    std::vector<bool> nodeIsVisited(GetNumNodes(), false);
+
+    std::vector<UInt> nodeIds;
+    nodeIds.reserve(GetNumNodes());
+
+    for (UInt e = 0; e < GetNumEdges(); e++)
+    {
+        if (edgeIsVisited[e] || !IsEdgeOnBoundary(e))
+        {
+            continue;
+        }
+
+        const auto firstNodeIndex = m_edges[e].first;
+        const auto secondNodeIndex = m_edges[e].second;
+        const auto firstNode = m_nodes[firstNodeIndex];
+        const auto secondNode = m_nodes[secondNodeIndex];
+
+        // Start a new polyline
+        if (!subSqeuence.empty())
+        {
+            subSqeuence.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
+            nodeIds.emplace_back(constants::missing::uintValue);
+        }
+
+        // Put the current edge on the mesh boundary, mark it as visited
+        const auto startPolygonEdges = static_cast<UInt>(subSqeuence.size());
+        subSqeuence.emplace_back(firstNode);
+        subSqeuence.emplace_back(secondNode);
+        nodeIds.emplace_back(firstNodeIndex);
+        nodeIds.emplace_back(secondNodeIndex);
+        edgeIsVisited[e] = true;
+        nodeIsVisited[firstNodeIndex] = true;
+        nodeIsVisited[secondNodeIndex] = true;
+
+        // walk the current mesh boundary
+        auto currentNode = secondNodeIndex;
+        WalkBoundaryFromNode(edgeIsVisited, nodeIsVisited, currentNode, subSqeuence, nodeIds, meshBoundaryPolygon);
+
+        const auto numNodesFirstTail = static_cast<UInt>(subSqeuence.size());
+
+        // if the boundary polygon is not closed
+        if (currentNode != firstNodeIndex)
+        {
+            // Now grow a polyline starting at the other side of the original link L, i.e., the second tail
+            currentNode = firstNodeIndex;
+            WalkBoundaryFromNode(edgeIsVisited, nodeIsVisited, currentNode, subSqeuence, nodeIds, meshBoundaryPolygon);
+        }
+
+        // There is a nonempty second tail, so reverse the first tail, so that they connect.
+        if (subSqeuence.size() > numNodesFirstTail)
+        {
+            const auto start = startPolygonEdges + static_cast<UInt>(std::ceil((numNodesFirstTail - startPolygonEdges + static_cast<UInt>(1)) * 0.5));
+            for (auto n = start; n < numNodesFirstTail; n++)
+            {
+                const auto backupPoint = subSqeuence[n];
+                const auto replaceIndex = numNodesFirstTail - n + firstNodeIndex;
+                subSqeuence[n] = subSqeuence[replaceIndex];
+                subSqeuence[replaceIndex] = backupPoint;
+
+                const UInt backupPointIndex = nodeIds[n];
+                nodeIds[n] = nodeIds[replaceIndex];
+                nodeIds[replaceIndex] = backupPointIndex;
+            }
+        }
+    }
+
+    return RemoveOuterDomainBoundaryPolygon(meshBoundaryPolygon);
+}
+
+std::vector<meshkernel::Point> Mesh2D::RemoveOuterDomainBoundaryPolygon(const std::vector<Point>& polygonNodes) const
+{
+    // Remove outer boundary.
+    // It is assumed that the boundary polygon with the most points is from the outer domain boundary
+
+    UInt polygonLength = 0;
+    UInt polygonStart = 0;
+
+    UInt polygonLengthIntermediate = 0;
+    UInt polygonStartIntermediate = 0;
+
+    UInt index = 0;
+
+    // Find start index of outer boundary and the length of the polygon
+    while (index < polygonNodes.size())
+    {
+        polygonStartIntermediate = index;
+
+        for (UInt i = polygonStartIntermediate; i < polygonNodes.size(); ++i)
+        {
+            ++index;
+
+            if (!polygonNodes[i].IsValid())
+            {
+                polygonLengthIntermediate = i - polygonStartIntermediate;
+                break;
+            }
+        }
+
+        if (polygonLengthIntermediate > polygonLength)
+        {
+            polygonLength = polygonLengthIntermediate;
+            polygonStart = polygonStartIntermediate;
+        }
+    }
+
+    if (polygonLength > 0 && polygonLength < polygonNodes.size())
+    {
+        ++polygonLength;
+    }
+
+    std::vector<Point> innerBoundaryNodes;
+
+    if (polygonStart > 0)
+    {
+        innerBoundaryNodes.insert(innerBoundaryNodes.begin(), polygonNodes.begin(), polygonNodes.begin() + polygonStart - 1);
+    }
+
+    if (polygonLength > 0 && polygonStart + polygonLength < polygonNodes.size())
+    {
+        innerBoundaryNodes.insert(innerBoundaryNodes.end(), polygonNodes.begin() + polygonStart + polygonLength, polygonNodes.end());
+    }
+
+    return innerBoundaryNodes;
+}
+
 void Mesh2D::WalkBoundaryFromNode(const Polygon& polygon,
                                   std::vector<bool>& isVisited,
                                   UInt& currentNode,
@@ -1584,6 +1719,106 @@ void Mesh2D::WalkBoundaryFromNode(const Polygon& polygon,
 
         meshBoundaryPolygon.emplace_back(m_nodes[currentNode]);
         isVisited[currentEdge] = true;
+    }
+}
+
+void Mesh2D::WalkBoundaryFromNode(std::vector<bool>& edgeIsVisited,
+                                  std::vector<bool>& nodeIsVisited,
+                                  UInt& currentNode,
+                                  std::vector<Point>& meshBoundaryPolygon,
+                                  std::vector<UInt>& nodeIds,
+                                  std::vector<Point>& subSequence) const
+{
+    std::cout << std::endl
+              << " Mesh2D::WalkBoundaryFromNode " << currentNode << "  " << m_nodes[currentNode].x << ", " << m_nodes[currentNode].y
+              << "  " << subSequence.size()
+              << std::endl;
+    UInt e = 0;
+
+    // size_t start = meshBoundaryPolygon.size();
+
+    while (e < m_nodesNumEdges[currentNode])
+    {
+        const auto currentEdge = m_nodesEdges[currentNode][e];
+
+        if (edgeIsVisited[currentEdge] || !IsEdgeOnBoundary(currentEdge))
+        {
+            e++;
+            continue;
+        }
+
+        UInt nextNode = OtherNodeOfEdge(m_edges[currentEdge], currentNode);
+        e = 0;
+
+        if (nodeIsVisited[nextNode])
+        {
+            UInt lastIndex = constants::missing::uintValue;
+
+            // Find index of last time node was added
+            for (size_t ii = nodeIds.size(); ii >= 1; --ii)
+            {
+                size_t i = ii - 1;
+
+                if (nodeIds[i] == constants::missing::uintValue)
+                {
+                    break;
+                }
+
+                if (nodeIds[i] == nextNode)
+                {
+                    lastIndex = i;
+                    break;
+                }
+            }
+
+            std::cout << "node ids: ";
+
+            for (size_t i = lastIndex; i < nodeIds.size(); ++i)
+            {
+                std::cout << nodeIds[i] << "  ";
+            }
+
+            std::cout << std::endl;
+
+            if (lastIndex != constants::missing::uintValue) // && lastIndex != 0 && lastIndex != nodeIds.size() - 1)
+            {
+
+                if (!subSequence.empty())
+                {
+                    std::cout << "adding: " << -999 << "  " << -999 << ", " << -999 << std::endl;
+                    subSequence.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
+                }
+
+                for (size_t i = lastIndex; i < nodeIds.size(); ++i)
+                {
+                    std::cout << "adding: " << nodeIds[i] << "  " << meshBoundaryPolygon[i].x << ", " << meshBoundaryPolygon[i].y << "  "
+                              << m_nodes[nodeIds[i]].x << ", " << m_nodes[nodeIds[i]].y
+                              << std::endl;
+                    // subSequence.emplace_back(m_nodes[nodeIds[i]]);
+                    subSequence.emplace_back(meshBoundaryPolygon[i]);
+                }
+
+                std::cout << "adding: " << nodeIds[lastIndex] << "  " << meshBoundaryPolygon[lastIndex].x << ", " << meshBoundaryPolygon[lastIndex].y << std::endl;
+                std::cout << "last index " << lastIndex << "  " << nodeIds[lastIndex] << "  " << nodeIds.size() << std::endl;
+                std::cout << std::endl;
+
+                // subSequence.emplace_back(m_nodes[nodeIds[lastIndex]]);
+                subSequence.emplace_back(meshBoundaryPolygon[lastIndex]);
+                meshBoundaryPolygon.resize(lastIndex);
+                nodeIds.resize(lastIndex);
+            }
+        }
+
+        currentNode = nextNode;
+        meshBoundaryPolygon.emplace_back(m_nodes[currentNode]);
+        edgeIsVisited[currentEdge] = true;
+        nodeIsVisited[currentNode] = true;
+        nodeIds.emplace_back(currentNode);
+    }
+
+    for (size_t i = 0; i < subSequence.size(); ++i)
+    {
+        std::cout << "subseq: " << subSequence[i].x << ", " << subSequence[i].y << std::endl;
     }
 }
 
@@ -1919,6 +2154,11 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces2(const Polygons&
                     m_edgesFaces[edge][1] = constants::missing::uintValue;
                     --m_edgesNumFaces[edge];
                 }
+
+                if (m_edgesNumFaces[edge] == 0)
+                {
+                    deleteMeshAction->Add(DeleteEdge(edge));
+                }
             }
 
             m_facesNodes[f].clear();
@@ -1977,6 +2217,8 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces2(const Polygons&
     //         }
     //     }
     // }
+
+    // SetAdministrationRequired(true);
 
     return deleteMeshAction;
 }
