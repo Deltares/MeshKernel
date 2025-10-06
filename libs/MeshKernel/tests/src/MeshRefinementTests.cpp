@@ -2789,6 +2789,7 @@ TEST(MeshRefinement, MeshWithHole_ShouldGenerateInteriorBoundaryPolygonsForSixFa
     Polygons boundaryWithMissingElement(boundaryNodes, Projection::cartesian);
 
     auto deleteMeshFacesUndoAction = mesh.DeleteMeshFacesInPolygons(boundaryWithMissingElement);
+    meshkernel::SaveVtk(mesh.Nodes(), mesh.m_facesNodes, "/home/wcs1/MeshKernel/MeshKernel04/build_deb/mesh1.vtu");
 
     // Compute interior boundary polygon points
     std::vector<Point> boundaryNodes2 = mesh.ComputeInnerBoundaryPolygons();
@@ -2860,4 +2861,405 @@ TEST(MeshRefinement, MeshWithHole_ShouldGenerateInteriorBoundaryPolygonsForSixFa
         EXPECT_EQ(expectedXPoints[i], boundaryNodes2[i].x);
         EXPECT_EQ(expectedYPoints[i], boundaryNodes2[i].y);
     }
+}
+
+TEST(MeshRefinement, WTF)
+{
+    const size_t ExpectedNumberOfPoints = 184;
+    const size_t ExpectedNumberOfEdges = 360;
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 20.0, 20.0, 11, 11);
+    const auto edges = curviMesh->ComputeEdges();
+    const auto nodes = curviMesh->ComputeNodes();
+
+    Mesh2D mesh(edges, nodes, Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh.Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh.Edges());
+
+    std::vector<Point> patch{{45.0, 5.0},
+                             {155.0, 5.0},
+                             {155.0, 155.0},
+                             {45.0, 155.0},
+                             {45.0, 5.0},
+                             {constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                             {65.0, 65.0},
+                             {115.0, 65.0},
+                             {115.0, 115.0},
+                             {65.0, 115.0},
+                             {65.0, 65.0}};
+
+    std::vector<Point> expectedPoints(ExpectedNumberOfPoints);
+    std::vector<meshkernel::UInt> expectedEdgeStart(ExpectedNumberOfEdges);
+    std::vector<meshkernel::UInt> expectedEdgeEnd(ExpectedNumberOfEdges);
+
+    Polygons polygon(patch, Projection::cartesian);
+
+    auto undoAction = CasulliRefinement::Compute(mesh, polygon);
+
+    auto node11 = mesh.FindNodeCloseToAPoint({80.0, 0.0}, 1.0e-5);
+    auto node12 = mesh.FindNodeCloseToAPoint({85.0, 15.0}, 1.0e-5);
+    auto node13 = mesh.FindNodeCloseToAPoint({75.0, 15.0}, 1.0e-5);
+    std::cout << "nodes1: " << node11 << "  " << node12 << "  " << node13 << std::endl;
+
+    auto node21 = mesh.FindNodeCloseToAPoint({180.0, 140.0}, 1.0e-5);
+    auto node22 = mesh.FindNodeCloseToAPoint({200.0, 140.0}, 1.0e-5);
+    auto node23 = mesh.FindNodeCloseToAPoint({200.0, 160.0}, 1.0e-5);
+    auto node24 = mesh.FindNodeCloseToAPoint({180.0, 160.0}, 1.0e-5);
+
+    std::cout << "nodes2: " << node21 << "  " << node22 << "  " << node23 << "  " << node24 << std::endl;
+
+    auto node31 = mesh.FindNodeCloseToAPoint({125.0, 125.0}, 1.0e-5);
+    auto node32 = mesh.FindNodeCloseToAPoint({135.0, 125.0}, 1.0e-5);
+    auto node33 = mesh.FindNodeCloseToAPoint({135.0, 135.0}, 1.0e-5);
+    auto node34 = mesh.FindNodeCloseToAPoint({125.0, 135.0}, 1.0e-5);
+
+    std::cout << "nodes3: " << node31 << "  " << node32 << "  " << node33 << "  " << node34 << std::endl;
+
+    auto node41 = mesh.FindNodeCloseToAPoint({85.0, 15.0}, 1.0e-5);
+    auto node42 = mesh.FindNodeCloseToAPoint({95.0, 15.0}, 1.0e-5);
+    auto node43 = mesh.FindNodeCloseToAPoint({95.0, 25.0}, 1.0e-5);
+    auto node44 = mesh.FindNodeCloseToAPoint({85.0, 25.0}, 1.0e-5);
+
+    std::cout << "nodes4: " << node41 << "  " << node42 << "  " << node43 << "  " << node44 << std::endl;
+
+    auto node51 = mesh.FindNodeCloseToAPoint({100.0, 0.0}, 1.0e-5);
+    auto node52 = mesh.FindNodeCloseToAPoint({105.0, 15.0}, 1.0e-5);
+    auto node53 = mesh.FindNodeCloseToAPoint({95.0, 15.0}, 1.0e-5);
+    std::cout << "nodes5: " << node51 << "  " << node52 << "  " << node53 << std::endl;
+
+    auto node61 = mesh.FindNodeCloseToAPoint({120.0, 0.0}, 1.0e-5);
+    auto node62 = mesh.FindNodeCloseToAPoint({125.0, 15.0}, 1.0e-5);
+    auto node63 = mesh.FindNodeCloseToAPoint({115.0, 15.0}, 1.0e-5);
+    // auto node61 = mesh.FindNodeCloseToAPoint({140.0, 0.0}, 1.0e-5);
+    // auto node62 = mesh.FindNodeCloseToAPoint({145.0, 15.0}, 1.0e-5);
+    // auto node63 = mesh.FindNodeCloseToAPoint({135.0, 15.0}, 1.0e-5);
+    std::cout << "nodes6: " << node61 << "  " << node62 << "  " << node63 << std::endl;
+
+    // mesh.Administrate();
+    std::vector<meshkernel::Point> polygonNodes;
+    auto boundaryNodes = mesh.ComputeBoundaryPolygons(polygonNodes);
+
+    // std::vector<meshkernel::Point> boundaryNodes = meshBoundaryPolygon.GatherAllEnclosureNodes();
+
+    std::vector<Point> elementNodes1{{constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                                     mesh.Node(node11),
+                                     mesh.Node(node12),
+                                     mesh.Node(node13),
+                                     mesh.Node(node11)};
+
+    std::vector<Point> elementNodes2{{constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                                     mesh.Node(node21),
+                                     mesh.Node(node22),
+                                     mesh.Node(node23),
+                                     mesh.Node(node24),
+                                     mesh.Node(node21)};
+
+    std::vector<Point> elementNodes3{{constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                                     mesh.Node(node31),
+                                     mesh.Node(node32),
+                                     mesh.Node(node33),
+                                     mesh.Node(node34),
+                                     mesh.Node(node31)};
+
+    std::vector<Point> elementNodes4{{constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                                     mesh.Node(node41),
+                                     mesh.Node(node42),
+                                     mesh.Node(node43),
+                                     mesh.Node(node44),
+                                     mesh.Node(node41)};
+
+    std::vector<Point> elementNodes5{{constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                                     mesh.Node(node51),
+                                     mesh.Node(node52),
+                                     mesh.Node(node53),
+                                     mesh.Node(node51)};
+
+    std::vector<Point> elementNodes6{{constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                                     mesh.Node(node61),
+                                     mesh.Node(node62),
+                                     mesh.Node(node63),
+                                     mesh.Node(node61)};
+
+    // boundaryNodes.insert(boundaryNodes.end(), elementNodes1.begin(), elementNodes1.end());
+    // boundaryNodes.insert(boundaryNodes.end(), elementNodes2.begin(), elementNodes2.end());
+    // boundaryNodes.insert(boundaryNodes.end(), elementNodes3.begin(), elementNodes3.end());
+    // boundaryNodes.insert(boundaryNodes.end(), elementNodes4.begin(), elementNodes4.end());
+    // boundaryNodes.insert(boundaryNodes.end(), elementNodes5.begin(), elementNodes5.end());
+    // boundaryNodes.insert(boundaryNodes.end(), elementNodes6.begin(), elementNodes6.end());
+
+    [[maybe_unused]] Polygons boundaryWithMissingElement(boundaryNodes, Projection::cartesian);
+
+    // auto edge1 = mesh.FindEdge(node1, node2);
+    // auto edge2 = mesh.FindEdge(node2, node3);
+    // auto edge3 = mesh.FindEdge(node3, node1);
+
+    // auto undoAction3 = ::Compute(mesh, Polygons());
+
+    //--------------------------------
+
+    // const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    // OrthogonalizationParameters orthogonalizationParameters;
+    // orthogonalizationParameters.inner_iterations = 2;
+    // orthogonalizationParameters.boundary_iterations = 25;
+    // orthogonalizationParameters.outer_iterations = 25;
+    // orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
+    // orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 0.975;
+    // orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
+
+    // // Execute
+    // auto orthoPolygon = std::make_unique<Polygons>();
+
+    // std::vector<Point> landBoundary{};
+    // auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, mesh, *orthoPolygon);
+
+    // OrthogonalizationAndSmoothing orthogonalization(mesh,
+    //                                                 std::move(orthoPolygon),
+    //                                                 std::move(landboundaries),
+    //                                                 projectToLandBoundaryOption,
+    //                                                 orthogonalizationParameters);
+
+    // [[maybe_unused]] auto undoActionOrtho = orthogonalization.Initialize();
+    // orthogonalization.Compute();
+
+    //--------------------------------
+
+    auto undoAction2 = mesh.DeleteMeshFacesInPolygons(boundaryWithMissingElement);
+
+    std::vector<Point> boundaryNodes2 = mesh.ComputeInnerBoundaryPolygons();
+
+    // UInt polygonLength = 0;
+    // UInt polygonStart = 0;
+
+    // UInt polygonLength2 = constants::missing::uintValue;
+    // UInt polygonStart2 = 0;
+
+    // UInt index = 0;
+
+    // while (index < boundaryNodes2.size())
+    // {
+    //     polygonStart2 = index;
+
+    //     for (UInt i = polygonStart2; i < boundaryNodes2.size(); ++i)
+    //     {
+    //         ++index;
+
+    //         if (!boundaryNodes2[i].IsValid())
+    //         {
+    //             polygonLength2 = i - polygonStart2;
+    //             break;
+    //         }
+    //     }
+
+    //     if (polygonLength2 > polygonLength)
+    //     {
+    //         polygonLength = polygonLength2;
+    //         polygonStart = polygonStart2;
+    //     }
+    // }
+
+    // if (polygonLength < boundaryNodes2.size())
+    // {
+    //     ++polygonLength;
+    // }
+
+    // std::cout << " max polygon length " << polygonLength << "  " << polygonStart << std::endl;
+
+    // std::vector<Point> boundaryNodes3;
+
+    // if (polygonStart > 0)
+    // {
+    //     boundaryNodes3.insert(boundaryNodes3.begin(), boundaryNodes2.begin(), boundaryNodes2.begin() + polygonStart - 1);
+    // }
+
+    // if (polygonStart + polygonLength < boundaryNodes2.size())
+    // {
+    //     boundaryNodes3.insert(boundaryNodes3.end(), boundaryNodes2.begin() + polygonStart + polygonLength, boundaryNodes2.end());
+    // }
+
+    int count = 0;
+
+    for (size_t i = 0; i < boundaryNodes2.size(); ++i)
+    {
+        std::cout << "point " << count << "  " << " = " << boundaryNodes2[i].x << ", " << boundaryNodes2[i].y << std::endl;
+        ++count;
+    }
+
+    [[maybe_unused]] Polygons boundaryWithMissingElement2(boundaryNodes2, Projection::cartesian);
+
+    // for (size_t i = 0; i < boundaryNodes3.size(); ++i)
+    // {
+    //     std::cout << "point " << count << "  " << " = " << boundaryNodes3[i].x << ", " << boundaryNodes3[i].y << std::endl;
+    //     ++count;
+    // }
+
+    //--------------------------------
+
+    MeshRefinementParameters refParams;
+    refParams.max_num_refinement_iterations = 1;
+
+    MeshRefinement meshRefinement(mesh, Polygons(), refParams);
+    auto undoAction5 = meshRefinement.Compute();
+
+    mesh.Administrate();
+
+    const auto projectToLandBoundaryOption = LandBoundaries::ProjectToLandBoundaryOption::DoNotProjectToLandBoundary;
+    OrthogonalizationParameters orthogonalizationParameters;
+    orthogonalizationParameters.inner_iterations = 2;
+    orthogonalizationParameters.boundary_iterations = 25;
+    orthogonalizationParameters.outer_iterations = 25;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor = 0.975;
+    orthogonalizationParameters.orthogonalization_to_smoothing_factor_at_boundary = 0.975;
+    orthogonalizationParameters.areal_to_angle_smoothing_factor = 1.0;
+
+    // Execute
+    auto orthoPolygon = std::make_unique<Polygons>();
+
+    std::vector<Point> landBoundary{};
+    auto landboundaries = std::make_unique<LandBoundaries>(landBoundary, mesh, *orthoPolygon);
+
+    OrthogonalizationAndSmoothing orthogonalization(mesh,
+                                                    std::move(orthoPolygon),
+                                                    std::move(landboundaries),
+                                                    projectToLandBoundaryOption,
+                                                    orthogonalizationParameters);
+
+    [[maybe_unused]] auto undoActionOrtho = orthogonalization.Initialize();
+    orthogonalization.Compute();
+
+    [[maybe_unused]] auto undoAction3 = mesh.DeleteMeshFacesInPolygons(boundaryWithMissingElement2);
+
+    meshkernel::SaveVtk(mesh.Nodes(), mesh.m_facesNodes, "/home/wcs1/MeshKernel/MeshKernel04/build_deb/mesh1.vtu");
+    // meshkernel::Print(mesh.Nodes(), mesh.Edges());
+}
+
+TEST(MeshRefinement, OMG)
+{
+    const size_t ExpectedNumberOfPoints = 184;
+    const size_t ExpectedNumberOfEdges = 360;
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 20.0, 20.0, 11, 11);
+    const auto edges = curviMesh->ComputeEdges();
+    const auto nodes = curviMesh->ComputeNodes();
+
+    Mesh2D mesh(edges, nodes, Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh.Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh.Edges());
+
+    std::vector<Point> patch{{45.0, 5.0},
+                             {155.0, 5.0},
+                             {155.0, 155.0},
+                             {45.0, 155.0},
+                             {45.0, 5.0},
+                             {constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                             {65.0, 65.0},
+                             {115.0, 65.0},
+                             {115.0, 115.0},
+                             {65.0, 115.0},
+                             {65.0, 65.0}};
+
+    std::vector<Point> expectedPoints(ExpectedNumberOfPoints);
+    std::vector<meshkernel::UInt> expectedEdgeStart(ExpectedNumberOfEdges);
+    std::vector<meshkernel::UInt> expectedEdgeEnd(ExpectedNumberOfEdges);
+
+    Polygons polygon(patch, Projection::cartesian);
+
+    auto undoAction = CasulliRefinement::Compute(mesh, polygon);
+
+    auto node11 = mesh.FindNodeCloseToAPoint({80.0, 0.0}, 1.0e-5);
+    auto node12 = mesh.FindNodeCloseToAPoint({85.0, 15.0}, 1.0e-5);
+    auto node13 = mesh.FindNodeCloseToAPoint({75.0, 15.0}, 1.0e-5);
+    std::cout << "nodes1: " << node11 << "  " << node12 << "  " << node13 << std::endl;
+
+    auto node21 = mesh.FindNodeCloseToAPoint({180.0, 140.0}, 1.0e-5);
+    auto node22 = mesh.FindNodeCloseToAPoint({200.0, 140.0}, 1.0e-5);
+    auto node23 = mesh.FindNodeCloseToAPoint({200.0, 160.0}, 1.0e-5);
+    auto node24 = mesh.FindNodeCloseToAPoint({180.0, 160.0}, 1.0e-5);
+
+    std::cout << "nodes2: " << node21 << "  " << node22 << "  " << node23 << "  " << node24 << std::endl;
+
+    auto node31 = mesh.FindNodeCloseToAPoint({125.0, 125.0}, 1.0e-5);
+    auto node32 = mesh.FindNodeCloseToAPoint({135.0, 125.0}, 1.0e-5);
+    auto node33 = mesh.FindNodeCloseToAPoint({135.0, 135.0}, 1.0e-5);
+    auto node34 = mesh.FindNodeCloseToAPoint({125.0, 135.0}, 1.0e-5);
+
+    std::cout << "nodes3: " << node31 << "  " << node32 << "  " << node33 << "  " << node34 << std::endl;
+
+    auto node41 = mesh.FindNodeCloseToAPoint({85.0, 15.0}, 1.0e-5);
+    auto node42 = mesh.FindNodeCloseToAPoint({95.0, 15.0}, 1.0e-5);
+    auto node43 = mesh.FindNodeCloseToAPoint({95.0, 25.0}, 1.0e-5);
+    auto node44 = mesh.FindNodeCloseToAPoint({85.0, 25.0}, 1.0e-5);
+
+    std::cout << "nodes4: " << node41 << "  " << node42 << "  " << node43 << "  " << node44 << std::endl;
+
+    auto node51 = mesh.FindNodeCloseToAPoint({100.0, 0.0}, 1.0e-5);
+    auto node52 = mesh.FindNodeCloseToAPoint({105.0, 15.0}, 1.0e-5);
+    auto node53 = mesh.FindNodeCloseToAPoint({95.0, 15.0}, 1.0e-5);
+    std::cout << "nodes5: " << node51 << "  " << node52 << "  " << node53 << std::endl;
+
+    auto node61 = mesh.FindNodeCloseToAPoint({120.0, 0.0}, 1.0e-5);
+    auto node62 = mesh.FindNodeCloseToAPoint({125.0, 15.0}, 1.0e-5);
+    auto node63 = mesh.FindNodeCloseToAPoint({115.0, 15.0}, 1.0e-5);
+    std::cout << "nodes6: " << node61 << "  " << node62 << "  " << node63 << std::endl;
+
+    // mesh.Administrate();
+    std::vector<meshkernel::Point> polygonNodes;
+    auto boundaryNodes = mesh.ComputeBoundaryPolygons(polygonNodes);
+
+    // std::vector<meshkernel::Point> boundaryNodes = meshBoundaryPolygon.GatherAllEnclosureNodes();
+
+    std::vector<Point> elementNodes1{{constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                                     mesh.Node(node11),
+                                     mesh.Node(node12),
+                                     mesh.Node(node13),
+                                     mesh.Node(node11)};
+
+    std::vector<Point> elementNodes2{{constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                                     mesh.Node(node21),
+                                     mesh.Node(node22),
+                                     mesh.Node(node23),
+                                     mesh.Node(node24),
+                                     mesh.Node(node21)};
+
+    std::vector<Point> elementNodes3{{constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                                     mesh.Node(node31),
+                                     mesh.Node(node32),
+                                     mesh.Node(node33),
+                                     mesh.Node(node34),
+                                     mesh.Node(node31)};
+
+    std::vector<Point> elementNodes4{{constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                                     mesh.Node(node41),
+                                     mesh.Node(node42),
+                                     mesh.Node(node43),
+                                     mesh.Node(node44),
+                                     mesh.Node(node41)};
+
+    std::vector<Point> elementNodes5{{constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                                     mesh.Node(node51),
+                                     mesh.Node(node52),
+                                     mesh.Node(node53),
+                                     mesh.Node(node51)};
+
+    std::vector<Point> elementNodes6{{constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                                     mesh.Node(node61),
+                                     mesh.Node(node62),
+                                     mesh.Node(node63),
+                                     mesh.Node(node61)};
+
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes1.begin(), elementNodes1.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes2.begin(), elementNodes2.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes3.begin(), elementNodes3.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes4.begin(), elementNodes4.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes5.begin(), elementNodes5.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes6.begin(), elementNodes6.end());
+
+    [[maybe_unused]] Polygons boundaryWithMissingElement(boundaryNodes, Projection::cartesian);
+
+    [[maybe_unused]] auto undoAction3 = mesh.DeleteMeshFacesInPolygons(boundaryWithMissingElement);
+
+    Mesh2D mesh2(mesh.Edges(), mesh.Nodes(), mesh.m_facesNodes, mesh.m_numFacesNodes, mesh.m_projection);
+
+    meshkernel::SaveVtk(mesh2.Nodes(), mesh2.m_facesNodes, "/home/wcs1/MeshKernel/MeshKernel04/build_deb/mesh1.vtu");
 }

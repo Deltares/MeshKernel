@@ -584,6 +584,12 @@ void Mesh2D::FindFacesGivenFaceNodesMapping(const std::vector<std::vector<UInt>>
     std::vector<UInt> local_node_indices;
     for (UInt f = 0; f < m_facesNodes.size(); ++f)
     {
+
+        if (numFaceNodes[f] == 0)
+        {
+            continue;
+        }
+
         local_edges.clear();
         local_nodes.clear();
         local_node_indices.clear();
@@ -1556,6 +1562,10 @@ std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector
 
 std::vector<meshkernel::Point> Mesh2D::ComputeInnerBoundaryPolygons() const
 {
+    if (GetNumFaces() == 0)
+    {
+        return std::vector<meshkernel::Point>();
+    }
 
     std::vector<Point> meshBoundaryPolygon;
     meshBoundaryPolygon.reserve(GetNumNodes());
@@ -1631,6 +1641,7 @@ std::vector<meshkernel::Point> Mesh2D::ComputeInnerBoundaryPolygons() const
 
     std::vector<Point> innerPolygonNodes(RemoveOuterDomainBoundaryPolygon(meshBoundaryPolygon));
     OrientatePolygonsAntiClockwise(innerPolygonNodes);
+
     return innerPolygonNodes;
 }
 
@@ -2136,6 +2147,11 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces(const Polygons& 
 
 std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygons(const Polygons& polygon)
 {
+    if (polygon.IsEmpty())
+    {
+        return nullptr;
+    }
+
     std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
 
     Administrate(deleteMeshAction.get());
@@ -2143,12 +2159,15 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygons(const 
     bool isInPolygon;
     UInt polygonIndex;
 
+    std::vector<UInt> faceIndicesOffset(GetNumFaces(), 0);
+    std::vector<UInt> faceIndices(GetNumFaces(), constants::missing::uintValue);
+    UInt faceIndexOffset = 0;
+    UInt faceIndex = 0;
+
     for (UInt f = 0u; f < GetNumFaces(); ++f)
     {
         isInPolygon = false;
         polygonIndex = constants::missing::uintValue;
-
-        // const auto faceIndex = m_edgesFaces[e][f];
 
         if (!m_facesMassCenters[f].IsValid())
         {
@@ -2157,7 +2176,8 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygons(const 
 
         std::tie(isInPolygon, polygonIndex) = polygon.IsPointInPolygons(m_facesMassCenters[f]);
 
-        if (isInPolygon)
+        // TODO I think the polygon is orientated in the wrong direction
+        if (!isInPolygon)
         {
 
             for (UInt e = 0u; e < m_facesEdges[f].size(); ++e)
@@ -2181,12 +2201,27 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygons(const 
                 }
             }
 
+            ++faceIndexOffset;
             m_facesNodes[f].clear();
             m_numFacesNodes[f] = 0;
             m_facesEdges[f].clear();
             m_facesMassCenters[f] = {constants::missing::doubleValue, constants::missing::doubleValue};
             m_faceArea[f] = constants::missing::doubleValue;
         }
+        else
+        {
+            faceIndices[f] = faceIndex;
+            ++faceIndex;
+        }
+
+        faceIndicesOffset[f] = faceIndexOffset;
+    }
+
+    std::cout << "faceIndicesOffset" << std::endl;
+
+    for (size_t i = 0; i < faceIndicesOffset.size(); ++i)
+    {
+        std::cout << " faceIndicesOffset " << i << " = " << faceIndicesOffset[i] << "  " << faceIndices[i] << std::endl;
     }
 
     return deleteMeshAction;
