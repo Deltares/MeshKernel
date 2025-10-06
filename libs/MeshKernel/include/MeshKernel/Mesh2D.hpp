@@ -373,7 +373,10 @@ namespace meshkernel
         /// If no such element can be found then the null value will be returned.
         UInt FindCommonFace(const UInt edge1, const UInt edge2) const;
 
-        [[nodiscard]] std::unique_ptr<UndoAction> DeleteMeshFaces2(const Polygons& polygon, bool invertDeletion);
+        /// @brief Deletes the mesh faces inside a set of polygons
+        /// @param[in] polygon        The polygon where to perform the operation
+        ///                           If this Polygons instance contains multiple polygons, the first one will be taken.
+        std::unique_ptr<UndoAction> DeleteMeshFacesInPolygons(const Polygons& polygon);
 
     private:
         // orthogonalization
@@ -440,13 +443,15 @@ namespace meshkernel
 
         /// @brief Constructs a polygon or polygons from the meshboundary, by walking through the mesh
         ///
-        /// If there are multiple polygons connected by a single node, then these will be separated into indicidual polygons
-        void WalkBoundaryFromNode(std::vector<bool>& edgeIsVisited,
-                                  std::vector<bool>& nodeIsVisited,
-                                  UInt& currentNode,
-                                  std::vector<Point>& meshBoundaryPolygon,
-                                  std::vector<UInt>& nodeIds,
-                                  std::vector<Point>& subsSequence) const;
+        /// If there are multiple polygons connected by a single node, then these will be separated into individual polygons
+        void WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
+                                       std::vector<bool>& nodeIsVisited,
+                                       UInt& currentNode,
+                                       std::vector<Point>& meshBoundaryPolygon,
+                                       std::vector<UInt>& nodeIds,
+                                       std::vector<Point>& subsSequence) const;
+
+        void OrientatePolygonsAntiClockwise(std::vector<Point>& polygonNodes) const;
 
         /// @brief Removes the outer domain boundary polygon from the set of polygons
         ///

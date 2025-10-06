@@ -25,11 +25,13 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernel/Mesh2D.hpp"
+#include <numeric>
+
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
+#include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Mesh2DIntersections.hpp"
 #include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/MeshOrthogonality.hpp"
@@ -1485,7 +1487,7 @@ std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector
     const Polygon polygon(polygonNodes, m_projection);
 
     // Find faces
-    // Administrate();
+    Administrate();
     std::vector<bool> isVisited(GetNumEdges(), false);
     std::vector<Point> meshBoundaryPolygon;
     meshBoundaryPolygon.reserve(GetNumNodes());
@@ -1513,7 +1515,6 @@ std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector
         // Start a new polyline
         if (!meshBoundaryPolygon.empty())
         {
-            // meshBoundaryPolygon.emplace_back(constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator);
             meshBoundaryPolygon.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
         }
 
@@ -1598,7 +1599,7 @@ std::vector<meshkernel::Point> Mesh2D::ComputeInnerBoundaryPolygons() const
 
         // walk the current mesh boundary
         auto currentNode = secondNodeIndex;
-        WalkBoundaryFromNode(edgeIsVisited, nodeIsVisited, currentNode, subSqeuence, nodeIds, meshBoundaryPolygon);
+        WalkMultiBoundaryFromNode(edgeIsVisited, nodeIsVisited, currentNode, subSqeuence, nodeIds, meshBoundaryPolygon);
 
         const auto numNodesFirstTail = static_cast<UInt>(subSqeuence.size());
 
@@ -1607,7 +1608,7 @@ std::vector<meshkernel::Point> Mesh2D::ComputeInnerBoundaryPolygons() const
         {
             // Now grow a polyline starting at the other side of the original link L, i.e., the second tail
             currentNode = firstNodeIndex;
-            WalkBoundaryFromNode(edgeIsVisited, nodeIsVisited, currentNode, subSqeuence, nodeIds, meshBoundaryPolygon);
+            WalkMultiBoundaryFromNode(edgeIsVisited, nodeIsVisited, currentNode, subSqeuence, nodeIds, meshBoundaryPolygon);
         }
 
         // There is a nonempty second tail, so reverse the first tail, so that they connect.
@@ -1628,7 +1629,64 @@ std::vector<meshkernel::Point> Mesh2D::ComputeInnerBoundaryPolygons() const
         }
     }
 
-    return RemoveOuterDomainBoundaryPolygon(meshBoundaryPolygon);
+    std::vector<Point> innerPolygonNodes(RemoveOuterDomainBoundaryPolygon(meshBoundaryPolygon));
+    OrientatePolygonsAntiClockwise(innerPolygonNodes);
+    return innerPolygonNodes;
+}
+
+void Mesh2D::OrientatePolygonsAntiClockwise(std::vector<Point>& polygonNodes) const
+{
+    UInt polygonStart = 0;
+    UInt polygonLength = 0;
+    UInt index = 0;
+
+    while (index < polygonNodes.size())
+    {
+        polygonStart = index;
+
+        for (size_t i = polygonStart; i < polygonNodes.size(); ++i)
+        {
+            ++index;
+
+            if (!polygonNodes[i].IsValid())
+            {
+                polygonLength = i - polygonStart;
+                break;
+            }
+
+            if (index == polygonNodes.size())
+            {
+                ++polygonLength;
+            }
+        }
+
+        if (polygonLength > 0)
+        {
+            const Point inValidPoint = {constants::missing::doubleValue, constants::missing::doubleValue};
+            Point zeroPoint{0.0, 0.0};
+
+            Point midPoint = std::accumulate(polygonNodes.begin() + polygonStart, polygonNodes.begin() + polygonStart + polygonLength - 1, zeroPoint) / static_cast<double>(polygonLength - 1);
+
+            if (!IsPointInPolygonNodes(midPoint, polygonNodes, m_projection, inValidPoint, polygonStart, polygonStart + polygonLength - 1))
+            {
+                // reverse order of polygon nodes
+                if (polygonLength - 1 == 3)
+                {
+                    // Only the second and third points need be swapped to reverse the points in the polygon
+                    std::swap(polygonNodes[polygonStart + 1], polygonNodes[polygonStart + 2]);
+                }
+                else if (polygonLength - 1 == 4)
+                {
+                    // Only the second and fourth points need be swapped to reverse the points in the polygon
+                    std::swap(polygonNodes[polygonStart + 1], polygonNodes[polygonStart + 3]);
+                }
+                else
+                {
+                    std::reverse(polygonNodes.begin() + polygonStart, polygonNodes.begin() + polygonStart + polygonLength);
+                }
+            }
+        }
+    }
 }
 
 std::vector<meshkernel::Point> Mesh2D::RemoveOuterDomainBoundaryPolygon(const std::vector<Point>& polygonNodes) const
@@ -1636,52 +1694,53 @@ std::vector<meshkernel::Point> Mesh2D::RemoveOuterDomainBoundaryPolygon(const st
     // Remove outer boundary.
     // It is assumed that the boundary polygon with the most points is from the outer domain boundary
 
-    UInt polygonLength = 0;
-    UInt polygonStart = 0;
+    UInt outerPolygonLength = 0;
+    UInt outerPolygonStart = 0;
 
-    UInt polygonLengthIntermediate = 0;
-    UInt polygonStartIntermediate = 0;
+    UInt outerPolygonLengthIntermediate = 0;
+    UInt outerPolygonStartIntermediate = 0;
 
     UInt index = 0;
 
     // Find start index of outer boundary and the length of the polygon
     while (index < polygonNodes.size())
     {
-        polygonStartIntermediate = index;
+        outerPolygonStartIntermediate = index;
 
-        for (UInt i = polygonStartIntermediate; i < polygonNodes.size(); ++i)
+        for (UInt i = outerPolygonStartIntermediate; i < polygonNodes.size(); ++i)
         {
             ++index;
 
             if (!polygonNodes[i].IsValid())
             {
-                polygonLengthIntermediate = i - polygonStartIntermediate;
+                outerPolygonLengthIntermediate = i - outerPolygonStartIntermediate;
                 break;
             }
         }
 
-        if (polygonLengthIntermediate > polygonLength)
+        if (outerPolygonLengthIntermediate > outerPolygonLength)
         {
-            polygonLength = polygonLengthIntermediate;
-            polygonStart = polygonStartIntermediate;
+            outerPolygonLength = outerPolygonLengthIntermediate;
+            outerPolygonStart = outerPolygonStartIntermediate;
         }
     }
 
-    if (polygonLength > 0 && polygonLength < polygonNodes.size())
+    if (outerPolygonLength > 0 && outerPolygonLength < polygonNodes.size())
     {
-        ++polygonLength;
+        ++outerPolygonLength;
     }
 
     std::vector<Point> innerBoundaryNodes;
 
-    if (polygonStart > 0)
+    // Gather all node except those from the outer domain boundary polygon (this is assumed to be the polygon with the largest number of nodes)
+    if (outerPolygonStart > 0)
     {
-        innerBoundaryNodes.insert(innerBoundaryNodes.begin(), polygonNodes.begin(), polygonNodes.begin() + polygonStart - 1);
+        innerBoundaryNodes.insert(innerBoundaryNodes.begin(), polygonNodes.begin(), polygonNodes.begin() + outerPolygonStart - 1);
     }
 
-    if (polygonLength > 0 && polygonStart + polygonLength < polygonNodes.size())
+    if (outerPolygonLength > 0 && outerPolygonStart + outerPolygonLength < polygonNodes.size())
     {
-        innerBoundaryNodes.insert(innerBoundaryNodes.end(), polygonNodes.begin() + polygonStart + polygonLength, polygonNodes.end());
+        innerBoundaryNodes.insert(innerBoundaryNodes.end(), polygonNodes.begin() + outerPolygonStart + outerPolygonLength, polygonNodes.end());
     }
 
     return innerBoundaryNodes;
@@ -1722,20 +1781,14 @@ void Mesh2D::WalkBoundaryFromNode(const Polygon& polygon,
     }
 }
 
-void Mesh2D::WalkBoundaryFromNode(std::vector<bool>& edgeIsVisited,
-                                  std::vector<bool>& nodeIsVisited,
-                                  UInt& currentNode,
-                                  std::vector<Point>& meshBoundaryPolygon,
-                                  std::vector<UInt>& nodeIds,
-                                  std::vector<Point>& subSequence) const
+void Mesh2D::WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
+                                       std::vector<bool>& nodeIsVisited,
+                                       UInt& currentNode,
+                                       std::vector<Point>& meshBoundaryPolygon,
+                                       std::vector<UInt>& nodeIds,
+                                       std::vector<Point>& subSequence) const
 {
-    std::cout << std::endl
-              << " Mesh2D::WalkBoundaryFromNode " << currentNode << "  " << m_nodes[currentNode].x << ", " << m_nodes[currentNode].y
-              << "  " << subSequence.size()
-              << std::endl;
     UInt e = 0;
-
-    // size_t start = meshBoundaryPolygon.size();
 
     while (e < m_nodesNumEdges[currentNode])
     {
@@ -1771,38 +1824,19 @@ void Mesh2D::WalkBoundaryFromNode(std::vector<bool>& edgeIsVisited,
                 }
             }
 
-            std::cout << "node ids: ";
-
-            for (size_t i = lastIndex; i < nodeIds.size(); ++i)
-            {
-                std::cout << nodeIds[i] << "  ";
-            }
-
-            std::cout << std::endl;
-
-            if (lastIndex != constants::missing::uintValue) // && lastIndex != 0 && lastIndex != nodeIds.size() - 1)
+            if (lastIndex != constants::missing::uintValue)
             {
 
                 if (!subSequence.empty())
                 {
-                    std::cout << "adding: " << -999 << "  " << -999 << ", " << -999 << std::endl;
                     subSequence.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
                 }
 
                 for (size_t i = lastIndex; i < nodeIds.size(); ++i)
                 {
-                    std::cout << "adding: " << nodeIds[i] << "  " << meshBoundaryPolygon[i].x << ", " << meshBoundaryPolygon[i].y << "  "
-                              << m_nodes[nodeIds[i]].x << ", " << m_nodes[nodeIds[i]].y
-                              << std::endl;
-                    // subSequence.emplace_back(m_nodes[nodeIds[i]]);
                     subSequence.emplace_back(meshBoundaryPolygon[i]);
                 }
 
-                std::cout << "adding: " << nodeIds[lastIndex] << "  " << meshBoundaryPolygon[lastIndex].x << ", " << meshBoundaryPolygon[lastIndex].y << std::endl;
-                std::cout << "last index " << lastIndex << "  " << nodeIds[lastIndex] << "  " << nodeIds.size() << std::endl;
-                std::cout << std::endl;
-
-                // subSequence.emplace_back(m_nodes[nodeIds[lastIndex]]);
                 subSequence.emplace_back(meshBoundaryPolygon[lastIndex]);
                 meshBoundaryPolygon.resize(lastIndex);
                 nodeIds.resize(lastIndex);
@@ -1814,11 +1848,6 @@ void Mesh2D::WalkBoundaryFromNode(std::vector<bool>& edgeIsVisited,
         edgeIsVisited[currentEdge] = true;
         nodeIsVisited[currentNode] = true;
         nodeIds.emplace_back(currentNode);
-    }
-
-    for (size_t i = 0; i < subSequence.size(); ++i)
-    {
-        std::cout << "subseq: " << subSequence[i].x << ", " << subSequence[i].y << std::endl;
     }
 }
 
@@ -2105,13 +2134,11 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces(const Polygons& 
     return deleteMeshAction;
 }
 
-std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces2(const Polygons& polygon, bool invertDeletion)
+std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygons(const Polygons& polygon)
 {
     std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
 
     Administrate(deleteMeshAction.get());
-    // std::vector<Point> faceCircumcenters = algo::ComputeFaceCircumcenters(*this);
-    std::vector<Point> faceCircumcenters = m_facesMassCenters;
 
     bool isInPolygon;
     UInt polygonIndex;
@@ -2123,19 +2150,12 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces2(const Polygons&
 
         // const auto faceIndex = m_edgesFaces[e][f];
 
-        if (!faceCircumcenters[f].IsValid())
+        if (!m_facesMassCenters[f].IsValid())
         {
             continue;
         }
 
-        std::tie(isInPolygon, polygonIndex) = polygon.IsPointInPolygons(faceCircumcenters[f]);
-
-        std::cout << "centre is in polygon: " << f << "  " << std::boolalpha << isInPolygon << "  " << polygonIndex << "  " << faceCircumcenters[f].x << ", " << faceCircumcenters[f].y << std::endl;
-
-        if (invertDeletion)
-        {
-            isInPolygon = !isInPolygon;
-        }
+        std::tie(isInPolygon, polygonIndex) = polygon.IsPointInPolygons(m_facesMassCenters[f]);
 
         if (isInPolygon)
         {
@@ -2166,59 +2186,8 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces2(const Polygons&
             m_facesEdges[f].clear();
             m_facesMassCenters[f] = {constants::missing::doubleValue, constants::missing::doubleValue};
             m_faceArea[f] = constants::missing::doubleValue;
-
-            // deleteMeshAction->Add(DeleteEdge(e));
         }
     }
-
-    // for (UInt e = 0u; e < GetNumEdges(); ++e)
-    // {
-    //     for (UInt f = 0u; f < GetNumEdgesFaces(e); ++f)
-    //     {
-    //         isInPolygon = false;
-    //         polygonIndex = constants::missing::uintValue;
-
-    //         const auto faceIndex = m_edgesFaces[e][f];
-    //         if (faceIndex == constants::missing::uintValue)
-    //         {
-    //             continue;
-    //         }
-
-    //         std::tie(isInPolygon, polygonIndex) = polygon.IsPointInPolygons(faceCircumcenters[faceIndex]);
-
-    //         std::cout << "centre is in polygon: " << std::boolalpha << isInPolygon << "  " << polygonIndex << "  " << faceCircumcenters[faceIndex].x << ", " << faceCircumcenters[faceIndex].y << std::endl;
-
-    //         if (invertDeletion)
-    //         {
-    //             isInPolygon = !isInPolygon;
-    //         }
-
-    //         if (isInPolygon)
-    //         {
-
-    //             if (m_edgesFaces[e][0] == f)
-    //             {
-    //                 m_edgesFaces[e][0] = constants::missing::uintValue;
-    //                 --m_edgesNumFaces[e];
-    //             }
-    //             else if (m_edgesFaces[e][1] == f)
-    //             {
-    //                 m_edgesFaces[e][1] = constants::missing::uintValue;
-    //                 --m_edgesNumFaces[e];
-    //             }
-
-    //             m_facesNodes[f].clear();
-    //             m_numFacesNodes[f] = 0;
-    //             m_facesEdges[f].clear();
-    //             m_facesMassCenters[f] = {constants::missing::doubleValue, constants::missing::doubleValue};
-    //             m_faceArea[f] = constants::missing::doubleValue;
-
-    //             // deleteMeshAction->Add(DeleteEdge(e));
-    //         }
-    //     }
-    // }
-
-    // SetAdministrationRequired(true);
 
     return deleteMeshAction;
 }
