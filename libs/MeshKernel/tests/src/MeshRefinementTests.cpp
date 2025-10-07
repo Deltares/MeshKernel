@@ -95,7 +95,10 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_OnFourByFourWithFourSamples_
     meshRefinementParameters.refinement_type = 2;
     meshRefinementParameters.smoothing_iterations = 0;
 
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
     MeshRefinement meshRefinement(*mesh,
+                                  polygon,
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
@@ -225,7 +228,10 @@ TEST(MeshRefinement, RefinementOnAFourByFourMeshWithSamplesShouldRefine)
     meshRefinementParameters.refinement_type = 1;
     meshRefinementParameters.smoothing_iterations = 0;
 
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
     MeshRefinement meshRefinement(*mesh,
+                                  polygon,
                                   std::move(interpolator),
                                   meshRefinementParameters);
     auto undoAction = meshRefinement.Compute();
@@ -364,7 +370,10 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_SmallTriangualMeshTwoSamples
     meshRefinementParameters.refinement_type = 2;
     meshRefinementParameters.smoothing_iterations = 0;
 
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
     MeshRefinement meshRefinement(*mesh,
+                                  polygon,
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
@@ -563,7 +572,12 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerFace)
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
 
-    MeshRefinement meshRefinement(*mesh, std::move(interpolator), meshRefinementParameters);
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
+    MeshRefinement meshRefinement(*mesh,
+                                  polygon,
+                                  std::move(interpolator),
+                                  meshRefinementParameters);
 
     auto undoAction = meshRefinement.Compute();
 
@@ -669,7 +683,10 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     meshRefinementParameters.refinement_type = 1;
     meshRefinementParameters.smoothing_iterations = 0;
 
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
     MeshRefinement meshRefinement(*mesh,
+                                  polygon,
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
@@ -773,7 +790,10 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_OnWindowOfRefinementFile_Sho
     meshRefinementParameters.refinement_type = 2;
     meshRefinementParameters.smoothing_iterations = 0;
 
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
     MeshRefinement meshRefinement(*mesh,
+                                  polygon,
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
@@ -1042,7 +1062,10 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     meshRefinementParameters.refinement_type = 2;
     meshRefinementParameters.smoothing_iterations = 0;
 
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
     MeshRefinement meshRefinement(*mesh,
+                                  polygon,
                                   std::move(interpolator),
                                   meshRefinementParameters);
     auto undoAction = meshRefinement.Compute();
@@ -1354,7 +1377,12 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefin
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
 
-    MeshRefinement meshRefinement(*mesh, std::move(interpolator), meshRefinementParameters, true);
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
+    MeshRefinement meshRefinement(*mesh,
+                                  polygon,
+                                  std::move(interpolator),
+                                  meshRefinementParameters, true);
 
     // Execute
     auto undoAction = meshRefinement.Compute();
@@ -1417,7 +1445,12 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRe
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
 
-    MeshRefinement meshRefinement(*mesh, std::move(interpolator), meshRefinementParameters, true);
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
+    MeshRefinement meshRefinement(*mesh,
+                                  polygon,
+                                  std::move(interpolator),
+                                  meshRefinementParameters, true);
 
     // Execute
     auto undoAction = meshRefinement.Compute();
@@ -1480,7 +1513,10 @@ TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
 
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
     MeshRefinement meshRefinement(*mesh,
+                                  polygon,
                                   std::move(interpolator),
                                   meshRefinementParameters, true);
 
@@ -1586,7 +1622,10 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
     meshRefinementParameters.refinement_type = 3;
     meshRefinementParameters.smoothing_iterations = 0;
 
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
     MeshRefinement meshRefinement(*mesh,
+                                  polygon,
                                   std::move(interpolator),
                                   meshRefinementParameters, false);
 
@@ -2678,6 +2717,67 @@ TEST(MeshRefinement, RowSplittingFailureTests)
 
     // Invalid edge id
     EXPECT_THROW([[maybe_unused]] auto undo4 = splitMeshRow.Compute(mesh, edgeId), ConstraintError);
+}
+TEST(MeshRefinement, MeshRefinementInsidePolygon_On21x21With50x50Samples_ShouldRefineMesh)
+{
+    const meshkernel::UInt size = 21;
+    const double delta = 2.5;
+    const meshkernel::UInt sampleSize = 50;
+
+    auto mesh = MakeRectangularMeshForTesting(size, size, delta, Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
+    std::vector<meshkernel::Sample> samples;
+
+    double sampleDelta = 52.0 / 49.0;
+
+    for (size_t i = 0; i < sampleSize; ++i)
+    {
+        for (size_t j = 0; j < sampleSize; ++j)
+        {
+            meshkernel::Sample samp(-1.0 + sampleDelta * static_cast<double>(i), -1.0 + sampleDelta * static_cast<double>(j), 100);
+            samples.push_back(samp);
+        }
+    }
+
+    [[maybe_unused]] auto interpolator = std::make_unique<AveragingInterpolation>(*mesh,
+                                                                                  samples,
+                                                                                  AveragingInterpolation::Method::SimpleAveraging,
+                                                                                  Location::Faces,
+                                                                                  1.0,
+                                                                                  false,
+                                                                                  false,
+                                                                                  1);
+
+    MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.min_edge_size = 1.0;
+    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 2;
+    meshRefinementParameters.smoothing_iterations = 0;
+
+    // Define two polygons
+    std::vector<meshkernel::Point> polygonPoints{{1.9, 1.9}, {16.0, 1.9}, {16.0, 16.0}, {1.9, 16.0}, {1.9, 1.9}, {-999, -999}, {31.9, 31.9}, {46.0, 31.9}, {46.0, 46.0}, {31.9, 46.0}, {31.9, 31.9}};
+    meshkernel::Polygons polygon(polygonPoints, Projection::cartesian);
+
+    MeshRefinement meshRefinement(*mesh,
+                                  polygon,
+                                  std::move(interpolator),
+                                  meshRefinementParameters);
+
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
+
+    mesh->Administrate();
+
+    // Only check that the number of nodes, edges and faces is correct
+    ASSERT_EQ(mesh->GetNumNodes(), 611);
+    ASSERT_EQ(mesh->GetNumEdges(), 1240);
+    ASSERT_EQ(mesh->GetNumFaces(), 630);
 }
 
 TEST(MeshRefinement, MeshWithHole_ShouldGenerateInteriorBoundaryPolygonsForSixFaces)

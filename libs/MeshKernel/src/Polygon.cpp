@@ -239,6 +239,7 @@ bool meshkernel::Polygon::Contains(const Point& pnt) const
     {
         return ContainsCartesian(pnt);
     }
+
     // projection = Projection::sphericalAccurate
     return ContainsSphericalAccurate(pnt);
 }

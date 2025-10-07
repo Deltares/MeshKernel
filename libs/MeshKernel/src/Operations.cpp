@@ -640,6 +640,11 @@ namespace meshkernel
         return {constants::missing::doubleValue, constants::missing::doubleValue};
     }
 
+    double WeightedSumOfDifferences(const Cartesian3DPoint& p1, const Cartesian3DPoint& p2, const std::array<double, 3>& weight)
+    {
+        return (p2.x - p1.x) * weight[0] + (p2.y - p1.y) * weight[1] + (p2.z - p1.z) * weight[2];
+    }
+
     Point NormalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, const Projection& projection)
     {
         if (!firstPoint.IsValid() || !secondPoint.IsValid())
@@ -656,13 +661,8 @@ namespace meshkernel
             std::array<double, 3> ephi{0.0, 0.0, 0.0};
             ComputeTwoBaseComponents(insidePoint, elambda, ephi);
 
-            const double dx = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * elambda[0] +
-                              (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * elambda[1] +
-                              (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * elambda[2];
-
-            const double dy = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * ephi[0] +
-                              (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * ephi[1] +
-                              (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * ephi[2];
+            const double dx = WeightedSumOfDifferences(firstPointCartesianCoordinates, secondPointCartesianCoordinates, elambda);
+            const double dy = WeightedSumOfDifferences(firstPointCartesianCoordinates, secondPointCartesianCoordinates, ephi);
 
             const double squaredDistance = dx * dx + dy * dy;
             Point result{constants::missing::doubleValue, constants::missing::doubleValue};
@@ -691,83 +691,6 @@ namespace meshkernel
             return result;
         }
         return {constants::missing::doubleValue, constants::missing::doubleValue};
-    }
-
-    double ComputeArea(const std::vector<Point>& polygon, const Projection projection)
-    {
-        const Point reference = ReferencePoint(polygon, projection);
-        const auto numberOfPointsOpenedPolygon = static_cast<UInt>(polygon.size()) - 1;
-
-        double area = 0.0;
-
-        const double minArea = 1e-8;
-
-        if (numberOfPointsOpenedPolygon == constants::geometric::numNodesInTriangle)
-        {
-            Vector delta1 = GetDelta(reference, polygon[0], projection);
-            Vector delta2 = GetDelta(reference, polygon[1], projection);
-            Vector delta3 = GetDelta(reference, polygon[2], projection);
-
-            Vector middle1 = 0.5 * (delta1 + delta2);
-            Vector middle2 = 0.5 * (delta2 + delta3);
-            Vector middle3 = 0.5 * (delta3 + delta1);
-
-            delta1 = GetDelta(polygon[0], polygon[1], projection);
-            delta2 = GetDelta(polygon[1], polygon[2], projection);
-            delta3 = GetDelta(polygon[2], polygon[0], projection);
-
-            double xds1 = delta1.y() * middle1.x() - delta1.x() * middle1.y();
-            double xds2 = delta2.y() * middle2.x() - delta2.x() * middle2.y();
-            double xds3 = delta3.y() * middle3.x() - delta3.x() * middle3.y();
-
-            area = 0.5 * (xds1 + xds2 + xds3);
-        }
-        else if (numberOfPointsOpenedPolygon == constants::geometric::numNodesInQuadrilateral)
-        {
-            Vector delta1 = GetDelta(reference, polygon[0], projection);
-            Vector delta2 = GetDelta(reference, polygon[1], projection);
-            Vector delta3 = GetDelta(reference, polygon[2], projection);
-            Vector delta4 = GetDelta(reference, polygon[3], projection);
-
-            Vector middle1 = 0.5 * (delta1 + delta2);
-            Vector middle2 = 0.5 * (delta2 + delta3);
-            Vector middle3 = 0.5 * (delta3 + delta4);
-            Vector middle4 = 0.5 * (delta4 + delta1);
-
-            delta1 = GetDelta(polygon[0], polygon[1], projection);
-            delta2 = GetDelta(polygon[1], polygon[2], projection);
-            delta3 = GetDelta(polygon[2], polygon[3], projection);
-            delta4 = GetDelta(polygon[3], polygon[0], projection);
-
-            double xds1 = delta1.y() * middle1.x() - delta1.x() * middle1.y();
-            double xds2 = delta2.y() * middle2.x() - delta2.x() * middle2.y();
-            double xds3 = delta3.y() * middle3.x() - delta3.x() * middle3.y();
-            double xds4 = delta4.y() * middle4.x() - delta4.x() * middle4.y();
-
-            area = 0.5 * (xds1 + xds2 + xds3 + xds4);
-        }
-        else
-        {
-
-            for (UInt n = 0; n < numberOfPointsOpenedPolygon; ++n)
-            {
-                const auto nextNode = NextCircularForwardIndex(n, numberOfPointsOpenedPolygon);
-
-                Vector delta = GetDelta(reference, polygon[n], projection);
-                Vector deltaNext = GetDelta(reference, polygon[nextNode], projection);
-                Vector middle = 0.5 * (delta + deltaNext);
-                delta = GetDelta(polygon[n], polygon[nextNode], projection);
-
-                // Rotate by 3pi/2
-                Vector normal(delta.y(), -delta.x());
-                double xds = dot(normal, middle);
-                area += 0.5 * xds;
-            }
-        }
-
-        area = std::abs(area) < minArea ? minArea : area;
-
-        return area;
     }
 
     void TransformGlobalVectorToLocal(const Point& reference, const Point& globalCoordinates, const Point& globalComponents, const Projection& projection, Point& localComponents)
@@ -850,13 +773,8 @@ namespace meshkernel
             ComputeTwoBaseComponents(middlePoint, elambda, ephi);
 
             // project vector in local base
-            const double dx = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * elambda[0] +
-                              (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * elambda[1] +
-                              (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * elambda[2];
-
-            const double dy = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * ephi[0] +
-                              (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * ephi[1] +
-                              (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * ephi[2];
+            const double dx = WeightedSumOfDifferences(firstPointCartesianCoordinates, secondPointCartesianCoordinates, elambda);
+            const double dy = WeightedSumOfDifferences(firstPointCartesianCoordinates, secondPointCartesianCoordinates, ephi);
 
             const double squaredDistance = dx * dx + dy * dy;
             Point result{constants::missing::doubleValue, constants::missing::doubleValue};

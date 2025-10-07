@@ -41,10 +41,12 @@ using meshkernel::Mesh2D;
 using meshkernel::MeshRefinement;
 
 MeshRefinement::MeshRefinement(Mesh2D& mesh,
+                               const Polygons& polygon,
                                std::unique_ptr<MeshInterpolation> interpolant,
                                const MeshRefinementParameters& meshRefinementParameters) : m_samplesRTree(RTreeFactory::Create(mesh.m_projection)),
                                                                                            m_mesh(mesh),
-                                                                                           m_interpolant(std::move(interpolant))
+                                                                                           m_interpolant(std::move(interpolant)),
+                                                                                           m_polygons(polygon)
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
     m_isRefinementBasedOnSamples = true;
@@ -53,11 +55,13 @@ MeshRefinement::MeshRefinement(Mesh2D& mesh,
 }
 
 MeshRefinement::MeshRefinement(Mesh2D& mesh,
+                               const Polygons& polygon,
                                std::unique_ptr<MeshInterpolation> interpolant,
                                const MeshRefinementParameters& meshRefinementParameters,
                                bool useNodalRefinement) : m_samplesRTree(RTreeFactory::Create(mesh.m_projection)),
                                                           m_mesh(mesh),
                                                           m_interpolant(std::move(interpolant)),
+                                                          m_polygons(polygon),
                                                           m_useNodalRefinement(useNodalRefinement)
 {
     CheckMeshRefinementParameters(meshRefinementParameters);
@@ -99,6 +103,7 @@ void MeshRefinement::UpdateFaceMask(const int level)
             }
         }
     }
+
     if (level > 0)
     {
         // if one face node is not in polygon disable refinement
@@ -131,6 +136,7 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::Compute()
     // get bounding box
     Point lowerLeft{constants::missing::doubleValue, constants::missing::doubleValue};
     Point upperRight{constants::missing::doubleValue, constants::missing::doubleValue};
+
     if (m_mesh.m_projection == Projection::spherical)
     {
         const auto boundingBox = BoundingBox(m_mesh.Nodes());
@@ -173,6 +179,7 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::Compute()
         }
 
         UpdateFaceMask(level);
+
         ComputeEdgesRefinementMask();
         ComputeIfFaceShouldBeSplit();
 
@@ -908,7 +915,6 @@ void MeshRefinement::ComputeRefinementMasksFromSamples()
     for (UInt f = 0; f < m_mesh.GetNumFaces(); f++)
     {
         FindHangingNodes(f);
-
         ComputeRefinementMasksFromSamples(f);
     }
 
@@ -916,6 +922,7 @@ void MeshRefinement::ComputeRefinementMasksFromSamples()
     {
         edge = -edge;
     }
+
     SmoothRefinementMasks();
 }
 
@@ -1154,7 +1161,6 @@ void MeshRefinement::ComputeRefinementMasksForRidgeDetection(UInt face,
 
     for (size_t i = 0; i < numEdges; ++i)
     {
-
         const auto& edgeIndex = m_mesh.m_facesEdges[face][i];
         const auto& [firstNode, secondNode] = m_mesh.GetEdge(edgeIndex);
         const auto distance = ComputeDistance(m_mesh.Node(firstNode), m_mesh.Node(secondNode), m_mesh.m_projection);
@@ -1181,7 +1187,19 @@ void MeshRefinement::ComputeRefinementMasksForRidgeDetection(UInt face,
 
 void MeshRefinement::ComputeRefinementMasksFromSamples(UInt face)
 {
-    if (IsEqual(m_interpolant->GetFaceResult(face), constants::missing::doubleValue))
+    bool refineFace = false;
+
+    // If all nodes of the element are masked out then there is no need to check if refinement is necessary.
+    for (UInt n = 0; n < m_mesh.m_facesNodes[face].size(); ++n)
+    {
+        if (m_nodeMask[m_mesh.m_facesNodes[face][n]] > 0)
+        {
+            refineFace = true;
+            break;
+        }
+    }
+
+    if (!refineFace || m_interpolant->GetFaceResult(face) == constants::missing::doubleValue)
     {
         return;
     }
@@ -1217,6 +1235,7 @@ void MeshRefinement::ComputeRefinementMasksFromSamples(UInt face)
             if (m_refineEdgeCache[n] == 1)
             {
                 const auto edgeIndex = m_mesh.m_facesEdges[face][n];
+
                 if (edgeIndex != constants::missing::uintValue)
                 {
                     m_edgeMask[edgeIndex] = 1;

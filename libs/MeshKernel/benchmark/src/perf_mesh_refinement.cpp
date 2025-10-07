@@ -81,7 +81,9 @@ static void BM_MeshRefinementBasedOnSamples(benchmark::State& state)
         // resume the timers to begin benchmarking
         state.ResumeTiming();
 
+        meshkernel::Polygons polygon{};
         MeshRefinement meshRefinement(*mesh,
+                                      polygon,
                                       std::move(interpolator),
                                       mesh_refinement_parameters);
 
