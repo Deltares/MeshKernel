@@ -117,6 +117,24 @@ jobs:
           -BuildType '${{ inputs.build_type }}'
           -ParallelJobs 10
 
+      # Step: Re-verify netcdf after rebuild
+      - name: Re-verify netcdf installation after rebuild
+        if: steps.restore-cached-external-dependencies.outputs.cache-hit == 'true' && steps.verify-netcdf.outputs.valid == 'false'
+        run: |
+          NETCDF_PREFIX="${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c"
+          CFG1="$NETCDF_PREFIX/lib/cmake/netCDF/netCDFConfig.cmake"
+          CFG2="$NETCDF_PREFIX/lib/cmake/netcdf/netcdf-config.cmake"
+          if [ -f "$CFG1" ] && [ -s "$CFG1" ]; then
+            echo "Rebuild produced NetCDF config: $CFG1"
+          elif [ -f "$CFG2" ] && [ -s "$CFG2" ]; then
+            echo "Rebuild produced NetCDF config: $CFG2"
+          else
+            echo "ERROR: NetCDF config still missing after rebuild" >&2
+            echo "Contents of prefix (up to 3 levels):" >&2
+            find "$NETCDF_PREFIX" -maxdepth 3 -type f -print || true >&2
+            exit 1
+          fi
+
       # Step: Cache user-provided dependencies, executes only if no cache restored
       - name: Cache user-provided dependencies
         uses: actions/cache/save@v3
