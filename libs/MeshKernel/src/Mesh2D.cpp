@@ -26,6 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include <numeric>
+#include <ranges>
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
@@ -2154,77 +2155,63 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygons(const 
 
     std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
 
-    Administrate(deleteMeshAction.get());
-
-    bool isInPolygon;
-    UInt polygonIndex;
-
-    std::vector<UInt> faceIndicesOffset(GetNumFaces(), 0);
-    std::vector<UInt> faceIndices(GetNumFaces(), constants::missing::uintValue);
-    UInt faceIndexOffset = 0;
-    UInt faceIndex = 0;
+    std::vector<UInt> faceIndices;
+    faceIndices.reserve(GetNumFaces());
 
     for (UInt f = 0u; f < GetNumFaces(); ++f)
     {
-        isInPolygon = false;
-        polygonIndex = constants::missing::uintValue;
 
         if (!m_facesMassCenters[f].IsValid())
         {
             continue;
         }
 
-        std::tie(isInPolygon, polygonIndex) = polygon.IsPointInPolygons(m_facesMassCenters[f]);
-
-        // TODO I think the polygon is orientated in the wrong direction
-        if (!isInPolygon)
+        if (polygon.IsPointInAnyPolygon(m_facesMassCenters[f]))
         {
-
-            for (UInt e = 0u; e < m_facesEdges[f].size(); ++e)
-            {
-                UInt edge = m_facesEdges[f][e];
-
-                if (m_edgesFaces[edge][0] == f)
-                {
-                    m_edgesFaces[edge][0] = constants::missing::uintValue;
-                    --m_edgesNumFaces[edge];
-                }
-                else if (m_edgesFaces[edge][1] == f)
-                {
-                    m_edgesFaces[edge][1] = constants::missing::uintValue;
-                    --m_edgesNumFaces[edge];
-                }
-
-                if (m_edgesNumFaces[edge] == 0)
-                {
-                    deleteMeshAction->Add(DeleteEdge(edge));
-                }
-            }
-
-            ++faceIndexOffset;
-            m_facesNodes[f].clear();
-            m_numFacesNodes[f] = 0;
-            m_facesEdges[f].clear();
-            m_facesMassCenters[f] = {constants::missing::doubleValue, constants::missing::doubleValue};
-            m_faceArea[f] = constants::missing::doubleValue;
+            faceIndices.push_back(f);
         }
-        else
-        {
-            faceIndices[f] = faceIndex;
-            ++faceIndex;
-        }
-
-        faceIndicesOffset[f] = faceIndexOffset;
     }
 
-    std::cout << "faceIndicesOffset" << std::endl;
-
-    for (size_t i = 0; i < faceIndicesOffset.size(); ++i)
-    {
-        std::cout << " faceIndicesOffset " << i << " = " << faceIndicesOffset[i] << "  " << faceIndices[i] << std::endl;
-    }
+    UpdateFaceInformation(faceIndices, *deleteMeshAction);
 
     return deleteMeshAction;
+}
+
+void Mesh2D::UpdateFaceInformation(const std::vector<UInt>& faceIndices, CompoundUndoAction& deleteMeshAction)
+{
+    for (UInt faceId : faceIndices)
+    {
+        for (UInt e = 0u; e < m_facesEdges[faceId].size(); ++e)
+        {
+            UInt edge = m_facesEdges[faceId][e];
+
+            if (m_edgesFaces[edge][0] == faceId)
+            {
+                m_edgesFaces[edge][0] = constants::missing::uintValue;
+                --m_edgesNumFaces[edge];
+            }
+            else if (m_edgesFaces[edge][1] == faceId)
+            {
+                m_edgesFaces[edge][1] = constants::missing::uintValue;
+                --m_edgesNumFaces[edge];
+            }
+
+            if (m_edgesNumFaces[edge] == 0)
+            {
+                deleteMeshAction.Add(DeleteEdge(edge));
+            }
+        }
+    }
+
+    // TODO need to collect undo information?
+    for (UInt faceId : faceIndices | std::views::reverse)
+    {
+        m_facesNodes.erase(m_facesNodes.begin() + faceId);
+        m_numFacesNodes.erase(m_numFacesNodes.begin() + faceId);
+        m_facesEdges.erase(m_facesEdges.begin() + faceId);
+        m_facesMassCenters.erase(m_facesMassCenters.begin() + faceId);
+        m_faceArea.erase(m_faceArea.begin() + faceId);
+    }
 }
 
 std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteHangingEdges()

@@ -484,6 +484,9 @@ namespace meshkernel
                                 std::vector<UInt>& sortedNodes,
                                 std::vector<Point>& nodalValues);
 
+        /// @brief Update information about a list of faces and face-edge information
+        void UpdateFaceInformation(const std::vector<UInt>& faceIndices, CompoundUndoAction& deleteMeshAction);
+
         /// @brief Checks if a triangle has an acute angle (checktriangle)
         /// @param[in] faceNodes The face nodes composing the triangles
         /// @param[in] nodes The node coordinates
