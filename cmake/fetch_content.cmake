@@ -7,7 +7,11 @@ if(ENABLE_UNIT_TESTING)
   GIT_REPOSITORY https://github.com/google/googletest.git
   GIT_TAG v1.13.0)
 
-  FetchContent_MakeAvailable(googletest)
+  FetchContent_GetProperties(googletest)
+  if(NOT googletest_POPULATED)
+    FetchContent_Populate(googletest)
+    add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
+  endif()
 
   # Note this needs to be done in the main CMakeLists since it calls
   # enable_testing, which must be in the main CMakeLists.
@@ -27,10 +31,19 @@ if(ENABLE_BENCHMARKING)
       GIT_TAG v1.8.2
     )
 
+    FetchContent_GetProperties(benchmark)
+
     # Prevent the google benchmark's own tests from running
     set(BENCHMARK_ENABLE_TESTING OFF)
 
-    FetchContent_MakeAvailable(googlebenchmark)
+    if(NOT googlebenchmark_POPULATED)
+      FetchContent_Populate(googlebenchmark)
+      add_subdirectory(
+        ${googlebenchmark_SOURCE_DIR}
+        ${googlebenchmark_BINARY_DIR}
+        EXCLUDE_FROM_ALL
+      )
+    endif()
   else()
     # disable all benchmarking options
     set(ENABLE_BENCHMARKING OFF)
@@ -62,7 +75,12 @@ if(${USE_LIBFMT})
     GIT_TAG ${LIBFMT_VERSION}
   )
 
-  FetchContent_MakeAvailable(fmt)
+  FetchContent_GetProperties(fmt)
+
+  if(NOT fmt_POPULATED)
+    FetchContent_Populate(fmt)
+    add_subdirectory(${fmt_SOURCE_DIR} ${fmt_BINARY_DIR} EXCLUDE_FROM_ALL)
+  endif()
 
   endif()
 
@@ -74,6 +92,11 @@ FetchContent_Declare(
   GIT_TAG        21cd3fe20990a5ac1d683806f605110962aac3f1
 )
 
+FetchContent_GetProperties(Eigen)
+
 set(BUILD_TESTING OFF)
 
-FetchContent_MakeAvailable(Eigen)
+if(NOT eigen_POPULATED)
+  FetchContent_Populate(Eigen)
+  add_subdirectory(${eigen_SOURCE_DIR} ${eigen_BINARY_DIR} EXCLUDE_FROM_ALL)
+endif()
