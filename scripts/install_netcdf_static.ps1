@@ -35,7 +35,7 @@ Param(
     [Parameter(Mandatory = $true)] [string] $InstallDir,
     [Parameter(Mandatory = $false)] [ValidateSet('Release', 'Debug', 'RelWithDebInfo')] [string] $BuildType = 'Release',
     [Parameter(Mandatory = $false)] [hashtable]$GitTags = @{ `
-            zlib     = 'v1.2.13'; `
+            zlib     = 'v1.3.1'; `
             curl     = 'curl-7_88_1'; `
             hdf5     = 'hdf5-1_14_0'; `
             netcdf_c = 'v4.9.1'
@@ -244,6 +244,7 @@ Function Invoke-BuildAndInstall {
     $ConfigArgs += ('-B {0}' -f $BuildDir)
     $ConfigArgs += ('-DCMAKE_INSTALL_PREFIX={0}' -f $InstallDir)
     $ConfigArgs += ('-DCMAKE_BUILD_TYPE={0}' -f $BuildType)
+    $ConfigArgs += '-DCMAKE_POLICY_VERSION_MINIMUM=3.5'
     $ConfigArgs += $Options
     $Configure = ('cmake {0}' -f ($ConfigArgs -Join ' '))
     Write-Host $Configure
