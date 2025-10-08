@@ -57,7 +57,7 @@ jobs:
 
       # Step: Restore cached user-provided dependencies
       - name: Restore cached user-provided dependencies
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: restore-cached-external-dependencies
         with:
           key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
@@ -77,7 +77,7 @@ jobs:
 
       # Step: Cache user-provided dependencies, executes only if no cache restored
       - name: Cache user-provided dependencies
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         if: steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
         with:
           key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
