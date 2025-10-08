@@ -39,13 +39,20 @@ jobs:
         if: inputs.platform == 'macos-13' || inputs.platform == 'macos-13-xlarge'
         run: sudo xcode-select -s /Applications/Xcode_14.1.app/Contents/Developer
 
-      # Step: Set paths
-      - name: Set paths
+      # Step: Set paths and detect architecture
+      - name: Set paths and detect architecture
         id: paths
         run: |
           echo "build_dir=${{ github.workspace }}/build" >> $GITHUB_OUTPUT
           echo "ext_deps_dir=${{ github.workspace }}/external_dependencies" >> $GITHUB_OUTPUT
           echo "install_dir=${{ github.workspace }}/install" >> $GITHUB_OUTPUT
+          if [ "${{ runner.os }}" == "macOS" ]; then
+            ARCH=$(uname -m)
+            echo "architecture=$ARCH" >> $GITHUB_OUTPUT
+            echo "Detected macOS architecture: $ARCH"
+          else
+            echo "architecture=unknown" >> $GITHUB_OUTPUT
+          fi
 
       - name: Install system-provided dependencies
         run: |
@@ -60,8 +67,8 @@ jobs:
         uses: actions/cache/restore@v3
         id: restore-cached-external-dependencies
         with:
-          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
-          restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
+          key: ${{ inputs.platform }}-${{ steps.paths.outputs.architecture }}-${{ inputs.build_type }}-cache-key
+          restore-keys: ${{ inputs.platform }}-${{ steps.paths.outputs.architecture }}-${{ inputs.build_type }}-cache-key
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
 
       # Step: Build and install user-provided dependencies, executes only if no cache restored
@@ -80,18 +87,19 @@ jobs:
         uses: actions/cache/save@v3
         if: steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
         with:
-          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
+          key: ${{ inputs.platform }}-${{ steps.paths.outputs.architecture }}-${{ inputs.build_type }}-cache-key
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
 
       # Step: CMake configuration
       - name: Configure
-        run: >
-          cmake
-          -S ${{ github.workspace }}
-          -B ${{ steps.paths.outputs.build_dir }}
-          -DCMAKE_BUILD_TYPE=${{ inputs.build_type }}
-          -DCMAKE_PREFIX_PATH=${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
-          -DCMAKE_INSTALL_PREFIX=${{ steps.paths.outputs.install_dir }}
+        run: |
+          CMAKE_ARGS="-S ${{ github.workspace }} -B ${{ steps.paths.outputs.build_dir }} -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} -DCMAKE_PREFIX_PATH=${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c -DCMAKE_INSTALL_PREFIX=${{ steps.paths.outputs.install_dir }}"
+          if [ "${{ runner.os }}" == "macOS" ] && [ "${{ steps.paths.outputs.architecture }}" != "unknown" ]; then
+            CMAKE_ARGS="$CMAKE_ARGS -DCMAKE_OSX_ARCHITECTURES=${{ steps.paths.outputs.architecture }}"
+            echo "Setting CMAKE_OSX_ARCHITECTURES to ${{ steps.paths.outputs.architecture }}"
+          fi
+          echo "Running: cmake $CMAKE_ARGS"
+          cmake $CMAKE_ARGS
 
       # Step: CMake build
       - name: Build
