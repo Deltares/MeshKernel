@@ -36,8 +36,16 @@ jobs:
           fetch-depth: 0
 
       - name: Set Xcode version
-        if: inputs.platform == 'macos-13' || inputs.platform == 'macos-13-xlarge'
-        run: sudo xcode-select -s /Applications/Xcode_14.1.app/Contents/Developer
+        if: |
+          inputs.platform == 'macos-13' ||
+          inputs.platform == 'macos-13-xlarge' ||
+          inputs.platform == 'macos-14'
+        run: |
+          if [[ "${{ inputs.platform }}" == "macos-13" || "${{ inputs.platform }}" == "macos-13-xlarge" ]]; then
+            sudo xcode-select -s /Applications/Xcode_14.1.app/Contents/Developer
+          elif [[ "${{ inputs.platform }}" == "macos-14" ]]; then
+            sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+          fi
 
       # Step: Set paths
       - name: Set paths
