@@ -125,10 +125,34 @@ jobs:
           key: ${{ inputs.platform }}-${{ steps.paths.outputs.architecture }}-${{ inputs.build_type }}-netcdf-v4.9.3-cache
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
 
+      # Step: Show netcdf installation tree (diagnostics)
+      - name: Show netcdf installation (diagnostics)
+        run: |
+          PREFIX="${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c"
+          echo "Listing NetCDF install prefix: $PREFIX"
+          if [ -d "$PREFIX" ]; then
+            find "$PREFIX" -maxdepth 4 -type f -name '*Config.cmake' -print || true
+            du -sh "$PREFIX" || true
+          else
+            echo "NetCDF prefix directory missing (will likely rebuild earlier)." >&2
+          fi
+
       # Step: CMake configuration
       - name: Configure
         run: |
           CMAKE_ARGS="-S ${{ github.workspace }} -B ${{ steps.paths.outputs.build_dir }} -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} -DCMAKE_PREFIX_PATH=${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c -DCMAKE_INSTALL_PREFIX=${{ steps.paths.outputs.install_dir }}"
+          # Attempt to set netCDF_DIR explicitly for robustness
+          NETCDF_CANDIDATE_DIR_UPPER="${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c/lib/cmake/netCDF"
+          NETCDF_CANDIDATE_DIR_LOWER="${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c/lib/cmake/netcdf"
+          if [ -f "$NETCDF_CANDIDATE_DIR_UPPER/netCDFConfig.cmake" ]; then
+            CMAKE_ARGS="$CMAKE_ARGS -DnetCDF_DIR=$NETCDF_CANDIDATE_DIR_UPPER"
+            echo "Using netCDF_DIR=$NETCDF_CANDIDATE_DIR_UPPER"
+          elif [ -f "$NETCDF_CANDIDATE_DIR_LOWER/netcdf-config.cmake" ]; then
+            CMAKE_ARGS="$CMAKE_ARGS -DnetCDF_DIR=$NETCDF_CANDIDATE_DIR_LOWER"
+            echo "Using netCDF_DIR=$NETCDF_CANDIDATE_DIR_LOWER"
+          else
+            echo "Warning: netCDF config dir not found yet; relying on CMAKE_PREFIX_PATH" >&2
+          fi
           if [ "${{ runner.os }}" == "macOS" ] && [ "${{ steps.paths.outputs.architecture }}" != "unknown" ]; then
             CMAKE_ARGS="$CMAKE_ARGS -DCMAKE_OSX_ARCHITECTURES=${{ steps.paths.outputs.architecture }}"
             echo "Setting CMAKE_OSX_ARCHITECTURES to ${{ steps.paths.outputs.architecture }}"
