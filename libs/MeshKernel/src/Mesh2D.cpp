@@ -2154,9 +2154,10 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygons(const 
     }
 
     std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
+    ComputeFaceAreaAndMassCenters(true);
 
-    std::vector<UInt> faceIndices;
-    faceIndices.reserve(GetNumFaces());
+    std::vector<UInt> faceIndices(GetNumFaces(), constants::missing::uintValue);
+    UInt faceIndex = 0;
 
     for (UInt f = 0u; f < GetNumFaces(); ++f)
     {
@@ -2166,9 +2167,10 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygons(const 
             continue;
         }
 
-        if (polygon.IsPointInAnyPolygon(m_facesMassCenters[f]))
+        if (!polygon.IsPointInAnyPolygon(m_facesMassCenters[f]))
         {
-            faceIndices.push_back(f);
+            faceIndices[f] = faceIndex;
+            ++faceIndex;
         }
     }
 
@@ -2179,7 +2181,20 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygons(const 
 
 void Mesh2D::UpdateFaceInformation(const std::vector<UInt>& faceIndices, CompoundUndoAction& deleteMeshAction)
 {
-    for (UInt faceId : faceIndices)
+    std::vector<UInt> facesToDelete;
+    facesToDelete.reserve(GetNumFaces());
+
+    // Collect face-ids of faces that are marked for deletion
+    for (UInt i = 0; i < faceIndices.size(); ++i)
+    {
+        if (faceIndices[i] == constants::missing::uintValue)
+        {
+            facesToDelete.push_back(i);
+        }
+    }
+
+    // Remove deleted faces from edge-face connectivity
+    for (UInt faceId : facesToDelete)
     {
         for (UInt e = 0u; e < m_facesEdges[faceId].size(); ++e)
         {
@@ -2189,6 +2204,9 @@ void Mesh2D::UpdateFaceInformation(const std::vector<UInt>& faceIndices, Compoun
             {
                 m_edgesFaces[edge][0] = constants::missing::uintValue;
                 --m_edgesNumFaces[edge];
+                // Ensure the first connected face is on the 0th side
+                // If the 1st side is already the invalid value then this operation does not change anything.
+                std::swap(m_edgesFaces[edge][0], m_edgesFaces[edge][1]);
             }
             else if (m_edgesFaces[edge][1] == faceId)
             {
@@ -2203,8 +2221,23 @@ void Mesh2D::UpdateFaceInformation(const std::vector<UInt>& faceIndices, Compoun
         }
     }
 
+    // Renumber existing edge-face ids to match new face-ids
+    for (size_t edge = 0; edge < m_edgesFaces.size(); ++edge)
+    {
+        if (m_edgesFaces[edge][0] != constants::missing::uintValue)
+        {
+            m_edgesFaces[edge][0] = faceIndices[m_edgesFaces[edge][0]];
+        }
+
+        if (m_edgesFaces[edge][1] != constants::missing::uintValue)
+        {
+            m_edgesFaces[edge][1] = faceIndices[m_edgesFaces[edge][1]];
+        }
+    }
+
     // TODO need to collect undo information?
-    for (UInt faceId : faceIndices | std::views::reverse)
+    // Shift face connectivity in arrays where deleted faces have been removed from arrays
+    for (UInt faceId : facesToDelete | std::views::reverse)
     {
         m_facesNodes.erase(m_facesNodes.begin() + faceId);
         m_numFacesNodes.erase(m_numFacesNodes.begin() + faceId);

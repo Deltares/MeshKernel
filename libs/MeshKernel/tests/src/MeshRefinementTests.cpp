@@ -3024,8 +3024,7 @@ TEST(MeshRefinement, WTF)
 
     std::vector<meshkernel::Point> boundaryNodes;
 
-    std::vector<Point> elementNodes1{{constants::missing::doubleValue, constants::missing::doubleValue},
-                                     mesh.Node(node11),
+    std::vector<Point> elementNodes1{mesh.Node(node11),
                                      mesh.Node(node12),
                                      mesh.Node(node13),
                                      mesh.Node(node11)};

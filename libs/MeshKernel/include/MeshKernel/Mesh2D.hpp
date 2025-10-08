@@ -375,8 +375,7 @@ namespace meshkernel
 
         /// @brief Deletes the mesh faces inside a set of polygons
         /// @param[in] polygon        The polygon where to perform the operation
-        ///                           If this Polygons instance contains multiple polygons, the first one will be taken.
-        std::unique_ptr<UndoAction> DeleteMeshFacesInPolygons(const Polygons& polygon);
+        /* [[nodiscard]] */ std::unique_ptr<UndoAction> DeleteMeshFacesInPolygons(const Polygons& polygon);
 
     private:
         // orthogonalization
@@ -485,6 +484,9 @@ namespace meshkernel
                                 std::vector<Point>& nodalValues);
 
         /// @brief Update information about a list of faces and face-edge information
+        ///
+        /// @param [in] faceIndices Mapping between old and new face-ids, the invalid value implies a deleted element
+        /// @param [in,out] deleteMeshAction Gather any additional undo information
         void UpdateFaceInformation(const std::vector<UInt>& faceIndices, CompoundUndoAction& deleteMeshAction);
 
         /// @brief Checks if a triangle has an acute angle (checktriangle)
