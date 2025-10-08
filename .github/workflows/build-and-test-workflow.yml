@@ -37,7 +37,7 @@ jobs:
 
       - name: Set Xcode version
         if: inputs.platform == 'macos-13-xlarge' || inputs.platform == 'macos-14' || inputs.platform == 'macos-15'
-        run: sudo xcode-select -s /Applications/Xcode_14.1.app/Contents/Developer
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
 
       # Step: Set paths
       - name: Set paths
