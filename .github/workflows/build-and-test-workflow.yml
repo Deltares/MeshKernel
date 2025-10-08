@@ -36,8 +36,16 @@ jobs:
           fetch-depth: 0
 
       - name: Set Xcode version
-        if: inputs.platform == 'macos-13' || inputs.platform == 'macos-13-xlarge'
-        run: sudo xcode-select -s /Applications/Xcode_14.1.app/Contents/Developer
+        if: |
+          inputs.platform == 'macos-13' ||
+          inputs.platform == 'macos-13-xlarge' ||
+          inputs.platform == 'macos-14'
+        run: |
+          if [[ "${{ inputs.platform }}" == "macos-13" || "${{ inputs.platform }}" == "macos-13-xlarge" ]]; then
+            sudo xcode-select -s /Applications/Xcode_14.1.app/Contents/Developer
+          elif [[ "${{ inputs.platform }}" == "macos-14" ]]; then
+            sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+          fi
 
       # Step: Set paths
       - name: Set paths
@@ -57,12 +65,12 @@ jobs:
 
       # Step: Restore cached user-provided dependencies
       - name: Restore cached user-provided dependencies
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: restore-cached-external-dependencies
         with:
           key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
           restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
-          path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
+          path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install
 
       # Step: Build and install user-provided dependencies, executes only if no cache restored
       - name: Build and install user-provided dependencies
@@ -77,7 +85,7 @@ jobs:
 
       # Step: Cache user-provided dependencies, executes only if no cache restored
       - name: Cache user-provided dependencies
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         if: steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
         with:
           key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key

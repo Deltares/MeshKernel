@@ -35,10 +35,10 @@ Param(
     [Parameter(Mandatory = $true)] [string] $InstallDir,
     [Parameter(Mandatory = $false)] [ValidateSet('Release', 'Debug', 'RelWithDebInfo')] [string] $BuildType = 'Release',
     [Parameter(Mandatory = $false)] [hashtable]$GitTags = @{ `
-            zlib     = 'v1.2.13'; `
+            zlib     = 'v1.3'; `
             curl     = 'curl-7_88_1'; `
             hdf5     = 'hdf5-1_14_0'; `
-            netcdf_c = 'v4.9.1'
+            netcdf_c = 'v4.9.3'
     },
     [Parameter(Mandatory = $false)] [ValidateRange(1, [int]::MaxValue)] [int] $ParallelJobs = 6,
     [Parameter(Mandatory = $false)] [Switch] $Clean = $False
@@ -325,6 +325,7 @@ $HDF5CMakeBuildOptions = @( `
         '-DBUILD_TESTING:BOOL=OFF', `
         '-DZLIB_USE_EXTERNAL:BOOL=OFF', `
         '-DHDF5_ENABLE_Z_LIB_SUPPORT:BOOL=ON', `
+        '-DHDF5_ENABLE_NONSTANDARD_FEATURE_FLOAT16=OFF', `
     ('-DZLIB_ROOT={0}' -f $ZLIBInstallDir), `
     ('-DZLIB_INCLUDE_DIR:PATH={0}' -f $ZlibIncludeDir), `
     ('-DZLIB_LIBRARY:FILEPATH={0}' -f $ZlibStaticLibrary) `
