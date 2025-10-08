@@ -74,7 +74,7 @@ Function Join-Paths {
 }
 
 # No need to download and extract m4 when platform is WIN32
-if ($PSVersionTable.Platform -ne 'Unix') {
+if ($IsWindows) {
     # ----------------------------------------------------------------------------------------
     # Download
     # ----------------------------------------------------------------------------------------
@@ -307,7 +307,7 @@ $env:Path += (';' + $CurlInstallDir)
 $HDF5BuildDir = (Join-Path $BuildDir $HDF5)
 $HDF5InstallDir = (Join-Path $LocalInstallDir $HDF5)
 $ZlibIncludeDir = (Join-Path $ZLIBInstallDir 'include')
-if ($PSVersionTable.Platform -eq 'Unix') {
+if ($IsLinux -or $IsMacOS) {
     $ZlibStaticLibrary = (Join-Path (Join-Path $ZLIBInstallDir 'lib') 'libz.a')
 }
 else {
@@ -347,7 +347,7 @@ $NetCDFCMakeBuildOptions = @(`
         '-DENABLE_DAP=OFF', `
         '-DENABLE_BYTERANGE=OFF' `
 )
-if ($PSVersionTable.Platform -eq 'Unix') {
+if ($IsLinux -or $IsMacOS) {
     $NetCDFCMakeBuildOptions += '-DCMAKE_POSITION_INDEPENDENT_CODE=ON'
 }
 
@@ -369,7 +369,7 @@ Invoke-BuildAndInstall `
 Function Invoke-Post-Build-Steps() {
     # Copy all necessary static libraries from the local instalaltion directory to the netcdf lib dir
     $NetCDFLibDir = (Join-Path $NetCDFInstallDir 'lib')
-    if ($PSVersionTable.Platform -eq 'Unix') {
+    if ($IsLinux -or $IsMacOS) {
         $NetCDFBinDir = (Join-Path $NetCDFInstallDir 'bin')
         Copy-Item (Join-Paths $ZLIBInstallDir 'lib' 'libz.a')       -Destination (Join-Path $NetCDFLibDir 'libz.a')
         Copy-Item (Join-Paths $ZLIBInstallDir 'lib' 'libz.so')      -Destination (Join-Path $NetCDFBinDir 'libz.so')
@@ -397,8 +397,14 @@ Function Invoke-Post-Build-Steps() {
     }
 
     # Replace the line above to list the public interface libararies in ${_IMPORT_PREFIX}/lib (libs copied and renamed above)
-    if ($PSVersionTable.Platform -eq 'Unix') {
+    if ($IsLinux) {
         $NewLine = '  INTERFACE_LINK_LIBRARIES "dl;${_IMPORT_PREFIX}/lib/libhdf5_hl.a;${_IMPORT_PREFIX}/lib/libhdf5.a;${_IMPORT_PREFIX}/lib/libz.a;${_IMPORT_PREFIX}/bin/libz.so"'
+    }
+    elseif ($IsMacOS) {
+        $NewLine = $Line
+        $NewLine = $NewLine.Replace($HDF5InstallDir, '${_IMPORT_PREFIX}')
+        $NewLine = $NewLine.Replace($ZLIBInstallDir, '${_IMPORT_PREFIX}')
+        $NewLine = $NewLine.Replace($CurlInstallDir, '${_IMPORT_PREFIX}')
     }
     else {
         $NewLine = '  INTERFACE_LINK_LIBRARIES "${_IMPORT_PREFIX}/lib/hdf5_hl-static.lib;${_IMPORT_PREFIX}/lib/hdf5-static.lib;${_IMPORT_PREFIX}/lib/zlib.lib"'

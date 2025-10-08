@@ -9,21 +9,22 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Add compiler-specific options and definitions per supported platform
-
-if((UNIX OR WIN32) AND CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  #add_compile_options("-Werror;-Wall;-Wextra;-pedantic;-Wno-unused-function")
-  add_compile_options("$<$<CONFIG:RELEASE>:-O2>")
-  add_compile_options("$<$<CONFIG:DEBUG>:-g>")
-elseif (UNIX)
-  add_compile_options("$<$<CONFIG:RELEASE>:-O2>")
-  add_compile_options("$<$<CONFIG:DEBUG>:-g>")
-elseif (UNIX)
+if (UNIX)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    add_compile_options("-Werror;-Wall;-Wextra;-pedantic;-Wno-unused-function")
+    add_compile_options("-fvisibility=hidden;-Werror;-Wall;-Wextra;-pedantic;-Wno-unused-function")
+
+    if(APPLE AND (CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64"))
+      # CMake automatically sets -Xarch_arm64 (for clang) but gcc doesn't support it
+      unset(_CMAKE_APPLE_ARCHS_DEFAULT)
+      # Be lenient on macos with arm64 toolchain to prevent Eigen -Werror=deprecated-enum-enum-conversion error
+      add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-enum-enum-conversion>)
+      # Suppress notes related to ABI changes
+      add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-psabi>)
+    endif()
     add_compile_options("$<$<CONFIG:RELEASE>:-O2>")
     add_compile_options("$<$<CONFIG:DEBUG>:-g>")
   else()
-    message(FATAL_ERROR "Unsupported compiler. Only GNU is supported under Unix and Unix-like operating systems.")
+    message(FATAL_ERROR "Unsupported compiler. Only GNU is supported under Linux. Found ${CMAKE_CXX_COMPILER_ID}.")
   endif()
 elseif(WIN32)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -31,11 +32,12 @@ elseif(WIN32)
     add_compile_options("$<$<CONFIG:RELEASE>:/O2>")
     add_compile_options("$<$<CONFIG:DEBUG>:/Od;/DEBUG>")
     add_compile_definitions("_USE_MATH_DEFINES")
+    add_compile_definitions("_CRT_SECURE_NO_WARNINGS")
   else()
-    message(FATAL_ERROR "Unsupported compiler. Only MSVC is supported under Windows.")
+    message(FATAL_ERROR "Unsupported compiler. Only MSVC is supported under Windows. Found ${CMAKE_CXX_COMPILER_ID}.")
   endif()
 else()
-    message(FATAL_ERROR "Unsupported platform. Only Unix, Unix-like, and Windows are supported.")
+    message(FATAL_ERROR "Unsupported platform. Only Linux and Windows are supported.")
 endif()
 
 # CMAKE_SOURCE_DIR is passed to the src in order to strip it out of the path of srcs where exceptions may occur
