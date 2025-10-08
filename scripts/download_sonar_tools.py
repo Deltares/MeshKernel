@@ -31,6 +31,10 @@ def get_build_wrapper(save_dir: Path) -> None:
         url = "https://sonarcloud.io/static/cpp/build-wrapper-win-x86.zip"
     elif platform.system() == "Linux":
         url = "http://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip"
+    elif platform.system() == "Darwin":
+        if platform.machine() != "arm64":
+            raise Exception("Only macOS ARM64 (Apple Silicon) is supported.")
+        url = "https://sonarcloud.io/static/cpp/build-wrapper-macosx-x86.zip"
     else:
         raise Exception("Unsupported OS used.")
 
@@ -51,6 +55,10 @@ def get_scanner(save_dir: Path) -> None:
         url = f"https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-{SONAR_SCANNER_VERSION}-windows.zip"
     elif platform.system() == "Linux":
         url = f"https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-{SONAR_SCANNER_VERSION}-linux.zip"
+    elif platform.system() == "Darwin":
+        if platform.machine() != "arm64":
+            raise Exception("Only macOS ARM64 (Apple Silicon) is supported.")
+        url = f"https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-{SONAR_SCANNER_VERSION}-macosx.zip"
     else:
         raise Exception("Unsupported OS used.")
 
