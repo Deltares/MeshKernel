@@ -58,7 +58,15 @@ void meshkernel::Polygon::Initialise()
 
     if (m_nodes.size() > 0 && m_nodes[0] != m_nodes[m_nodes.size() - 1])
     {
-        throw ConstraintError("Polygon is not closed");
+        std::stringstream buffer;
+
+        buffer << "Polygon is not closed" << std::endl;
+        buffer.precision(15);
+        buffer << "first point " << m_nodes[0].x << ", " << m_nodes[0].y << std::endl;
+        buffer << "last point " << m_nodes[m_nodes.size() - 1].x << ", " << m_nodes[m_nodes.size() - 1].y << std::endl;
+
+        throw ConstraintError(buffer.str());
+        // throw ConstraintError("Polygon is not closed");
     }
 
     if (InvalidPointCount(m_nodes) > 0)
