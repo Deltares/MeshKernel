@@ -1150,7 +1150,7 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_delete_hanging_edges(int meshKernelId);
 
-        /// @brief Deletes
+        /// @brief Deletes the mesh faces inside a set of polygons
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] polygon      The polygon regions where the faces are to be deleted
         /// @returns Error code

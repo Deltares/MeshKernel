@@ -245,7 +245,6 @@ namespace meshkernel
         [[nodiscard]] std::vector<Point> ComputeBoundaryPolygons(const std::vector<Point>& polygon);
 
         /// @brief Convert all mesh boundaries to a vector of polygon nodes
-        /// @param[in] polygon The polygon where the operation is performed
         /// @return The resulting set of polygons, describing interior mesh boundaries
         std::vector<Point> ComputeInnerBoundaryPolygons() const;
 
