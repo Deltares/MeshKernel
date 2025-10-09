@@ -39,13 +39,20 @@ jobs:
         if: inputs.platform == 'macos-13-xlarge' || inputs.platform == 'macos-14' || inputs.platform == 'macos-15' ||  inputs.platform == 'macos-15-intel'
         run: sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
 
-      # Step: Set paths
-      - name: Set paths
+      # Step: Set paths and detect architecture
+      - name: Set paths and detect architecture
         id: paths
         run: |
           echo "build_dir=${{ github.workspace }}/build" >> $GITHUB_OUTPUT
           echo "ext_deps_dir=${{ github.workspace }}/external_dependencies" >> $GITHUB_OUTPUT
           echo "install_dir=${{ github.workspace }}/install" >> $GITHUB_OUTPUT
+          if [ "${{ runner.os }}" == "macOS" ]; then
+            ARCH=$(uname -m)
+            echo "architecture=$ARCH" >> $GITHUB_OUTPUT
+            echo "Detected macOS architecture: $ARCH"
+          else
+            echo "architecture=unknown" >> $GITHUB_OUTPUT
+          fi
 
       - name: Install system-provided dependencies
         run: |
@@ -60,9 +67,34 @@ jobs:
         uses: actions/cache/restore@v3
         id: restore-cached-external-dependencies
         with:
-          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
-          restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
+          # Include netcdf version (must match scripts/install_netcdf_static.ps1 GitTags.netcdf_c)
+          key: ${{ inputs.platform }}-${{ steps.paths.outputs.architecture }}-${{ inputs.build_type }}-netcdf-v4.9.3-cache
+          restore-keys: ${{ inputs.platform }}-${{ steps.paths.outputs.architecture }}-${{ inputs.build_type }}-netcdf-v4.9.3-cache
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
+
+      # Step: Verify integrity of restored netcdf installation (config file must exist and not be empty)
+      - name: Verify netcdf installation
+        id: verify-netcdf
+        run: |
+          NETCDF_PREFIX="${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c"
+          CFG1="$NETCDF_PREFIX/lib/cmake/netCDF/netCDFConfig.cmake"
+          CFG2="$NETCDF_PREFIX/lib/cmake/netcdf/netcdf-config.cmake"
+          if [ -f "$CFG1" ]; then
+            TARGET_CFG="$CFG1"
+          elif [ -f "$CFG2" ]; then
+            TARGET_CFG="$CFG2"
+          else
+            echo "NetCDF config file missing; will trigger rebuild" >&2
+            echo "valid=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          if [ ! -s "$TARGET_CFG" ]; then
+            echo "NetCDF config file is empty; will trigger rebuild" >&2
+            echo "valid=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "Found NetCDF config: $TARGET_CFG";
+          echo "valid=true" >> $GITHUB_OUTPUT
 
       # Step: Build and install user-provided dependencies, executes only if no cache restored
       - name: Build and install user-provided dependencies
@@ -75,23 +107,76 @@ jobs:
           -BuildType '${{ inputs.build_type }}'
           -ParallelJobs 10
 
+      # Step: Force rebuild when cache existed but was invalid
+      - name: Rebuild user-provided dependencies (invalid cache)
+        if: steps.restore-cached-external-dependencies.outputs.cache-hit == 'true' && steps.verify-netcdf.outputs.valid == 'false'
+        run: >
+          pwsh ${{ github.workspace }}/scripts/install_netcdf_static.ps1
+          -WorkDir ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/work
+          -InstallDir ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install
+          -BuildType '${{ inputs.build_type }}'
+          -ParallelJobs 10
+
+      # Step: Re-verify netcdf after rebuild
+      - name: Re-verify netcdf installation after rebuild
+        if: steps.restore-cached-external-dependencies.outputs.cache-hit == 'true' && steps.verify-netcdf.outputs.valid == 'false'
+        run: |
+          NETCDF_PREFIX="${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c"
+          CFG1="$NETCDF_PREFIX/lib/cmake/netCDF/netCDFConfig.cmake"
+          CFG2="$NETCDF_PREFIX/lib/cmake/netcdf/netcdf-config.cmake"
+          if [ -f "$CFG1" ] && [ -s "$CFG1" ]; then
+            echo "Rebuild produced NetCDF config: $CFG1"
+          elif [ -f "$CFG2" ] && [ -s "$CFG2" ]; then
+            echo "Rebuild produced NetCDF config: $CFG2"
+          else
+            echo "ERROR: NetCDF config still missing after rebuild" >&2
+            echo "Contents of prefix (up to 3 levels):" >&2
+            find "$NETCDF_PREFIX" -maxdepth 3 -type f -print || true >&2
+            exit 1
+          fi
+
       # Step: Cache user-provided dependencies, executes only if no cache restored
       - name: Cache user-provided dependencies
         uses: actions/cache/save@v3
-        if: steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
+        if: (steps.restore-cached-external-dependencies.outputs.cache-hit != 'true') || (steps.verify-netcdf.outputs.valid == 'false')
         with:
-          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
+          key: ${{ inputs.platform }}-${{ steps.paths.outputs.architecture }}-${{ inputs.build_type }}-netcdf-v4.9.3-cache
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
+
+      # Step: Show netcdf installation tree (diagnostics)
+      - name: Show netcdf installation (diagnostics)
+        run: |
+          PREFIX="${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c"
+          echo "Listing NetCDF install prefix: $PREFIX"
+          if [ -d "$PREFIX" ]; then
+            find "$PREFIX" -maxdepth 4 -type f -name '*Config.cmake' -print || true
+            du -sh "$PREFIX" || true
+          else
+            echo "NetCDF prefix directory missing (will likely rebuild earlier)." >&2
+          fi
 
       # Step: CMake configuration
       - name: Configure
-        run: >
-          cmake
-          -S ${{ github.workspace }}
-          -B ${{ steps.paths.outputs.build_dir }}
-          -DCMAKE_BUILD_TYPE=${{ inputs.build_type }}
-          -DCMAKE_PREFIX_PATH=${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
-          -DCMAKE_INSTALL_PREFIX=${{ steps.paths.outputs.install_dir }}
+        run: |
+          CMAKE_ARGS="-S ${{ github.workspace }} -B ${{ steps.paths.outputs.build_dir }} -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} -DCMAKE_PREFIX_PATH=${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c -DCMAKE_INSTALL_PREFIX=${{ steps.paths.outputs.install_dir }}"
+          # Attempt to set netCDF_DIR explicitly for robustness
+          NETCDF_CANDIDATE_DIR_UPPER="${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c/lib/cmake/netCDF"
+          NETCDF_CANDIDATE_DIR_LOWER="${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c/lib/cmake/netcdf"
+          if [ -f "$NETCDF_CANDIDATE_DIR_UPPER/netCDFConfig.cmake" ]; then
+            CMAKE_ARGS="$CMAKE_ARGS -DnetCDF_DIR=$NETCDF_CANDIDATE_DIR_UPPER"
+            echo "Using netCDF_DIR=$NETCDF_CANDIDATE_DIR_UPPER"
+          elif [ -f "$NETCDF_CANDIDATE_DIR_LOWER/netcdf-config.cmake" ]; then
+            CMAKE_ARGS="$CMAKE_ARGS -DnetCDF_DIR=$NETCDF_CANDIDATE_DIR_LOWER"
+            echo "Using netCDF_DIR=$NETCDF_CANDIDATE_DIR_LOWER"
+          else
+            echo "Warning: netCDF config dir not found yet; relying on CMAKE_PREFIX_PATH" >&2
+          fi
+          if [ "${{ runner.os }}" == "macOS" ] && [ "${{ steps.paths.outputs.architecture }}" != "unknown" ]; then
+            CMAKE_ARGS="$CMAKE_ARGS -DCMAKE_OSX_ARCHITECTURES=${{ steps.paths.outputs.architecture }}"
+            echo "Setting CMAKE_OSX_ARCHITECTURES to ${{ steps.paths.outputs.architecture }}"
+          fi
+          echo "Running: cmake $CMAKE_ARGS"
+          cmake $CMAKE_ARGS
 
       # Step: CMake build
       - name: Build

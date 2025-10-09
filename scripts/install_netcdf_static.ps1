@@ -65,6 +65,23 @@ if ( -not ($IsLinux -or $IsMacOS -or $IsWindows)) {
     Exit
 }
 
+# Detect architecture for macOS
+$TargetArchitecture = $null
+if ($IsMacOS) {
+    $ArchOutput = & uname -m
+    if ($ArchOutput -eq "arm64") {
+        $TargetArchitecture = "arm64"
+        Write-Host "Detected macOS ARM64 architecture"
+    } elseif ($ArchOutput -eq "x86_64") {
+        $TargetArchitecture = "x86_64"
+        Write-Host "Detected macOS x86_64 architecture"
+    } else {
+        Write-Error ("Unsupported macOS architecture: {0}" -f $ArchOutput)
+        Invoke-Terminate
+        Exit
+    }
+}
+
 # Check version, powershell 7+ is supported
 $MajorPSVers = $PSVersionTable.PSVersion.Major
 if ([int]$MajorPSVers -lt 7) {
@@ -82,6 +99,9 @@ Write-Host 'Work directory              : ' $WorkDir
 Write-Host 'Installation directory      : ' $InstallDir
 Write-Host 'Build type                  : ' $BuildType
 Write-Host 'Parallel jobs per build     : ' $ParallelJobs
+if ($IsMacOS) {
+    Write-Host 'Target architecture         : ' $TargetArchitecture
+}
 Write-Host 'Tagged branches to checkout : ' ($GitTags | Out-String)
 
 # No need to download and extract m4 when platform is WIN32
@@ -244,6 +264,13 @@ Function Invoke-BuildAndInstall {
     $ConfigArgs += ('-B {0}' -f $BuildDir)
     $ConfigArgs += ('-DCMAKE_INSTALL_PREFIX={0}' -f $InstallDir)
     $ConfigArgs += ('-DCMAKE_BUILD_TYPE={0}' -f $BuildType)
+    
+    # Add macOS architecture specification
+    if ($IsMacOS -and $null -ne $TargetArchitecture) {
+        $ConfigArgs += ('-DCMAKE_OSX_ARCHITECTURES={0}' -f $TargetArchitecture)
+        Write-Host "Setting CMAKE_OSX_ARCHITECTURES to $TargetArchitecture"
+    }
+    
     $ConfigArgs += $Options
     $Configure = ('cmake {0}' -f ($ConfigArgs -Join ' '))
     Write-Host $Configure
