@@ -62,6 +62,7 @@ void meshkernel::Polygon::Initialise()
 
         buffer << "Polygon is not closed" << std::endl;
         buffer.precision(15);
+        buffer << "size " << m_nodes.size() << std::endl;
         buffer << "first point " << m_nodes[0].x << ", " << m_nodes[0].y << std::endl;
         buffer << "last point " << m_nodes[m_nodes.size() - 1].x << ", " << m_nodes[m_nodes.size() - 1].y << std::endl;
 
