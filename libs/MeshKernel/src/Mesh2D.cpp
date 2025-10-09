@@ -1656,7 +1656,7 @@ void Mesh2D::OrientatePolygonsAntiClockwise(std::vector<Point>& polygonNodes) co
     {
         polygonStart = index;
 
-        for (size_t i = polygonStart; i < polygonNodes.size(); ++i)
+        for (UInt i = polygonStart; i < polygonNodes.size(); ++i)
         {
             ++index;
 
@@ -1684,12 +1684,12 @@ void Mesh2D::OrientatePolygonsAntiClockwise(std::vector<Point>& polygonNodes) co
                 // reverse order of polygon nodes
                 if (polygonLength - 1 == 3)
                 {
-                    // Only the second and third points need be swapped to reverse the points in the polygon
+                    // Only the second and third points need be swapped to reverse the points in a triangle polygon
                     std::swap(polygonNodes[polygonStart + 1], polygonNodes[polygonStart + 2]);
                 }
                 else if (polygonLength - 1 == 4)
                 {
-                    // Only the second and fourth points need be swapped to reverse the points in the polygon
+                    // Only the second and fourth points need be swapped to reverse the points in a quadrialteral polygon
                     std::swap(polygonNodes[polygonStart + 1], polygonNodes[polygonStart + 3]);
                 }
                 else
@@ -1822,7 +1822,7 @@ void Mesh2D::WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
             // Find index of last time node was added
             for (size_t ii = nodeIds.size(); ii >= 1; --ii)
             {
-                size_t i = ii - 1;
+                UInt i = static_cast<UInt>(ii) - 1;
 
                 if (nodeIds[i] == constants::missing::uintValue)
                 {

@@ -1152,6 +1152,7 @@ namespace meshkernelapi
 
         /// @brief Deletes
         /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] polygon      The polygon regions where the faces are to be deleted
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_delete_faces_in_polygons(int meshKernelId, const GeometryList& polygon);
 

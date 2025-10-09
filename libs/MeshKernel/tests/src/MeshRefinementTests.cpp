@@ -3127,17 +3127,6 @@ TEST(MeshRefinement, WTF)
     //     boundaryNodes3.insert(boundaryNodes3.end(), boundaryNodes2.begin() + polygonStart + polygonLength, boundaryNodes2.end());
     // }
 
-    int count = 0;
-
-    std::cout << "boundaryNodes2.size " << boundaryNodes2.size() << std::endl;
-
-    for (size_t i = 0; i < boundaryNodes2.size(); ++i)
-    {
-        std::cout << "point " << count << "  " << " = "
-                  << boundaryNodes2[i].x << ", " << boundaryNodes2[i].y << std::endl;
-        ++count;
-    }
-
     [[maybe_unused]] Polygons boundaryWithMissingElement2(boundaryNodes2, Projection::cartesian);
 
     // for (size_t i = 0; i < boundaryNodes3.size(); ++i)
