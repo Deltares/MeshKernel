@@ -45,8 +45,6 @@
 #include "MeshKernel/MeshRefinement.hpp"
 #include "SampleGenerator.hpp"
 
-#include "MeshKernel/Utilities/Utilities.hpp"
-
 namespace fs = std::filesystem;
 
 TEST_F(CartesianApiTestFixture, RefineAPolygonThroughApi)
