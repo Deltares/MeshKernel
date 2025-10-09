@@ -88,6 +88,7 @@
 #include <MeshKernel/UndoActions/UndoAction.hpp>
 #include <MeshKernel/UndoActions/UndoActionStack.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
+#include <MeshKernel/Utilities/Utilities.hpp>
 
 #include "MeshKernelApi/ApiCache/CachedPointValues.hpp"
 #include "MeshKernelApi/ApiCache/CurvilinearBoundariesAsPolygonCache.hpp"
@@ -203,6 +204,7 @@ namespace meshkernelapi
             auto const projection = static_cast<meshkernel::Projection>(projectionType);
             meshKernelState.insert({meshKernelId, MeshKernelState(projection)});
             meshKernelState[meshKernelId].m_propertyCalculators = allocateDefaultPropertyCalculators();
+            meshKernelState[meshKernelId].m_invalidCellPolygons = std::make_shared<std::vector<meshkernel::Point>>();
         }
         catch (...)
         {
@@ -458,7 +460,18 @@ namespace meshkernelapi
             const auto deletionOptionEnum = static_cast<meshkernel::Mesh2D::DeleteMeshOptions>(deletionOption);
 
             meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteMesh(meshKernelPolygon, deletionOptionEnum, invertDeletionBool), meshKernelId);
+
+            if (meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
+
+            // Invalid cells may need to be updated after deleting
+            *meshKernelState[meshKernelId].m_invalidCellPolygons = meshKernelState[meshKernelId].m_mesh2d->ComputeInnerBoundaryPolygons();
         }
+
         catch (...)
         {
             lastExitCode = HandleException();
@@ -515,6 +528,7 @@ namespace meshkernelapi
                                                                                               meshKernelState[meshKernelId].m_projection);
             }
 
+            *meshKernelState[meshKernelId].m_invalidCellPolygons = meshKernelState[meshKernelId].m_mesh2d->ComputeInnerBoundaryPolygons();
             meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
         }
         catch (...)
@@ -663,6 +677,13 @@ namespace meshkernelapi
 
             meshkernel::SplitRowColumnOfMesh splitAlongRow;
             meshKernelUndoStack.Add(splitAlongRow.Compute(*meshKernelState[meshKernelId].m_mesh2d, edgeId), meshKernelId);
+
+            if (meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
         }
         catch (...)
         {
@@ -881,7 +902,20 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            meshKernelState[meshKernelId].m_mesh2d->Administrate();
+            bool doAdministration = meshKernelState[meshKernelId].m_mesh2d->AdministrationRequired();
+
+            if (doAdministration)
+            {
+                meshKernelState[meshKernelId].m_mesh2d->Administrate();
+            }
+
+            if (doAdministration && meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
+
             SetMesh2dApiDimensions(*meshKernelState[meshKernelId].m_mesh2d, mesh2d);
         }
         catch (...)
@@ -1298,6 +1332,13 @@ namespace meshkernelapi
             auto undoAction = MKStateUndoAction::Create(meshKernelState[meshKernelId]);
             meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(*meshKernelState[meshKernelId].m_mesh2d);
 
+            if (meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
+
             meshKernelState[meshKernelId].m_curvilinearGrid = mesh2DToCurvilinear.Compute({xPointCoordinate, yPointCoordinate});
 
             meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
@@ -1325,7 +1366,20 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Polygon Hanging edge has already been cached. Cached values will be delelted.");
             }
 
-            meshKernelState[meshKernelId].m_mesh2d->Administrate();
+            bool doAdministration = meshKernelState[meshKernelId].m_mesh2d->AdministrationRequired();
+
+            if (doAdministration)
+            {
+                meshKernelState[meshKernelId].m_mesh2d->Administrate();
+            }
+
+            if (doAdministration && meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
+
             const auto hangingEdges = meshKernelState[meshKernelId].m_mesh2d->GetHangingEdges();
             meshKernelState[meshKernelId].m_hangingEdgeCache = std::make_shared<HangingEdgeCache>(hangingEdges);
             numHangingEdges = meshKernelState[meshKernelId].m_hangingEdgeCache->Size();
@@ -1381,6 +1435,29 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_mesh2d_delete_faces_in_polygons(int meshKernelId, const GeometryList& polygon)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            const std::vector<meshkernel::Point> polygonPoints = ConvertGeometryListToPointVector(polygon);
+            const meshkernel::Polygons invalidCellsPolygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+
+            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidCellsPolygon), meshKernelId);
+            *meshKernelState[meshKernelId].m_invalidCellPolygons = meshKernelState[meshKernelId].m_mesh2d->ComputeInnerBoundaryPolygons();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_mesh2d_compute_orthogonalization(int meshKernelId,
                                                              int projectToLandBoundaryOption,
                                                              const meshkernel::OrthogonalizationParameters& orthogonalizationParameters,
@@ -1416,6 +1493,13 @@ namespace meshkernelapi
                                                                        orthogonalizationParameters);
             meshKernelUndoStack.Add(ortogonalization.Initialize(), meshKernelId);
             ortogonalization.Compute();
+
+            if (meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
         }
         catch (...)
         {
@@ -2046,6 +2130,14 @@ namespace meshkernelapi
             const meshkernel::Polygons polygons(boundaryPolygonPoints, meshKernelState[meshKernelId].m_projection);
 
             meshkernel::Mesh2DIntersections mesh2DIntersections(*meshKernelState[meshKernelId].m_mesh2d);
+
+            if (meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
+
             mesh2DIntersections.Compute(polygons);
             auto edgeIntersections = mesh2DIntersections.EdgeIntersections();
             auto faceIntersections = mesh2DIntersections.FaceIntersections();
@@ -2635,7 +2727,21 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
-            meshKernelState[meshKernelId].m_mesh2d->Administrate();
+
+            bool doAdministration = meshKernelState[meshKernelId].m_mesh2d->AdministrationRequired();
+
+            if (doAdministration)
+            {
+                meshKernelState[meshKernelId].m_mesh2d->Administrate();
+            }
+
+            if (doAdministration && meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
+
             const auto numFaces = meshKernelState[meshKernelId].m_mesh2d->GetNumFaces();
             std::vector<bool> validFace(numFaces, false);
             for (meshkernel::UInt f = 0; f < numFaces; ++f)
@@ -2665,7 +2771,21 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
-            meshKernelState[meshKernelId].m_mesh2d->Administrate();
+
+            bool doAdministration = meshKernelState[meshKernelId].m_mesh2d->AdministrationRequired();
+
+            if (doAdministration)
+            {
+                meshKernelState[meshKernelId].m_mesh2d->Administrate();
+            }
+
+            if (doAdministration && meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
+
             const auto numFaces = meshKernelState[meshKernelId].m_mesh2d->GetNumFaces();
             int numMatchingFaces = 0;
             for (meshkernel::UInt f = 0; f < numFaces; ++f)
@@ -2899,6 +3019,13 @@ namespace meshkernelapi
                                                       std::move(averaging),
                                                       meshRefinementParameters);
             meshKernelUndoStack.Add(meshRefinement.Compute(), meshKernelId);
+
+            if (meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
         }
         catch (...)
         {
@@ -2957,6 +3084,13 @@ namespace meshkernelapi
                                                       std::move(averaging),
                                                       meshRefinementParameters);
             meshKernelUndoStack.Add(meshRefinement.Compute(), meshKernelId);
+
+            if (meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
         }
         catch (...)
         {
@@ -2995,6 +3129,13 @@ namespace meshkernelapi
                                                       meshRefinementParameters,
                                                       useNodalRefinement);
             meshKernelUndoStack.Add(meshRefinement.Compute(), meshKernelId);
+
+            if (meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
         }
         catch (...)
         {
@@ -3025,6 +3166,16 @@ namespace meshkernelapi
 
             meshkernel::MeshRefinement meshRefinement(*meshKernelState[meshKernelId].m_mesh2d, polygon, meshRefinementParameters);
             meshKernelUndoStack.Add(meshRefinement.Compute(), meshKernelId);
+
+            if (meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
+
+            meshkernel::SaveVtk(meshKernelState[meshKernelId].m_mesh2d->Nodes(), meshKernelState[meshKernelId].m_mesh2d->m_facesNodes, "mesh2.vtu");
+            meshkernel::Print(meshKernelState[meshKernelId].m_mesh2d->Nodes(), meshKernelState[meshKernelId].m_mesh2d->Edges());
         }
         catch (...)
         {
@@ -3049,6 +3200,13 @@ namespace meshkernelapi
 
             meshkernel::RemoveDisconnectedRegions removeDisconnectedRegions;
             meshKernelUndoStack.Add(removeDisconnectedRegions.Compute(*meshKernelState[meshKernelId].m_mesh2d), meshKernelId);
+
+            if (meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
         }
         catch (...)
         {
@@ -3220,6 +3378,13 @@ namespace meshkernelapi
             }
 
             meshKernelUndoStack.Add(meshkernel::CasulliRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d), meshKernelId);
+
+            if (meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
         }
         catch (...)
         {
@@ -3247,6 +3412,13 @@ namespace meshkernelapi
             meshKernelUndoStack.Add(meshkernel::CasulliRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d,
                                                                            meshKernelPolygons),
                                     meshKernelId);
+
+            if (meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
         }
         catch (...)
         {
@@ -3292,6 +3464,13 @@ namespace meshkernelapi
                                                                          depthValues,
                                                                          meshRefinementParameters,
                                                                          minimumRefinementDepth);
+
+                if (meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+                {
+                    meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                               meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                    meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+                }
 
                 meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
             }
@@ -3388,6 +3567,13 @@ namespace meshkernelapi
             }
 
             meshKernelUndoStack.Add(meshkernel::CasulliDeRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d), meshKernelId);
+
+            if (meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
         }
         catch (...)
         {
@@ -3414,6 +3600,13 @@ namespace meshkernelapi
             meshKernelUndoStack.Add(meshkernel::CasulliDeRefinement::Compute(*meshKernelState[meshKernelId].m_mesh2d,
                                                                              meshKernelPolygons),
                                     meshKernelId);
+
+            if (meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
         }
         catch (...)
         {
@@ -4052,7 +4245,23 @@ namespace meshkernelapi
 
             meshKernelState[meshKernelId].m_mesh2d->SetNodes(mergedMeshes->Nodes());
             meshKernelState[meshKernelId].m_mesh2d->SetEdges(mergedMeshes->Edges());
-            meshKernelState[meshKernelId].m_mesh2d->Administrate();
+
+            bool doAdministration = meshKernelState[meshKernelId].m_mesh2d->AdministrationRequired();
+
+            if (doAdministration)
+            {
+                meshKernelState[meshKernelId].m_mesh2d->Administrate();
+            }
+
+            if (doAdministration && meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
+
+            // Update the missing elements polygons
+            *meshKernelState[meshKernelId].m_invalidCellPolygons = meshKernelState[meshKernelId].m_mesh2d->ComputeInnerBoundaryPolygons();
             meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
         }
         catch (...)
@@ -5164,7 +5373,7 @@ namespace meshkernelapi
             // The undo action for conversion of clg to m2d is made in two steps
             std::unique_ptr<meshkernel::CompoundUndoAction> undoAction = meshkernel::CompoundUndoAction::Create();
 
-            // 1. Keep the mesh kernel state to be able to restore (manily) the curvilinear grid and (secondly) other members.
+            // 1. Keep the mesh kernel state to be able to restore (firstly) the curvilinear grid and (secondly) other members.
             undoAction->Add(MKStateUndoAction::Create(meshKernelState[meshKernelId]));
 
             // 2. Keep track of the undo required to restore the mesh2d to its pre-converted state.
@@ -5173,6 +5382,13 @@ namespace meshkernelapi
             // curvilinear grid must be reset to an empty curvilinear grid
             meshKernelState[meshKernelId].m_curvilinearGrid = std::make_unique<meshkernel::CurvilinearGrid>();
             meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
+
+            if (meshKernelState[meshKernelId].m_invalidCellPolygons->size() > 0)
+            {
+                meshkernel::Polygons invalidElementPolygon(*meshKernelState[meshKernelId].m_invalidCellPolygons,
+                                                           meshKernelState[meshKernelId].m_mesh2d->m_projection);
+                meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
+            }
         }
         catch (...)
         {

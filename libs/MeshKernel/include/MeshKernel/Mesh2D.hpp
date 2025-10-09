@@ -244,15 +244,9 @@ namespace meshkernel
         /// @return The resulting polygon mesh boundary
         [[nodiscard]] std::vector<Point> ComputeBoundaryPolygons(const std::vector<Point>& polygon);
 
-        /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
-        /// @param[in] polygon The input polygon
-        /// @param[in,out] isVisited the visited mesh nodes
-        /// @param[in,out] currentNode the current node
-        /// @param[out] meshBoundaryPolygon The resulting polygon points
-        void WalkBoundaryFromNode(const Polygon& polygon,
-                                  std::vector<bool>& isVisited,
-                                  UInt& currentNode,
-                                  std::vector<Point>& meshBoundaryPolygon) const;
+        /// @brief Convert all mesh boundaries to a vector of polygon nodes
+        /// @return The resulting set of polygons, describing interior mesh boundaries
+        std::vector<Point> ComputeInnerBoundaryPolygons() const;
 
         /// @brief Gets the hanging edges
         /// @return A vector with the indices of the hanging edges
@@ -378,6 +372,10 @@ namespace meshkernel
         /// If no such element can be found then the null value will be returned.
         UInt FindCommonFace(const UInt edge1, const UInt edge2) const;
 
+        /// @brief Deletes the mesh faces inside a set of polygons
+        /// @param[in] polygon        The polygon where to perform the operation
+        /* [[nodiscard]] */ std::unique_ptr<UndoAction> DeleteMeshFacesInPolygons(const Polygons& polygon);
+
     private:
         // orthogonalization
         static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length
@@ -435,6 +433,30 @@ namespace meshkernel
         /// @brief Find the mesh faces that lie entirely within the polygon.
         std::vector<bool> FindFacesEntirelyInsidePolygon(const std::vector<bool>& isNodeInsidePolygon) const;
 
+        /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
+        void WalkBoundaryFromNode(const Polygon& polygon,
+                                  std::vector<bool>& isVisited,
+                                  UInt& currentNode,
+                                  std::vector<Point>& meshBoundaryPolygon) const;
+
+        /// @brief Constructs a polygon or polygons from the meshboundary, by walking through the mesh
+        ///
+        /// If there are multiple polygons connected by a single node, then these will be separated into individual polygons
+        void WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
+                                       std::vector<bool>& nodeIsVisited,
+                                       UInt& currentNode,
+                                       std::vector<Point>& meshBoundaryPolygon,
+                                       std::vector<UInt>& nodeIds,
+                                       std::vector<Point>& subsSequence) const;
+
+        /// @brief Ensure that all polynomials are orientated in the ACW direction.
+        void OrientatePolygonsAntiClockwise(std::vector<Point>& polygonNodes) const;
+
+        /// @brief Removes the outer domain boundary polygon from the set of polygons
+        ///
+        /// It is assumed that the outer domain polygon contains the most nodes
+        std::vector<Point> RemoveOuterDomainBoundaryPolygon(const std::vector<Point>& polygonNodes) const;
+
         /// @brief Deletes the mesh faces inside a polygon
         /// @param[in] polygon        The polygon where to perform the operation
         ///                           If this Polygons instance contains multiple polygons, the first one will be taken.
@@ -460,6 +482,12 @@ namespace meshkernel
                                 std::vector<UInt>& sortedEdges,
                                 std::vector<UInt>& sortedNodes,
                                 std::vector<Point>& nodalValues);
+
+        /// @brief Update information about a list of faces and face-edge information
+        ///
+        /// @param [in] faceIndices Mapping between old and new face-ids, the invalid value implies a deleted element
+        /// @param [in,out] deleteMeshAction Gather any additional undo information
+        void UpdateFaceInformation(const std::vector<UInt>& faceIndices, CompoundUndoAction& deleteMeshAction);
 
         /// @brief Checks if a triangle has an acute angle (checktriangle)
         /// @param[in] faceNodes The face nodes composing the triangles
