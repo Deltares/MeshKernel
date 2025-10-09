@@ -449,6 +449,7 @@ namespace meshkernel
                                        std::vector<UInt>& nodeIds,
                                        std::vector<Point>& subsSequence) const;
 
+        /// @brief Ensure that all polynomials are orientated in the ACW direction.
         void OrientatePolygonsAntiClockwise(std::vector<Point>& polygonNodes) const;
 
         /// @brief Removes the outer domain boundary polygon from the set of polygons
