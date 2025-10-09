@@ -2156,18 +2156,14 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygons(const 
     std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
     ComputeFaceAreaAndMassCenters(true);
 
+    // A mapping between the old face-id and the new face-id.
+    // Any deleted elements will be the invalid uint value.
     std::vector<UInt> faceIndices(GetNumFaces(), constants::missing::uintValue);
     UInt faceIndex = 0;
 
     for (UInt f = 0u; f < GetNumFaces(); ++f)
     {
-
-        if (!m_facesMassCenters[f].IsValid())
-        {
-            continue;
-        }
-
-        if (!polygon.IsPointInAnyPolygon(m_facesMassCenters[f]))
+        if (m_facesMassCenters[f].IsValid() && !polygon.IsPointInAnyPolygon(m_facesMassCenters[f]))
         {
             faceIndices[f] = faceIndex;
             ++faceIndex;
@@ -2199,6 +2195,7 @@ void Mesh2D::UpdateFaceInformation(const std::vector<UInt>& faceIndices, Compoun
         for (UInt e = 0u; e < m_facesEdges[faceId].size(); ++e)
         {
             UInt edge = m_facesEdges[faceId][e];
+            bool removedFace = false;
 
             if (m_edgesFaces[edge][0] == faceId)
             {
@@ -2207,14 +2204,16 @@ void Mesh2D::UpdateFaceInformation(const std::vector<UInt>& faceIndices, Compoun
                 // Ensure the first connected face is on the 0th side
                 // If the 1st side is already the invalid value then this operation does not change anything.
                 std::swap(m_edgesFaces[edge][0], m_edgesFaces[edge][1]);
+                removedFace = true;
             }
             else if (m_edgesFaces[edge][1] == faceId)
             {
                 m_edgesFaces[edge][1] = constants::missing::uintValue;
                 --m_edgesNumFaces[edge];
+                removedFace = true;
             }
 
-            if (m_edgesNumFaces[edge] == 0)
+            if (removedFace && m_edgesNumFaces[edge] == 0)
             {
                 deleteMeshAction.Add(DeleteEdge(edge));
             }
