@@ -3133,7 +3133,8 @@ TEST(MeshRefinement, WTF)
 
     for (size_t i = 0; i < boundaryNodes2.size(); ++i)
     {
-        std::cout << "point " << count << "  " << " = " << boundaryNodes2[i].x << ", " << boundaryNodes2[i].y << std::endl;
+        std::cout << "point " << count << "  " << " = "
+                  << boundaryNodes2[i].x << ", " << boundaryNodes2[i].y << std::endl;
         ++count;
     }
 
