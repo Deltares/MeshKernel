@@ -52,9 +52,9 @@ The requirements are:
 - Git
 - CMake 3.23 or higher
 - A C++20 compatible compiler. Currently the following compilers are supported:
-  - Windows: Microsoft Visual C++
-  - Linux: GCC
-  - macOS: GCC. Clang is not yet supported. Care must be taken if gcc and g++ are symbolic links to clang and clang++
+  - Windows: Microsoft Visual C++ 16.11.14 or later
+  - Linux: GCC 13.1 or later, Clang 14.0 or later  
+  - macOS: GCC 13.1 or later, Clang 14.0 or later, AppleClang 14.0 or later
 - The Boost libraries
 - [NetCDF](#netcdf)
 - Doxygen (optional)

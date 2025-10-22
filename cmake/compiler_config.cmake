@@ -23,8 +23,19 @@ if (UNIX)
     endif()
     add_compile_options("$<$<CONFIG:RELEASE>:-O2>")
     add_compile_options("$<$<CONFIG:DEBUG>:-g>")
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+    add_compile_options("-fvisibility=hidden;-Werror;-Wall;-Wextra;-pedantic;-Wno-unused-function")
+    
+    if(APPLE AND (CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64"))
+      # Be lenient on macOS with arm64 toolchain to prevent Eigen -Werror=deprecated-enum-enum-conversion error
+      add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-enum-enum-conversion>)
+      # Suppress notes related to ABI changes
+      add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-psabi>)
+    endif()
+    add_compile_options("$<$<CONFIG:RELEASE>:-O2>")
+    add_compile_options("$<$<CONFIG:DEBUG>:-g>")
   else()
-    message(FATAL_ERROR "Unsupported compiler. Only GNU is supported under Linux. Found ${CMAKE_CXX_COMPILER_ID}.")
+    message(FATAL_ERROR "Unsupported compiler. Only GNU and Clang are supported under Unix. Found ${CMAKE_CXX_COMPILER_ID}.")
   endif()
 elseif(WIN32)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -37,7 +48,7 @@ elseif(WIN32)
     message(FATAL_ERROR "Unsupported compiler. Only MSVC is supported under Windows. Found ${CMAKE_CXX_COMPILER_ID}.")
   endif()
 else()
-    message(FATAL_ERROR "Unsupported platform. Only Linux and Windows are supported.")
+    message(FATAL_ERROR "Unsupported platform. Only Linux, macOS, and Windows are supported.")
 endif()
 
 # CMAKE_SOURCE_DIR is passed to the src in order to strip it out of the path of srcs where exceptions may occur
@@ -55,6 +66,12 @@ if(
   OR
   (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC"
     AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 16.11.14)
+  OR
+  (CMAKE_CXX_COMPILER_ID STREQUAL "Clang"
+    AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 14.0)
+  OR
+  (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"
+    AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 14.0)
 )
   set(USE_LIBFMT 1)
 endif()
