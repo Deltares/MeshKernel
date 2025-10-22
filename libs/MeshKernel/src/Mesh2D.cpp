@@ -1655,6 +1655,7 @@ void Mesh2D::OrientatePolygonsAntiClockwise(std::vector<Point>& polygonNodes) co
     while (index < polygonNodes.size())
     {
         polygonStart = index;
+        polygonLength = 0;
 
         for (UInt i = polygonStart; i < polygonNodes.size(); ++i)
         {
@@ -1679,7 +1680,7 @@ void Mesh2D::OrientatePolygonsAntiClockwise(std::vector<Point>& polygonNodes) co
 
             Point midPoint = std::accumulate(polygonNodes.begin() + polygonStart, polygonNodes.begin() + polygonStart + polygonLength - 1, zeroPoint) / static_cast<double>(polygonLength - 1);
 
-            if (!IsPointInPolygonNodes(midPoint, polygonNodes, m_projection, inValidPoint, polygonStart, polygonStart + polygonLength - 1))
+            if (!IsPointInPolygonNodes(midPoint, polygonNodes, m_projection, inValidPoint, polygonStart, polygonStart + polygonLength))
             {
                 // reverse order of polygon nodes
                 if (polygonLength - 1 == 3)

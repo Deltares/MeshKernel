@@ -3173,9 +3173,6 @@ namespace meshkernelapi
                                                            meshKernelState[meshKernelId].m_mesh2d->m_projection);
                 meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidElementPolygon);
             }
-
-            meshkernel::SaveVtk(meshKernelState[meshKernelId].m_mesh2d->Nodes(), meshKernelState[meshKernelId].m_mesh2d->m_facesNodes, "mesh2.vtu");
-            meshkernel::Print(meshKernelState[meshKernelId].m_mesh2d->Nodes(), meshKernelState[meshKernelId].m_mesh2d->Edges());
         }
         catch (...)
         {
