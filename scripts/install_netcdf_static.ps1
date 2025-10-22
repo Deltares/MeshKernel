@@ -240,15 +240,17 @@ Function Invoke-BuildAndInstall {
     }
 
     # Configure
-    $ConfigArgs = @('-S {0}' -f $SrcDir)
-    $ConfigArgs += ('-B {0}' -f $BuildDir)
+    $ConfigArgs = @()
+    $ConfigArgs += '-S'
+    $ConfigArgs += $SrcDir
+    $ConfigArgs += '-B'
+    $ConfigArgs += $BuildDir
     $ConfigArgs += ('-DCMAKE_INSTALL_PREFIX={0}' -f $InstallDir)
     $ConfigArgs += ('-DCMAKE_BUILD_TYPE={0}' -f $BuildType)
-    $ConfigArgs += ('-DCMAKE_POLICY_VERSION_MINIMUM=3.5')
+    $ConfigArgs += '-DCMAKE_POLICY_VERSION_MINIMUM=3.5'
     $ConfigArgs += $Options
-    $Configure = ('cmake {0}' -f ($ConfigArgs -Join ' '))
-    Write-Host $Configure
-    Invoke-Expression $Configure
+    Write-Host "cmake $($ConfigArgs -Join ' ')"
+    & cmake @ConfigArgs
     $ExitCode = $LASTEXITCODE
     if ( $ExitCode -gt 0 ) {
         Write-Error ('Failed to configure the build {0}. Exit code = {1}.' `
@@ -258,10 +260,9 @@ Function Invoke-BuildAndInstall {
     }
 
     # Build
-    $BuildArgs += @('--build', $BuildDir, '--config', $BuildType, '--parallel', $ParallelJobs.ToString())
-    $Build = ('cmake {0}' -f ($BuildArgs -Join ' '))
-    Write-Host $Build
-    Invoke-Expression $Build
+    $BuildArgs = @('--build', $BuildDir, '--config', $BuildType, '--parallel', $ParallelJobs.ToString())
+    Write-Host "cmake $($BuildArgs -Join ' ')"
+    & cmake @BuildArgs
     $ExitCode = $LASTEXITCODE
     if ( $ExitCode -gt 0 ) {
         Write-Error ('Failed to build {0} in {1}. Exit code = {2}.' `
@@ -271,10 +272,9 @@ Function Invoke-BuildAndInstall {
     }
 
     # Install
-    $InstalldArgs += @('--install', $BuildDir)
-    $Install = ('cmake {0}' -f ($InstalldArgs -Join ' '))
-    Write-Host $Install
-    Invoke-Expression $Install
+    $InstalldArgs = @('--install', $BuildDir)
+    Write-Host "cmake $($InstalldArgs -Join ' ')"
+    & cmake @InstalldArgs
     $ExitCode = $LASTEXITCODE
     if ( $ExitCode -gt 0 ) {
         Write-Error ('Failed to install {0} in {1}. Exit code = {2}.' `
