@@ -244,6 +244,7 @@ Function Invoke-BuildAndInstall {
     $ConfigArgs += ('-B {0}' -f $BuildDir)
     $ConfigArgs += ('-DCMAKE_INSTALL_PREFIX={0}' -f $InstallDir)
     $ConfigArgs += ('-DCMAKE_BUILD_TYPE={0}' -f $BuildType)
+    $ConfigArgs += ('-DCMAKE_POLICY_VERSION_MINIMUM=3.5')
     $ConfigArgs += $Options
     $Configure = ('cmake {0}' -f ($ConfigArgs -Join ' '))
     Write-Host $Configure
