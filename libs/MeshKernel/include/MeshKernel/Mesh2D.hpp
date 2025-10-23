@@ -31,6 +31,7 @@
 #include <utility>
 #include <vector>
 
+#include "MeshKernel/UndoActions/PointArrayUndo.hpp"
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Definitions.hpp>
 #include <MeshKernel/Entities.hpp>
@@ -127,10 +128,16 @@ namespace meshkernel
         /// @brief Apply the coordinate offset action
         void CommitAction(const SphericalCoordinatesOffsetAction& undoAction);
 
+        /// @brief Set the node values.
+        void CommitAction(PointArrayUndo& undoAction);
+
         /// @brief Undo the coordinate offset action
         ///
         /// Restore mesh to state before coordinate offset action was applied
         void RestoreAction(const SphericalCoordinatesOffsetAction& undoAction);
+
+        /// @brief Undo node array
+        void RestoreAction(PointArrayUndo& undoAction);
 
         /// @brief For a face create a closed polygon and fill local mapping caches (get_cellpolygon)
         /// @param[in]  faceIndex              The face index
@@ -267,6 +274,10 @@ namespace meshkernel
         /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
         [[nodiscard]] std::unique_ptr<UndoAction> DeleteMesh(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion);
 
+        /// @brief Deletes the mesh faces inside a set of polygons
+        /// @param[in] polygon        The polygon where to perform the operation
+        /*[[nodiscard]] */ std::unique_ptr<UndoAction> DeleteMeshFacesInPolygons(const Polygons& polygon);
+
         /// @brief  This method generates a mask indicating which locations are within the specified  range of the given metric.
         ///
         /// @param[in] location The location representing the location where to filter the object.
@@ -372,10 +383,6 @@ namespace meshkernel
         /// If no such element can be found then the null value will be returned.
         UInt FindCommonFace(const UInt edge1, const UInt edge2) const;
 
-        /// @brief Deletes the mesh faces inside a set of polygons
-        /// @param[in] polygon        The polygon where to perform the operation
-        /* [[nodiscard]] */ std::unique_ptr<UndoAction> DeleteMeshFacesInPolygons(const Polygons& polygon);
-
     private:
         // orthogonalization
         static constexpr double m_minimumEdgeLength = 1e-4;               ///< Minimum edge length
@@ -463,6 +470,18 @@ namespace meshkernel
         /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
         [[nodiscard]] std::unique_ptr<UndoAction> DeleteMeshFaces(const Polygons& polygon, bool invertDeletion);
 
+        /// @brief Append the polygon describing the cell to the list of invalid cells polygons
+        void AppendCellPolygon(const UInt faceId);
+
+        /// @brief Delete parts of the mesh described by the invalid cells polygons
+        void DeleteMeshHoles(CompoundUndoAction* undoAction);
+
+        /// @brief Update information about a list of faces and face-edge information
+        ///
+        /// @param [in] faceIndices Mapping between old and new face-ids, the invalid value implies a deleted element
+        /// @param [in,out] deleteMeshAction Gather any additional undo information
+        void UpdateFaceInformation(const std::vector<UInt>& faceIndices, CompoundUndoAction& deleteMeshAction);
+
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param[in] startNode The starting node
         /// @param[in] node The current node
@@ -482,12 +501,6 @@ namespace meshkernel
                                 std::vector<UInt>& sortedEdges,
                                 std::vector<UInt>& sortedNodes,
                                 std::vector<Point>& nodalValues);
-
-        /// @brief Update information about a list of faces and face-edge information
-        ///
-        /// @param [in] faceIndices Mapping between old and new face-ids, the invalid value implies a deleted element
-        /// @param [in,out] deleteMeshAction Gather any additional undo information
-        void UpdateFaceInformation(const std::vector<UInt>& faceIndices, CompoundUndoAction& deleteMeshAction);
 
         /// @brief Checks if a triangle has an acute angle (checktriangle)
         /// @param[in] faceNodes The face nodes composing the triangles
@@ -539,7 +552,8 @@ namespace meshkernel
         /// @returns The number of edges that have been invalidated
         UInt InvalidateEdgesWithNoFace();
 
-        std::vector<MeshNodeType> m_nodesTypes; ///< The node types (nb)
+        std::vector<MeshNodeType> m_nodesTypes;   ///< The node types (nb)
+        std::vector<Point> m_invalidCellPolygons; ///< Invalid cell polygons
     };
 
 } // namespace meshkernel

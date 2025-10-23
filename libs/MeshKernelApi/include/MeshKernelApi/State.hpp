@@ -73,12 +73,11 @@ namespace meshkernelapi
         }
 
         // Geometrical entities instances
-        std::shared_ptr<meshkernel::Mesh1D> m_mesh1d;                          ///< Shared pointer to meshkernel::Mesh1D instance
-        std::shared_ptr<meshkernel::Network1D> m_network1d;                    ///< Shared pointer to meshkernel::Network1D instance
-        std::shared_ptr<meshkernel::Mesh2D> m_mesh2d;                          ///< Shared pointer to meshkernel::Mesh2D instance
-        std::shared_ptr<meshkernel::Contacts> m_contacts;                      ///< Shared pointer to meshkernel::Contacts instance
-        std::shared_ptr<meshkernel::CurvilinearGrid> m_curvilinearGrid;        ///< Shared pointer to meshkernel::CurvilinearGrid instance
-        std::shared_ptr<std::vector<meshkernel::Point>> m_invalidCellPolygons; ///< Set of polygon points for invalid regions or holes in mesh
+        std::shared_ptr<meshkernel::Mesh1D> m_mesh1d;                   ///< Shared pointer to meshkernel::Mesh1D instance
+        std::shared_ptr<meshkernel::Network1D> m_network1d;             ///< Shared pointer to meshkernel::Network1D instance
+        std::shared_ptr<meshkernel::Mesh2D> m_mesh2d;                   ///< Shared pointer to meshkernel::Mesh2D instance
+        std::shared_ptr<meshkernel::Contacts> m_contacts;               ///< Shared pointer to meshkernel::Contacts instance
+        std::shared_ptr<meshkernel::CurvilinearGrid> m_curvilinearGrid; ///< Shared pointer to meshkernel::CurvilinearGrid instance
 
         // Algorithms instances (interactivity)
         std::shared_ptr<meshkernel::OrthogonalizationAndSmoothing> m_meshOrthogonalization;                  ///< Shared pointer to meshkernel::OrthogonalizationAndSmoothing instance

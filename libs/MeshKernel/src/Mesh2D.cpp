@@ -26,7 +26,6 @@
 //------------------------------------------------------------------------------
 
 #include <numeric>
-#include <ranges>
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
@@ -48,11 +47,13 @@ using meshkernel::Mesh2D;
 Mesh2D::Mesh2D()
     : Mesh()
 {
+    std::cout << "Mesh2D::constructor 1" << std::endl;
 }
 
 Mesh2D::Mesh2D(Projection projection)
     : Mesh(projection)
 {
+    std::cout << "Mesh2D::constructor 2 " << this << std::endl;
 }
 
 Mesh2D::Mesh2D(const std::vector<Edge>& edges,
@@ -60,6 +61,7 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                Projection projection)
     : Mesh(edges, nodes, projection)
 {
+    std::cout << "Mesh2D::constructor 3 " << this << std::endl;
     DoAdministration();
 
     if (InvalidateEdgesWithNoFace() > 0)
@@ -67,6 +69,7 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
         DeleteInvalidNodesAndEdges();
         DoAdministration();
     }
+    std::cout << "end Mesh2D::constructor 3" << std::endl;
 }
 
 Mesh2D::Mesh2D(const std::vector<Edge>& edges,
@@ -81,6 +84,7 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
 
 Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, Projection projection)
 {
+    std::cout << "Mesh2D::constructor 5" << std::endl;
     m_projection = projection;
     // compute triangulation
     TriangulationWrapper triangulationWrapper;
@@ -185,6 +189,7 @@ void Mesh2D::DoAdministration(CompoundUndoAction* undoAction)
         return;
     }
 
+    std::cout << " Mesh2D::DoAdministration " << this << std::endl;
     AdministrateNodesEdges(undoAction);
 
     // face administration
@@ -195,6 +200,8 @@ void Mesh2D::DoAdministration(CompoundUndoAction* undoAction)
 
     // Compute face mass centers
     ComputeFaceAreaAndMassCenters();
+
+    DeleteMeshHoles(undoAction);
 
     // classify node types
     ClassifyNodes();
@@ -859,9 +866,24 @@ void Mesh2D::CommitAction(const SphericalCoordinatesOffsetAction& undoAction)
     undoAction.ApplyOffset(m_nodes);
 }
 
+void Mesh2D::CommitAction(PointArrayUndo& undoAction)
+{
+    undoAction.Swap(m_invalidCellPolygons);
+    // SetAdministrationRequired(true);
+    // Administrate();
+}
+
 void Mesh2D::RestoreAction(const SphericalCoordinatesOffsetAction& undoAction)
 {
     undoAction.UndoOffset(m_nodes);
+}
+
+void Mesh2D::RestoreAction(PointArrayUndo& undoAction)
+{
+    undoAction.Swap(m_invalidCellPolygons);
+    // m_nodesRTreeRequiresUpdate = true;
+    // m_edgesRTreeRequiresUpdate = true;
+    // SetAdministrationRequired(true);
 }
 
 std::vector<meshkernel::Point> Mesh2D::GetObtuseTrianglesCenters()
@@ -1981,12 +2003,12 @@ std::vector<bool> Mesh2D::FindFacesEntirelyInsidePolygon(const std::vector<bool>
     return isFaceCompletlyIncludedInPolygon;
 }
 
-//
 void Mesh2D::DeletedMeshNodesAndEdges(const std::function<bool(UInt)>& excludedFace,
                                       std::vector<bool>& deleteNode,
                                       CompoundUndoAction& deleteMeshAction)
 {
     std::vector<std::uint8_t> nodeEdgeCount(m_nodesNumEdges);
+    std::vector<bool> includeFacePolygon(GetNumFaces(), false);
 
     for (UInt e = 0; e < GetNumEdges(); ++e)
     {
@@ -1998,6 +2020,7 @@ void Mesh2D::DeletedMeshNodesAndEdges(const std::function<bool(UInt)>& excludedF
             deleteNode[m_edges[e].second] = false;
             continue;
         }
+
         if (numEdgeFaces == 2 && (excludedFace(m_edgesFaces[e][0]) || excludedFace(m_edgesFaces[e][1])))
         {
             deleteNode[m_edges[e].first] = false;
@@ -2015,147 +2038,123 @@ void Mesh2D::DeletedMeshNodesAndEdges(const std::function<bool(UInt)>& excludedF
             --nodeEdgeCount[m_edges[e].second];
         }
 
+        if (m_edgesFaces[e][0] != constants::missing::uintValue && !excludedFace(m_edgesFaces[e][0]))
+        {
+            includeFacePolygon[m_edgesFaces[e][0]] = true;
+        }
+
+        if (m_edgesFaces[e][1] != constants::missing::uintValue && !excludedFace(m_edgesFaces[e][1]))
+        {
+            includeFacePolygon[m_edgesFaces[e][1]] = true;
+        }
+
         deleteMeshAction.Add(DeleteEdge(e));
     }
+
+    std::vector<UInt> nodesToDelete;
+    nodesToDelete.reserve(GetNumNodes());
 
     for (UInt i = 0; i < m_nodes.size(); ++i)
     {
         if ((deleteNode[i] || nodeEdgeCount[i] == 0) && m_nodes[i].IsValid())
         {
-            deleteMeshAction.Add(DeleteNode(i));
+
+            for (UInt edgeId = 0; edgeId < m_nodesNumEdges[i]; ++edgeId)
+            {
+
+                if (m_edgesFaces[edgeId][0] != constants::missing::uintValue && !excludedFace(m_edgesFaces[edgeId][0]))
+                {
+                    includeFacePolygon[m_edgesFaces[edgeId][0]] = true;
+                }
+
+                if (m_edgesFaces[edgeId][1] != constants::missing::uintValue && !excludedFace(m_edgesFaces[edgeId][1]))
+                {
+                    includeFacePolygon[m_edgesFaces[edgeId][1]] = true;
+                }
+            }
+
+            nodesToDelete.push_back(i);
         }
+    }
+
+    deleteMeshAction.Add(PointArrayUndo::Create(*this, m_invalidCellPolygons));
+
+    // Must append cell polygons before deleting node, otherwise the node value will be invalid.
+    for (UInt faceId = 0; faceId < includeFacePolygon.size(); ++faceId)
+    {
+        if (includeFacePolygon[faceId])
+        {
+            std::cout << "appending cell " << faceId << std::endl;
+            AppendCellPolygon(faceId);
+        }
+    }
+
+    for (const UInt nodeId : nodesToDelete)
+    {
+        deleteMeshAction.Add(DeleteNode(nodeId));
     }
 }
 
-std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMesh(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion)
+void Mesh2D::AppendCellPolygon(const UInt faceId)
 {
-    if (deletionOption == FacesWithIncludedCircumcenters)
+    std::cout << " Mesh::AppendCellPolygon " << faceId << std::endl;
+
+    if (faceId == constants::missing::uintValue)
     {
-        return DeleteMeshFaces(polygon, invertDeletion);
+        throw ConstraintError("Face index is invalid");
     }
 
-    std::unique_ptr<CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
+    size_t pointIndex = m_invalidCellPolygons.size();
 
-    // Find crossed faces
-    Mesh2DIntersections mesh2DIntersections(*this);
-    mesh2DIntersections.Compute(polygon);
-    const auto& faceIntersections = mesh2DIntersections.FaceIntersections();
-
-    // Find faces with all nodes inside the polygon
-    std::vector<bool> isNodeInsidePolygon(GetNumNodes(), false);
-    std::vector<bool> deleteNode(GetNumNodes(), invertDeletion);
-
-    FindNodesToDelete(polygon, invertDeletion, isNodeInsidePolygon, deleteNode);
-
-    std::vector<bool> isFaceCompletlyIncludedInPolygon(FindFacesEntirelyInsidePolygon(isNodeInsidePolygon));
-
-    std::function<bool(UInt)> excludedFace;
-
-    if (deletionOption == InsideNotIntersected && !invertDeletion)
+    if (m_invalidCellPolygons.empty())
     {
-        excludedFace = [&isFaceCompletlyIncludedInPolygon, &faceIntersections](UInt f)
-        { return !isFaceCompletlyIncludedInPolygon[f] || faceIntersections[f].faceIndex != constants::missing::uintValue; };
+        // +1 for the closing node
+        m_invalidCellPolygons.resize(m_numFacesNodes[faceId] + 1);
     }
-    else if (deletionOption == InsideNotIntersected && invertDeletion)
+    else
     {
-        excludedFace = [&isFaceCompletlyIncludedInPolygon, &faceIntersections](UInt f)
-        { return isFaceCompletlyIncludedInPolygon[f] && faceIntersections[f].faceIndex == constants::missing::uintValue; };
-    }
-    else if (deletionOption == InsideAndIntersected && !invertDeletion)
-    {
-        excludedFace = [&isFaceCompletlyIncludedInPolygon, &faceIntersections](UInt f)
-        { return !isFaceCompletlyIncludedInPolygon[f] && faceIntersections[f].faceIndex == constants::missing::uintValue; };
-    }
-    else if (deletionOption == InsideAndIntersected && invertDeletion)
-    {
-        excludedFace = [&isFaceCompletlyIncludedInPolygon, &faceIntersections](UInt f)
-        { return isFaceCompletlyIncludedInPolygon[f] || faceIntersections[f].faceIndex != constants::missing::uintValue; };
+        // +2: 1 for the closing node and another for the separation value
+        m_invalidCellPolygons.resize(m_invalidCellPolygons.size() + m_numFacesNodes[faceId] + 2);
+        // Add separator
+        m_invalidCellPolygons[pointIndex] = Point{constants::missing::doubleValue, constants::missing::doubleValue};
+        ++pointIndex;
     }
 
-    // Delete nodes and edges marked for deletion
-    DeletedMeshNodesAndEdges(excludedFace, deleteNode, *deleteMeshAction);
+    for (UInt i = 0; i < m_numFacesNodes[faceId]; ++i)
+    {
+        m_invalidCellPolygons[pointIndex] = m_nodes[m_facesNodes[faceId][i]];
+        ++pointIndex;
+    }
 
-    SetNodesRTreeRequiresUpdate(true);
-    SetEdgesRTreeRequiresUpdate(true);
-
-    Administrate(deleteMeshAction.get());
-    return deleteMeshAction;
+    // Close the polygon
+    m_invalidCellPolygons[pointIndex] = m_nodes[m_facesNodes[faceId][0]];
 }
 
-std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces(const Polygons& polygon, bool invertDeletion)
+void Mesh2D::DeleteMeshHoles(CompoundUndoAction* undoAction)
 {
-    std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
 
-    Administrate(deleteMeshAction.get());
-    std::vector<Point> faceCircumcenters = algo::ComputeFaceCircumcenters(*this);
-
-    for (UInt e = 0u; e < GetNumEdges(); ++e)
+    if (!m_invalidCellPolygons.empty())
     {
-        bool allFaceCircumcentersInPolygon = true;
+        Polygons invalidElementPolygon(m_invalidCellPolygons, m_projection);
+        auto deleteFacesUndo = DeleteMeshFacesInPolygons(invalidElementPolygon);
 
-        for (UInt f = 0u; f < GetNumEdgesFaces(e); ++f)
+        if (undoAction != nullptr)
         {
-            const auto faceIndex = m_edgesFaces[e][f];
-            if (faceIndex == constants::missing::uintValue)
-            {
-                continue;
-            }
-
-            auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(faceCircumcenters[faceIndex]);
-
-            if (invertDeletion)
-            {
-                isInPolygon = !isInPolygon;
-            }
-            if (!isInPolygon)
-            {
-                allFaceCircumcentersInPolygon = false;
-                break;
-            }
-        }
-
-        // 2D edge without surrounding faces.
-        if (GetNumEdgesFaces(e) == 0)
-        {
-            const auto firstNodeIndex = m_edges[e].first;
-            const auto secondNodeIndex = m_edges[e].second;
-
-            if (firstNodeIndex == constants::missing::uintValue || secondNodeIndex == constants::missing::uintValue)
-            {
-                continue;
-            }
-
-            const auto edgeCenter = (m_nodes[firstNodeIndex] + m_nodes[secondNodeIndex]) / 2.0;
-
-            auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(edgeCenter);
-            allFaceCircumcentersInPolygon = isInPolygon;
-
-            if (invertDeletion)
-            {
-                allFaceCircumcentersInPolygon = !allFaceCircumcentersInPolygon;
-            }
-        }
-
-        if (allFaceCircumcentersInPolygon)
-        {
-            deleteMeshAction->Add(DeleteEdge(e));
+            undoAction->Add(std::move(deleteFacesUndo));
         }
     }
 
-    Administrate(deleteMeshAction.get());
+    for (const Point& p : m_invalidCellPolygons)
+    {
+        std::cout << "point: " << p.x << ", " << p.y << std::endl;
+    }
 
-    return deleteMeshAction;
+    std::cout << " m_invalidCellPolygons " << m_invalidCellPolygons.size() << std::endl;
 }
 
 std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygons(const Polygons& polygon)
 {
-    if (polygon.IsEmpty())
-    {
-        return nullptr;
-    }
-
     std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
-    ComputeFaceAreaAndMassCenters(true);
 
     // A mapping between the old face-id and the new face-id.
     // Any deleted elements will be the invalid uint value.
@@ -2188,6 +2187,16 @@ void Mesh2D::UpdateFaceInformation(const std::vector<UInt>& faceIndices, Compoun
         {
             facesToDelete.push_back(i);
         }
+    }
+
+    if (facesToDelete.empty())
+    {
+        return;
+    }
+
+    for (UInt faceId : facesToDelete)
+    {
+        AppendCellPolygon(faceId);
     }
 
     // Remove deleted faces from edge-face connectivity
@@ -2245,6 +2254,152 @@ void Mesh2D::UpdateFaceInformation(const std::vector<UInt>& faceIndices, Compoun
         m_facesMassCenters.erase(m_facesMassCenters.begin() + faceId);
         m_faceArea.erase(m_faceArea.begin() + faceId);
     }
+}
+
+std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMesh(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion)
+{
+
+    std::cout << " Mesh2D::DeleteMesh " << std::endl;
+
+    if (deletionOption == FacesWithIncludedCircumcenters)
+    {
+        std::cout << " Mesh2D::DeleteMesh::DeleteMeshFaces " << std::endl;
+        return DeleteMeshFaces(polygon, invertDeletion);
+    }
+
+    std::cout << " Mesh2D::DeleteMesh::DeleteMeshEdges " << std::endl;
+    std::unique_ptr<CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
+
+    // Find crossed faces
+    Mesh2DIntersections mesh2DIntersections(*this);
+    mesh2DIntersections.Compute(polygon);
+    const auto& faceIntersections = mesh2DIntersections.FaceIntersections();
+
+    // Find faces with all nodes inside the polygon
+    std::vector<bool> isNodeInsidePolygon(GetNumNodes(), false);
+    std::vector<bool> deleteNode(GetNumNodes(), invertDeletion);
+
+    FindNodesToDelete(polygon, invertDeletion, isNodeInsidePolygon, deleteNode);
+
+    std::vector<bool> isFaceCompletlyIncludedInPolygon(FindFacesEntirelyInsidePolygon(isNodeInsidePolygon));
+
+    std::function<bool(UInt)> excludedFace;
+
+    if (deletionOption == InsideNotIntersected && !invertDeletion)
+    {
+        excludedFace = [&isFaceCompletlyIncludedInPolygon, &faceIntersections](UInt f)
+        { return !isFaceCompletlyIncludedInPolygon[f] || faceIntersections[f].faceIndex != constants::missing::uintValue; };
+    }
+    else if (deletionOption == InsideNotIntersected && invertDeletion)
+    {
+        excludedFace = [&isFaceCompletlyIncludedInPolygon, &faceIntersections](UInt f)
+        { return isFaceCompletlyIncludedInPolygon[f] && faceIntersections[f].faceIndex == constants::missing::uintValue; };
+    }
+    else if (deletionOption == InsideAndIntersected && !invertDeletion)
+    {
+        excludedFace = [&isFaceCompletlyIncludedInPolygon, &faceIntersections](UInt f)
+        { return !isFaceCompletlyIncludedInPolygon[f] && faceIntersections[f].faceIndex == constants::missing::uintValue; };
+    }
+    else if (deletionOption == InsideAndIntersected && invertDeletion)
+    {
+        excludedFace = [&isFaceCompletlyIncludedInPolygon, &faceIntersections](UInt f)
+        { return isFaceCompletlyIncludedInPolygon[f] || faceIntersections[f].faceIndex != constants::missing::uintValue; };
+    }
+
+    // Delete nodes and edges marked for deletion
+    DeletedMeshNodesAndEdges(excludedFace, deleteNode, *deleteMeshAction);
+
+    SetNodesRTreeRequiresUpdate(true);
+    SetEdgesRTreeRequiresUpdate(true);
+
+    Administrate(deleteMeshAction.get());
+    return deleteMeshAction;
+}
+
+std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFaces(const Polygons& polygon, bool invertDeletion)
+{
+    std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
+
+    Administrate(deleteMeshAction.get());
+    std::vector<Point> faceCircumcenters = algo::ComputeFaceCircumcenters(*this);
+    std::vector<bool> includeFace(GetNumFaces(), false);
+
+    for (UInt e = 0u; e < GetNumEdges(); ++e)
+    {
+        bool allFaceCircumcentersInPolygon = true;
+
+        for (UInt f = 0u; f < GetNumEdgesFaces(e); ++f)
+        {
+            const auto faceIndex = m_edgesFaces[e][f];
+            if (faceIndex == constants::missing::uintValue)
+            {
+                continue;
+            }
+
+            auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(faceCircumcenters[faceIndex]);
+
+            if (invertDeletion)
+            {
+                isInPolygon = !isInPolygon;
+            }
+            if (!isInPolygon)
+            {
+                allFaceCircumcentersInPolygon = false;
+                break;
+            }
+        }
+
+        // 2D edge without surrounding faces.
+        if (GetNumEdgesFaces(e) == 0)
+        {
+            const auto firstNodeIndex = m_edges[e].first;
+            const auto secondNodeIndex = m_edges[e].second;
+
+            if (firstNodeIndex == constants::missing::uintValue || secondNodeIndex == constants::missing::uintValue)
+            {
+                continue;
+            }
+
+            const auto edgeCenter = (m_nodes[firstNodeIndex] + m_nodes[secondNodeIndex]) / 2.0;
+
+            auto [isInPolygon, polygonIndex] = polygon.IsPointInPolygons(edgeCenter);
+            allFaceCircumcentersInPolygon = isInPolygon;
+
+            if (invertDeletion)
+            {
+                allFaceCircumcentersInPolygon = !allFaceCircumcentersInPolygon;
+            }
+        }
+
+        if (allFaceCircumcentersInPolygon)
+        {
+            if (m_edgesFaces[e][0] != constants::missing::uintValue)
+            {
+                includeFace[m_edgesFaces[e][0]] = true;
+            }
+
+            if (m_edgesFaces[e][1] != constants::missing::uintValue)
+            {
+                includeFace[m_edgesFaces[e][1]] = true;
+            }
+
+            deleteMeshAction->Add(DeleteEdge(e));
+        }
+    }
+
+    deleteMeshAction->Add(PointArrayUndo::Create(*this, m_invalidCellPolygons));
+
+    for (UInt faceId = 0; faceId < includeFace.size(); ++faceId)
+    {
+        if (includeFace[faceId])
+        {
+            AppendCellPolygon(faceId);
+        }
+    }
+
+    Administrate(deleteMeshAction.get());
+
+    return deleteMeshAction;
 }
 
 std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteHangingEdges()

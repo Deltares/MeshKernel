@@ -33,6 +33,7 @@
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/Utilities/Utilities.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
@@ -769,8 +770,13 @@ TEST_P(MeshDeletion, expected_results)
 
     const meshkernel::Polygons polygon(polygonNodes, meshkernel::Projection::cartesian);
 
+    meshkernel::Print(mesh->Nodes(), mesh->Edges());
+    meshkernel::SaveVtk(mesh->Nodes(), mesh->m_facesNodes, "mesh1.vtu");
+
     // Execute
     auto undoAction = mesh->DeleteMesh(polygon, deleteOption, invertSelection);
+
+    meshkernel::SaveVtk(mesh->Nodes(), mesh->m_facesNodes, "mesh2.vtu");
 
     // Assert
     ASSERT_EQ(numNodes, mesh->GetNumValidNodes());
@@ -791,8 +797,8 @@ TEST_P(MeshDeletion, expected_results)
 
     for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
-        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
-        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first) << "first node of edge " << i;
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second) << "second node of edge " << i;
     }
 }
 

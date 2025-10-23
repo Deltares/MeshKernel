@@ -513,6 +513,7 @@ namespace meshkernel
                                         UInt& numInvalidNodes,
                                         CompoundUndoAction* undoAction = nullptr);
     };
+
 } // namespace meshkernel
 
 inline const std::vector<meshkernel::Point>& meshkernel::Mesh::Nodes() const
