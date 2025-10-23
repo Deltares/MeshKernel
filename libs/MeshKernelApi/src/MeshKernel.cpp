@@ -1408,7 +1408,7 @@ namespace meshkernelapi
             const std::vector<meshkernel::Point> polygonPoints = ConvertGeometryListToPointVector(polygon);
             const meshkernel::Polygons invalidCellsPolygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            // meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidCellsPolygon), meshKernelId);
+            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygons(invalidCellsPolygon), meshKernelId);
         }
         catch (...)
         {

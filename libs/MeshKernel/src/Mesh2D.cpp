@@ -2155,6 +2155,7 @@ void Mesh2D::DeleteMeshHoles(CompoundUndoAction* undoAction)
 std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygons(const Polygons& polygon)
 {
     std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
+    deleteMeshAction->Add(PointArrayUndo::Create(*this, m_invalidCellPolygons));
 
     // A mapping between the old face-id and the new face-id.
     // Any deleted elements will be the invalid uint value.
@@ -2196,6 +2197,7 @@ void Mesh2D::UpdateFaceInformation(const std::vector<UInt>& faceIndices, Compoun
 
     for (UInt faceId : facesToDelete)
     {
+        std::cout << "deleteing face: " << faceId << std::endl;
         AppendCellPolygon(faceId);
     }
 
