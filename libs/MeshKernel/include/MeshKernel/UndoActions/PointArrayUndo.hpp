@@ -39,7 +39,7 @@ namespace meshkernel
     /// @brief Forward declaration of the unstructured mesh
     class Mesh2D;
 
-    /// @brief Action to save all the node and edge values from a mesh
+    /// @brief Action to save an array of points stored in the mesh
     ///
     /// The undo will simply swap these values
     class PointArrayUndo : public BaseMeshUndoAction<PointArrayUndo, Mesh2D>
@@ -51,14 +51,14 @@ namespace meshkernel
         /// @brief Constructor
         explicit PointArrayUndo(Mesh2D& mesh, const std::vector<Point>& nodes);
 
-        /// @brief Swap the nodes and edges with the saved values.
+        /// @brief Swap the array of points with the saved values.
         void Swap(std::vector<Point>& nodes);
 
         /// \brief Compute the approximate amount of memory being used, in bytes.
         std::uint64_t MemorySize() const override;
 
     private:
-        /// @brief The saved node values.
+        /// @brief The saved point values.
         std::vector<Point> m_savedNodes;
     };
 
