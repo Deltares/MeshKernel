@@ -39,9 +39,7 @@ Mesh2DToCurvilinear::Mesh2DToCurvilinear(Mesh2D& mesh) : m_mesh(mesh)
         throw AlgorithmError("Mesh with no nodes");
     }
 
-    std::cout << " Mesh2DToCurvilinear::constructor " << std::endl;
     mesh.Administrate();
-    std::cout << " after administrate " << std::endl;
 
     if (mesh.GetNumFaces() <= 0)
     {

@@ -47,13 +47,11 @@ using meshkernel::Mesh2D;
 Mesh2D::Mesh2D()
     : Mesh()
 {
-    std::cout << "Mesh2D::constructor 1" << std::endl;
 }
 
 Mesh2D::Mesh2D(Projection projection)
     : Mesh(projection)
 {
-    std::cout << "Mesh2D::constructor 2 " << this << std::endl;
 }
 
 Mesh2D::Mesh2D(const std::vector<Edge>& edges,
@@ -61,7 +59,6 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
                Projection projection)
     : Mesh(edges, nodes, projection)
 {
-    std::cout << "Mesh2D::constructor 3 " << this << std::endl;
     DoAdministration();
 
     if (InvalidateEdgesWithNoFace() > 0)
@@ -69,7 +66,6 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
         DeleteInvalidNodesAndEdges();
         DoAdministration();
     }
-    std::cout << "end Mesh2D::constructor 3" << std::endl;
 }
 
 Mesh2D::Mesh2D(const std::vector<Edge>& edges,
@@ -84,7 +80,6 @@ Mesh2D::Mesh2D(const std::vector<Edge>& edges,
 
 Mesh2D::Mesh2D(const std::vector<Point>& inputNodes, const Polygons& polygons, Projection projection)
 {
-    std::cout << "Mesh2D::constructor 5" << std::endl;
     m_projection = projection;
     // compute triangulation
     TriangulationWrapper triangulationWrapper;
@@ -189,7 +184,6 @@ void Mesh2D::DoAdministration(CompoundUndoAction* undoAction)
         return;
     }
 
-    std::cout << " Mesh2D::DoAdministration " << this << std::endl;
     AdministrateNodesEdges(undoAction);
 
     // face administration
@@ -2084,7 +2078,6 @@ void Mesh2D::DeletedMeshNodesAndEdges(const std::function<bool(UInt)>& excludedF
     {
         if (includeFacePolygon[faceId])
         {
-            std::cout << "appending cell " << faceId << std::endl;
             AppendCellPolygon(faceId);
         }
     }
@@ -2097,8 +2090,6 @@ void Mesh2D::DeletedMeshNodesAndEdges(const std::function<bool(UInt)>& excludedF
 
 void Mesh2D::AppendCellPolygon(const UInt faceId)
 {
-    std::cout << " Mesh::AppendCellPolygon " << faceId << std::endl;
-
     if (faceId == constants::missing::uintValue)
     {
         throw ConstraintError("Face index is invalid");
@@ -2136,23 +2127,16 @@ void Mesh2D::DeleteMeshHoles(CompoundUndoAction* undoAction)
     if (!m_invalidCellPolygons.empty())
     {
         Polygons invalidElementPolygon(m_invalidCellPolygons, m_projection);
-        auto deleteFacesUndo = DeleteMeshFacesInPolygons(invalidElementPolygon);
+        auto deleteFacesUndo = DeleteMeshFacesInPolygon(invalidElementPolygon, false);
 
         if (undoAction != nullptr)
         {
             undoAction->Add(std::move(deleteFacesUndo));
         }
     }
-
-    for (const Point& p : m_invalidCellPolygons)
-    {
-        std::cout << "point: " << p.x << ", " << p.y << std::endl;
-    }
-
-    std::cout << " m_invalidCellPolygons " << m_invalidCellPolygons.size() << std::endl;
 }
 
-std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygons(const Polygons& polygon)
+std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygon(const Polygons& polygon, const bool appendDeletedFaces)
 {
     std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
     deleteMeshAction->Add(PointArrayUndo::Create(*this, m_invalidCellPolygons));
@@ -2171,12 +2155,12 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygons(const 
         }
     }
 
-    UpdateFaceInformation(faceIndices, *deleteMeshAction);
+    UpdateFaceInformation(faceIndices, *deleteMeshAction, appendDeletedFaces);
 
     return deleteMeshAction;
 }
 
-void Mesh2D::UpdateFaceInformation(const std::vector<UInt>& faceIndices, CompoundUndoAction& deleteMeshAction)
+void Mesh2D::UpdateFaceInformation(const std::vector<UInt>& faceIndices, CompoundUndoAction& deleteMeshAction, const bool appendDeletedFaces)
 {
     std::vector<UInt> facesToDelete;
     facesToDelete.reserve(GetNumFaces());
@@ -2195,10 +2179,14 @@ void Mesh2D::UpdateFaceInformation(const std::vector<UInt>& faceIndices, Compoun
         return;
     }
 
-    for (UInt faceId : facesToDelete)
+    SetAdministrationRequired(true);
+
+    if (appendDeletedFaces)
     {
-        std::cout << "deleteing face: " << faceId << std::endl;
-        AppendCellPolygon(faceId);
+        for (UInt faceId : facesToDelete)
+        {
+            AppendCellPolygon(faceId);
+        }
     }
 
     // Remove deleted faces from edge-face connectivity
@@ -2261,15 +2249,11 @@ void Mesh2D::UpdateFaceInformation(const std::vector<UInt>& faceIndices, Compoun
 std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMesh(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion)
 {
 
-    std::cout << " Mesh2D::DeleteMesh " << std::endl;
-
     if (deletionOption == FacesWithIncludedCircumcenters)
     {
-        std::cout << " Mesh2D::DeleteMesh::DeleteMeshFaces " << std::endl;
         return DeleteMeshFaces(polygon, invertDeletion);
     }
 
-    std::cout << " Mesh2D::DeleteMesh::DeleteMeshEdges " << std::endl;
     std::unique_ptr<CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
 
     // Find crossed faces

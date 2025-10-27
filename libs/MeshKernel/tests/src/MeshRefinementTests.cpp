@@ -2887,7 +2887,7 @@ TEST(MeshRefinement, MeshWithHole_ShouldGenerateInteriorBoundaryPolygonsForSixFa
 
     Polygons boundaryWithMissingElements(boundaryNodes, Projection::cartesian);
 
-    auto deleteMeshFacesUndoAction = mesh.DeleteMeshFacesInPolygons(boundaryWithMissingElements);
+    auto deleteMeshFacesUndoAction = mesh.DeleteMeshFacesInPolygon(boundaryWithMissingElements);
 
     // Compute interior boundary polygon points
     std::vector<Point> boundaryNodes2 = mesh.ComputeInnerBoundaryPolygons();
@@ -3071,7 +3071,7 @@ TEST(MeshRefinement, WTF)
     boundaryNodes.insert(boundaryNodes.end(), elementNodes6.begin(), elementNodes6.end());
 
     [[maybe_unused]] Polygons boundaryWithMissingElements(boundaryNodes, Projection::cartesian);
-    auto undoAction2 = mesh.DeleteMeshFacesInPolygons(boundaryWithMissingElements);
+    auto undoAction2 = mesh.DeleteMeshFacesInPolygon(boundaryWithMissingElements);
     meshkernel::SaveVtk(mesh.Nodes(), mesh.m_facesNodes, "mesh1.vtu");
 
     //--------------------------------
@@ -3169,7 +3169,7 @@ TEST(MeshRefinement, WTF)
     // [[maybe_unused]] auto undoActionOrtho = orthogonalization.Initialize();
     // orthogonalization.Compute();
 
-    [[maybe_unused]] auto undoAction3 = mesh.DeleteMeshFacesInPolygons(boundaryWithMissingElement2);
+    [[maybe_unused]] auto undoAction3 = mesh.DeleteMeshFacesInPolygon(boundaryWithMissingElement2);
 
     meshkernel::SaveVtk(mesh.Nodes(), mesh.m_facesNodes, "mesh2.vtu");
     // meshkernel::Print(mesh.Nodes(), mesh.Edges());
@@ -3287,7 +3287,7 @@ TEST(MeshRefinement, OMG)
 
     [[maybe_unused]] Polygons boundaryWithMissingElement(boundaryNodes, Projection::cartesian);
 
-    [[maybe_unused]] auto undoAction3 = mesh.DeleteMeshFacesInPolygons(boundaryWithMissingElement);
+    [[maybe_unused]] auto undoAction3 = mesh.DeleteMeshFacesInPolygon(boundaryWithMissingElement);
 
     Mesh2D mesh2(mesh.Edges(), mesh.Nodes(), mesh.m_facesNodes, mesh.m_numFacesNodes, mesh.m_projection);
 

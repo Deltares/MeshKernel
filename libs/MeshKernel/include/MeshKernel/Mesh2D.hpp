@@ -276,7 +276,8 @@ namespace meshkernel
 
         /// @brief Deletes the mesh faces inside a set of polygons
         /// @param[in] polygon        The polygon where to perform the operation
-        /*[[nodiscard]] */ std::unique_ptr<UndoAction> DeleteMeshFacesInPolygons(const Polygons& polygon);
+        /// @param[in] appendDeletedFaces Indicate if the deleted cells should be appended to the list of polygons describing holes in the mesh
+        [[nodiscard]] std::unique_ptr<UndoAction> DeleteMeshFacesInPolygon(const Polygons& polygon, const bool appendDeletedFaces = true);
 
         /// @brief  This method generates a mask indicating which locations are within the specified  range of the given metric.
         ///
@@ -480,7 +481,8 @@ namespace meshkernel
         ///
         /// @param [in] faceIndices Mapping between old and new face-ids, the invalid value implies a deleted element
         /// @param [in,out] deleteMeshAction Gather any additional undo information
-        void UpdateFaceInformation(const std::vector<UInt>& faceIndices, CompoundUndoAction& deleteMeshAction);
+        /// @param [in] appendDeletedFaces Indicate if the deleted cells should be appended to the list of polygons describing holes in the mesh
+        void UpdateFaceInformation(const std::vector<UInt>& faceIndices, CompoundUndoAction& deleteMeshAction, const bool appendDeletedFaces);
 
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param[in] startNode The starting node
