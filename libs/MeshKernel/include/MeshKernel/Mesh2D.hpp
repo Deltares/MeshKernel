@@ -480,9 +480,9 @@ namespace meshkernel
         /// @brief Update information about a list of faces and face-edge information
         ///
         /// @param [in] faceIndices Mapping between old and new face-ids, the invalid value implies a deleted element
-        /// @param [in,out] deleteMeshAction Gather any additional undo information
         /// @param [in] appendDeletedFaces Indicate if the deleted cells should be appended to the list of polygons describing holes in the mesh
-        void UpdateFaceInformation(const std::vector<UInt>& faceIndices, CompoundUndoAction& deleteMeshAction, const bool appendDeletedFaces);
+        /// If no faces are marked for deletion then return a nullptr for the undo-action
+        std::unique_ptr<UndoAction> UpdateFaceInformation(const std::vector<UInt>& faceIndices, const bool appendDeletedFaces);
 
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param[in] startNode The starting node

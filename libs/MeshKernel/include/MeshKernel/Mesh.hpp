@@ -319,9 +319,6 @@ namespace meshkernel
         /// @brief Perform node and edges administration
         void AdministrateNodesEdges(CompoundUndoAction* undoAction = nullptr);
 
-        /// @brief Determine if a administration is required
-        bool AdministrationRequired() const;
-
         /// @brief Sort mesh edges around a node in counterclockwise order (Sort_links_ccw)
         /// @param[in] startNode The first node index where to perform edge sorting.
         /// @param[in] endNode   The last node index where to perform edge sorting.
@@ -481,6 +478,9 @@ namespace meshkernel
 
     protected:
         /// @brief Determine if a administration is required
+        bool AdministrationRequired() const;
+
+        /// @brief Indicate if an administration is required
         void SetAdministrationRequired(const bool value);
 
         // Make private

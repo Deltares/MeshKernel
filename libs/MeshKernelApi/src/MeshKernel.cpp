@@ -883,12 +883,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            bool doAdministration = meshKernelState[meshKernelId].m_mesh2d->AdministrationRequired();
-
-            if (doAdministration)
-            {
-                meshKernelState[meshKernelId].m_mesh2d->Administrate();
-            }
+            meshKernelState[meshKernelId].m_mesh2d->Administrate();
 
             SetMesh2dApiDimensions(*meshKernelState[meshKernelId].m_mesh2d, mesh2d);
         }
@@ -1333,12 +1328,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("Polygon Hanging edge has already been cached. Cached values will be delelted.");
             }
 
-            bool doAdministration = meshKernelState[meshKernelId].m_mesh2d->AdministrationRequired();
-
-            if (doAdministration)
-            {
-                meshKernelState[meshKernelId].m_mesh2d->Administrate();
-            }
+            meshKernelState[meshKernelId].m_mesh2d->Administrate();
 
             const auto hangingEdges = meshKernelState[meshKernelId].m_mesh2d->GetHangingEdges();
             meshKernelState[meshKernelId].m_hangingEdgeCache = std::make_shared<HangingEdgeCache>(hangingEdges);
@@ -2673,12 +2663,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            bool doAdministration = meshKernelState[meshKernelId].m_mesh2d->AdministrationRequired();
-
-            if (doAdministration)
-            {
-                meshKernelState[meshKernelId].m_mesh2d->Administrate();
-            }
+            meshKernelState[meshKernelId].m_mesh2d->Administrate();
 
             const auto numFaces = meshKernelState[meshKernelId].m_mesh2d->GetNumFaces();
             std::vector<bool> validFace(numFaces, false);
@@ -2710,12 +2695,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            bool doAdministration = meshKernelState[meshKernelId].m_mesh2d->AdministrationRequired();
-
-            if (doAdministration)
-            {
-                meshKernelState[meshKernelId].m_mesh2d->Administrate();
-            }
+            meshKernelState[meshKernelId].m_mesh2d->Administrate();
 
             const auto numFaces = meshKernelState[meshKernelId].m_mesh2d->GetNumFaces();
             int numMatchingFaces = 0;
@@ -4103,13 +4083,7 @@ namespace meshkernelapi
 
             meshKernelState[meshKernelId].m_mesh2d->SetNodes(mergedMeshes->Nodes());
             meshKernelState[meshKernelId].m_mesh2d->SetEdges(mergedMeshes->Edges());
-
-            bool doAdministration = meshKernelState[meshKernelId].m_mesh2d->AdministrationRequired();
-
-            if (doAdministration)
-            {
-                meshKernelState[meshKernelId].m_mesh2d->Administrate();
-            }
+            meshKernelState[meshKernelId].m_mesh2d->Administrate();
 
             meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
         }
