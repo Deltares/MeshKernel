@@ -2144,11 +2144,20 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygon(const P
     // A mapping between the old face-id and the new face-id.
     // Any deleted elements will be the invalid uint value.
     std::vector<UInt> faceIndices(GetNumFaces(), constants::missing::uintValue);
+    // Indicate of the cell has a valid cell centre and is not inside the polygons of regions to be deleted.
+    std::vector<Boolean> validAndNotInside(GetNumFaces(), false);
     UInt faceIndex = 0;
+
+    // Compute the expensive part (is point in polygon for all cells) in parallel
+#pragma omp parallel for
+    for (int f = 0; f < static_cast<int>(GetNumFaces()); ++f)
+    {
+        validAndNotInside[f] = m_facesMassCenters[f].IsValid() && !polygon.IsPointInAnyPolygon(m_facesMassCenters[f]);
+    }
 
     for (UInt f = 0u; f < GetNumFaces(); ++f)
     {
-        if (m_facesMassCenters[f].IsValid() && !polygon.IsPointInAnyPolygon(m_facesMassCenters[f]))
+        if (validAndNotInside[f])
         {
             faceIndices[f] = faceIndex;
             ++faceIndex;
