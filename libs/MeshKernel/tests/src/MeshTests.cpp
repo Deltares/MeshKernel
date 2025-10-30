@@ -32,7 +32,10 @@
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Mesh2D.hpp>
+#include <MeshKernel/MeshRefinement.hpp>
+#include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/Utilities/Utilities.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
 
@@ -769,8 +772,13 @@ TEST_P(MeshDeletion, expected_results)
 
     const meshkernel::Polygons polygon(polygonNodes, meshkernel::Projection::cartesian);
 
+    meshkernel::Print(mesh->Nodes(), mesh->Edges());
+    meshkernel::SaveVtk(mesh->Nodes(), mesh->m_facesNodes, "mesh1.vtu");
+
     // Execute
     auto undoAction = mesh->DeleteMesh(polygon, deleteOption, invertSelection);
+
+    meshkernel::SaveVtk(mesh->Nodes(), mesh->m_facesNodes, "mesh2.vtu");
 
     // Assert
     ASSERT_EQ(numNodes, mesh->GetNumValidNodes());
@@ -791,8 +799,8 @@ TEST_P(MeshDeletion, expected_results)
 
     for (meshkernel::UInt i = 0; i < mesh->Edges().size(); ++i)
     {
-        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first);
-        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second);
+        EXPECT_EQ(originalEdges[i].first, mesh->GetEdge(i).first) << "first node of edge " << i;
+        EXPECT_EQ(originalEdges[i].second, mesh->GetEdge(i).second) << "second node of edge " << i;
     }
 }
 
@@ -883,3 +891,91 @@ TEST_P(MeshDeletionWithInnerPolygons, expected_results)
 }
 
 INSTANTIATE_TEST_SUITE_P(Mesh, MeshDeletionWithInnerPolygons, ::testing::ValuesIn(MeshDeletionWithInnerPolygons::GetData()));
+
+TEST(Mesh, ManageMeshHoles)
+{
+    // Setup
+    auto mesh = MakeRectangularMeshForTesting(4, 4, 1.0, meshkernel::Projection::cartesian);
+    mesh->BuildTree(meshkernel::Location::Nodes);
+
+    std::vector<meshkernel::Point> polygonPoints{{0.99, 0.99}, {2.01, 0.99}, {2.01, 2.01}, {0.99, 2.01}, {0.99, 0.99}};
+    meshkernel::Polygons polygon(polygonPoints, mesh->m_projection);
+
+    // Create holes in mesh
+    auto undoDeleteFaces = mesh->DeleteMeshFacesInPolygon(polygon);
+
+    meshkernel::Polygons refinementPolygon;
+
+    meshkernel::MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+
+    meshkernel::MeshRefinement meshRefinement(*mesh, refinementPolygon, meshRefinementParameters);
+    auto refinementUndoAction = meshRefinement.Compute();
+
+    ASSERT_EQ(mesh->GetNumNodes(), 48);
+    ASSERT_EQ(mesh->GetNumEdges(), 80);
+    ASSERT_EQ(mesh->GetNumFaces(), 32);
+
+    std::vector<double> expectedNodeX{0.0, 0.0, 0.0, 0.0, 1.0, 1.0,
+                                      1.0, 1.0, 2.0, 2.0, 2.0, 2.0,
+                                      3.0, 3.0, 3.0, 3.0, 0.5, 0.5,
+                                      0.5, 0.5, 1.5, 1.5, 1.5, 1.5,
+                                      2.5, 2.5, 2.5, 2.5, 0.0, 0.0,
+                                      0.0, 1.0, 1.0, 1.0, 2.0, 2.0,
+                                      2.0, 3.0, 3.0, 3.0, 0.5, 0.5,
+                                      0.5, 1.5, 1.5, 2.5, 2.5, 2.5};
+
+    std::vector<double> expectedNodeY{0.0, 1.0, 2.0, 3.0, 0.0, 1.0,
+                                      2.0, 3.0, 0.0, 1.0, 2.0, 3.0,
+                                      0.0, 1.0, 2.0, 3.0, 0.0, 1.0,
+                                      2.0, 3.0, 0.0, 1.0, 2.0, 3.0,
+                                      0.0, 1.0, 2.0, 3.0, 0.5, 1.5,
+                                      2.5, 0.5, 1.5, 2.5, 0.5, 1.5,
+                                      2.5, 0.5, 1.5, 2.5, 0.5, 1.5,
+                                      2.5, 0.5, 2.5, 0.5, 1.5, 2.5};
+
+    std::vector<meshkernel::UInt> expectedEdgesFirst{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                                                     11, 1, 2, 3, 5, 6, 7, 9, 10, 11,
+                                                     13, 14, 15, 16, 31, 17, 28, 17,
+                                                     32, 18, 29, 18, 33, 19, 30, 20,
+                                                     34, 21, 31, 22, 36, 23, 33, 24,
+                                                     37, 25, 34, 25, 38, 26, 35, 26,
+                                                     39, 27, 36, 16, 17, 18, 19, 20,
+                                                     21, 22, 23, 24, 25, 26, 27, 28,
+                                                     29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39};
+
+    std::vector<meshkernel::UInt> expectedEdgesSecond{16, 17, 18, 19, 20, 21, 22, 23,
+                                                      24, 25, 26, 27, 28, 29, 30, 31,
+                                                      32, 33, 34, 35, 36, 37, 38, 39,
+                                                      40, 40, 40, 40, 41, 41, 41, 41,
+                                                      42, 42, 42, 42, 43, 43, 43, 43,
+                                                      44, 44, 44, 44, 45, 45, 45, 45,
+                                                      46, 46, 46, 46, 47, 47, 47, 47,
+                                                      4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+                                                      14, 15, 0, 1, 2, 4, 5, 6, 8, 9, 10, 12, 13, 14};
+
+    auto nodes = mesh->Nodes();
+    auto edges = mesh->Edges();
+
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        EXPECT_EQ(expectedNodeX[i], nodes[i].x);
+        EXPECT_EQ(expectedNodeY[i], nodes[i].y);
+    }
+
+    for (size_t i = 0; i < edges.size(); ++i)
+    {
+        EXPECT_EQ(expectedEdgesFirst[i], edges[i].first);
+        EXPECT_EQ(expectedEdgesSecond[i], edges[i].second);
+    }
+
+    refinementUndoAction->Restore();
+    undoDeleteFaces->Restore();
+    mesh->Administrate();
+
+    ASSERT_EQ(mesh->GetNumValidNodes(), 16);
+    ASSERT_EQ(mesh->GetNumValidEdges(), 24);
+    ASSERT_EQ(mesh->GetNumFaces(), 9);
+}

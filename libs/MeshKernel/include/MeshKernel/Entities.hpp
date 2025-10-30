@@ -46,7 +46,7 @@ namespace meshkernel
     //    t.IsValid
     //};
 
-    /// @brief Describes an edge with two indices
+    /// @brief Describes an edge connecting two nodes.
     using Edge = std::pair<UInt, UInt>;
 
     //// @brief Determine if the value is a valid value (true) or is the undefined value (false)

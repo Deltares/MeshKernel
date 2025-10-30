@@ -91,6 +91,7 @@ set(
   ${UNDO_SRC_DIR}/MeshConversionAction.cpp
   ${UNDO_SRC_DIR}/NoActionUndo.cpp
   ${UNDO_SRC_DIR}/NodeTranslationAction.cpp
+  ${UNDO_SRC_DIR}/PointArrayUndo.cpp
   ${UNDO_SRC_DIR}/ResetEdgeAction.cpp
   ${UNDO_SRC_DIR}/ResetNodeAction.cpp
   ${UNDO_SRC_DIR}/SphericalCoordinatesOffsetAction.cpp
@@ -231,6 +232,7 @@ set(
   ${UNDO_INC_DIR}/MeshConversionAction.hpp
   ${UNDO_INC_DIR}/NoActionUndo.hpp
   ${UNDO_INC_DIR}/NodeTranslationAction.hpp
+  ${UNDO_INC_DIR}/PointArrayUndo.hpp
   ${UNDO_INC_DIR}/ResetEdgeAction.hpp
   ${UNDO_INC_DIR}/ResetNodeAction.hpp
   ${UNDO_INC_DIR}/SphericalCoordinatesOffsetAction.hpp

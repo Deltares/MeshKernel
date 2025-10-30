@@ -88,6 +88,7 @@
 #include <MeshKernel/UndoActions/UndoAction.hpp>
 #include <MeshKernel/UndoActions/UndoActionStack.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
+#include <MeshKernel/Utilities/Utilities.hpp>
 
 #include "MeshKernelApi/ApiCache/CachedPointValues.hpp"
 #include "MeshKernelApi/ApiCache/CurvilinearBoundariesAsPolygonCache.hpp"
@@ -459,6 +460,7 @@ namespace meshkernelapi
 
             meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteMesh(meshKernelPolygon, deletionOptionEnum, invertDeletionBool), meshKernelId);
         }
+
         catch (...)
         {
             lastExitCode = HandleException();
@@ -882,6 +884,7 @@ namespace meshkernelapi
             }
 
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
+
             SetMesh2dApiDimensions(*meshKernelState[meshKernelId].m_mesh2d, mesh2d);
         }
         catch (...)
@@ -1326,6 +1329,7 @@ namespace meshkernelapi
             }
 
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
+
             const auto hangingEdges = meshKernelState[meshKernelId].m_mesh2d->GetHangingEdges();
             meshKernelState[meshKernelId].m_hangingEdgeCache = std::make_shared<HangingEdgeCache>(hangingEdges);
             numHangingEdges = meshKernelState[meshKernelId].m_hangingEdgeCache->Size();
@@ -1373,6 +1377,28 @@ namespace meshkernelapi
             }
 
             meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteHangingEdges(), meshKernelId);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_delete_faces_in_polygons(int meshKernelId, const GeometryList& polygon)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            const std::vector<meshkernel::Point> polygonPoints = ConvertGeometryListToPointVector(polygon);
+            const meshkernel::Polygons invalidCellsPolygon(polygonPoints, meshKernelState[meshKernelId].m_mesh2d->m_projection);
+
+            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->DeleteMeshFacesInPolygon(invalidCellsPolygon), meshKernelId);
         }
         catch (...)
         {
@@ -2046,6 +2072,7 @@ namespace meshkernelapi
             const meshkernel::Polygons polygons(boundaryPolygonPoints, meshKernelState[meshKernelId].m_projection);
 
             meshkernel::Mesh2DIntersections mesh2DIntersections(*meshKernelState[meshKernelId].m_mesh2d);
+
             mesh2DIntersections.Compute(polygons);
             auto edgeIntersections = mesh2DIntersections.EdgeIntersections();
             auto faceIntersections = mesh2DIntersections.FaceIntersections();
@@ -2635,7 +2662,9 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
+
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
+
             const auto numFaces = meshKernelState[meshKernelId].m_mesh2d->GetNumFaces();
             std::vector<bool> validFace(numFaces, false);
             for (meshkernel::UInt f = 0; f < numFaces; ++f)
@@ -2665,7 +2694,9 @@ namespace meshkernelapi
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
+
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
+
             const auto numFaces = meshKernelState[meshKernelId].m_mesh2d->GetNumFaces();
             int numMatchingFaces = 0;
             for (meshkernel::UInt f = 0; f < numFaces; ++f)
@@ -4053,6 +4084,7 @@ namespace meshkernelapi
             meshKernelState[meshKernelId].m_mesh2d->SetNodes(mergedMeshes->Nodes());
             meshKernelState[meshKernelId].m_mesh2d->SetEdges(mergedMeshes->Edges());
             meshKernelState[meshKernelId].m_mesh2d->Administrate();
+
             meshKernelUndoStack.Add(std::move(undoAction), meshKernelId);
         }
         catch (...)
@@ -5164,7 +5196,7 @@ namespace meshkernelapi
             // The undo action for conversion of clg to m2d is made in two steps
             std::unique_ptr<meshkernel::CompoundUndoAction> undoAction = meshkernel::CompoundUndoAction::Create();
 
-            // 1. Keep the mesh kernel state to be able to restore (manily) the curvilinear grid and (secondly) other members.
+            // 1. Keep the mesh kernel state to be able to restore (firstly) the curvilinear grid and (secondly) other members.
             undoAction->Add(MKStateUndoAction::Create(meshKernelState[meshKernelId]));
 
             // 2. Keep track of the undo required to restore the mesh2d to its pre-converted state.

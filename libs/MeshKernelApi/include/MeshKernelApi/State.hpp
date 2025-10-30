@@ -29,6 +29,7 @@
 
 #include <map>
 #include <memory>
+#include <vector>
 
 #include "MeshKernel/Contacts.hpp"
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridFromSplines.hpp"

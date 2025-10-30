@@ -55,4 +55,13 @@ namespace meshkernel
     /// @note saves only triangle and quadrilateral elements.
     void SaveVtk(const std::vector<Point>& nodes, const std::vector<std::vector<UInt>>& faces, const std::string& fileName);
 
+    /// @brief Save the mesh data in a vtk file format
+    ///
+    /// @note saves only triangle and quadrilateral elements.
+    void SaveVtk(const std::vector<double>& nodesX,
+                 const std::vector<double>& nodesY,
+                 const std::vector<int>& facesNodes,
+                 const std::vector<int>& facesNumNodes,
+                 const std::string& fileName);
+
 } // namespace meshkernel
