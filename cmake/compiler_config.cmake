@@ -15,10 +15,8 @@ if(APPLE)
     message(STATUS "Configuring build for macOS with ${CMAKE_CXX_COMPILER_ID} (${CMAKE_CXX_COMPILER_VERSION}).")
     # Common warning and visibility flags
     add_compile_options("-fvisibility=hidden;-Wall;-Wextra;-pedantic;-Werror;-Wno-unused-function")
-    # Be lenient for Eigen (deprecated enum conversion) on arm64
-    if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64")
-      add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-enum-enum-conversion>)
-    endif()
+    # Be lenient for Eigen (deprecated enum conversion) on all macOS Clang builds
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-enum-enum-conversion>)
     # Optimization / debug flags
     add_compile_options("$<$<CONFIG:RELEASE>:-O2>")
     add_compile_options("$<$<CONFIG:DEBUG>:-g>")
