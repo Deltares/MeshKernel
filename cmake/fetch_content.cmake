@@ -25,7 +25,7 @@ if(ENABLE_BENCHMARKING)
     FetchContent_Declare(
       googlebenchmark
       GIT_REPOSITORY https://github.com/google/benchmark.git
-      GIT_TAG v1.8.2
+      GIT_TAG v1.9.4
     )
     # Prevent the google benchmark's own tests from running
     set(BENCHMARK_ENABLE_TESTING OFF)
