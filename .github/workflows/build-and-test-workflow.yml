@@ -14,17 +14,8 @@ on:
 
 jobs:
   build:
-    # Build platform
     runs-on: ${{ inputs.platform }}
-
     name: ${{ inputs.platform }}-${{ inputs.build_type }}
-
-    # The default compiler on macos is clang, switch to gcc. Specifying the version is necessary.
-    # It seems like gcc and g++ are symbolic links to the default clang and clang++ compilers, respectively.
-    # CMAKE_CXX_COMPILER_ID will evaluate to AppleClang rather than GNU on macos.
-    env:
-      CC: gcc-12
-      CXX: g++-12
 
     # Build steps
     steps:
@@ -34,6 +25,15 @@ jobs:
         # Workaround for getting "git describe --tags" to work in cmake/get_version_from_git.cmake (Build step)
         with:
           fetch-depth: 0
+
+      # Step: Set compiler (use system Clang for all macOS versions)
+      - name: Set compiler (macOS Clang)
+        if: runner.os == 'macOS'
+        run: |
+          echo "Using system Clang for ${{ inputs.platform }}"
+          echo "CC=clang" >> "$GITHUB_ENV"
+          echo "CXX=clang++" >> "$GITHUB_ENV"
+          echo "Configured Clang toolchain: $(clang --version | head -n 1)"
 
       # Step: Set paths
       - name: Set paths
