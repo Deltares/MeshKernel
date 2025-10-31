@@ -2117,7 +2117,7 @@ std::vector<int> Mesh2D::NodeMaskFromPolygon(const Polygons& polygon, bool insid
 
     for (UInt i = 0; i < nodeMask.size(); ++i)
     {
-        auto isInPolygon = nodePolygonIndices[i];
+        bool isInPolygon = static_cast<bool>(nodePolygonIndices[i]);
         if (!inside)
         {
             isInPolygon = !isInPolygon;
