@@ -64,9 +64,20 @@ jobs:
           restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
 
+      # Step: Check if netCDF cache is populated
+      - name: Check if netCDF cache is populated
+        id: check-nc-cache
+        run: |
+          if [ -d "${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c" ] && \
+             [ "$(ls -A ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c)" ]; then
+            echo "has-deps=true" >> $GITHUB_OUTPUT
+          else
+            echo "has-deps=false" >> $GITHUB_OUTPUT
+          fi
+
       # Step: Build and install user-provided dependencies, executes only if no cache restored
       - name: Build and install user-provided dependencies
-        if: steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
+        if: steps.check-nc-cache.outputs.has-deps == 'false'
         # NetCDF Dependencies m4, curl, and openssl are provided by the build machine
         run: >
           pwsh ${{ github.workspace }}/scripts/install_netcdf_static.ps1
@@ -78,7 +89,7 @@ jobs:
       # Step: Cache user-provided dependencies, executes only if no cache restored
       - name: Cache user-provided dependencies
         uses: actions/cache/save@v3
-        if: steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
+        if: steps.check-nc-cache.outputs.has-deps == 'false'
         with:
           key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
