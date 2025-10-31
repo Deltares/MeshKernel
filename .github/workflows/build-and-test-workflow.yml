@@ -14,17 +14,8 @@ on:
 
 jobs:
   build:
-    # Build platform
     runs-on: ${{ inputs.platform }}
-
     name: ${{ inputs.platform }}-${{ inputs.build_type }}
-
-    # The default compiler on macos is clang, switch to gcc. Specifying the version is necessary.
-    # It seems like gcc and g++ are symbolic links to the default clang and clang++ compilers, respectively.
-    # CMAKE_CXX_COMPILER_ID will evaluate to AppleClang rather than GNU on macos.
-    env:
-      CC: gcc-12
-      CXX: g++-12
 
     # Build steps
     steps:
@@ -35,9 +26,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set Xcode version
-        if: inputs.platform == 'macos-14' || inputs.platform == 'macos-15'
-        run: sudo xcode-select -s /Applications/Xcode_14.1.app/Contents/Developer
+      # Step: Set compiler (use system Clang for all macOS versions)
+      - name: Set compiler (macOS Clang)
+        if: runner.os == 'macOS'
+        run: |
+          echo "Using system Clang for ${{ inputs.platform }}"
+          echo "CC=clang" >> "$GITHUB_ENV"
+          echo "CXX=clang++" >> "$GITHUB_ENV"
+          echo "Configured Clang toolchain: $(clang --version | head -n 1)"
 
       # Step: Set paths
       - name: Set paths
@@ -55,18 +51,39 @@ jobs:
             sudo apt-get install libboost-all-dev doxygen
           fi
 
+      # Step: Install OpenMP
+      - name: Install OpenMP
+        run: brew install libomp
+
+      # Step: Set OpenMP environment variables
+      - name: Set OpenMP environment variables
+        run: |
+          echo "LDFLAGS=-L/opt/homebrew/opt/libomp/lib" >> $GITHUB_ENV
+          echo "CPPFLAGS=-I/opt/homebrew/opt/libomp/include" >> $GITHUB_ENV
+
       # Step: Restore cached user-provided dependencies
       - name: Restore cached user-provided dependencies
         uses: actions/cache/restore@v3
         id: restore-cached-external-dependencies
         with:
-          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
-          restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
+          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v2
+          restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v2
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
+
+      # Step: Check if netCDF cache directory already has contents (defensive guard)
+      - name: Check if netCDF cache is populated
+        id: check-nc-cache
+        run: |
+          netcdf_dir="${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c"
+          if [ -d "$netcdf_dir" ] && [ "$(ls -A "$netcdf_dir" 2>/dev/null)" ]; then
+            echo "has-deps=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has-deps=false" >> "$GITHUB_OUTPUT"
+          fi
 
       # Step: Build and install user-provided dependencies, executes only if no cache restored
       - name: Build and install user-provided dependencies
-        if: steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
+        if: steps.check-nc-cache.outputs.has-deps == 'false'
         # NetCDF Dependencies m4, curl, and openssl are provided by the build machine
         run: >
           pwsh ${{ github.workspace }}/scripts/install_netcdf_static.ps1
@@ -80,7 +97,7 @@ jobs:
         uses: actions/cache/save@v3
         if: steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
         with:
-          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
+          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v2
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
 
       # Step: CMake configuration
@@ -92,6 +109,9 @@ jobs:
           -DCMAKE_BUILD_TYPE=${{ inputs.build_type }}
           -DCMAKE_PREFIX_PATH=${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
           -DCMAKE_INSTALL_PREFIX=${{ steps.paths.outputs.install_dir }}
+          -DCMAKE_C_FLAGS="-Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include"
+          -DCMAKE_CXX_FLAGS="-Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include"
+          -DCMAKE_EXE_LINKER_FLAGS="-L/opt/homebrew/opt/libomp/lib -lomp"
 
       # Step: CMake build
       - name: Build

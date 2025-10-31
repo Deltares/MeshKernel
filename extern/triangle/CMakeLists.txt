@@ -38,10 +38,11 @@ target_compile_definitions(
 )
 
 # platform-specific compiler options and definitions for disabling warnings
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  target_compile_options(${target_name} PRIVATE "-w")
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-  target_compile_options(${target_name} PRIVATE "/w")
+# Use the C compiler ID because this target is pure C. Disable warnings for GCC and Clang.
+if(CMAKE_C_COMPILER_ID MATCHES "Clang|GNU")
+  target_compile_options(${target_name} PRIVATE -w)
+elseif(CMAKE_C_COMPILER_ID STREQUAL "MSVC")
+  target_compile_options(${target_name} PRIVATE /w)
 endif()
 
  # group the sources and headers in IDE project generation
