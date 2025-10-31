@@ -56,8 +56,8 @@ jobs:
         uses: actions/cache/restore@v3
         id: restore-cached-external-dependencies
         with:
-          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
-          restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
+          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v2
+          restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v2
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
 
       # Step: Build and install user-provided dependencies, executes only if no cache restored
@@ -76,7 +76,7 @@ jobs:
         uses: actions/cache/save@v3
         if: steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
         with:
-          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
+          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v2
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
 
       # Step: CMake configuration
