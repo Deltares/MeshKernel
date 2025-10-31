@@ -51,6 +51,20 @@ jobs:
             sudo apt-get install libboost-all-dev doxygen
           fi
 
+      # Step: Install OpenMP for macOS
+      - name: Install OpenMP for macOS
+        if: runner.os == 'macOS'
+        run: brew install libomp
+
+      # Step: Set OpenMP environment variables (persist for later steps)
+      - name: Set OpenMP environment variables
+        if: runner.os == 'macOS'
+        run: |
+          BREW_PREFIX=$(brew --prefix libomp)
+          echo "LDFLAGS=-L${BREW_PREFIX}/lib" >> "$GITHUB_ENV"
+          echo "CPPFLAGS=-I${BREW_PREFIX}/include" >> "$GITHUB_ENV"
+          echo "OpenMP flags set: LDFLAGS=$LDFLAGS CPPFLAGS=$CPPFLAGS"
+
       # Step: Restore cached user-provided dependencies
       - name: Restore cached user-provided dependencies
         uses: actions/cache/restore@v3
