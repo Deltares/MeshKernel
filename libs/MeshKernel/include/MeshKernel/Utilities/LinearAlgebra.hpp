@@ -30,14 +30,15 @@
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Exceptions.hpp"
 
-#ifdef __linux__
+#if defined(__GNUC__) && !defined(__clang__)
+// GCC only: suppress -Wmaybe-uninitialized (Clang does not have this warning group)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
 
 #include <Eigen/Core>
 #include <Eigen/Eigenvalues>
-#ifdef __linux__
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
 
