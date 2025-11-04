@@ -82,10 +82,10 @@ jobs:
           -BuildType '${{ inputs.build_type }}'
           -ParallelJobs 10
 
-      # Step: Cache user-provided dependencies, executes only if no cache restored
+      # Step: Cache user-provided dependencies, executes only if dependencies were built
       - name: Cache user-provided dependencies
         uses: actions/cache/save@v3
-        if: steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
+        if: steps.check-nc-cache.outputs.has-deps == 'false'
         with:
           key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v4
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
