@@ -353,7 +353,7 @@ $NetCDFCMakeBuildOptions = @(`
 )
 if ($IsLinux -or $IsMacOS) {
     $NetCDFCMakeBuildOptions += '-DCMAKE_POSITION_INDEPENDENT_CODE=ON'
-    if ($IsMacOS -and (sw_vers -productVersion).StartsWith("14.")) {
+    if ($IsMacOS -and ((sw_vers -productVersion | Out-String).Trim().StartsWith("14."))) {
         # Only apply FLT_EVAL_METHOD fix for macOS 14 (Sonoma)
         $NetCDFCMakeBuildOptions += '-DCMAKE_C_FLAGS=-D__FLT_EVAL_METHOD__=0'
     }
