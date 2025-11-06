@@ -35,10 +35,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set Xcode version
-        if: inputs.platform == 'macos-14' || inputs.platform == 'macos-15'
-        run: sudo xcode-select -s /Applications/Xcode_14.1.app/Contents/Developer
-
       # Step: Set paths
       - name: Set paths
         id: paths
@@ -60,13 +56,24 @@ jobs:
         uses: actions/cache/restore@v3
         id: restore-cached-external-dependencies
         with:
-          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
-          restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
+          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v4
+          restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v4
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
+
+      # Step: Check if netCDF cache directory already has contents (defensive guard)
+      - name: Check if netCDF cache is populated
+        id: check-nc-cache
+        run: |
+          netcdf_dir="${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c"
+          if [ -d "$netcdf_dir" ] && [ "$(ls -A "$netcdf_dir" 2>/dev/null)" ]; then
+            echo "has-deps=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has-deps=false" >> "$GITHUB_OUTPUT"
+          fi
 
       # Step: Build and install user-provided dependencies, executes only if no cache restored
       - name: Build and install user-provided dependencies
-        if: steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
+        if: steps.check-nc-cache.outputs.has-deps == 'false'
         # NetCDF Dependencies m4, curl, and openssl are provided by the build machine
         run: >
           pwsh ${{ github.workspace }}/scripts/install_netcdf_static.ps1
@@ -75,12 +82,12 @@ jobs:
           -BuildType '${{ inputs.build_type }}'
           -ParallelJobs 10
 
-      # Step: Cache user-provided dependencies, executes only if no cache restored
+      # Step: Cache user-provided dependencies, executes only if dependencies were built
       - name: Cache user-provided dependencies
         uses: actions/cache/save@v3
-        if: steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
+        if: steps.check-nc-cache.outputs.has-deps == 'false'
         with:
-          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key
+          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v4
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
 
       # Step: CMake configuration
