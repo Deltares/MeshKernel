@@ -31,6 +31,7 @@
 #include <utility>
 #include <vector>
 
+#include "MeshKernel/UndoActions/PointArrayUndo.hpp"
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Definitions.hpp>
 #include <MeshKernel/Entities.hpp>
@@ -127,10 +128,16 @@ namespace meshkernel
         /// @brief Apply the coordinate offset action
         void CommitAction(const SphericalCoordinatesOffsetAction& undoAction);
 
+        /// @brief Set the node values.
+        void CommitAction(PointArrayUndo& undoAction);
+
         /// @brief Undo the coordinate offset action
         ///
         /// Restore mesh to state before coordinate offset action was applied
         void RestoreAction(const SphericalCoordinatesOffsetAction& undoAction);
+
+        /// @brief Undo node array
+        void RestoreAction(PointArrayUndo& undoAction);
 
         /// @brief For a face create a closed polygon and fill local mapping caches (get_cellpolygon)
         /// @param[in]  faceIndex              The face index
@@ -244,15 +251,9 @@ namespace meshkernel
         /// @return The resulting polygon mesh boundary
         [[nodiscard]] std::vector<Point> ComputeBoundaryPolygons(const std::vector<Point>& polygon);
 
-        /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
-        /// @param[in] polygon The input polygon
-        /// @param[in,out] isVisited the visited mesh nodes
-        /// @param[in,out] currentNode the current node
-        /// @param[out] meshBoundaryPolygon The resulting polygon points
-        void WalkBoundaryFromNode(const Polygon& polygon,
-                                  std::vector<bool>& isVisited,
-                                  UInt& currentNode,
-                                  std::vector<Point>& meshBoundaryPolygon) const;
+        /// @brief Convert all mesh boundaries to a vector of polygon nodes
+        /// @return The resulting set of polygons, describing interior mesh boundaries
+        std::vector<Point> ComputeInnerBoundaryPolygons() const;
 
         /// @brief Gets the hanging edges
         /// @return A vector with the indices of the hanging edges
@@ -272,6 +273,11 @@ namespace meshkernel
         /// @param[in] deletionOption The deletion option
         /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
         [[nodiscard]] std::unique_ptr<UndoAction> DeleteMesh(const Polygons& polygon, DeleteMeshOptions deletionOption, bool invertDeletion);
+
+        /// @brief Deletes the mesh faces inside a set of polygons
+        /// @param[in] polygon        The polygon where to perform the operation
+        /// @param[in] appendDeletedFaces Indicate if the deleted cells should be appended to the list of polygons describing holes in the mesh
+        [[nodiscard]] std::unique_ptr<UndoAction> DeleteMeshFacesInPolygon(const Polygons& polygon, const bool appendDeletedFaces = true);
 
         /// @brief  This method generates a mask indicating which locations are within the specified  range of the given metric.
         ///
@@ -435,11 +441,48 @@ namespace meshkernel
         /// @brief Find the mesh faces that lie entirely within the polygon.
         std::vector<bool> FindFacesEntirelyInsidePolygon(const std::vector<bool>& isNodeInsidePolygon) const;
 
+        /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
+        void WalkBoundaryFromNode(const Polygon& polygon,
+                                  std::vector<bool>& isVisited,
+                                  UInt& currentNode,
+                                  std::vector<Point>& meshBoundaryPolygon) const;
+
+        /// @brief Constructs a polygon or polygons from the meshboundary, by walking through the mesh
+        ///
+        /// If there are multiple polygons connected by a single node, then these will be separated into individual polygons
+        void WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
+                                       std::vector<bool>& nodeIsVisited,
+                                       UInt& currentNode,
+                                       std::vector<Point>& meshBoundaryPolygon,
+                                       std::vector<UInt>& nodeIds,
+                                       std::vector<Point>& subSequence) const;
+
+        /// @brief Ensure that all polynomials are orientated in the ACW direction.
+        void OrientatePolygonsAntiClockwise(std::vector<Point>& polygonNodes) const;
+
+        /// @brief Removes the outer domain boundary polygon from the set of polygons
+        ///
+        /// It is assumed that the outer domain polygon contains the most nodes
+        std::vector<Point> RemoveOuterDomainBoundaryPolygon(const std::vector<Point>& polygonNodes) const;
+
         /// @brief Deletes the mesh faces inside a polygon
         /// @param[in] polygon        The polygon where to perform the operation
         ///                           If this Polygons instance contains multiple polygons, the first one will be taken.
         /// @param[in] invertDeletion Inverts the selected node to delete (instead of outside the polygon, inside the polygon)
         [[nodiscard]] std::unique_ptr<UndoAction> DeleteMeshFaces(const Polygons& polygon, bool invertDeletion);
+
+        /// @brief Append the polygon describing the cell to the list of invalid cells polygons
+        void AppendCellPolygon(const UInt faceId);
+
+        /// @brief Delete parts of the mesh described by the invalid cells polygons
+        void DeleteMeshHoles(CompoundUndoAction* undoAction);
+
+        /// @brief Update information about a list of faces and face-edge information
+        ///
+        /// @param [in] faceIndices Mapping between old and new face-ids, the invalid value implies a deleted element
+        /// @param [in] appendDeletedFaces Indicate if the deleted cells should be appended to the list of polygons describing holes in the mesh
+        /// If no faces are marked for deletion then return a nullptr for the undo-action
+        std::unique_ptr<UndoAction> UpdateFaceInformation(const std::vector<UInt>& faceIndices, const bool appendDeletedFaces);
 
         /// @brief Find cells recursive, works with an arbitrary number of edges
         /// @param[in] startNode The starting node
@@ -511,7 +554,8 @@ namespace meshkernel
         /// @returns The number of edges that have been invalidated
         UInt InvalidateEdgesWithNoFace();
 
-        std::vector<MeshNodeType> m_nodesTypes; ///< The node types (nb)
+        std::vector<MeshNodeType> m_nodesTypes;   ///< The node types (nb)
+        std::vector<Point> m_invalidCellPolygons; ///< Invalid cell polygons
     };
 
 } // namespace meshkernel

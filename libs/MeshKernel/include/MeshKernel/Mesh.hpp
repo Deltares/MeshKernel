@@ -480,7 +480,7 @@ namespace meshkernel
         /// @brief Determine if a administration is required
         bool AdministrationRequired() const;
 
-        /// @brief Determine if a administration is required
+        /// @brief Indicate if an administration is required
         void SetAdministrationRequired(const bool value);
 
         // Make private
@@ -513,6 +513,7 @@ namespace meshkernel
                                         UInt& numInvalidNodes,
                                         CompoundUndoAction* undoAction = nullptr);
     };
+
 } // namespace meshkernel
 
 inline const std::vector<meshkernel::Point>& meshkernel::Mesh::Nodes() const

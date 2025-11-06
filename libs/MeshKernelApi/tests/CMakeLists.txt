@@ -17,6 +17,7 @@ set(SRC_LIST
     ${SRC_DIR}/CurvilinearGridTests.cpp
     ${SRC_DIR}/CurvilinearGridUndoTests.cpp
     ${SRC_DIR}/ErrorHandlingTests.cpp
+    ${SRC_DIR}/InvalidCellsPolygonsTests.cpp
     ${SRC_DIR}/LandBoundaryTests.cpp
     ${SRC_DIR}/Mesh1DTests.cpp
     ${SRC_DIR}/Mesh2DCasulliRefinmentTests.cpp
