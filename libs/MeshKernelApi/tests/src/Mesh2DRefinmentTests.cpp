@@ -1353,6 +1353,7 @@ TEST(MeshRefinement, Mesh2DWithHoleRefineBasedOnGriddedSamplesWaveCourant_WithGr
     polygon.coordinates_x = pxs.data();
     polygon.coordinates_y = pys.data();
     polygon.num_coordinates = static_cast<int>(pxs.size());
+    // Create a hole in the mesh
     errorCode = mkernel_mesh2d_delete(meshKernelId, polygon, 0, 0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
@@ -1372,10 +1373,17 @@ TEST(MeshRefinement, Mesh2DWithHoleRefineBasedOnGriddedSamplesWaveCourant_WithGr
     meshkernel::MeshRefinementParameters meshRefinementParameters;
     meshRefinementParameters.min_edge_size = 1250.0;
     meshRefinementParameters.refinement_type = 1; // WAVE_COURANT?
-    meshRefinementParameters.smoothing_iterations = 2;
+    meshRefinementParameters.smoothing_iterations = 1;
 
     meshkernelapi::GeometryList refPolygon{};
 
     errorCode = mkernel_mesh2d_refine_based_on_gridded_samples(meshKernelId, refPolygon, sampleData, meshRefinementParameters, true);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::Mesh2D mesh2d{};
+    errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    ASSERT_EQ(1791899, mesh2d.num_nodes);
+    ASSERT_EQ(3585635, mesh2d.num_edges);
 }
