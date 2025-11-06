@@ -1709,7 +1709,7 @@ void Mesh2D::OrientatePolygonsAntiClockwise(std::vector<Point>& polygonNodes) co
                 }
                 else if (polygonLength - 1 == 4)
                 {
-                    // Only the second and fourth points need be swapped to reverse the points in a quadrialteral polygon
+                    // Only the second and fourth points need be swapped to reverse the points in a quadrilateral polygon
                     std::swap(polygonNodes[polygonStart + 1], polygonNodes[polygonStart + 3]);
                 }
                 else
