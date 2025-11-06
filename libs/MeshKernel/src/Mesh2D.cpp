@@ -1589,8 +1589,8 @@ std::vector<meshkernel::Point> Mesh2D::ComputeInnerBoundaryPolygons() const
 
     std::vector<Point> meshBoundaryPolygon;
     meshBoundaryPolygon.reserve(GetNumNodes());
-    std::vector<Point> subSqeuence;
-    subSqeuence.reserve(GetNumNodes());
+    std::vector<Point> subSequence;
+    subSequence.reserve(GetNumNodes());
 
     std::vector<bool> edgeIsVisited(GetNumEdges(), false);
     std::vector<bool> nodeIsVisited(GetNumNodes(), false);
@@ -1611,16 +1611,16 @@ std::vector<meshkernel::Point> Mesh2D::ComputeInnerBoundaryPolygons() const
         const auto secondNode = m_nodes[secondNodeIndex];
 
         // Start a new polyline
-        if (!subSqeuence.empty())
+        if (!subSequence.empty())
         {
-            subSqeuence.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
+            subSequence.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
             nodeIds.emplace_back(constants::missing::uintValue);
         }
 
         // Put the current edge on the mesh boundary, mark it as visited
-        const auto startPolygonEdges = static_cast<UInt>(subSqeuence.size());
-        subSqeuence.emplace_back(firstNode);
-        subSqeuence.emplace_back(secondNode);
+        const auto startPolygonEdges = static_cast<UInt>(subSequence.size());
+        subSequence.emplace_back(firstNode);
+        subSequence.emplace_back(secondNode);
         nodeIds.emplace_back(firstNodeIndex);
         nodeIds.emplace_back(secondNodeIndex);
         edgeIsVisited[e] = true;
@@ -1629,28 +1629,28 @@ std::vector<meshkernel::Point> Mesh2D::ComputeInnerBoundaryPolygons() const
 
         // walk the current mesh boundary
         auto currentNode = secondNodeIndex;
-        WalkMultiBoundaryFromNode(edgeIsVisited, nodeIsVisited, currentNode, subSqeuence, nodeIds, meshBoundaryPolygon);
+        WalkMultiBoundaryFromNode(edgeIsVisited, nodeIsVisited, currentNode, subSequence, nodeIds, meshBoundaryPolygon);
 
-        const auto numNodesFirstTail = static_cast<UInt>(subSqeuence.size());
+        const auto numNodesFirstTail = static_cast<UInt>(subSequence.size());
 
         // if the boundary polygon is not closed
         if (currentNode != firstNodeIndex)
         {
             // Now grow a polyline starting at the other side of the original link L, i.e., the second tail
             currentNode = firstNodeIndex;
-            WalkMultiBoundaryFromNode(edgeIsVisited, nodeIsVisited, currentNode, subSqeuence, nodeIds, meshBoundaryPolygon);
+            WalkMultiBoundaryFromNode(edgeIsVisited, nodeIsVisited, currentNode, subSequence, nodeIds, meshBoundaryPolygon);
         }
 
         // There is a nonempty second tail, so reverse the first tail, so that they connect.
-        if (subSqeuence.size() > numNodesFirstTail)
+        if (subSequence.size() > numNodesFirstTail)
         {
             const auto start = startPolygonEdges + static_cast<UInt>(std::ceil((numNodesFirstTail - startPolygonEdges + static_cast<UInt>(1)) * 0.5));
             for (auto n = start; n < numNodesFirstTail; n++)
             {
-                const auto backupPoint = subSqeuence[n];
+                const auto backupPoint = subSequence[n];
                 const auto replaceIndex = numNodesFirstTail - n + firstNodeIndex;
-                subSqeuence[n] = subSqeuence[replaceIndex];
-                subSqeuence[replaceIndex] = backupPoint;
+                subSequence[n] = subSequence[replaceIndex];
+                subSequence[replaceIndex] = backupPoint;
 
                 const UInt backupPointIndex = nodeIds[n];
                 nodeIds[n] = nodeIds[replaceIndex];
