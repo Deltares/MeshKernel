@@ -2144,7 +2144,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygon(const P
     // A mapping between the old face-id and the new face-id.
     // Any deleted elements will be the invalid uint value.
     std::vector<UInt> faceIndices(GetNumFaces(), constants::missing::uintValue);
-    // Indicate of the cell has a valid cell centre and is inside the polygons of regions to be deleted.
+    // Indicate if the cell has a valid cell centre and is inside the polygons or regions to be deleted.
     std::vector<Boolean> validAndInside(GetNumFaces(), false);
     UInt faceIndex = 0;
 
@@ -2183,12 +2183,14 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::UpdateFaceInformation(const std:
 
     if (facesToDelete.empty())
     {
+        // No elements to be deleted
         return nullptr;
     }
 
     std::unique_ptr<meshkernel::CompoundUndoAction> deleteMeshAction = CompoundUndoAction::Create();
     deleteMeshAction->Add(PointArrayUndo::Create(*this, m_invalidCellPolygons));
 
+    // The edges of one of more faces will be deleted, so indicate that an administrate will be required.
     SetAdministrationRequired(true);
 
     if (appendDeletedFaces)
@@ -2245,6 +2247,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::UpdateFaceInformation(const std:
     }
 
     // Shift face connectivity in arrays where deleted faces have been removed from arrays
+    // Loop must be iterated in reverse order, from highest face id value to lowest.
     for (UInt faceId : facesToDelete | std::views::reverse)
     {
         m_facesNodes.erase(m_facesNodes.begin() + faceId);
