@@ -151,7 +151,11 @@ namespace meshkernel
         for (UInt n = 0; n < numNodes; ++n)
         {
             const auto node = m_mesh.Node(n);
-            m_nodeResults[n] = Interpolation(node);
+
+            if (node.IsValid())
+            {
+                m_nodeResults[n] = Interpolation(node);
+            }
         }
 
         m_edgeResults.resize(numEdges);
@@ -159,14 +163,21 @@ namespace meshkernel
         for (UInt e = 0; e < numEdges; ++e)
         {
             const auto& [first, second] = m_mesh.GetEdge(e);
-            m_edgeResults[e] = 0.5 * (m_nodeResults[first] + m_nodeResults[second]);
+
+            if (first != constants::missing::uintValue && second != constants::missing::uintValue)
+            {
+                m_edgeResults[e] = 0.5 * (m_nodeResults[first] + m_nodeResults[second]);
+            }
         }
 
         m_faceResults.resize(numFaces, constants::missing::doubleValue);
         std::ranges::fill(m_faceResults, constants::missing::doubleValue);
         for (UInt f = 0; f < numFaces; ++f)
         {
-            m_faceResults[f] = Interpolation(m_mesh.m_facesMassCenters[f]);
+            if (m_mesh.m_facesMassCenters[f].IsValid())
+            {
+                m_faceResults[f] = Interpolation(m_mesh.m_facesMassCenters[f]);
+            }
         }
     }
 
