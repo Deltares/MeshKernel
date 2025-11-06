@@ -162,9 +162,17 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>FindFaces</b> ()</td>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>CommitAction</b> (const SphericalCoordinatesOffsetAction &amp;undoAction)</td></tr>
 <tr class="memdesc:a61f7359958c3f54ba47ee48655e0f26d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply the coordinate offset action. <br /></td></tr>
 <tr class="separator:a61f7359958c3f54ba47ee48655e0f26d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab18c7a893610a36fac49a3abe1c978de" id="r_ab18c7a893610a36fac49a3abe1c978de"><td class="memItemLeft" align="right" valign="top"><a id="ab18c7a893610a36fac49a3abe1c978de" name="ab18c7a893610a36fac49a3abe1c978de"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>CommitAction</b> (PointArrayUndo &amp;undoAction)</td></tr>
+<tr class="memdesc:ab18c7a893610a36fac49a3abe1c978de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the node values. <br /></td></tr>
+<tr class="separator:ab18c7a893610a36fac49a3abe1c978de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d1e41a70cbb395250bbc7d0d2d874a6" id="r_a5d1e41a70cbb395250bbc7d0d2d874a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a5d1e41a70cbb395250bbc7d0d2d874a6">RestoreAction</a> (const SphericalCoordinatesOffsetAction &amp;undoAction)</td></tr>
 <tr class="memdesc:a5d1e41a70cbb395250bbc7d0d2d874a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Undo the coordinate offset action.  <br /></td></tr>
 <tr class="separator:a5d1e41a70cbb395250bbc7d0d2d874a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb9731afb2a91b8c59e05f36965c0621" id="r_aeb9731afb2a91b8c59e05f36965c0621"><td class="memItemLeft" align="right" valign="top"><a id="aeb9731afb2a91b8c59e05f36965c0621" name="aeb9731afb2a91b8c59e05f36965c0621"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>RestoreAction</b> (PointArrayUndo &amp;undoAction)</td></tr>
+<tr class="memdesc:aeb9731afb2a91b8c59e05f36965c0621"><td class="mdescLeft">&#160;</td><td class="mdescRight">Undo node array. <br /></td></tr>
+<tr class="separator:aeb9731afb2a91b8c59e05f36965c0621"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35186078240ebfeac3c6bf9db8160cd2" id="r_a35186078240ebfeac3c6bf9db8160cd2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a35186078240ebfeac3c6bf9db8160cd2">ComputeFaceClosedPolygonWithLocalMappings</a> (<a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> faceIndex, std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygonNodesCache, std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;localNodeIndicesCache, std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt; &amp;globalEdgeIndicesCache) const</td></tr>
 <tr class="memdesc:a35186078240ebfeac3c6bf9db8160cd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">For a face create a closed polygon and fill local mapping caches (get_cellpolygon)  <br /></td></tr>
 <tr class="separator:a35186078240ebfeac3c6bf9db8160cd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -223,9 +231,9 @@ std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="b
 <tr class="memitem:a80fe66dcf09a227009a48bc2f0480845" id="r_a80fe66dcf09a227009a48bc2f0480845"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a80fe66dcf09a227009a48bc2f0480845">ComputeBoundaryPolygons</a> (const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygon)</td></tr>
 <tr class="memdesc:a80fe66dcf09a227009a48bc2f0480845"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert all mesh boundaries to a vector of polygon nodes, including holes (copynetboundstopol)  <br /></td></tr>
 <tr class="separator:a80fe66dcf09a227009a48bc2f0480845"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ccf24cf23136393e36d0fd07bbbfff2" id="r_a9ccf24cf23136393e36d0fd07bbbfff2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a9ccf24cf23136393e36d0fd07bbbfff2">WalkBoundaryFromNode</a> (const <a class="el" href="classmeshkernel_1_1_polygon.html">Polygon</a> &amp;polygon, std::vector&lt; bool &gt; &amp;isVisited, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &amp;currentNode, std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;meshBoundaryPolygon) const</td></tr>
-<tr class="memdesc:a9ccf24cf23136393e36d0fd07bbbfff2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a polygon from the meshboundary, by walking through the mesh.  <br /></td></tr>
-<tr class="separator:a9ccf24cf23136393e36d0fd07bbbfff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab131476cd009c39ff748534b252930c8" id="r_ab131476cd009c39ff748534b252930c8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#ab131476cd009c39ff748534b252930c8">ComputeInnerBoundaryPolygons</a> () const</td></tr>
+<tr class="memdesc:ab131476cd009c39ff748534b252930c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert all mesh boundaries to a vector of polygon nodes.  <br /></td></tr>
+<tr class="separator:ab131476cd009c39ff748534b252930c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a502d0128e5203b330d2bf77f2db30a87" id="r_a502d0128e5203b330d2bf77f2db30a87"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#a502d0128e5203b330d2bf77f2db30a87">GetHangingEdges</a> () const</td></tr>
 <tr class="memdesc:a502d0128e5203b330d2bf77f2db30a87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the hanging edges.  <br /></td></tr>
 <tr class="separator:a502d0128e5203b330d2bf77f2db30a87"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -239,6 +247,9 @@ std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="b
 <tr class="memitem:ab9aff255bad361448c527200cfe16e09" id="r_ab9aff255bad361448c527200cfe16e09"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#ab9aff255bad361448c527200cfe16e09">DeleteMesh</a> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon, <a class="el" href="classmeshkernel_1_1_mesh2_d.html#a41e7c8bf5e92fec3f46ba18204e8cc6e">DeleteMeshOptions</a> deletionOption, bool invertDeletion)</td></tr>
 <tr class="memdesc:ab9aff255bad361448c527200cfe16e09"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a mesh in a polygon, using several options (delnet)  <br /></td></tr>
 <tr class="separator:ab9aff255bad361448c527200cfe16e09"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace13154fdc98be5905f292d69e819f6c" id="r_ace13154fdc98be5905f292d69e819f6c"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; UndoAction &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#ace13154fdc98be5905f292d69e819f6c">DeleteMeshFacesInPolygon</a> (const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;polygon, const bool appendDeletedFaces=true)</td></tr>
+<tr class="memdesc:ace13154fdc98be5905f292d69e819f6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the mesh faces inside a set of polygons.  <br /></td></tr>
+<tr class="separator:ace13154fdc98be5905f292d69e819f6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aec6d18641ef8bbc49a66eb948b5669c8" id="r_aec6d18641ef8bbc49a66eb948b5669c8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classmeshkernel_1_1_mesh2_d.html#aec6d18641ef8bbc49a66eb948b5669c8">FilterBasedOnMetric</a> (<a class="el" href="namespacemeshkernel.html#a50aa377deae5c143c4fc0ba767f051d9">Location</a> location, <a class="el" href="namespacemeshkernel.html#a8d1bd683cd76de27086a293fb36a8b8a">Property</a> property, double minValue, double maxValue) const</td></tr>
 <tr class="memdesc:aec6d18641ef8bbc49a66eb948b5669c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">This method generates a mask indicating which locations are within the specified range of the given metric.  <br /></td></tr>
 <tr class="separator:aec6d18641ef8bbc49a66eb948b5669c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -678,7 +689,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>AdministrationRequire
 <tr class="separator:a6cefdee88e13794b67efd4fb46da9d83 inherit pro_methods_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad9d3b03c50a0a43cff8d2d437257758 inherit pro_methods_classmeshkernel_1_1_mesh" id="r_aad9d3b03c50a0a43cff8d2d437257758"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>SetAdministrationRequired</b> (const bool value)</td></tr>
-<tr class="memdesc:aad9d3b03c50a0a43cff8d2d437257758 inherit pro_methods_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if a administration is required. <br /></td></tr>
+<tr class="memdesc:aad9d3b03c50a0a43cff8d2d437257758 inherit pro_methods_classmeshkernel_1_1_mesh"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicate if an administration is required. <br /></td></tr>
 <tr class="separator:aad9d3b03c50a0a43cff8d2d437257758 inherit pro_methods_classmeshkernel_1_1_mesh"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classmeshkernel_1_1_mesh"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classmeshkernel_1_1_mesh')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classmeshkernel_1_1_mesh.html">meshkernel::Mesh</a></td></tr>
 <tr class="memitem:a130c483ec12ccfc11cddc0b1162a318e inherit pro_attribs_classmeshkernel_1_1_mesh" id="r_a130c483ec12ccfc11cddc0b1162a318e"><td class="memItemLeft" align="right" valign="top">
@@ -1009,6 +1020,26 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
 
 </div>
 </div>
+<a id="ab131476cd009c39ff748534b252930c8" name="ab131476cd009c39ff748534b252930c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab131476cd009c39ff748534b252930c8">&#9670;&#160;</a></span>ComputeInnerBoundaryPolygons()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; meshkernel::Mesh2D::ComputeInnerBoundaryPolygons </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert all mesh boundaries to a vector of polygon nodes. </p>
+<dl class="section return"><dt>Returns</dt><dd>The resulting set of polygons, describing interior mesh boundaries </dd></dl>
+
+</div>
+</div>
 <a id="ab9aff255bad361448c527200cfe16e09" name="ab9aff255bad361448c527200cfe16e09"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab9aff255bad361448c527200cfe16e09">&#9670;&#160;</a></span>DeleteMesh()</h2>
 
@@ -1047,6 +1078,43 @@ std::vector&lt; <a class="el" href="namespacemeshkernel.html#a07234cba2b9eb4b8df
     <tr><td class="paramdir">[in]</td><td class="paramname">polygon</td><td>The polygon where to perform the operation If this <a class="el" href="classmeshkernel_1_1_polygons.html" title="A class containing a list of polygonaly enclosed regions.">Polygons</a> instance contains multiple polygons, the first one will be taken. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">deletionOption</td><td>The deletion option </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">invertDeletion</td><td>Inverts the selected node to delete (instead of outside the polygon, inside the polygon) </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ace13154fdc98be5905f292d69e819f6c" name="ace13154fdc98be5905f292d69e819f6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace13154fdc98be5905f292d69e819f6c">&#9670;&#160;</a></span>DeleteMeshFacesInPolygon()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt; UndoAction &gt; meshkernel::Mesh2D::DeleteMeshFacesInPolygon </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_polygons.html">Polygons</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygon</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>appendDeletedFaces</em> = <code>true</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deletes the mesh faces inside a set of polygons. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygon</td><td>The polygon where to perform the operation </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">appendDeletedFaces</td><td>Indicate if the deleted cells should be appended to the list of polygons describing holes in the mesh </td></tr>
   </table>
   </dd>
 </dl>
@@ -2168,57 +2236,6 @@ Coincide circumcenter</div></div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The face indexses </dd></dl>
-
-</div>
-</div>
-<a id="a9ccf24cf23136393e36d0fd07bbbfff2" name="a9ccf24cf23136393e36d0fd07bbbfff2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9ccf24cf23136393e36d0fd07bbbfff2">&#9670;&#160;</a></span>WalkBoundaryFromNode()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void meshkernel::Mesh2D::WalkBoundaryFromNode </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classmeshkernel_1_1_polygon.html">Polygon</a> &amp;&#160;</td>
-          <td class="paramname"><em>polygon</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; bool &gt; &amp;&#160;</td>
-          <td class="paramname"><em>isVisited</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> &amp;&#160;</td>
-          <td class="paramname"><em>currentNode</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>meshBoundaryPolygon</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Constructs a polygon from the meshboundary, by walking through the mesh. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">polygon</td><td>The input polygon </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">isVisited</td><td>the visited mesh nodes </td></tr>
-    <tr><td class="paramdir">[in,out]</td><td class="paramname">currentNode</td><td>the current node </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">meshBoundaryPolygon</td><td>The resulting polygon points </td></tr>
-  </table>
-  </dd>
-</dl>
 
 </div>
 </div>

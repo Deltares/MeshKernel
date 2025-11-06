@@ -536,6 +536,9 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <tr class="memitem:a847e53287a42b4e00385755ba1162e70" id="r_a847e53287a42b4e00385755ba1162e70"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a847e53287a42b4e00385755ba1162e70">mkernel_mesh2d_delete_hanging_edges</a> (int meshKernelId)</td></tr>
 <tr class="memdesc:a847e53287a42b4e00385755ba1162e70"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes all hanging edges. An hanging edge is an edge where one of the two nodes is not connected.  <br /></td></tr>
 <tr class="separator:a847e53287a42b4e00385755ba1162e70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a8a432b9953a27636a6345cd0ec2f23" id="r_a9a8a432b9953a27636a6345cd0ec2f23"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a9a8a432b9953a27636a6345cd0ec2f23">mkernel_mesh2d_delete_faces_in_polygons</a> (int meshKernelId, const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;polygon)</td></tr>
+<tr class="memdesc:a9a8a432b9953a27636a6345cd0ec2f23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the mesh faces inside a set of polygons.  <br /></td></tr>
+<tr class="separator:a9a8a432b9953a27636a6345cd0ec2f23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ec2f1082a199322b753b054d226329e" id="r_a2ec2f1082a199322b753b054d226329e"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a2ec2f1082a199322b753b054d226329e">mkernel_mesh2d_delete_node</a> (int meshKernelId, int nodeIndex)</td></tr>
 <tr class="memdesc:a2ec2f1082a199322b753b054d226329e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a mesh2d node.  <br /></td></tr>
 <tr class="separator:a2ec2f1082a199322b753b054d226329e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -5800,6 +5803,44 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">edgeIndex</td><td>The index of the edge to delete </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a9a8a432b9953a27636a6345cd0ec2f23" name="a9a8a432b9953a27636a6345cd0ec2f23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a8a432b9953a27636a6345cd0ec2f23">&#9670;&#160;</a></span>mkernel_mesh2d_delete_faces_in_polygons()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_delete_faces_in_polygons </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>polygon</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deletes the mesh faces inside a set of polygons. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">polygon</td><td>The polygon regions where the faces are to be deleted </td></tr>
   </table>
   </dd>
 </dl>
