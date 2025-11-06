@@ -863,6 +863,10 @@ void Mesh2D::CommitAction(const SphericalCoordinatesOffsetAction& undoAction)
 void Mesh2D::CommitAction(PointArrayUndo& undoAction)
 {
     undoAction.Swap(m_invalidCellPolygons);
+    SetAdministrationRequired(true);
+    SetNodesRTreeRequiresUpdate(true);
+    SetEdgesRTreeRequiresUpdate(true);
+    SetFacesRTreeRequiresUpdate(true);
 }
 
 void Mesh2D::RestoreAction(const SphericalCoordinatesOffsetAction& undoAction)
@@ -2240,7 +2244,6 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::UpdateFaceInformation(const std:
         }
     }
 
-    // TODO need to collect undo information?
     // Shift face connectivity in arrays where deleted faces have been removed from arrays
     for (UInt faceId : facesToDelete | std::views::reverse)
     {
