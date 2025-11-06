@@ -1357,6 +1357,7 @@ TEST(MeshRefinement, Mesh2DWithHoleRefineBasedOnGriddedSamplesWaveCourant_WithGr
     errorCode = mkernel_mesh2d_delete(meshKernelId, polygon, 0, 0);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
+    // Creating samples for refinement
     std::vector<double> sampleDataXs{99.0, 114.0};
     std::vector<double> sampleDataYs{-7.0, 13.5};
     std::vector<double> sampleDataValues{-9999.0, -9999.0, -9999.0, -9999.0};
