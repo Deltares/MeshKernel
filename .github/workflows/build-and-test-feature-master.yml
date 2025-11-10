@@ -21,7 +21,9 @@ jobs:
       matrix:
         platform:
           - macos-14 # arm64 (free)
-          - macos-15 # arm64
+          - macos-15 # arm64 (free)
+          - macos-15-intel # intel (free)
+          - macos-26 # arm64 (free)
         build_type:
           - Release
 
