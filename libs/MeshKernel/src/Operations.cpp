@@ -25,6 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+#include <span>
+
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Cartesian3DPoint.hpp"
 #include "MeshKernel/Mesh.hpp"
@@ -34,7 +36,7 @@ namespace meshkernel::impl
 
     /// @brief Checks if a point is in polygonNodes for Cartesian and spherical coordinate systems, using the winding number method
     bool IsPointInPolygonNodesCartesian(const Point& point,
-                                        const std::vector<Point>& polygonNodes,
+                                        const std::span<const Point> polygonNodes,
                                         UInt startNode,
                                         UInt endNode)
     {
@@ -71,7 +73,7 @@ namespace meshkernel::impl
 
     /// @brief Checks if a point is in polygonNodes for accurate spherical coordinate system, using the winding number method
     bool IsPointInPolygonNodesSphericalAccurate(const Point& point,
-                                                const std::vector<Point>& polygonNodes,
+                                                const std::span<const Point> polygonNodes,
                                                 Point polygonCenter,
                                                 UInt startNode,
                                                 UInt endNode)
@@ -327,7 +329,7 @@ namespace meshkernel
     }
 
     bool IsPointInPolygonNodes(const Point& point,
-                               const std::vector<Point>& polygonNodes,
+                               const std::span<const Point> polygonNodes,
                                const Projection& projection,
                                Point polygonCenter,
                                UInt startNode,
@@ -376,7 +378,7 @@ namespace meshkernel
     }
 
     bool IsPointInPolygonNodes(const Point& point,
-                               const std::vector<Point>& polygonNodes,
+                               const std::span<const Point> polygonNodes,
                                const Projection& projection,
                                const BoundingBox& boundingBox,
                                Point polygonCenter,

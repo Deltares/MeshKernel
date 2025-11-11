@@ -2892,6 +2892,7 @@ TEST(MeshRefinement, MeshWithHole_ShouldGenerateInteriorBoundaryPolygonsForSixFa
     // Compute interior boundary polygon points
     std::vector<Point> boundaryNodes2 = mesh.ComputeInnerBoundaryPolygons();
 
+    // The expected number of points include the land boundary points
     UInt expectedNumberOfNodes = 26;
 
     ASSERT_EQ(expectedNumberOfNodes, boundaryNodes2.size());
@@ -2954,7 +2955,7 @@ TEST(MeshRefinement, MeshWithHole_ShouldGenerateInteriorBoundaryPolygonsForSixFa
         125.0,
         125.0};
 
-    for (size_t i = 0; i < boundaryNodes2.size(); ++i)
+    for (size_t i = 0; i < expectedXPoints.size(); ++i)
     {
         EXPECT_EQ(expectedXPoints[i], boundaryNodes2[i].x);
         EXPECT_EQ(expectedYPoints[i], boundaryNodes2[i].y);
