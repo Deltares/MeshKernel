@@ -215,7 +215,7 @@ void Mesh2D::DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector
     FindFacesGivenFaceNodesMapping(faceNodes, numFaceNodes);
 
     // Compute face mass centers
-    ComputeFaceAreaAndMassCenters();
+    ComputeFaceAreaAndMassCenters(true);
 
     m_invalidCellPolygons = ComputeInnerBoundaryPolygons();
 
@@ -1862,17 +1862,7 @@ void Mesh2D::WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
 
             if (lastIndex != constants::missing::uintValue)
             {
-                UInt firstFace = m_edgesFaces[currentEdge][0];
                 size_t start = meshBoundaryPolygon.size();
-
-                Point elementCentre(0.0, 0.0);
-
-                for (size_t i = 0; i < m_facesNodes[firstFace].size(); ++i)
-                {
-                    elementCentre += m_nodes[m_facesNodes[firstFace][i]];
-                }
-
-                elementCentre /= static_cast<double>(m_facesNodes[firstFace].size());
 
                 if (!meshBoundaryPolygon.empty())
                 {
@@ -1888,13 +1878,15 @@ void Mesh2D::WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
                 meshBoundaryPolygon.emplace_back(subSequence[lastIndex]);
 
                 std::span<const Point> currentPolygon(meshBoundaryPolygon.data() + start, meshBoundaryPolygon.data() + meshBoundaryPolygon.size());
-                bool isInPolygon = IsPointInPolygonNodes(elementCentre, currentPolygon, m_projection);
+                UInt connectedFace = m_edgesFaces[currentEdge][0];
+                bool isInPolygon = IsPointInPolygonNodes(m_facesMassCenters[connectedFace], currentPolygon, m_projection);
 
                 if (!isInPolygon)
                 {
 
                     if (!illegalCells.empty())
                     {
+                        // If illecal cells is not empty then add the polygon separator
                         illegalCells.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
                     }
 
