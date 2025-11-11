@@ -27,9 +27,9 @@
 
 #include <span>
 
-#include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Cartesian3DPoint.hpp"
 #include "MeshKernel/Mesh.hpp"
+#include "MeshKernel/Operations.hpp"
 
 namespace meshkernel::impl
 {
