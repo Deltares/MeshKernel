@@ -1663,7 +1663,7 @@ std::vector<meshkernel::Point> Mesh2D::ComputeInnerBoundaryPolygons() const
         }
     }
 
-    OrientatePolygonsAntiClockwise (illegalCells);
+    OrientatePolygonsAntiClockwise(illegalCells);
 
     return illegalCells;
 }
@@ -1816,7 +1816,6 @@ void Mesh2D::WalkBoundaryFromNode(const Polygon& polygon,
     }
 }
 
-
 void Mesh2D::WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
                                        std::vector<bool>& nodeIsVisited,
                                        UInt& currentNode,
@@ -1863,17 +1862,17 @@ void Mesh2D::WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
 
             if (lastIndex != constants::missing::uintValue)
             {
-                UInt firstFace = m_edgesFaces [currentEdge][0];
-                size_t start = meshBoundaryPolygon.size ();
+                UInt firstFace = m_edgesFaces[currentEdge][0];
+                size_t start = meshBoundaryPolygon.size();
 
                 Point elementCentre(0.0, 0.0);
 
-                for (size_t i = 0; i < m_facesNodes[firstFace].size (); ++i)
+                for (size_t i = 0; i < m_facesNodes[firstFace].size(); ++i)
                 {
                     elementCentre += m_nodes[m_facesNodes[firstFace][i]];
                 }
 
-                elementCentre /= static_cast<double>(m_facesNodes[firstFace].size ());
+                elementCentre /= static_cast<double>(m_facesNodes[firstFace].size());
 
                 if (!meshBoundaryPolygon.empty())
                 {
@@ -1888,22 +1887,21 @@ void Mesh2D::WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
 
                 meshBoundaryPolygon.emplace_back(subSequence[lastIndex]);
 
-                std::span<const Point> currentPolygon (meshBoundaryPolygon.data () + start, meshBoundaryPolygon.data () + meshBoundaryPolygon.size ());
-                bool isInPolygon = IsPointInPolygonNodes (elementCentre, currentPolygon, m_projection);
+                std::span<const Point> currentPolygon(meshBoundaryPolygon.data() + start, meshBoundaryPolygon.data() + meshBoundaryPolygon.size());
+                bool isInPolygon = IsPointInPolygonNodes(elementCentre, currentPolygon, m_projection);
 
                 if (!isInPolygon)
                 {
 
-                    if (!illegalCells.empty ())
+                    if (!illegalCells.empty())
                     {
                         illegalCells.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
                     }
 
-                    for (size_t ii = 0; ii < currentPolygon.size (); ++ii)
+                    for (size_t ii = 0; ii < currentPolygon.size(); ++ii)
                     {
                         illegalCells.emplace_back(currentPolygon[ii]);
                     }
-
                 }
 
                 subSequence.resize(lastIndex);
@@ -1918,8 +1916,6 @@ void Mesh2D::WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
         nodeIds.emplace_back(currentNode);
     }
 }
-
-
 
 std::vector<meshkernel::UInt> Mesh2D::GetHangingEdges() const
 {

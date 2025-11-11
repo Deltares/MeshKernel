@@ -326,25 +326,6 @@ std::vector<bool> Polygons::PointsInPolygons(const std::vector<Point>& points) c
     return result;
 }
 
-meshkernel::UInt Polygons::PointIsInHowManyPolygons(const Point& point) const
-{
-
-    UInt insideCount = 0;
-
-    for (UInt i = 0; i < m_enclosures.size(); ++i)
-    {
-        const PolygonalEnclosure& enclosure = m_enclosures[i];
-
-        if (enclosure.ContainsRegion(point) == PolygonalEnclosure::Region::Exterior)
-        {
-            ++insideCount;
-        }
-    }
-
-
-    return insideCount;
-}
-
 // TODO put in header.
 bool Polygons::IsEmpty() const
 {

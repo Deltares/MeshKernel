@@ -125,11 +125,6 @@ namespace meshkernel
         /// @return A vector of booleans to indicate if the point is in polygon
         [[nodiscard]] std::vector<bool> PointsInPolygons(const std::vector<Point>& point) const;
 
-        /// @brief Checks if a point is included in any of the polygonal enclosures contained.
-        /// @param[in] point The point to check
-        /// @return True if it is included, false otherwise
-        [[nodiscard]] UInt PointIsInHowManyPolygons(const Point& point) const;
-
         /// @brief Checks if the polygon is empty
         /// @return True if it is empty, false otherwise
         [[nodiscard]] bool IsEmpty() const;
