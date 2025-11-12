@@ -1893,7 +1893,7 @@ void Mesh2D::WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
                         illegalCells.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
                     }
 
-                    illegalCells.insert (illegalCells.end (), currentPolygon.begin (), currentPolygon.end ());
+                    illegalCells.insert(illegalCells.end(), currentPolygon.begin(), currentPolygon.end());
                 }
 
                 subSequence.resize(lastIndex);
