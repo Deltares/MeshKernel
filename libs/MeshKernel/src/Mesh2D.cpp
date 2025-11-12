@@ -1590,6 +1590,7 @@ std::vector<meshkernel::Point> Mesh2D::ComputeInnerBoundaryPolygons() const
     }
 
     std::vector<Point> illegalCells;
+    illegalCells.reserve(GetNumNodes());
     std::vector<Point> meshBoundaryPolygon;
     meshBoundaryPolygon.reserve(GetNumNodes());
     std::vector<Point> subSequence;
