@@ -58,7 +58,8 @@ namespace meshkernel
         /// @brief Constructor taking a vector of coordinates types
         /// @tparam T Requires IsCoordinate<T>
         /// @param[in] points The point values
-        explicit BoundingBox(const std::span<const Point> points)
+        template <typename T>
+        explicit BoundingBox(const std::span<const T> points)
         {
             Reset(points);
         }
@@ -207,7 +208,7 @@ namespace meshkernel
 template <typename T>
 void meshkernel::BoundingBox::Reset(const std::vector<T>& points)
 {
-    Reset (std::span (points));
+    Reset(std::span(points));
 } // namespace meshkernel
 
 template <typename T>
@@ -228,7 +229,7 @@ void meshkernel::BoundingBox::Reset(const std::span<const T> points)
 template <typename T>
 void meshkernel::BoundingBox::Reset(const std::vector<T>& points, size_t start, size_t end)
 {
-    Reset (std::span (points), start, end);
+    Reset(std::span(points), start, end);
 }
 
 template <typename T>
