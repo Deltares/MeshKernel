@@ -207,17 +207,7 @@ namespace meshkernel
 template <typename T>
 void meshkernel::BoundingBox::Reset(const std::vector<T>& points)
 {
-
-    if (points.size() > 0)
-    {
-        Reset(points, 0, points.size() - 1);
-    }
-    else
-    {
-        m_lowerLeft = Point(std::numeric_limits<double>::lowest(), std::numeric_limits<double>::lowest());
-        m_upperRight = Point(std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
-    }
-
+    Reset (std::span (points));
 } // namespace meshkernel
 
 template <typename T>
@@ -238,25 +228,7 @@ void meshkernel::BoundingBox::Reset(const std::span<const T> points)
 template <typename T>
 void meshkernel::BoundingBox::Reset(const std::vector<T>& points, size_t start, size_t end)
 {
-    double minx = std::numeric_limits<double>::max();
-    double maxx = std::numeric_limits<double>::lowest();
-    double miny = std::numeric_limits<double>::max();
-    double maxy = std::numeric_limits<double>::lowest();
-
-    for (size_t i = start; i <= end; ++i)
-    {
-        const auto& point = points[i];
-
-        if (point.IsValid())
-        {
-            minx = std::min(minx, point.x);
-            maxx = std::max(maxx, point.x);
-            miny = std::min(miny, point.y);
-            maxy = std::max(maxy, point.y);
-        }
-    }
-    m_lowerLeft = Point(minx, miny);
-    m_upperRight = Point(maxx, maxy);
+    Reset (std::span (points), start, end);
 }
 
 template <typename T>
