@@ -3149,5 +3149,4 @@ TEST(MeshRefinement, MeshWithHole_ShouldConstructMeshWithInteriorBoundaryPolygon
         EXPECT_EQ(expectedXPoints[i], boundaryNodes2[i].x);
         EXPECT_EQ(expectedYPoints[i], boundaryNodes2[i].y);
     }
-
 }
