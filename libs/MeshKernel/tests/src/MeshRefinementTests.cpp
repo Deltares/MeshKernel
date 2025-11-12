@@ -2961,3 +2961,193 @@ TEST(MeshRefinement, MeshWithHole_ShouldGenerateInteriorBoundaryPolygonsForSixFa
         EXPECT_EQ(expectedYPoints[i], boundaryNodes2[i].y);
     }
 }
+
+TEST(MeshRefinement, MeshWithHole_ShouldConstructMeshWithInteriorBoundaryPolygons)
+{
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 20.0, 20.0, 11, 11);
+    const auto edges = curviMesh->ComputeEdges();
+    const auto nodes = curviMesh->ComputeNodes();
+
+    Mesh2D mesh(edges, nodes, Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh.Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh.Edges());
+
+    std::vector<Point> patch{{45.0, 5.0},
+                             {155.0, 5.0},
+                             {155.0, 155.0},
+                             {45.0, 155.0},
+                             {45.0, 5.0},
+                             {constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                             {65.0, 65.0},
+                             {115.0, 65.0},
+                             {115.0, 115.0},
+                             {65.0, 115.0},
+                             {65.0, 65.0}};
+
+    Polygons polygon(patch, Projection::cartesian);
+
+    auto casulliUndoAction = CasulliRefinement::Compute(mesh, polygon);
+
+    // Find nodes of elements to be deleted.
+    auto node11 = mesh.FindNodeCloseToAPoint({80.0, 0.0}, 1.0e-5);
+    auto node12 = mesh.FindNodeCloseToAPoint({85.0, 15.0}, 1.0e-5);
+    auto node13 = mesh.FindNodeCloseToAPoint({75.0, 15.0}, 1.0e-5);
+
+    auto node21 = mesh.FindNodeCloseToAPoint({180.0, 140.0}, 1.0e-5);
+    auto node22 = mesh.FindNodeCloseToAPoint({200.0, 140.0}, 1.0e-5);
+    auto node23 = mesh.FindNodeCloseToAPoint({200.0, 160.0}, 1.0e-5);
+    auto node24 = mesh.FindNodeCloseToAPoint({180.0, 160.0}, 1.0e-5);
+
+    auto node31 = mesh.FindNodeCloseToAPoint({125.0, 125.0}, 1.0e-5);
+    auto node32 = mesh.FindNodeCloseToAPoint({135.0, 125.0}, 1.0e-5);
+    auto node33 = mesh.FindNodeCloseToAPoint({135.0, 135.0}, 1.0e-5);
+    auto node34 = mesh.FindNodeCloseToAPoint({125.0, 135.0}, 1.0e-5);
+
+    auto node41 = mesh.FindNodeCloseToAPoint({85.0, 15.0}, 1.0e-5);
+    auto node42 = mesh.FindNodeCloseToAPoint({95.0, 15.0}, 1.0e-5);
+    auto node43 = mesh.FindNodeCloseToAPoint({95.0, 25.0}, 1.0e-5);
+    auto node44 = mesh.FindNodeCloseToAPoint({85.0, 25.0}, 1.0e-5);
+
+    auto node51 = mesh.FindNodeCloseToAPoint({100.0, 0.0}, 1.0e-5);
+    auto node52 = mesh.FindNodeCloseToAPoint({105.0, 15.0}, 1.0e-5);
+    auto node53 = mesh.FindNodeCloseToAPoint({95.0, 15.0}, 1.0e-5);
+
+    auto node61 = mesh.FindNodeCloseToAPoint({120.0, 0.0}, 1.0e-5);
+    auto node62 = mesh.FindNodeCloseToAPoint({125.0, 15.0}, 1.0e-5);
+    auto node63 = mesh.FindNodeCloseToAPoint({115.0, 15.0}, 1.0e-5);
+
+    std::vector<meshkernel::Point> boundaryNodes;
+
+    std::vector<Point> elementNodes1{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node11),
+                                     mesh.Node(node12),
+                                     mesh.Node(node13),
+                                     mesh.Node(node11)};
+
+    std::vector<Point> elementNodes2{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node21),
+                                     mesh.Node(node22),
+                                     mesh.Node(node23),
+                                     mesh.Node(node24),
+                                     mesh.Node(node21)};
+
+    std::vector<Point> elementNodes3{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node31),
+                                     mesh.Node(node32),
+                                     mesh.Node(node33),
+                                     mesh.Node(node34),
+                                     mesh.Node(node31)};
+
+    std::vector<Point> elementNodes4{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node41),
+                                     mesh.Node(node42),
+                                     mesh.Node(node43),
+                                     mesh.Node(node44),
+                                     mesh.Node(node41)};
+
+    std::vector<Point> elementNodes5{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node51),
+                                     mesh.Node(node52),
+                                     mesh.Node(node53),
+                                     mesh.Node(node51)};
+
+    std::vector<Point> elementNodes6{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node61),
+                                     mesh.Node(node62),
+                                     mesh.Node(node63),
+                                     mesh.Node(node61)};
+
+    // Combine all nodes to for a sequence of polygons
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes1.begin(), elementNodes1.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes2.begin(), elementNodes2.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes3.begin(), elementNodes3.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes4.begin(), elementNodes4.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes5.begin(), elementNodes5.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes6.begin(), elementNodes6.end());
+
+    Polygons boundaryWithMissingElements(boundaryNodes, Projection::cartesian);
+
+    auto deleteMeshFacesUndoAction = mesh.DeleteMeshFacesInPolygon(boundaryWithMissingElements);
+
+    // Construct a mesh with holes
+    meshkernel::Mesh2D mesh2(mesh.Edges(), mesh.Nodes(), mesh.m_facesNodes, mesh.m_numFacesNodes, mesh.m_projection);
+
+    // Call administrate, to re-compute the face-node and face-edge connectivity.
+    // This should not fill in the holes in the mesh
+    mesh2.Administrate();
+
+    // Compute interior boundary polygon points
+    std::vector<Point> boundaryNodes2 = mesh2.ComputeInnerBoundaryPolygons();
+
+    // The expected number of points include the land boundary points
+    UInt expectedNumberOfNodes = 26;
+
+    ASSERT_EQ(expectedNumberOfNodes, boundaryNodes2.size());
+
+    // The edge of one of the deleted elements lies on the boundary, so will be not be part of the
+    // interior set of polygons
+    std::vector<double> expectedXPoints{
+        95.0,
+        105.0,
+        100.0,
+        95.0,
+        constants::missing::doubleValue,
+        85.0,
+        85.0,
+        95.0,
+        95.0,
+        85.0,
+        constants::missing::doubleValue,
+        80.0,
+        75.0,
+        85.0,
+        80.0,
+        constants::missing::doubleValue,
+        120.0,
+        115.0,
+        125.0,
+        120.0,
+        constants::missing::doubleValue,
+        125.0,
+        125.0,
+        135.0,
+        135.0,
+        125.0};
+
+    std::vector<double> expectedYPoints{
+        15.0,
+        15.0,
+        0.0,
+        15.0,
+        constants::missing::doubleValue,
+        15.0,
+        25.0,
+        25.0,
+        15.0,
+        15.0,
+        constants::missing::doubleValue,
+        0.0,
+        15.0,
+        15.0,
+        0.0,
+        constants::missing::doubleValue,
+        0.0,
+        15.0,
+        15.0,
+        0.0,
+        constants::missing::doubleValue,
+        125.0,
+        135.0,
+        135.0,
+        125.0,
+        125.0};
+
+    for (size_t i = 0; i < expectedXPoints.size(); ++i)
+    {
+        EXPECT_EQ(expectedXPoints[i], boundaryNodes2[i].x);
+        EXPECT_EQ(expectedYPoints[i], boundaryNodes2[i].y);
+    }
+
+}
