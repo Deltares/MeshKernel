@@ -73,6 +73,17 @@ namespace meshkernel
             Reset(points);
         }
 
+        /// @brief Constructor taking a vector of coordinates types
+        /// @tparam T Requires IsCoordinate<T>
+        /// @param[in] points The point values
+        /// @param[in] start The start index for the array slice
+        /// @param[in] end The end index for the array slice
+        template <typename T>
+        BoundingBox(const std::vector<T>& points, size_t start, size_t end)
+        {
+            Reset(points, start, end);
+        }
+
         /// @brief Reset bounding box with a vector of coordinates types
         /// @tparam T Requires IsCoordinate<T>
         /// @param[in] points The point values
@@ -100,17 +111,6 @@ namespace meshkernel
         /// @param[in] end The end index for the array slice
         template <typename T>
         void Reset(const std::span<const T> points, size_t start, size_t end);
-
-        /// @brief Constructor taking a vector of coordinates types
-        /// @tparam T Requires IsCoordinate<T>
-        /// @param[in] points The point values
-        /// @param[in] start The start index for the array slice
-        /// @param[in] end The end index for the array slice
-        template <typename T>
-        BoundingBox(const std::vector<T>& points, size_t start, size_t end)
-        {
-            Reset(points, start, end);
-        }
 
         /// @brief Not equal operator
         /// @param[in] other The other bounding box to compare
