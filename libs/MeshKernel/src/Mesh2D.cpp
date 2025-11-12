@@ -1878,6 +1878,8 @@ void Mesh2D::WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
                 meshBoundaryPolygon.emplace_back(subSequence[lastIndex]);
 
                 std::span<const Point> currentPolygon(meshBoundaryPolygon.data() + start, meshBoundaryPolygon.data() + meshBoundaryPolygon.size());
+                // Since the edge lies on a boundary, there will be only 1 attached element.
+                // This element will be in the 0th position
                 UInt connectedFace = m_edgesFaces[currentEdge][0];
                 bool isInPolygon = IsPointInPolygonNodes(m_facesMassCenters[connectedFace], currentPolygon, m_projection);
 
@@ -1886,14 +1888,11 @@ void Mesh2D::WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
 
                     if (!illegalCells.empty())
                     {
-                        // If illecal cells is not empty then add the polygon separator
+                        // If illegal cells array is not empty then add the polygon separator
                         illegalCells.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
                     }
 
-                    for (size_t ii = 0; ii < currentPolygon.size(); ++ii)
-                    {
-                        illegalCells.emplace_back(currentPolygon[ii]);
-                    }
+                    illegalCells.insert (illegalCells.end (), currentPolygon.begin (), currentPolygon.end ());
                 }
 
                 subSequence.resize(lastIndex);
