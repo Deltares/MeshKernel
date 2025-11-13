@@ -3081,7 +3081,7 @@ TEST(MeshRefinement, MeshWithHole_ShouldConstructMeshWithInteriorBoundaryPolygon
     // Compute interior boundary polygon points
     std::vector<Point> boundaryNodes2 = mesh2.ComputeInnerBoundaryPolygons();
 
-    // The expected number of points include the land boundary points
+    // The expected number of points, should not include any land boundary points
     UInt expectedNumberOfNodes = 26;
 
     ASSERT_EQ(expectedNumberOfNodes, boundaryNodes2.size());

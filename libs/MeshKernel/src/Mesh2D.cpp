@@ -1878,6 +1878,7 @@ void Mesh2D::WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
 
                 meshBoundaryPolygon.emplace_back(subSequence[lastIndex]);
 
+                // the points making up the last found polygon
                 std::span<const Point> currentPolygon(meshBoundaryPolygon.data() + start, meshBoundaryPolygon.data() + meshBoundaryPolygon.size());
                 // Since the edge lies on a boundary, there will be only 1 attached element.
                 // This element will be in the 0th position
@@ -1886,6 +1887,7 @@ void Mesh2D::WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
 
                 if (!isInPolygon)
                 {
+                    // If the centre of this element does not lie within the polygon, then the polygon defines a hole in the mesh.
 
                     if (!illegalCells.empty())
                     {
