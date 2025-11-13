@@ -3059,7 +3059,7 @@ TEST(MeshRefinement, MeshWithHole_ShouldConstructMeshWithInteriorBoundaryPolygon
                                      mesh.Node(node63),
                                      mesh.Node(node61)};
 
-    // Combine all nodes to for a sequence of polygons
+    // Combine all nodes to form a sequence of polygons
     boundaryNodes.insert(boundaryNodes.end(), elementNodes1.begin(), elementNodes1.end());
     boundaryNodes.insert(boundaryNodes.end(), elementNodes2.begin(), elementNodes2.end());
     boundaryNodes.insert(boundaryNodes.end(), elementNodes3.begin(), elementNodes3.end());
