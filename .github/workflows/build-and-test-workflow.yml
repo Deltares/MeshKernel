@@ -30,7 +30,7 @@ jobs:
     steps:
       # Step: Install GCC (macOS only)
       - name: Install GCC
-        if: runner.os == 'macOS'
+        if: startsWith(runner.os, 'macOS')
         run: |
           brew install gcc@12
           echo "CC=$(brew --prefix)/bin/gcc-12" >> $GITHUB_ENV
