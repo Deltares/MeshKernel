@@ -814,6 +814,11 @@ std::unique_ptr<meshkernel::UndoAction> MeshRefinement::RefineFacesBySplittingEd
 
         const auto numEdges = m_mesh.GetNumFaceEdges(f);
 
+        if (numEdges == 0)
+        {
+            continue;
+        }
+
         m_mesh.ComputeFaceClosedPolygonWithLocalMappings(f, m_polygonNodesCache, m_localNodeIndicesCache, m_globalEdgeIndicesCache);
 
         UInt numBrotherEdges = 0;

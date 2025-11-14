@@ -19,6 +19,14 @@ jobs:
 
     # Build steps
     steps:
+      # Step: Install GCC (macOS only)
+      - name: Install GCC
+        if: startsWith(runner.os, 'macOS')
+        run: |
+          brew install gcc@12
+          echo "CC=$(brew --prefix)/bin/gcc-12" >> $GITHUB_ENV
+          echo "CXX=$(brew --prefix)/bin/g++-12" >> $GITHUB_ENV
+
       # Step: Checkout
       - name: Checkout
         uses: actions/checkout@v4
@@ -63,11 +71,11 @@ jobs:
 
       # Step: Restore cached user-provided dependencies
       - name: Restore cached user-provided dependencies
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: restore-cached-external-dependencies
         with:
-          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v2
-          restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v2
+          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v4
+          restore-keys: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v4
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
 
       # Step: Check if netCDF cache directory already has contents (defensive guard)
@@ -92,12 +100,12 @@ jobs:
           -BuildType '${{ inputs.build_type }}'
           -ParallelJobs 10
 
-      # Step: Cache user-provided dependencies, executes only if no cache restored
+      # Step: Cache user-provided dependencies, executes only if dependencies were built
       - name: Cache user-provided dependencies
-        uses: actions/cache/save@v3
-        if: steps.restore-cached-external-dependencies.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        if: steps.check-nc-cache.outputs.has-deps == 'false'
         with:
-          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v2
+          key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v4
           path: ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
 
       # Step: CMake configuration
