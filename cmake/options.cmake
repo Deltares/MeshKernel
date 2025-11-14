@@ -17,7 +17,7 @@ include(CMakeDependentOption)
 cmake_dependent_option(
   ENABLE_BENCHMARKING_MEM_REPORT
   "When benchmarking is enabled, enables reporting memory usage statistics."
-  ON 
+  ON
   "ENABLE_BENCHMARKING"
   OFF
 )

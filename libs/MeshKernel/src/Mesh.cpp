@@ -29,6 +29,7 @@
 #include <cmath>
 #include <iomanip>
 #include <numeric>
+#include <ranges>
 
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"

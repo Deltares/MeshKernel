@@ -30,3 +30,6 @@ tools/Version/Version.hpp
 
 # Python cache
 __pycache__/
+
+# JetBrains
+.idea

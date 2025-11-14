@@ -35,7 +35,7 @@ Param(
     [Parameter(Mandatory = $true)] [string] $InstallDir,
     [Parameter(Mandatory = $false)] [ValidateSet('Release', 'Debug', 'RelWithDebInfo')] [string] $BuildType = 'Release',
     [Parameter(Mandatory = $false)] [hashtable]$GitTags = @{ `
-            zlib     = 'v1.2.13'; `
+            zlib     = 'v1.3.1'; `
             curl     = 'curl-7_88_1'; `
             hdf5     = 'hdf5-1_14_0'; `
             netcdf_c = 'v4.9.1'
@@ -353,6 +353,10 @@ $NetCDFCMakeBuildOptions = @(`
 )
 if ($IsLinux -or $IsMacOS) {
     $NetCDFCMakeBuildOptions += '-DCMAKE_POSITION_INDEPENDENT_CODE=ON'
+    if ($IsMacOS -and ((sw_vers -productVersion | Out-String).Trim().StartsWith("14."))) {
+        # Only apply FLT_EVAL_METHOD fix for macOS 14 (Sonoma)
+        $NetCDFCMakeBuildOptions += '-DCMAKE_C_FLAGS=-D__FLT_EVAL_METHOD__=0'
+    }
 }
 
 Invoke-BuildAndInstall `
