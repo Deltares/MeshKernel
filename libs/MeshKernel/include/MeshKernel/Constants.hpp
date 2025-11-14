@@ -33,14 +33,15 @@
 #include <limits>
 #include <math.h>
 
-#if (defined(__linux__) && !(__clang__)) || defined(__APPLE__)
+#if defined(__GNUC__) && !defined(__clang__)
+// GCC only: suppress -Wmaybe-uninitialized (not recognized by Clang / AppleClang)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
 
 #include <Eigen/Core>
 
-#if (defined(__linux__) && !(__clang__)) || defined(__APPLE__)
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
 
