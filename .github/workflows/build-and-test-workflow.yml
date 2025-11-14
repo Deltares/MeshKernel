@@ -19,23 +19,8 @@ jobs:
 
     name: ${{ inputs.platform }}-${{ inputs.build_type }}
 
-    # The default compiler on macos is clang, switch to gcc. Specifying the version is necessary.
-    # It seems like gcc and g++ are symbolic links to the default clang and clang++ compilers, respectively.
-    # CMAKE_CXX_COMPILER_ID will evaluate to AppleClang rather than GNU on macos.
-    env:
-      CC: gcc-12
-      CXX: g++-12
-
     # Build steps
     steps:
-      # Step: Install GCC (macOS only)
-      - name: Install GCC
-        if: startsWith(runner.os, 'macOS')
-        run: |
-          brew install gcc@12
-          echo "CC=$(brew --prefix)/bin/gcc-12" >> $GITHUB_ENV
-          echo "CXX=$(brew --prefix)/bin/g++-12" >> $GITHUB_ENV
-
       # Step: Checkout
       - name: Checkout
         uses: actions/checkout@v4
