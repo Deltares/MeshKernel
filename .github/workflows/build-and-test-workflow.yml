@@ -19,14 +19,6 @@ jobs:
 
     # Build steps
     steps:
-      # Step: Install GCC (macOS only)
-      - name: Install GCC
-        if: startsWith(runner.os, 'macOS')
-        run: |
-          brew install gcc@12
-          echo "CC=$(brew --prefix)/bin/gcc-12" >> $GITHUB_ENV
-          echo "CXX=$(brew --prefix)/bin/g++-12" >> $GITHUB_ENV
-
       # Step: Checkout
       - name: Checkout
         uses: actions/checkout@v4
