@@ -455,7 +455,8 @@ namespace meshkernel
                                        UInt& currentNode,
                                        std::vector<Point>& meshBoundaryPolygon,
                                        std::vector<UInt>& nodeIds,
-                                       std::vector<Point>& subSequence) const;
+                                       std::vector<Point>& subSequence,
+                                       std::vector<Point>& illegalCells) const;
 
         /// @brief Ensure that all polynomials are orientated in the ACW direction.
         void OrientatePolygonsAntiClockwise(std::vector<Point>& polygonNodes) const;
