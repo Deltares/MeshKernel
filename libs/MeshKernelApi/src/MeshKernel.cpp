@@ -937,7 +937,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_inner_boundary_polygon_data(int meshKernelId, Mesh2D& mesh2d)
+    MKERNEL_API int mkernel_mesh2d_get_inner_boundary_polygon_data(int meshKernelId, GeometryList& innerPolygon)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -947,12 +947,12 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            if (mesh2d.num_nodes != static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetInnerBoundaryPolygons().size()))
+            if (innerPolygon.num_coordinates != static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetInnerBoundaryPolygons().size()))
             {
                 throw meshkernel::MeshKernelError("The geometry list has not been initialised correctly.");
             }
 
-            if (mesh2d.node_x == nullptr || mesh2d.node_y == nullptr)
+            if (innerPolygon.coordinates_x == nullptr || innerPolygon.coordinates_y == nullptr)
             {
                 throw meshkernel::MeshKernelError("The geometry list has not been initialised correctly.");
             }
@@ -963,8 +963,8 @@ namespace meshkernelapi
 
             for (const meshkernel::Point& p : illegalCellsPolygons)
             {
-                mesh2d.node_x[count] = p.x;
-                mesh2d.node_y[count] = p.y;
+                innerPolygon.coordinates_x[count] = p.x;
+                innerPolygon.coordinates_y[count] = p.y;
                 ++count;
             }
         }
@@ -975,7 +975,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_inner_boundary_polygon_dimension(int meshKernelId, Mesh2D& mesh2d)
+    MKERNEL_API int mkernel_mesh2d_get_inner_boundary_polygon_dimension(int meshKernelId, GeometryList& innerPolygon)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -985,7 +985,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            mesh2d.num_nodes = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetInnerBoundaryPolygons().size());
+            innerPolygon.num_coordinates = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetInnerBoundaryPolygons().size());
         }
         catch (...)
         {
