@@ -937,6 +937,63 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_mesh2d_get_inner_boundary_polygon_data(int meshKernelId, Mesh2D& mesh2d)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (mesh2d.num_nodes != static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetInnerBoundaryPolygons().size()))
+            {
+                throw meshkernel::MeshKernelError("The geometry list has not been initialised correctly.");
+            }
+
+            if (mesh2d.node_x == nullptr || mesh2d.node_y == nullptr)
+            {
+                throw meshkernel::MeshKernelError("The geometry list has not been initialised correctly.");
+            }
+
+            const std::vector<meshkernel::Point>& illegalCellsPolygons(meshKernelState[meshKernelId].m_mesh2d->GetInnerBoundaryPolygons());
+
+            int count = 0;
+
+            for (const meshkernel::Point& p : illegalCellsPolygons)
+            {
+                mesh2d.node_x[count] = p.x;
+                mesh2d.node_y[count] = p.y;
+                ++count;
+            }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_get_inner_boundary_polygon_dimension(int meshKernelId, Mesh2D& mesh2d)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            mesh2d.num_nodes = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetInnerBoundaryPolygons().size());
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_mesh2d_get_edge_length_property_type(int& type)
     {
         lastExitCode = meshkernel::ExitCode::Success;
