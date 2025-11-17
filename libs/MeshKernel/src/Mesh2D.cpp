@@ -1871,7 +1871,7 @@ void Mesh2D::WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
                     ++start;
                 }
 
-                meshBoundaryPolygon.insert(meshBoundaryPolygon.end(), subSequence.begin() + lastIndex, subSequence.begin() + nodeIds.size());
+                meshBoundaryPolygon.insert(meshBoundaryPolygon.end(), subSequence.begin() + lastIndex, subSequence.end());
                 meshBoundaryPolygon.emplace_back(subSequence[lastIndex]);
 
                 // the points making up the last found polygon
