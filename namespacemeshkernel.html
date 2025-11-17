@@ -531,12 +531,12 @@ template&lt;typename T &gt; </td></tr>
 <tr class="memitem:aaf0a80624cc39ca2bbcaaa9d772b4136" id="r_aaf0a80624cc39ca2bbcaaa9d772b4136"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#aaf0a80624cc39ca2bbcaaa9d772b4136">crossProduct</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentFirstPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;firstSegmentSecondPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentFirstPoint, const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;secondSegmentSecondPoint, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
 <tr class="memdesc:aaf0a80624cc39ca2bbcaaa9d772b4136"><td class="mdescLeft">&#160;</td><td class="mdescRight">Computes the cross product between two segments (duitpl)  <br /></td></tr>
 <tr class="separator:aaf0a80624cc39ca2bbcaaa9d772b4136"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3356503d69b272a618842fd6653dfc00" id="r_a3356503d69b272a618842fd6653dfc00"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a3356503d69b272a618842fd6653dfc00">IsPointInPolygonNodes</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;point, const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygonNodes, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, <a class="el" href="classmeshkernel_1_1_point.html">Point</a> polygonCenter={constants::missing::doubleValue, constants::missing::doubleValue}, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startNode=constants::missing::uintValue, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endNode=constants::missing::uintValue)</td></tr>
-<tr class="memdesc:a3356503d69b272a618842fd6653dfc00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is in polygonNodes using the winding number method.  <br /></td></tr>
-<tr class="separator:a3356503d69b272a618842fd6653dfc00"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1fcd21aa656c8a67fbd1079d1b81a89c" id="r_a1fcd21aa656c8a67fbd1079d1b81a89c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a1fcd21aa656c8a67fbd1079d1b81a89c">IsPointInPolygonNodes</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;point, const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;polygonNodes, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, const <a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a> &amp;boundingBox, <a class="el" href="classmeshkernel_1_1_point.html">Point</a> polygonCenter={constants::missing::doubleValue, constants::missing::doubleValue}, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startNode=constants::missing::uintValue, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endNode=constants::missing::uintValue)</td></tr>
-<tr class="memdesc:a1fcd21aa656c8a67fbd1079d1b81a89c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is in polygonNodes using the winding number method.  <br /></td></tr>
-<tr class="separator:a1fcd21aa656c8a67fbd1079d1b81a89c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae69121176817346215599de956a91d5a" id="r_ae69121176817346215599de956a91d5a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ae69121176817346215599de956a91d5a">IsPointInPolygonNodes</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;point, const std::span&lt; const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; polygonNodes, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, <a class="el" href="classmeshkernel_1_1_point.html">Point</a> polygonCenter={constants::missing::doubleValue, constants::missing::doubleValue}, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startNode=constants::missing::uintValue, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endNode=constants::missing::uintValue)</td></tr>
+<tr class="memdesc:ae69121176817346215599de956a91d5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is in polygonNodes using the winding number method.  <br /></td></tr>
+<tr class="separator:ae69121176817346215599de956a91d5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8707ebfc5afa7e9d56cce7180226f98e" id="r_a8707ebfc5afa7e9d56cce7180226f98e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#a8707ebfc5afa7e9d56cce7180226f98e">IsPointInPolygonNodes</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;point, const std::span&lt; const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; polygonNodes, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection, const <a class="el" href="classmeshkernel_1_1_bounding_box.html">BoundingBox</a> &amp;boundingBox, <a class="el" href="classmeshkernel_1_1_point.html">Point</a> polygonCenter={constants::missing::doubleValue, constants::missing::doubleValue}, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startNode=constants::missing::uintValue, <a class="el" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> endNode=constants::missing::uintValue)</td></tr>
+<tr class="memdesc:a8707ebfc5afa7e9d56cce7180226f98e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is in polygonNodes using the winding number method.  <br /></td></tr>
+<tr class="separator:a8707ebfc5afa7e9d56cce7180226f98e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada642e1e268fa84ad7a3f630cc1e03cd" id="r_ada642e1e268fa84ad7a3f630cc1e03cd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernel.html#ada642e1e268fa84ad7a3f630cc1e03cd">IsPointInTriangle</a> (const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &amp;point, const std::span&lt; const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; triangleNodes, const <a class="el" href="namespacemeshkernel.html#a22d09b6f79c4d1aa55aafadb84908716">Projection</a> &amp;projection)</td></tr>
 <tr class="memdesc:ada642e1e268fa84ad7a3f630cc1e03cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if a point is in triangle using the winding number method.  <br /></td></tr>
 <tr class="separator:ada642e1e268fa84ad7a3f630cc1e03cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -2582,8 +2582,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a1fcd21aa656c8a67fbd1079d1b81a89c" name="a1fcd21aa656c8a67fbd1079d1b81a89c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1fcd21aa656c8a67fbd1079d1b81a89c">&#9670;&#160;</a></span>IsPointInPolygonNodes() <span class="overload">[1/2]</span></h2>
+<a id="a8707ebfc5afa7e9d56cce7180226f98e" name="a8707ebfc5afa7e9d56cce7180226f98e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8707ebfc5afa7e9d56cce7180226f98e">&#9670;&#160;</a></span>IsPointInPolygonNodes() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2597,7 +2597,7 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::span&lt; const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td>
           <td class="paramname"><em>polygonNodes</em>, </td>
         </tr>
         <tr>
@@ -2655,8 +2655,8 @@ template&lt;typename T &gt; </div>
 
 </div>
 </div>
-<a id="a3356503d69b272a618842fd6653dfc00" name="a3356503d69b272a618842fd6653dfc00"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3356503d69b272a618842fd6653dfc00">&#9670;&#160;</a></span>IsPointInPolygonNodes() <span class="overload">[2/2]</span></h2>
+<a id="ae69121176817346215599de956a91d5a" name="ae69121176817346215599de956a91d5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae69121176817346215599de956a91d5a">&#9670;&#160;</a></span>IsPointInPolygonNodes() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2670,7 +2670,7 @@ template&lt;typename T &gt; </div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt; &amp;&#160;</td>
+          <td class="paramtype">const std::span&lt; const <a class="el" href="classmeshkernel_1_1_point.html">Point</a> &gt;&#160;</td>
           <td class="paramname"><em>polygonNodes</em>, </td>
         </tr>
         <tr>

@@ -338,65 +338,66 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00455" name="l00455"></a><span class="lineno">  455</span>                                       <a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a>&amp; currentNode,</div>
 <div class="line"><a id="l00456" name="l00456"></a><span class="lineno">  456</span>                                       std::vector&lt;Point&gt;&amp; meshBoundaryPolygon,</div>
 <div class="line"><a id="l00457" name="l00457"></a><span class="lineno">  457</span>                                       std::vector&lt;UInt&gt;&amp; nodeIds,</div>
-<div class="line"><a id="l00458" name="l00458"></a><span class="lineno">  458</span>                                       std::vector&lt;Point&gt;&amp; subSequence) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00459" name="l00459"></a><span class="lineno">  459</span> </div>
-<div class="line"><a id="l00461" name="l00461"></a><span class="lineno">  461</span>        <span class="keywordtype">void</span> OrientatePolygonsAntiClockwise(std::vector&lt;Point&gt;&amp; polygonNodes) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00462" name="l00462"></a><span class="lineno">  462</span> </div>
-<div class="line"><a id="l00466" name="l00466"></a><span class="lineno">  466</span>        std::vector&lt;Point&gt; RemoveOuterDomainBoundaryPolygon(<span class="keyword">const</span> std::vector&lt;Point&gt;&amp; polygonNodes) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00467" name="l00467"></a><span class="lineno">  467</span> </div>
-<div class="line"><a id="l00472" name="l00472"></a><span class="lineno">  472</span>        [[nodiscard]] std::unique_ptr&lt;UndoAction&gt; DeleteMeshFaces(<span class="keyword">const</span> <a class="code hl_class" href="classmeshkernel_1_1_polygons.html">Polygons</a>&amp; polygon, <span class="keywordtype">bool</span> invertDeletion);</div>
-<div class="line"><a id="l00473" name="l00473"></a><span class="lineno">  473</span> </div>
-<div class="line"><a id="l00475" name="l00475"></a><span class="lineno">  475</span>        <span class="keywordtype">void</span> AppendCellPolygon(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> faceId);</div>
-<div class="line"><a id="l00476" name="l00476"></a><span class="lineno">  476</span> </div>
-<div class="line"><a id="l00478" name="l00478"></a><span class="lineno">  478</span>        <span class="keywordtype">void</span> DeleteMeshHoles(CompoundUndoAction* undoAction);</div>
-<div class="line"><a id="l00479" name="l00479"></a><span class="lineno">  479</span> </div>
-<div class="line"><a id="l00485" name="l00485"></a><span class="lineno">  485</span>        std::unique_ptr&lt;UndoAction&gt; UpdateFaceInformation(<span class="keyword">const</span> std::vector&lt;UInt&gt;&amp; faceIndices, <span class="keyword">const</span> <span class="keywordtype">bool</span> appendDeletedFaces);</div>
-<div class="line"><a id="l00486" name="l00486"></a><span class="lineno">  486</span> </div>
-<div class="line"><a id="l00497" name="l00497"></a><span class="lineno">  497</span>        <span class="keywordtype">void</span> FindFacesRecursive(<a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startNode,</div>
-<div class="line"><a id="l00498" name="l00498"></a><span class="lineno">  498</span>                                <a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> node,</div>
-<div class="line"><a id="l00499" name="l00499"></a><span class="lineno">  499</span>                                <a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> previousEdge,</div>
-<div class="line"><a id="l00500" name="l00500"></a><span class="lineno">  500</span>                                <a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numClosingEdges,</div>
-<div class="line"><a id="l00501" name="l00501"></a><span class="lineno">  501</span>                                std::vector&lt;UInt&gt;&amp; edges,</div>
-<div class="line"><a id="l00502" name="l00502"></a><span class="lineno">  502</span>                                std::vector&lt;UInt&gt;&amp; nodes,</div>
-<div class="line"><a id="l00503" name="l00503"></a><span class="lineno">  503</span>                                std::vector&lt;UInt&gt;&amp; sortedEdges,</div>
-<div class="line"><a id="l00504" name="l00504"></a><span class="lineno">  504</span>                                std::vector&lt;UInt&gt;&amp; sortedNodes,</div>
-<div class="line"><a id="l00505" name="l00505"></a><span class="lineno">  505</span>                                std::vector&lt;Point&gt;&amp; nodalValues);</div>
-<div class="line"><a id="l00506" name="l00506"></a><span class="lineno">  506</span> </div>
-<div class="line"><a id="l00511" name="l00511"></a><span class="lineno">  511</span>        [[nodiscard]] <span class="keywordtype">bool</span> HasTriangleNoAcuteAngles(<span class="keyword">const</span> std::vector&lt;UInt&gt;&amp; faceNodes, <span class="keyword">const</span> std::vector&lt;Point&gt;&amp; nodes) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00512" name="l00512"></a><span class="lineno">  512</span> </div>
-<div class="line"><a id="l00516" name="l00516"></a><span class="lineno">  516</span>        <span class="keywordtype">bool</span> HasDuplicateNodes(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numClosingEdges, <span class="keyword">const</span> std::vector&lt;UInt&gt;&amp; node, std::vector&lt;UInt&gt;&amp; sortedNodes) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00517" name="l00517"></a><span class="lineno">  517</span> </div>
-<div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span>        <span class="keywordtype">bool</span> HasDuplicateEdgeFaces(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numClosingEdges, <span class="keyword">const</span> std::vector&lt;UInt&gt;&amp; edges, std::vector&lt;UInt&gt;&amp; sortedEdgesFaces) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span> </div>
-<div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span>        <span class="keywordtype">void</span> ResizeAndInitializeFaceVectors();</div>
-<div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span> </div>
-<div class="line"><a id="l00529" name="l00529"></a><span class="lineno">  529</span>        <span class="keywordtype">void</span> DoAdministrationGivenFaceNodesMapping(<span class="keyword">const</span> std::vector&lt;std::vector&lt;UInt&gt;&gt;&amp; faceNodes,</div>
-<div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span>                                                   <span class="keyword">const</span> std::vector&lt;std::uint8_t&gt;&amp; numFaceNodes);</div>
-<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span> </div>
-<div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span>        <span class="keywordtype">void</span> DoAdministration(CompoundUndoAction* undoAction = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span> </div>
-<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span>        <span class="keywordtype">void</span> InitialiseBoundaryNodeClassification(std::vector&lt;int&gt;&amp; intNodeType) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span> </div>
-<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>        <a class="code hl_enumeration" href="namespacemeshkernel.html#a296258ed24b382bc57ad5d4fe5f325ca">MeshNodeType</a> ClassifyNode(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> nodeId) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span> </div>
-<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>        <span class="keywordtype">void</span> ComputeAverageFlowEdgesLength(std::vector&lt;double&gt;&amp; edgesLength,</div>
-<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>                                           std::vector&lt;double&gt;&amp; averageFlowEdgesLength) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span> </div>
-<div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span>        <span class="keywordtype">void</span> ComputeAverageEdgeLength(<span class="keyword">const</span> std::vector&lt;double&gt;&amp; edgesLength,</div>
-<div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span>                                      <span class="keyword">const</span> std::vector&lt;double&gt;&amp; averageFlowEdgesLength,</div>
-<div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span>                                      std::vector&lt;bool&gt;&amp; curvilinearGridIndicator,</div>
-<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>                                      std::vector&lt;std::array&lt;double, 2&gt;&gt;&amp; averageEdgesLength,</div>
-<div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span>                                      std::vector&lt;double&gt;&amp; aspectRatios) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span> </div>
-<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>        <a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> InvalidateEdgesWithNoFace();</div>
-<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span> </div>
-<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span>        std::vector&lt;MeshNodeType&gt; m_nodesTypes;   </div>
-<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>        std::vector&lt;Point&gt; m_invalidCellPolygons; </div>
-<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span>    };</div>
+<div class="line"><a id="l00458" name="l00458"></a><span class="lineno">  458</span>                                       std::vector&lt;Point&gt;&amp; subSequence,</div>
+<div class="line"><a id="l00459" name="l00459"></a><span class="lineno">  459</span>                                       std::vector&lt;Point&gt;&amp; illegalCells) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00460" name="l00460"></a><span class="lineno">  460</span> </div>
+<div class="line"><a id="l00462" name="l00462"></a><span class="lineno">  462</span>        <span class="keywordtype">void</span> OrientatePolygonsAntiClockwise(std::vector&lt;Point&gt;&amp; polygonNodes) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00463" name="l00463"></a><span class="lineno">  463</span> </div>
+<div class="line"><a id="l00467" name="l00467"></a><span class="lineno">  467</span>        std::vector&lt;Point&gt; RemoveOuterDomainBoundaryPolygon(<span class="keyword">const</span> std::vector&lt;Point&gt;&amp; polygonNodes) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00468" name="l00468"></a><span class="lineno">  468</span> </div>
+<div class="line"><a id="l00473" name="l00473"></a><span class="lineno">  473</span>        [[nodiscard]] std::unique_ptr&lt;UndoAction&gt; DeleteMeshFaces(<span class="keyword">const</span> <a class="code hl_class" href="classmeshkernel_1_1_polygons.html">Polygons</a>&amp; polygon, <span class="keywordtype">bool</span> invertDeletion);</div>
+<div class="line"><a id="l00474" name="l00474"></a><span class="lineno">  474</span> </div>
+<div class="line"><a id="l00476" name="l00476"></a><span class="lineno">  476</span>        <span class="keywordtype">void</span> AppendCellPolygon(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> faceId);</div>
+<div class="line"><a id="l00477" name="l00477"></a><span class="lineno">  477</span> </div>
+<div class="line"><a id="l00479" name="l00479"></a><span class="lineno">  479</span>        <span class="keywordtype">void</span> DeleteMeshHoles(CompoundUndoAction* undoAction);</div>
+<div class="line"><a id="l00480" name="l00480"></a><span class="lineno">  480</span> </div>
+<div class="line"><a id="l00486" name="l00486"></a><span class="lineno">  486</span>        std::unique_ptr&lt;UndoAction&gt; UpdateFaceInformation(<span class="keyword">const</span> std::vector&lt;UInt&gt;&amp; faceIndices, <span class="keyword">const</span> <span class="keywordtype">bool</span> appendDeletedFaces);</div>
+<div class="line"><a id="l00487" name="l00487"></a><span class="lineno">  487</span> </div>
+<div class="line"><a id="l00498" name="l00498"></a><span class="lineno">  498</span>        <span class="keywordtype">void</span> FindFacesRecursive(<a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> startNode,</div>
+<div class="line"><a id="l00499" name="l00499"></a><span class="lineno">  499</span>                                <a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> node,</div>
+<div class="line"><a id="l00500" name="l00500"></a><span class="lineno">  500</span>                                <a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> previousEdge,</div>
+<div class="line"><a id="l00501" name="l00501"></a><span class="lineno">  501</span>                                <a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numClosingEdges,</div>
+<div class="line"><a id="l00502" name="l00502"></a><span class="lineno">  502</span>                                std::vector&lt;UInt&gt;&amp; edges,</div>
+<div class="line"><a id="l00503" name="l00503"></a><span class="lineno">  503</span>                                std::vector&lt;UInt&gt;&amp; nodes,</div>
+<div class="line"><a id="l00504" name="l00504"></a><span class="lineno">  504</span>                                std::vector&lt;UInt&gt;&amp; sortedEdges,</div>
+<div class="line"><a id="l00505" name="l00505"></a><span class="lineno">  505</span>                                std::vector&lt;UInt&gt;&amp; sortedNodes,</div>
+<div class="line"><a id="l00506" name="l00506"></a><span class="lineno">  506</span>                                std::vector&lt;Point&gt;&amp; nodalValues);</div>
+<div class="line"><a id="l00507" name="l00507"></a><span class="lineno">  507</span> </div>
+<div class="line"><a id="l00512" name="l00512"></a><span class="lineno">  512</span>        [[nodiscard]] <span class="keywordtype">bool</span> HasTriangleNoAcuteAngles(<span class="keyword">const</span> std::vector&lt;UInt&gt;&amp; faceNodes, <span class="keyword">const</span> std::vector&lt;Point&gt;&amp; nodes) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00513" name="l00513"></a><span class="lineno">  513</span> </div>
+<div class="line"><a id="l00517" name="l00517"></a><span class="lineno">  517</span>        <span class="keywordtype">bool</span> HasDuplicateNodes(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numClosingEdges, <span class="keyword">const</span> std::vector&lt;UInt&gt;&amp; node, std::vector&lt;UInt&gt;&amp; sortedNodes) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00518" name="l00518"></a><span class="lineno">  518</span> </div>
+<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>        <span class="keywordtype">bool</span> HasDuplicateEdgeFaces(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> numClosingEdges, <span class="keyword">const</span> std::vector&lt;UInt&gt;&amp; edges, std::vector&lt;UInt&gt;&amp; sortedEdgesFaces) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span> </div>
+<div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span>        <span class="keywordtype">void</span> ResizeAndInitializeFaceVectors();</div>
+<div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span> </div>
+<div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span>        <span class="keywordtype">void</span> DoAdministrationGivenFaceNodesMapping(<span class="keyword">const</span> std::vector&lt;std::vector&lt;UInt&gt;&gt;&amp; faceNodes,</div>
+<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>                                                   <span class="keyword">const</span> std::vector&lt;std::uint8_t&gt;&amp; numFaceNodes);</div>
+<div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span> </div>
+<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>        <span class="keywordtype">void</span> DoAdministration(CompoundUndoAction* undoAction = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span> </div>
+<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span>        <span class="keywordtype">void</span> InitialiseBoundaryNodeClassification(std::vector&lt;int&gt;&amp; intNodeType) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span> </div>
+<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span>        <a class="code hl_enumeration" href="namespacemeshkernel.html#a296258ed24b382bc57ad5d4fe5f325ca">MeshNodeType</a> ClassifyNode(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> nodeId) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span> </div>
+<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>        <span class="keywordtype">void</span> ComputeAverageFlowEdgesLength(std::vector&lt;double&gt;&amp; edgesLength,</div>
+<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>                                           std::vector&lt;double&gt;&amp; averageFlowEdgesLength) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span> </div>
+<div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span>        <span class="keywordtype">void</span> ComputeAverageEdgeLength(<span class="keyword">const</span> std::vector&lt;double&gt;&amp; edgesLength,</div>
+<div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span>                                      <span class="keyword">const</span> std::vector&lt;double&gt;&amp; averageFlowEdgesLength,</div>
+<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>                                      std::vector&lt;bool&gt;&amp; curvilinearGridIndicator,</div>
+<div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span>                                      std::vector&lt;std::array&lt;double, 2&gt;&gt;&amp; averageEdgesLength,</div>
+<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span>                                      std::vector&lt;double&gt;&amp; aspectRatios) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span> </div>
+<div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span>        <a class="code hl_typedef" href="namespacemeshkernel.html#a97cee6f31f2b12e413c4b37aceaccf28">UInt</a> InvalidateEdgesWithNoFace();</div>
+<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span> </div>
+<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>        std::vector&lt;MeshNodeType&gt; m_nodesTypes;   </div>
+<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span>        std::vector&lt;Point&gt; m_invalidCellPolygons; </div>
+<div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span>    };</div>
 </div>
-<div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span> </div>
-<div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span>} <span class="comment">// namespace meshkernel</span></div>
-<div class="ttc" id="aclassmeshkernel_1_1_bounding_box_html"><div class="ttname"><a href="classmeshkernel_1_1_bounding_box.html">meshkernel::BoundingBox</a></div><div class="ttdoc">A class defining a bounding box.</div><div class="ttdef"><b>Definition</b> BoundingBox.hpp:40</div></div>
+<div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span> </div>
+<div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>} <span class="comment">// namespace meshkernel</span></div>
+<div class="ttc" id="aclassmeshkernel_1_1_bounding_box_html"><div class="ttname"><a href="classmeshkernel_1_1_bounding_box.html">meshkernel::BoundingBox</a></div><div class="ttdoc">A class defining a bounding box.</div><div class="ttdef"><b>Definition</b> BoundingBox.hpp:43</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_mesh2_d_html"><div class="ttname"><a href="classmeshkernel_1_1_mesh2_d.html">meshkernel::Mesh2D</a></div><div class="ttdoc">A class derived from Mesh, which describes unstructures 2d meshes.</div><div class="ttdef"><b>Definition</b> Mesh2D.hpp:59</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_mesh2_d_html_a090e78d0c19e35d87acc5bdc82559398"><div class="ttname"><a href="classmeshkernel_1_1_mesh2_d.html#a090e78d0c19e35d87acc5bdc82559398">meshkernel::Mesh2D::Mesh2D</a></div><div class="ttdeci">Mesh2D()</div><div class="ttdoc">Default constructor.</div></div>
 <div class="ttc" id="aclassmeshkernel_1_1_mesh2_d_html_a0a715728f7bbf687dc65a05750684b93"><div class="ttname"><a href="classmeshkernel_1_1_mesh2_d.html#a0a715728f7bbf687dc65a05750684b93">meshkernel::Mesh2D::Mesh2D</a></div><div class="ttdeci">Mesh2D(const std::vector&lt; Edge &gt; &amp;edges, const std::vector&lt; Point &gt; &amp;nodes, const std::vector&lt; std::vector&lt; UInt &gt; &gt; &amp;faceNodes, const std::vector&lt; std::uint8_t &gt; &amp;numFaceNodes, Projection projection)</div><div class="ttdoc">Construct a mesh2d from face nodes and num face nodes.</div></div>
