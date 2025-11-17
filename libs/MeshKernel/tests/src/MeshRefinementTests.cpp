@@ -3078,13 +3078,13 @@ TEST(MeshRefinement, MeshWithHole_ShouldConstructMeshWithInteriorBoundaryPolygon
     // This should not fill in the holes in the mesh
     mesh2.Administrate();
 
-    // Compute interior boundary polygon points
-    std::vector<Point> boundaryNodes2 = mesh2.ComputeInnerBoundaryPolygons();
+    // Get interior boundary polygon points
+    std::vector<Point> innerBoundaryPoints = mesh2.GetInnerBoundaryPolygons();
 
     // The expected number of points, should not include any land boundary points
     UInt expectedNumberOfNodes = 26;
 
-    ASSERT_EQ(expectedNumberOfNodes, boundaryNodes2.size());
+    ASSERT_EQ(expectedNumberOfNodes, innerBoundaryPoints.size());
 
     // The edge of one of the deleted elements lies on the boundary, so will be not be part of the
     // interior set of polygons
@@ -3146,7 +3146,7 @@ TEST(MeshRefinement, MeshWithHole_ShouldConstructMeshWithInteriorBoundaryPolygon
 
     for (size_t i = 0; i < expectedXPoints.size(); ++i)
     {
-        EXPECT_EQ(expectedXPoints[i], boundaryNodes2[i].x);
-        EXPECT_EQ(expectedYPoints[i], boundaryNodes2[i].y);
+        EXPECT_EQ(expectedXPoints[i], innerBoundaryPoints[i].x);
+        EXPECT_EQ(expectedYPoints[i], innerBoundaryPoints[i].y);
     }
 }
