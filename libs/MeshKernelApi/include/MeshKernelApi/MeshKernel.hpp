@@ -1256,7 +1256,7 @@ namespace meshkernelapi
         /// @param[in]     meshKernelId The id of the mesh state
         /// @param[in,out] mesh2d       The Mesh2D data
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_get_inner_boundary_polygon_dimension(int meshKernelId, GeometryList& mesh2d);
+        MKERNEL_API int mkernel_mesh2d_get_inner_boundary_polygon_dimension(int meshKernelId, int& size);
 
         /// @brief Gets only the node and edge Mesh2D data
         ///

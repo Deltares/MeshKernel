@@ -975,7 +975,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_inner_boundary_polygon_dimension(int meshKernelId, GeometryList& innerPolygon)
+    MKERNEL_API int mkernel_mesh2d_get_inner_boundary_polygon_dimension(int meshKernelId, int& size)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -985,7 +985,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            innerPolygon.num_coordinates = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetInnerBoundaryPolygons().size());
+            size = static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetInnerBoundaryPolygons().size());
         }
         catch (...)
         {
