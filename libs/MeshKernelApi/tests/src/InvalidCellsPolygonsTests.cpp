@@ -207,7 +207,7 @@ TEST(InvalidCellsPolygonsTests, MeshHolesAreMainainedAfterRefinement)
     innerPolygon.coordinates_x = xInner.data();
     innerPolygon.coordinates_y = yInner.data();
 
-    errorCode = meshkernelapi::mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons(meshKernelId, innerPolygon);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_data(meshKernelId, innerPolygon);
     EXPECT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     const double tolerance = 1.0e-10;
