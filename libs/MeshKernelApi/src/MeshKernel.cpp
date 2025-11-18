@@ -957,11 +957,11 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The geometry list has not been initialised correctly.");
             }
 
-            const std::vector<meshkernel::Point>& illegalCellsPolygons(meshKernelState[meshKernelId].m_mesh2d->GetInnerBoundaryPolygons());
+            const std::vector<meshkernel::Point>& innerBoundaryPolygons(meshKernelState[meshKernelId].m_mesh2d->GetInnerBoundaryPolygons());
 
-            int count = 0;
+            size_t count = 0;
 
-            for (const meshkernel::Point& p : illegalCellsPolygons)
+            for (const meshkernel::Point& p : innerBoundaryPolygons)
             {
                 innerPolygon.coordinates_x[count] = p.x;
                 innerPolygon.coordinates_y[count] = p.y;

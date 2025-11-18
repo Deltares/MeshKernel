@@ -1246,15 +1246,15 @@ namespace meshkernelapi
 
         /// @brief Gets the Mesh2D inner boundary polygons data
         ///
-        /// @param[in]  meshKernelId The id of the mesh state
-        /// @param[out] mesh2d       The Mesh2D data
+        /// @param[in]     meshKernelId  The id of the mesh state
+        /// @param[in,out] innerPolygons The inner boundaries polygons
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_data(int meshKernelId, GeometryList& mesh2d);
+        MKERNEL_API int mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_data(int meshKernelId, GeometryList& innerPolygons);
 
         /// @brief Gets the Mesh2D inner boundary polygons dimension
         ///
-        /// @param[in]     meshKernelId The id of the mesh state
-        /// @param[in,out] mesh2d       The Mesh2D data
+        /// @param[in]  meshKernelId The id of the mesh state
+        /// @param[out] size         The number of points in the inner boundaries polygons, including separator points.
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_dimension(int meshKernelId, int& size);
 
