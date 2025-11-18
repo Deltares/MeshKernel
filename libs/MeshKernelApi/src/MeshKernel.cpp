@@ -937,7 +937,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_data(int meshKernelId, GeometryList& innerPolygon)
+    MKERNEL_API int mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons(int meshKernelId, GeometryList& innerPolygon)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
