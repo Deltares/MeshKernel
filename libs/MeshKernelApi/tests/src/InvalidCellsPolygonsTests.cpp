@@ -197,7 +197,7 @@ TEST(InvalidCellsPolygonsTests, MeshHolesAreMainainedAfterRefinement)
     int innerPolygonSize = 0;
     meshkernelapi::GeometryList innerPolygon;
 
-    errorCode = meshkernelapi::mkernel_mesh2d_get_inner_boundary_polygon_dimension(meshKernelId, innerPolygonSize);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_dimension(meshKernelId, innerPolygonSize);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
     ASSERT_EQ(innerPolygonSize, 32);
 
@@ -207,7 +207,7 @@ TEST(InvalidCellsPolygonsTests, MeshHolesAreMainainedAfterRefinement)
     innerPolygon.coordinates_x = xInner.data();
     innerPolygon.coordinates_y = yInner.data();
 
-    errorCode = meshkernelapi::mkernel_mesh2d_get_inner_boundary_polygon_data(meshKernelId, innerPolygon);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_data(meshKernelId, innerPolygon);
     EXPECT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     const double tolerance = 1.0e-10;
