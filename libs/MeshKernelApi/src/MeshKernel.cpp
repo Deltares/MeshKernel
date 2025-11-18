@@ -959,9 +959,7 @@ namespace meshkernelapi
 
             const std::vector<meshkernel::Point>& innerBoundaryPolygons(meshKernelState[meshKernelId].m_mesh2d->GetInnerBoundaryPolygons());
 
-            size_t count = 0;
-
-            for (const meshkernel::Point& p : innerBoundaryPolygons)
+            for (size_t count = 0; const meshkernel::Point& p : innerBoundaryPolygons)
             {
                 innerPolygon.coordinates_x[count] = p.x;
                 innerPolygon.coordinates_y[count] = p.y;
