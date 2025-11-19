@@ -246,6 +246,9 @@ namespace meshkernel
         /// @return The face indexses
         [[nodiscard]] std::vector<UInt> SortedFacesAroundNode(UInt node) const;
 
+        /// @brief Get the polygons of the inner boundaries
+        const std::vector<Point>& GetInnerBoundaryPolygons() const;
+
         /// @brief Convert all mesh boundaries to a vector of polygon nodes, including holes (copynetboundstopol)
         /// @param[in] polygon The polygon where the operation is performed
         /// @return The resulting polygon mesh boundary
@@ -560,3 +563,8 @@ namespace meshkernel
     };
 
 } // namespace meshkernel
+
+inline const std::vector<meshkernel::Point>& meshkernel::Mesh2D::GetInnerBoundaryPolygons() const
+{
+    return m_invalidCellPolygons;
+}
