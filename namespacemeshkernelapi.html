@@ -569,6 +569,12 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
 <tr class="memitem:a009ffb86f5a7f1e40281b21f175f96fe" id="r_a009ffb86f5a7f1e40281b21f175f96fe"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a009ffb86f5a7f1e40281b21f175f96fe">mkernel_mesh2d_get_face_circumcenter_property_type</a> (int &amp;type)</td></tr>
 <tr class="memdesc:a009ffb86f5a7f1e40281b21f175f96fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets an int indicating the face circumcenter property type for mesh2d.  <br /></td></tr>
 <tr class="separator:a009ffb86f5a7f1e40281b21f175f96fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d9d88fd314eb03977834c4d9afde7b4" id="r_a6d9d88fd314eb03977834c4d9afde7b4"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a6d9d88fd314eb03977834c4d9afde7b4">mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_data</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;innerPolygons)</td></tr>
+<tr class="memdesc:a6d9d88fd314eb03977834c4d9afde7b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> inner boundary polygons data.  <br /></td></tr>
+<tr class="separator:a6d9d88fd314eb03977834c4d9afde7b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a450451fdfb46ee3368a2837b1f9f0f2d" id="r_a450451fdfb46ee3368a2837b1f9f0f2d"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#a450451fdfb46ee3368a2837b1f9f0f2d">mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_dimension</a> (int meshKernelId, int &amp;size)</td></tr>
+<tr class="memdesc:a450451fdfb46ee3368a2837b1f9f0f2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> inner boundary polygons dimension.  <br /></td></tr>
+<tr class="separator:a450451fdfb46ee3368a2837b1f9f0f2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac69ba29d07c1fcbd9a1292693090eaef" id="r_ac69ba29d07c1fcbd9a1292693090eaef"><td class="memItemLeft" align="right" valign="top">MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacemeshkernelapi.html#ac69ba29d07c1fcbd9a1292693090eaef">mkernel_mesh2d_get_node_edge_data</a> (int meshKernelId, <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html">Mesh2D</a> &amp;mesh2d)</td></tr>
 <tr class="memdesc:ac69ba29d07c1fcbd9a1292693090eaef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets only the node and edge <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> data.  <br /></td></tr>
 <tr class="separator:ac69ba29d07c1fcbd9a1292693090eaef"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -6728,6 +6734,82 @@ MKERNEL_API int&#160;</td><td class="memItemRight" valign="bottom"><b>mkernel_cu
     <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">selectionPolygon</td><td>The polygon selecting the area where generating the mesh boundary polygons </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">boundaryPolygons</td><td>The output network boundary polygon </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a6d9d88fd314eb03977834c4d9afde7b4" name="a6d9d88fd314eb03977834c4d9afde7b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d9d88fd314eb03977834c4d9afde7b4">&#9670;&#160;</a></span>mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_data()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_data </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structmeshkernelapi_1_1_geometry_list.html">GeometryList</a> &amp;&#160;</td>
+          <td class="paramname"><em>innerPolygons</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> inner boundary polygons data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">innerPolygons</td><td>The inner boundaries polygons </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code </dd></dl>
+
+</div>
+</div>
+<a id="a450451fdfb46ee3368a2837b1f9f0f2d" name="a450451fdfb46ee3368a2837b1f9f0f2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a450451fdfb46ee3368a2837b1f9f0f2d">&#9670;&#160;</a></span>mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_dimension()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MKERNEL_API int meshkernelapi::mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_dimension </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>meshKernelId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int &amp;&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the <a class="el" href="structmeshkernelapi_1_1_mesh2_d.html" title="A struct used to describe the values of an unstructured, two-dimensional mesh in a C-compatible manne...">Mesh2D</a> inner boundary polygons dimension. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">meshKernelId</td><td>The id of the mesh state </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">size</td><td>The number of points in the inner boundaries polygons, including separator points. </td></tr>
   </table>
   </dd>
 </dl>
