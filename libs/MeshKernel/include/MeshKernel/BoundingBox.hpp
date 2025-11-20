@@ -30,7 +30,10 @@
 #include "MeshKernel/Point.hpp"
 
 #include <algorithm>
+#include <concepts>
 #include <limits>
+#include <span>
+#include <vector>
 
 namespace meshkernel
 {
@@ -56,24 +59,19 @@ namespace meshkernel
         /// @tparam T Requires IsCoordinate<T>
         /// @param[in] points The point values
         template <typename T>
-        explicit BoundingBox(const std::vector<T>& points)
+        explicit BoundingBox(const std::span<const T> points)
         {
             Reset(points);
         }
 
-        /// @brief Reset bounding box with a vector of coordinates types
+        /// @brief Constructor taking a vector of coordinates types
         /// @tparam T Requires IsCoordinate<T>
         /// @param[in] points The point values
         template <typename T>
-        void Reset(const std::vector<T>& points);
-
-        /// @brief Reset bounding box with a vector of coordinates types
-        /// @tparam T Requires IsCoordinate<T>
-        /// @param[in] points The point values
-        /// @param[in] start The start index for the array slice
-        /// @param[in] end The end index for the array slice
-        template <typename T>
-        void Reset(const std::vector<T>& points, size_t start, size_t end);
+        explicit BoundingBox(const std::vector<T>& points)
+        {
+            Reset(points);
+        }
 
         /// @brief Constructor taking a vector of coordinates types
         /// @tparam T Requires IsCoordinate<T>
@@ -85,6 +83,34 @@ namespace meshkernel
         {
             Reset(points, start, end);
         }
+
+        /// @brief Reset bounding box with a vector of coordinates types
+        /// @tparam T Requires IsCoordinate<T>
+        /// @param[in] points The point values
+        template <typename T>
+        void Reset(const std::vector<T>& points);
+
+        /// @brief Reset bounding box with a std::span of coordinates types
+        /// @tparam T Requires IsCoordinate<T>
+        /// @param[in] points The point values
+        template <typename T>
+        void Reset(const std::span<const T> points);
+
+        /// @brief Reset bounding box with a vector of coordinates types
+        /// @tparam T Requires IsCoordinate<T>
+        /// @param[in] points The point values
+        /// @param[in] start The start index for the array slice
+        /// @param[in] end The end index for the array slice
+        template <typename T>
+        void Reset(const std::vector<T>& points, size_t start, size_t end);
+
+        /// @brief Reset bounding box with a std::span of coordinates types
+        /// @tparam T Requires IsCoordinate<T>
+        /// @param[in] points The point values
+        /// @param[in] start The start index for the array slice
+        /// @param[in] end The end index for the array slice
+        template <typename T>
+        void Reset(const std::span<const T> points, size_t start, size_t end);
 
         /// @brief Not equal operator
         /// @param[in] other The other bounding box to compare
@@ -113,11 +139,19 @@ namespace meshkernel
 
         /// @brief Returns the lower left corner of the bounding box
         /// @return The lower left corner of the bounding box
-        [[nodiscard]] auto& lowerLeft() const { return m_lowerLeft; }
+        [[nodiscard]] const auto& lowerLeft() const { return m_lowerLeft; }
+
+        /// @brief Returns the lower left corner of the bounding box
+        /// @return The lower left corner of the bounding box
+        [[nodiscard]] auto& lowerLeft() { return m_lowerLeft; }
 
         /// @brief Returns the upper right corner
         /// @return The upper right corner of the bounding box
-        [[nodiscard]] auto& upperRight() const { return m_upperRight; }
+        [[nodiscard]] const auto& upperRight() const { return m_upperRight; }
+
+        /// @brief Returns the upper right corner
+        /// @return The upper right corner of the bounding box
+        [[nodiscard]] auto& upperRight() { return m_upperRight; }
 
         /// @brief Returns the mass centre
         /// @return The mass centre of the bounding box.
@@ -174,7 +208,12 @@ namespace meshkernel
 template <typename T>
 void meshkernel::BoundingBox::Reset(const std::vector<T>& points)
 {
+    Reset(std::span(points));
+} // namespace meshkernel
 
+template <typename T>
+void meshkernel::BoundingBox::Reset(const std::span<const T> points)
+{
     if (points.size() > 0)
     {
         Reset(points, 0, points.size() - 1);
@@ -189,6 +228,12 @@ void meshkernel::BoundingBox::Reset(const std::vector<T>& points)
 
 template <typename T>
 void meshkernel::BoundingBox::Reset(const std::vector<T>& points, size_t start, size_t end)
+{
+    Reset(std::span(points), start, end);
+}
+
+template <typename T>
+void meshkernel::BoundingBox::Reset(const std::span<const T> points, size_t start, size_t end)
 {
     double minx = std::numeric_limits<double>::max();
     double maxx = std::numeric_limits<double>::lowest();
