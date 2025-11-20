@@ -1376,6 +1376,8 @@ REAL area;                                      /* The area of the triangle. */
   REAL oalen, dalen, odlen;
   REAL maxlen;
 
+  (void)(area);
+
   dxoa = triorg[0] - triapex[0];
   dyoa = triorg[1] - triapex[1];
   dxda = tridest[0] - triapex[0];
@@ -3264,7 +3266,7 @@ void info()
 /*                                                                           */
 /*****************************************************************************/
 
-void internalerror()
+void internalerror(void)
 {
   printf("  Please report this bug to jrs@cs.berkeley.edu\n");
   printf("  Include the message above, your input data set, and the exact\n");
@@ -3769,6 +3771,8 @@ struct osub *s;
   struct otri printtri;
   vertex printvertex;
 
+  (void)(b);
+
   printf("subsegment x%llx with orientation %d and mark %d:\n",
          (unsigned long long) s->ss, s->ssorient, mark(*s));
   sdecode(s->ss[0], printsh);
@@ -3946,7 +3950,7 @@ int alignment;
   /*   - The parameter `alignment'.                                   */
   /*   - sizeof(VOID *), so the stack of dead items can be maintained */
   /*       without unaligned accesses.                                */
-  if (alignment > sizeof(VOID *)) {
+  if (alignment > (int)sizeof(VOID *)) {
     pool->alignbytes = alignment;
   } else {
     pool->alignbytes = sizeof(VOID *);
@@ -4346,8 +4350,8 @@ struct behavior *b;
   /*   integer index can occupy the same space as the subsegment pointers  */
   /*   or attributes or area constraint or extra nodes.                    */
   if ((b->voronoi || b->neighbors) &&
-      (trisize < 6 * sizeof(triangle) + sizeof(int))) {
-    trisize = 6 * sizeof(triangle) + sizeof(int);
+      (trisize < 6 * (int)sizeof(triangle) + (int)sizeof(int))) {
+    trisize = 6 * (int)sizeof(triangle) + (int)sizeof(int);
   }
 
   /* Having determined the memory size of a triangle, initialize the pool. */
@@ -4883,7 +4887,7 @@ struct osub *newsubseg;
 /*                                                                           */
 /*****************************************************************************/
 
-void exactinit()
+void exactinit(void)
 {
   REAL half;
   REAL check, lastcheck;
@@ -11774,6 +11778,7 @@ vertex endpoint2;
   /* Inserting the vertex may have caused edge flips.  We wish to rediscover */
   /*   the edge connecting endpoint1 to the new intersection vertex.         */
   collinear = finddirection(m, b, splittri, endpoint1);
+  (void)(collinear);
   dest(*splittri, rightvertex);
   apex(*splittri, leftvertex);
   if ((leftvertex[0] == endpoint1[0]) && (leftvertex[1] == endpoint1[1])) {
@@ -13189,6 +13194,7 @@ struct behavior *b;
   while (subsegloop.ss != (subseg *) NULL) {
     /* If the segment is encroached, add it to the list. */
     dummy = checkseg4encroach(m, b, &subsegloop);
+    (void)(dummy);
     subsegloop.ss = subsegtraverse(m);
   }
 }
@@ -13203,7 +13209,7 @@ struct behavior *b;
 
 #ifndef CDT_ONLY
 
-void precisionerror()
+void precisionerror(void)
 {
   printf("Try increasing the area criterion and/or reducing the minimum\n");
   printf("  allowable angle so that tiny triangles are not created.\n");
@@ -13426,6 +13432,7 @@ int triflaws;
         dummy = checkseg4encroach(m, b, &currentenc);
         snextself(currentenc);
         dummy = checkseg4encroach(m, b, &currentenc);
+	(void)(dummy);
       }
 
       badsubsegdealloc(m, encloop);
@@ -14580,6 +14587,7 @@ char **argv;
       tlist[vertexindex++] = vertexmark(p1);
       tlist[vertexindex++] = vertexmark(p2);
       tlist[vertexindex++] = vertexmark(p3);
+      (void)(elementnumber);
 #else /* not TRILIBRARY */
       /* Triangle number, indices for three vertices. */
       fprintf(outfile, "%4ld    %4d  %4d  %4d", elementnumber,
@@ -15112,6 +15120,7 @@ char **argv;
           normlist[coordindex++] = tdest[1] - torg[1];
           elist[coordindex] = -1;
           normlist[coordindex++] = torg[0] - tdest[0];
+	  (void)(vedgenumber);
 #else /* not TRILIBRARY */
           /* Write an infinite ray.  Edge number, index of one endpoint, -1, */
           /*   and x and y coordinates of a vector representing the          */
