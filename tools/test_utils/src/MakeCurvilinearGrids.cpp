@@ -25,7 +25,6 @@ size_t CurvilinearGridCountValidNodes(meshkernelapi::CurvilinearGrid const& curv
 size_t CurvilinearGridCountValidNodes(meshkernel::CurvilinearGrid const& curvilinearGrid)
 {
     size_t validNodes = 0;
-    size_t index = 0;
     for (meshkernel::UInt n = 0; n < curvilinearGrid.NumN(); ++n)
     {
         for (meshkernel::UInt m = 0; m < curvilinearGrid.NumM(); ++m)
@@ -34,7 +33,6 @@ size_t CurvilinearGridCountValidNodes(meshkernel::CurvilinearGrid const& curvili
             {
                 validNodes++;
             }
-            index++;
         }
     }
     return validNodes;
