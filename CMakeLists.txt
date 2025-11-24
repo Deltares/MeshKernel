@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.23)
 
-set(MESHKERNEL_VERSION 8.2.0)
+set(MESHKERNEL_VERSION 8.2.1)
 
 project(
   MeshKernel
