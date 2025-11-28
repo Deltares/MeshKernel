@@ -227,6 +227,12 @@ TEST(Mesh2D, MeshBoundaryToPolygon)
     auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     std::vector<meshkernel::Point> polygonNodes;
+    polygonNodes.push_back({-2.5, 0.0});
+    polygonNodes.push_back({5.0, 7.5});
+    polygonNodes.push_back({7.5, 2.5});
+    polygonNodes.push_back({2.5, -2.5});
+    polygonNodes.push_back({-2.5, 0.0});
+
     const auto meshBoundaryPolygon = mesh.ComputeBoundaryPolygons(polygonNodes);
 
     const double tolerance = 1e-5;
