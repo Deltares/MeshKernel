@@ -445,8 +445,7 @@ namespace meshkernel
         std::vector<bool> FindFacesEntirelyInsidePolygon(const std::vector<bool>& isNodeInsidePolygon) const;
 
         /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
-        void WalkBoundaryFromNode(const Polygon& polygon,
-                                  std::vector<bool>& isVisited,
+        void WalkBoundaryFromNode(std::vector<bool>& isVisited,
                                   UInt& currentNode,
                                   std::vector<Point>& meshBoundaryPolygon) const;
 

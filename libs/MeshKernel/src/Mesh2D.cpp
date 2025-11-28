@@ -1554,7 +1554,7 @@ std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector
 
         // walk the current mesh boundary
         auto currentNode = secondNodeIndex;
-        WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
+        WalkBoundaryFromNode(isVisited, currentNode, meshBoundaryPolygon);
 
         const auto numNodesFirstTail = static_cast<UInt>(meshBoundaryPolygon.size());
 
@@ -1563,7 +1563,7 @@ std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector
         {
             // Now grow a polyline starting at the other side of the original link L, i.e., the second tail
             currentNode = firstNodeIndex;
-            WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
+            WalkBoundaryFromNode(isVisited, currentNode, meshBoundaryPolygon);
         }
 
         // There is a nonempty second tail, so reverse the first tail, so that they connect.
@@ -1782,26 +1782,16 @@ std::vector<meshkernel::Point> Mesh2D::RemoveOuterDomainBoundaryPolygon(const st
     return innerBoundaryNodes;
 }
 
-void Mesh2D::WalkBoundaryFromNode(const Polygon& polygon,
-                                  std::vector<bool>& isVisited,
+void Mesh2D::WalkBoundaryFromNode(std::vector<bool>& isVisited,
                                   UInt& currentNode,
                                   std::vector<Point>& meshBoundaryPolygon) const
 {
     UInt e = 0;
-    bool currentNodeInPolygon = false;
+
     while (e < m_nodesNumEdges[currentNode])
     {
-        if (!currentNodeInPolygon)
-        {
-            currentNodeInPolygon = polygon.Contains(m_nodes[currentNode]);
-        }
-
-        if (!currentNodeInPolygon)
-        {
-            break;
-        }
-
         const auto currentEdge = m_nodesEdges[currentNode][e];
+
         if (isVisited[currentEdge] || !IsEdgeOnBoundary(currentEdge))
         {
             e++;
@@ -1810,7 +1800,6 @@ void Mesh2D::WalkBoundaryFromNode(const Polygon& polygon,
 
         currentNode = OtherNodeOfEdge(m_edges[currentEdge], currentNode);
         e = 0;
-        currentNodeInPolygon = false;
 
         meshBoundaryPolygon.emplace_back(m_nodes[currentNode]);
         isVisited[currentEdge] = true;
