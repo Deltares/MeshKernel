@@ -227,8 +227,11 @@ TEST(Mesh2D, MeshBoundaryToPolygon)
     auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     std::vector<meshkernel::Point> polygonNodes;
+
+    // 2 Execution
     const auto meshBoundaryPolygon = mesh.ComputeBoundaryPolygons(polygonNodes);
 
+    // 3 Validation
     const double tolerance = 1e-5;
     ASSERT_NEAR(0.0, meshBoundaryPolygon[0].x, tolerance);
     ASSERT_NEAR(5.0, meshBoundaryPolygon[1].x, tolerance);
@@ -241,6 +244,88 @@ TEST(Mesh2D, MeshBoundaryToPolygon)
     ASSERT_NEAR(0.0, meshBoundaryPolygon[2].y, tolerance);
     ASSERT_NEAR(-5.0, meshBoundaryPolygon[3].y, tolerance);
     ASSERT_NEAR(0.0, meshBoundaryPolygon[4].y, tolerance);
+}
+
+TEST(Mesh2D, MeshBoundaryToPolygonWithSelection)
+{
+    // 1 Setup
+    std::vector<meshkernel::Point> nodes;
+    nodes.push_back({0.0, 0.0});
+    nodes.push_back({10.0, 0.0});
+    nodes.push_back({20.0, 0.0});
+    nodes.push_back({30.0, 0.0});
+    nodes.push_back({0.0, 10.0});
+    nodes.push_back({10.0, 10.0});
+    nodes.push_back({20.0, 10.0});
+    nodes.push_back({30.0, 10.0});
+    nodes.push_back({0.0, 20.0});
+    nodes.push_back({10.0, 20.0});
+    nodes.push_back({20.0, 20.0});
+    nodes.push_back({30.0, 20.0});
+    nodes.push_back({0.0, 30.0});
+    nodes.push_back({10.0, 30.0});
+    nodes.push_back({20.0, 30.0});
+    nodes.push_back({30.0, 30.0});
+
+    std::vector<meshkernel::Edge> edges;
+    edges.push_back({0, 4});
+    edges.push_back({1, 5});
+    edges.push_back({2, 6});
+    edges.push_back({3, 7});
+    edges.push_back({4, 8});
+    edges.push_back({5, 9});
+    edges.push_back({6, 10});
+    edges.push_back({7, 11});
+    edges.push_back({8, 12});
+    edges.push_back({9, 13});
+    edges.push_back({10, 14});
+    edges.push_back({11, 15});
+    edges.push_back({0, 1});
+    edges.push_back({1, 2});
+    edges.push_back({2, 3});
+    edges.push_back({4, 5});
+    edges.push_back({5, 6});
+    edges.push_back({6, 7});
+    edges.push_back({8, 9});
+    edges.push_back({9, 10});
+    edges.push_back({10, 11});
+    edges.push_back({12, 13});
+    edges.push_back({13, 14});
+    edges.push_back({14, 15});
+
+    auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+
+    std::vector<meshkernel::Point> polygonNodes;
+    polygonNodes.push_back({-5.0, 35.0});
+    polygonNodes.push_back({15.0, 35.0});
+    polygonNodes.push_back({15.0, -5.0});
+    polygonNodes.push_back({-5.0, -5.0});
+    polygonNodes.push_back({-5.0, 35.0});
+
+    // 2 Execution
+    const auto meshBoundaryPolygon = mesh.ComputeBoundaryPolygons(polygonNodes);
+
+    // 3 Validation
+    const double tolerance = 1e-5;
+    ASSERT_EQ(9, meshBoundaryPolygon.size());
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[0].x, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[0].y, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[1].x, tolerance);
+    ASSERT_NEAR(10.0, meshBoundaryPolygon[1].y, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[2].x, tolerance);
+    ASSERT_NEAR(20.0, meshBoundaryPolygon[2].y, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[3].x, tolerance);
+    ASSERT_NEAR(30.0, meshBoundaryPolygon[3].y, tolerance);
+    ASSERT_NEAR(10.0, meshBoundaryPolygon[4].x, tolerance);
+    ASSERT_NEAR(30.0, meshBoundaryPolygon[4].y, tolerance);
+    ASSERT_NEAR(20.0, meshBoundaryPolygon[5].x, tolerance);
+    ASSERT_NEAR(30.0, meshBoundaryPolygon[5].y, tolerance);
+    ASSERT_NEAR(20.0, meshBoundaryPolygon[6].x, tolerance);
+    ASSERT_NEAR(00.0, meshBoundaryPolygon[6].y, tolerance);
+    ASSERT_NEAR(10.0, meshBoundaryPolygon[7].x, tolerance);
+    ASSERT_NEAR(00.0, meshBoundaryPolygon[7].y, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[8].x, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[8].y, tolerance);
 }
 
 TEST(Mesh2D, HangingEdge)

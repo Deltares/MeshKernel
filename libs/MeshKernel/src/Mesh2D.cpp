@@ -1547,7 +1547,6 @@ std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector
         }
 
         // Put the current edge on the mesh boundary, mark it as visited
-        const auto startPolygonEdges = static_cast<UInt>(meshBoundaryPolygon.size());
         meshBoundaryPolygon.emplace_back(firstNode);
         meshBoundaryPolygon.emplace_back(secondNode);
         isVisited[e] = true;
@@ -1566,17 +1565,11 @@ std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector
             WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
         }
 
-        // There is a nonempty second tail, so reverse the first tail, so that they connect.
+        // There is a nonempty second tail: reverse the second tail so that the tails connect and close the polygon.
         if (meshBoundaryPolygon.size() > numNodesFirstTail)
         {
-            const auto start = startPolygonEdges + static_cast<UInt>(std::ceil((numNodesFirstTail - startPolygonEdges + static_cast<UInt>(1)) * 0.5));
-            for (auto n = start; n < numNodesFirstTail; n++)
-            {
-                const auto backupPoint = meshBoundaryPolygon[n];
-                const auto replaceIndex = numNodesFirstTail - n + firstNodeIndex;
-                meshBoundaryPolygon[n] = meshBoundaryPolygon[replaceIndex];
-                meshBoundaryPolygon[replaceIndex] = backupPoint;
-            }
+            std::reverse(meshBoundaryPolygon.begin() + numNodesFirstTail, meshBoundaryPolygon.end());
+            meshBoundaryPolygon.push_back(meshBoundaryPolygon.front());
         }
     }
     return meshBoundaryPolygon;
