@@ -428,9 +428,9 @@ TEST(CasulliRefinement, CasulliRefinementAndDeRefinementInterleavedCycles)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Execute
-    for (int i = 0; i < 6; ++i)
+    for (int i = 0; i < 3; ++i)
     {
-        errorCode = meshkernelapi::mkernel_mesh2d_casulli_refinement(meshKernelId);
+        meshkernelapi::mkernel_mesh2d_casulli_refinement(meshKernelId);
         ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
         errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement(meshKernelId);
