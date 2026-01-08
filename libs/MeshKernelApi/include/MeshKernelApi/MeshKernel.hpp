@@ -1244,6 +1244,20 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_face_circumcenter_property_type(int& type);
 
+        /// @brief Gets the Mesh2D inner boundary polygons data
+        ///
+        /// @param[in]     meshKernelId  The id of the mesh state
+        /// @param[in,out] innerPolygons The inner boundaries polygons
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_data(int meshKernelId, GeometryList& innerPolygons);
+
+        /// @brief Gets the Mesh2D inner boundary polygons dimension
+        ///
+        /// @param[in]  meshKernelId The id of the mesh state
+        /// @param[out] size         The number of points in the inner boundaries polygons, including separator points.
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_dimension(int meshKernelId, int& size);
+
         /// @brief Gets only the node and edge Mesh2D data
         ///
         /// This function ought to be called after `mkernel_mesh2d_get_dimensions` has been called
