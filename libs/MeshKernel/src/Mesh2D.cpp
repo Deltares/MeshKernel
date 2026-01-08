@@ -215,7 +215,9 @@ void Mesh2D::DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector
     FindFacesGivenFaceNodesMapping(faceNodes, numFaceNodes);
 
     // Compute face mass centers
-    ComputeFaceAreaAndMassCenters();
+    ComputeFaceAreaAndMassCenters(true);
+
+    m_invalidCellPolygons = ComputeInnerBoundaryPolygons();
 
     // classify node types
     ClassifyNodes();
@@ -1545,7 +1547,6 @@ std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector
         }
 
         // Put the current edge on the mesh boundary, mark it as visited
-        const auto startPolygonEdges = static_cast<UInt>(meshBoundaryPolygon.size());
         meshBoundaryPolygon.emplace_back(firstNode);
         meshBoundaryPolygon.emplace_back(secondNode);
         isVisited[e] = true;
@@ -1564,17 +1565,11 @@ std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector
             WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
         }
 
-        // There is a nonempty second tail, so reverse the first tail, so that they connect.
+        // There is a nonempty second tail: reverse the second tail so that the tails connect and close the polygon.
         if (meshBoundaryPolygon.size() > numNodesFirstTail)
         {
-            const auto start = startPolygonEdges + static_cast<UInt>(std::ceil((numNodesFirstTail - startPolygonEdges + static_cast<UInt>(1)) * 0.5));
-            for (auto n = start; n < numNodesFirstTail; n++)
-            {
-                const auto backupPoint = meshBoundaryPolygon[n];
-                const auto replaceIndex = numNodesFirstTail - n + firstNodeIndex;
-                meshBoundaryPolygon[n] = meshBoundaryPolygon[replaceIndex];
-                meshBoundaryPolygon[replaceIndex] = backupPoint;
-            }
+            std::reverse(meshBoundaryPolygon.begin() + numNodesFirstTail, meshBoundaryPolygon.end());
+            meshBoundaryPolygon.push_back(meshBoundaryPolygon.front());
         }
     }
     return meshBoundaryPolygon;
@@ -1587,6 +1582,8 @@ std::vector<meshkernel::Point> Mesh2D::ComputeInnerBoundaryPolygons() const
         return std::vector<meshkernel::Point>();
     }
 
+    std::vector<Point> illegalCells;
+    illegalCells.reserve(GetNumNodes());
     std::vector<Point> meshBoundaryPolygon;
     meshBoundaryPolygon.reserve(GetNumNodes());
     std::vector<Point> subSequence;
@@ -1629,7 +1626,7 @@ std::vector<meshkernel::Point> Mesh2D::ComputeInnerBoundaryPolygons() const
 
         // walk the current mesh boundary
         auto currentNode = secondNodeIndex;
-        WalkMultiBoundaryFromNode(edgeIsVisited, nodeIsVisited, currentNode, subSequence, nodeIds, meshBoundaryPolygon);
+        WalkMultiBoundaryFromNode(edgeIsVisited, nodeIsVisited, currentNode, subSequence, nodeIds, meshBoundaryPolygon, illegalCells);
 
         const auto numNodesFirstTail = static_cast<UInt>(subSequence.size());
 
@@ -1638,13 +1635,14 @@ std::vector<meshkernel::Point> Mesh2D::ComputeInnerBoundaryPolygons() const
         {
             // Now grow a polyline starting at the other side of the original link L, i.e., the second tail
             currentNode = firstNodeIndex;
-            WalkMultiBoundaryFromNode(edgeIsVisited, nodeIsVisited, currentNode, subSequence, nodeIds, meshBoundaryPolygon);
+            WalkMultiBoundaryFromNode(edgeIsVisited, nodeIsVisited, currentNode, subSequence, nodeIds, meshBoundaryPolygon, illegalCells);
         }
 
         // There is a nonempty second tail, so reverse the first tail, so that they connect.
         if (subSequence.size() > numNodesFirstTail)
         {
             const auto start = startPolygonEdges + static_cast<UInt>(std::ceil((numNodesFirstTail - startPolygonEdges + static_cast<UInt>(1)) * 0.5));
+
             for (auto n = start; n < numNodesFirstTail; n++)
             {
                 const auto backupPoint = subSequence[n];
@@ -1659,10 +1657,9 @@ std::vector<meshkernel::Point> Mesh2D::ComputeInnerBoundaryPolygons() const
         }
     }
 
-    std::vector<Point> innerPolygonNodes(RemoveOuterDomainBoundaryPolygon(meshBoundaryPolygon));
-    OrientatePolygonsAntiClockwise(innerPolygonNodes);
+    OrientatePolygonsAntiClockwise(illegalCells);
 
-    return innerPolygonNodes;
+    return illegalCells;
 }
 
 void Mesh2D::OrientatePolygonsAntiClockwise(std::vector<Point>& polygonNodes) const
@@ -1816,9 +1813,10 @@ void Mesh2D::WalkBoundaryFromNode(const Polygon& polygon,
 void Mesh2D::WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
                                        std::vector<bool>& nodeIsVisited,
                                        UInt& currentNode,
-                                       std::vector<Point>& meshBoundaryPolygon,
+                                       std::vector<Point>& subSequence,
                                        std::vector<UInt>& nodeIds,
-                                       std::vector<Point>& subSequence) const
+                                       std::vector<Point>& meshBoundaryPolygon,
+                                       std::vector<Point>& illegalCells) const
 {
     UInt e = 0;
 
@@ -1858,25 +1856,43 @@ void Mesh2D::WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
 
             if (lastIndex != constants::missing::uintValue)
             {
+                size_t start = meshBoundaryPolygon.size();
 
-                if (!subSequence.empty())
+                if (!meshBoundaryPolygon.empty())
                 {
-                    subSequence.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
+                    meshBoundaryPolygon.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
+                    ++start;
                 }
 
-                for (size_t i = lastIndex; i < nodeIds.size(); ++i)
+                meshBoundaryPolygon.insert(meshBoundaryPolygon.end(), subSequence.begin() + lastIndex, subSequence.end());
+                meshBoundaryPolygon.emplace_back(subSequence[lastIndex]);
+
+                // the points making up the last found polygon
+                std::span<const Point> currentPolygon(meshBoundaryPolygon.data() + start, meshBoundaryPolygon.data() + meshBoundaryPolygon.size());
+                // Since the edge lies on a boundary, there will be only 1 attached element.
+                // This element will be in the 0th position
+                UInt connectedFace = m_edgesFaces[currentEdge][0];
+
+                if (!IsPointInPolygonNodes(m_facesMassCenters[connectedFace], currentPolygon, m_projection))
                 {
-                    subSequence.emplace_back(meshBoundaryPolygon[i]);
+                    // If the centre of this element does not lie within the polygon, then the polygon defines a hole in the mesh.
+
+                    if (!illegalCells.empty())
+                    {
+                        // If illegal cells array is not empty then add the polygon separator
+                        illegalCells.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
+                    }
+
+                    illegalCells.insert(illegalCells.end(), currentPolygon.begin(), currentPolygon.end());
                 }
 
-                subSequence.emplace_back(meshBoundaryPolygon[lastIndex]);
-                meshBoundaryPolygon.resize(lastIndex);
+                subSequence.resize(lastIndex);
                 nodeIds.resize(lastIndex);
             }
         }
 
         currentNode = nextNode;
-        meshBoundaryPolygon.emplace_back(m_nodes[currentNode]);
+        subSequence.emplace_back(m_nodes[currentNode]);
         edgeIsVisited[currentEdge] = true;
         nodeIsVisited[currentNode] = true;
         nodeIds.emplace_back(currentNode);

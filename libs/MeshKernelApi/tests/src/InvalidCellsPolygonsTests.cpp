@@ -188,6 +188,33 @@ TEST(InvalidCellsPolygonsTests, MeshHolesAreMainainedAfterRefinement)
     EXPECT_EQ(mesh2d.num_valid_edges, 421);
     EXPECT_EQ(mesh2d.num_faces, 203);
 
-    whichMeshkernelId = -1;
-    isUndone = false;
+    //-----------------------
+    // Check the inner boundary polygon are correct
+
+    std::vector<double> expectedInnerX{80.0, 85.0, 75.0, 80.0, -999.0, 100.0, 105.0, 95.0, 100.0, -999.0, 120.0, 125.0, 115.0, 120.0, -999.0, 180.0, 200.0, 200.0, 180.0, 180.0, -999.0, 95.0, 95.0, 85.0, 85.0, 95.0, -999.0, 125.0, 135.0, 135.0, 125.0, 125.0};
+    std::vector<double> expectedInnerY{0.0, 15.0, 15.0, 0.0, -999.0, 0.0, 15.0, 15.0, 0.0, -999.0, 0.0, 15.0, 15.0, 0.0, -999.0, 140.0, 140.0, 160.0, 160.0, 140.0, -999.0, 15.0, 25.0, 25.0, 15.0, 15.0, -999.0, 125.0, 125.0, 135.0, 135.0, 125.0};
+
+    int innerPolygonSize = 0;
+    meshkernelapi::GeometryList innerPolygon;
+
+    errorCode = meshkernelapi::mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_dimension(meshKernelId, innerPolygonSize);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    ASSERT_EQ(innerPolygonSize, 32);
+
+    innerPolygon.num_coordinates = innerPolygonSize;
+    std::vector<double> xInner(innerPolygon.num_coordinates);
+    std::vector<double> yInner(innerPolygon.num_coordinates);
+    innerPolygon.coordinates_x = xInner.data();
+    innerPolygon.coordinates_y = yInner.data();
+
+    errorCode = meshkernelapi::mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_data(meshKernelId, innerPolygon);
+    EXPECT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    const double tolerance = 1.0e-10;
+
+    for (size_t i = 0; i < xInner.size(); ++i)
+    {
+        EXPECT_NEAR(expectedInnerX[i], xInner[i], tolerance);
+        EXPECT_NEAR(expectedInnerY[i], yInner[i], tolerance);
+    }
 }

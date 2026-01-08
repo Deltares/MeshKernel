@@ -266,7 +266,7 @@ namespace meshkernel
     /// @param[in] polygonCenter A coordinate needed in case of sphericalAccurate projection
     /// @returns If point is inside the designated polygon
     [[nodiscard]] bool IsPointInPolygonNodes(const Point& point,
-                                             const std::vector<Point>& polygonNodes,
+                                             const std::span<const Point> polygonNodes,
                                              const Projection& projection,
                                              Point polygonCenter = {constants::missing::doubleValue, constants::missing::doubleValue},
                                              UInt startNode = constants::missing::uintValue,
@@ -282,7 +282,7 @@ namespace meshkernel
     /// @param[in] polygonCenter A coordinate needed in case of sphericalAccurate projection
     /// @returns If point is inside the designated polygon
     [[nodiscard]] bool IsPointInPolygonNodes(const Point& point,
-                                             const std::vector<Point>& polygonNodes,
+                                             const std::span<const Point> polygonNodes,
                                              const Projection& projection,
                                              const BoundingBox& boundingBox,
                                              Point polygonCenter = {constants::missing::doubleValue, constants::missing::doubleValue},
