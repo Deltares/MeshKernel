@@ -19,29 +19,23 @@ jobs:
 
     name: ${{ inputs.platform }}-${{ inputs.build_type }}
 
-    # The default compiler on macos is clang, switch to gcc. Specifying the version is necessary.
-    # It seems like gcc and g++ are symbolic links to the default clang and clang++ compilers, respectively.
-    # CMAKE_CXX_COMPILER_ID will evaluate to AppleClang rather than GNU on macos.
-    env:
-      CC: gcc-12
-      CXX: g++-12
-
     # Build steps
     steps:
-      # Step: Install GCC (macOS only)
-      - name: Install GCC
-        if: startsWith(runner.os, 'macOS')
-        run: |
-          brew install gcc@12
-          echo "CC=$(brew --prefix)/bin/gcc-12" >> $GITHUB_ENV
-          echo "CXX=$(brew --prefix)/bin/g++-12" >> $GITHUB_ENV
-
       # Step: Checkout
       - name: Checkout
         uses: actions/checkout@v4
         # Workaround for getting "git describe --tags" to work in cmake/get_version_from_git.cmake (Build step)
         with:
           fetch-depth: 0
+
+        # Step: Set compiler (use system Clang for all macOS versions)
+      - name: Set compiler (macOS Clang)
+        if: runner.os == 'macOS'
+        run: |
+          echo "Using system Clang for ${{ inputs.platform }}"
+          echo "CC=clang" >> "$GITHUB_ENV"
+          echo "CXX=clang++" >> "$GITHUB_ENV"
+          echo "Configured Clang toolchain: $(clang --version | head -n 1)"
 
       # Step: Set paths
       - name: Set paths
@@ -53,11 +47,18 @@ jobs:
 
       - name: Install system-provided dependencies
         run: |
-          if [ "${{ runner.os }}" == "macOS" ]; then
-            brew install boost doxygen
-          elif [ "${{ runner.os }}" == "Linux" ]; then
-            sudo apt-get install libboost-all-dev doxygen
-          fi
+          brew update
+          brew install boost doxygen libaec libomp
+
+      # Step: Set OpenMP environment variables
+      - name: Set OpenMP environment variables
+        run: |
+          echo "LDFLAGS=-L/opt/homebrew/opt/libomp/lib" >> $GITHUB_ENV
+          echo "CPPFLAGS=-I/opt/homebrew/opt/libomp/include" >> $GITHUB_ENV
+          echo "Debug: Checking OpenMP installation:"
+          ls -la /opt/homebrew/opt/libomp/lib/ || echo "OpenMP lib directory not found"
+          ls -la /opt/homebrew/opt/libomp/include/ || echo "OpenMP include directory not found"
+          file /opt/homebrew/opt/libomp/lib/libomp.dylib || echo "libomp.dylib not found"
 
       # Step: Restore cached user-provided dependencies
       - name: Restore cached user-provided dependencies
@@ -107,21 +108,28 @@ jobs:
           -DCMAKE_BUILD_TYPE=${{ inputs.build_type }}
           -DCMAKE_PREFIX_PATH=${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
           -DCMAKE_INSTALL_PREFIX=${{ steps.paths.outputs.install_dir }}
+          -DCMAKE_OSX_ARCHITECTURES=arm64
+          -DOpenMP_C_FLAGS="-Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include"
+          -DOpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include"
+          -DOpenMP_C_LIB_NAMES="omp"
+          -DOpenMP_CXX_LIB_NAMES="omp"
+          -DOpenMP_omp_LIBRARY="/opt/homebrew/opt/libomp/lib/libomp.dylib"
+          -DCMAKE_C_FLAGS="-Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include"
+          -DCMAKE_CXX_FLAGS="-Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include"
+          -DCMAKE_EXE_LINKER_FLAGS="-L/opt/homebrew/opt/libomp/lib -lomp"
+          -DCMAKE_SHARED_LINKER_FLAGS="-L/opt/homebrew/opt/libomp/lib -lomp"
 
       # Step: CMake build
       - name: Build
         run: cmake --build ${{ steps.paths.outputs.build_dir }} --config ${{ inputs.build_type }} -j 4
 
-      # Step: Test
-      #       Works if runner.os == 'Linux' or runner.os == 'macOS'
-      #       if runner.os == 'Windows',  /inputs.build_type needs to be inserted before /tests
+      # Step: Test (portable via ctest)
       - name: Test
-        timeout-minutes: 10 # Set timeout to 10 minutes
+        timeout-minutes: 10
         run: |
-          echo -e "\n***************   MeshKernel Tests   ***************\n"
-          ${{ steps.paths.outputs.build_dir }}/libs/MeshKernel/tests/MeshKernelUnitTests
-          echo -e "\n\n*************** MeshKernel API Tests ***************\n"
-          ${{ steps.paths.outputs.build_dir }}/libs/MeshKernelApi/tests/MeshKernelApiUnitTests
+          ctest --test-dir ${{ steps.paths.outputs.build_dir }} \
+                -C ${{ inputs.build_type }} \
+                --output-on-failure
 
       # Step: CMake install
       - name: Install
