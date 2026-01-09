@@ -127,6 +127,7 @@ jobs:
       - name: Test
         timeout-minutes: 10
         run: |
+          export DYLD_LIBRARY_PATH="${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/zlib/lib:$DYLD_LIBRARY_PATH"
           ctest --test-dir ${{ steps.paths.outputs.build_dir }} \
                 -C ${{ inputs.build_type }} \
                 --output-on-failure
