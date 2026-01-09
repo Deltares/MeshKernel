@@ -127,20 +127,12 @@ jobs:
       - name: Test
         timeout-minutes: 10
         run: |
-          echo "=== Debug: Checking for zlib libraries ==="
-          ls -la ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/zlib/lib/ || echo "zlib/lib not found"
-          ls -la ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c/bin/ || echo "netcdf-c/bin not found"
-          ls -la ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c/lib/ || echo "netcdf-c/lib not found"
-          
-          echo "=== Creating missing libz.1.dylib symlink if needed ==="
+          # Create libz.1.dylib symlink needed for runtime linking
           if [ -f "${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c/bin/libz.dylib" ]; then
             ln -sf libz.dylib ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c/bin/libz.1.dylib
-            echo "Created symlink: libz.1.dylib -> libz.dylib"
           fi
           
           export DYLD_LIBRARY_PATH="${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c/bin:$DYLD_LIBRARY_PATH"
-          echo "DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH"
-          
           ctest --test-dir ${{ steps.paths.outputs.build_dir }} \
                 -C ${{ inputs.build_type }} \
                 --output-on-failure
