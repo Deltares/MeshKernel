@@ -50,15 +50,23 @@ jobs:
           brew update
           brew install boost doxygen libaec libomp
 
-      # Step: Set OpenMP environment variables
+      # Step: Set OpenMP environment variables (architecture-aware)
       - name: Set OpenMP environment variables
         run: |
-          echo "LDFLAGS=-L/opt/homebrew/opt/libomp/lib" >> $GITHUB_ENV
-          echo "CPPFLAGS=-I/opt/homebrew/opt/libomp/include" >> $GITHUB_ENV
-          echo "Debug: Checking OpenMP installation:"
-          ls -la /opt/homebrew/opt/libomp/lib/ || echo "OpenMP lib directory not found"
-          ls -la /opt/homebrew/opt/libomp/include/ || echo "OpenMP include directory not found"
-          file /opt/homebrew/opt/libomp/lib/libomp.dylib || echo "libomp.dylib not found"
+          # Detect Homebrew prefix based on runner architecture
+          if [ "${{ runner.arch }}" = "ARM64" ]; then
+            HOMEBREW_PREFIX="/opt/homebrew"
+          else
+            HOMEBREW_PREFIX="/usr/local"
+          fi
+          
+          echo "HOMEBREW_PREFIX=$HOMEBREW_PREFIX" >> $GITHUB_ENV
+          echo "LDFLAGS=-L$HOMEBREW_PREFIX/opt/libomp/lib" >> $GITHUB_ENV
+          echo "CPPFLAGS=-I$HOMEBREW_PREFIX/opt/libomp/include" >> $GITHUB_ENV
+          echo "Debug: Checking OpenMP installation at $HOMEBREW_PREFIX:"
+          ls -la "$HOMEBREW_PREFIX/opt/libomp/lib/" || echo "OpenMP lib directory not found"
+          ls -la "$HOMEBREW_PREFIX/opt/libomp/include/" || echo "OpenMP include directory not found"
+          file "$HOMEBREW_PREFIX/opt/libomp/lib/libomp.dylib" || echo "libomp.dylib not found"
 
       # Step: Restore cached user-provided dependencies
       - name: Restore cached user-provided dependencies
@@ -101,23 +109,28 @@ jobs:
 
       # Step: CMake configuration
       - name: Configure
-        run: >
-          cmake
-          -S ${{ github.workspace }}
-          -B ${{ steps.paths.outputs.build_dir }}
-          -DCMAKE_BUILD_TYPE=${{ inputs.build_type }}
-          -DCMAKE_PREFIX_PATH=${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c
-          -DCMAKE_INSTALL_PREFIX=${{ steps.paths.outputs.install_dir }}
-          -DCMAKE_OSX_ARCHITECTURES=arm64
-          -DOpenMP_C_FLAGS="-Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include"
-          -DOpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include"
-          -DOpenMP_C_LIB_NAMES="omp"
-          -DOpenMP_CXX_LIB_NAMES="omp"
-          -DOpenMP_omp_LIBRARY="/opt/homebrew/opt/libomp/lib/libomp.dylib"
-          -DCMAKE_C_FLAGS="-Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include"
-          -DCMAKE_CXX_FLAGS="-Xpreprocessor -fopenmp -I/opt/homebrew/opt/libomp/include"
-          -DCMAKE_EXE_LINKER_FLAGS="-L/opt/homebrew/opt/libomp/lib -lomp"
-          -DCMAKE_SHARED_LINKER_FLAGS="-L/opt/homebrew/opt/libomp/lib -lomp"
+        run: |
+          ARCH_FLAG=""
+          if [ "${{ runner.arch }}" = "ARM64" ]; then
+            ARCH_FLAG="-DCMAKE_OSX_ARCHITECTURES=arm64"
+          fi
+          
+          cmake \
+            -S ${{ github.workspace }} \
+            -B ${{ steps.paths.outputs.build_dir }} \
+            -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} \
+            -DCMAKE_PREFIX_PATH=${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c \
+            -DCMAKE_INSTALL_PREFIX=${{ steps.paths.outputs.install_dir }} \
+            $ARCH_FLAG \
+            -DOpenMP_C_FLAGS="-Xpreprocessor -fopenmp -I$HOMEBREW_PREFIX/opt/libomp/include" \
+            -DOpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp -I$HOMEBREW_PREFIX/opt/libomp/include" \
+            -DOpenMP_C_LIB_NAMES="omp" \
+            -DOpenMP_CXX_LIB_NAMES="omp" \
+            -DOpenMP_omp_LIBRARY="$HOMEBREW_PREFIX/opt/libomp/lib/libomp.dylib" \
+            -DCMAKE_C_FLAGS="-Xpreprocessor -fopenmp -I$HOMEBREW_PREFIX/opt/libomp/include" \
+            -DCMAKE_CXX_FLAGS="-Xpreprocessor -fopenmp -I$HOMEBREW_PREFIX/opt/libomp/include" \
+            -DCMAKE_EXE_LINKER_FLAGS="-L$HOMEBREW_PREFIX/opt/libomp/lib -lomp" \
+            -DCMAKE_SHARED_LINKER_FLAGS="-L$HOMEBREW_PREFIX/opt/libomp/lib -lomp"
 
       # Step: CMake build
       - name: Build

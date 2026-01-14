@@ -336,7 +336,7 @@ target_include_directories(${TARGET_NAME} PUBLIC ${INC_DIR})
 
 # Boost
 find_package(Boost REQUIRED)
-target_include_directories(${TARGET_NAME} SYSTEM PUBLIC ${Boost_INCLUDE_DIR})
+target_include_directories(${TARGET_NAME} SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 
 # OpenMP
 find_package(OpenMP REQUIRED)
