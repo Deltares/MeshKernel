@@ -14,7 +14,7 @@ if(APPLE)
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     message(STATUS "Configuring build for macOS with ${CMAKE_CXX_COMPILER_ID} (${CMAKE_CXX_COMPILER_VERSION}).")
     # Common warning and visibility flags
-    add_compile_options("-fvisibility=hidden;-Wall;-Wextra;-pedantic;-Werror;-Wno-unused-function;-Wno-unused-parameter")
+    add_compile_options("-fvisibility=hidden;-Wall;-Wextra;-pedantic;-Werror;-Wno-unused-function;")
     # Be lenient for Eigen (deprecated enum conversion) on all macOS Clang builds
     add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-enum-enum-conversion>)
     # Optimization / debug flags
