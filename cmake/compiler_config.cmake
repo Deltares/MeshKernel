@@ -18,7 +18,7 @@ if(APPLE)
     # Conditionally suppress unused parameter warnings (used for platform-specific compiler issues)
     if(SUPPRESS_UNUSED_PARAMETER_WARNING)
       add_compile_options("-Wno-unused-parameter")
-      message(STATUS "Suppressing -Wno-unused-parameter warnings for macOS Clang build on MaoOS15-intel")
+      message(STATUS "Suppressing -Wno-unused-parameter warnings for macOS Clang build on macOS15-intel")
     endif()
     # Be lenient for Eigen (deprecated enum conversion) on all macOS Clang builds
     add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-enum-enum-conversion>)
