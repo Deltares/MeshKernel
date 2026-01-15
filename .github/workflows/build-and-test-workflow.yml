@@ -47,7 +47,6 @@ jobs:
 
       - name: Install system-provided dependencies
         run: |
-          brew update
           brew install boost doxygen libaec libomp
 
       # Step: Set OpenMP environment variables (architecture-aware)
