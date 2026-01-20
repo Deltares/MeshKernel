@@ -336,7 +336,6 @@ target_include_directories(${TARGET_NAME} PUBLIC ${INC_DIR})
 
 # Boost
 find_package(Boost REQUIRED)
-target_include_directories(${TARGET_NAME} SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 
 # OpenMP
 find_package(OpenMP REQUIRED)
@@ -348,6 +347,7 @@ target_link_libraries(
     Triangle
     OpenMP::OpenMP_CXX
     Eigen3::Eigen
+    Boost::boost
 )
 
 if(${USE_LIBFMT})
