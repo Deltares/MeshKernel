@@ -1,0 +1,172 @@
+name: Copilot Setup Steps
+
+# This workflow demonstrates the setup steps needed to build and work with MeshKernel
+# It can be triggered manually or used as a reference for development environment setup
+on:
+  workflow_dispatch:
+
+# Minimal permissions for reading repository content only
+permissions:
+  contents: read
+
+jobs:
+  setup:
+    # Run on Ubuntu (Linux) - the primary development platform
+    runs-on: ubuntu-latest
+    
+    name: Setup Development Environment
+    
+    steps:
+      # Step 1: Checkout the repository
+      # This retrieves the source code with full git history (fetch-depth: 0)
+      # which is needed for version detection via git tags
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      # Step 2: Setup C++ compiler (GCC)
+      # MeshKernel requires C++20 support. GCC 12+ is recommended.
+      # Ubuntu-latest comes with GCC pre-installed, but we ensure the right version
+      - name: Install GCC compiler
+        run: |
+          # Update package lists
+          sudo apt-get update
+          # Install GCC and G++ version 12
+          sudo apt-get install -y gcc-12 g++-12
+          # Set as default compiler for the workflow
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100
+          # Verify installation
+          gcc --version
+          g++ --version
+      
+      # Step 3: Setup CMake
+      # MeshKernel requires CMake 3.23 or higher for build configuration
+      - name: Install CMake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.23'
+      
+      # Step 4: Verify CMake installation
+      - name: Verify CMake version
+        run: cmake --version
+      
+      # Step 5: Install Boost libraries
+      # Boost is a required dependency for MeshKernel's C++ code
+      - name: Install Boost libraries
+        run: |
+          sudo apt-get install -y libboost-all-dev
+          # Verify Boost installation
+          dpkg -l | grep libboost
+      
+      # Step 6: Install Doxygen (for documentation generation)
+      # Doxygen is optional but needed for building documentation
+      - name: Install Doxygen
+        run: |
+          sudo apt-get install -y doxygen
+          doxygen --version
+      
+      # Step 7: Setup Python environment
+      # Python is used for various scripts in the repository (e.g., benchmark post-processing)
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      
+      # Step 8: Install Python dependencies
+      # Install packages needed by repository scripts
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Install dependencies from requirements.txt if it exists
+          if [ -f scripts/benchmark_post_processing/requirements.txt ]; then
+            pip install -r scripts/benchmark_post_processing/requirements.txt
+          fi
+      
+      # Step 9: Install PowerShell (for NetCDF installation script)
+      # The repository uses PowerShell scripts for building NetCDF dependency
+      - name: Install PowerShell
+        run: |
+          # PowerShell is needed for install_netcdf_static.ps1 script
+          sudo apt-get install -y powershell
+          pwsh --version
+      
+      # Step 10: Setup paths for build directories
+      # Define standard directory structure for build artifacts
+      - name: Setup build paths
+        id: paths
+        run: |
+          echo "build_dir=${{ github.workspace }}/build" >> $GITHUB_OUTPUT
+          echo "ext_deps_dir=${{ github.workspace }}/external_dependencies" >> $GITHUB_OUTPUT
+          echo "install_dir=${{ github.workspace }}/install" >> $GITHUB_OUTPUT
+          # Create directories
+          mkdir -p ${{ github.workspace }}/build
+          mkdir -p ${{ github.workspace }}/external_dependencies
+          mkdir -p ${{ github.workspace }}/install
+      
+      # Step 11: Install NetCDF dependency
+      # NetCDF is a required dependency for MeshKernel's data I/O
+      # This step builds and installs NetCDF from source
+      - name: Build and install NetCDF
+        run: |
+          # NetCDF dependencies (m4, curl, openssl) are system-provided
+          sudo apt-get install -y m4 curl libssl-dev
+          # Use the repository's installation script
+          pwsh ${{ github.workspace }}/scripts/install_netcdf_static.ps1 \
+            -WorkDir ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/work \
+            -InstallDir ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install \
+            -BuildType 'Release' \
+            -ParallelJobs 4
+      
+      # Step 12: Configure MeshKernel with CMake
+      # Generate build files using CMake with all dependencies configured
+      - name: Configure MeshKernel
+        run: |
+          cmake \
+            -S ${{ github.workspace }} \
+            -B ${{ steps.paths.outputs.build_dir }} \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH=${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c \
+            -DCMAKE_INSTALL_PREFIX=${{ steps.paths.outputs.install_dir }}
+      
+      # Step 13: Build MeshKernel
+      # Compile the C++ code with parallel jobs for faster builds
+      - name: Build MeshKernel
+        run: |
+          cmake --build ${{ steps.paths.outputs.build_dir }} --config Release -j 4
+      
+      # Step 14: Run tests
+      # Execute unit tests to verify the build
+      - name: Run tests
+        timeout-minutes: 10
+        run: |
+          echo "Running MeshKernel Tests..."
+          ${{ steps.paths.outputs.build_dir }}/libs/MeshKernel/tests/MeshKernelUnitTests
+          echo "Running MeshKernel API Tests..."
+          ${{ steps.paths.outputs.build_dir }}/libs/MeshKernelApi/tests/MeshKernelApiUnitTests
+      
+      # Step 15: Install MeshKernel
+      # Copy built artifacts to the installation directory
+      - name: Install MeshKernel
+        run: |
+          cmake --install ${{ steps.paths.outputs.build_dir }}
+      
+      # Step 16: Summary
+      # Display completion message with next steps
+      - name: Setup complete
+        run: |
+          echo "✅ MeshKernel development environment setup complete!"
+          echo ""
+          echo "Summary of installed tools:"
+          echo "- GCC/G++ $(gcc --version | head -n1)"
+          echo "- CMake $(cmake --version | head -n1)"
+          echo "- Python $(python --version)"
+          echo "- PowerShell $(pwsh --version)"
+          echo ""
+          echo "Build artifacts available in: ${{ steps.paths.outputs.install_dir }}"
+          echo ""
+          echo "You can now:"
+          echo "1. Modify C++ source code in libs/"
+          echo "2. Build with: cmake --build build"
+          echo "3. Run tests with: build/libs/MeshKernel/tests/MeshKernelUnitTests"
