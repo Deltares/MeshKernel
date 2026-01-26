@@ -49,6 +49,9 @@
 #include "MeshKernel/UndoActions/UndoActionStack.hpp"
 #include "MeshKernel/Utilities/Utilities.hpp"
 
+#include "MeshKernel/LandBoundaries.hpp"
+#include "MeshKernel/OrthogonalizationAndSmoothing.hpp"
+
 #include "TestUtils/Definitions.hpp"
 #include "TestUtils/MakeCurvilinearGrids.hpp"
 #include "TestUtils/MakeMeshes.hpp"
@@ -92,7 +95,10 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_OnFourByFourWithFourSamples_
     meshRefinementParameters.refinement_type = 2;
     meshRefinementParameters.smoothing_iterations = 0;
 
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
     MeshRefinement meshRefinement(*mesh,
+                                  polygon,
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
@@ -222,7 +228,10 @@ TEST(MeshRefinement, RefinementOnAFourByFourMeshWithSamplesShouldRefine)
     meshRefinementParameters.refinement_type = 1;
     meshRefinementParameters.smoothing_iterations = 0;
 
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
     MeshRefinement meshRefinement(*mesh,
+                                  polygon,
                                   std::move(interpolator),
                                   meshRefinementParameters);
     auto undoAction = meshRefinement.Compute();
@@ -361,7 +370,10 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_SmallTriangualMeshTwoSamples
     meshRefinementParameters.refinement_type = 2;
     meshRefinementParameters.smoothing_iterations = 0;
 
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
     MeshRefinement meshRefinement(*mesh,
+                                  polygon,
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
@@ -560,7 +572,12 @@ TEST(MeshRefinement, ThreeBythreeWithThreeSamplesPerFace)
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
 
-    MeshRefinement meshRefinement(*mesh, std::move(interpolator), meshRefinementParameters);
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
+    MeshRefinement meshRefinement(*mesh,
+                                  polygon,
+                                  std::move(interpolator),
+                                  meshRefinementParameters);
 
     auto undoAction = meshRefinement.Compute();
 
@@ -666,7 +683,10 @@ TEST(MeshRefinement, WindowOfRefinementFile)
     meshRefinementParameters.refinement_type = 1;
     meshRefinementParameters.smoothing_iterations = 0;
 
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
     MeshRefinement meshRefinement(*mesh,
+                                  polygon,
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
@@ -770,7 +790,10 @@ TEST(MeshRefinement, MeshRefinementRefinementLevels_OnWindowOfRefinementFile_Sho
     meshRefinementParameters.refinement_type = 2;
     meshRefinementParameters.smoothing_iterations = 0;
 
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
     MeshRefinement meshRefinement(*mesh,
+                                  polygon,
                                   std::move(interpolator),
                                   meshRefinementParameters);
 
@@ -1039,7 +1062,10 @@ TEST(MeshRefinement, FourByFourWithFourSamplesSpherical)
     meshRefinementParameters.refinement_type = 2;
     meshRefinementParameters.smoothing_iterations = 0;
 
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
     MeshRefinement meshRefinement(*mesh,
+                                  polygon,
                                   std::move(interpolator),
                                   meshRefinementParameters);
     auto undoAction = meshRefinement.Compute();
@@ -1351,7 +1377,12 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandShouldNotRefin
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
 
-    MeshRefinement meshRefinement(*mesh, std::move(interpolator), meshRefinementParameters, true);
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
+    MeshRefinement meshRefinement(*mesh,
+                                  polygon,
+                                  std::move(interpolator),
+                                  meshRefinementParameters, true);
 
     // Execute
     auto undoAction = meshRefinement.Compute();
@@ -1414,7 +1445,12 @@ TEST(MeshRefinement, BilinearInterpolationWithGriddedSamplesOnLandAndSeaShouldRe
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
 
-    MeshRefinement meshRefinement(*mesh, std::move(interpolator), meshRefinementParameters, true);
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
+    MeshRefinement meshRefinement(*mesh,
+                                  polygon,
+                                  std::move(interpolator),
+                                  meshRefinementParameters, true);
 
     // Execute
     auto undoAction = meshRefinement.Compute();
@@ -1477,7 +1513,10 @@ TEST(MeshRefinement, BilinearInterpolationWithAllGriddedSamplesOnSeaShouldRefine
     meshRefinementParameters.connect_hanging_nodes = 1;
     meshRefinementParameters.refinement_type = 1;
 
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
     MeshRefinement meshRefinement(*mesh,
+                                  polygon,
                                   std::move(interpolator),
                                   meshRefinementParameters, true);
 
@@ -1529,8 +1568,8 @@ public:
         return std::vector{
             std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::GaussianBump, 1165, 2344),
             std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::GaussianWave, 5297, 10784),
-            std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::RidgeXDirection, 2654, 5774),
-            std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::ArctanFunction, 2333, 5084)};
+            std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::RidgeXDirection, 2606, 5670),
+            std::make_tuple<FunctionTestCase, UInt, UInt>(FunctionTestCase::ArctanFunction, 2309, 5028)};
     }
 };
 
@@ -1574,7 +1613,7 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
                                                                  1);
 
     MeshRefinementParameters meshRefinementParameters;
-    meshRefinementParameters.max_num_refinement_iterations = 3;
+    meshRefinementParameters.max_num_refinement_iterations = 2;
     meshRefinementParameters.refine_intersected = 0;
     meshRefinementParameters.use_mass_center_when_refining = 0;
     meshRefinementParameters.min_edge_size = 2.0;
@@ -1583,7 +1622,10 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
     meshRefinementParameters.refinement_type = 3;
     meshRefinementParameters.smoothing_iterations = 0;
 
+    meshkernel::Polygons polygon({}, Projection::cartesian);
+
     MeshRefinement meshRefinement(*mesh,
+                                  polygon,
                                   std::move(interpolator),
                                   meshRefinementParameters, false);
 
@@ -1591,16 +1633,16 @@ TEST_P(RidgeRefinementTestCases, expectedResults)
     auto undoAction = meshRefinement.Compute();
 
     // Assert
-    ASSERT_EQ(numNodes, mesh->GetNumNodes());
-    ASSERT_EQ(numEdges, mesh->GetNumEdges());
+    EXPECT_EQ(numNodes, mesh->GetNumNodes());
+    EXPECT_EQ(numEdges, mesh->GetNumEdges());
 
     // Test the undo action has been computed correctly
     undoAction->Restore();
     // Recompute faces
     mesh->Administrate();
 
-    ASSERT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
-    ASSERT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
+    EXPECT_EQ(originalNodes.size(), mesh->GetNumValidNodes());
+    EXPECT_EQ(originalEdges.size(), mesh->GetNumValidEdges());
 
     meshkernel::UInt count = 0;
 
@@ -2070,6 +2112,13 @@ TEST(MeshRefinement, CasulliTwoPolygonDeRefinement)
                                        55.0, 75.0, 96.25, 35.0, 55.0, 76.25,
                                        55.0, 76.25, 55.0, 97.5, 75.0};
 
+    // std::vector<double> elementCentreX{25.0, 25.0, 25.0, 25.0, 25.0, 25.0, 45.0,
+    //                                    45.0, 45.0, 46.666666666666, 65.0, 65.0, 66.666666666666,
+    //                                    85.0, 103.333333333333, 105.0, 125.0, 125.0};
+    // std::vector<double> elementCentreY{15.0, 35.0, 55.0, 75.0, 95.0, 115.0, 35.0,
+    //                                    55.0, 75.0, 96.66666666666, 35.0, 55.0, 76.66666666666,
+    //                                    55.0, 76.66666666666, 55.0, 98.333333333333, 75.0};
+
     std::vector<Point> centrePoints{{55.0, 55.0}, {155.0, 105.0}, {175.0, 225.0}, {25.0, 274.0}, {55.0, 55.0}};
     meshkernel::Polygons centrePolygon(centrePoints, Projection::cartesian);
 
@@ -2093,7 +2142,7 @@ TEST(MeshRefinement, CasulliTwoPolygonDeRefinement)
     const std::vector<mk::Point> centreRefinedNodes(mesh.Nodes());
     const std::vector<mk::Edge> centreRefinedEdges(mesh.Edges());
 
-    mesh.ComputeCircumcentersMassCentersAndFaceAreas(true);
+    mesh.ComputeFaceAreaAndMassCenters(true);
 
     // Get the element centres of the elements to be deleted.
     std::vector<meshkernel::Point> toDelete(meshkernel::CasulliDeRefinement::ElementsToDelete(mesh, lowerPolygon));
@@ -2675,4 +2724,436 @@ TEST(MeshRefinement, RowSplittingFailureTests)
 
     // Invalid edge id
     EXPECT_THROW([[maybe_unused]] auto undo4 = splitMeshRow.Compute(mesh, edgeId), ConstraintError);
+}
+TEST(MeshRefinement, MeshRefinementInsidePolygon_On21x21With50x50Samples_ShouldRefineMesh)
+{
+    const meshkernel::UInt size = 21;
+    const double delta = 2.5;
+    const meshkernel::UInt sampleSize = 50;
+
+    auto mesh = MakeRectangularMeshForTesting(size, size, delta, Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh->Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh->Edges());
+
+    std::vector<meshkernel::Sample> samples;
+
+    double sampleDelta = 52.0 / 49.0;
+
+    for (size_t i = 0; i < sampleSize; ++i)
+    {
+        for (size_t j = 0; j < sampleSize; ++j)
+        {
+            meshkernel::Sample samp(-1.0 + sampleDelta * static_cast<double>(i), -1.0 + sampleDelta * static_cast<double>(j), 100);
+            samples.push_back(samp);
+        }
+    }
+
+    [[maybe_unused]] auto interpolator = std::make_unique<AveragingInterpolation>(*mesh,
+                                                                                  samples,
+                                                                                  AveragingInterpolation::Method::SimpleAveraging,
+                                                                                  Location::Faces,
+                                                                                  1.0,
+                                                                                  false,
+                                                                                  false,
+                                                                                  1);
+
+    MeshRefinementParameters meshRefinementParameters;
+    meshRefinementParameters.max_num_refinement_iterations = 1;
+    meshRefinementParameters.refine_intersected = 0;
+    meshRefinementParameters.use_mass_center_when_refining = 0;
+    meshRefinementParameters.min_edge_size = 1.0;
+    meshRefinementParameters.account_for_samples_outside = 0;
+    meshRefinementParameters.connect_hanging_nodes = 1;
+    meshRefinementParameters.refinement_type = 2;
+    meshRefinementParameters.smoothing_iterations = 0;
+
+    // Define two polygons
+    std::vector<meshkernel::Point> polygonPoints{{1.9, 1.9}, {16.0, 1.9}, {16.0, 16.0}, {1.9, 16.0}, {1.9, 1.9}, {-999, -999}, {31.9, 31.9}, {46.0, 31.9}, {46.0, 46.0}, {31.9, 46.0}, {31.9, 31.9}};
+    meshkernel::Polygons polygon(polygonPoints, Projection::cartesian);
+
+    MeshRefinement meshRefinement(*mesh,
+                                  polygon,
+                                  std::move(interpolator),
+                                  meshRefinementParameters);
+
+    [[maybe_unused]] auto undoAction = meshRefinement.Compute();
+
+    mesh->Administrate();
+
+    // Only check that the number of nodes, edges and faces is correct
+    ASSERT_EQ(mesh->GetNumNodes(), 611);
+    ASSERT_EQ(mesh->GetNumEdges(), 1240);
+    ASSERT_EQ(mesh->GetNumFaces(), 630);
+}
+
+TEST(MeshRefinement, MeshWithHole_ShouldGenerateInteriorBoundaryPolygonsForSixFaces)
+{
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 20.0, 20.0, 11, 11);
+    const auto edges = curviMesh->ComputeEdges();
+    const auto nodes = curviMesh->ComputeNodes();
+
+    Mesh2D mesh(edges, nodes, Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh.Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh.Edges());
+
+    std::vector<Point> patch{{45.0, 5.0},
+                             {155.0, 5.0},
+                             {155.0, 155.0},
+                             {45.0, 155.0},
+                             {45.0, 5.0},
+                             {constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                             {65.0, 65.0},
+                             {115.0, 65.0},
+                             {115.0, 115.0},
+                             {65.0, 115.0},
+                             {65.0, 65.0}};
+
+    Polygons polygon(patch, Projection::cartesian);
+
+    auto casulliUndoAction = CasulliRefinement::Compute(mesh, polygon);
+
+    // Find nodes of elements to be deleted.
+    auto node11 = mesh.FindNodeCloseToAPoint({80.0, 0.0}, 1.0e-5);
+    auto node12 = mesh.FindNodeCloseToAPoint({85.0, 15.0}, 1.0e-5);
+    auto node13 = mesh.FindNodeCloseToAPoint({75.0, 15.0}, 1.0e-5);
+
+    auto node21 = mesh.FindNodeCloseToAPoint({180.0, 140.0}, 1.0e-5);
+    auto node22 = mesh.FindNodeCloseToAPoint({200.0, 140.0}, 1.0e-5);
+    auto node23 = mesh.FindNodeCloseToAPoint({200.0, 160.0}, 1.0e-5);
+    auto node24 = mesh.FindNodeCloseToAPoint({180.0, 160.0}, 1.0e-5);
+
+    auto node31 = mesh.FindNodeCloseToAPoint({125.0, 125.0}, 1.0e-5);
+    auto node32 = mesh.FindNodeCloseToAPoint({135.0, 125.0}, 1.0e-5);
+    auto node33 = mesh.FindNodeCloseToAPoint({135.0, 135.0}, 1.0e-5);
+    auto node34 = mesh.FindNodeCloseToAPoint({125.0, 135.0}, 1.0e-5);
+
+    auto node41 = mesh.FindNodeCloseToAPoint({85.0, 15.0}, 1.0e-5);
+    auto node42 = mesh.FindNodeCloseToAPoint({95.0, 15.0}, 1.0e-5);
+    auto node43 = mesh.FindNodeCloseToAPoint({95.0, 25.0}, 1.0e-5);
+    auto node44 = mesh.FindNodeCloseToAPoint({85.0, 25.0}, 1.0e-5);
+
+    auto node51 = mesh.FindNodeCloseToAPoint({100.0, 0.0}, 1.0e-5);
+    auto node52 = mesh.FindNodeCloseToAPoint({105.0, 15.0}, 1.0e-5);
+    auto node53 = mesh.FindNodeCloseToAPoint({95.0, 15.0}, 1.0e-5);
+
+    auto node61 = mesh.FindNodeCloseToAPoint({120.0, 0.0}, 1.0e-5);
+    auto node62 = mesh.FindNodeCloseToAPoint({125.0, 15.0}, 1.0e-5);
+    auto node63 = mesh.FindNodeCloseToAPoint({115.0, 15.0}, 1.0e-5);
+
+    std::vector<meshkernel::Point> boundaryNodes;
+
+    std::vector<Point> elementNodes1{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node11),
+                                     mesh.Node(node12),
+                                     mesh.Node(node13),
+                                     mesh.Node(node11)};
+
+    std::vector<Point> elementNodes2{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node21),
+                                     mesh.Node(node22),
+                                     mesh.Node(node23),
+                                     mesh.Node(node24),
+                                     mesh.Node(node21)};
+
+    std::vector<Point> elementNodes3{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node31),
+                                     mesh.Node(node32),
+                                     mesh.Node(node33),
+                                     mesh.Node(node34),
+                                     mesh.Node(node31)};
+
+    std::vector<Point> elementNodes4{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node41),
+                                     mesh.Node(node42),
+                                     mesh.Node(node43),
+                                     mesh.Node(node44),
+                                     mesh.Node(node41)};
+
+    std::vector<Point> elementNodes5{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node51),
+                                     mesh.Node(node52),
+                                     mesh.Node(node53),
+                                     mesh.Node(node51)};
+
+    std::vector<Point> elementNodes6{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node61),
+                                     mesh.Node(node62),
+                                     mesh.Node(node63),
+                                     mesh.Node(node61)};
+
+    // Combine all nodes to for a sequence of polygons
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes1.begin(), elementNodes1.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes2.begin(), elementNodes2.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes3.begin(), elementNodes3.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes4.begin(), elementNodes4.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes5.begin(), elementNodes5.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes6.begin(), elementNodes6.end());
+
+    Polygons boundaryWithMissingElements(boundaryNodes, Projection::cartesian);
+
+    auto deleteMeshFacesUndoAction = mesh.DeleteMeshFacesInPolygon(boundaryWithMissingElements);
+
+    // Compute interior boundary polygon points
+    std::vector<Point> boundaryNodes2 = mesh.ComputeInnerBoundaryPolygons();
+
+    // The expected number of points include the land boundary points
+    UInt expectedNumberOfNodes = 26;
+
+    ASSERT_EQ(expectedNumberOfNodes, boundaryNodes2.size());
+
+    // The edge of one of the deleted elements lies on the boundary, so will be not be part of the
+    // interior set of polygons
+    std::vector<double> expectedXPoints{
+        95.0,
+        105.0,
+        100.0,
+        95.0,
+        constants::missing::doubleValue,
+        85.0,
+        85.0,
+        95.0,
+        95.0,
+        85.0,
+        constants::missing::doubleValue,
+        80.0,
+        75.0,
+        85.0,
+        80.0,
+        constants::missing::doubleValue,
+        120.0,
+        115.0,
+        125.0,
+        120.0,
+        constants::missing::doubleValue,
+        125.0,
+        125.0,
+        135.0,
+        135.0,
+        125.0};
+
+    std::vector<double> expectedYPoints{
+        15.0,
+        15.0,
+        0.0,
+        15.0,
+        constants::missing::doubleValue,
+        15.0,
+        25.0,
+        25.0,
+        15.0,
+        15.0,
+        constants::missing::doubleValue,
+        0.0,
+        15.0,
+        15.0,
+        0.0,
+        constants::missing::doubleValue,
+        0.0,
+        15.0,
+        15.0,
+        0.0,
+        constants::missing::doubleValue,
+        125.0,
+        135.0,
+        135.0,
+        125.0,
+        125.0};
+
+    for (size_t i = 0; i < expectedXPoints.size(); ++i)
+    {
+        EXPECT_EQ(expectedXPoints[i], boundaryNodes2[i].x);
+        EXPECT_EQ(expectedYPoints[i], boundaryNodes2[i].y);
+    }
+}
+
+TEST(MeshRefinement, MeshWithHole_ShouldConstructMeshWithInteriorBoundaryPolygons)
+{
+
+    auto curviMesh = MakeCurvilinearGrid(0.0, 0.0, 20.0, 20.0, 11, 11);
+    const auto edges = curviMesh->ComputeEdges();
+    const auto nodes = curviMesh->ComputeNodes();
+
+    Mesh2D mesh(edges, nodes, Projection::cartesian);
+
+    const std::vector<meshkernel::Point> originalNodes(mesh.Nodes());
+    const std::vector<meshkernel::Edge> originalEdges(mesh.Edges());
+
+    std::vector<Point> patch{{45.0, 5.0},
+                             {155.0, 5.0},
+                             {155.0, 155.0},
+                             {45.0, 155.0},
+                             {45.0, 5.0},
+                             {constants::missing::innerOuterSeparator, constants::missing::innerOuterSeparator},
+                             {65.0, 65.0},
+                             {115.0, 65.0},
+                             {115.0, 115.0},
+                             {65.0, 115.0},
+                             {65.0, 65.0}};
+
+    Polygons polygon(patch, Projection::cartesian);
+
+    auto casulliUndoAction = CasulliRefinement::Compute(mesh, polygon);
+
+    // Find nodes of elements to be deleted.
+    auto node11 = mesh.FindNodeCloseToAPoint({80.0, 0.0}, 1.0e-5);
+    auto node12 = mesh.FindNodeCloseToAPoint({85.0, 15.0}, 1.0e-5);
+    auto node13 = mesh.FindNodeCloseToAPoint({75.0, 15.0}, 1.0e-5);
+
+    auto node21 = mesh.FindNodeCloseToAPoint({180.0, 140.0}, 1.0e-5);
+    auto node22 = mesh.FindNodeCloseToAPoint({200.0, 140.0}, 1.0e-5);
+    auto node23 = mesh.FindNodeCloseToAPoint({200.0, 160.0}, 1.0e-5);
+    auto node24 = mesh.FindNodeCloseToAPoint({180.0, 160.0}, 1.0e-5);
+
+    auto node31 = mesh.FindNodeCloseToAPoint({125.0, 125.0}, 1.0e-5);
+    auto node32 = mesh.FindNodeCloseToAPoint({135.0, 125.0}, 1.0e-5);
+    auto node33 = mesh.FindNodeCloseToAPoint({135.0, 135.0}, 1.0e-5);
+    auto node34 = mesh.FindNodeCloseToAPoint({125.0, 135.0}, 1.0e-5);
+
+    auto node41 = mesh.FindNodeCloseToAPoint({85.0, 15.0}, 1.0e-5);
+    auto node42 = mesh.FindNodeCloseToAPoint({95.0, 15.0}, 1.0e-5);
+    auto node43 = mesh.FindNodeCloseToAPoint({95.0, 25.0}, 1.0e-5);
+    auto node44 = mesh.FindNodeCloseToAPoint({85.0, 25.0}, 1.0e-5);
+
+    auto node51 = mesh.FindNodeCloseToAPoint({100.0, 0.0}, 1.0e-5);
+    auto node52 = mesh.FindNodeCloseToAPoint({105.0, 15.0}, 1.0e-5);
+    auto node53 = mesh.FindNodeCloseToAPoint({95.0, 15.0}, 1.0e-5);
+
+    auto node61 = mesh.FindNodeCloseToAPoint({120.0, 0.0}, 1.0e-5);
+    auto node62 = mesh.FindNodeCloseToAPoint({125.0, 15.0}, 1.0e-5);
+    auto node63 = mesh.FindNodeCloseToAPoint({115.0, 15.0}, 1.0e-5);
+
+    std::vector<meshkernel::Point> boundaryNodes;
+
+    std::vector<Point> elementNodes1{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node11),
+                                     mesh.Node(node12),
+                                     mesh.Node(node13),
+                                     mesh.Node(node11)};
+
+    std::vector<Point> elementNodes2{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node21),
+                                     mesh.Node(node22),
+                                     mesh.Node(node23),
+                                     mesh.Node(node24),
+                                     mesh.Node(node21)};
+
+    std::vector<Point> elementNodes3{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node31),
+                                     mesh.Node(node32),
+                                     mesh.Node(node33),
+                                     mesh.Node(node34),
+                                     mesh.Node(node31)};
+
+    std::vector<Point> elementNodes4{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node41),
+                                     mesh.Node(node42),
+                                     mesh.Node(node43),
+                                     mesh.Node(node44),
+                                     mesh.Node(node41)};
+
+    std::vector<Point> elementNodes5{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node51),
+                                     mesh.Node(node52),
+                                     mesh.Node(node53),
+                                     mesh.Node(node51)};
+
+    std::vector<Point> elementNodes6{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node61),
+                                     mesh.Node(node62),
+                                     mesh.Node(node63),
+                                     mesh.Node(node61)};
+
+    // Combine all nodes to form a sequence of polygons
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes1.begin(), elementNodes1.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes2.begin(), elementNodes2.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes3.begin(), elementNodes3.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes4.begin(), elementNodes4.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes5.begin(), elementNodes5.end());
+    boundaryNodes.insert(boundaryNodes.end(), elementNodes6.begin(), elementNodes6.end());
+
+    Polygons boundaryWithMissingElements(boundaryNodes, Projection::cartesian);
+
+    auto deleteMeshFacesUndoAction = mesh.DeleteMeshFacesInPolygon(boundaryWithMissingElements);
+
+    // Construct a mesh with holes
+    meshkernel::Mesh2D mesh2(mesh.Edges(), mesh.Nodes(), mesh.m_facesNodes, mesh.m_numFacesNodes, mesh.m_projection);
+
+    // Call administrate, to re-compute the face-node and face-edge connectivity.
+    // This should not fill in the holes in the mesh
+    mesh2.Administrate();
+
+    // Get interior boundary polygon points
+    std::vector<Point> innerBoundaryPoints = mesh2.GetInnerBoundaryPolygons();
+
+    // The expected number of points, should not include any land boundary points
+    UInt expectedNumberOfNodes = 26;
+
+    ASSERT_EQ(expectedNumberOfNodes, innerBoundaryPoints.size());
+
+    // The edge of one of the deleted elements lies on the boundary, so will be not be part of the
+    // interior set of polygons
+    std::vector<double> expectedXPoints{
+        95.0,
+        105.0,
+        100.0,
+        95.0,
+        constants::missing::doubleValue,
+        85.0,
+        85.0,
+        95.0,
+        95.0,
+        85.0,
+        constants::missing::doubleValue,
+        80.0,
+        75.0,
+        85.0,
+        80.0,
+        constants::missing::doubleValue,
+        120.0,
+        115.0,
+        125.0,
+        120.0,
+        constants::missing::doubleValue,
+        125.0,
+        125.0,
+        135.0,
+        135.0,
+        125.0};
+
+    std::vector<double> expectedYPoints{
+        15.0,
+        15.0,
+        0.0,
+        15.0,
+        constants::missing::doubleValue,
+        15.0,
+        25.0,
+        25.0,
+        15.0,
+        15.0,
+        constants::missing::doubleValue,
+        0.0,
+        15.0,
+        15.0,
+        0.0,
+        constants::missing::doubleValue,
+        0.0,
+        15.0,
+        15.0,
+        0.0,
+        constants::missing::doubleValue,
+        125.0,
+        135.0,
+        135.0,
+        125.0,
+        125.0};
+
+    for (size_t i = 0; i < expectedXPoints.size(); ++i)
+    {
+        EXPECT_EQ(expectedXPoints[i], innerBoundaryPoints[i].x);
+        EXPECT_EQ(expectedYPoints[i], innerBoundaryPoints[i].y);
+    }
 }

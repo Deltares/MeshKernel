@@ -101,8 +101,6 @@ void Contacts::ComputeSingleContacts(const std::vector<bool>& oneDNodeMask,
         // connect faces crossing the left projected segment
         Connect1dNodesWithCrossingFaces(n, -projectionFactor);
     }
-
-    m_areComputed = true;
 }
 
 void Contacts::Connect1dNodesWithCrossingFaces(UInt node,
@@ -272,8 +270,6 @@ void Contacts::ComputeMultipleContacts(const std::vector<bool>& oneDNodeMask)
             }
         }
     }
-
-    m_areComputed = true;
 }
 
 void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask,
@@ -343,8 +339,6 @@ void Contacts::ComputeContactsWithPolygons(const std::vector<bool>& oneDNodeMask
         m_mesh1dIndices.emplace_back(closest1dNodeIndices[polygonIndex]);
         m_mesh2dIndices.emplace_back(closest2dNodeIndices[polygonIndex]);
     }
-
-    m_areComputed = true;
 }
 
 void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
@@ -356,6 +350,11 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
         throw AlgorithmError("oneDNodeMask and m_mesh1d do not have the same number of nodes ({} and {}, respectively)",
                              oneDNodeMask.size(),
                              m_mesh1d.GetNumNodes());
+    }
+
+    if (m_mesh1d.GetNumNodes() == 0)
+    {
+        return;
     }
 
     // perform mesh1d administration (m_nodesRTree will also be build if necessary)
@@ -372,6 +371,7 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
     // for each 1d node in the 2d mesh, find the closest 1d node.
     for (UInt i = 0; i < points.size(); ++i)
     {
+
         // point not in the mesh
         if (pointsFaceIndices[i] == constants::missing::uintValue)
         {
@@ -381,18 +381,21 @@ void Contacts::ComputeContactsWithPoints(const std::vector<bool>& oneDNodeMask,
         // get the closest 1d node
         rtree.SearchNearestPoint(points[i]);
 
-        // if nothing found continue
         if (rtree.GetQueryResultSize() == 0)
         {
             continue;
         }
 
-        // form the 1d-2d contact
-        m_mesh1dIndices.emplace_back(rtree.GetQueryResult(0));
-        m_mesh2dIndices.emplace_back(pointsFaceIndices[i]);
-    }
+        UInt closest1dNodeindex = rtree.GetQueryResult(0);
 
-    m_areComputed = true;
+        // form the 1d-2d contact
+        // Account for 1d node mask
+        if (closest1dNodeindex != constants::missing::uintValue && oneDNodeMask[closest1dNodeindex])
+        {
+            m_mesh1dIndices.emplace_back(closest1dNodeindex);
+            m_mesh2dIndices.emplace_back(pointsFaceIndices[i]);
+        }
+    }
 }
 
 void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
@@ -502,22 +505,11 @@ void Contacts::ComputeBoundaryContacts(const std::vector<bool>& oneDNodeMask,
             m_mesh2dIndices.emplace_back(f);
         }
     }
-
-    m_areComputed = true;
 }
 
 void Contacts::SetIndices(const std::vector<meshkernel::UInt>& mesh1dIndices,
                           const std::vector<meshkernel::UInt>& mesh2dIndices)
 {
-    if (mesh1dIndices.empty())
-    {
-        throw AlgorithmError("The 1d mesh indices vector is empty");
-    }
-
-    if (mesh2dIndices.empty())
-    {
-        throw AlgorithmError("The 2d mesh indices vector is empty");
-    }
 
     if (mesh1dIndices.size() != mesh2dIndices.size())
     {
@@ -528,7 +520,6 @@ void Contacts::SetIndices(const std::vector<meshkernel::UInt>& mesh1dIndices,
 
     m_mesh1dIndices = mesh1dIndices;
     m_mesh2dIndices = mesh2dIndices;
-    m_areComputed = true;
 }
 
 void Contacts::Validate() const

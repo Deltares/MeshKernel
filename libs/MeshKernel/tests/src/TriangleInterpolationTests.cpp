@@ -35,6 +35,8 @@
 #include <TestUtils/MakeMeshes.hpp>
 #include <TestUtils/SampleFileReader.hpp>
 
+#include <print>
+
 TEST(TriangleInterpolation, TriangleInterpolation_OnNodesWithSphericalCoordinates_Shouldinterpolate)
 {
     // Prepare
@@ -179,24 +181,24 @@ TEST(TriangleInterpolation, InterpolateOnFacesUsingSphericalAccurateOption)
     // test internal results
     constexpr double tolerance = 1e-9;
 
-    EXPECT_NEAR(-27.10868779318686, results[0], tolerance);
-    EXPECT_NEAR(-26.00930207321026, results[1], tolerance);
-    EXPECT_NEAR(-26.76102146173949, results[2], tolerance);
-    EXPECT_NEAR(-26.49275221859572, results[3], tolerance);
-    EXPECT_NEAR(-26.99345542316746, results[4], tolerance);
-    EXPECT_NEAR(-26.89671692900715, results[5], tolerance);
-    EXPECT_NEAR(-27.33232890626062, results[6], tolerance);
-    EXPECT_NEAR(-28.37412297707877, results[7], tolerance);
-    EXPECT_NEAR(-22.33073000076475, results[8], tolerance);
-    EXPECT_NEAR(-30.42755591027593, results[9], tolerance);
-    EXPECT_NEAR(-22.40438283953654, results[10], tolerance);
-    EXPECT_NEAR(-13.36606610319540, results[11], tolerance);
-    EXPECT_NEAR(-19.08344680981395, results[12], tolerance);
-    EXPECT_NEAR(-33.57513770674175, results[13], tolerance);
-    EXPECT_NEAR(-35.30789016071103, results[14], tolerance);
-    EXPECT_NEAR(-32.53606308736682, results[15], tolerance);
-    EXPECT_NEAR(-28.30846634340706, results[16], tolerance);
-    EXPECT_NEAR(-26.42547910691146, results[17], tolerance);
-    EXPECT_NEAR(-26.98947539456887, results[18], tolerance);
-    EXPECT_NEAR(-29.54900509035342, results[19], tolerance);
+    EXPECT_NEAR(-27.108687793186, results[0], tolerance);
+    EXPECT_NEAR(-26.009302073210, results[1], tolerance);
+    EXPECT_NEAR(-26.761021461739, results[2], tolerance);
+    EXPECT_NEAR(-26.492752218595, results[3], tolerance);
+    EXPECT_NEAR(-26.993455423167, results[4], tolerance);
+    EXPECT_NEAR(-26.896716929007, results[5], tolerance);
+    EXPECT_NEAR(-27.332328906260, results[6], tolerance);
+    EXPECT_NEAR(-28.374122977078, results[7], tolerance);
+    EXPECT_NEAR(-22.330730000764, results[8], tolerance);
+    EXPECT_NEAR(-30.427555910275, results[9], tolerance);
+    EXPECT_NEAR(-22.404382839536, results[10], tolerance);
+    EXPECT_NEAR(-13.366066103195, results[11], tolerance);
+    EXPECT_NEAR(-19.083446809814, results[12], tolerance);
+    EXPECT_NEAR(-33.575137706741, results[13], tolerance);
+    EXPECT_NEAR(-35.307890160711, results[14], tolerance);
+    EXPECT_NEAR(-32.536063087366, results[15], tolerance);
+    EXPECT_NEAR(-28.308466343407, results[16], tolerance);
+    EXPECT_NEAR(-26.425479106911, results[17], tolerance);
+    EXPECT_NEAR(-26.989475394568, results[18], tolerance);
+    EXPECT_NEAR(-29.549005090353, results[19], tolerance);
 }

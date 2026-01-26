@@ -153,4 +153,20 @@ namespace meshkernel
         Corner        ///< Nodes at corners
     };
 
+    /// Enumerator for different properties on a 2D mesh
+    enum class Property
+    {
+        Orthogonality = 0,
+        EdgeLength = 1,
+        FaceCircumcenter = 2
+    };
+
+    /// \brief Describe how the circumcentre should be computed.
+    enum CircumCentreMethod
+    {
+        InternalNetlinksEdge,
+        InternalNetlinksLoop,
+        AllNetlinksLoop
+    };
+
 } // namespace meshkernel

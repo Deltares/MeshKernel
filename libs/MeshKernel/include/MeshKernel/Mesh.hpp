@@ -331,13 +331,13 @@ namespace meshkernel
 
         /// @brief Computes a vector with the mesh locations coordinates (nodes, edges or faces coordinates).
         ///
-        /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
+        /// @param[in] location The mesh location (e.g. nodes, edge centers or face mass-centers).
         /// @return The vector with the mesh locations.
         [[nodiscard]] std::vector<Point> ComputeLocations(Location location) const;
 
         /// @brief Computes if a location is in polygon.
         /// @param[in] polygon The input polygon.
-        /// @param[in] location The mesh location (e.g. nodes, edge centers or face circumcenters).
+        /// @param[in] location The mesh location (e.g. nodes, edge centers or face mass-centers).
         /// @return A vector of booleans indicating if a location is in a polygon or not.
         [[nodiscard]] std::vector<Boolean> IsLocationInPolygon(const Polygons& polygon, Location location) const;
 
@@ -480,7 +480,7 @@ namespace meshkernel
         /// @brief Determine if a administration is required
         bool AdministrationRequired() const;
 
-        /// @brief Determine if a administration is required
+        /// @brief Indicate if an administration is required
         void SetAdministrationRequired(const bool value);
 
         // Make private
@@ -513,6 +513,7 @@ namespace meshkernel
                                         UInt& numInvalidNodes,
                                         CompoundUndoAction* undoAction = nullptr);
     };
+
 } // namespace meshkernel
 
 inline const std::vector<meshkernel::Point>& meshkernel::Mesh::Nodes() const

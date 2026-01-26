@@ -10,10 +10,10 @@ jobs:
     name: Doxygen Deploy
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.9
+      - name: Set up Python 3.14
         uses: actions/setup-python@v1
         with:
-          python-version: 3.9
+          python-version: 3.14
       - name: Install doxygen
         run: sudo apt-get install doxygen
 

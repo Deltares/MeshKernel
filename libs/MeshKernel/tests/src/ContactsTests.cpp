@@ -36,6 +36,7 @@
 #include <MeshKernel/Mesh1D.hpp>
 #include <MeshKernel/Mesh2D.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/Utilities/Utilities.hpp>
 #include <gmock/gmock-matchers.h>
 
 using namespace meshkernel;
@@ -380,7 +381,8 @@ TEST_F(ContactsTests, SetIndices)
     Contacts contacts(*mesh1d, *mesh2d);
     std::vector<UInt> mesh1dIndices;
     std::vector<UInt> mesh2dIndices;
-    EXPECT_THROW(contacts.SetIndices(mesh1dIndices, mesh2dIndices), AlgorithmError);
+
+    // Contacts should accept empty mesh1dIndices and mesh2dIndices arrays
 
     mesh1dIndices = {1, 2, 3};
     EXPECT_THROW(contacts.SetIndices(mesh1dIndices, mesh2dIndices), AlgorithmError);
@@ -393,4 +395,231 @@ TEST_F(ContactsTests, SetIndices)
 
     EXPECT_EQ(mesh1dIndices, contacts.Mesh1dIndices());
     EXPECT_EQ(mesh2dIndices, contacts.Mesh2dIndices());
+}
+
+TEST_F(ContactsTests, AllFalseNodeMask)
+{
+
+    // Create 1d mesh
+
+    std::vector<Point> nodes{
+        {0.5, 0.5},
+        {1.5, 1.5},
+        {2.5, 2.5},
+        {3.5, 3.5},
+        {4.5, 4.5}};
+    std::vector<Edge> edges{{0, 1}, {1, 2}, {2, 3}, {3, 4}};
+
+    auto mesh1d = std::make_unique<Mesh1D>(edges, nodes, Projection::cartesian);
+
+    mesh1d->Administrate();
+
+    // Create 2d mesh
+    auto mesh2d = MakeRectangularMeshForTesting(6, 6, 1.0, Projection::cartesian, {0.0, 0.0}, true, true);
+    mesh2d->Administrate();
+
+    // Create contacts
+    std::vector<bool> onedNodeMask(mesh1d->GetNumNodes(), false);
+    Contacts contacts(*mesh1d, *mesh2d);
+
+    // Set the polygon where to generate the contacts
+    std::vector<Point> points{{0.5, 2.5}, {3.5, 1.5}, {4.5, 2.5}};
+
+    // Execute
+    contacts.ComputeContactsWithPoints(onedNodeMask, points);
+
+    auto m1dIndices = contacts.Mesh1dIndices();
+    auto m2dIndices = contacts.Mesh2dIndices();
+
+    ASSERT_EQ(m1dIndices.size(), 0);
+    ASSERT_EQ(m2dIndices.size(), 0);
+}
+
+TEST_F(ContactsTests, AllTrueNodeMask)
+{
+
+    // Create 1d mesh
+
+    std::vector<Point> nodes{
+        {0.5, 0.5},
+        {1.5, 1.5},
+        {2.5, 2.5},
+        {3.5, 3.5},
+        {4.5, 4.5}};
+    std::vector<Edge> edges{{0, 1}, {1, 2}, {2, 3}, {3, 4}};
+
+    auto mesh1d = std::make_unique<Mesh1D>(edges, nodes, Projection::cartesian);
+
+    mesh1d->Administrate();
+
+    // Create 2d mesh
+    auto mesh2d = MakeRectangularMeshForTesting(6, 6, 1.0, Projection::cartesian, {0.0, 0.0}, true, true);
+    mesh2d->Administrate();
+
+    // Create contacts
+    std::vector<bool> onedNodeMask(mesh1d->GetNumNodes(), true);
+    Contacts contacts(*mesh1d, *mesh2d);
+
+    // Set the polygon where to generate the contacts
+    std::vector<Point> points{{0.5, 2.5}, {3.5, 1.5}, {4.5, 2.5}};
+
+    // Execute
+    contacts.ComputeContactsWithPoints(onedNodeMask, points);
+
+    auto m1dIndices = contacts.Mesh1dIndices();
+    auto m2dIndices = contacts.Mesh2dIndices();
+
+    ASSERT_EQ(m1dIndices.size(), 3);
+    ASSERT_EQ(m2dIndices.size(), 3);
+
+    EXPECT_EQ(m1dIndices[0], 1);
+    EXPECT_EQ(m1dIndices[1], 2);
+    EXPECT_EQ(m1dIndices[2], 3);
+
+    EXPECT_EQ(m2dIndices[0], 2);
+    EXPECT_EQ(m2dIndices[1], 16);
+    EXPECT_EQ(m2dIndices[2], 22);
+}
+
+TEST_F(ContactsTests, AllMixedBooleanNodeMask)
+{
+
+    // Create 1d mesh
+
+    std::vector<Point> nodes{
+        {0.5, 0.5},
+        {1.5, 1.5},
+        {2.5, 2.5},
+        {3.5, 3.5},
+        {4.5, 4.5},
+        {5.5, 5.5},
+        {6.5, 6.5},
+        {8.5, 8.5},
+        {9.5, 9.5}};
+    std::vector<Edge> edges{{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7}, {7, 8}};
+
+    auto mesh1d = std::make_unique<Mesh1D>(edges, nodes, Projection::cartesian);
+
+    mesh1d->Administrate();
+
+    // Create 2d mesh
+    auto mesh2d = MakeRectangularMeshForTesting(11, 11, 1.0, Projection::cartesian, {0.0, 0.0}, true, true);
+    mesh2d->Administrate();
+
+    // Create contacts
+    std::vector<bool> onedNodeMask(mesh1d->GetNumNodes(), true);
+    onedNodeMask[1] = false;
+    onedNodeMask[2] = false;
+    Contacts contacts(*mesh1d, *mesh2d);
+
+    // Set the polygon where to generate the contacts
+    std::vector<Point> points{{0.5, 2.5}, {3.5, 1.5}, {4.5, 2.5}, {7.5, 5.5}};
+
+    // Execute
+    contacts.ComputeContactsWithPoints(onedNodeMask, points);
+
+    auto m1dIndices = contacts.Mesh1dIndices();
+    auto m2dIndices = contacts.Mesh2dIndices();
+
+    ASSERT_EQ(m1dIndices.size(), 2);
+    ASSERT_EQ(m2dIndices.size(), 2);
+
+    EXPECT_EQ(m1dIndices[0], 3);
+    EXPECT_EQ(m1dIndices[1], 6);
+
+    EXPECT_EQ(m2dIndices[0], 42);
+    EXPECT_EQ(m2dIndices[1], 75);
+}
+
+TEST(Contacts, GenerateContactsMorePointsThanOneDMesh)
+{
+
+    // This test checks that the contacts generated are correct when the
+    // number of points is greater than the number of nodes in the oned mesh
+
+    // Create 1d mesh
+    std::vector<Point> nodes{{-9.0, -3.0},
+                             {-8.18181818, -2.36363636},
+                             {-7.36363636, -1.72727273},
+                             {-6.54545455, -1.09090909},
+                             {-5.72727273, -0.45454545},
+                             {-4.90909091, 0.18181818},
+                             {-4.09090909, 0.81818182},
+                             {-3.27272727, 1.45454545},
+                             {-2.45454545, 2.09090909},
+                             {-1.63636364, 2.72727273},
+                             {-0.81818182, 3.36363636},
+                             {0.0, 4.0},
+                             {1.0, 4.11111111},
+                             {2.0, 4.22222222},
+                             {3.0, 4.33333333},
+                             {4.0, 4.44444444},
+                             {5.0, 4.55555556},
+                             {6.0, 4.66666667},
+                             {7.0, 4.77777778},
+                             {8.0, 4.88888889},
+                             {9.0, 5.0}};
+    std::vector<Edge> edges{nodes.size() - 1};
+
+    for (meshkernel::UInt i = 0; i < edges.size(); ++i)
+    {
+        edges[i].first = i;
+        edges[i].second = i + 1;
+    }
+
+    const auto mesh1d = std::make_shared<Mesh1D>(edges, nodes, Projection::cartesian);
+
+    // Create 2d mesh
+    const auto mesh2d = MakeRectangularMeshForTesting(32, 8, 0.5, Projection::cartesian, {-8.0, 2.5});
+
+    // Create contacts
+    std::vector<bool> onedNodeMask(nodes.size(), true);
+    Contacts contacts(*mesh1d, *mesh2d);
+
+    std::vector<Point> points{{-1.75, 2.75},
+                              {-1.25, 2.75},
+                              {-1.25, 3.25},
+                              {-0.75, 3.25},
+                              {-0.75, 3.75},
+                              {-0.25, 3.75},
+                              {0.25, 3.75},
+                              {-0.25, 4.25},
+                              {0.25, 4.25},
+                              {0.75, 4.25},
+                              {1.25, 4.25},
+                              {1.75, 4.25},
+                              {2.25, 4.25},
+                              {2.75, 4.25},
+                              {3.25, 4.25},
+                              {3.75, 4.25},
+                              {4.25, 4.25},
+                              {4.25, 4.75},
+                              {4.75, 4.75},
+                              {5.25, 4.75},
+                              {5.75, 4.75},
+                              {6.25, 4.75},
+                              {6.75, 4.75},
+                              {7.25, 4.75}};
+
+    // Execute
+    contacts.ComputeContactsWithPoints(onedNodeMask, points);
+
+    std::vector<meshkernel::UInt> expected1dIndices{9, 9, 10, 10, 10, 11, 11, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 15, 16, 16, 17, 17, 18, 18};
+    std::vector<meshkernel::UInt> expected2dIndices{84, 91, 92, 99, 100, 107, 114, 108, 115, 122, 129, 136, 143, 150, 157, 164, 171, 172, 179, 186, 193, 200, 207, 214};
+
+    auto m1dIndices = contacts.Mesh1dIndices();
+    auto m2dIndices = contacts.Mesh2dIndices();
+
+    ASSERT_EQ(m1dIndices.size(), expected1dIndices.size());
+    ASSERT_EQ(m2dIndices.size(), expected2dIndices.size());
+
+    for (size_t i = 0; i < m1dIndices.size(); ++i)
+    {
+        EXPECT_EQ(expected1dIndices[i], m1dIndices[i]);
+    }
+
+    for (size_t i = 0; i < m2dIndices.size(); ++i)
+    {
+        EXPECT_EQ(expected2dIndices[i], m2dIndices[i]);
+    }
 }

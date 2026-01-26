@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.23)
 
-set(MESHKERNEL_VERSION 8.0.0)
+set(MESHKERNEL_VERSION 8.2.2)
 
 project(
   MeshKernel
@@ -20,6 +20,11 @@ include(cmake/fetch_content.cmake)
 
 # organize targets into folders, can be remove in version > 3.26 (ON by default)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+# Enables IDE test discovery
+if(ENABLE_UNIT_TESTING)
+    enable_testing()
+endif()
 
 # Docs only available if this is the main app
 add_subdirectory(docs)

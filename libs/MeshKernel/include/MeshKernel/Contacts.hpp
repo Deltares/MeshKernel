@@ -141,10 +141,6 @@ namespace meshkernel
         void SetIndices(const std::vector<meshkernel::UInt>& mesh1dIndices,
                         const std::vector<meshkernel::UInt>& mesh2dIndices);
 
-        /// @brief checks whether contacts have been computed
-        /// @return True if the contact is crossing an existing contact
-        [[nodiscard]] bool AreComputed() const { return m_areComputed; }
-
     private:
         /// @brief Asserts if a contact is crossing a 1d mesh edge
         /// @param[in] node The 1d node index (start of the contact)
@@ -172,6 +168,5 @@ namespace meshkernel
         std::vector<UInt> m_mesh1dIndices;       ///< The indices of the connected 1-d nodes
         std::vector<UInt> m_mesh2dIndices;       ///< The indices of the connected 2-d faces
         std::vector<Point> m_facesCircumcenters; ///< The circumcentres of the faces of the mesh2d.
-        bool m_areComputed = false;              ///< Indicates whether contacts have been computed
     };
 } // namespace meshkernel

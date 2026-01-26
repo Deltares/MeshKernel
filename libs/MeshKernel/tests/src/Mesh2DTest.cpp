@@ -37,6 +37,7 @@
 #include "MeshKernel/Mesh2DIntersections.hpp"
 #include "MeshKernel/Mesh2DToCurvilinear.hpp"
 #include "MeshKernel/MeshEdgeLength.hpp"
+#include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/MeshOrthogonality.hpp"
 #include "MeshKernel/MeshSmoothness.hpp"
 #include "MeshKernel/Operations.hpp"
@@ -226,8 +227,11 @@ TEST(Mesh2D, MeshBoundaryToPolygon)
     auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     std::vector<meshkernel::Point> polygonNodes;
+
+    // 2 Execution
     const auto meshBoundaryPolygon = mesh.ComputeBoundaryPolygons(polygonNodes);
 
+    // 3 Validation
     const double tolerance = 1e-5;
     ASSERT_NEAR(0.0, meshBoundaryPolygon[0].x, tolerance);
     ASSERT_NEAR(5.0, meshBoundaryPolygon[1].x, tolerance);
@@ -240,6 +244,88 @@ TEST(Mesh2D, MeshBoundaryToPolygon)
     ASSERT_NEAR(0.0, meshBoundaryPolygon[2].y, tolerance);
     ASSERT_NEAR(-5.0, meshBoundaryPolygon[3].y, tolerance);
     ASSERT_NEAR(0.0, meshBoundaryPolygon[4].y, tolerance);
+}
+
+TEST(Mesh2D, MeshBoundaryToPolygonWithSelection)
+{
+    // 1 Setup
+    std::vector<meshkernel::Point> nodes;
+    nodes.push_back({0.0, 0.0});
+    nodes.push_back({10.0, 0.0});
+    nodes.push_back({20.0, 0.0});
+    nodes.push_back({30.0, 0.0});
+    nodes.push_back({0.0, 10.0});
+    nodes.push_back({10.0, 10.0});
+    nodes.push_back({20.0, 10.0});
+    nodes.push_back({30.0, 10.0});
+    nodes.push_back({0.0, 20.0});
+    nodes.push_back({10.0, 20.0});
+    nodes.push_back({20.0, 20.0});
+    nodes.push_back({30.0, 20.0});
+    nodes.push_back({0.0, 30.0});
+    nodes.push_back({10.0, 30.0});
+    nodes.push_back({20.0, 30.0});
+    nodes.push_back({30.0, 30.0});
+
+    std::vector<meshkernel::Edge> edges;
+    edges.push_back({0, 4});
+    edges.push_back({1, 5});
+    edges.push_back({2, 6});
+    edges.push_back({3, 7});
+    edges.push_back({4, 8});
+    edges.push_back({5, 9});
+    edges.push_back({6, 10});
+    edges.push_back({7, 11});
+    edges.push_back({8, 12});
+    edges.push_back({9, 13});
+    edges.push_back({10, 14});
+    edges.push_back({11, 15});
+    edges.push_back({0, 1});
+    edges.push_back({1, 2});
+    edges.push_back({2, 3});
+    edges.push_back({4, 5});
+    edges.push_back({5, 6});
+    edges.push_back({6, 7});
+    edges.push_back({8, 9});
+    edges.push_back({9, 10});
+    edges.push_back({10, 11});
+    edges.push_back({12, 13});
+    edges.push_back({13, 14});
+    edges.push_back({14, 15});
+
+    auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+
+    std::vector<meshkernel::Point> polygonNodes;
+    polygonNodes.push_back({-5.0, 35.0});
+    polygonNodes.push_back({15.0, 35.0});
+    polygonNodes.push_back({15.0, -5.0});
+    polygonNodes.push_back({-5.0, -5.0});
+    polygonNodes.push_back({-5.0, 35.0});
+
+    // 2 Execution
+    const auto meshBoundaryPolygon = mesh.ComputeBoundaryPolygons(polygonNodes);
+
+    // 3 Validation
+    const double tolerance = 1e-5;
+    ASSERT_EQ(9, meshBoundaryPolygon.size());
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[0].x, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[0].y, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[1].x, tolerance);
+    ASSERT_NEAR(10.0, meshBoundaryPolygon[1].y, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[2].x, tolerance);
+    ASSERT_NEAR(20.0, meshBoundaryPolygon[2].y, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[3].x, tolerance);
+    ASSERT_NEAR(30.0, meshBoundaryPolygon[3].y, tolerance);
+    ASSERT_NEAR(10.0, meshBoundaryPolygon[4].x, tolerance);
+    ASSERT_NEAR(30.0, meshBoundaryPolygon[4].y, tolerance);
+    ASSERT_NEAR(20.0, meshBoundaryPolygon[5].x, tolerance);
+    ASSERT_NEAR(30.0, meshBoundaryPolygon[5].y, tolerance);
+    ASSERT_NEAR(20.0, meshBoundaryPolygon[6].x, tolerance);
+    ASSERT_NEAR(00.0, meshBoundaryPolygon[6].y, tolerance);
+    ASSERT_NEAR(10.0, meshBoundaryPolygon[7].x, tolerance);
+    ASSERT_NEAR(00.0, meshBoundaryPolygon[7].y, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[8].x, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[8].y, tolerance);
 }
 
 TEST(Mesh2D, HangingEdge)
@@ -1521,10 +1607,10 @@ TEST(Mesh2D, Mesh2DComputeAspectRatio)
 
     std::vector<double> aspectRatios;
     // Values calculated by the algorithm, not derived analytically
-    std::vector<double> expectedAspectRatios{0.909799624513058, 1.36963998294878, 1.08331064761803,
-                                             0.896631398796997, 0.839834200634414, 1.15475768474815,
-                                             0.832219560848176, 0.819704195029218, 1.11720404458871,
-                                             0.807269974963293, 0.972997967873087, 1.17917808082661};
+    std::vector<double> expectedAspectRatios{0.909873432321899, 1.36956868695895, 1.08336278844686,
+                                             0.896664584053244, 0.839534615157463, 1.15529513995042,
+                                             0.832436574406386, 0.81970228836466, 1.11708942468894,
+                                             0.807420719217234, 0.973005016614517, 1.17901223763961};
 
     mesh->ComputeAspectRatios(aspectRatios);
 
@@ -1536,42 +1622,164 @@ TEST(Mesh2D, Mesh2DComputeAspectRatio)
     }
 }
 
-TEST(Mesh2D, CentreOfMassTest)
+TEST(Mesh2D, MeshToCurvilinear_SingleElement)
 {
-    // Tests that the centre of masses are computed correctly
+    // Test steps
+    // - generate 3 x3 element mesh
+    // - triangulate all elements except the centre element
+    // - compute curvilinear grid with point in centre element, generated should be a single element
+    // - add some tests checking for expected failure cases
 
-    auto mesh = MakeRectangularMeshForTesting(4, 4, 30.0, 30.0, meshkernel::Projection::cartesian, {0.0, 0.0});
+    const int n = 4; // x
+    const int m = 4; // y
 
-    [[maybe_unused]] auto undo = mesh->TriangulateFaces();
+    std::vector<std::vector<int>> indicesValues(n, std::vector<int>(m));
+    std::vector<meshkernel::Point> nodes(n * m);
+    std::size_t nodeIndex = 0;
+    for (auto j = 0; j < m; ++j)
+    {
+        for (auto i = 0; i < n; ++i)
+        {
+            indicesValues[i][j] = i + j * n;
+            nodes[nodeIndex] = {(double)i, (double)j};
+            nodeIndex++;
+        }
+    }
+
+    std::vector<meshkernel::Edge> edges((n - 1) * m + (m - 1) * n);
+    std::size_t edgeIndex = 0;
+    for (auto j = 0; j < m; ++j)
+    {
+        for (auto i = 0; i < n - 1; ++i)
+        {
+            edges[edgeIndex] = {indicesValues[i][j], indicesValues[i + 1][j]};
+            edgeIndex++;
+        }
+    }
+
+    for (auto j = 0; j < m - 1; ++j)
+    {
+        for (auto i = 0; i < n; ++i)
+        {
+            edges[edgeIndex] = {indicesValues[i][j + 1], indicesValues[i][j]};
+            edgeIndex++;
+        }
+    }
+
+    // leave centre quadrilateral element untouched, all others will be split into two triangles
+    std::vector<meshkernel::Edge> toConnect{{0, 5}, {1, 6}, {2, 7}, {4, 9}, {6, 11}, {8, 13}, {9, 14}, {10, 15}};
+
+    meshkernel::Mesh2D mesh(edges, nodes, meshkernel::Projection::cartesian);
+
+    for (size_t i = 0; i < toConnect.size(); ++i)
+    {
+        [[maybe_unused]] auto undo = mesh.ConnectNodes(toConnect[i].first, toConnect[i].second, false);
+    }
+
+    meshkernel::Mesh2DToCurvilinear mesh2DToCurvilinear(mesh);
+
+    // Execute
+    const auto result = mesh2DToCurvilinear.Compute({1.5, 1.5});
+
+    // Assert
+    ASSERT_EQ(result->NumM(), 2);
+    ASSERT_EQ(result->NumN(), 2);
+
+    EXPECT_EQ(result->GetNode(0, 0).x, 2.0);
+    EXPECT_EQ(result->GetNode(0, 0).y, 1.0);
+
+    EXPECT_EQ(result->GetNode(0, 1).x, 2.0);
+    EXPECT_EQ(result->GetNode(0, 1).y, 2.0);
+
+    EXPECT_EQ(result->GetNode(1, 1).x, 1.0);
+    EXPECT_EQ(result->GetNode(1, 1).y, 2.0);
+
+    EXPECT_EQ(result->GetNode(1, 0).x, 1.0);
+    EXPECT_EQ(result->GetNode(1, 0).y, 1.0);
+
+    // Execute several expected failure tests
+    // Element is not quadrilateral
+    EXPECT_THROW([[maybe_unused]] auto result = mesh2DToCurvilinear.Compute({0.5, 0.45}), meshkernel::AlgorithmError);
+    EXPECT_THROW([[maybe_unused]] auto result = mesh2DToCurvilinear.Compute({2.5, 0.45}), meshkernel::AlgorithmError);
+    // Point is outside domain
+    EXPECT_THROW([[maybe_unused]] auto result = mesh2DToCurvilinear.Compute({-1.0, -1.0}), meshkernel::AlgorithmError);
+    EXPECT_THROW([[maybe_unused]] auto result = mesh2DToCurvilinear.Compute({4.0, 4.0}), meshkernel::AlgorithmError);
+}
+
+TEST(Mesh2D, CircumcentreTest)
+{
+    // Tests the circum centre are computed correctly
+    // Setup a mesh with 20 quadrilaterals on a bend
+    auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/bend_net.nc");
+
+    // Create some triangles in the mesh
+    [[maybe_unused]] auto [edgeId1, undoConnect1] = mesh->ConnectNodes(22, 28, false);
+    [[maybe_unused]] auto [edgeId2, undoConnect2] = mesh->ConnectNodes(16, 22, false);
+    [[maybe_unused]] auto [edgeId3, undoConnect3] = mesh->ConnectNodes(11, 17, false);
+
     mesh->Administrate();
 
-    mesh->ComputeCircumcentersMassCentersAndFaceAreas(true);
+    // This is required
+    mesh->ComputeFaceAreaAndMassCenters(true);
 
-    std::vector<double> expectedCentresX{6.66666666666667, 3.33333333333333, 6.66666666666667,
-                                         3.33333333333333, 6.66666666666667, 3.33333333333333,
-                                         16.6666666666667, 13.3333333333333, 16.6666666666667,
-                                         13.3333333333333, 16.6666666666667, 13.3333333333333,
-                                         26.6666666666667, 23.3333333333333, 26.6666666666667,
-                                         23.3333333333333, 26.6666666666667, 23.3333333333333};
+    meshkernel::SaveVtk(mesh->Nodes(), mesh->m_facesNodes, "mesh.vtu");
+    meshkernel::Print(mesh->Nodes(), mesh->Edges());
 
-    std::vector<double> expectedCentresY{3.33333333333333, 6.66666666666667, 13.3333333333333,
-                                         16.6666666666667, 23.3333333333333, 26.6666666666667,
-                                         3.33333333333333, 6.66666666666667, 13.3333333333333,
-                                         16.6666666666667, 23.3333333333333, 26.6666666666667,
-                                         3.33333333333333, 6.66666666666667, 13.3333333333333,
-                                         16.6666666666667, 23.3333333333333, 26.6666666666667};
+    std::vector<meshkernel::Point> circumcentres(meshkernel::algo::ComputeFaceCircumcenters(*mesh));
+    std::cout.precision(15);
 
-    ASSERT_EQ(expectedCentresX.size(), mesh->m_facesMassCenters.size());
+    for (size_t i = 0; i < circumcentres.size(); ++i)
+    {
+        std::cout << circumcentres[i].x << ", ";
+    }
+
+    std::cout << std::endl;
+
+    for (size_t i = 0; i < circumcentres.size(); ++i)
+    {
+        std::cout << circumcentres[i].y << ", ";
+    }
+
+    std::cout << std::endl;
+    std::vector<double> expectedCentresX{195.548859348137, 195.235674457397, 271.915589751738, 284.900235427491,
+                                         351.512547260357, 355.690238206463, 104.919375137228, 69.2507531389557,
+                                         59.9583069695529, 23.9604914644564, 145.755696079123, 119.431652826799,
+                                         111.723865598897, 70.5541419999908, 195.536017493847, 194.645304105658,
+                                         194.970304993753, 262.525432113543, 282.788622697952, 303.084030872608,
+                                         321.374266773485, 347.774368656456, 377.38786513133};
+
+    std::vector<double> expectedCentresY{431.647325146099, 433.981288217263, 377.797199466343, 392.061145626661,
+                                         283.461922195895, 286.695117250479, 264.353318718317, 277.290052172434,
+                                         281.345088772013, 294.393193121389, 363.814413592881, 387.058643711794,
+                                         395.129683835643, 423.687584880616, 399.579494278851, 445.095116548308,
+                                         483.911226901712, 369.305095387488, 394.459784250186, 411.031394866702,
+                                         261.393085971729, 280.526729809418, 301.170129957231};
+
+    // std::vector<double> expectedCentresX{206.660451817758, 185.888995485133, 276.045461920919, 262.103773081694,
+    //                                      351.512547260357, 354.488336820198, 96.9057821605506, 74.139650060642,
+    //                                      64.9521150400979, 26.5193850779214, 143.773947886783, 126.140829602317,
+    //                                      119.140571110995, 95.2344804191452, 195.26948950604, 194.972002901377,
+    //                                      196.67077220983, 253.038332333396, 277.725432056083, 305.985424137459,
+    //                                      327.068944125115, 347.455772919182, 376.70237660149};
+
+    // std::vector<double> expectedCentresY{416.300290705537, 420.104841429695, 368.791106258972, 390.312778220515,
+    //                                      283.461922195895, 288.010897902414, 267.184187763926, 275.571981947808,
+    //                                      279.59015036956, 293.865143028155, 368.39893765591, 380.315565887432,
+    //                                      387.675951330253, 416.01997987334, 399.080604846198, 430.106563115441,
+    //                                      477.611199943931, 365.195459544209, 387.971212251494, 417.968996300952,
+    //                                      266.714576206953, 280.533311526148, 300.712823947955};
+
+    ASSERT_EQ(expectedCentresX.size(), circumcentres.size());
 
     const double tolerance = 1.0e-10;
 
-    for (size_t i = 0; i < mesh->m_facesMassCenters.size(); ++i)
+    for (size_t i = 0; i < circumcentres.size(); ++i)
     {
-        EXPECT_NEAR(expectedCentresX[i], mesh->m_facesMassCenters[i].x, tolerance);
+        EXPECT_NEAR(expectedCentresX[i], circumcentres[i].x, tolerance);
     }
 
-    for (size_t i = 0; i < mesh->m_facesMassCenters.size(); ++i)
+    for (size_t i = 0; i < circumcentres.size(); ++i)
     {
-        EXPECT_NEAR(expectedCentresY[i], mesh->m_facesMassCenters[i].y, tolerance);
+        EXPECT_NEAR(expectedCentresY[i], circumcentres[i].y, tolerance);
     }
 }

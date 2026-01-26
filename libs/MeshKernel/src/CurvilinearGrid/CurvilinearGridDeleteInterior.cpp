@@ -49,11 +49,63 @@ meshkernel::UndoActionPtr meshkernel::CurvilinearGridDeleteInterior::Compute()
 
     std::unique_ptr<CurvilinearGridBlockUndoAction> undoAction = CurvilinearGridBlockUndoAction::Create(m_grid, m_lowerLeft, m_upperRight);
 
+    bool awayFromUpperNBoundary = m_upperRight.m_n < m_grid.NumN() - 2;
+    bool awayFromUpperMBoundary = m_upperRight.m_m < m_grid.NumM() - 2;
+
+    bool awayFromLowerNBoundary = m_lowerLeft.m_n > 1;
+    bool awayFromLowerMBoundary = m_lowerLeft.m_m > 1;
+
+    bool onUpperNBoundary = m_upperRight.m_n == m_grid.NumN() - 1;
+    bool onUpperMBoundary = m_upperRight.m_m == m_grid.NumM() - 1;
+
+    bool onLowerNBoundary = m_lowerLeft.m_n == 0;
+    bool onLowerMBoundary = m_lowerLeft.m_m == 0;
+
     for (UInt n = lowerLimitI + 1; n < upperLimitI; ++n)
     {
         for (UInt m = lowerLimitJ + 1; m < upperLimitJ; ++m)
         {
             m_grid.GetNode(n, m).SetInvalid();
+
+            if (awayFromUpperNBoundary && n == upperLimitI - 1 && !m_grid.GetNode(n + 2, m).IsValid())
+            {
+                m_grid.GetNode(n + 1, m).SetInvalid();
+            }
+
+            if (awayFromLowerNBoundary && n == lowerLimitI + 1 && !m_grid.GetNode(n - 2, m).IsValid())
+            {
+                m_grid.GetNode(n - 1, m).SetInvalid();
+            }
+
+            if (onUpperNBoundary && n == upperLimitI - 1)
+            {
+                m_grid.GetNode(n + 1, m).SetInvalid();
+            }
+
+            if (onLowerNBoundary && n == 1)
+            {
+                m_grid.GetNode(n - 1, m).SetInvalid();
+            }
+
+            if (awayFromUpperMBoundary && m == upperLimitJ - 1 && !m_grid.GetNode(n, m + 2).IsValid())
+            {
+                m_grid.GetNode(n, m + 1).SetInvalid();
+            }
+
+            if (awayFromLowerMBoundary && m == lowerLimitJ + 1 && !m_grid.GetNode(n, m - 2).IsValid())
+            {
+                m_grid.GetNode(n, m - 1).SetInvalid();
+            }
+
+            if (onUpperMBoundary && m == upperLimitJ - 1)
+            {
+                m_grid.GetNode(n, upperLimitJ).SetInvalid();
+            }
+
+            if (onLowerMBoundary && m == 1)
+            {
+                m_grid.GetNode(n, m - 1).SetInvalid();
+            }
         }
     }
 

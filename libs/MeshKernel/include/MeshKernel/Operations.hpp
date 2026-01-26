@@ -266,7 +266,7 @@ namespace meshkernel
     /// @param[in] polygonCenter A coordinate needed in case of sphericalAccurate projection
     /// @returns If point is inside the designated polygon
     [[nodiscard]] bool IsPointInPolygonNodes(const Point& point,
-                                             const std::vector<Point>& polygonNodes,
+                                             const std::span<const Point> polygonNodes,
                                              const Projection& projection,
                                              Point polygonCenter = {constants::missing::doubleValue, constants::missing::doubleValue},
                                              UInt startNode = constants::missing::uintValue,
@@ -282,7 +282,7 @@ namespace meshkernel
     /// @param[in] polygonCenter A coordinate needed in case of sphericalAccurate projection
     /// @returns If point is inside the designated polygon
     [[nodiscard]] bool IsPointInPolygonNodes(const Point& point,
-                                             const std::vector<Point>& polygonNodes,
+                                             const std::span<const Point> polygonNodes,
                                              const Projection& projection,
                                              const BoundingBox& boundingBox,
                                              Point polygonCenter = {constants::missing::doubleValue, constants::missing::doubleValue},
@@ -444,14 +444,6 @@ namespace meshkernel
     /// @return The resulting normalized inner product
     [[nodiscard]] double NormalizedInnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection);
 
-    /// @brief Computes the circumcenter of a triangle
-    /// @param[in] firstNode  The first triangle node
-    /// @param[in] secondNode The second triangle node
-    /// @param[in] thirdNode  The third triangle node
-    /// @param[in] projection The coordinate system projection
-    /// @return The resulting circumcenter
-    [[nodiscard]] Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection& projection);
-
     /// @brief Count the number of valid edges in list
     UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, UInt numNodes);
 
@@ -463,18 +455,6 @@ namespace meshkernel
                                     std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
                                     UInt& pointCount,
                                     const Projection& projection);
-
-    /// @brief Compute circumcenter of face
-    Point ComputeCircumCenter(const Point& centerOfMass,
-                              const UInt pointCount,
-                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
-                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
-                              const Projection& projection);
-
-    /// @brief Compute the circumcenter for the face described by the polygon
-    Point ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                 const std::vector<UInt>& edgesNumFaces,
-                                 const Projection& projection);
 
     /// @brief Determines if two segments are crossing (cross, cross3D)
     /// @param[in]  firstSegmentFirstPoint   The first point of the first segment

@@ -37,6 +37,7 @@
 #include "MeshKernel/UndoActions/ResetEdgeAction.hpp"
 #include "MeshKernel/UndoActions/ResetNodeAction.hpp"
 #include "MeshKernel/UndoActions/UndoActionStack.hpp"
+#include "MeshKernel/Utilities/Utilities.hpp"
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Entities.hpp"
@@ -124,6 +125,8 @@ TEST(CompoundUndoTests, MergeNodesInPolygonInMesh)
 
     // Undoing merge should restore the original mesh.
     undoActionStack.Undo();
+
+    EXPECT_EQ(mesh->GetNumValidEdges(), originalEdges.size());
 
     for (mk::UInt i = 0; i < originalNodes.size(); ++i)
     {

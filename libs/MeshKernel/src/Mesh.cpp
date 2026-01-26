@@ -29,6 +29,7 @@
 #include <cmath>
 #include <iomanip>
 #include <numeric>
+#include <ranges>
 
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
@@ -372,7 +373,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeTwoNodes(UInt firstNodeIndex,
         if (m_edges[edgeIndex].first != constants::missing::uintValue)
         {
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;
-            numSecondNodeEdges++;
+            ++numSecondNodeEdges;
         }
     }
 
@@ -384,6 +385,7 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeTwoNodes(UInt firstNodeIndex,
         if (m_edges[edgeIndex].first != constants::missing::uintValue)
         {
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;
+            ++numSecondNodeEdges;
 
             if (m_edges[edgeIndex].first == firstNodeIndex)
             {
@@ -395,8 +397,6 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeTwoNodes(UInt firstNodeIndex,
                 undoAction->Add(ResetEdge(edgeIndex, {m_edges[edgeIndex].first, secondNodeIndex}));
                 SetAdministrationRequired(true);
             }
-
-            numSecondNodeEdges++;
         }
     }
 
@@ -455,11 +455,18 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeNodesInPolygon(const Polygons
     // merge the closest nodes
     auto const mergingDistanceSquared = mergingDistance * mergingDistance;
 
-    for (UInt i = 0; i < filteredNodes.size(); ++i)
+    for (size_t ii = filteredNodes.size(); ii > 0; --ii)
     {
+        const UInt i = static_cast<UInt>(ii - 1);
+
+        if (originalNodeIndices[i] == constants::missing::uintValue)
+        {
+            continue;
+        }
+
         nodesRtree->SearchPoints(filteredNodes[i], mergingDistanceSquared);
 
-        const auto resultSize = nodesRtree->GetQueryResultSize();
+        const UInt resultSize = nodesRtree->GetQueryResultSize();
 
         if (resultSize > 1)
         {
@@ -468,10 +475,12 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeNodesInPolygon(const Polygons
             {
                 const auto nodeIndexInFilteredNodes = nodesRtree->GetQueryResult(j);
 
-                if (nodeIndexInFilteredNodes != i)
+                if (nodeIndexInFilteredNodes != i && originalNodeIndices[nodeIndexInFilteredNodes] != constants::missing::uintValue)
                 {
+
                     undoAction->Add(MergeTwoNodes(originalNodeIndices[i], originalNodeIndices[nodeIndexInFilteredNodes]));
                     nodesRtree->DeleteNode(i);
+
                     SetAdministrationRequired(true);
                 }
             }
@@ -969,10 +978,18 @@ std::vector<meshkernel::Boolean> Mesh::IsLocationInPolygon(const Polygons& polyg
     const auto locations = ComputeLocations(location);
     std::vector<Boolean> result(locations.size());
 
-#pragma omp parallel for
-    for (int i = 0; i < static_cast<int>(result.size()); ++i)
+    if (polygon.IsEmpty())
     {
-        result[i] = polygon.IsPointInPolygon(locations[i], 0);
+        std::ranges::fill(result, true);
+    }
+    else
+    {
+
+#pragma omp parallel for
+        for (int i = 0; i < static_cast<int>(result.size()); ++i)
+        {
+            result[i] = polygon.IsPointInPolygon(locations[i], 0);
+        }
     }
 
     return result;

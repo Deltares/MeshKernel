@@ -1044,10 +1044,11 @@ namespace meshkernelapi
         /// @brief Connect two or more disconnected regions along boundary
         /// @param[in]  meshKernelId  The id of the mesh states
         /// @param[in]  mesh2d  The mesh we want to connect to the main mesh
+        /// @param[in]  polygon The polygonal region(s) in which the meshes are to be connected (if connect is true)
         /// @param[in]  searchFraction  Fraction of the shortest edge (along an edge to be connected) to use when determining neighbour edge closeness
         /// @param[in]  connect Boolean value indicating whether or not the two meshes should be connected
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d, double searchFraction, bool connect);
+        MKERNEL_API int mkernel_mesh2d_connect_meshes(int meshKernelId, const Mesh2D& mesh2d, const GeometryList& polygon, double searchFraction, bool connect);
 
         /// @brief Converts the projection of a mesh2d.
         ///
@@ -1149,6 +1150,12 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_delete_hanging_edges(int meshKernelId);
 
+        /// @brief Deletes the mesh faces inside a set of polygons
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] polygon      The polygon regions where the faces are to be deleted
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_delete_faces_in_polygons(int meshKernelId, const GeometryList& polygon);
+
         /// @brief Deletes a mesh2d node
         /// @param[in] meshKernelId The id of the mesh state
         /// @param[in] nodeIndex    The index of the node to delete
@@ -1222,10 +1229,34 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_data(int meshKernelId, Mesh2D& mesh2d);
 
+        /// @brief Gets an int indicating the edge length property type for mesh2d
+        /// @param[out] type The int indicating the edge length property type
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_edge_length_property_type(int& type);
+
         /// @brief Gets an int indicating the orthogonality property type for mesh2d
         /// @param[out] type The int indicating the orthogonality property type
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_orthogonality_property_type(int& type);
+
+        /// @brief Gets an int indicating the face circumcenter property type for mesh2d
+        /// @param[out] type The int indicating the face circumcenter property type
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_face_circumcenter_property_type(int& type);
+
+        /// @brief Gets the Mesh2D inner boundary polygons data
+        ///
+        /// @param[in]     meshKernelId  The id of the mesh state
+        /// @param[in,out] innerPolygons The inner boundaries polygons
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_data(int meshKernelId, GeometryList& innerPolygons);
+
+        /// @brief Gets the Mesh2D inner boundary polygons dimension
+        ///
+        /// @param[in]  meshKernelId The id of the mesh state
+        /// @param[out] size         The number of points in the inner boundaries polygons, including separator points.
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_dimension(int meshKernelId, int& size);
 
         /// @brief Gets only the node and edge Mesh2D data
         ///
@@ -1515,8 +1546,9 @@ namespace meshkernelapi
         /// @brief Generates a triangular mesh2d grid within a polygon. The size of the triangles is determined from the length of the polygon edges.
         /// @param[in] meshKernelId  The id of the mesh state
         /// @param[in] polygonPoints The polygon where to triangulate
+        /// @param[in] scaleFactor Average triangle size scaling factor, if value is less that 0.0 a value generated from the polygon will be used.
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_make_triangular_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints);
+        MKERNEL_API int mkernel_mesh2d_make_triangular_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints, const double scaleFactor);
 
         /// @brief Makes a triangular mesh from  a set of samples, triangulating the sample points.
         /// @param[in] meshKernelId The id of the mesh state
@@ -1588,11 +1620,13 @@ namespace meshkernelapi
         /// For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces),
         /// a value of 2 two splits (a quadrilateral face generates 16 faces).
         /// @param[in] meshKernelId             The id of the mesh state
-        /// @param[in] griddedSamples                  The gridded samples
+        /// @param[in] polygon                  The region in which refinement is done, if empty the whole mesh will be considered
+        /// @param[in] griddedSamples           The gridded samples
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @param[in] useNodalRefinement       Use nodal refinement
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_refine_based_on_gridded_samples(int meshKernelId,
+                                                                       const GeometryList& polygon,
                                                                        const GriddedSamples& griddedSamples,
                                                                        const meshkernel::MeshRefinementParameters& meshRefinementParameters,
                                                                        bool useNodalRefinement);
@@ -1612,12 +1646,14 @@ namespace meshkernelapi
         /// For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces),
         /// a value of 2 two splits (a quadrilateral face generates 16 faces).
         /// @param[in] meshKernelId             The id of the mesh state
+        /// @param[in] polygon                  The region in which refinement is done, if empty the whole mesh will be considered
         /// @param[in] samples                  The sample set
         /// @param[in] relativeSearchRadius     The relative search radius relative to the face size, used for some interpolation algorithms
         /// @param[in] minimumNumSamples        The minimum number of samples used for some averaging algorithms
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_refine_based_on_samples(int meshKernelId,
+                                                               const GeometryList& polygon,
                                                                const GeometryList& samples,
                                                                double relativeSearchRadius,
                                                                int minimumNumSamples,
@@ -1629,6 +1665,7 @@ namespace meshkernelapi
         /// For example a value of 0 means no split and hence no refinement, a value of 1 a single split (a quadrilateral face generates 4 faces),
         /// a value of 2 two splits (a quadrilateral face generates 16 faces).
         /// @param[in] meshKernelId                The id of the mesh state
+        /// @param[in] polygon                     The region in which refinement is done, if empty the whole mesh will be considered
         /// @param[in] griddedSamples              The gridded samples
         /// @param[in] relativeSearchRadius        The relative search radius relative to the face size, used for some interpolation algorithms
         /// @param[in] minimumNumSamples           The minimum number of samples used for some averaging algorithms
@@ -1636,6 +1673,7 @@ namespace meshkernelapi
         /// @param[in] meshRefinementParameters The mesh refinement parameters
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_refine_ridges_based_on_gridded_samples(int meshKernelId,
+                                                                              const GeometryList& polygon,
                                                                               const GriddedSamples& griddedSamples,
                                                                               double relativeSearchRadius,
                                                                               int minimumNumSamples,

@@ -58,27 +58,27 @@ TEST(Mesh1D, GenerateMeshFromPolyLines_WithOverlappingNodes_ShouldRemoveOverlapp
 
     // 3 Assertion
     const auto tolerance = 1e-6;
-    ASSERT_NEAR(0.00, mesh.Node(0).x, tolerance);
-    ASSERT_NEAR(5.00, mesh.Node(1).x, tolerance);
-    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, mesh.Node(2).x, tolerance);
-    ASSERT_NEAR(15.0, mesh.Node(3).x, tolerance);
-    ASSERT_NEAR(20.0, mesh.Node(4).x, tolerance);
-    ASSERT_NEAR(10.0, mesh.Node(5).x, tolerance);
-    ASSERT_NEAR(10.0, mesh.Node(6).x, tolerance);
-    ASSERT_NEAR(10.0, mesh.Node(7).x, tolerance);
-    ASSERT_NEAR(10.0, mesh.Node(8).x, tolerance);
-    ASSERT_NEAR(10.0, mesh.Node(9).x, tolerance);
+    EXPECT_NEAR(0.00, mesh.Node(0).x, tolerance);
+    EXPECT_NEAR(5.00, mesh.Node(1).x, tolerance);
+    EXPECT_NEAR(10.0, mesh.Node(2).x, tolerance);
+    EXPECT_NEAR(15.0, mesh.Node(3).x, tolerance);
+    EXPECT_NEAR(20.0, mesh.Node(4).x, tolerance);
+    EXPECT_NEAR(10.0, mesh.Node(5).x, tolerance);
+    EXPECT_NEAR(10.0, mesh.Node(6).x, tolerance);
+    EXPECT_NEAR(meshkernel::constants::missing::doubleValue, mesh.Node(7).x, tolerance);
+    EXPECT_NEAR(10.0, mesh.Node(8).x, tolerance);
+    EXPECT_NEAR(10.0, mesh.Node(9).x, tolerance);
 
-    ASSERT_NEAR(0.0, mesh.Node(0).y, tolerance);
-    ASSERT_NEAR(0.0, mesh.Node(1).y, tolerance);
-    ASSERT_NEAR(meshkernel::constants::missing::doubleValue, mesh.Node(2).y, tolerance);
-    ASSERT_NEAR(0.0, mesh.Node(3).y, tolerance);
-    ASSERT_NEAR(0.0, mesh.Node(4).y, tolerance);
-    ASSERT_NEAR(-10.0, mesh.Node(5).y, tolerance);
-    ASSERT_NEAR(-5.0, mesh.Node(6).y, tolerance);
-    ASSERT_NEAR(0.0, mesh.Node(7).y, tolerance);
-    ASSERT_NEAR(5.0, mesh.Node(8).y, tolerance);
-    ASSERT_NEAR(10.0, mesh.Node(9).y, tolerance);
+    EXPECT_NEAR(0.0, mesh.Node(0).y, tolerance);
+    EXPECT_NEAR(0.0, mesh.Node(1).y, tolerance);
+    EXPECT_NEAR(0.0, mesh.Node(2).y, tolerance);
+    EXPECT_NEAR(0.0, mesh.Node(3).y, tolerance);
+    EXPECT_NEAR(0.0, mesh.Node(4).y, tolerance);
+    EXPECT_NEAR(-10.0, mesh.Node(5).y, tolerance);
+    EXPECT_NEAR(-5.0, mesh.Node(6).y, tolerance);
+    EXPECT_NEAR(meshkernel::constants::missing::doubleValue, mesh.Node(7).y, tolerance);
+    EXPECT_NEAR(5.0, mesh.Node(8).y, tolerance);
+    EXPECT_NEAR(10.0, mesh.Node(9).y, tolerance);
 }
 
 TEST(Mesh1D, GenerateMeshFromPolyLines_WithInexactOffset_ShouldGenerateMesh)

@@ -25,16 +25,18 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernel/Operations.hpp"
+#include <span>
+
 #include "MeshKernel/Cartesian3DPoint.hpp"
 #include "MeshKernel/Mesh.hpp"
+#include "MeshKernel/Operations.hpp"
 
 namespace meshkernel::impl
 {
 
     /// @brief Checks if a point is in polygonNodes for Cartesian and spherical coordinate systems, using the winding number method
     bool IsPointInPolygonNodesCartesian(const Point& point,
-                                        const std::vector<Point>& polygonNodes,
+                                        const std::span<const Point> polygonNodes,
                                         UInt startNode,
                                         UInt endNode)
     {
@@ -53,7 +55,6 @@ namespace meshkernel::impl
             if (polygonNodes[n].y <= point.y) // an upward crossing
             {
                 if (polygonNodes[n + 1].y > point.y && crossProductValue > 0.0)
-
                 {
                     ++windingNumber; // have  a valid up intersect
                 }
@@ -62,7 +63,6 @@ namespace meshkernel::impl
             {
                 if (polygonNodes[n + 1].y <= point.y && crossProductValue < 0.0) // a downward crossing
                 {
-
                     --windingNumber; // have  a valid down intersect
                 }
             }
@@ -73,7 +73,7 @@ namespace meshkernel::impl
 
     /// @brief Checks if a point is in polygonNodes for accurate spherical coordinate system, using the winding number method
     bool IsPointInPolygonNodesSphericalAccurate(const Point& point,
-                                                const std::vector<Point>& polygonNodes,
+                                                const std::span<const Point> polygonNodes,
                                                 Point polygonCenter,
                                                 UInt startNode,
                                                 UInt endNode)
@@ -247,7 +247,11 @@ namespace meshkernel
         return std::abs(std::abs(point.y) - 90.0) < constants::geometric::absLatitudeAtPoles;
     }
 
-    double crossProduct(const Point& firstSegmentFirstPoint, const Point& firstSegmentSecondPoint, const Point& secondSegmentFirstPoint, const Point& secondSegmentSecondPoint, const Projection& projection)
+    double crossProduct(const Point& firstSegmentFirstPoint,
+                        const Point& firstSegmentSecondPoint,
+                        const Point& secondSegmentFirstPoint,
+                        const Point& secondSegmentSecondPoint,
+                        const Projection& projection)
     {
         const auto dx1 = GetDx(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
         const auto dy1 = GetDy(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
@@ -325,7 +329,7 @@ namespace meshkernel
     }
 
     bool IsPointInPolygonNodes(const Point& point,
-                               const std::vector<Point>& polygonNodes,
+                               const std::span<const Point> polygonNodes,
                                const Projection& projection,
                                Point polygonCenter,
                                UInt startNode,
@@ -374,7 +378,7 @@ namespace meshkernel
     }
 
     bool IsPointInPolygonNodes(const Point& point,
-                               const std::vector<Point>& polygonNodes,
+                               const std::span<const Point> polygonNodes,
                                const Projection& projection,
                                const BoundingBox& boundingBox,
                                Point polygonCenter,
@@ -535,25 +539,10 @@ namespace meshkernel
     {
         if (projection == Projection::sphericalAccurate)
         {
-            const Cartesian3DPoint firstPointFirstSegmentCartesian{SphericalToCartesian3D(firstPointFirstSegment)};
-            const auto xx1 = firstPointFirstSegmentCartesian.x;
-            const auto yy1 = firstPointFirstSegmentCartesian.y;
-            const auto zz1 = firstPointFirstSegmentCartesian.z;
-
-            const Cartesian3DPoint secondPointFirstSegmentCartesian{SphericalToCartesian3D(secondPointFirstSegment)};
-            const auto xx2 = secondPointFirstSegmentCartesian.x;
-            const auto yy2 = secondPointFirstSegmentCartesian.y;
-            const auto zz2 = secondPointFirstSegmentCartesian.z;
-
-            const Cartesian3DPoint firstPointSecondSegmentCartesian{SphericalToCartesian3D(firstPointSecondSegment)};
-            const auto xx3 = firstPointSecondSegmentCartesian.x;
-            const auto yy3 = firstPointSecondSegmentCartesian.y;
-            const auto zz3 = firstPointSecondSegmentCartesian.z;
-
-            const Cartesian3DPoint secondPointSecondSegmentCartesian{SphericalToCartesian3D(secondPointSecondSegment)};
-            const auto xx4 = secondPointSecondSegmentCartesian.x;
-            const auto yy4 = secondPointSecondSegmentCartesian.y;
-            const auto zz4 = secondPointSecondSegmentCartesian.z;
+            const auto [xx1, yy1, zz1] = SphericalToCartesian3D(firstPointFirstSegment);
+            const auto [xx2, yy2, zz2] = SphericalToCartesian3D(secondPointFirstSegment);
+            const auto [xx3, yy3, zz3] = SphericalToCartesian3D(firstPointSecondSegment);
+            const auto [xx4, yy4, zz4] = SphericalToCartesian3D(secondPointSecondSegment);
 
             const double vxx = (yy2 - yy1) * (zz4 - zz3) - (zz2 - zz1) * (yy4 - yy3);
             const double vyy = (zz2 - zz1) * (xx4 - xx3) - (xx2 - xx1) * (zz4 - zz3);
@@ -653,6 +642,11 @@ namespace meshkernel
         return {constants::missing::doubleValue, constants::missing::doubleValue};
     }
 
+    double WeightedSumOfDifferences(const Cartesian3DPoint& p1, const Cartesian3DPoint& p2, const std::array<double, 3>& weight)
+    {
+        return (p2.x - p1.x) * weight[0] + (p2.y - p1.y) * weight[1] + (p2.z - p1.z) * weight[2];
+    }
+
     Point NormalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, const Projection& projection)
     {
         if (!firstPoint.IsValid() || !secondPoint.IsValid())
@@ -669,13 +663,8 @@ namespace meshkernel
             std::array<double, 3> ephi{0.0, 0.0, 0.0};
             ComputeTwoBaseComponents(insidePoint, elambda, ephi);
 
-            const double dx = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * elambda[0] +
-                              (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * elambda[1] +
-                              (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * elambda[2];
-
-            const double dy = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * ephi[0] +
-                              (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * ephi[1] +
-                              (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * ephi[2];
+            const double dx = WeightedSumOfDifferences(firstPointCartesianCoordinates, secondPointCartesianCoordinates, elambda);
+            const double dy = WeightedSumOfDifferences(firstPointCartesianCoordinates, secondPointCartesianCoordinates, ephi);
 
             const double squaredDistance = dx * dx + dy * dy;
             Point result{constants::missing::doubleValue, constants::missing::doubleValue};
@@ -863,13 +852,8 @@ namespace meshkernel
             ComputeTwoBaseComponents(middlePoint, elambda, ephi);
 
             // project vector in local base
-            const double dx = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * elambda[0] +
-                              (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * elambda[1] +
-                              (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * elambda[2];
-
-            const double dy = (secondPointCartesianCoordinates.x - firstPointCartesianCoordinates.x) * ephi[0] +
-                              (secondPointCartesianCoordinates.y - firstPointCartesianCoordinates.y) * ephi[1] +
-                              (secondPointCartesianCoordinates.z - firstPointCartesianCoordinates.z) * ephi[2];
+            const double dx = WeightedSumOfDifferences(firstPointCartesianCoordinates, secondPointCartesianCoordinates, elambda);
+            const double dy = WeightedSumOfDifferences(firstPointCartesianCoordinates, secondPointCartesianCoordinates, ephi);
 
             const double squaredDistance = dx * dx + dy * dy;
             Point result{constants::missing::doubleValue, constants::missing::doubleValue};
@@ -1067,15 +1051,8 @@ namespace meshkernel
 
         if (projection == Projection::sphericalAccurate)
         {
-            const Cartesian3DPoint firstPointCartesian{SphericalToCartesian3D(firstPoint)};
-            const auto xx1 = firstPointCartesian.x;
-            const auto yy1 = firstPointCartesian.y;
-            const auto zz1 = firstPointCartesian.z;
-
-            const Cartesian3DPoint secondPointCartesian{SphericalToCartesian3D(secondPoint)};
-            const auto xx2 = secondPointCartesian.x;
-            const auto yy2 = secondPointCartesian.y;
-            const auto zz2 = secondPointCartesian.z;
+            const auto [xx1, yy1, zz1] = SphericalToCartesian3D(firstPoint);
+            const auto [xx2, yy2, zz2] = SphericalToCartesian3D(secondPoint);
 
             return (xx2 - xx1) * (xx2 - xx1) + (yy2 - yy1) * (yy2 - yy1) + (zz2 - zz1) * (zz2 - zz1);
         }
@@ -1123,20 +1100,9 @@ namespace meshkernel
 
         if (projection == Projection::sphericalAccurate)
         {
-            const Cartesian3DPoint firstNodeCartesian{SphericalToCartesian3D(firstNode)};
-            const auto xx1 = firstNodeCartesian.x;
-            const auto yy1 = firstNodeCartesian.y;
-            const auto zz1 = firstNodeCartesian.z;
-
-            const Cartesian3DPoint secondNodeCartesian{SphericalToCartesian3D(secondNode)};
-            const auto xx2 = secondNodeCartesian.x;
-            const auto yy2 = secondNodeCartesian.y;
-            const auto zz2 = secondNodeCartesian.z;
-
-            const Cartesian3DPoint pointCartesian{SphericalToCartesian3D(point)};
-            const auto xx3 = pointCartesian.x;
-            const auto yy3 = pointCartesian.y;
-            const auto zz3 = pointCartesian.z;
+            const auto [xx1, yy1, zz1] = SphericalToCartesian3D(firstNode);
+            const auto [xx2, yy2, zz2] = SphericalToCartesian3D(secondNode);
+            const auto [xx3, yy3, zz3] = SphericalToCartesian3D(point);
 
             const double x21 = xx2 - xx1;
             const double y21 = yy2 - yy1;
@@ -1148,16 +1114,16 @@ namespace meshkernel
             const double r2 = x21 * x21 + y21 * y21 + z21 * z21;
 
             ratio = 0.0;
+
             if (r2 >= 0.0)
             {
-
                 ratio = (x31 * x21 + y31 * y21 + z31 * z21) / r2;
                 const double correctedRatio = std::max(std::min(1.0, ratio), 0.0);
 
                 Cartesian3DPoint cartesianNormal3DPoint;
-                cartesianNormal3DPoint.x = firstNodeCartesian.x + correctedRatio * x21;
-                cartesianNormal3DPoint.y = firstNodeCartesian.y + correctedRatio * y21;
-                cartesianNormal3DPoint.z = firstNodeCartesian.z + correctedRatio * z21;
+                cartesianNormal3DPoint.x = xx1 + correctedRatio * x21;
+                cartesianNormal3DPoint.y = yy1 + correctedRatio * y21;
+                cartesianNormal3DPoint.z = zz1 + correctedRatio * z21;
 
                 cartesianNormal3DPoint.x = cartesianNormal3DPoint.x - xx3;
                 cartesianNormal3DPoint.y = cartesianNormal3DPoint.y - yy3;
@@ -1175,7 +1141,11 @@ namespace meshkernel
         return {distance, normalPoint, ratio};
     }
 
-    double InnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection)
+    double InnerProductTwoSegments(const Point& firstPointFirstSegment,
+                                   const Point& secondPointFirstSegment,
+                                   const Point& firstPointSecondSegment,
+                                   const Point& secondPointSecondSegment,
+                                   const Projection& projection)
     {
         if (projection == Projection::sphericalAccurate)
         {
@@ -1202,29 +1172,18 @@ namespace meshkernel
         return constants::missing::doubleValue;
     }
 
-    double NormalizedInnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection)
+    double NormalizedInnerProductTwoSegments(const Point& firstPointFirstSegment,
+                                             const Point& secondPointFirstSegment,
+                                             const Point& firstPointSecondSegment,
+                                             const Point& secondPointSecondSegment,
+                                             const Projection& projection)
     {
         if (projection == Projection::sphericalAccurate)
         {
-            const Cartesian3DPoint firstPointFirstSegmentCartesian{SphericalToCartesian3D(firstPointFirstSegment)};
-            const auto xx1 = firstPointFirstSegmentCartesian.x;
-            const auto yy1 = firstPointFirstSegmentCartesian.y;
-            const auto zz1 = firstPointFirstSegmentCartesian.z;
-
-            const Cartesian3DPoint secondPointFirstSegmentCartesian{SphericalToCartesian3D(secondPointFirstSegment)};
-            const auto xx2 = secondPointFirstSegmentCartesian.x;
-            const auto yy2 = secondPointFirstSegmentCartesian.y;
-            const auto zz2 = secondPointFirstSegmentCartesian.z;
-
-            const Cartesian3DPoint firstPointSecondSegmentCartesian{SphericalToCartesian3D(firstPointSecondSegment)};
-            const auto xx3 = firstPointSecondSegmentCartesian.x;
-            const auto yy3 = firstPointSecondSegmentCartesian.y;
-            const auto zz3 = firstPointSecondSegmentCartesian.z;
-
-            const Cartesian3DPoint secondPointSecondSegmentCartesian{SphericalToCartesian3D(secondPointSecondSegment)};
-            const auto xx4 = secondPointSecondSegmentCartesian.x;
-            const auto yy4 = secondPointSecondSegmentCartesian.y;
-            const auto zz4 = secondPointSecondSegmentCartesian.z;
+            const auto [xx1, yy1, zz1] = SphericalToCartesian3D(firstPointFirstSegment);
+            const auto [xx2, yy2, zz2] = SphericalToCartesian3D(secondPointFirstSegment);
+            const auto [xx3, yy3, zz3] = SphericalToCartesian3D(firstPointSecondSegment);
+            const auto [xx4, yy4, zz4] = SphericalToCartesian3D(secondPointSecondSegment);
 
             const auto dx1 = xx2 - xx1;
             const auto dy1 = yy2 - yy1;
@@ -1274,41 +1233,6 @@ namespace meshkernel
         return constants::missing::doubleValue;
     }
 
-    Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection& projection)
-    {
-        const double dx2 = GetDx(firstNode, secondNode, projection);
-        const double dy2 = GetDy(firstNode, secondNode, projection);
-
-        const double dx3 = GetDx(firstNode, thirdNode, projection);
-        const double dy3 = GetDy(firstNode, thirdNode, projection);
-
-        const double den = dy2 * dx3 - dy3 * dx2;
-        double z = 0.0;
-        if (std::abs(den) > 0.0)
-        {
-            z = (dx2 * (dx2 - dx3) + dy2 * (dy2 - dy3)) / den;
-        }
-
-        Point circumcenter;
-        if (projection == Projection::cartesian)
-        {
-            circumcenter.x = firstNode.x + 0.5 * (dx3 - z * dy3);
-            circumcenter.y = firstNode.y + 0.5 * (dy3 + z * dx3);
-        }
-        if (projection == Projection::spherical)
-        {
-            const double phi = (firstNode.y + secondNode.y + thirdNode.y) * constants::numeric::oneThird;
-            const double xf = 1.0 / cos(constants::conversion::degToRad * phi);
-            circumcenter.x = firstNode.x + xf * 0.5 * (dx3 - z * dy3) * constants::conversion::radToDeg / constants::geometric::earth_radius;
-            circumcenter.y = firstNode.y + 0.5 * (dy3 + z * dx3) * constants::conversion::radToDeg / constants::geometric::earth_radius;
-        }
-        if (projection == Projection::sphericalAccurate)
-        {
-            // TODO: compute in case of spherical accurate (comp_circumcenter3D)
-        }
-        return circumcenter;
-    }
-
     UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, UInt numEdges)
     {
         if (numEdges > edgesNumFaces.size())
@@ -1340,107 +1264,6 @@ namespace meshkernel
             normals[pointCount] = NormalVector(polygon[n], polygon[nextNode], middlePoints[pointCount], projection);
             ++pointCount;
         }
-    }
-
-    Point ComputeCircumCenter(const Point& centerOfMass,
-                              const UInt pointCount,
-                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
-                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
-                              const Projection& projection)
-    {
-        const UInt maximumNumberCircumcenterIterations = 100;
-        const double eps = projection == Projection::cartesian ? 1e-3 : 9e-10; // 111km = 0-e digit.
-
-        Point estimatedCircumCenter = centerOfMass;
-
-        for (UInt iter = 0; iter < maximumNumberCircumcenterIterations; ++iter)
-        {
-            const Point previousCircumCenter = estimatedCircumCenter;
-            for (UInt n = 0; n < pointCount; n++)
-            {
-                const Point delta{GetDx(middlePoints[n], estimatedCircumCenter, projection), GetDy(middlePoints[n], estimatedCircumCenter, projection)};
-                const auto increment = -0.1 * dot(delta, normals[n]);
-                AddIncrementToPoint(normals[n], increment, centerOfMass, projection, estimatedCircumCenter);
-            }
-            if (iter > 0 &&
-                abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps &&
-                abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
-            {
-                break;
-            }
-        }
-
-        return estimatedCircumCenter;
-    }
-
-    Point ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                 const std::vector<UInt>& edgesNumFaces,
-                                 const Projection& projection)
-    {
-        static constexpr double weightCircumCenter = 1.0; ///< Weight circum center
-
-        std::array<Point, constants::geometric::maximumNumberOfNodesPerFace> middlePoints;
-        std::array<Point, constants::geometric::maximumNumberOfNodesPerFace> normals;
-        UInt pointCount = 0;
-
-        const auto numNodes = static_cast<UInt>(polygon.size()) - 1;
-
-        Point centerOfMass{0.0, 0.0};
-        for (UInt n = 0; n < numNodes; ++n)
-        {
-            centerOfMass.x += polygon[n].x;
-            centerOfMass.y += polygon[n].y;
-        }
-
-        centerOfMass /= static_cast<double>(numNodes);
-
-        auto result = centerOfMass;
-        if (numNodes == constants::geometric::numNodesInTriangle)
-        {
-            result = CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], projection);
-        }
-        else if (!edgesNumFaces.empty())
-        {
-            UInt numValidEdges = CountNumberOfValidEdges(edgesNumFaces, numNodes);
-
-            if (numValidEdges > 1)
-            {
-                ComputeMidPointsAndNormals(polygon, edgesNumFaces, numNodes, middlePoints, normals, pointCount, projection);
-                result = ComputeCircumCenter(centerOfMass, pointCount, middlePoints, normals, projection);
-            }
-        }
-
-        for (UInt n = 0; n < numNodes; ++n)
-        {
-            polygon[n] = weightCircumCenter * polygon[n] + (1.0 - weightCircumCenter) * centerOfMass;
-        }
-
-        // The circumcenter is included in the face, then return the calculated circumcenter
-        if (IsPointInPolygonNodes(result, polygon, projection))
-        {
-            return result;
-        }
-
-        // If the circumcenter is not included in the face,
-        // the circumcenter will be placed at the intersection between an edge and the segment connecting the mass center with the circumcenter.
-        for (UInt n = 0; n < numNodes; ++n)
-        {
-            const auto nextNode = NextCircularForwardIndex(n, numNodes);
-
-            const auto [areLineCrossing,
-                        intersection,
-                        crossProduct,
-                        firstRatio,
-                        secondRatio] = AreSegmentsCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, projection);
-
-            if (areLineCrossing)
-            {
-                result = intersection;
-                break;
-            }
-        }
-
-        return result;
     }
 
     std::tuple<bool, Point, double, double, double> AreSegmentsCrossing(const Point& firstSegmentFirstPoint,

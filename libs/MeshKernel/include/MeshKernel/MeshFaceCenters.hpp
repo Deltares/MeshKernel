@@ -1,3 +1,8 @@
+//---- GPL ---------------------------------------------------------------------
+//
+// Copyright (C)  Stichting Deltares, 2011-2025.
+//
+// This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation version 3.
 //
@@ -22,9 +27,11 @@
 
 #pragma once
 
+#include <array>
 #include <span>
 #include <vector>
 
+#include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Mesh.hpp"
 #include "MeshKernel/Point.hpp"
@@ -32,9 +39,27 @@
 namespace meshkernel::algo
 {
     /// @brief Compute the circum-center point of each of the faces
-    std::vector<Point> ComputeFaceCircumcenters(const Mesh& mesh);
+    std::vector<Point> ComputeFaceCircumcenters(const Mesh& mesh, CircumCentreMethod circumcentreMethod = constants::geometric::DeafultCircumCentreMethod);
 
     /// @brief Compute the circum-center point of each of the faces overwriting the values in an array
-    void ComputeFaceCircumcenters(const Mesh& mesh, std::span<Point> edgeCenters);
+    void ComputeFaceCircumcenters(const Mesh& mesh, std::span<Point> faceCenters, CircumCentreMethod circumcentreMethod = constants::geometric::DeafultCircumCentreMethod);
+
+    /// @brief Compute the circumcenter of a triangle element.
+    Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection projection);
+
+    /// @brief Compute the circumcenter of a polygon
+    Point ComputeFaceCircumenter(std::vector<Point>& polygon,
+                                 const std::vector<UInt>& edgesNumFaces,
+                                 const Projection projection,
+                                 CircumCentreMethod circumcentreMethod = constants::geometric::DeafultCircumCentreMethod);
+
+    /// @brief Compute circumcenter of face
+    Point ComputeCircumCenter(const Point& centerOfMass,
+                              const UInt pointCount,
+                              const std::vector<UInt>& edgesNumFaces,
+                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
+                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
+                              CircumCentreMethod circumcentreMethod,
+                              const Projection projection);
 
 } // namespace meshkernel::algo

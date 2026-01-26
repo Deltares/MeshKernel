@@ -25,14 +25,23 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernelApi/PropertyCalculator.hpp"
-#include "MeshKernelApi/State.hpp"
+#include "MeshKernel/UndoActions/PointArrayUndo.hpp"
+#include "MeshKernel/Mesh2D.hpp"
 
-#include "MeshKernel/MeshEdgeLength.hpp"
-#include "MeshKernel/MeshFaceCenters.hpp"
-#include "MeshKernel/MeshOrthogonality.hpp"
-#include "MeshKernel/SampleAveragingInterpolator.hpp"
-#include "MeshKernel/SampleTriangulationInterpolator.hpp"
+std::unique_ptr<meshkernel::PointArrayUndo>
+meshkernel::PointArrayUndo::Create(Mesh2D& mesh, const std::vector<Point>& nodes)
+{
+    return std::make_unique<PointArrayUndo>(mesh, nodes);
+}
 
-#include <algorithm>
-#include <functional>
+meshkernel::PointArrayUndo::PointArrayUndo(Mesh2D& mesh, const std::vector<Point>& nodes) : BaseMeshUndoAction<PointArrayUndo, Mesh2D>(mesh), m_savedNodes(nodes) {}
+
+void meshkernel::PointArrayUndo::Swap(std::vector<Point>& nodes)
+{
+    std::swap(nodes, m_savedNodes);
+}
+
+std::uint64_t meshkernel::PointArrayUndo::MemorySize() const
+{
+    return sizeof(PointArrayUndo) + sizeof(Point) * m_savedNodes.capacity();
+}
