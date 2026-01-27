@@ -30,6 +30,7 @@
 #include <span>
 #include <vector>
 
+#include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Mesh2D.hpp"
 
 namespace meshkernel
@@ -39,10 +40,10 @@ namespace meshkernel
     {
     public:
         /// @brief Compute the orthogonality values returning values in a vector
-        static std::vector<double> Compute(const Mesh2D& mesh);
+        static std::vector<double> Compute(const Mesh2D& mesh, CircumCentreMethod circumcentreMethod = constants::geometric::defaultCircumCentreMethod);
 
         /// @brief Compute the orthogonality values overwriting the values in an array
-        static void Compute(const Mesh2D& mesh, std::span<double> orthogonality);
+        static void Compute(const Mesh2D& mesh, std::span<double> orthogonality, CircumCentreMethod circumcentreMethod = constants::geometric::defaultCircumCentreMethod);
 
     private:
         /// @brief Compute the orthogonality value for the edge

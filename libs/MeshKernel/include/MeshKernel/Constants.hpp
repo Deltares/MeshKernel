@@ -94,7 +94,8 @@ namespace meshkernel
             constexpr UInt maximumNumberOfEdgesPerFace = 6;                                                    ///< Maximum number of edges per face
             constexpr UInt maximumNumberOfNodesPerFace = 6;                                                    ///< Maximum number of nodes per face
             constexpr UInt maximumNumberOfConnectedNodes = maximumNumberOfEdgesPerNode * 4;                    ///< Maximum number of connected nodes
-            constexpr CircumCentreMethod DeafultCircumCentreMethod = CircumCentreMethod::InternalNetlinksEdge; ///< Default circum centre calculation method
+            constexpr double circumCentreWeight = 1.0;                                                         ///< Weighting factor for circumcentre calculations
+            constexpr CircumCentreMethod defaultCircumCentreMethod = CircumCentreMethod::InternalNetlinksEdge; ///< Default circum centre calculation method
 
         } // namespace geometric
 

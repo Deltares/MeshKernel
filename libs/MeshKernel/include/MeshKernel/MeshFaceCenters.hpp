@@ -39,27 +39,19 @@
 namespace meshkernel::algo
 {
     /// @brief Compute the circum-center point of each of the faces
-    std::vector<Point> ComputeFaceCircumcenters(const Mesh& mesh, CircumCentreMethod circumcentreMethod = constants::geometric::DeafultCircumCentreMethod);
+    std::vector<Point> ComputeFaceCircumcenters(const Mesh& mesh, CircumCentreMethod circumcentreMethod = constants::geometric::defaultCircumCentreMethod,
+                                                double circumCentreWeight = constants::geometric::circumCentreWeight);
 
     /// @brief Compute the circum-center point of each of the faces overwriting the values in an array
-    void ComputeFaceCircumcenters(const Mesh& mesh, std::span<Point> faceCenters, CircumCentreMethod circumcentreMethod = constants::geometric::DeafultCircumCentreMethod);
-
-    /// @brief Compute the circumcenter of a triangle element.
-    Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection projection);
+    void ComputeFaceCircumcenters(const Mesh& mesh, std::span<Point> faceCenters,
+                                  CircumCentreMethod circumcentreMethod = constants::geometric::defaultCircumCentreMethod,
+                                  double circumCentreWeight = constants::geometric::circumCentreWeight);
 
     /// @brief Compute the circumcenter of a polygon
     Point ComputeFaceCircumenter(std::vector<Point>& polygon,
                                  const std::vector<UInt>& edgesNumFaces,
                                  const Projection projection,
-                                 CircumCentreMethod circumcentreMethod = constants::geometric::DeafultCircumCentreMethod);
-
-    /// @brief Compute circumcenter of face
-    Point ComputeCircumCenter(const Point& centerOfMass,
-                              const UInt pointCount,
-                              const std::vector<UInt>& edgesNumFaces,
-                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
-                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
-                              CircumCentreMethod circumcentreMethod,
-                              const Projection projection);
+                                 double circumCentreWeight = constants::geometric::circumCentreWeight,
+                                 CircumCentreMethod circumcentreMethod = constants::geometric::defaultCircumCentreMethod);
 
 } // namespace meshkernel::algo

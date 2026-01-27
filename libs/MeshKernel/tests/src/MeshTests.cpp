@@ -772,13 +772,8 @@ TEST_P(MeshDeletion, expected_results)
 
     const meshkernel::Polygons polygon(polygonNodes, meshkernel::Projection::cartesian);
 
-    meshkernel::Print(mesh->Nodes(), mesh->Edges());
-    meshkernel::SaveVtk(mesh->Nodes(), mesh->m_facesNodes, "mesh1.vtu");
-
     // Execute
     auto undoAction = mesh->DeleteMesh(polygon, deleteOption, invertSelection);
-
-    meshkernel::SaveVtk(mesh->Nodes(), mesh->m_facesNodes, "mesh2.vtu");
 
     // Assert
     ASSERT_EQ(numNodes, mesh->GetNumValidNodes());

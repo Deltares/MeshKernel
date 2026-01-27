@@ -1555,9 +1555,9 @@ TEST(Mesh2D, GetOrthogonality_OnTriangularMesh_ShouldGetOrthogonalityValues)
     // Assert
     const double tolerance = 1e-6;
     ASSERT_NEAR(1.0566340037701503e-15, orthogonality[0], tolerance);
-    ASSERT_NEAR(0.052159566591519289, orthogonality[10], tolerance);
+    ASSERT_NEAR(0.052159566591519289, orthogonality[10], tolerance);  // 0.0697870665979613
     ASSERT_NEAR(1.0342915752434056e-15, orthogonality[20], tolerance);
-    ASSERT_NEAR(0.045878303256790140, orthogonality[30], tolerance);
+    ASSERT_NEAR(0.045878303256790140, orthogonality[30], tolerance); //0.20448535986258717
 }
 
 TEST(Mesh2D, MeshToCurvilinear_OnRealMesh_ShouldConvertCurvilinearPart)
@@ -1712,7 +1712,7 @@ TEST(Mesh2D, CircumcentreTest)
     // Setup a mesh with 20 quadrilaterals on a bend
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/bend_net.nc");
 
-    // Create some triangles in the mesh
+    // Create some triangles in the mesh by adding a diagonal edge in he quadrilateral elements
     [[maybe_unused]] auto [edgeId1, undoConnect1] = mesh->ConnectNodes(22, 28, false);
     [[maybe_unused]] auto [edgeId2, undoConnect2] = mesh->ConnectNodes(16, 22, false);
     [[maybe_unused]] auto [edgeId3, undoConnect3] = mesh->ConnectNodes(11, 17, false);
@@ -1722,52 +1722,21 @@ TEST(Mesh2D, CircumcentreTest)
     // This is required
     mesh->ComputeFaceAreaAndMassCenters(true);
 
-    meshkernel::SaveVtk(mesh->Nodes(), mesh->m_facesNodes, "mesh.vtu");
-    meshkernel::Print(mesh->Nodes(), mesh->Edges());
+    std::vector<meshkernel::Point> circumcentres(meshkernel::algo::ComputeFaceCircumcenters(*mesh, meshkernel::CircumCentreMethod::AllNetlinksLoop));
 
-    std::vector<meshkernel::Point> circumcentres(meshkernel::algo::ComputeFaceCircumcenters(*mesh));
-    std::cout.precision(15);
+    std::vector<double> expectedCentresX{206.660451817758, 185.888995485133, 276.045461920919, 262.103773081694,
+                                         351.512547260357, 354.488336820198, 96.9057821605506, 74.139650060642,
+                                         64.9521150400979, 26.5193850779214, 143.773947886783, 126.140829602317,
+                                         119.140571110995, 95.2344804191452, 195.26948950604, 194.972002901377,
+                                         196.67077220983, 253.038332333396, 277.725432056083, 305.985424137459,
+                                         327.068944125115, 347.455772919182, 376.70237660149};
 
-    for (size_t i = 0; i < circumcentres.size(); ++i)
-    {
-        std::cout << circumcentres[i].x << ", ";
-    }
-
-    std::cout << std::endl;
-
-    for (size_t i = 0; i < circumcentres.size(); ++i)
-    {
-        std::cout << circumcentres[i].y << ", ";
-    }
-
-    std::cout << std::endl;
-    std::vector<double> expectedCentresX{195.548859348137, 195.235674457397, 271.915589751738, 284.900235427491,
-                                         351.512547260357, 355.690238206463, 104.919375137228, 69.2507531389557,
-                                         59.9583069695529, 23.9604914644564, 145.755696079123, 119.431652826799,
-                                         111.723865598897, 70.5541419999908, 195.536017493847, 194.645304105658,
-                                         194.970304993753, 262.525432113543, 282.788622697952, 303.084030872608,
-                                         321.374266773485, 347.774368656456, 377.38786513133};
-
-    std::vector<double> expectedCentresY{431.647325146099, 433.981288217263, 377.797199466343, 392.061145626661,
-                                         283.461922195895, 286.695117250479, 264.353318718317, 277.290052172434,
-                                         281.345088772013, 294.393193121389, 363.814413592881, 387.058643711794,
-                                         395.129683835643, 423.687584880616, 399.579494278851, 445.095116548308,
-                                         483.911226901712, 369.305095387488, 394.459784250186, 411.031394866702,
-                                         261.393085971729, 280.526729809418, 301.170129957231};
-
-    // std::vector<double> expectedCentresX{206.660451817758, 185.888995485133, 276.045461920919, 262.103773081694,
-    //                                      351.512547260357, 354.488336820198, 96.9057821605506, 74.139650060642,
-    //                                      64.9521150400979, 26.5193850779214, 143.773947886783, 126.140829602317,
-    //                                      119.140571110995, 95.2344804191452, 195.26948950604, 194.972002901377,
-    //                                      196.67077220983, 253.038332333396, 277.725432056083, 305.985424137459,
-    //                                      327.068944125115, 347.455772919182, 376.70237660149};
-
-    // std::vector<double> expectedCentresY{416.300290705537, 420.104841429695, 368.791106258972, 390.312778220515,
-    //                                      283.461922195895, 288.010897902414, 267.184187763926, 275.571981947808,
-    //                                      279.59015036956, 293.865143028155, 368.39893765591, 380.315565887432,
-    //                                      387.675951330253, 416.01997987334, 399.080604846198, 430.106563115441,
-    //                                      477.611199943931, 365.195459544209, 387.971212251494, 417.968996300952,
-    //                                      266.714576206953, 280.533311526148, 300.712823947955};
+    std::vector<double> expectedCentresY{416.300290705537, 420.104841429695, 368.791106258972, 390.312778220515,
+                                         283.461922195895, 288.010897902414, 267.184187763926, 275.571981947808,
+                                         279.59015036956, 293.865143028155, 368.39893765591, 380.315565887432,
+                                         387.675951330253, 416.01997987334, 399.080604846198, 430.106563115441,
+                                         477.611199943931, 365.195459544209, 387.971212251494, 417.968996300952,
+                                         266.714576206953, 280.533311526148, 300.712823947955};
 
     ASSERT_EQ(expectedCentresX.size(), circumcentres.size());
 
