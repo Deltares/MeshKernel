@@ -444,8 +444,8 @@ namespace meshkernel
     /// @return The resulting normalized inner product
     [[nodiscard]] double NormalizedInnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection);
 
-    /// @brief Count the number of valid edges in list
-    UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, UInt numNodes);
+    /// @brief Count the number of interior edges in list
+    UInt CountNumberOfInteriorEdges(const std::vector<UInt>& edgesNumFaces, UInt numNodes);
 
     /// @brief Compute mid point and normal of polygon segment
     void ComputeMidPointsAndNormals(const std::vector<Point>& polygon,

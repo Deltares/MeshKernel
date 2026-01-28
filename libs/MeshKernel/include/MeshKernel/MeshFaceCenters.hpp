@@ -54,4 +54,7 @@ namespace meshkernel::algo
                                  double circumCentreWeight = constants::geometric::circumCentreWeight,
                                  CircumCentreMethod circumcentreMethod = constants::geometric::defaultCircumCentreMethod);
 
+    /// @brief Compute the mass centre element.
+    Point ComputeMassCentre(const std::vector<Point>& polygon);
+
 } // namespace meshkernel::algo
