@@ -38,7 +38,7 @@ jobs:
 
       # Step: Checkout
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         # Workaround for getting "git describe --tags" to work in cmake/get_version_from_git.cmake (Build step)
         with:
           fetch-depth: 0
