@@ -366,12 +366,23 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeTwoNodes(UInt firstNodeIndex,
     std::vector<UInt> secondNodeEdges(constants::geometric::maximumNumberOfEdgesPerNode, constants::missing::uintValue);
     UInt numSecondNodeEdges = 0;
 
+    auto checkEdgeCount = [&]
+    {
+        if (numSecondNodeEdges >= constants::geometric::maximumNumberOfEdgesPerNode)
+        {
+            throw RangeError("Node {} has too many edges: maximum is {}, attempting to add edge number {}",
+                             secondNodeIndex, constants::geometric::maximumNumberOfEdgesPerNode, numSecondNodeEdges + 1);
+        }
+    };
+
     for (UInt n = 0; n < m_nodesNumEdges[secondNodeIndex]; n++)
     {
         edgeIndex = m_nodesEdges[secondNodeIndex][n];
 
         if (m_edges[edgeIndex].first != constants::missing::uintValue)
         {
+            checkEdgeCount();
+
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;
             ++numSecondNodeEdges;
         }
@@ -384,6 +395,8 @@ std::unique_ptr<meshkernel::UndoAction> Mesh::MergeTwoNodes(UInt firstNodeIndex,
 
         if (m_edges[edgeIndex].first != constants::missing::uintValue)
         {
+            checkEdgeCount();
+
             secondNodeEdges[numSecondNodeEdges] = edgeIndex;
             ++numSecondNodeEdges;
 

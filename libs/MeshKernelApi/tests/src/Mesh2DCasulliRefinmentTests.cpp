@@ -36,6 +36,8 @@
 #include "MeshKernelApi/MeshKernel.hpp"
 #include "TestUtils/MakeMeshes.hpp"
 
+#include "TestMeshGeneration.hpp"
+
 // namespace aliases
 namespace mk = meshkernel;
 namespace mkapi = meshkernelapi;
@@ -413,6 +415,53 @@ TEST(CasulliRefinement, CasullDeRefinementMeshRegion)
 
     EXPECT_LT(refinedMesh2d.num_nodes, mesh2d.num_nodes);
     EXPECT_LT(refinedMesh2d.num_edges, mesh2d.num_edges);
+}
+
+TEST(CasulliRefinement, CasulliRefinementAndDeRefinementInterleavedCycles)
+{
+    // Prepare
+    int meshKernelId = 0;
+    int errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = GenerateUnstructuredMesh(meshKernelId, 3, 3, 10.0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    for (int i = 0; i < 3; ++i)
+    {
+        meshkernelapi::mkernel_mesh2d_casulli_refinement(meshKernelId);
+        ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+        errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement(meshKernelId);
+        ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    }
+}
+
+TEST(CasulliRefinement, CasulliRefinementAndDeRefinementBatchedCycles)
+{
+    // Prepare
+    int meshKernelId = 0;
+    int errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    errorCode = GenerateUnstructuredMesh(meshKernelId, 3, 3, 10.0);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Execute
+    const int numCycles = 3;
+
+    for (int i = 0; i < numCycles; ++i)
+    {
+        errorCode = meshkernelapi::mkernel_mesh2d_casulli_refinement(meshKernelId);
+        ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    }
+
+    for (int i = 0; i < numCycles; ++i)
+    {
+        errorCode = meshkernelapi::mkernel_mesh2d_casulli_derefinement(meshKernelId);
+        ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    }
 }
 
 TEST(CasulliRefinement, CasulliDeRefinementElementsWholeMesh)

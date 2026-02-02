@@ -595,12 +595,9 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> meshkernel::CasulliDeRefinement::
                                                                                                const UInt rightElementId,
                                                                                                const UInt connectedElementId)
 {
-    UInt edgeId = constants::missing::uintValue;
-    UInt j;
-
-    for (j = 0; j < mesh.m_numFacesNodes[leftElementId]; ++j)
+    for (UInt j = 0; j < mesh.m_numFacesNodes[leftElementId]; ++j)
     {
-        edgeId = mesh.m_facesEdges[leftElementId][j];
+        UInt edgeId = mesh.m_facesEdges[leftElementId][j];
 
         if (mesh.GetNumEdgesFaces(edgeId) < 2)
         {
@@ -620,9 +617,10 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> meshkernel::CasulliDeRefinement::
                 mesh.m_edgesNumFaces[edgeId] = 1;
             }
 
-            break;
+            return {edgeId, j};
         }
-        else if (mesh.m_edgesFaces[edgeId][1] == connectedElementId && mesh.m_edgesFaces[edgeId][0] == leftElementId)
+
+        if (mesh.m_edgesFaces[edgeId][1] == connectedElementId && mesh.m_edgesFaces[edgeId][0] == leftElementId)
         {
             if (rightElementId != constants::missing::uintValue)
             {
@@ -634,11 +632,11 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> meshkernel::CasulliDeRefinement::
                 mesh.m_edgesNumFaces[edgeId] = 1;
             }
 
-            break;
+            return {edgeId, j};
         }
     }
 
-    return {edgeId, j};
+    return {constants::missing::uintValue, constants::missing::uintValue};
 }
 
 bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedTriangleElements(Mesh2D& mesh,
@@ -679,6 +677,11 @@ bool meshkernel::CasulliDeRefinement::UpdateDirectlyConnectedTriangleElements(Me
 
         // find the common edge
         auto [edgeId, faceEdgeIndex] = FindCommonEdge(mesh, leftElementId, rightElementId, connectedElementId);
+
+        if (edgeId == constants::missing::uintValue || faceEdgeIndex == constants::missing::uintValue)
+        {
+            continue;
+        }
 
         if (otherEdgeId != constants::missing::uintValue)
         {
@@ -807,7 +810,7 @@ void meshkernel::CasulliDeRefinement::RedirectNodesOfConnectedElements(Mesh2D& m
             {
                 if (faceNodeId == mesh.m_facesNodes[elementId][k])
                 {
-                    mesh.m_facesNodes[elementId][j] = nodeId;
+                    mesh.m_facesNodes[connectedElementId][j] = nodeId;
                 }
             }
         }
