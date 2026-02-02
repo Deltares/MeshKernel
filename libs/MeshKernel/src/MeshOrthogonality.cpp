@@ -31,10 +31,10 @@
 #include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/Operations.hpp"
 
-std::vector<double> meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh, const CircumCentreMethod circumcentreMethod)
+std::vector<double> meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh)
 {
     std::vector<double> orthogonality(mesh.GetNumEdges(), constants::missing::doubleValue);
-    Compute(mesh, orthogonality, circumcentreMethod);
+    Compute(mesh, orthogonality);
 
     return orthogonality;
 }
@@ -77,14 +77,14 @@ double meshkernel::MeshOrthogonality::ComputeValue(const Mesh2D& mesh, const std
     return val;
 }
 
-void meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh, std::span<double> orthogonality, const CircumCentreMethod circumcentreMethod)
+void meshkernel::MeshOrthogonality::Compute(const Mesh2D& mesh, std::span<double> orthogonality)
 {
     if (orthogonality.size() != mesh.GetNumEdges())
     {
         throw ConstraintError("array for orthogonality values is not the correct size");
     }
 
-    std::vector<Point> faceCircumcentres = algo::ComputeFaceCircumcenters(mesh, circumcentreMethod);
+    std::vector<Point> faceCircumcentres = algo::ComputeFaceCircumcenters(mesh);
 
     const auto numEdges = mesh.GetNumEdges();
 

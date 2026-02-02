@@ -39,20 +39,17 @@
 namespace meshkernel::algo
 {
     /// @brief Compute the circum-center point of each of the faces
-    std::vector<Point> ComputeFaceCircumcenters(const Mesh& mesh, CircumCentreMethod circumcentreMethod = constants::geometric::defaultCircumCentreMethod,
-                                                double circumCentreWeight = constants::geometric::circumCentreWeight);
+    std::vector<Point> ComputeFaceCircumcenters(const Mesh& mesh);
 
     /// @brief Compute the circum-center point of each of the faces overwriting the values in an array
-    void ComputeFaceCircumcenters(const Mesh& mesh, std::span<Point> faceCenters,
-                                  CircumCentreMethod circumcentreMethod = constants::geometric::defaultCircumCentreMethod,
-                                  double circumCentreWeight = constants::geometric::circumCentreWeight);
+    void ComputeFaceCircumcenters(const Mesh& mesh, std::span<Point> faceCenters);
 
     /// @brief Compute the circumcenter of a polygon
     Point ComputeFaceCircumenter(std::vector<Point>& polygon,
                                  const std::vector<UInt>& edgesNumFaces,
                                  const Projection projection,
-                                 double circumCentreWeight = constants::geometric::circumCentreWeight,
-                                 CircumCentreMethod circumcentreMethod = constants::geometric::defaultCircumCentreMethod);
+                                 double circumCentreWeight,
+                                 CircumCentreMethod circumcentreMethod);
 
     /// @brief Compute the mass centre element.
     Point ComputeMassCentre(const std::vector<Point>& polygon);

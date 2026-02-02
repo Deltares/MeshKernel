@@ -30,6 +30,8 @@
 #include <memory>
 
 #include "MeshKernel/BoundingBox.hpp"
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/UndoActions/AddEdgeAction.hpp"
@@ -459,6 +461,15 @@ namespace meshkernel
         /// @param[in,out] polygonNodesCache The cache array to be filled with the nodes values
         void ComputeFaceClosedPolygon(UInt faceIndex, std::vector<Point>& polygonNodesCache) const;
 
+        /// @brief Get the circumecentre algorithm
+        CircumCentreMethod GetCircumcentreMethod() const;
+
+        /// @brief Get the circumcentre-masscentre weighting factor.
+        ///
+        /// This value should be in the range to 0 to 1
+        /// \f$ c_{
+        double GetCircumcentreWeight() const;
+
         // nodes
         std::vector<std::vector<UInt>> m_nodesEdges; ///< For each node, the indices of connected edges (nod%lin)
         std::vector<std::uint8_t> m_nodesNumEdges;   ///< For each node, the number of connected edges (nmk)
@@ -497,6 +508,10 @@ namespace meshkernel
         bool m_administrationRequired = true;                              ///< Indicates if mesh administration requires an update
         std::unordered_map<Location, std::unique_ptr<RTreeBase>> m_RTrees; ///< The RTrees to use
         BoundingBox m_boundingBoxCache;                                    ///< Caches the last bounding box used for selecting the locations
+
+        // These two circumcentre related members are to be kept.
+        const CircumCentreMethod m_circumcentreMethod = constants::geometric::defaultCircumCentreMethod; ///< The circum-centre method
+        const double m_circumcentreWeight = constants::geometric::circumCentreWeight;                    ///< The circum centre--mass centre weighting factor
 
         /// @brief Set nodes and edges that are not connected to be invalid.
         void SetUnConnectedNodesAndEdgesToInvalid(CompoundUndoAction* undoAction);
@@ -578,4 +593,14 @@ inline void meshkernel::Mesh::SetEdges(const std::vector<Edge>& newValues)
 inline bool meshkernel::Mesh::AdministrationRequired() const
 {
     return m_administrationRequired;
+}
+
+inline meshkernel::CircumCentreMethod meshkernel::Mesh::GetCircumcentreMethod() const
+{
+    return m_circumcentreMethod;
+}
+
+inline double meshkernel::Mesh::GetCircumcentreWeight() const
+{
+    return m_circumcentreWeight;
 }

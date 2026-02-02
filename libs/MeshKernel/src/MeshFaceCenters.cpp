@@ -166,6 +166,7 @@ meshkernel::Point meshkernel::algo::ComputeFaceCircumenter(std::vector<Point>& p
                                                            const double circumCentreWeight,
                                                            const CircumCentreMethod circumcentreMethod)
 {
+    // This variable is in the fortran code, but it does not seem to be able to be changed from its default value (dcenterinside)
     static constexpr double weightCircumCenter = 1.0; ///< Weight circum center
 
     std::array<Point, constants::geometric::maximumNumberOfNodesPerFace> middlePoints;
@@ -213,15 +214,15 @@ meshkernel::Point meshkernel::algo::ComputeFaceCircumenter(std::vector<Point>& p
     return circumCentre;
 }
 
-std::vector<meshkernel::Point> meshkernel::algo::ComputeFaceCircumcenters(const Mesh& mesh, const CircumCentreMethod circumcentreMethod, const double circumCentreWeight)
+std::vector<meshkernel::Point> meshkernel::algo::ComputeFaceCircumcenters(const Mesh& mesh)
 {
     std::vector<Point> faceCenters(mesh.GetNumFaces());
-    ComputeFaceCircumcenters(mesh, faceCenters, circumcentreMethod, circumCentreWeight);
+    ComputeFaceCircumcenters(mesh, faceCenters);
 
     return faceCenters;
 }
 
-void meshkernel::algo::ComputeFaceCircumcenters(const Mesh& mesh, std::span<Point> faceCenters, const CircumCentreMethod circumcentreMethod, const double circumCentreWeight)
+void meshkernel::algo::ComputeFaceCircumcenters(const Mesh& mesh, std::span<Point> faceCenters)
 {
     if (faceCenters.size() != mesh.GetNumFaces())
     {
@@ -265,7 +266,7 @@ void meshkernel::algo::ComputeFaceCircumcenters(const Mesh& mesh, std::span<Poin
                 numEdgeFacesCache.emplace_back(mesh.m_edgesNumFaces[mesh.m_facesEdges[f][n]]);
             }
 
-            faceCenters[f] = algo::ComputeFaceCircumenter(polygonNodesCache, numEdgeFacesCache, mesh.m_projection, circumCentreWeight, circumcentreMethod);
+            faceCenters[f] = algo::ComputeFaceCircumenter(polygonNodesCache, numEdgeFacesCache, mesh.m_projection, mesh.GetCircumcentreWeight(), mesh.GetCircumcentreMethod());
         }
     }
 }

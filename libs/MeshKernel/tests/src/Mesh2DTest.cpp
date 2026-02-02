@@ -1555,9 +1555,9 @@ TEST(Mesh2D, GetOrthogonality_OnTriangularMesh_ShouldGetOrthogonalityValues)
     // Assert
     const double tolerance = 1e-6;
     ASSERT_NEAR(1.0566340037701503e-15, orthogonality[0], tolerance);
-    ASSERT_NEAR(0.052159566591519289, orthogonality[10], tolerance);  // 0.0697870665979613
+    ASSERT_NEAR(0.052159566591519289, orthogonality[10], tolerance);
     ASSERT_NEAR(1.0342915752434056e-15, orthogonality[20], tolerance);
-    ASSERT_NEAR(0.045878303256790140, orthogonality[30], tolerance); //0.20448535986258717
+    ASSERT_NEAR(0.045878303256790140, orthogonality[30], tolerance);
 }
 
 TEST(Mesh2D, MeshToCurvilinear_OnRealMesh_ShouldConvertCurvilinearPart)
@@ -1722,7 +1722,7 @@ TEST(Mesh2D, CircumcentreTest)
     // This is required
     mesh->ComputeFaceAreaAndMassCenters(true);
 
-    std::vector<meshkernel::Point> circumcentres(meshkernel::algo::ComputeFaceCircumcenters(*mesh, meshkernel::CircumCentreMethod::AllNetlinksLoop));
+    std::vector<meshkernel::Point> circumcentres(meshkernel::algo::ComputeFaceCircumcenters(*mesh));
 
     std::vector<double> expectedCentresX{206.660451817758, 185.888995485133, 276.045461920919, 262.103773081694,
                                          351.512547260357, 354.488336820198, 96.9057821605506, 74.139650060642,
