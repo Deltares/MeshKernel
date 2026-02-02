@@ -38,7 +38,7 @@ jobs:
 
       # Step: Checkout
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         # Workaround for getting "git describe --tags" to work in cmake/get_version_from_git.cmake (Build step)
         with:
           fetch-depth: 0
@@ -61,7 +61,7 @@ jobs:
 
       # Step: Restore cached user-provided dependencies
       - name: Restore cached user-provided dependencies
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         id: restore-cached-external-dependencies
         with:
           key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v4
@@ -92,7 +92,7 @@ jobs:
 
       # Step: Cache user-provided dependencies, executes only if dependencies were built
       - name: Cache user-provided dependencies
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         if: steps.check-nc-cache.outputs.has-deps == 'false'
         with:
           key: ${{ inputs.platform }}-${{ inputs.build_type }}-cache-key-v4

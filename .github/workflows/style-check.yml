@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-24.04
     name: Clang Format Check
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - name: Download a recent, static build of clang-format
         run: |
           wget --no-verbose https://github.com/angular/clang-format/raw/master/bin/linux_x64/clang-format
