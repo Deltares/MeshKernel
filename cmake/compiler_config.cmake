@@ -9,22 +9,34 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Add compiler-specific options and definitions per supported platform
-if (UNIX)
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    add_compile_options("-fvisibility=hidden;-Werror;-Wall;-Wextra;-pedantic;-Wno-unused-function")
-
-    if(APPLE AND (CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64"))
-      # CMake automatically sets -Xarch_arm64 (for clang) but gcc doesn't support it
-      unset(_CMAKE_APPLE_ARCHS_DEFAULT)
-      # Be lenient on macos with arm64 toolchain to prevent Eigen -Werror=deprecated-enum-enum-conversion error
-      add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-enum-enum-conversion>)
-      # Suppress notes related to ABI changes
-      add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-psabi>)
+if(APPLE)
+  # macOS: support AppleClang / Clang (system toolchain). GCC may also be supported but Clang is preferred.
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    message(STATUS "Configuring build for macOS with ${CMAKE_CXX_COMPILER_ID} (${CMAKE_CXX_COMPILER_VERSION}).")
+    # Common warning and visibility flags
+    add_compile_options("-fvisibility=hidden;-Wall;-Wextra;-pedantic;-Werror;-Wno-unused-function")
+    # Conditionally suppress unused parameter warnings (used for platform-specific compiler issues)
+    if(SUPPRESS_UNUSED_PARAMETER_WARNING)
+      add_compile_options("-Wno-unused-parameter")
+      message(STATUS "Suppressing -Wno-unused-parameter warnings for macOS Clang build on macOS15-intel")
     endif()
+    # Be lenient for Eigen (deprecated enum conversion) on all macOS Clang builds
+    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-deprecated-enum-enum-conversion>)
+    # Optimization / debug flags
     add_compile_options("$<$<CONFIG:RELEASE>:-O2>")
     add_compile_options("$<$<CONFIG:DEBUG>:-g>")
   else()
-    message(FATAL_ERROR "Unsupported compiler. Only GNU is supported under Linux. Found ${CMAKE_CXX_COMPILER_ID}.")
+    message(FATAL_ERROR "Unsupported compiler on macOS. Supported: AppleClang/Clang. Found ${CMAKE_CXX_COMPILER_ID}.")
+  endif()
+elseif(UNIX)
+  # Linux: require GNU
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    message(STATUS "Configuring build for Linux with GNU ${CMAKE_CXX_COMPILER_VERSION}.")
+    add_compile_options("-fvisibility=hidden;-Werror;-Wall;-Wextra;-pedantic;-Wno-unused-function")
+    add_compile_options("$<$<CONFIG:RELEASE>:-O2>")
+    add_compile_options("$<$<CONFIG:DEBUG>:-g>")
+  else()
+    message(FATAL_ERROR "Unsupported compiler on Linux. Only GNU is supported. Found ${CMAKE_CXX_COMPILER_ID}.")
   endif()
 elseif(WIN32)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
@@ -37,7 +49,7 @@ elseif(WIN32)
     message(FATAL_ERROR "Unsupported compiler. Only MSVC is supported under Windows. Found ${CMAKE_CXX_COMPILER_ID}.")
   endif()
 else()
-    message(FATAL_ERROR "Unsupported platform. Only Linux and Windows are supported.")
+    message(FATAL_ERROR "Unsupported platform. Only macOS, Linux and Windows are supported.")
 endif()
 
 # CMAKE_SOURCE_DIR is passed to the src in order to strip it out of the path of srcs where exceptions may occur

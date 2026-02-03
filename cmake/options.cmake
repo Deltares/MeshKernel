@@ -37,3 +37,10 @@ option(
   "Includes source location information in customized exceptions."
   OFF
 )
+
+# suppress unused parameter warnings (sometimes necessary for platform-specific builds)
+option(
+  SUPPRESS_UNUSED_PARAMETER_WARNING
+  "Suppress -Wno-unused-parameter warning flag (used for platform-specific compiler issues)."
+  OFF
+)

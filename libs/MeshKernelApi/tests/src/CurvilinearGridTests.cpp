@@ -908,7 +908,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearDeleteExterior_OnCurvilinearGrid_Shou
     MakeRectangularCurvilinearGrid(10, 10, 1.0, 1.0, 0.0, 0.0);
 
     // Execute
-    meshkernelapi::BoundingBox boundingBox(5.0, 5.0, 15.0, 15.0);
+    meshkernelapi::BoundingBox boundingBox{5.0, 5.0, 15.0, 15.0};
     auto errorCode = meshkernelapi::mkernel_curvilinear_delete_exterior(meshKernelId, boundingBox);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
@@ -938,7 +938,7 @@ TEST_F(CartesianApiTestFixture, CurvilinearDeleteInterior_OnCurvilinearGrid_Shou
     MakeRectangularCurvilinearGrid(10, 10, 1.0, 1.0, 0.0, 0.0);
 
     // Execute
-    meshkernelapi::BoundingBox boundingBox(5.0, 5.0, 15.0, 15.0);
+    meshkernelapi::BoundingBox boundingBox{5.0, 5.0, 15.0, 15.0};
     auto errorCode = meshkernelapi::mkernel_curvilinear_delete_interior(meshKernelId, boundingBox);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 

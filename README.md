@@ -54,7 +54,8 @@ The requirements are:
 - A C++20 compatible compiler. Currently the following compilers are supported:
   - Windows: Microsoft Visual C++
   - Linux: GCC
-  - macOS: GCC. Clang is not yet supported. Care must be taken if gcc and g++ are symbolic links to clang and clang++
+  - ~~macOS: GCC. Clang is not yet supported. Care must be taken if gcc and g++ are symbolic links to clang and clang++~~
+  - macOS: Apple/Clang. 
 - The Boost libraries
 - [NetCDF](#netcdf)
 - Doxygen (optional)
@@ -70,6 +71,11 @@ The requirements are:
 ### NetCDF
 
 The NetCDF static library is required for building MeshKernel. Optionally, a PowerShell [script](scripts/install_netcdf_static.ps1) is made available for cloning and building [NetCDF](https://github.com/Unidata/netcdf-c) and its dependencies ([HDF5](https://github.com/HDFGroup/hdf5), [ZLIB](https://github.com/madler/zlib), [Curl](https://github.com/curl/curl), and [m4](https://sourceforge.net/projects/gnuwin32/files/m4/)). It can be used under Windows, Linux, and macOS. The script is compatible with Powershell version 7 and higher. If necessary, Windows users need to upgrade to from version 5 to 7. The procedure is described [here](https://learn.microsoft.com/en-us/powershell/scripting/whats-new/migrating-from-windows-powershell-51-to-powershell-7?view=powershell-7.3).
+
+#### MacOS
+To be able to run the script to build the netCDF static libraries several additional packages need to be installed:
+- brew install szip
+- brew install libaec
 
 To run the script in a PowerShell session, use
 
@@ -155,3 +161,4 @@ MeshKernel can be configured with a set of options, which are summarized in the 
 | ENABLE_BENCHMARKING_MEM_REPORT | Enables reporting memory usage statistics                     | Bool | OFF     | Applicable only when ENABLE_BENCHMARKING is ON, ignored otherwise                               |
 | ENABLE_CODE_COVERAGE           | Generates code coverage report                                | Bool | OFF     | Valid only under Linux and macOS when a GNU compiler is used (requires gcov), ignored otherwise |
 | HAVE_SRC_LOC_IN_ERR_MSGS       | Includes the source location information in custom exceptions | Bool | OFF     |                                                                                                 |
+

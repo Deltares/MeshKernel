@@ -42,6 +42,8 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options(${target_name} PRIVATE "-w")
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   target_compile_options(${target_name} PRIVATE "/w")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  target_compile_options(${target_name} PRIVATE "-w")
 endif()
 
  # group the sources and headers in IDE project generation

@@ -60,9 +60,6 @@ namespace meshkernel
             WholeMesh = 4
         };
 
-        /// @brief Default constructor
-        LandBoundaries() = default;
-
         /// @brief Constructor
         /// @param[in] landBoundary A vector of points defining the land boundary.
         /// @param[in] mesh         The current 2d mesh.
