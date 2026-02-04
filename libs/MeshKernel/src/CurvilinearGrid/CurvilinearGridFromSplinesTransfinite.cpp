@@ -381,6 +381,7 @@ void CurvilinearGridFromSplinesTransfinite::ComputeInteractions()
                     {
                         // switch j
                         std::ranges::reverse(m_splines->m_splineNodes[j]);
+                        std::ranges::reverse(m_splines->m_splineDerivatives[j]);
                         secondSplineRatio = static_cast<double>(numNodesJSpline) - 1.0 - secondSplineRatio;
                     }
                 }
@@ -391,6 +392,7 @@ void CurvilinearGridFromSplinesTransfinite::ComputeInteractions()
                     {
                         // switch i
                         std::ranges::reverse(m_splines->m_splineNodes[i]);
+                        std::ranges::reverse(m_splines->m_splineDerivatives[i]);
                         firstSplineRatio = static_cast<double>(numNodesISpline) - 1.0 - firstSplineRatio;
                     }
                 }
