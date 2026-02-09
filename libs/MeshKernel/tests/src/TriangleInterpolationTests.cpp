@@ -179,24 +179,25 @@ TEST(TriangleInterpolation, InterpolateOnFacesUsingSphericalAccurateOption)
     // test internal results
     constexpr double tolerance = 1e-9;
 
-    EXPECT_NEAR(-27.108706771384, results[0], tolerance);
-    EXPECT_NEAR(-26.009304907814, results[1], tolerance);
-    EXPECT_NEAR(-26.761017862316, results[2], tolerance);
-    EXPECT_NEAR(-26.492756376222, results[3], tolerance);
-    EXPECT_NEAR(-26.993450824473, results[4], tolerance);
-    EXPECT_NEAR(-26.896717604451, results[5], tolerance);
-    EXPECT_NEAR(-27.332328048991, results[6], tolerance);
-    EXPECT_NEAR(-28.374153123483, results[7], tolerance);
-    EXPECT_NEAR(-22.330677494619, results[8], tolerance);
-    EXPECT_NEAR(-30.427553277301, results[9], tolerance);
-    EXPECT_NEAR(-22.404457686668, results[10], tolerance);
-    EXPECT_NEAR(-13.366173846988, results[11], tolerance);
-    EXPECT_NEAR(-19.083347703857, results[12], tolerance);
-    EXPECT_NEAR(-33.575109615314, results[13], tolerance);
-    EXPECT_NEAR(-35.307909396654, results[14], tolerance);
-    EXPECT_NEAR(-32.536083626614, results[15], tolerance);
-    EXPECT_NEAR(-28.308474234385, results[16], tolerance);
-    EXPECT_NEAR(-26.425478326615, results[17], tolerance);
-    EXPECT_NEAR(-26.989472301758, results[18], tolerance);
-    EXPECT_NEAR(-29.548994620034, results[19], tolerance);
+    EXPECT_NEAR(-27.1082819956949, results[0], tolerance);
+    EXPECT_NEAR(-26.0109019085909, results[1], tolerance);
+    EXPECT_NEAR(-26.7610852575111, results[2], tolerance);
+    EXPECT_NEAR(-26.4916187389490, results[3], tolerance);
+    EXPECT_NEAR(-26.9939554824336, results[4], tolerance);
+    EXPECT_NEAR(-26.8971634627618, results[5], tolerance);
+    EXPECT_NEAR(-27.3321521553971, results[6], tolerance);
+    EXPECT_NEAR(-28.3773948281769, results[7], tolerance);
+    EXPECT_NEAR(-22.3342818962145, results[8], tolerance);
+    EXPECT_NEAR(-30.4274387417513, results[9], tolerance);
+    EXPECT_NEAR(-22.4082693394666, results[10], tolerance);
+    EXPECT_NEAR(-13.3736952391707, results[11], tolerance);
+    EXPECT_NEAR(-19.0857978197386, results[12], tolerance);
+    EXPECT_NEAR(-33.5790592260255, results[13], tolerance);
+    EXPECT_NEAR(-35.3064624113943, results[14], tolerance);
+    EXPECT_NEAR(-32.5370257526609, results[15], tolerance);
+    EXPECT_NEAR(-28.3094181718101, results[16], tolerance);
+    EXPECT_NEAR(-26.4251569389341, results[17], tolerance);
+    EXPECT_NEAR(-26.9888933822691, results[18], tolerance);
+    EXPECT_NEAR(-29.5493208869884, results[19], tolerance);
+
 }

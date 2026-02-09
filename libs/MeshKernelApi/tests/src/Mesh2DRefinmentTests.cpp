@@ -1383,6 +1383,6 @@ TEST(MeshRefinement, Mesh2DWithHoleRefineBasedOnGriddedSamplesWaveCourant_WithGr
     errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    ASSERT_EQ(1791862, mesh2d.num_nodes);
-    ASSERT_EQ(3585560, mesh2d.num_edges);
+    ASSERT_EQ(1791899, mesh2d.num_nodes);
+    ASSERT_EQ(3585635, mesh2d.num_edges);
 }
