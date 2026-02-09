@@ -349,6 +349,10 @@ $NetCDFCMakeBuildOptions = @(`
         '-DENABLE_NETCDF_4=ON', `
         '-DENABLE_DAP=OFF', `
         '-DENABLE_BYTERANGE=OFF', `
+    # Suppress CMake developer warnings from third-party (netcdf-c) CMake files
+    '-Wno-dev', `
+    # Keep legacy behavior for add_custom_command(TARGET ...) in netcdf-c MakeDist module
+    '-DCMAKE_POLICY_DEFAULT_CMP0175=OLD', `
     ('-DZLIB_ROOT={0}' -f $ZLIBInstallDir) `
 )
 if ($IsLinux -or $IsMacOS) {

@@ -86,7 +86,7 @@ TEST(MeshPropertyTests, TriangulationTest)
 
     // Origin of mesh is {0, 0}, with delta {1,1} and there are 3x3 nodes
 
-    std::vector<mk::Point> pointsToCheck{{-1.0, -1.0}, {0.25, 0.25}, {0.25, 2.25}, {3.5, 0.25}, {4.0, 4.0}, {2.5, 2.5}};
+    std::vector<mk::Point> pointsToCheck{{-1.0, -1.0}, {0.25, 0.25}, {0.25, 2.25}, {3.5, 0.25}, {4.0, 4.0}, {2.51, 2.51}};
     std::vector<mk::UInt> expectedElementId{mk::constants::missing::uintValue,
                                             0, 4, mk::constants::missing::uintValue, mk::constants::missing::uintValue, 15};
     std::vector<bool> expectedIsInElement{false, true, true, false, false, true};

@@ -33,15 +33,20 @@
 #include <limits>
 #include <math.h>
 
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#elif defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-anon-enum-enum-conversion"
 #endif
 
 #include <Eigen/Core>
 
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
+#elif defined(__clang__)
+#pragma clang diagnostic pop
 #endif
 
 namespace meshkernel

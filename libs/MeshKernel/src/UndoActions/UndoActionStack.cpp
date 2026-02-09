@@ -42,7 +42,7 @@ void meshkernel::UndoActionStack::Add(UndoActionPtr&& action, const int actionId
             throw ConstraintError("Cannot add an action in the {} state.", UndoAction::to_string(action->GetState()));
         }
 
-        m_committed.emplace_back(std::move(action), actionId);
+        m_committed.emplace_back(UndoActionForMesh{std::move(action), actionId});
 
         // Clear the restored actions for this actionId.
         // Adding a new undo action for an actionId, means that no action for this Id can be restored

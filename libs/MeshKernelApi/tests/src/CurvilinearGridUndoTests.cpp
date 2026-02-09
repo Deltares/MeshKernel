@@ -439,7 +439,7 @@ TEST(CurvilinearGridUndoTests, DeleteInterior)
 
     constexpr double lowerBoundValue = static_cast<double>(lowerBoundIndex);
     constexpr double upperBoundValue = static_cast<double>(upperBoundIndex);
-    meshkernelapi::BoundingBox boundingbox(lowerBoundValue, lowerBoundValue, upperBoundValue, upperBoundValue);
+    meshkernelapi::BoundingBox boundingbox{lowerBoundValue, lowerBoundValue, upperBoundValue, upperBoundValue};
 
     // delete interior block
     errorCode = meshkernelapi::mkernel_curvilinear_delete_interior(meshKernelId, boundingbox);
@@ -530,7 +530,7 @@ TEST(CurvilinearGridUndoTests, DeleteExterior)
 
     constexpr double lowerBoundValue = static_cast<double>(lowerBoundIndex);
     constexpr double upperBoundValue = static_cast<double>(upperBoundIndex);
-    meshkernelapi::BoundingBox boundingbox(lowerBoundValue, lowerBoundValue, upperBoundValue, upperBoundValue);
+    meshkernelapi::BoundingBox boundingbox{lowerBoundValue, lowerBoundValue, upperBoundValue, upperBoundValue};
 
     // delete exterior block
     errorCode = meshkernelapi::mkernel_curvilinear_delete_exterior(meshKernelId, boundingbox);
@@ -1656,10 +1656,10 @@ TEST(CurvilinearGridUndoTests, MultiStepUndoTest)
     const int upperBoundIndex = 20;
 
     // delete interior block
-    meshkernelapi::BoundingBox boundingBox(lowerBoundIndex,
+    meshkernelapi::BoundingBox boundingBox{lowerBoundIndex,
                                            lowerBoundIndex,
                                            upperBoundIndex,
-                                           upperBoundIndex);
+                                           upperBoundIndex};
     errorCode = meshkernelapi::mkernel_curvilinear_delete_interior(meshKernelId, boundingBox);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
