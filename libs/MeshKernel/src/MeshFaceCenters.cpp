@@ -32,6 +32,8 @@
 
 namespace meshkernel::algo::impl
 {
+    /// @brief Compute average of polygon nodes.
+    Point ComputeNodeAverage(const std::vector<Point>& polygon);
 
     /// @brief Compute the circumcenter of a triangle element.
     Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection projection);
@@ -53,7 +55,7 @@ namespace meshkernel::algo::impl
 
 } // namespace meshkernel::algo::impl
 
-meshkernel::Point meshkernel::algo::ComputeMassCentre(const std::vector<Point>& polygon)
+meshkernel::Point meshkernel::algo::impl::ComputeNodeAverage(const std::vector<Point>& polygon)
 {
     Point centerOfMass = std::accumulate(polygon.begin(), polygon.end() - 1, Point{0.0, 0.0});
     centerOfMass /= static_cast<double>(polygon.size() - 1);
@@ -175,7 +177,7 @@ meshkernel::Point meshkernel::algo::ComputeFaceCircumenter(std::vector<Point>& p
 
     const auto numNodes = static_cast<UInt>(polygon.size()) - 1;
 
-    Point centerOfMass = ComputeMassCentre(polygon);
+    Point centerOfMass = impl::ComputeNodeAverage(polygon);
     Point circumCentre = centerOfMass;
 
     if (numNodes == constants::geometric::numNodesInTriangle)
