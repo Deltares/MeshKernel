@@ -239,7 +239,6 @@ void meshkernel::algo::ComputeFaceCircumcenters(const Mesh& mesh, std::span<Poin
 #pragma omp parallel for private(numEdgeFacesCache, polygonNodesCache)
     for (int f = 0; f < numFaces; f++)
     {
-
         UInt numberOfInteriorEdges = 0;
         const auto numberOfFaceNodes = mesh.GetNumFaceEdges(f);
 

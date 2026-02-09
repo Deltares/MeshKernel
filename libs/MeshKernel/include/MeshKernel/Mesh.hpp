@@ -467,7 +467,6 @@ namespace meshkernel
         /// @brief Get the circumcentre-masscentre weighting factor.
         ///
         /// This value should be in the range to 0 to 1
-        /// \f$ c_{
         double GetCircumcentreWeight() const;
 
         // nodes
