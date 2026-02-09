@@ -32,6 +32,7 @@
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/LandBoundary.hpp"
+#include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/Operations.hpp"
 #include "MeshKernel/Polygon.hpp"
 #include "MeshKernel/Vector.hpp"
@@ -751,147 +752,8 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
     double area = 0.0;
 
     const double minArea = 1e-8;
-    const auto numberOfPointsOpenedPolygon = static_cast<UInt>(polygon.size()) - 1;
 
-    const double updateStepSize = 0.1;
-
-    Point centreOfMass(0.0, 0.0);
-
-    for (UInt n = 0; n < numberOfPointsOpenedPolygon; ++n)
-    {
-        centreOfMass += polygon[n];
-    }
-
-    centreOfMass *= 1.0 / static_cast<double>(numberOfPointsOpenedPolygon);
-    // Will be non-unity for spherical coordinates only
-    const double xTransformation = projection == Projection::cartesian ? 1.0 : 1.0 / std::cos(centreOfMass.y * constants::conversion::degToRad);
-    const double circumcentreTolerance = constants::geometric::circumcentreTolerance * (projection == Projection::cartesian ? 1.0 : 1.0 / (constants::geometric::earth_radius * constants::conversion::degToRad));
-
-    if (numberOfPointsOpenedPolygon == constants::geometric::numNodesInTriangle)
-    {
-
-        Point midPoint1 = 0.5 * (polygon[0] + polygon[1]);
-        Point midPoint2 = 0.5 * (polygon[1] + polygon[2]);
-        Point midPoint3 = 0.5 * (polygon[2] + polygon[0]);
-
-        Vector edgeVector1 = static_cast<Vector>(NormalVector(polygon[0], polygon[1], midPoint1, projection));
-        Vector edgeVector2 = static_cast<Vector>(NormalVector(polygon[1], polygon[2], midPoint2, projection));
-        Vector edgeVector3 = static_cast<Vector>(NormalVector(polygon[2], polygon[0], midPoint3, projection));
-
-        edgeVector1.normalise();
-        edgeVector2.normalise();
-        edgeVector3.normalise();
-
-        Vector edgeVectorSum = edgeVector1 + edgeVector2 + edgeVector3;
-
-        double edgeVectorSumLength = edgeVectorSum.length();
-
-        for (UInt i = 1; i <= MaximumNumberOfCircumcentreIterations; ++i)
-        {
-            Vector delta1 = GetDelta(midPoint1, centreOfMass, projection);
-            Vector delta2 = GetDelta(midPoint2, centreOfMass, projection);
-            Vector delta3 = GetDelta(midPoint3, centreOfMass, projection);
-
-            double ds = dot(delta1, edgeVector1) + dot(delta2, edgeVector2) + dot(delta3, edgeVector3);
-
-            if (projection != Projection::cartesian)
-            {
-                ds *= constants::conversion::radToDeg * constants::geometric::inverse_earth_radius;
-            }
-
-            centreOfMass.x -= updateStepSize * ds * edgeVectorSum.x() * xTransformation;
-            centreOfMass.y -= updateStepSize * ds * edgeVectorSum.y();
-
-            if (ds * edgeVectorSumLength < circumcentreTolerance || i == MaximumNumberOfCircumcentreIterations)
-            {
-                break;
-            }
-        }
-    }
-    else if (numberOfPointsOpenedPolygon == constants::geometric::numNodesInQuadrilateral)
-    {
-
-        Point midPoint1 = 0.5 * (polygon[0] + polygon[1]);
-        Point midPoint2 = 0.5 * (polygon[1] + polygon[2]);
-        Point midPoint3 = 0.5 * (polygon[2] + polygon[3]);
-        Point midPoint4 = 0.5 * (polygon[3] + polygon[0]);
-
-        Vector edgeVector1 = static_cast<Vector>(NormalVector(polygon[0], polygon[1], midPoint1, projection));
-        Vector edgeVector2 = static_cast<Vector>(NormalVector(polygon[1], polygon[2], midPoint2, projection));
-        Vector edgeVector3 = static_cast<Vector>(NormalVector(polygon[2], polygon[3], midPoint3, projection));
-        Vector edgeVector4 = static_cast<Vector>(NormalVector(polygon[3], polygon[0], midPoint4, projection));
-
-        edgeVector1.normalise();
-        edgeVector2.normalise();
-        edgeVector3.normalise();
-        edgeVector4.normalise();
-
-        Vector edgeVectorSum = edgeVector1 + edgeVector2 + edgeVector3 + edgeVector4;
-
-        if (projection != Projection::cartesian)
-        {
-            edgeVectorSum.x() *= constants::conversion::radToDeg * constants::geometric::inverse_earth_radius;
-        }
-
-        double edgeVectorSumLength = edgeVectorSum.length();
-
-        for (UInt i = 1; i <= MaximumNumberOfCircumcentreIterations; ++i)
-        {
-            Vector delta1 = GetDelta(midPoint1, centreOfMass, projection);
-            Vector delta2 = GetDelta(midPoint2, centreOfMass, projection);
-            Vector delta3 = GetDelta(midPoint3, centreOfMass, projection);
-            Vector delta4 = GetDelta(midPoint4, centreOfMass, projection);
-
-            double ds = dot(delta1, edgeVector1) + dot(delta2, edgeVector2) + dot(delta3, edgeVector3) + dot(delta4, edgeVector4);
-
-            if (projection != Projection::cartesian)
-            {
-                ds *= constants::conversion::radToDeg * constants::geometric::inverse_earth_radius;
-            }
-
-            centreOfMass.x -= updateStepSize * ds * edgeVectorSum.x() * xTransformation;
-            centreOfMass.y -= updateStepSize * ds * edgeVectorSum.y();
-
-            if (ds * edgeVectorSumLength < circumcentreTolerance)
-            {
-                break;
-            }
-        }
-    }
-    else
-    {
-        for (UInt j = 1; j <= MaximumNumberOfCircumcentreIterations; ++j)
-        {
-            Vector edgeVectorSum(0.0, 0.0);
-            double ds = 0.0;
-
-            for (UInt i = 0; i < numberOfPointsOpenedPolygon; ++i)
-            {
-                const auto nextNode = NextCircularForwardIndex(i, numberOfPointsOpenedPolygon);
-
-                Point midPoint = 0.5 * (polygon[i] + polygon[nextNode]);
-                Vector edgeVector = static_cast<Vector>(NormalVector(polygon[i], polygon[nextNode], midPoint, projection));
-                Vector delta = GetDelta(midPoint, centreOfMass, projection);
-
-                edgeVector.normalise();
-                ds += dot(delta, edgeVector);
-                edgeVectorSum += edgeVector;
-            }
-
-            if (projection != Projection::cartesian)
-            {
-                ds *= constants::conversion::radToDeg * constants::geometric::inverse_earth_radius;
-            }
-
-            centreOfMass.x -= updateStepSize * ds * edgeVectorSum.x() * xTransformation;
-            centreOfMass.y -= updateStepSize * ds * edgeVectorSum.y();
-
-            if (ds * edgeVectorSum.length() < circumcentreTolerance)
-            {
-                break;
-            }
-        }
-    }
+    Point centreOfMass(algo::ComputeMassCentre(polygon));
 
     area = ComputeArea(polygon, projection);
     TraversalDirection direction = area > 0.0 ? TraversalDirection::AntiClockwise : TraversalDirection::Clockwise;
