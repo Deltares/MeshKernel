@@ -45,7 +45,7 @@ namespace meshkernel::algo
     void ComputeFaceCircumcenters(const Mesh& mesh, std::span<Point> faceCenters);
 
     /// @brief Compute the circumcenter of a polygon
-    Point ComputeFaceCircumenter(std::vector<Point>& polygon,
+    Point ComputeFaceCircumenter(const std::vector<Point>& polygon,
                                  const std::vector<UInt>& edgesNumFaces,
                                  const Projection projection,
                                  double circumcentreWeight,

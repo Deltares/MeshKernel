@@ -162,15 +162,12 @@ void meshkernel::algo::impl::CheckCircumcentreIsWithinElement(const std::vector<
     }
 }
 
-meshkernel::Point meshkernel::algo::ComputeFaceCircumenter(std::vector<Point>& polygon,
+meshkernel::Point meshkernel::algo::ComputeFaceCircumenter(const std::vector<Point>& polygon,
                                                            const std::vector<UInt>& edgesNumFaces,
                                                            const Projection projection,
                                                            const double circumcentreWeight,
                                                            const CircumcentreMethod circumcentreMethod)
 {
-    // This variable is in the fortran code, but it does not seem to be able to be changed from its default value (dcenterinside)
-    static constexpr double weightCircumCenter = 1.0; ///< Weight circum center
-
     std::array<Point, constants::geometric::maximumNumberOfNodesPerFace> middlePoints;
     std::array<Point, constants::geometric::maximumNumberOfNodesPerFace> normals;
     UInt pointCount = 0;
@@ -195,18 +192,7 @@ meshkernel::Point meshkernel::algo::ComputeFaceCircumenter(std::vector<Point>& p
         }
     }
 
-    if (weightCircumCenter >= 0.0 && weightCircumCenter <= 1.0)
-    {
-        if (weightCircumCenter != 1.0)
-        {
-            for (UInt n = 0; n < numNodes; ++n)
-            {
-                polygon[n] = weightCircumCenter * polygon[n] + (1.0 - weightCircumCenter) * centerOfMass;
-            }
-        }
-
-        algo::impl::CheckCircumcentreIsWithinElement(polygon, numNodes, projection, centerOfMass, circumcentre);
-    }
+    algo::impl::CheckCircumcentreIsWithinElement(polygon, numNodes, projection, centerOfMass, circumcentre);
 
     if (circumcentreWeight != 1.0)
     {
