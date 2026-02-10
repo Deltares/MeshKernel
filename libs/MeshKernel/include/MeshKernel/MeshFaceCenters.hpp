@@ -48,7 +48,7 @@ namespace meshkernel::algo
     Point ComputeFaceCircumenter(std::vector<Point>& polygon,
                                  const std::vector<UInt>& edgesNumFaces,
                                  const Projection projection,
-                                 double circumCentreWeight,
-                                 CircumCentreMethod circumcentreMethod);
+                                 double circumcentreWeight,
+                                 CircumcentreMethod circumcentreMethod);
 
 } // namespace meshkernel::algo

@@ -462,7 +462,7 @@ namespace meshkernel
         void ComputeFaceClosedPolygon(UInt faceIndex, std::vector<Point>& polygonNodesCache) const;
 
         /// @brief Get the circumecentre algorithm
-        CircumCentreMethod GetCircumcentreMethod() const;
+        CircumcentreMethod GetCircumcentreMethod() const;
 
         /// @brief Get the circumcentre-masscentre weighting factor.
         ///
@@ -509,8 +509,8 @@ namespace meshkernel
         BoundingBox m_boundingBoxCache;                                    ///< Caches the last bounding box used for selecting the locations
 
         // These two circumcentre related members are to be kept.
-        const CircumCentreMethod m_circumcentreMethod = constants::geometric::defaultCircumCentreMethod; ///< The circum-centre method
-        const double m_circumcentreWeight = constants::geometric::circumCentreWeight;                    ///< The circum centre--mass centre weighting factor
+        const CircumcentreMethod m_circumcentreMethod = constants::geometric::defaultCircumcentreMethod; ///< The circum-centre method
+        const double m_circumcentreWeight = constants::geometric::circumcentreWeight;                    ///< The circum centre--mass centre weighting factor
 
         /// @brief Set nodes and edges that are not connected to be invalid.
         void SetUnConnectedNodesAndEdgesToInvalid(CompoundUndoAction* undoAction);
@@ -594,7 +594,7 @@ inline bool meshkernel::Mesh::AdministrationRequired() const
     return m_administrationRequired;
 }
 
-inline meshkernel::CircumCentreMethod meshkernel::Mesh::GetCircumcentreMethod() const
+inline meshkernel::CircumcentreMethod meshkernel::Mesh::GetCircumcentreMethod() const
 {
     return m_circumcentreMethod;
 }

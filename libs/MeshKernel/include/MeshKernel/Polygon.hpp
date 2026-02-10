@@ -142,9 +142,6 @@ namespace meshkernel
         std::tuple<double, double> SegmentLengthExtrema() const;
 
     private:
-        /// @brief The maximum number of iterations that can be executed when calculating the circumcentre of an element
-        static const UInt MaximumNumberOfCircumcentreIterations = 100;
-
         /// @brief Refines the segment between two polygon nodes.
         ///
         /// Starting with the node specified by the iterator up to, but not including, the next node.

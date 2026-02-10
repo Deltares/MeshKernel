@@ -162,7 +162,7 @@ namespace meshkernel
     };
 
     /// \brief Describe how the circumcentre should be computed.
-    enum CircumCentreMethod
+    enum CircumcentreMethod
     {
         InternalNetlinksEdge,
         InternalNetlinksLoop,
