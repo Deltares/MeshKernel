@@ -199,5 +199,4 @@ TEST(TriangleInterpolation, InterpolateOnFacesUsingSphericalAccurateOption)
     EXPECT_NEAR(-26.4251569389341, results[17], tolerance);
     EXPECT_NEAR(-26.9888933822691, results[18], tolerance);
     EXPECT_NEAR(-29.5493208869884, results[19], tolerance);
-
 }
