@@ -59,7 +59,10 @@ namespace meshkernel
         /// @brief[in] grid         The curvilinear grid
         explicit Splines(CurvilinearGrid const& grid);
 
-        explicit Splines(const std::vector<Point>& splinePoints, Projection projection);
+        /// @brief Construct from a sequence of spline points
+        ///
+        /// The array may contain a number of splines separated by an invalid point
+        Splines(const std::vector<Point>& splinePoints, Projection projection);
 
         /// @brief Adds a new spline to m_splineCornerPoints
         /// @param[in] splines The spline corner points

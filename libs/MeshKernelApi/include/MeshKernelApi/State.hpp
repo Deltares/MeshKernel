@@ -103,7 +103,7 @@ namespace meshkernelapi
         std::shared_ptr<HangingEdgeCache> m_hangingEdgeCache;                            ///< hanging edge id cache
         std::shared_ptr<ObtuseTriangleCentreCache> m_obtuseTriangleCentreCache;          ///< centre of obtuse triangles cache
 
-        std::shared_ptr<meshkernel::Splines> m_splines;
+        std::shared_ptr<meshkernel::Splines> m_splines;                     ///< The splines
         std::shared_ptr<SplineIntersectionCache> m_splineIntersectionCache; ///< Spline intersection cache
     };
 
