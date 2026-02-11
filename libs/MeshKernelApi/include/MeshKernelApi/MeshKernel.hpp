@@ -1886,21 +1886,24 @@ namespace meshkernelapi
                                                              int startIndex,
                                                              int endIndex);
 
+        /// @brief Initialise the spline intersection calculation
         MKERNEL_API int mkernel_initialise_spline_intersection(int meshKernelId,
                                                                const GeometryList& multiSpline);
 
+        /// @brief Check a spline intersects any of the defined splines
         MKERNEL_API int mkernel_check_spline_intersection(int meshKernelId,
                                                           const GeometryList& singleSpline);
 
+        /// @brief Get the number of intersections found
         MKERNEL_API int mkernel_get_spline_intersection_dim(int meshKernelId,
                                                             int& numberOfIntersection);
 
+        /// @brief Get the intersection data
         MKERNEL_API int mkernel_get_spline_intersection_data(int meshKernelId,
                                                              SplineIntersections& intersections);
 
+        /// @brief Finalise the spline intersection calculation
         MKERNEL_API int mkernel_finalise_spline_intersection(int meshKernelId);
-
-
 
 #ifdef __cplusplus
     }

@@ -57,24 +57,23 @@ Splines::Splines(CurvilinearGrid const& grid)
     m_projection = grid.projection();
 }
 
-Splines::Splines(const std::vector<Point>& splinePoints, Projection projection) : m_projection (projection)
+Splines::Splines(const std::vector<Point>& splinePoints, Projection projection) : m_projection(projection)
 {
     UInt startIndex = 0;
     UInt endIndex = 0;
 
-    while (endIndex < splinePoints.size ())
+    while (endIndex < splinePoints.size())
     {
         startIndex = endIndex;
 
-        while (endIndex < splinePoints.size () && splinePoints[endIndex].IsValid ())
+        while (endIndex < splinePoints.size() && splinePoints[endIndex].IsValid())
         {
             ++endIndex;
         }
 
-        AddSpline (splinePoints, startIndex, endIndex - startIndex);
+        AddSpline(splinePoints, startIndex, endIndex - startIndex);
         ++endIndex;
     }
-
 }
 
 /// add a new spline, return the index
@@ -205,7 +204,6 @@ bool Splines::GetSplinesIntersection(UInt first,
                                   intersectionPoint,
                                   firstSplineRatio,
                                   secondSplineRatio);
-
 }
 
 void Splines::GetAllIntersections(const std::vector<Point>& spline,
@@ -214,18 +212,18 @@ void Splines::GetAllIntersections(const std::vector<Point>& spline,
                                   std::vector<double>& xCrossOver,
                                   std::vector<double>& yCrossOver) const
 {
-    std::vector<Point> splineDerivative (ComputeSplineDerivative(spline));
+    std::vector<Point> splineDerivative(ComputeSplineDerivative(spline));
 
-    splineIndices.clear ();
-    splineIndices.reserve (m_splineNodes.size());
-    angles.clear ();
-    angles.reserve (m_splineNodes.size());
-    xCrossOver.clear ();
-    xCrossOver.reserve (m_splineNodes.size());
-    yCrossOver.clear ();
-    yCrossOver.reserve (m_splineNodes.size());
+    splineIndices.clear();
+    splineIndices.reserve(m_splineNodes.size());
+    angles.clear();
+    angles.reserve(m_splineNodes.size());
+    xCrossOver.clear();
+    xCrossOver.reserve(m_splineNodes.size());
+    yCrossOver.clear();
+    yCrossOver.reserve(m_splineNodes.size());
 
-    for (size_t i = 0; i < m_splineNodes.size (); ++i)
+    for (size_t i = 0; i < m_splineNodes.size(); ++i)
     {
 
         Point intersectionPoint;
@@ -234,26 +232,23 @@ void Splines::GetAllIntersections(const std::vector<Point>& spline,
         double firstSplineLambda;
         double secondSplineLambda;
 
-        bool doesIntersect = GetSplinesIntersection (spline, splineDerivative,
-                                                     m_splineNodes[i], m_splineDerivatives[i],
-                                                     intersectionCrossProduct,
-                                                     intersectionAngle,
-                                                     intersectionPoint,
-                                                     firstSplineLambda,
-                                                     secondSplineLambda);
+        bool doesIntersect = GetSplinesIntersection(spline, splineDerivative,
+                                                    m_splineNodes[i], m_splineDerivatives[i],
+                                                    intersectionCrossProduct,
+                                                    intersectionAngle,
+                                                    intersectionPoint,
+                                                    firstSplineLambda,
+                                                    secondSplineLambda);
 
         if (doesIntersect)
         {
-            splineIndices.push_back (static_cast<int>(i));
-            xCrossOver.push_back (intersectionPoint.x);
-            yCrossOver.push_back (intersectionPoint.y);
-            angles.push_back (intersectionAngle);
+            splineIndices.push_back(static_cast<int>(i));
+            xCrossOver.push_back(intersectionPoint.x);
+            yCrossOver.push_back(intersectionPoint.y);
+            angles.push_back(intersectionAngle);
         }
-
     }
-
 }
-
 
 bool Splines::GetSplinesIntersection(const std::vector<Point>& firstSpline,
                                      const std::vector<Point>& firstSplineDerivative,

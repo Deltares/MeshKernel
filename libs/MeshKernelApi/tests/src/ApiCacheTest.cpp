@@ -273,33 +273,33 @@ TEST(ApiCacheTest, SplineIntersections)
     // Prepare a mesh with one obtuse triangle
     int meshKernelId = 0;
 
-    const std::vector<mk::Point> splinePoints (LoadSplinePoints (TEST_FOLDER + "/data/CurvilinearGrids/seventy_splines.spl"));
+    const std::vector<mk::Point> splinePoints(LoadSplinePoints(TEST_FOLDER + "/data/CurvilinearGrids/seventy_splines.spl"));
 
     std::vector<double> xPoints;
-    std::transform (splinePoints.begin (), splinePoints.end (), std::back_inserter (xPoints), [](const mk::Point& p){return p.x;});
+    std::transform(splinePoints.begin(), splinePoints.end(), std::back_inserter(xPoints), [](const mk::Point& p)
+                   { return p.x; });
     std::vector<double> yPoints;
-    std::transform (splinePoints.begin (), splinePoints.end (), std::back_inserter (yPoints), [](const mk::Point& p){return p.y;});
-
-
+    std::transform(splinePoints.begin(), splinePoints.end(), std::back_inserter(yPoints), [](const mk::Point& p)
+                   { return p.y; });
 
     meshkernelapi::GeometryList splines;
-    splines.num_coordinates = static_cast<int> (splinePoints.size ());
-    splines.coordinates_x = xPoints.data ();
-    splines.coordinates_y = yPoints.data ();
+    splines.num_coordinates = static_cast<int>(splinePoints.size());
+    splines.coordinates_x = xPoints.data();
+    splines.coordinates_y = yPoints.data();
 
     int errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    errorCode = meshkernelapi::mkernel_initialise_spline_intersection (meshKernelId, splines);
+    errorCode = meshkernelapi::mkernel_initialise_spline_intersection(meshKernelId, splines);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     std::vector<double> splineCoordX{30825.9994380052, 31503.2022933559, 33217.3720209622, 33153.884253273, 32053.4296133283, 32730.6324686789, 34085.0381793802, 34338.9892501366};
     std::vector<double> splineCoordY{377851.802873428, 379206.208584129, 381915.020005531, 383481.05160853, 384454.530713096, 385576.147942271, 385999.399726865, 387438.455794485};
 
     meshkernelapi::GeometryList testSpline;
-    testSpline.num_coordinates = static_cast<int> (splineCoordX.size ());
-    testSpline.coordinates_x = splineCoordX.data ();
-    testSpline.coordinates_y = splineCoordY.data ();
+    testSpline.num_coordinates = static_cast<int>(splineCoordX.size());
+    testSpline.coordinates_x = splineCoordX.data();
+    testSpline.coordinates_y = splineCoordY.data();
 
     errorCode = meshkernelapi::mkernel_check_spline_intersection(meshKernelId, testSpline);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -309,20 +309,20 @@ TEST(ApiCacheTest, SplineIntersections)
     errorCode = meshkernelapi::mkernel_get_spline_intersection_dim(meshKernelId, numberOfIntersections);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    ASSERT_EQ (numberOfIntersections, 7);
+    ASSERT_EQ(numberOfIntersections, 7);
 
-    std::vector<int> splineIndices (numberOfIntersections);
-    std::vector<double> splineIntersectionsAngles (numberOfIntersections);
-    std::vector<double> splineIntersectionsCoordX (numberOfIntersections);
-    std::vector<double> splineIntersectionsCoordY (numberOfIntersections);
+    std::vector<int> splineIndices(numberOfIntersections);
+    std::vector<double> splineIntersectionsAngles(numberOfIntersections);
+    std::vector<double> splineIntersectionsCoordX(numberOfIntersections);
+    std::vector<double> splineIntersectionsCoordY(numberOfIntersections);
 
     meshkernelapi::SplineIntersections splineIntersectionData;
     splineIntersectionData.num_intersections = numberOfIntersections;
 
-    splineIntersectionData.spline_index = splineIndices.data ();
-    splineIntersectionData.intersection_angle = splineIntersectionsAngles.data ();
-    splineIntersectionData.intersection_x = splineIntersectionsCoordX.data ();
-    splineIntersectionData.intersection_y = splineIntersectionsCoordY.data ();
+    splineIntersectionData.spline_index = splineIndices.data();
+    splineIntersectionData.intersection_angle = splineIntersectionsAngles.data();
+    splineIntersectionData.intersection_x = splineIntersectionsCoordX.data();
+    splineIntersectionData.intersection_y = splineIntersectionsCoordY.data();
 
     errorCode = meshkernelapi::mkernel_get_spline_intersection_data(meshKernelId, splineIntersectionData);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -332,23 +332,21 @@ TEST(ApiCacheTest, SplineIntersections)
     std::vector<double> expectedIntersectedAngles{9.369091291645886e+01, 1.128522130510987e+02, 1.133073718558457e+02, 1.146340134566103e+02,
                                                   4.215466692286142e+01, 6.936103716736207e+01, 8.094729661593756e+01};
 
-    std::vector<double> expectedIntersectedCoordX{3.345969673585541e+04,3.291179368046583e+04,3.199660809941513e+04,3.204744958459182e+04,
-                                                  3.270633719945683e+04,3.431874691644472e+04,3.108691001430429e+04};
+    std::vector<double> expectedIntersectedCoordX{3.345969673585541e+04, 3.291179368046583e+04, 3.199660809941513e+04, 3.204744958459182e+04,
+                                                  3.270633719945683e+04, 3.431874691644472e+04, 3.108691001430429e+04};
 
-    std::vector<double> expectedIntersectedCoordY{3.826926563132096e+05,3.813522268790855e+05,3.799435990928682e+05,3.848083038591905e+05,
-                                                  3.838236381325046e+05,3.865335746218469e+05,3.784979991789844e+05};
-
+    std::vector<double> expectedIntersectedCoordY{3.826926563132096e+05, 3.813522268790855e+05, 3.799435990928682e+05, 3.848083038591905e+05,
+                                                  3.838236381325046e+05, 3.865335746218469e+05, 3.784979991789844e+05};
 
     constexpr double tolerance = 1.0e-5;
 
-    for (size_t i = 0; i < splineIndices.size (); ++i)
+    for (size_t i = 0; i < splineIndices.size(); ++i)
     {
         EXPECT_EQ(splineIndices[i], expectedIntersectedSplines[i]);
         EXPECT_NEAR(splineIntersectionsAngles[i], expectedIntersectedAngles[i], tolerance);
         EXPECT_NEAR(splineIntersectionsCoordX[i], expectedIntersectedCoordX[i], tolerance);
         EXPECT_NEAR(splineIntersectionsCoordY[i], expectedIntersectedCoordY[i], tolerance);
     }
-
 
     errorCode = meshkernelapi::mkernel_finalise_spline_intersection(meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);

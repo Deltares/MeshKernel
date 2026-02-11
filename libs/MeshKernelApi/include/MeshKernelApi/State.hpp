@@ -38,8 +38,8 @@
 #include "MeshKernel/CurvilinearGrid/CurvilinearGridSmoothing.hpp"
 #include "MeshKernel/Mesh1D.hpp"
 #include "MeshKernel/Mesh2D.hpp"
-#include "MeshKernel/Splines.hpp"
 #include "MeshKernel/OrthogonalizationAndSmoothing.hpp"
+#include "MeshKernel/Splines.hpp"
 
 #include "MeshKernelApi/ApiCache/CurvilinearBoundariesAsPolygonCache.hpp"
 #include "MeshKernelApi/ApiCache/FacePolygonPropertyCache.hpp"

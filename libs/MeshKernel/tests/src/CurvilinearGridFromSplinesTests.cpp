@@ -1026,7 +1026,6 @@ TEST(CurvilinearGridFromSplines, Compute_ThreeLongitudinalSplinesTwoCrossingSpli
     ASSERT_NEAR(370670.2161009402, curviGrid->GetNode(2, 8).y, tolerance);
 }
 
-
 meshkernel::CurvilinearGrid LoadCurvilinearGrid(const std::string& fileName)
 {
     std::ifstream splineFile;

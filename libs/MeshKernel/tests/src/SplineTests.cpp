@@ -254,35 +254,32 @@ TEST(Splines, MultiSplineConstructionTest)
 
     for (size_t i = 0; i < splines->GetNumSplines(); ++i)
     {
-        allPoints.insert (allPoints.end (), splines->m_splineNodes [i].begin (), splines->m_splineNodes [i].end ());
+        allPoints.insert(allPoints.end(), splines->m_splineNodes[i].begin(), splines->m_splineNodes[i].end());
 
         if (i != splines->GetNumSplines() - 1)
         {
-            allPoints.push_back (mk::Point (mk::constants::missing::doubleValue, mk::constants::missing::doubleValue));
+            allPoints.push_back(mk::Point(mk::constants::missing::doubleValue, mk::constants::missing::doubleValue));
         }
-
     }
 
     // Construct the other splines
-    mk::Splines otherSplines (allPoints, splines->m_projection);
+    mk::Splines otherSplines(allPoints, splines->m_projection);
 
-    ASSERT_EQ (splines->GetNumSplines (), otherSplines.GetNumSplines ());
+    ASSERT_EQ(splines->GetNumSplines(), otherSplines.GetNumSplines());
 
-    for (size_t i = 0; i < splines->GetNumSplines (); ++i)
+    for (size_t i = 0; i < splines->GetNumSplines(); ++i)
     {
-        const std::vector<mk::Point>& spline1 (splines->m_splineNodes [i]);
-        const std::vector<mk::Point>& spline2 (otherSplines.m_splineNodes [i]);
+        const std::vector<mk::Point>& spline1(splines->m_splineNodes[i]);
+        const std::vector<mk::Point>& spline2(otherSplines.m_splineNodes[i]);
 
-        ASSERT_EQ (spline1.size (), spline2.size ());
+        ASSERT_EQ(spline1.size(), spline2.size());
 
-        for (size_t i = 0; i < spline1.size (); ++i)
+        for (size_t i = 0; i < spline1.size(); ++i)
         {
-            EXPECT_EQ (spline1[i].x, spline2[i].x);
-            EXPECT_EQ (spline1[i].y, spline2[i].y);
+            EXPECT_EQ(spline1[i].x, spline2[i].x);
+            EXPECT_EQ(spline1[i].y, spline2[i].y);
         }
-
     }
-
 }
 
 TEST(Splines, SimpleSplineIntersectionAngle)
@@ -320,19 +317,18 @@ TEST(Splines, SimpleSplineIntersectionAngle)
 
     bool crossing = splines.GetSplinesIntersection(0, 1, crossProductIntersection, intersectionAngle, dimensionalIntersection, firstSplineRatio, secondSplineRatio);
 
-    EXPECT_TRUE (crossing);
-    EXPECT_NEAR (intersectionAngle, expectedSpline0Spline1IntersectionAngle, tolerance);
+    EXPECT_TRUE(crossing);
+    EXPECT_NEAR(intersectionAngle, expectedSpline0Spline1IntersectionAngle, tolerance);
 
     crossing = splines.GetSplinesIntersection(0, 2, crossProductIntersection, intersectionAngle, dimensionalIntersection, firstSplineRatio, secondSplineRatio);
 
-    EXPECT_TRUE (crossing);
-    EXPECT_NEAR (intersectionAngle, expectedSpline0Spline2IntersectionAngle, tolerance);
+    EXPECT_TRUE(crossing);
+    EXPECT_NEAR(intersectionAngle, expectedSpline0Spline2IntersectionAngle, tolerance);
 
     crossing = splines.GetSplinesIntersection(1, 2, crossProductIntersection, intersectionAngle, dimensionalIntersection, firstSplineRatio, secondSplineRatio);
-    EXPECT_FALSE (crossing);
-    EXPECT_NEAR (intersectionAngle, expectedSpline1Spline2IntersectionAngle, tolerance);
+    EXPECT_FALSE(crossing);
+    EXPECT_NEAR(intersectionAngle, expectedSpline1Spline2IntersectionAngle, tolerance);
 }
-
 
 TEST(Splines, MultiSegmentSplineIntersectionAngle)
 {
@@ -370,14 +366,13 @@ TEST(Splines, MultiSegmentSplineIntersectionAngle)
     // Should be half way along the second spline segment
     constexpr double expectedSecondSplineRatio = 1.5;
 
-    EXPECT_TRUE (crossing);
-    EXPECT_NEAR (intersectionAngle, expectedSplineIntersectionAngle, tolerance);
-    EXPECT_NEAR (intersectionPoint.x, expectedIntersectionPointX, tolerance);
-    EXPECT_NEAR (intersectionPoint.y, expectedIntersectionPointY, tolerance);
-    EXPECT_NEAR (firstSplineRatio, expectedFirstSplineRatio, tolerance);
-    EXPECT_NEAR (secondSplineRatio, expectedSecondSplineRatio, tolerance);
+    EXPECT_TRUE(crossing);
+    EXPECT_NEAR(intersectionAngle, expectedSplineIntersectionAngle, tolerance);
+    EXPECT_NEAR(intersectionPoint.x, expectedIntersectionPointX, tolerance);
+    EXPECT_NEAR(intersectionPoint.y, expectedIntersectionPointY, tolerance);
+    EXPECT_NEAR(firstSplineRatio, expectedFirstSplineRatio, tolerance);
+    EXPECT_NEAR(secondSplineRatio, expectedSecondSplineRatio, tolerance);
 }
-
 
 TEST(Splines, MultiSplineIntersectionAngle)
 {
@@ -403,15 +398,15 @@ TEST(Splines, MultiSplineIntersectionAngle)
     std::vector<double> expectedIntersectedAngles{9.369091291645886e+01, 1.128522130510987e+02, 1.133073718558457e+02, 1.146340134566103e+02,
                                                   4.215466692286142e+01, 6.936103716736207e+01, 8.094729661593756e+01};
 
-    std::vector<double> expectedIntersectedCoordX{3.345969673585541e+04,3.291179368046583e+04,3.199660809941513e+04,3.204744958459182e+04,
-                                                  3.270633719945683e+04,3.431874691644472e+04,3.108691001430429e+04};
+    std::vector<double> expectedIntersectedCoordX{3.345969673585541e+04, 3.291179368046583e+04, 3.199660809941513e+04, 3.204744958459182e+04,
+                                                  3.270633719945683e+04, 3.431874691644472e+04, 3.108691001430429e+04};
 
-    std::vector<double> expectedIntersectedCoordY{3.826926563132096e+05,3.813522268790855e+05,3.799435990928682e+05,3.848083038591905e+05,
-                                                  3.838236381325046e+05,3.865335746218469e+05,3.784979991789844e+05};
+    std::vector<double> expectedIntersectedCoordY{3.826926563132096e+05, 3.813522268790855e+05, 3.799435990928682e+05, 3.848083038591905e+05,
+                                                  3.838236381325046e+05, 3.865335746218469e+05, 3.784979991789844e+05};
 
-    splines->GetAllIntersections (mySpline, splineIndices, angles, xCrossOver, yCrossOver);
+    splines->GetAllIntersections(mySpline, splineIndices, angles, xCrossOver, yCrossOver);
 
-    ASSERT_EQ (splineIndices.size (), expectedIntersectedSplines.size ());
+    ASSERT_EQ(splineIndices.size(), expectedIntersectedSplines.size());
 
     constexpr double tolerance = 1.0e-5;
 
@@ -422,5 +417,4 @@ TEST(Splines, MultiSplineIntersectionAngle)
         EXPECT_NEAR(xCrossOver[i], expectedIntersectedCoordX[i], tolerance);
         EXPECT_NEAR(yCrossOver[i], expectedIntersectedCoordY[i], tolerance);
     }
-
 }

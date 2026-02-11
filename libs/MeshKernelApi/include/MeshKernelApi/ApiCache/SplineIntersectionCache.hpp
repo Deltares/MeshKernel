@@ -36,17 +36,16 @@ namespace meshkernelapi
 
     class SplineIntersectionCache
     {
-    public :
-
-        int Size () const
+    public:
+        int Size() const
         {
-            return static_cast<int>(m_splineIndices.size ());
+            return static_cast<int>(m_splineIndices.size());
         }
 
-        void Set (const std::vector<int>& splineIndices,
-                  const std::vector<double>& intersectionAngles,
-                  const std::vector<double>& intersectionCoordX,
-                  const std::vector<double>& intersectionCoordY )
+        void Set(const std::vector<int>& splineIndices,
+                 const std::vector<double>& intersectionAngles,
+                 const std::vector<double>& intersectionCoordX,
+                 const std::vector<double>& intersectionCoordY)
         {
             m_splineIndices = splineIndices;
             m_intersectionAngles = intersectionAngles;
@@ -54,9 +53,9 @@ namespace meshkernelapi
             m_intersectionCoordinateY = intersectionCoordY;
         }
 
-        void Copy (SplineIntersections& intersections) const
+        void Copy(SplineIntersections& intersections) const
         {
-            intersections.num_intersections = Size ();
+            intersections.num_intersections = Size();
 
             std::memcpy(intersections.spline_index, m_splineIndices.data(), sizeof(int) * Size());
             std::memcpy(intersections.intersection_angle, m_intersectionAngles.data(), sizeof(double) * Size());
@@ -70,4 +69,4 @@ namespace meshkernelapi
         std::vector<double> m_intersectionCoordinateY;
     };
 
-}
+} // namespace meshkernelapi

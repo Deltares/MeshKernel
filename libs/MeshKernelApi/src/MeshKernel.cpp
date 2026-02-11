@@ -5811,7 +5811,6 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-
     MKERNEL_API int mkernel_initialise_spline_intersection(int meshKernelId,
                                                            const GeometryList& multiSpline)
     {
@@ -5843,18 +5842,17 @@ namespace meshkernelapi
         std::vector<double> xCrossOver;
         std::vector<double> yCrossOver;
 
-        meshKernelState[meshKernelId].m_splines->GetAllIntersections (splinePoints, splineIndices, angles, xCrossOver, yCrossOver);
+        meshKernelState[meshKernelId].m_splines->GetAllIntersections(splinePoints, splineIndices, angles, xCrossOver, yCrossOver);
 
-        meshKernelState[meshKernelId].m_splineIntersectionCache->Set (splineIndices, angles, xCrossOver, yCrossOver);
+        meshKernelState[meshKernelId].m_splineIntersectionCache->Set(splineIndices, angles, xCrossOver, yCrossOver);
         return lastExitCode;
     }
-
 
     MKERNEL_API int mkernel_get_spline_intersection_dim(int meshKernelId,
                                                         int& numberOfIntersection)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        numberOfIntersection = meshKernelState[meshKernelId].m_splineIntersectionCache->Size ();
+        numberOfIntersection = meshKernelState[meshKernelId].m_splineIntersectionCache->Size();
         return lastExitCode;
     }
 
@@ -5862,18 +5860,16 @@ namespace meshkernelapi
                                                          SplineIntersections& intersections)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        meshKernelState[meshKernelId].m_splineIntersectionCache->Copy (intersections);
+        meshKernelState[meshKernelId].m_splineIntersectionCache->Copy(intersections);
         return lastExitCode;
     }
-
 
     MKERNEL_API int mkernel_finalise_spline_intersection(int meshKernelId)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        meshKernelState[meshKernelId].m_splines.reset ();
-        meshKernelState[meshKernelId].m_splineIntersectionCache.reset ();
+        meshKernelState[meshKernelId].m_splines.reset();
+        meshKernelState[meshKernelId].m_splineIntersectionCache.reset();
         return lastExitCode;
     }
-
 
 } // namespace meshkernelapi
