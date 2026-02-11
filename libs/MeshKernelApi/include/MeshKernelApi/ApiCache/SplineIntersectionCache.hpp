@@ -34,7 +34,7 @@
 namespace meshkernelapi
 {
 
-    /// @brief Cache spline interesction data
+    /// @brief Cache spline intersection data
     class SplineIntersectionCache
     {
     public:
