@@ -452,51 +452,6 @@ bool Splines::GetSplinesIntersection(const std::vector<Point>& firstSpline,
     return false;
 }
 
-void Splines::GetAllIntersectionsWithFirst(std::vector<int>& splineIndices,
-                                           std::vector<double>& angles,
-                                           std::vector<double>& xCrossOver,
-                                           std::vector<double>& yCrossOver) const
-{
-
-    if (m_splineNodes.size() < 2)
-    {
-        // Error or just return
-    }
-
-    splineIndices.clear ();
-    splineIndices.reserve (m_splineNodes.size());
-    angles.clear ();
-    angles.reserve (m_splineNodes.size());
-    xCrossOver.clear ();
-    xCrossOver.reserve (m_splineNodes.size());
-    yCrossOver.clear ();
-    yCrossOver.reserve (m_splineNodes.size());
-
-    for (size_t i = 1; i < m_splineNodes.size(); ++i)
-    {
-        Point intersectionPoint;
-        double intersectionAngle;
-        double crossProductIntersection;
-        double firstSplineRatio;
-        double secondSplineRatio;
-
-        bool doesCrossOver = GetSplinesIntersection(0, i,
-                                                    crossProductIntersection,
-                                                    intersectionAngle,
-                                                    intersectionPoint,
-                                                    firstSplineRatio,
-                                                    secondSplineRatio);
-        if (doesCrossOver)
-        {
-            splineIndices.push_back (static_cast<int>(i));
-            xCrossOver.push_back (intersectionPoint.x);
-            yCrossOver.push_back (intersectionPoint.y);
-            angles.push_back (intersectionAngle);
-        }
-
-    }
-}
-
 double Splines::ComputeSplineLength(UInt index,
                                     double startAdimensionalCoordinate,
                                     double endAdimensionalCoordinate,

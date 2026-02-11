@@ -118,12 +118,6 @@ namespace meshkernel
                                     double& firstSplineRatio,
                                     double& secondSplineRatio) const;
 
-        /// \brief Get the set of all crossover points with the angles of all spline with the first spline.
-        void GetAllIntersectionsWithFirst (std::vector<int>& splineIndices,
-                                           std::vector<double>& angles,
-                                           std::vector<double>& xCrossOver,
-                                           std::vector<double>& yCrossOver) const;
-
         /// @brief Computes the spline length in s coordinates (GETDIS)
         /// @param[in] index The spline index
         /// @param[in] startAdimensionalCoordinate Adimensional start spline
