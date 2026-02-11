@@ -738,6 +738,7 @@ std::unique_ptr<meshkernel::UndoAction> meshkernel::ConnectMeshes::FreeHangingNo
     const auto [segmentsCross,
                 intersectionPoint,
                 crossProduct,
+                intersectionAngle,
                 normalisedPolylineSegmentDistance,
                 normalisedEdgeDistance] = AreSegmentsCrossing(mesh.Node(boundaryEdge.first),
                                                               mesh.Node(startNode),

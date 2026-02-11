@@ -673,6 +673,7 @@ namespace meshkernel
             const auto [segmentsDoCross,
                         intersection,
                         crossProduct,
+                        intersectionAngle,
                         firstRatio,
                         secondRatio] = AreSegmentsCrossing(x1, x2, x3, x4, false, m_splines->m_projection);
 
@@ -2036,11 +2037,12 @@ namespace meshkernel
                 continue;
             }
 
-            double crossProductIntersection;
             Point intersectionPoint;
+            double crossProductIntersection;
+            double intersectionAngle;
             double firstSplineRatio;
             double secondSplineRatio;
-            bool crossing = m_splines->GetSplinesIntersection(splineIndex, s, crossProductIntersection, intersectionPoint, firstSplineRatio, secondSplineRatio);
+            bool crossing = m_splines->GetSplinesIntersection(splineIndex, s, crossProductIntersection, intersectionAngle, intersectionPoint, firstSplineRatio, secondSplineRatio);
 
             if (std::abs(crossProductIntersection) < m_splinesToCurvilinearParameters.min_cosine_crossing_angles)
             {

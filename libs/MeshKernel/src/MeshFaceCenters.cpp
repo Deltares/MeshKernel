@@ -158,6 +158,7 @@ meshkernel::Point meshkernel::algo::ComputeFaceCircumenter(std::vector<Point>& p
         const auto [areLineCrossing,
                     intersection,
                     crossProduct,
+                    intersectionAngle,
                     firstRatio,
                     secondRatio] = AreSegmentsCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, projection);
 

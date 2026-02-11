@@ -94,9 +94,10 @@ void meshkernel::CurvilinearGridSplineToGrid::DetermineIntersection(const Spline
                                                                     double& secondNormalisedIntersectionLength) const
 {
     Point intersectionPoint;
+    [[maybe_unused]] double intersectionAngle;
 
     // Need way of getting the number of times the spline intersect.
-    if (splines.GetSplinesIntersection(splineI, splineJ, crossProductOfIntersection, intersectionPoint, firstNormalisedIntersectionLength, secondNormalisedIntersectionLength))
+    if (splines.GetSplinesIntersection(splineI, splineJ, crossProductOfIntersection, intersectionAngle, intersectionPoint, firstNormalisedIntersectionLength, secondNormalisedIntersectionLength))
     {
         numberTimesCrossing = 1;
     }

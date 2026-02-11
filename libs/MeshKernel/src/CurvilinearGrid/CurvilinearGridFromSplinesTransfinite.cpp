@@ -354,15 +354,16 @@ void CurvilinearGridFromSplinesTransfinite::ComputeInteractions()
     {
         for (UInt j = i + 1; j < numSplines; j++)
         {
-            double crossProductIntersection;
             Point intersectionPoint;
+            double crossProductIntersection;
+            double intersectionAngle;
             double firstSplineRatio;
             double secondSplineRatio;
             const auto numNodesISpline = static_cast<int>(m_splines->m_splineNodes[i].size());
             const auto numNodesJSpline = static_cast<int>(m_splines->m_splineNodes[j].size());
 
             // find intersections
-            const auto areCrossing = m_splines->GetSplinesIntersection(i, j, crossProductIntersection, intersectionPoint, firstSplineRatio, secondSplineRatio);
+            const auto areCrossing = m_splines->GetSplinesIntersection(i, j, crossProductIntersection, intersectionAngle, intersectionPoint, firstSplineRatio, secondSplineRatio);
 
             if (areCrossing)
             {

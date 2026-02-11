@@ -67,6 +67,7 @@ set(
   ${DOMAIN_INC_DIR}/InterpolatedSamplePropertyCalculator.hpp
   ${DOMAIN_INC_DIR}/State.hpp
   ${DOMAIN_INC_DIR}/Utils.hpp
+  ${DOMAIN_INC_DIR}/SplineIntersections.hpp
   ${VERSION_INC_DIR}/Version/Version.hpp
 )
 

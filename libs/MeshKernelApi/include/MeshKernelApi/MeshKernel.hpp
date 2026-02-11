@@ -35,6 +35,7 @@
 #include <MeshKernelApi/GriddedSamples.hpp>
 #include <MeshKernelApi/Mesh1D.hpp>
 #include <MeshKernelApi/Mesh2D.hpp>
+#include <MeshKernelApi/SplineIntersections.hpp>
 
 #if defined(_WIN32)
 #if !defined(MKERNEL_API)
@@ -1884,6 +1885,22 @@ namespace meshkernelapi
                                                              GeometryList& polygon,
                                                              int startIndex,
                                                              int endIndex);
+
+        MKERNEL_API int mkernel_initialise_spline_intersection(int meshKernelId,
+                                                               const GeometryList& multiSpline);
+
+        MKERNEL_API int mkernel_check_spline_intersection(int meshKernelId,
+                                                          const GeometryList& singleSpline);
+
+        MKERNEL_API int mkernel_get_spline_intersection_dim(int meshKernelId,
+                                                            int& numberOfIntersection);
+
+        MKERNEL_API int mkernel_get_spline_intersection_data(int meshKernelId,
+                                                             SplineIntersections& intersections);
+
+        MKERNEL_API int mkernel_finalise_spline_intersection(int meshKernelId);
+
+
 
 #ifdef __cplusplus
     }
