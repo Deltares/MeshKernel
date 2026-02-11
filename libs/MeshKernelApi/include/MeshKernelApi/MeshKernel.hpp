@@ -1908,15 +1908,15 @@ namespace meshkernelapi
         /// @param[out] numberOfIntersections The number of spline intersections computed
         /// @returns Error code
         MKERNEL_API int mkernel_get_spline_intersection_dim(int meshKernelId,
-                                                            int& numberOfIntersection);
+                                                            int& numberOfIntersections);
 
         /// @brief Get the intersection data
         ///
         /// @param[in] meshKernelId  The id of the mesh state
-        /// @param[out] intersections The number spline intersections data
+        /// @param[out] intersectionData The spline intersection data
         /// @returns Error code
         MKERNEL_API int mkernel_get_spline_intersection_data(int meshKernelId,
-                                                             SplineIntersections& intersections);
+                                                             SplineIntersections& intersectionData);
 
         /// @brief Finalise the spline intersection calculation
         ///
