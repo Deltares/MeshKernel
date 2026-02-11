@@ -34,39 +34,27 @@
 namespace meshkernelapi
 {
 
+    /// @brief Cache spline interesction data
     class SplineIntersectionCache
     {
     public:
-        int Size() const
-        {
-            return static_cast<int>(m_splineIndices.size());
-        }
+        /// @brief Get the number of spline intersections found
+        int NumberOfIntersections() const;
 
+        /// @brief Set the spline intersection data
         void Set(const std::vector<int>& splineIndices,
                  const std::vector<double>& intersectionAngles,
                  const std::vector<double>& intersectionCoordX,
-                 const std::vector<double>& intersectionCoordY)
-        {
-            m_splineIndices = splineIndices;
-            m_intersectionAngles = intersectionAngles;
-            m_intersectionCoordinateX = intersectionCoordX;
-            m_intersectionCoordinateY = intersectionCoordY;
-        }
+                 const std::vector<double>& intersectionCoordY);
 
-        void Copy(SplineIntersections& intersections) const
-        {
-            intersections.num_intersections = Size();
+        /// @brief Copy the spline intersection data
+        void Copy(SplineIntersections& intersections) const;
 
-            std::memcpy(intersections.spline_index, m_splineIndices.data(), sizeof(int) * Size());
-            std::memcpy(intersections.intersection_angle, m_intersectionAngles.data(), sizeof(double) * Size());
-            std::memcpy(intersections.intersection_x, m_intersectionCoordinateX.data(), sizeof(double) * Size());
-            std::memcpy(intersections.intersection_y, m_intersectionCoordinateY.data(), sizeof(double) * Size());
-        }
-
-        std::vector<int> m_splineIndices;
-        std::vector<double> m_intersectionAngles;
-        std::vector<double> m_intersectionCoordinateX;
-        std::vector<double> m_intersectionCoordinateY;
+    private:
+        std::vector<int> m_splineIndices;              ///< The indices of the spline intersected
+        std::vector<double> m_intersectionAngles;      ///< The angles of the intersections
+        std::vector<double> m_intersectionCoordinateX; ///< The x-coordinate of the intersection point
+        std::vector<double> m_intersectionCoordinateY; ///< The y-coordinate of the intersection point
     };
 
 } // namespace meshkernelapi

@@ -5881,7 +5881,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
-            numberOfIntersections = meshKernelState[meshKernelId].m_splineIntersectionCache->Size();
+            numberOfIntersections = meshKernelState[meshKernelId].m_splineIntersectionCache->NumberOfIntersections();
         }
         catch (...)
         {

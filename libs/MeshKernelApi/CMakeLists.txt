@@ -43,6 +43,7 @@ set(CACHE_SRC_LIST
   ${CACHE_SRC_DIR}/ObtuseTriangleCentreCache.cpp
   ${CACHE_SRC_DIR}/PolygonRefinementCache.cpp
   ${CACHE_SRC_DIR}/SmallFlowEdgeCentreCache.cpp
+  ${CACHE_SRC_DIR}/SplineIntersectionCache.cpp
 )
 
 
@@ -83,6 +84,7 @@ set(
   ${CACHE_INC_DIR}/ObtuseTriangleCentreCache.hpp
   ${CACHE_INC_DIR}/PolygonRefinementCache.hpp
   ${CACHE_INC_DIR}/SmallFlowEdgeCentreCache.hpp
+  ${CACHE_INC_DIR}/SplineIntersectionCache.hpp
 )
 
 
