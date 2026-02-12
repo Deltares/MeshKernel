@@ -301,14 +301,10 @@ TEST(ApiCacheTest, SplineIntersections)
     testSpline.coordinates_x = splineCoordX.data();
     testSpline.coordinates_y = splineCoordY.data();
 
-    errorCode = meshkernelapi::mkernel_check_spline_intersection(meshKernelId, testSpline);
-    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
     int numberOfIntersections = -1;
 
-    errorCode = meshkernelapi::mkernel_get_spline_intersection_dim(meshKernelId, numberOfIntersections);
+    errorCode = meshkernelapi::mkernel_check_spline_intersection(meshKernelId, testSpline, numberOfIntersections);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
-
     ASSERT_EQ(numberOfIntersections, 7);
 
     std::vector<int> splineIndices(numberOfIntersections);

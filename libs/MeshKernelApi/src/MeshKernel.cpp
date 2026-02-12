@@ -5837,9 +5837,12 @@ namespace meshkernelapi
     }
 
     MKERNEL_API int mkernel_check_spline_intersection(int meshKernelId,
-                                                      const GeometryList& singleSpline)
+                                                      const GeometryList& singleSpline,
+                                                      int& numberOfIntersections)
     {
         lastExitCode = meshkernel::ExitCode::Success;
+        numberOfIntersections = 0;
+
         try
         {
             if (!meshKernelState.contains(meshKernelId))
@@ -5862,25 +5865,6 @@ namespace meshkernelapi
 
             meshKernelState[meshKernelId].m_splines->GetAllIntersections(splinePoints, splineIndices, angles, xCrossOver, yCrossOver);
             meshKernelState[meshKernelId].m_splineIntersectionCache->Set(splineIndices, angles, xCrossOver, yCrossOver);
-        }
-        catch (...)
-        {
-            lastExitCode = HandleException();
-        }
-        return lastExitCode;
-    }
-
-    MKERNEL_API int mkernel_get_spline_intersection_dim(int meshKernelId,
-                                                        int& numberOfIntersections)
-    {
-        lastExitCode = meshkernel::ExitCode::Success;
-        try
-        {
-            if (!meshKernelState.contains(meshKernelId))
-            {
-                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
-            }
-
             numberOfIntersections = meshKernelState[meshKernelId].m_splineIntersectionCache->NumberOfIntersections();
         }
         catch (...)

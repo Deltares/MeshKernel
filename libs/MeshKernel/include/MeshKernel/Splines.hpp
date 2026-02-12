@@ -61,8 +61,9 @@ namespace meshkernel
 
         /// @brief Construct from a sequence of spline points
         ///
-        /// The array may contain a number of splines separated by an invalid point
-        Splines(const std::vector<Point>& splinePoints, Projection projection);
+        /// @brief[in] splinePoints The sequence of spline points, multiple splines are separated by an invalid point
+        /// @brief[in] projection   The map projection
+        explicit Splines(const std::vector<Point>& splinePoints, Projection projection);
 
         /// @brief Adds a new spline to m_splineCornerPoints
         /// @param[in] splines The spline corner points

@@ -1235,7 +1235,6 @@ namespace meshkernel
                 intersectionAngle += 180.0;
             }
 
-            // intersectionAngle = std::asin (std::abs(det) / (lengthSegment1 * lengthSegment2)) * constants::conversion::radToDeg;
             ratioSecondSegment = (y31 * x21 - x31 * y21) / det;
             ratioFirstSegment = (y31 * x43 - x31 * y43) / det;
 

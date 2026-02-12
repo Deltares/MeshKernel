@@ -1894,21 +1894,15 @@ namespace meshkernelapi
         MKERNEL_API int mkernel_initialise_spline_intersection(int meshKernelId,
                                                                const GeometryList& multiSpline);
 
-        /// @brief Check a spline intersects any of the defined splines
+        /// @brief Compute the intersections of this spline with the cached splines and return the number of intersections found.
         ///
         /// @param[in] meshKernelId  The id of the mesh state
         /// @param[in] singleSpline  A single spline, this is will checked for intersection with any of the defined cached splines
-        /// @returns Error code
-        MKERNEL_API int mkernel_check_spline_intersection(int meshKernelId,
-                                                          const GeometryList& singleSpline);
-
-        /// @brief Get the number of intersections found
-        ///
-        /// @param[in] meshKernelId  The id of the mesh state
         /// @param[out] numberOfIntersections The number of spline intersections computed
         /// @returns Error code
-        MKERNEL_API int mkernel_get_spline_intersection_dim(int meshKernelId,
-                                                            int& numberOfIntersections);
+        MKERNEL_API int mkernel_check_spline_intersection(int meshKernelId,
+                                                          const GeometryList& singleSpline,
+                                                          int& numberOfIntersections);
 
         /// @brief Get the intersection data
         ///
