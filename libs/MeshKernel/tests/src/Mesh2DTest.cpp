@@ -1712,7 +1712,7 @@ TEST(Mesh2D, CircumcentreTest)
     // Setup a mesh with 20 quadrilaterals on a bend
     auto mesh = ReadLegacyMesh2DFromFile(TEST_FOLDER + "/data/bend_net.nc");
 
-    // Create some triangles in the mesh
+    // Create some triangles in the mesh by adding a diagonal edge in he quadrilateral elements
     [[maybe_unused]] auto [edgeId1, undoConnect1] = mesh->ConnectNodes(22, 28, false);
     [[maybe_unused]] auto [edgeId2, undoConnect2] = mesh->ConnectNodes(16, 22, false);
     [[maybe_unused]] auto [edgeId3, undoConnect3] = mesh->ConnectNodes(11, 17, false);

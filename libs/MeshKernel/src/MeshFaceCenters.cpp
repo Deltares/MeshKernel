@@ -30,7 +30,39 @@
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Operations.hpp"
 
-meshkernel::Point meshkernel::algo::CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection projection)
+namespace meshkernel::algo::impl
+{
+    /// @brief Compute average of polygon nodes.
+    Point ComputeNodeAverage(const std::vector<Point>& polygon);
+
+    /// @brief Compute the circumcenter of a triangle element.
+    Point CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection projection);
+
+    /// @brief Compute circumcenter of face
+    Point ComputeCircumCenter(const Point& centerOfMass,
+                              const UInt pointCount,
+                              const std::vector<UInt>& edgesNumFaces,
+                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
+                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
+                              CircumcentreMethod circumcentreMethod,
+                              const Projection projection);
+
+    void CheckCircumcentreIsWithinElement(const std::vector<Point>& polygon,
+                                          const UInt numNodes,
+                                          const Projection projection,
+                                          const Point& massCentre,
+                                          Point& circumcentre);
+
+} // namespace meshkernel::algo::impl
+
+meshkernel::Point meshkernel::algo::impl::ComputeNodeAverage(const std::vector<Point>& polygon)
+{
+    Point centerOfMass = std::accumulate(polygon.begin(), polygon.end() - 1, Point{0.0, 0.0});
+    centerOfMass /= static_cast<double>(polygon.size() - 1);
+    return centerOfMass;
+}
+
+meshkernel::Point meshkernel::algo::impl::CircumcenterOfTriangle(const Point& firstNode, const Point& secondNode, const Point& thirdNode, const Projection projection)
 {
     const double dx2 = GetDx(firstNode, secondNode, projection);
     const double dy2 = GetDy(firstNode, secondNode, projection);
@@ -39,12 +71,7 @@ meshkernel::Point meshkernel::algo::CircumcenterOfTriangle(const Point& firstNod
     const double dy3 = GetDy(firstNode, thirdNode, projection);
 
     const double den = dy2 * dx3 - dy3 * dx2;
-    double z = 0.0;
-
-    if (std::abs(den) > 0.0)
-    {
-        z = (dx2 * (dx2 - dx3) + dy2 * (dy2 - dy3)) / den;
-    }
+    const double z = std::abs(den) > 0.0 ? (dx2 * (dx2 - dx3) + dy2 * (dy2 - dy3)) / den : 0.0;
 
     Point circumcenter;
 
@@ -63,15 +90,19 @@ meshkernel::Point meshkernel::algo::CircumcenterOfTriangle(const Point& firstNod
     else if (projection == Projection::sphericalAccurate)
     {
         // compute in case of spherical accurate (comp_circumcenter3D)
+        throw NotImplementedError("Circumcentre for triangles not implemented for spherical accurate");
     }
+
     return circumcenter;
 }
 
-meshkernel::Point meshkernel::algo::ComputeCircumCenter(const Point& centerOfMass,
-                                                        const UInt pointCount,
-                                                        const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
-                                                        const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
-                                                        const Projection projection)
+meshkernel::Point meshkernel::algo::impl::ComputeCircumCenter(const Point& centerOfMass,
+                                                              const UInt pointCount,
+                                                              const std::vector<UInt>& edgesNumFaces,
+                                                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& middlePoints,
+                                                              const std::array<Point, constants::geometric::maximumNumberOfNodesPerFace>& normals,
+                                                              const CircumcentreMethod circumcentreMethod,
+                                                              const Projection projection)
 {
     const double eps = constants::geometric::circumcentreTolerance * (projection == Projection::cartesian ? 1.0 : 1.0 / (constants::geometric::earth_radius * constants::conversion::degToRad));
 
@@ -80,12 +111,17 @@ meshkernel::Point meshkernel::algo::ComputeCircumCenter(const Point& centerOfMas
     for (UInt iter = 0; iter < constants::numeric::MaximumNumberOfCircumcentreIterations; ++iter)
     {
         const Point previousCircumCenter = estimatedCircumCenter;
+
         for (UInt n = 0; n < pointCount; n++)
         {
-            const Vector delta{GetDelta(middlePoints[n], previousCircumCenter, projection)};
-            const auto increment = -0.1 * dot(delta, normals[n]);
-            AddIncrementToPoint(normals[n], increment, centerOfMass, projection, estimatedCircumCenter);
+            if (edgesNumFaces[n] == 2 || circumcentreMethod == CircumcentreMethod::AllNetlinksLoop)
+            {
+                const Vector delta{GetDelta(middlePoints[n], previousCircumCenter, projection)};
+                const double increment = -0.1 * dot(delta, normals[n]);
+                AddIncrementToPoint(normals[n], increment, centerOfMass, projection, estimatedCircumCenter);
+            }
         }
+
         if (iter > 0 &&
             abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps &&
             abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
@@ -97,79 +133,74 @@ meshkernel::Point meshkernel::algo::ComputeCircumCenter(const Point& centerOfMas
     return estimatedCircumCenter;
 }
 
-meshkernel::Point meshkernel::algo::ComputeFaceCircumenter(std::vector<Point>& polygon,
-                                                           const std::vector<UInt>& edgesNumFaces,
-                                                           const Projection projection)
+void meshkernel::algo::impl::CheckCircumcentreIsWithinElement(const std::vector<Point>& polygon,
+                                                              const UInt numNodes,
+                                                              const Projection projection,
+                                                              const Point& massCentre,
+                                                              Point& circumcentre)
 {
-    static constexpr double weightCircumCenter = 1.0; ///< Weight circum center
+    if (!IsPointInPolygonNodes(circumcentre, polygon, projection))
+    {
+        // If the circumcenter is not included in the face,
+        // the circumcenter will be placed at the intersection between an edge and the segment connecting the mass center with the circumcenter.
+        for (UInt n = 0; n < numNodes; ++n)
+        {
+            const auto nextNode = NextCircularForwardIndex(n, numNodes);
 
+            const auto [areLineCrossing,
+                        intersection,
+                        crossProduct,
+                        intersectionAngle,
+                        firstRatio,
+                        secondRatio] = AreSegmentsCrossing(massCentre, circumcentre, polygon[n], polygon[nextNode], false, projection);
+
+            if (areLineCrossing)
+            {
+                circumcentre = intersection;
+                break;
+            }
+        }
+    }
+}
+
+meshkernel::Point meshkernel::algo::ComputeFaceCircumenter(const std::vector<Point>& polygon,
+                                                           const std::vector<UInt>& edgesNumFaces,
+                                                           const Projection projection,
+                                                           const double circumcentreWeight,
+                                                           const CircumcentreMethod circumcentreMethod)
+{
     std::array<Point, constants::geometric::maximumNumberOfNodesPerFace> middlePoints;
     std::array<Point, constants::geometric::maximumNumberOfNodesPerFace> normals;
     UInt pointCount = 0;
 
     const auto numNodes = static_cast<UInt>(polygon.size()) - 1;
 
-    Point centerOfMass{0.0, 0.0};
+    Point centerOfMass = impl::ComputeNodeAverage(polygon);
+    Point circumcentre = centerOfMass;
 
-    for (UInt n = 0; n < numNodes; ++n)
-    {
-        centerOfMass.x += polygon[n].x;
-        centerOfMass.y += polygon[n].y;
-    }
-
-    centerOfMass /= static_cast<double>(numNodes);
-
-    auto result = centerOfMass;
     if (numNodes == constants::geometric::numNodesInTriangle)
     {
-        result = algo::CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], projection);
+        circumcentre = algo::impl::CircumcenterOfTriangle(polygon[0], polygon[1], polygon[2], projection);
     }
     else if (!edgesNumFaces.empty())
     {
-        UInt numValidEdges = CountNumberOfValidEdges(edgesNumFaces, numNodes);
+        const UInt numInteriorEdges = CountNumberOfInteriorEdges(edgesNumFaces, numNodes);
 
-        if (numValidEdges > 1)
+        if (numInteriorEdges > 1)
         {
             ComputeMidPointsAndNormals(polygon, edgesNumFaces, numNodes, middlePoints, normals, pointCount, projection);
-            result = algo::ComputeCircumCenter(centerOfMass, pointCount, middlePoints, normals, projection);
+            circumcentre = algo::impl::ComputeCircumCenter(centerOfMass, pointCount, edgesNumFaces, middlePoints, normals, circumcentreMethod, projection);
         }
     }
 
-    if (weightCircumCenter != 1.0)
+    algo::impl::CheckCircumcentreIsWithinElement(polygon, numNodes, projection, centerOfMass, circumcentre);
+
+    if (circumcentreWeight != 1.0)
     {
-        for (UInt n = 0; n < numNodes; ++n)
-        {
-            polygon[n] = weightCircumCenter * polygon[n] + (1.0 - weightCircumCenter) * centerOfMass;
-        }
+        circumcentre = circumcentreWeight * circumcentre + (1.0 - circumcentreWeight) * centerOfMass;
     }
 
-    // The circumcenter is included in the face, then return the calculated circumcenter
-    if (IsPointInPolygonNodes(result, polygon, projection))
-    {
-        return result;
-    }
-
-    // If the circumcenter is not included in the face,
-    // the circumcenter will be placed at the intersection between an edge and the segment connecting the mass center with the circumcenter.
-    for (UInt n = 0; n < numNodes; ++n)
-    {
-        const auto nextNode = NextCircularForwardIndex(n, numNodes);
-
-        const auto [areLineCrossing,
-                    intersection,
-                    crossProduct,
-                    intersectionAngle,
-                    firstRatio,
-                    secondRatio] = AreSegmentsCrossing(centerOfMass, result, polygon[n], polygon[nextNode], false, projection);
-
-        if (areLineCrossing)
-        {
-            result = intersection;
-            break;
-        }
-    }
-
-    return result;
+    return circumcentre;
 }
 
 std::vector<meshkernel::Point> meshkernel::algo::ComputeFaceCircumcenters(const Mesh& mesh)
@@ -197,7 +228,6 @@ void meshkernel::algo::ComputeFaceCircumcenters(const Mesh& mesh, std::span<Poin
 #pragma omp parallel for private(numEdgeFacesCache, polygonNodesCache)
     for (int f = 0; f < numFaces; f++)
     {
-
         UInt numberOfInteriorEdges = 0;
         const auto numberOfFaceNodes = mesh.GetNumFaceEdges(f);
 
@@ -224,7 +254,7 @@ void meshkernel::algo::ComputeFaceCircumcenters(const Mesh& mesh, std::span<Poin
                 numEdgeFacesCache.emplace_back(mesh.m_edgesNumFaces[mesh.m_facesEdges[f][n]]);
             }
 
-            faceCenters[f] = algo::ComputeFaceCircumenter(polygonNodesCache, numEdgeFacesCache, mesh.m_projection);
+            faceCenters[f] = algo::ComputeFaceCircumenter(polygonNodesCache, numEdgeFacesCache, mesh.m_projection, mesh.GetCircumcentreWeight(), mesh.GetCircumcentreMethod());
         }
     }
 }

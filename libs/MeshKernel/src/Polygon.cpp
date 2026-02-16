@@ -842,7 +842,6 @@ std::tuple<double, meshkernel::Point, meshkernel::TraversalDirection> meshkernel
     }
 
     centreOfMass += reference;
-
     return {std::abs(area), centreOfMass, direction};
 }
 

@@ -356,9 +356,6 @@ namespace meshkernel
     /// @return The Normal vector
     [[nodiscard]] Point NormalVector(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, const Projection& projection);
 
-    /// @brief Compute the area of the polygon described by the closed sequence of points
-    double ComputeArea(const std::vector<Point>& polygon, const Projection projection);
-
     /// @brief Transforms vector with components in global spherical coordinate directions(xglob, yglob)
     ///       to local coordinate directions(xloc, yloc) around reference point(xref, yref)
     void TransformGlobalVectorToLocal(const Point& reference, const Point& globalCoordinates, const Point& globalComponents, const Projection& projection, Point& localComponents);
@@ -444,8 +441,8 @@ namespace meshkernel
     /// @return The resulting normalized inner product
     [[nodiscard]] double NormalizedInnerProductTwoSegments(const Point& firstPointFirstSegment, const Point& secondPointFirstSegment, const Point& firstPointSecondSegment, const Point& secondPointSecondSegment, const Projection& projection);
 
-    /// @brief Count the number of valid edges in list
-    UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, UInt numNodes);
+    /// @brief Count the number of interior edges in list
+    UInt CountNumberOfInteriorEdges(const std::vector<UInt>& edgesNumFaces, UInt numNodes);
 
     /// @brief Compute mid point and normal of polygon segment
     void ComputeMidPointsAndNormals(const std::vector<Point>& polygon,

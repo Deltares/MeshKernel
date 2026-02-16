@@ -699,7 +699,9 @@ void MeshRefinement::ComputeSplittingNode(const UInt faceId,
 
         splittingNode = algo::ComputeFaceCircumenter(facePolygonWithoutHangingNodes,
                                                      localEdgesNumFaces,
-                                                     m_mesh.m_projection);
+                                                     m_mesh.m_projection,
+                                                     m_mesh.GetCircumcentreWeight(),
+                                                     m_mesh.GetCircumcentreMethod());
 
         if (m_mesh.m_projection == Projection::spherical)
         {

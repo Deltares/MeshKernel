@@ -161,4 +161,12 @@ namespace meshkernel
         FaceCircumcenter = 2
     };
 
+    /// \brief Describe how the circumcentre should be computed.
+    enum CircumcentreMethod
+    {
+        InternalNetlinksEdge,
+        InternalNetlinksLoop,
+        AllNetlinksLoop
+    };
+
 } // namespace meshkernel

@@ -1156,7 +1156,7 @@ namespace meshkernel
         return constants::missing::doubleValue;
     }
 
-    UInt CountNumberOfValidEdges(const std::vector<UInt>& edgesNumFaces, UInt numEdges)
+    UInt CountNumberOfInteriorEdges(const std::vector<UInt>& edgesNumFaces, UInt numEdges)
     {
         if (numEdges > edgesNumFaces.size())
         {
