@@ -133,6 +133,7 @@ std::unique_ptr<meshkernel::UndoAction> FlipEdges::Compute(const Polygons& polyg
             const auto [areEdgesCrossing,
                         intersection,
                         crossProduct,
+                        intersectionAngle,
                         firstRatio,
                         secondRatio] = AreSegmentsCrossing(m_mesh.Node(firstNode),
                                                            m_mesh.Node(secondNode),

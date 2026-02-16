@@ -5811,4 +5811,122 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_initialise_spline_intersection(int meshKernelId,
+                                                           const GeometryList& multiSpline)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_splines != nullptr)
+            {
+                throw meshkernel::MeshKernelError("Splines have already been cached.");
+            }
+
+            std::vector<meshkernel::Point> splinePoints(ConvertGeometryListToPointVector(multiSpline));
+
+            meshkernel::Splines splineValues(meshKernelState[meshKernelId].m_mesh2d->m_projection);
+
+            meshKernelState[meshKernelId].m_splines = std::make_shared<meshkernel::Splines>(splinePoints, meshKernelState[meshKernelId].m_projection);
+            meshKernelState[meshKernelId].m_splineIntersectionCache = std::make_shared<meshkernelapi::SplineIntersectionCache>();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_check_spline_intersection(int meshKernelId,
+                                                      const GeometryList& singleSpline,
+                                                      int& numberOfIntersections)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        numberOfIntersections = 0;
+
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_splines == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Splines have not been cached.");
+            }
+
+            std::vector<meshkernel::Point> splinePoints(singleSpline.num_coordinates);
+
+            for (auto i = 0; i < singleSpline.num_coordinates; ++i)
+            {
+                splinePoints[i].x = singleSpline.coordinates_x[i];
+                splinePoints[i].y = singleSpline.coordinates_y[i];
+            }
+
+            std::vector<int> splineIndices;
+            std::vector<double> angles;
+            std::vector<double> xCrossOver;
+            std::vector<double> yCrossOver;
+
+            meshKernelState[meshKernelId].m_splines->GetAllIntersections(splinePoints, splineIndices, angles, xCrossOver, yCrossOver);
+            meshKernelState[meshKernelId].m_splineIntersectionCache->Set(splineIndices, angles, xCrossOver, yCrossOver);
+            numberOfIntersections = meshKernelState[meshKernelId].m_splineIntersectionCache->NumberOfIntersections();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_spline_intersection_data(int meshKernelId,
+                                                         SplineIntersections& intersectionData)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_splines == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Splines have not been cached.");
+            }
+
+            meshKernelState[meshKernelId].m_splineIntersectionCache->Copy(intersectionData);
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_finalise_spline_intersection(int meshKernelId)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            meshKernelState[meshKernelId].m_splines.reset();
+            meshKernelState[meshKernelId].m_splineIntersectionCache.reset();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
 } // namespace meshkernelapi

@@ -143,6 +143,7 @@ void TriangulationInterpolation::Compute()
                 const auto [areCrossing,
                             intersection,
                             crossProduct,
+                            intersectionAngle,
                             firstRatio,
                             secondRatio] = AreSegmentsCrossing(trianglesCircumcenters[triangle],
                                                                m_locations[n],

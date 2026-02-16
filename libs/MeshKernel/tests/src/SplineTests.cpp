@@ -35,6 +35,9 @@
 #include <MeshKernel/SplineAlgorithms.hpp>
 #include <MeshKernel/Splines.hpp>
 
+#include <TestUtils/Definitions.hpp>
+#include <TestUtils/SplineReader.hpp>
+
 TEST(Splines, SetSpline)
 {
     // a valid spline
@@ -107,10 +110,11 @@ TEST(Splines, SplineIntersection)
 
     double crossProductIntersection;
     meshkernel::Point dimensionalIntersection;
+    double intersectionAngle;
     double firstSplineRatio;
     double secondSplineRatio;
 
-    splines.GetSplinesIntersection(0, 1, crossProductIntersection, dimensionalIntersection, firstSplineRatio, secondSplineRatio);
+    splines.GetSplinesIntersection(0, 1, crossProductIntersection, intersectionAngle, dimensionalIntersection, firstSplineRatio, secondSplineRatio);
 
     const double tolerance = 1e-6;
     ASSERT_NEAR(261.736770097059, dimensionalIntersection.x, tolerance);
@@ -230,10 +234,187 @@ TEST(Splines, SplineMultiIntersection)
 
     double crossProductIntersection;
     meshkernel::Point dimensionalIntersection;
+    double intersectionAngle;
     double firstSplineRatio;
     double secondSplineRatio;
 
-    bool crossing = splines.GetSplinesIntersection(0, 1, crossProductIntersection, dimensionalIntersection, firstSplineRatio, secondSplineRatio);
+    bool crossing = splines.GetSplinesIntersection(0, 1, crossProductIntersection, intersectionAngle, dimensionalIntersection, firstSplineRatio, secondSplineRatio);
 
     ASSERT_TRUE(crossing);
+}
+
+TEST(Splines, MultiSplineConstructionTest)
+{
+
+    namespace mk = meshkernel;
+    auto splines = std::make_shared<mk::Splines>(LoadSplines(TEST_FOLDER + "/data/CurvilinearGrids/seventy_splines.spl"));
+
+    // Concatenate the points of all splines into single array separated by a separator (invalid) point
+    std::vector<mk::Point> allPoints;
+
+    for (size_t i = 0; i < splines->GetNumSplines(); ++i)
+    {
+        allPoints.insert(allPoints.end(), splines->m_splineNodes[i].begin(), splines->m_splineNodes[i].end());
+
+        if (i != splines->GetNumSplines() - 1)
+        {
+            allPoints.push_back(mk::Point(mk::constants::missing::doubleValue, mk::constants::missing::doubleValue));
+        }
+    }
+
+    // Construct the other splines
+    mk::Splines otherSplines(allPoints, splines->m_projection);
+
+    ASSERT_EQ(splines->GetNumSplines(), otherSplines.GetNumSplines());
+
+    for (size_t i = 0; i < splines->GetNumSplines(); ++i)
+    {
+        const std::vector<mk::Point>& spline1(splines->m_splineNodes[i]);
+        const std::vector<mk::Point>& spline2(otherSplines.m_splineNodes[i]);
+
+        ASSERT_EQ(spline1.size(), spline2.size());
+
+        for (size_t i = 0; i < spline1.size(); ++i)
+        {
+            EXPECT_EQ(spline1[i].x, spline2[i].x);
+            EXPECT_EQ(spline1[i].y, spline2[i].y);
+        }
+    }
+}
+
+TEST(Splines, SimpleSplineIntersectionAngle)
+{
+    meshkernel::Splines splines(meshkernel::Projection::cartesian);
+
+    std::vector<meshkernel::Point> firstSpline;
+    firstSpline.push_back(meshkernel::Point{0.0, 0.0});
+    firstSpline.push_back(meshkernel::Point{10.0, 10.0});
+
+    splines.AddSpline(firstSpline, 0, static_cast<meshkernel::UInt>(firstSpline.size()));
+
+    std::vector<meshkernel::Point> secondSpline;
+    secondSpline.push_back(meshkernel::Point{0.0, 3.0});
+    secondSpline.push_back(meshkernel::Point{10.0, 3.0});
+
+    splines.AddSpline(secondSpline, 0, static_cast<meshkernel::UInt>(secondSpline.size()));
+
+    std::vector<meshkernel::Point> thirdSpline;
+    thirdSpline.push_back(meshkernel::Point{0.0, 8.0});
+    thirdSpline.push_back(meshkernel::Point{10.0, 8.0});
+
+    splines.AddSpline(thirdSpline, 0, static_cast<meshkernel::UInt>(thirdSpline.size()));
+
+    double crossProductIntersection;
+    meshkernel::Point dimensionalIntersection;
+    double intersectionAngle;
+    double firstSplineRatio;
+    double secondSplineRatio;
+
+    constexpr double tolerance = 1.0e-10;
+    constexpr double expectedSpline0Spline1IntersectionAngle = 45.0;
+    constexpr double expectedSpline0Spline2IntersectionAngle = 45.0;
+    constexpr double expectedSpline1Spline2IntersectionAngle = meshkernel::constants::missing::doubleValue;
+
+    bool crossing = splines.GetSplinesIntersection(0, 1, crossProductIntersection, intersectionAngle, dimensionalIntersection, firstSplineRatio, secondSplineRatio);
+
+    EXPECT_TRUE(crossing);
+    EXPECT_NEAR(intersectionAngle, expectedSpline0Spline1IntersectionAngle, tolerance);
+
+    crossing = splines.GetSplinesIntersection(0, 2, crossProductIntersection, intersectionAngle, dimensionalIntersection, firstSplineRatio, secondSplineRatio);
+
+    EXPECT_TRUE(crossing);
+    EXPECT_NEAR(intersectionAngle, expectedSpline0Spline2IntersectionAngle, tolerance);
+
+    crossing = splines.GetSplinesIntersection(1, 2, crossProductIntersection, intersectionAngle, dimensionalIntersection, firstSplineRatio, secondSplineRatio);
+    EXPECT_FALSE(crossing);
+    EXPECT_NEAR(intersectionAngle, expectedSpline1Spline2IntersectionAngle, tolerance);
+}
+
+TEST(Splines, MultiSegmentSplineIntersectionAngle)
+{
+    meshkernel::Splines splines(meshkernel::Projection::cartesian);
+
+    std::vector<meshkernel::Point> firstSpline;
+    firstSpline.push_back(meshkernel::Point{-100.0, 7.5});
+    firstSpline.push_back(meshkernel::Point{20.0, 7.5});
+
+    splines.AddSpline(firstSpline, 0, static_cast<meshkernel::UInt>(firstSpline.size()));
+
+    std::vector<meshkernel::Point> secondSpline;
+    secondSpline.push_back(meshkernel::Point{0.0, 0.0});
+    secondSpline.push_back(meshkernel::Point{5.0, 5.0});
+    secondSpline.push_back(meshkernel::Point{5.0, 10.0});
+    secondSpline.push_back(meshkernel::Point{0.0, 15.0});
+
+    splines.AddSpline(secondSpline, 0, static_cast<meshkernel::UInt>(secondSpline.size()));
+
+    double crossProductIntersection;
+    meshkernel::Point intersectionPoint;
+    double intersectionAngle;
+    double firstSplineRatio;
+    double secondSplineRatio;
+
+    constexpr double tolerance = 1.0e-10;
+    constexpr double expectedSplineIntersectionAngle = 90.0;
+
+    bool crossing = splines.GetSplinesIntersection(0, 1, crossProductIntersection, intersectionAngle, intersectionPoint, firstSplineRatio, secondSplineRatio);
+
+    constexpr double expectedIntersectionPointX = 5.7470703125;
+    // Should be halfway between the second and third spline support points
+    constexpr double expectedIntersectionPointY = 7.5;
+    constexpr double expectedFirstSplineRatio = 0.8812255859375;
+    // Should be half way along the second spline segment
+    constexpr double expectedSecondSplineRatio = 1.5;
+
+    EXPECT_TRUE(crossing);
+    EXPECT_NEAR(intersectionAngle, expectedSplineIntersectionAngle, tolerance);
+    EXPECT_NEAR(intersectionPoint.x, expectedIntersectionPointX, tolerance);
+    EXPECT_NEAR(intersectionPoint.y, expectedIntersectionPointY, tolerance);
+    EXPECT_NEAR(firstSplineRatio, expectedFirstSplineRatio, tolerance);
+    EXPECT_NEAR(secondSplineRatio, expectedSecondSplineRatio, tolerance);
+}
+
+TEST(Splines, MultiSplineIntersectionAngle)
+{
+    namespace mk = meshkernel;
+    auto splines = std::make_shared<mk::Splines>(LoadSplines(TEST_FOLDER + "/data/CurvilinearGrids/seventy_splines.spl"));
+
+    std::vector<mk::Point> mySpline{{30825.9994380052, 377851.802873428},
+                                    {31503.2022933559, 379206.208584129},
+                                    {33217.3720209622, 381915.020005531},
+                                    {33153.884253273, 383481.05160853},
+                                    {32053.4296133283, 384454.530713096},
+                                    {32730.6324686789, 385576.147942271},
+                                    {34085.0381793802, 385999.399726865},
+                                    {34338.9892501366, 387438.455794485}};
+
+    std::vector<int> splineIndices;
+    std::vector<double> angles;
+    std::vector<double> xCrossOver;
+    std::vector<double> yCrossOver;
+
+    std::vector<int> expectedIntersectedSplines{0, 1, 2, 3, 4, 10, 23};
+
+    std::vector<double> expectedIntersectedAngles{9.369091291645886e+01, 1.128522130510987e+02, 1.133073718558457e+02, 1.146340134566103e+02,
+                                                  4.215466692286142e+01, 6.936103716736207e+01, 8.094729661593756e+01};
+
+    std::vector<double> expectedIntersectedCoordX{3.345969673585541e+04, 3.291179368046583e+04, 3.199660809941513e+04, 3.204744958459182e+04,
+                                                  3.270633719945683e+04, 3.431874691644472e+04, 3.108691001430429e+04};
+
+    std::vector<double> expectedIntersectedCoordY{3.826926563132096e+05, 3.813522268790855e+05, 3.799435990928682e+05, 3.848083038591905e+05,
+                                                  3.838236381325046e+05, 3.865335746218469e+05, 3.784979991789844e+05};
+
+    splines->GetAllIntersections(mySpline, splineIndices, angles, xCrossOver, yCrossOver);
+
+    ASSERT_EQ(splineIndices.size(), expectedIntersectedSplines.size());
+
+    constexpr double tolerance = 1.0e-5;
+
+    for (size_t i = 0; i < splineIndices.size(); ++i)
+    {
+        EXPECT_EQ(splineIndices[i], expectedIntersectedSplines[i]);
+        EXPECT_NEAR(angles[i], expectedIntersectedAngles[i], tolerance);
+        EXPECT_NEAR(xCrossOver[i], expectedIntersectedCoordX[i], tolerance);
+        EXPECT_NEAR(yCrossOver[i], expectedIntersectedCoordY[i], tolerance);
+    }
 }

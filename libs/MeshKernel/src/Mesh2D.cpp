@@ -2479,6 +2479,7 @@ std::tuple<meshkernel::UInt, meshkernel::UInt> Mesh2D::IsSegmentCrossingABoundar
         const auto [areSegmentCrossing,
                     intersectionPoint,
                     crossProduct,
+                    intersectionAngle,
                     ratioFirstSegment,
                     ratioSecondSegment] = AreSegmentsCrossing(firstPoint,
                                                               secondPoint,
