@@ -347,3 +347,56 @@ TEST(ApiCacheTest, SplineIntersections)
     errorCode = meshkernelapi::mkernel_finalise_spline_intersection(meshKernelId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
+
+TEST(ApiCacheTest, SplineIntersectionsFailureTests)
+{
+    namespace mk = meshkernel;
+
+    // Prepare a mesh with one obtuse triangle
+    int meshKernelId = 0;
+
+    const std::vector<mk::Point> splinePoints(LoadSplinePoints(TEST_FOLDER + "/data/CurvilinearGrids/seventy_splines.spl"));
+
+    std::vector<double> xPoints;
+    std::transform(splinePoints.begin(), splinePoints.end(), std::back_inserter(xPoints), [](const mk::Point& p)
+                   { return p.x; });
+    std::vector<double> yPoints;
+    std::transform(splinePoints.begin(), splinePoints.end(), std::back_inserter(yPoints), [](const mk::Point& p)
+                   { return p.y; });
+
+    meshkernelapi::GeometryList splines;
+    splines.num_coordinates = static_cast<int>(splinePoints.size());
+    splines.coordinates_x = xPoints.data();
+    splines.coordinates_y = yPoints.data();
+
+    int errorCode = meshkernelapi::mkernel_allocate_state(0, meshKernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    std::vector<double> splineCoordX{30825.9994380052, 31503.2022933559, 33217.3720209622, 33153.884253273, 32053.4296133283, 32730.6324686789, 34085.0381793802, 34338.9892501366};
+    std::vector<double> splineCoordY{377851.802873428, 379206.208584129, 381915.020005531, 383481.05160853, 384454.530713096, 385576.147942271, 385999.399726865, 387438.455794485};
+
+    meshkernelapi::GeometryList testSpline;
+    testSpline.num_coordinates = static_cast<int>(splineCoordX.size());
+    testSpline.coordinates_x = splineCoordX.data();
+    testSpline.coordinates_y = splineCoordY.data();
+
+    int numberOfIntersections = -1;
+
+    // Check execption is raised if no splines have been cached
+    errorCode = meshkernelapi::mkernel_check_spline_intersection(meshKernelId, testSpline, numberOfIntersections);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    meshkernelapi::SplineIntersections splineIntersectionData;
+    splineIntersectionData.num_intersections = 0;
+
+    // Check execption is raised if no splines have been cached
+    errorCode = meshkernelapi::mkernel_get_spline_intersection_data(meshKernelId, splineIntersectionData);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+
+    errorCode = meshkernelapi::mkernel_initialise_spline_intersection(meshKernelId, splines);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Check execption is raised if splines have been cahched already
+    errorCode = meshkernelapi::mkernel_initialise_spline_intersection(meshKernelId, splines);
+    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
+}

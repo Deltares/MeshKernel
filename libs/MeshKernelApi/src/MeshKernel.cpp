@@ -5822,6 +5822,11 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
             }
 
+            if (meshKernelState[meshKernelId].m_splines != nullptr)
+            {
+                throw meshkernel::MeshKernelError("Splines have already been cached.");
+            }
+
             std::vector<meshkernel::Point> splinePoints(ConvertGeometryListToPointVector(multiSpline));
 
             meshkernel::Splines splineValues(meshKernelState[meshKernelId].m_mesh2d->m_projection);
@@ -5848,6 +5853,11 @@ namespace meshkernelapi
             if (!meshKernelState.contains(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_splines == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Splines have not been cached.");
             }
 
             std::vector<meshkernel::Point> splinePoints(singleSpline.num_coordinates);
@@ -5883,6 +5893,11 @@ namespace meshkernelapi
             if (!meshKernelState.contains(meshKernelId))
             {
                 throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_splines == nullptr)
+            {
+                throw meshkernel::MeshKernelError("Splines have not been cached.");
             }
 
             meshKernelState[meshKernelId].m_splineIntersectionCache->Copy(intersectionData);

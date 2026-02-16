@@ -45,10 +45,11 @@ void meshkernelapi::SplineIntersectionCache::Set(const std::vector<int>& splineI
 
 void meshkernelapi::SplineIntersectionCache::Copy(SplineIntersections& intersections) const
 {
-    intersections.num_intersections = NumberOfIntersections();
-
-    std::memcpy(intersections.spline_index, m_splineIndices.data(), sizeof(int) * NumberOfIntersections());
-    std::memcpy(intersections.intersection_angle, m_intersectionAngles.data(), sizeof(double) * NumberOfIntersections());
-    std::memcpy(intersections.intersection_x, m_intersectionCoordinateX.data(), sizeof(double) * NumberOfIntersections());
-    std::memcpy(intersections.intersection_y, m_intersectionCoordinateY.data(), sizeof(double) * NumberOfIntersections());
+    if (NumberOfIntersections() > 0)
+    {
+        std::memcpy(intersections.spline_index, m_splineIndices.data(), sizeof(int) * NumberOfIntersections());
+        std::memcpy(intersections.intersection_angle, m_intersectionAngles.data(), sizeof(double) * NumberOfIntersections());
+        std::memcpy(intersections.intersection_x, m_intersectionCoordinateX.data(), sizeof(double) * NumberOfIntersections());
+        std::memcpy(intersections.intersection_y, m_intersectionCoordinateY.data(), sizeof(double) * NumberOfIntersections());
+    }
 }

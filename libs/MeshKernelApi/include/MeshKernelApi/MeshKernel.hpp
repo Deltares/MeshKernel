@@ -1888,7 +1888,7 @@ namespace meshkernelapi
 
         /// @brief Initialise the spline intersection calculation
         ///
-        /// @param[in] meshKernelId  The id of the mesh state
+        /// @param[in] meshKernelId  Meshkernel state identifier
         /// @param[in] multiSpline   A set of splines
         /// @returns Error code
         MKERNEL_API int mkernel_initialise_spline_intersection(int meshKernelId,
@@ -1896,7 +1896,7 @@ namespace meshkernelapi
 
         /// @brief Compute the intersections of this spline with the cached splines and return the number of intersections found.
         ///
-        /// @param[in] meshKernelId  The id of the mesh state
+        /// @param[in] meshKernelId  Meshkernel state identifier
         /// @param[in] singleSpline  A single spline, this is will checked for intersection with any of the defined cached splines
         /// @param[out] numberOfIntersections The number of spline intersections computed
         /// @returns Error code
@@ -1906,7 +1906,7 @@ namespace meshkernelapi
 
         /// @brief Get the intersection data
         ///
-        /// @param[in] meshKernelId  The id of the mesh state
+        /// @param[in] meshKernelId  Meshkernel state identifier
         /// @param[out] intersectionData The spline intersection data
         /// @returns Error code
         MKERNEL_API int mkernel_get_spline_intersection_data(int meshKernelId,
@@ -1914,7 +1914,7 @@ namespace meshkernelapi
 
         /// @brief Finalise the spline intersection calculation
         ///
-        /// @param[in] meshKernelId  The id of the mesh state
+        /// @param[in] meshKernelId  Meshkernel state identifier
         /// @returns Error code
         MKERNEL_API int mkernel_finalise_spline_intersection(int meshKernelId);
 
