@@ -59,6 +59,12 @@ namespace meshkernel
         /// @brief[in] grid         The curvilinear grid
         explicit Splines(CurvilinearGrid const& grid);
 
+        /// @brief Construct from a sequence of spline points
+        ///
+        /// @brief[in] splinePoints The sequence of spline points, multiple splines are separated by an invalid point
+        /// @brief[in] projection   The map projection
+        explicit Splines(const std::vector<Point>& splinePoints, Projection projection);
+
         /// @brief Adds a new spline to m_splineCornerPoints
         /// @param[in] splines The spline corner points
         /// @param[in] start The starting index in splines
@@ -92,10 +98,18 @@ namespace meshkernel
                         const LandBoundary& landBoundary,
                         const int numberOfIterations = constants::numeric::defaultSnappingIterations);
 
+        /// @brief Computes the intersection of a spline with all splines
+        void GetAllIntersections(const std::vector<Point>& firstSpline,
+                                 std::vector<int>& splineIndices,
+                                 std::vector<double>& angles,
+                                 std::vector<double>& xCrossOver,
+                                 std::vector<double>& yCrossOver) const;
+
         /// @brief Computes the intersection of two splines (sect3r)
         /// @param[in] first The index of the first spline
         /// @param[in] second The index of the second spline
         /// @param[out] crossProductIntersection The cross product of the intersection
+        /// @param[out] intersectionAngle The angle of the intersection
         /// @param[out] intersectionPoint The intersection point
         /// @param[out] firstSplineRatio The ratio of the first spline length where the intersection occurs
         /// @param[out] secondSplineRatio The ratio of the second spline length where the intersection occurs
@@ -103,6 +117,7 @@ namespace meshkernel
         bool GetSplinesIntersection(UInt first,
                                     UInt second,
                                     double& crossProductIntersection,
+                                    double& intersectionAngle,
                                     Point& intersectionPoint,
                                     double& firstSplineRatio,
                                     double& secondSplineRatio) const;
@@ -175,6 +190,17 @@ namespace meshkernel
         Projection m_projection = Projection::cartesian;     ///< The map projection
 
     private:
+        /// @returns If a valid intersection is found
+        bool GetSplinesIntersection(const std::vector<Point>& firstSpline,
+                                    const std::vector<Point>& firstSplineDerivative,
+                                    const std::vector<Point>& secondSpline,
+                                    const std::vector<Point>& secondSplineDerivative,
+                                    double& crossProductIntersection,
+                                    double& intersectionAngle,
+                                    Point& intersectionPoint,
+                                    double& firstSplineRatio,
+                                    double& secondSplineRatio) const;
+
         /// @brief Adds a new corner point in an existing spline
         /// @param[in] splineIndex The spline index
         /// @param[in] point The point to add

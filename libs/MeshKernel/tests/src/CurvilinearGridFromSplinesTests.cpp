@@ -35,6 +35,7 @@
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Splines.hpp>
 #include <TestUtils/Definitions.hpp>
+#include <TestUtils/SplineReader.hpp>
 
 #include <fstream>
 #include <iomanip>
@@ -1023,52 +1024,6 @@ TEST(CurvilinearGridFromSplines, Compute_ThreeLongitudinalSplinesTwoCrossingSpli
     ASSERT_NEAR(370669.9086649796, curviGrid->GetNode(2, 6).y, tolerance);
     ASSERT_NEAR(370670.7463540983, curviGrid->GetNode(2, 7).y, tolerance);
     ASSERT_NEAR(370670.2161009402, curviGrid->GetNode(2, 8).y, tolerance);
-}
-
-meshkernel::Splines LoadSplines(const std::string& fileName)
-{
-
-    std::ifstream splineFile;
-    splineFile.open(fileName.c_str());
-
-    meshkernel::Splines splines(Projection::cartesian);
-    std::string line;
-
-    std::vector<meshkernel::Point> splinePoints;
-
-    while (std::getline(splineFile, line))
-    {
-        if (size_t found = line.find("L00"); found != std::string::npos)
-        {
-            std::getline(splineFile, line);
-            std::istringstream sizes(line);
-
-            meshkernel::UInt numPoints = 0;
-            meshkernel::UInt numDim = 0;
-
-            sizes >> numPoints;
-            sizes >> numDim;
-
-            splinePoints.clear();
-            splinePoints.reserve(numPoints);
-
-            for (meshkernel::UInt i = 0; i < numPoints; ++i)
-            {
-                std::getline(splineFile, line);
-                std::istringstream values(line);
-                double x;
-                double y;
-                values >> x;
-                values >> y;
-                splinePoints.emplace_back(meshkernel::Point(x, y));
-            }
-
-            splines.AddSpline(splinePoints);
-        }
-    }
-
-    splineFile.close();
-    return splines;
 }
 
 meshkernel::CurvilinearGrid LoadCurvilinearGrid(const std::string& fileName)

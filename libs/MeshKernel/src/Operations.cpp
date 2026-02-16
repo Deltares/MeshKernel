@@ -1189,15 +1189,16 @@ namespace meshkernel
         }
     }
 
-    std::tuple<bool, Point, double, double, double> AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
-                                                                        const Point& firstSegmentSecondPoint,
-                                                                        const Point& secondSegmentFirstPoint,
-                                                                        const Point& secondSegmentSecondPoint,
-                                                                        bool adimensionalCrossProduct,
-                                                                        const Projection& projection)
+    std::tuple<bool, Point, double, double, double, double> AreSegmentsCrossing(const Point& firstSegmentFirstPoint,
+                                                                                const Point& firstSegmentSecondPoint,
+                                                                                const Point& secondSegmentFirstPoint,
+                                                                                const Point& secondSegmentSecondPoint,
+                                                                                bool adimensionalCrossProduct,
+                                                                                const Projection& projection)
     {
         bool isCrossing = false;
         Point intersectionPoint;
+        double intersectionAngle = constants::missing::doubleValue;
         double ratioFirstSegment = constants::missing::doubleValue;
         double ratioSecondSegment = constants::missing::doubleValue;
         double crossProduct = constants::missing::doubleValue;
@@ -1222,18 +1223,30 @@ namespace meshkernel
 
             if (std::abs(det) < eps)
             {
-                return {isCrossing, intersectionPoint, crossProduct, ratioFirstSegment, ratioSecondSegment};
+                return {isCrossing, intersectionPoint, crossProduct, intersectionAngle, ratioFirstSegment, ratioSecondSegment};
+            }
+
+            double lengthSegment1 = std::sqrt(x21 * x21 + y21 * y21);
+            double lengthSegment2 = std::sqrt(x43 * x43 + y43 * y43);
+            intersectionAngle = std::asin(det / (lengthSegment1 * lengthSegment2)) * constants::conversion::radToDeg;
+
+            if (intersectionAngle < 0.0)
+            {
+                intersectionAngle += 180.0;
             }
 
             ratioSecondSegment = (y31 * x21 - x31 * y21) / det;
             ratioFirstSegment = (y31 * x43 - x31 * y43) / det;
+
             if (ratioFirstSegment >= 0.0 && ratioFirstSegment <= 1.0 && ratioSecondSegment >= 0.0 && ratioSecondSegment <= 1.0)
             {
                 isCrossing = true;
             }
+
             intersectionPoint.x = firstSegmentFirstPoint.x + ratioFirstSegment * (firstSegmentSecondPoint.x - firstSegmentFirstPoint.x);
             intersectionPoint.y = firstSegmentFirstPoint.y + ratioFirstSegment * (firstSegmentSecondPoint.y - firstSegmentFirstPoint.y);
             crossProduct = -det;
+
             if (adimensionalCrossProduct)
             {
                 crossProduct = -det / (std::sqrt(x21 * x21 + y21 * y21) * std::sqrt(x43 * x43 + y43 * y43) + 1e-8);
@@ -1302,7 +1315,7 @@ namespace meshkernel
             }
         }
 
-        return {isCrossing, intersectionPoint, crossProduct, ratioFirstSegment, ratioSecondSegment};
+        return {isCrossing, intersectionPoint, crossProduct, intersectionAngle, ratioFirstSegment, ratioSecondSegment};
     }
 
     std::tuple<std::vector<double>, double> ComputeAdimensionalDistancesFromPointSerie(const std::vector<Point>& v, const Projection& projection)

@@ -99,6 +99,7 @@ std::tuple<UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh2D& me
             const auto [isEdgeCrossed,
                         intersectionPoint,
                         crossProductValue,
+                        intersectionAngle,
                         adimensionalPolylineSegmentDistance,
                         adimensionalEdgeDistance] = AreSegmentsCrossing(polyLine[segmentIndex],
                                                                         polyLine[segmentIndex + 1],
@@ -192,8 +193,8 @@ std::tuple<bool, UInt, UInt, double, double, double> Mesh2DIntersections::GetNex
 
         intersectionFound = std::get<0>(intersection);
         crossProductValue = std::get<2>(intersection);
-        adimensionalPolylineSegmentDistance = std::get<3>(intersection);
-        adimensionalEdgeDistance = std::get<4>(intersection);
+        adimensionalPolylineSegmentDistance = std::get<4>(intersection);
+        adimensionalEdgeDistance = std::get<5>(intersection);
 
         numSteps++;
     }
@@ -231,8 +232,8 @@ void Mesh2DIntersections::IntersectFaceEdges(const std::vector<Point>& polyLine,
 
         bool intersectionFound = std::get<0>(intersection);
         double crossProductValue = std::get<2>(intersection);
-        double adimensionalPolylineSegmentDistance = std::get<3>(intersection);
-        double adimensionalEdgeDistance = std::get<4>(intersection);
+        double adimensionalPolylineSegmentDistance = std::get<4>(intersection);
+        double adimensionalEdgeDistance = std::get<5>(intersection);
 
         if (!intersectionFound)
         {

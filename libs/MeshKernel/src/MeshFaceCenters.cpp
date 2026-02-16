@@ -150,6 +150,7 @@ void meshkernel::algo::impl::CheckCircumcentreIsWithinElement(const std::vector<
             const auto [areLineCrossing,
                         intersection,
                         crossProduct,
+                        intersectionAngle,
                         firstRatio,
                         secondRatio] = AreSegmentsCrossing(massCentre, circumcentre, polygon[n], polygon[nextNode], false, projection);
 

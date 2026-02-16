@@ -57,6 +57,25 @@ Splines::Splines(CurvilinearGrid const& grid)
     m_projection = grid.projection();
 }
 
+Splines::Splines(const std::vector<Point>& splinePoints, Projection projection) : m_projection(projection)
+{
+    UInt startIndex = 0;
+    UInt endIndex = 0;
+
+    while (endIndex < splinePoints.size())
+    {
+        startIndex = endIndex;
+
+        while (endIndex < splinePoints.size() && splinePoints[endIndex].IsValid())
+        {
+            ++endIndex;
+        }
+
+        AddSpline(splinePoints, startIndex, endIndex - startIndex);
+        ++endIndex;
+    }
+}
+
 /// add a new spline, return the index
 void Splines::AddSpline(const std::vector<Point>& splines, UInt start, UInt size)
 {
@@ -171,6 +190,72 @@ void Splines::AddPointInExistingSpline(UInt splineIndex, const Point& point)
 bool Splines::GetSplinesIntersection(UInt first,
                                      UInt second,
                                      double& crossProductIntersection,
+                                     double& intersectionAngle,
+                                     Point& intersectionPoint,
+                                     double& firstSplineRatio,
+                                     double& secondSplineRatio) const
+{
+    return GetSplinesIntersection(m_splineNodes[first],
+                                  m_splineDerivatives[first],
+                                  m_splineNodes[second],
+                                  m_splineDerivatives[second],
+                                  crossProductIntersection,
+                                  intersectionAngle,
+                                  intersectionPoint,
+                                  firstSplineRatio,
+                                  secondSplineRatio);
+}
+
+void Splines::GetAllIntersections(const std::vector<Point>& spline,
+                                  std::vector<int>& splineIndices,
+                                  std::vector<double>& angles,
+                                  std::vector<double>& xCrossOver,
+                                  std::vector<double>& yCrossOver) const
+{
+    std::vector<Point> splineDerivative(ComputeSplineDerivative(spline));
+
+    splineIndices.clear();
+    splineIndices.reserve(m_splineNodes.size());
+    angles.clear();
+    angles.reserve(m_splineNodes.size());
+    xCrossOver.clear();
+    xCrossOver.reserve(m_splineNodes.size());
+    yCrossOver.clear();
+    yCrossOver.reserve(m_splineNodes.size());
+
+    for (size_t i = 0; i < m_splineNodes.size(); ++i)
+    {
+
+        Point intersectionPoint;
+        double intersectionCrossProduct;
+        double intersectionAngle;
+        double firstSplineLambda;
+        double secondSplineLambda;
+
+        bool doesIntersect = GetSplinesIntersection(spline, splineDerivative,
+                                                    m_splineNodes[i], m_splineDerivatives[i],
+                                                    intersectionCrossProduct,
+                                                    intersectionAngle,
+                                                    intersectionPoint,
+                                                    firstSplineLambda,
+                                                    secondSplineLambda);
+
+        if (doesIntersect)
+        {
+            splineIndices.push_back(static_cast<int>(i));
+            xCrossOver.push_back(intersectionPoint.x);
+            yCrossOver.push_back(intersectionPoint.y);
+            angles.push_back(intersectionAngle);
+        }
+    }
+}
+
+bool Splines::GetSplinesIntersection(const std::vector<Point>& firstSpline,
+                                     const std::vector<Point>& firstSplineDerivative,
+                                     const std::vector<Point>& secondSpline,
+                                     const std::vector<Point>& secondSplineDerivative,
+                                     double& crossProductIntersection,
+                                     double& intersectionAngle,
                                      Point& intersectionPoint,
                                      double& firstSplineRatio,
                                      double& secondSplineRatio) const
@@ -183,8 +268,10 @@ bool Splines::GetSplinesIntersection(UInt first,
     UInt firstCrossingIndex = 0;
     UInt secondCrossingIndex = 0;
     Point closestIntersection;
-    const auto numNodesFirstSpline = static_cast<UInt>(m_splineNodes[first].size());
-    const auto numNodesSecondSpline = static_cast<UInt>(m_splineNodes[second].size());
+    const auto numNodesFirstSpline = static_cast<UInt>(firstSpline.size());
+    const auto numNodesSecondSpline = static_cast<UInt>(secondSpline.size());
+
+    intersectionAngle = constants::missing::doubleValue;
 
     // First find a valid crossing, the closest to spline central point
     for (UInt n = 0; n < numNodesFirstSpline - 1; n++)
@@ -194,16 +281,19 @@ bool Splines::GetSplinesIntersection(UInt first,
             const auto [areCrossing,
                         intersection,
                         crossProduct,
+                        angle,
                         firstRatio,
-                        secondRatio] = AreSegmentsCrossing(m_splineNodes[first][n],
-                                                           m_splineNodes[first][n + 1],
-                                                           m_splineNodes[second][nn],
-                                                           m_splineNodes[second][nn + 1],
+                        secondRatio] = AreSegmentsCrossing(firstSpline[n],
+                                                           firstSpline[n + 1],
+                                                           secondSpline[nn],
+                                                           secondSpline[nn + 1],
                                                            false,
                                                            m_projection);
 
             if (areCrossing)
             {
+                intersectionAngle = angle;
+
                 if (numNodesFirstSpline == 2)
                 {
                     crossingDistance = std::min(minimumCrossingDistance, std::abs(firstRatio - 0.5));
@@ -273,25 +363,26 @@ bool Splines::GetSplinesIntersection(UInt first,
         firstRatioIterations = firstRight - firstLeft;
         secondRatioIterations = secondRight - secondLeft;
 
-        const auto firstLeftSplinePoint = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[first], m_splineDerivatives[first], firstLeft);
+        const auto firstLeftSplinePoint = ComputePointOnSplineAtAdimensionalDistance(firstSpline, firstSplineDerivative, firstLeft);
+
         if (!firstLeftSplinePoint.IsValid())
         {
             return false;
         }
 
-        const auto firstRightSplinePoint = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[first], m_splineDerivatives[first], firstRight);
+        const auto firstRightSplinePoint = ComputePointOnSplineAtAdimensionalDistance(firstSpline, firstSplineDerivative, firstRight);
         if (!firstRightSplinePoint.IsValid())
         {
             return false;
         }
 
-        const auto secondLeftSplinePoint = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[second], m_splineDerivatives[second], secondLeft);
+        const auto secondLeftSplinePoint = ComputePointOnSplineAtAdimensionalDistance(secondSpline, secondSplineDerivative, secondLeft);
         if (!secondLeftSplinePoint.IsValid())
         {
             return false;
         }
 
-        const auto secondRightSplinePoint = ComputePointOnSplineAtAdimensionalDistance(m_splineNodes[second], m_splineDerivatives[second], secondRight);
+        const auto secondRightSplinePoint = ComputePointOnSplineAtAdimensionalDistance(secondSpline, secondSplineDerivative, secondRight);
         if (!secondRightSplinePoint.IsValid())
         {
             return false;
@@ -302,6 +393,7 @@ bool Splines::GetSplinesIntersection(UInt first,
         const auto [areCrossing,
                     intersectionPoint,
                     crossProduct,
+                    angle,
                     firstRatio,
                     secondRatio] = AreSegmentsCrossing(firstLeftSplinePoint,
                                                        firstRightSplinePoint,
@@ -310,6 +402,7 @@ bool Splines::GetSplinesIntersection(UInt first,
                                                        true,
                                                        m_projection);
 
+        intersectionAngle = angle;
         closestIntersection = intersectionPoint;
 
         // search close by

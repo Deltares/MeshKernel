@@ -39,6 +39,7 @@
 #include "MeshKernel/Mesh1D.hpp"
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/OrthogonalizationAndSmoothing.hpp"
+#include "MeshKernel/Splines.hpp"
 
 #include "MeshKernelApi/ApiCache/CurvilinearBoundariesAsPolygonCache.hpp"
 #include "MeshKernelApi/ApiCache/FacePolygonPropertyCache.hpp"
@@ -47,6 +48,7 @@
 #include "MeshKernelApi/ApiCache/ObtuseTriangleCentreCache.hpp"
 #include "MeshKernelApi/ApiCache/PolygonRefinementCache.hpp"
 #include "MeshKernelApi/ApiCache/SmallFlowEdgeCentreCache.hpp"
+#include "MeshKernelApi/ApiCache/SplineIntersectionCache.hpp"
 #include "MeshKernelApi/PropertyCalculator.hpp"
 
 #include "ApiCache/MeshBoundariesAsPolygonCache.hpp"
@@ -100,6 +102,9 @@ namespace meshkernelapi
         std::shared_ptr<SmallFlowEdgeCentreCache> m_smallFlowEdgeCentreCache;            ///< small flow edge centres cache
         std::shared_ptr<HangingEdgeCache> m_hangingEdgeCache;                            ///< hanging edge id cache
         std::shared_ptr<ObtuseTriangleCentreCache> m_obtuseTriangleCentreCache;          ///< centre of obtuse triangles cache
+
+        std::shared_ptr<meshkernel::Splines> m_splines;                     ///< The splines
+        std::shared_ptr<SplineIntersectionCache> m_splineIntersectionCache; ///< Spline intersection cache
     };
 
 } // namespace meshkernelapi

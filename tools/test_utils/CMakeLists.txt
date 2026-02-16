@@ -35,6 +35,7 @@ set(
   ${SRC_DIR}/SampleFileReader.cpp
   ${SRC_DIR}/SampleFileWriter.cpp
   ${SRC_DIR}/SampleGenerator.cpp
+  ${SRC_DIR}/SplineReader.cpp
 )
 
 # list of target headers
@@ -49,6 +50,7 @@ set(
   ${DOMAIN_INC_DIR}/SampleFileReader.hpp
   ${DOMAIN_INC_DIR}/SampleFileWriter.hpp
   ${DOMAIN_INC_DIR}/SampleGenerator.hpp
+  ${DOMAIN_INC_DIR}/SplineReader.hpp
 )
 
 # add sources to target
