@@ -297,12 +297,21 @@ $env:Path += (';' + $ZLIBInstallDir)
 if ($IsWindows) {
     $CurlBuildDir = (Join-Path $BuildDir $Curl)
     $CurlInstallDir = (Join-Path $LocalInstallDir $Curl)
+    $ZlibIncludeDir = (Join-Path $ZLIBInstallDir 'include')
+    $ZlibStaticLibrary = (Join-Path $ZLIBInstallDir 'lib' 'zlib.lib')
+    $CurlCMakeBuildOptions = @(
+        ('-DZLIB_ROOT={0}' -f $ZLIBInstallDir),
+        ('-DZLIB_INCLUDE_DIR:PATH={0}' -f $ZlibIncludeDir),
+        ('-DZLIB_LIBRARY:FILEPATH={0}' -f $ZlibStaticLibrary)
+    )
+
     Invoke-BuildAndInstall `
         -SrcDir $CurlSrcDir `
         -BuildDir $CurlBuildDir `
         -InstallDir $CurlInstallDir `
         -ParallelJobs $ParallelJobs `
-        -BuildType $BuildType
+        -BuildType $BuildType `
+        -Options $CurlCMakeBuildOptions
     $env:Path += (';' + $CurlInstallDir)
 }
 
