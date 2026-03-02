@@ -5,6 +5,8 @@
 
 #include <TestUtils/MakeMeshes.hpp>
 
+#include <MeshKernel/Constants.hpp>
+
 std::tuple<size_t,
            size_t,
            std::vector<double>,
@@ -178,7 +180,8 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     meshkernel::Projection projection,
     meshkernel::Point const& origin,
     const bool ewIndexIncreasing,
-    const bool nsIndexIncreasing)
+    const bool nsIndexIncreasing,
+    const double rotationAngle)
 {
     std::vector<std::vector<meshkernel::UInt>> node_indices(n, std::vector<meshkernel::UInt>(m));
     std::vector<meshkernel::Point> nodes(n * m);
@@ -195,6 +198,21 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
                 nodes[index] = {origin.x + i * delta_x, origin.y + j * delta_y};
                 index++;
             }
+        }
+    }
+
+    if (rotationAngle != 0.0)
+    {
+        double cosTheta = std::cos(rotationAngle * meshkernel::constants::conversion::degToRad);
+        double sinTheta = std::sin(rotationAngle * meshkernel::constants::conversion::degToRad);
+
+        for (size_t i = 0; i < nodes.size(); ++i)
+        {
+            meshkernel::Point translated = nodes[i] - origin;
+            meshkernel::Point rotated(cosTheta * translated.x - sinTheta * translated.y,
+                                      sinTheta * translated.x + cosTheta * translated.y);
+            translated = rotated + origin;
+            nodes[i] = translated;
         }
     }
 
@@ -248,7 +266,8 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     meshkernel::Projection projection,
     meshkernel::Point const& origin,
     const bool ewIndexIncreasing,
-    const bool nsIndexIncreasing)
+    const bool nsIndexIncreasing,
+    const double rotationAngle)
 {
     double const dim_x = delta * static_cast<double>(n - 1);
     double const dim_y = delta * static_cast<double>(m - 1);
@@ -260,7 +279,8 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
         projection,
         origin,
         ewIndexIncreasing,
-        nsIndexIncreasing);
+        nsIndexIncreasing,
+        rotationAngle);
 }
 
 std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTestingRand(meshkernel::UInt n,

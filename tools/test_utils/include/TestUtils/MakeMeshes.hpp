@@ -68,7 +68,8 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     meshkernel::Projection projection,
     meshkernel::Point const& origin = {0.0, 0.0},
     const bool ewIndexIncreasing = true,
-    const bool nsIndexIncreasing = false);
+    const bool nsIndexIncreasing = false,
+    const double rotationAngle = 0.0);
 
 /// @brief Generate a regular grid using the unstructured grid class.
 ///
@@ -85,7 +86,8 @@ std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTesting(
     meshkernel::Projection projection,
     meshkernel::Point const& origin = {0.0, 0.0},
     const bool ewIndexIncreasing = true,
-    const bool nsIndexIncreasing = false);
+    const bool nsIndexIncreasing = false,
+    const double rotationAngle = 0.0);
 
 std::unique_ptr<meshkernel::Mesh2D> MakeRectangularMeshForTestingRand(
     meshkernel::UInt n,
