@@ -27,7 +27,6 @@
 
 #pragma once
 
-#include <array>
 #include <span>
 #include <vector>
 
@@ -44,15 +43,15 @@ namespace meshkernel::algo
     {
     public:
         /// @brief Compute the netlink contour polygons
-        std::vector<Point> Compute(const Mesh& mesh) const;
+        static std::vector<Point> Compute(const Mesh& mesh);
 
     private:
         /// @brief Compute the netlink contour polygon for a single edge
         ///
         /// @note circumcentre1 must be a valid circumcentre point.
-        void ComputePolygonForEdge(const Point& start, const Point& end, const Point& curcumcentre1, const Point& circumcentre2,
-                                   const Projection projection,
-                                   std::span<Point> polygon) const;
+        static void ComputePolygonForEdge(const Point& start, const Point& end, const Point& curcumcentre1, const Point& circumcentre2,
+                                          const Projection projection,
+                                          std::span<Point> polygon);
     };
 
 } // namespace meshkernel::algo

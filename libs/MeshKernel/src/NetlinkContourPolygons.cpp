@@ -3,7 +3,7 @@
 #include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/Operations.hpp"
 
-std::vector<meshkernel::Point> meshkernel::algo::NetlinkContourPolygons::Compute(const Mesh& mesh) const
+std::vector<meshkernel::Point> meshkernel::algo::NetlinkContourPolygons::Compute(const Mesh& mesh)
 {
     std::vector<Point> netlinkPolygons(mesh.GetNumValidEdges() * 4);
     std::vector<Point> circumcentres(algo::ComputeFaceCircumcenters(mesh));
@@ -44,7 +44,7 @@ std::vector<meshkernel::Point> meshkernel::algo::NetlinkContourPolygons::Compute
 void meshkernel::algo::NetlinkContourPolygons::ComputePolygonForEdge(const Point& edgeStart, const Point& edgeEnd,
                                                                      const Point& circumcentreLeft, const Point& circumcentreRight,
                                                                      const Projection projection,
-                                                                     std::span<Point> polygon) const
+                                                                     std::span<Point> polygon)
 {
 
     // Project circumcenters onto the line passing through the edge
