@@ -5,15 +5,16 @@
 
 std::vector<meshkernel::Point> meshkernel::algo::NetlinkContourPolygons::Compute(const Mesh& mesh)
 {
-    std::vector<Point> netlinkPolygons(mesh.GetNumValidEdges() * 4);
+    std::vector<Point> netlinkPolygons(mesh.GetNumEdges() * 4);
     std::vector<Point> circumcentres(algo::ComputeFaceCircumcenters(mesh));
 
-    UInt pointCount = 0;
-
-    for (UInt edge = 0; edge < mesh.GetNumEdges(); ++edge)
+#pragma omp parallel
+    for (int edge = 0; edge < static_cast<int>(mesh.GetNumEdges()); ++edge)
     {
         if (mesh.IsValidEdge(edge))
         {
+            UInt pointCount = 4 * edge;
+
             const Edge currentEdge = mesh.GetEdge(edge);
             const auto edgeFaces = mesh.m_edgesFaces[edge];
 
@@ -34,7 +35,6 @@ std::vector<meshkernel::Point> meshkernel::algo::NetlinkContourPolygons::Compute
             }
 
             ComputePolygonForEdge(startNode, endNode, circumcentreLeft, circumcentreRight, mesh.m_projection, edgePolygon);
-            pointCount += 4;
         }
     }
 
