@@ -13,7 +13,7 @@ std::vector<meshkernel::Point> meshkernel::algo::NetlinkContourPolygons::Compute
     {
         if (mesh.IsValidEdge(edge))
         {
-            UInt pointCount = 4 * edge;
+            UInt pointCount = 4 * static_cast<UInt>(edge);
 
             const Edge currentEdge = mesh.GetEdge(edge);
             const auto edgeFaces = mesh.m_edgesFaces[edge];
