@@ -59,12 +59,12 @@ void meshkernel::algo::NetlinkContourPolygons::ComputePolygonForEdge(const Point
     NormalVectorInside(edgeStart, edgeEnd, circumcentreLeft, edgeNormal, normalReflected, projection);
 
     // Distances from edge line to circumcenters
-    auto getDist = [&](const Point& pnt)
+    auto computeDistance = [&](const Point& pnt)
     {
         return (pnt.x - edgeStart.x) * edgeNormal.x + (pnt.y - edgeStart.y) * edgeNormal.y;
     };
 
-    double distanceToC1 = getDist(circumcentreLeft);
+    double distanceToC1 = computeDistance(circumcentreLeft);
 
     if (projection == Projection::spherical)
     {
@@ -77,7 +77,7 @@ void meshkernel::algo::NetlinkContourPolygons::ComputePolygonForEdge(const Point
     // the second circumcentre is valid indicates the edge has two connecting elements
     if (circumcentreRight.IsValid())
     {
-        double distanceToC2 = getDist(circumcentreRight);
+        double distanceToC2 = computeDistance(circumcentreRight);
 
         if (projection == Projection::spherical)
         {
