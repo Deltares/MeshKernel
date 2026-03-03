@@ -1771,7 +1771,6 @@ TEST(Mesh2D, ComputeEdgeNetlinkContourPolygons)
     meshkernel::algo::NetlinkContourPolygons netlinkContourPolygons;
 
     auto netlinkPolygonPoints(netlinkContourPolygons.Compute(*mesh));
-    std::vector<meshkernel::Point> circumcentres(meshkernel::algo::ComputeFaceCircumcenters(*mesh));
 
     // Select a small number of edges to check
     // Edge 0 : Lies on the boundary and is the non-hypotenuse edge of a triangle
@@ -1781,35 +1780,75 @@ TEST(Mesh2D, ComputeEdgeNetlinkContourPolygons)
     // Edge 12: An interior edge neighboured by two triangles
     std::vector<size_t> edgesToTest{0, 1, 5, 9, 12};
 
-    // The values here are from the output of the computation. They have been checked analytically
-    std::vector<double> expectedXs{1.59099025766973, -0.53033008588991, 0.0, 2.12132034355964,
-                                   1.59099025766973, -0.530330085889911, -1.59099025766973, 0.530330085889911,
-                                   2.65165042944955, 0.530330085889911, 0.0, 2.12132034355964,
-                                   0.0, -1.06066017177982, 1.06066017177982, 2.12132034355964,
+    // The values here are from the output of the computation. They have been checked analytically.
+    std::vector<double> expectedXs{1.59099025766973, -0.530330085889911, 0.0, 2.12132034355964,
+                                   -0.53033008588991, 1.59099025766973, 0.530330085889911, -1.59099025766973,
+                                   0.530330085889911, 2.65165042944955, 2.12132034355964, 4.44089209850063e-16,
+                                   -1.06066017177982, -2.22044604925031e-16, 2.12132034355964, 1.06066017177982,
                                    1.06066017177982, 0.0, 0.0, 1.06066017177982};
 
-    std::vector<double> expectedYs{2.65165042944955, 0.530330085889911, 0, 2.12132034355964,
-                                   2.65165042944955, 0.530330085889911, 1.59099025766973, 3.71231060122937,
-                                   5.83363094478902, 3.71231060122938, 4.24264068711929, 6.36396103067893,
-                                   2.12132034355964, 3.18198051533946, 5.30330085889911, 4.24264068711928,
-                                   3.18198051533946, 3.5108334685767e-17, 3.5108334685767e-17, 3.18198051533946};
-
-    std::cout.precision(15);
+    std::vector<double> expectedYs{2.65165042944955, 0.530330085889911, 0.0, 2.12132034355964,
+                                   0.530330085889911, 2.65165042944955, 3.71231060122937, 1.59099025766973,
+                                   3.71231060122938, 5.83363094478902, 6.36396103067893, 4.24264068711929,
+                                   3.18198051533946, 2.12132034355964, 4.24264068711928, 5.30330085889911,
+                                   3.18198051533946, 0.0, 0.0, 3.18198051533946};
 
     constexpr double tolerance = 1.0e-8;
     size_t expectedNodeCount = 0;
 
     for (size_t edge : edgesToTest)
-    // for (size_t i = 0; i < edgesToTest.size(); ++i)
     {
         size_t p1 = 4 * edge;
         size_t p2 = 4 * edge + 1;
         size_t p3 = 4 * edge + 2;
         size_t p4 = 4 * edge + 3;
-        // size_t p1 = 4 * edgesToTest[i];
-        // size_t p2 = 4 * edgesToTest[i] + 1;
-        // size_t p3 = 4 * edgesToTest[i] + 2;
-        // size_t p4 = 4 * edgesToTest[i] + 3;
+
+        EXPECT_NEAR(netlinkPolygonPoints[p1].x, expectedXs[expectedNodeCount], tolerance);
+        EXPECT_NEAR(netlinkPolygonPoints[p1].y, expectedYs[expectedNodeCount], tolerance);
+        ++expectedNodeCount;
+        EXPECT_NEAR(netlinkPolygonPoints[p2].x, expectedXs[expectedNodeCount], tolerance);
+        EXPECT_NEAR(netlinkPolygonPoints[p2].y, expectedYs[expectedNodeCount], tolerance);
+        ++expectedNodeCount;
+        EXPECT_NEAR(netlinkPolygonPoints[p3].x, expectedXs[expectedNodeCount], tolerance);
+        EXPECT_NEAR(netlinkPolygonPoints[p3].y, expectedYs[expectedNodeCount], tolerance);
+        ++expectedNodeCount;
+        EXPECT_NEAR(netlinkPolygonPoints[p4].x, expectedXs[expectedNodeCount], tolerance);
+        EXPECT_NEAR(netlinkPolygonPoints[p4].y, expectedYs[expectedNodeCount], tolerance);
+        ++expectedNodeCount;
+    }
+}
+
+TEST(Mesh2D, ComputeEdgeNetlinkContourPolygonsSpherical)
+{
+    auto mesh = MakeRectangularMeshForTesting(3, 3, 2.0, 2.0, meshkernel::Projection::spherical, {0.0, 0.0}, true, false, 45.0 /* degrees */);
+    mesh->Administrate();
+
+    meshkernel::algo::NetlinkContourPolygons netlinkContourPolygons;
+
+    auto netlinkPolygonPoints(netlinkContourPolygons.Compute(*mesh));
+
+    // Select a small number of edges to check
+    std::vector<size_t> edgesToTest{0, 1, 4, 9};
+
+    std::vector<double> expectedXs{0.353499585496677, -0.353607195689871, 0.0, 0.707106781186548,
+                                   -0.353534843222838, 0.35357193796371, -0.353571938924677, -1.06067872011123,
+                                   0.353809268303803, 1.06091604949035, 0.353297509994498, -0.35380927119205,
+                                   -1.0609160523786, -0.35380927119205, 0.353809268303803, -0.353297512882745};
+
+    std::vector<double> expectedYs{1.06070051268337, 0.353593731496819, 0.0, 0.707106781186547,
+                                   0.353655996575239, 1.06076277776179, 1.76766434794504, 1.06055756675849,
+                                   1.06074098866997, 1.76784776985652, 2.47479292014826, 1.76768613896172,
+                                   1.76784776697102, 1.06074098578447, 1.76768613607622, 2.47479291726277};
+
+    constexpr double tolerance = 1.0e-8;
+    size_t expectedNodeCount = 0;
+
+    for (size_t edge : edgesToTest)
+    {
+        size_t p1 = 4 * edge;
+        size_t p2 = 4 * edge + 1;
+        size_t p3 = 4 * edge + 2;
+        size_t p4 = 4 * edge + 3;
 
         EXPECT_NEAR(netlinkPolygonPoints[p1].x, expectedXs[expectedNodeCount], tolerance);
         EXPECT_NEAR(netlinkPolygonPoints[p1].y, expectedYs[expectedNodeCount], tolerance);

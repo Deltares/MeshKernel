@@ -1749,3 +1749,47 @@ TEST(Mesh2D, GetNode_OnMesh2D_ShouldGetANodeIndex)
     // Assert
     ASSERT_EQ(nodeIndex, 11);
 }
+
+TEST(Mesh2D, Mesh2D_ShouldComputeNetlinkPolygon)
+{
+    int meshkernelId = 0;
+    int errorCode = meshkernelapi::mkernel_allocate_state(0, meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = GenerateUnstructuredMesh(meshkernelId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    int dimension = -1;
+
+    // Execute
+    errorCode = meshkernelapi::mkernel_mesh2d_compute_netlink_contour_polygons_dimension(meshkernelId, dimension);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    // Each polygon has exactly 4 points
+    ASSERT_EQ (dimension, 17 * 4); // 2x3 quadrilateral elements => 9 + 8 = 17 edges => 17 * 4
+
+    std::vector<double> xCoords (dimension);
+    std::vector<double> yCoords (dimension);
+
+    meshkernelapi::GeometryList polygons {};
+
+    polygons.num_coordinates = dimension;
+    polygons.coordinates_x = xCoords.data ();
+    polygons.coordinates_y = yCoords.data ();
+
+    errorCode = meshkernelapi::mkernel_mesh2d_compute_netlink_contour_polygons(meshkernelId, polygons);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    std::vector<double> expectedX{1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 2, 1, 1, 2, 1, 2, 2, 1, 1, 2, 2, 1, 3, 2, 2, 3, 2, 3, 3, 2, 2, 3, 3, 2, 0.5, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0.5, 0.5, 1.5, 1.5, 0.5, 0.5, 1.5, 1.5, 1.5, 1.5, 2.5, 2.5, 1.5, 1.5, 2.5, 2.5, 2.5, 2.5, 3, 3, 2.5, 2.5, 3, 3};
+
+    std::vector<double> expectedY{0.5, 0.5, 0, 0, 0.5, 0.5, 1.5, 1.5, 1.5, 1.5, 2, 2, 0.5, 0.5, 0, 0, 0.5, 0.5, 1.5, 1.5, 1.5, 1.5, 2, 2, 0.5, 0.5, 0, 0, 0.5, 0.5, 1.5, 1.5, 1.5, 1.5, 2, 2, 0, 1, 1, 0, 1, 2, 2, 1, 1, 0, 0, 1, 2, 1, 1, 2, 1, 0, 0, 1, 2, 1, 1, 2, 1, 0, 0, 1, 2, 1, 1, 2};
+
+    constexpr double tolerance = 1.0e-10;
+
+    for (size_t i = 0; i < xCoords.size (); ++i)
+    {
+        EXPECT_NEAR (xCoords [i], expectedX[i], tolerance);
+        EXPECT_NEAR (yCoords [i], expectedY[i], tolerance);
+    }
+
+
+}
