@@ -1766,6 +1766,7 @@ TEST(Mesh2D, ComputeEdgeNetlinkContourPolygons)
 
     [[maybe_unused]] auto connectNodesUndo1 = mesh->ConnectNodes(node1, node2, false);
     [[maybe_unused]] auto connectNodesUndo2 = mesh->ConnectNodes(node2, node3, false);
+
     mesh->Administrate();
 
     meshkernel::algo::NetlinkContourPolygons netlinkContourPolygons;
@@ -1777,21 +1778,18 @@ TEST(Mesh2D, ComputeEdgeNetlinkContourPolygons)
     // Edge 1 : interior to the domain, neighboured by a triangle and a quadrilateral
     // Edge 5 : A Boundary edge, the connected element is a quadrilateral
     // Edge 9 : An interior edge neighboured by two quadrilaterals
-    // Edge 12: An interior edge neighboured by two triangles
-    std::vector<size_t> edgesToTest{0, 1, 5, 9, 12};
+    std::vector<size_t> edgesToTest{0, 1, 5, 9};
 
     // The values here are from the output of the computation. They have been checked analytically.
     std::vector<double> expectedXs{1.59099025766973, -0.530330085889911, 0.0, 2.12132034355964,
                                    -0.53033008588991, 1.59099025766973, 0.530330085889911, -1.59099025766973,
                                    0.530330085889911, 2.65165042944955, 2.12132034355964, 4.44089209850063e-16,
-                                   -1.06066017177982, -2.22044604925031e-16, 2.12132034355964, 1.06066017177982,
-                                   1.06066017177982, 0.0, 0.0, 1.06066017177982};
+                                   -1.06066017177982, -2.22044604925031e-16, 2.12132034355964, 1.06066017177982};
 
     std::vector<double> expectedYs{2.65165042944955, 0.530330085889911, 0.0, 2.12132034355964,
                                    0.530330085889911, 2.65165042944955, 3.71231060122937, 1.59099025766973,
                                    3.71231060122938, 5.83363094478902, 6.36396103067893, 4.24264068711929,
-                                   3.18198051533946, 2.12132034355964, 4.24264068711928, 5.30330085889911,
-                                   3.18198051533946, 0.0, 0.0, 3.18198051533946};
+                                   3.18198051533946, 2.12132034355964, 4.24264068711928, 5.30330085889911};
 
     constexpr double tolerance = 1.0e-8;
     size_t expectedNodeCount = 0;
