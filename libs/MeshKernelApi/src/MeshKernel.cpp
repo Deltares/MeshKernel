@@ -1638,7 +1638,7 @@ namespace meshkernelapi
                 return lastExitCode;
             }
 
-            if (4 * static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumEdges ()) > polygons.num_coordinates)
+            if (4 * static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumEdges()) > polygons.num_coordinates)
             {
                 throw meshkernel::MeshKernelError("The geometry list has not been configured correctly, incorrect value for num_coordinates.");
             }

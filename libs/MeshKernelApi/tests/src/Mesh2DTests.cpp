@@ -1765,16 +1765,16 @@ TEST(Mesh2D, Mesh2D_ShouldComputeNetlinkPolygon)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Each polygon has exactly 4 points
-    ASSERT_EQ (dimension, 17 * 4); // 2x3 quadrilateral elements => 9 + 8 = 17 edges => 17 * 4
+    ASSERT_EQ(dimension, 17 * 4); // 2x3 quadrilateral elements => 9 + 8 = 17 edges => 17 * 4
 
-    std::vector<double> xCoords (dimension);
-    std::vector<double> yCoords (dimension);
+    std::vector<double> xCoords(dimension);
+    std::vector<double> yCoords(dimension);
 
-    meshkernelapi::GeometryList polygons {};
+    meshkernelapi::GeometryList polygons{};
 
     polygons.num_coordinates = dimension;
-    polygons.coordinates_x = xCoords.data ();
-    polygons.coordinates_y = yCoords.data ();
+    polygons.coordinates_x = xCoords.data();
+    polygons.coordinates_y = yCoords.data();
 
     errorCode = meshkernelapi::mkernel_mesh2d_compute_netlink_contour_polygons(meshkernelId, polygons);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
@@ -1785,11 +1785,9 @@ TEST(Mesh2D, Mesh2D_ShouldComputeNetlinkPolygon)
 
     constexpr double tolerance = 1.0e-10;
 
-    for (size_t i = 0; i < xCoords.size (); ++i)
+    for (size_t i = 0; i < xCoords.size(); ++i)
     {
-        EXPECT_NEAR (xCoords [i], expectedX[i], tolerance);
-        EXPECT_NEAR (yCoords [i], expectedY[i], tolerance);
+        EXPECT_NEAR(xCoords[i], expectedX[i], tolerance);
+        EXPECT_NEAR(yCoords[i], expectedY[i], tolerance);
     }
-
-
 }
