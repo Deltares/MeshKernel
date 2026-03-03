@@ -36,7 +36,7 @@ std::vector<meshkernel::Point> meshkernel::algo::NetlinkContourPolygons::Compute
     std::vector<Point> netlinkPolygons(4 * mesh.GetNumEdges(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
     std::vector<Point> circumcentres(algo::ComputeFaceCircumcenters(mesh));
 
-    // #pragma omp parallel for
+#pragma omp parallel for
     for (int edge = 0; edge < static_cast<int>(mesh.GetNumEdges()); ++edge)
     {
         if (mesh.IsValidEdge(edge))
@@ -47,11 +47,8 @@ std::vector<meshkernel::Point> meshkernel::algo::NetlinkContourPolygons::Compute
             const auto edgeFaces = mesh.m_edgesFaces[edge];
 
             std::span<Point> edgePolygon(netlinkPolygons.data() + pointCount, netlinkPolygons.data() + pointCount + 4);
-            // Start and end are swapped in order to get the correct orientation of the polygon
             Point startNode = mesh.Node(currentEdge.first);
             Point endNode = mesh.Node(currentEdge.second);
-            // Point startNode = mesh.Node(currentEdge.second);
-            // Point endNode = mesh.Node(currentEdge.first);
             Point circumcentreLeft = circumcentres[edgeFaces[0]];
             Point circumcentreRight;
 
@@ -83,7 +80,6 @@ void meshkernel::algo::NetlinkContourPolygons::ComputePolygonForEdge(const Point
     // The polygon vertices are formed by shifting edgeStart and edgeEnd
     // along the normals pointing towards circumcentre1 and circumcentre12
 
-
     Point edgeStart = edgeStart1;
     Point edgeEnd = edgeEnd1;
 
@@ -93,7 +89,7 @@ void meshkernel::algo::NetlinkContourPolygons::ComputePolygonForEdge(const Point
     NormalVectorInside(edgeStart, edgeEnd, circumcentreLeft, edgeNormal, normalReflected, projection);
 
     // Get distance of circumcentre from the edge
-    auto [distanceToC1, np, rat] = DistanceFromLine (circumcentreLeft, edgeStart, edgeEnd, projection);
+    auto [distanceToC1, np, rat] = DistanceFromLine(circumcentreLeft, edgeStart, edgeEnd, projection);
 
     if (projection == Projection::spherical)
     {
@@ -102,7 +98,7 @@ void meshkernel::algo::NetlinkContourPolygons::ComputePolygonForEdge(const Point
 
     if (normalReflected)
     {
-        std::swap (edgeStart, edgeEnd);
+        std::swap(edgeStart, edgeEnd);
     }
 
     polygon[0] = {edgeEnd.x - distanceToC1 * edgeNormal.x, edgeEnd.y - distanceToC1 * edgeNormal.y};
@@ -112,7 +108,7 @@ void meshkernel::algo::NetlinkContourPolygons::ComputePolygonForEdge(const Point
     if (circumcentreRight.IsValid())
     {
         // Get distance of circumcentre from the edge
-        auto [distanceToC2, np2, rat2] = DistanceFromLine (circumcentreLeft, edgeStart, edgeEnd, projection);
+        auto [distanceToC2, np2, rat2] = DistanceFromLine(circumcentreLeft, edgeStart, edgeEnd, projection);
 
         if (projection == Projection::spherical)
         {
@@ -120,7 +116,7 @@ void meshkernel::algo::NetlinkContourPolygons::ComputePolygonForEdge(const Point
         }
 
         polygon[2] = {edgeStart.x + distanceToC2 * edgeNormal.x, edgeStart.y + distanceToC2 * edgeNormal.y};
-        polygon[3] = {edgeEnd.x +  distanceToC2 * edgeNormal.x, edgeEnd.y + distanceToC2 * edgeNormal.y};
+        polygon[3] = {edgeEnd.x + distanceToC2 * edgeNormal.x, edgeEnd.y + distanceToC2 * edgeNormal.y};
     }
     else
     {

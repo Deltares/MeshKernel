@@ -1773,7 +1773,7 @@ TEST(Mesh2D, ComputeEdgeNetlinkContourPolygons)
     auto netlinkPolygonPoints(netlinkContourPolygons.Compute(*mesh));
 
     // Select a small number of edges to check
-    // Edge 0 : Lies on the boundary and is the non-hypotenuse edge of a triangle
+    // Edge 0 : Lies on the boundary and is an edge of a triangle
     // Edge 1 : interior to the domain, neighboured by a triangle and a quadrilateral
     // Edge 5 : A Boundary edge, the connected element is a quadrilateral
     // Edge 9 : An interior edge neighboured by two quadrilaterals
