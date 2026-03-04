@@ -870,7 +870,7 @@ namespace meshkernel
         else // if projection = Projection::spherical or projection = Projection::sphericalAccurate
         {
             const double xf = 1.0 / std::cos(constants::conversion::degToRad * referencePoint.y);
-            const double convertedIncrement = constants::conversion::radToDeg * increment / constants::geometric::earth_radius;
+            const double convertedIncrement = constants::conversion::radToDeg * increment * constants::geometric::inverse_earth_radius;
             Point result;
             result.x = normal.x * convertedIncrement * xf;
             result.y = normal.y * convertedIncrement;
