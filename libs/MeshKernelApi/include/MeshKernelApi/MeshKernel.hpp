@@ -937,6 +937,12 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_compute_inner_ortogonalization_iteration(int meshKernelId);
 
+        /// @brief Get the array sizes for the netlink contour polygons
+        MKERNEL_API int mkernel_mesh2d_compute_netlink_contour_polygons_dimension(int meshKernelId, int& dimension);
+
+        /// @brief Get the netlink contour polygons values
+        MKERNEL_API int mkernel_mesh2d_compute_netlink_contour_polygons(int meshKernelId, const GeometryList& polygons);
+
         /// @brief Rotate a mesh2d about a point.
         ///
         /// @param[in] meshKernelId The id of the mesh state

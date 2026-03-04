@@ -74,6 +74,7 @@
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/MeshSmoothness.hpp>
 #include <MeshKernel/MeshTransformation.hpp>
+#include <MeshKernel/NetlinkContourPolygons.hpp>
 #include <MeshKernel/Operations.hpp>
 #include <MeshKernel/OrthogonalizationAndSmoothing.hpp>
 #include <MeshKernel/Polygons.hpp>
@@ -1588,6 +1589,72 @@ namespace meshkernelapi
             }
 
             meshKernelState[meshKernelId].m_meshOrthogonalization->Solve();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_compute_netlink_contour_polygons_dimension(int meshKernelId, int& dimension)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        dimension = 0;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
+            {
+                return lastExitCode;
+            }
+
+            // Each netlink contour polygon has 4 corner nodes
+            dimension = 4 * meshKernelState[meshKernelId].m_mesh2d->GetNumEdges();
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_compute_netlink_contour_polygons(int meshKernelId, const GeometryList& polygons)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
+            {
+                return lastExitCode;
+            }
+
+            if (4 * static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumEdges()) > polygons.num_coordinates)
+            {
+                throw meshkernel::MeshKernelError("The geometry list has not been configured correctly, incorrect value for num_coordinates.");
+            }
+
+            if (polygons.coordinates_x == nullptr || polygons.coordinates_y == nullptr)
+            {
+                throw meshkernel::MeshKernelError("The geometry list has not been configured correctly, coordinates_x or _y is null.");
+            }
+
+            std::vector<meshkernel::Point> contourPolygons(meshkernel::algo::NetlinkContourPolygons::Compute(*meshKernelState[meshKernelId].m_mesh2d));
+
+            for (size_t i = 0; i < contourPolygons.size(); ++i)
+            {
+                polygons.coordinates_x[i] = contourPolygons[i].x;
+                polygons.coordinates_y[i] = contourPolygons[i].y;
+            }
         }
         catch (...)
         {

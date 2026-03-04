@@ -57,6 +57,7 @@ set(
   ${SRC_DIR}/MeshRefinement.cpp
   ${SRC_DIR}/MeshSmoothness.cpp
   ${SRC_DIR}/MeshTriangulation.cpp
+  ${SRC_DIR}/NetlinkContourPolygons.cpp
   ${SRC_DIR}/Network1D.cpp
   ${SRC_DIR}/Operations.cpp
   ${SRC_DIR}/OrthogonalizationAndSmoothing.cpp
@@ -193,6 +194,7 @@ set(
   ${DOMAIN_INC_DIR}/MeshSmoothness.hpp
   ${DOMAIN_INC_DIR}/MeshTransformation.hpp
   ${DOMAIN_INC_DIR}/MeshTriangulation.hpp
+  ${DOMAIN_INC_DIR}/NetlinkContourPolygons.hpp
   ${DOMAIN_INC_DIR}/Network1D.hpp
   ${DOMAIN_INC_DIR}/Operations.hpp
   ${DOMAIN_INC_DIR}/OrthogonalizationAndSmoothing.hpp

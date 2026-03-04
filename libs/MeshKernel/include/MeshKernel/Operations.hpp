@@ -372,6 +372,13 @@ namespace meshkernel
     /// Similar to NormalVectorOutside, except that the normal vector may be flipped based on the 'inside' point.
     void NormalVectorInside(const Point& firstPoint, const Point& secondPoint, const Point& insidePoint, Point& normal, bool& flippedNormal, const Projection& projection);
 
+    /// @brief Compute the update to a point by a given about in in a given direction.
+    /// @param[in] normal         The increment direction.
+    /// @param[in] increment      The increment to use.
+    /// @param[in] referencePoint The reference point containing the reference latitude to use.
+    /// @param[in] projection     The coordinate system projection.
+    Point ComputePointIncrement(const Point& normal, double increment, const Point& referencePoint, const Projection& projection);
+
     /// @brief Moves a point by adding an increment vector to it.
     /// @param[in] normal         The increment direction.
     /// @param[in] increment      The increment to use.
