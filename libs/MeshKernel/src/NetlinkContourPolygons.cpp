@@ -78,11 +78,11 @@ void meshkernel::algo::NetlinkContourPolygons::ComputePolygonForEdge(Point edgeS
     // to find their lateral offsets relative to the edge line.
 
     // The polygon vertices are formed by shifting edgeStart and edgeEnd
-    // along the normals pointing towards circumcentre1 and circumcentre12
+    // along the normals pointing towards circumcentre1 and circumcentre2
 
     Point edgeNormal;
     bool normalReflected = false;
-    // The normal computed here will be pointing to the same side of the edge as the circimcentreLeft point
+    // The normal computed here will be pointing to the same side of the edge as the circimcentre1 point
     NormalVectorInside(edgeStart, edgeEnd, circumcentre1, edgeNormal, normalReflected, projection);
 
     // Get distance of circumcentre from the edge
