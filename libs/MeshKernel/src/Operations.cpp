@@ -878,10 +878,9 @@ namespace meshkernel
         }
     }
 
-
     void AddIncrementToPoint(const Point& normal, double increment, const Point& referencePoint, const Projection& projection, Point& point)
     {
-        point += ComputePointIncrement (normal, increment, referencePoint, projection);
+        point += ComputePointIncrement(normal, increment, referencePoint, projection);
     }
 
     void TranslateSphericalCoordinates(std::vector<Point>& polygon)

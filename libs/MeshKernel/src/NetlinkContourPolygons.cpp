@@ -93,8 +93,8 @@ void meshkernel::algo::NetlinkContourPolygons::ComputePolygonForEdge(Point edgeS
         std::swap(edgeStart, edgeEnd);
     }
 
-    polygon[0] = edgeEnd - ComputePointIncrement (edgeNormal, distanceToC1, edgeEnd, projection);
-    polygon[1] = edgeStart - ComputePointIncrement (edgeNormal, distanceToC1, edgeStart, projection);
+    polygon[0] = edgeEnd - ComputePointIncrement(edgeNormal, distanceToC1, edgeEnd, projection);
+    polygon[1] = edgeStart - ComputePointIncrement(edgeNormal, distanceToC1, edgeStart, projection);
 
     // the second circumcentre is valid indicates the edge has two connecting elements
     if (circumcentre2.IsValid())
@@ -102,8 +102,8 @@ void meshkernel::algo::NetlinkContourPolygons::ComputePolygonForEdge(Point edgeS
         // Get distance of circumcentre from the edge
         auto [distanceToC2, np2, rat2] = DistanceFromLine(circumcentre2, edgeStart, edgeEnd, projection);
 
-        polygon[2] = edgeStart + ComputePointIncrement (edgeNormal, distanceToC2, edgeStart, projection);
-        polygon[3] = edgeEnd + ComputePointIncrement (edgeNormal, distanceToC2, edgeEnd, projection);
+        polygon[2] = edgeStart + ComputePointIncrement(edgeNormal, distanceToC2, edgeStart, projection);
+        polygon[3] = edgeEnd + ComputePointIncrement(edgeNormal, distanceToC2, edgeEnd, projection);
     }
     else
     {
