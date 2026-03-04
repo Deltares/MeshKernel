@@ -99,8 +99,8 @@ namespace meshkernel
         // unit conversion constants
         namespace conversion
         {
-            constexpr double degToRad = M_PI / 180.0;                               ///< Conversion factor from degrees to radians(pi / 180)
-            constexpr double radToDeg = 1.0 / degToRad;                             ///< Conversion factor from radians to degrees(180 / pi)
+            constexpr double degToRad = M_PI / 180.0;   ///< Conversion factor from degrees to radians(pi / 180)
+            constexpr double radToDeg = 1.0 / degToRad; ///< Conversion factor from radians to degrees(180 / pi)
         } // namespace conversion
 
         namespace physical
