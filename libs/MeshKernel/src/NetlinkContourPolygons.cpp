@@ -68,8 +68,8 @@ std::vector<meshkernel::Point> meshkernel::algo::NetlinkContourPolygons::Compute
     return netlinkPolygons;
 }
 
-void meshkernel::algo::NetlinkContourPolygons::ComputePolygonForEdge(const Point& edgeStart1, const Point& edgeEnd1,
-                                                                     const Point& circumcentreLeft, const Point& circumcentreRight,
+void meshkernel::algo::NetlinkContourPolygons::ComputePolygonForEdge(Point edgeStart, Point edgeEnd,
+                                                                     const Point& circumcentre1, const Point& circumcentre2,
                                                                      const Projection projection,
                                                                      std::span<Point> polygon)
 {
@@ -80,43 +80,30 @@ void meshkernel::algo::NetlinkContourPolygons::ComputePolygonForEdge(const Point
     // The polygon vertices are formed by shifting edgeStart and edgeEnd
     // along the normals pointing towards circumcentre1 and circumcentre12
 
-    Point edgeStart = edgeStart1;
-    Point edgeEnd = edgeEnd1;
-
     Point edgeNormal;
     bool normalReflected = false;
     // The normal computed here will be pointing to the same side of the edge as the circimcentreLeft point
-    NormalVectorInside(edgeStart, edgeEnd, circumcentreLeft, edgeNormal, normalReflected, projection);
+    NormalVectorInside(edgeStart, edgeEnd, circumcentre1, edgeNormal, normalReflected, projection);
 
     // Get distance of circumcentre from the edge
-    auto [distanceToC1, np, rat] = DistanceFromLine(circumcentreLeft, edgeStart, edgeEnd, projection);
-
-    if (projection == Projection::spherical)
-    {
-        distanceToC1 *= constants::conversion::mtsToDeg;
-    }
+    auto [distanceToC1, np, rat] = DistanceFromLine(circumcentre1, edgeStart, edgeEnd, projection);
 
     if (normalReflected)
     {
         std::swap(edgeStart, edgeEnd);
     }
 
-    polygon[0] = {edgeEnd.x - distanceToC1 * edgeNormal.x, edgeEnd.y - distanceToC1 * edgeNormal.y};
-    polygon[1] = {edgeStart.x - distanceToC1 * edgeNormal.x, edgeStart.y - distanceToC1 * edgeNormal.y};
+    polygon[0] = edgeEnd - ComputePointIncrement (edgeNormal, distanceToC1, edgeEnd, projection);
+    polygon[1] = edgeStart - ComputePointIncrement (edgeNormal, distanceToC1, edgeStart, projection);
 
     // the second circumcentre is valid indicates the edge has two connecting elements
-    if (circumcentreRight.IsValid())
+    if (circumcentre2.IsValid())
     {
         // Get distance of circumcentre from the edge
-        auto [distanceToC2, np2, rat2] = DistanceFromLine(circumcentreLeft, edgeStart, edgeEnd, projection);
+        auto [distanceToC2, np2, rat2] = DistanceFromLine(circumcentre2, edgeStart, edgeEnd, projection);
 
-        if (projection == Projection::spherical)
-        {
-            distanceToC2 *= constants::conversion::mtsToDeg;
-        }
-
-        polygon[2] = {edgeStart.x + distanceToC2 * edgeNormal.x, edgeStart.y + distanceToC2 * edgeNormal.y};
-        polygon[3] = {edgeEnd.x + distanceToC2 * edgeNormal.x, edgeEnd.y + distanceToC2 * edgeNormal.y};
+        polygon[2] = edgeStart + ComputePointIncrement (edgeNormal, distanceToC2, edgeStart, projection);
+        polygon[3] = edgeEnd + ComputePointIncrement (edgeNormal, distanceToC2, edgeEnd, projection);
     }
     else
     {

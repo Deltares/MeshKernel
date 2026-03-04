@@ -861,20 +861,27 @@ namespace meshkernel
         }
     }
 
-    void AddIncrementToPoint(const Point& normal, double increment, const Point& referencePoint, const Projection& projection, Point& point)
+    Point ComputePointIncrement(const Point& normal, double increment, const Point& referencePoint, const Projection& projection)
     {
         if (projection == Projection::cartesian)
         {
-            point.x = point.x + normal.x * increment;
-            point.y = point.y + normal.y * increment;
+            return increment * normal;
         }
-        if (projection == Projection::spherical || projection == Projection::sphericalAccurate)
+        else // if projection = Projection::spherical or projection = Projection::sphericalAccurate
         {
             const double xf = 1.0 / std::cos(constants::conversion::degToRad * referencePoint.y);
             const double convertedIncrement = constants::conversion::radToDeg * increment / constants::geometric::earth_radius;
-            point.x = point.x + normal.x * convertedIncrement * xf;
-            point.y = point.y + normal.y * convertedIncrement;
+            Point result;
+            result.x = normal.x * convertedIncrement * xf;
+            result.y = normal.y * convertedIncrement;
+            return result;
         }
+    }
+
+
+    void AddIncrementToPoint(const Point& normal, double increment, const Point& referencePoint, const Projection& projection, Point& point)
+    {
+        point += ComputePointIncrement (normal, increment, referencePoint, projection);
     }
 
     void TranslateSphericalCoordinates(std::vector<Point>& polygon)

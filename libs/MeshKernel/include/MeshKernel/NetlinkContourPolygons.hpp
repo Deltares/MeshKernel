@@ -49,7 +49,7 @@ namespace meshkernel::algo
         /// @brief Compute the netlink contour polygon for a single edge
         ///
         /// @note circumcentre1 must be a valid circumcentre point.
-        static void ComputePolygonForEdge(const Point& start, const Point& end, const Point& curcumcentre1, const Point& circumcentre2,
+        static void ComputePolygonForEdge(Point start, Point end, const Point& circumcentre1, const Point& circumcentre2,
                                           const Projection projection,
                                           std::span<Point> polygon);
     };
