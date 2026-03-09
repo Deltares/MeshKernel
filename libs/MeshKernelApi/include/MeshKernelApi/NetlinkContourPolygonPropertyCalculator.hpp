@@ -37,7 +37,7 @@
 namespace meshkernelapi
 {
 
-    /// @brief Calculator for the face circumcenter for a mesh
+    /// @brief Calculator for the netlink contour polygons for a mesh
     class NetlinkContourPolygonPropertyCalculator : public PropertyCalculator
     {
     public:
