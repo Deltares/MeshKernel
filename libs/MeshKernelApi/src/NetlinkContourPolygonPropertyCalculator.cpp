@@ -47,8 +47,9 @@ void meshkernelapi::NetlinkContourPolygonPropertyCalculator::Calculate(const Mes
 
     std::vector<meshkernel::Point> netlinkContourPolygons(meshkernel::algo::NetlinkContourPolygons::Compute(*state.m_mesh2d));
 
-    std::span<double> xCoord(geometryList.coordinates_x, state.m_mesh2d->GetNumFaces());
-    std::span<double> yCoord(geometryList.coordinates_y, state.m_mesh2d->GetNumFaces());
+    size_t size = static_cast<size_t>(Size(state, location));
+    std::span<double> xCoord(geometryList.coordinates_x, size);
+    std::span<double> yCoord(geometryList.coordinates_y, size);
 
     for (size_t i = 0; i < netlinkContourPolygons.size(); ++i)
     {

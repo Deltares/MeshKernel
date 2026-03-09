@@ -937,12 +937,6 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_compute_inner_ortogonalization_iteration(int meshKernelId);
 
-        /// @brief Get the array sizes for the netlink contour polygons
-        MKERNEL_API int mkernel_mesh2d_compute_netlink_contour_polygons_dimension(int meshKernelId, int& dimension);
-
-        /// @brief Get the netlink contour polygons values
-        MKERNEL_API int mkernel_mesh2d_compute_netlink_contour_polygons(int meshKernelId, const GeometryList& polygons);
-
         /// @brief Rotate a mesh2d about a point.
         ///
         /// @param[in] meshKernelId The id of the mesh state
@@ -1254,7 +1248,7 @@ namespace meshkernelapi
         /// @brief Gets an int indicating the edge netlink contour polygon property type for mesh2d
         /// @param[out] type The int indicating the netlink contour polygon property type
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_get_netlink_contour_polygon_property_type((int& type);
+        MKERNEL_API int mkernel_mesh2d_get_netlink_contour_polygon_property_type(int& type);
 
         /// @brief Gets the Mesh2D inner boundary polygons data
         ///
@@ -1449,7 +1443,7 @@ namespace meshkernelapi
         /// @param[in] propertyValue The value representing the specific property
         /// @param[out] dimension The dimension of the specified property
         /// @returns Error code
-        MKERNEL_API int mkernel_mesh2d_get_property_dimension(int meshKernelId, int propertyValue, int& dimension);
+        MKERNEL_API int mkernel_mesh2d_get_property_dimension(int meshKernelId, int propertyValue, int locationId, int& dimension);
 
         /// @brief Gets the small mesh2d flow edges. The flow edges are the edges connecting faces circumcenters.
         /// @param[in]  meshKernelId            The id of the mesh state
