@@ -62,7 +62,14 @@ void meshkernelapi::FaceCircumcenterPropertyCalculator::Calculate(const MeshKern
     }
 }
 
-int meshkernelapi::FaceCircumcenterPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location [[maybe_unused]]) const
+int meshkernelapi::FaceCircumcenterPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location) const
 {
-    return static_cast<int>(state.m_mesh2d->GetNumFaces());
+    int size = -1;
+
+    if (location == meshkernel::Location::Faces)
+    {
+        size = static_cast<int>(state.m_mesh2d->GetNumFaces());
+    }
+
+    return size;
 }

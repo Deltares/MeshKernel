@@ -53,7 +53,14 @@ void meshkernelapi::EdgeLengthPropertyCalculator::Calculate(const MeshKernelStat
     meshkernel::algo::ComputeMeshEdgeLength(*state.m_mesh2d, edgeLengths);
 }
 
-int meshkernelapi::EdgeLengthPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location [[maybe_unused]]) const
+int meshkernelapi::EdgeLengthPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location) const
 {
-    return static_cast<int>(state.m_mesh2d->GetNumEdges());
+    int size = -1;
+
+    if (location == meshkernel::Location::Edges)
+    {
+        size = static_cast<int>(state.m_mesh2d->GetNumEdges());
+    }
+
+    return size;
 }

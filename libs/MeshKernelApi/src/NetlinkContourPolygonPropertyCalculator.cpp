@@ -58,7 +58,14 @@ void meshkernelapi::NetlinkContourPolygonPropertyCalculator::Calculate(const Mes
     }
 }
 
-int meshkernelapi::NetlinkContourPolygonPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location [[maybe_unused]]) const
+int meshkernelapi::NetlinkContourPolygonPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location) const
 {
-    return 4 * static_cast<int>(state.m_mesh2d->GetNumEdges());
+    int size = -1;
+
+    if (location == meshkernel::Location::Edges)
+    {
+        size = 4 * static_cast<int>(state.m_mesh2d->GetNumEdges());
+    }
+
+    return size;
 }
