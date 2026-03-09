@@ -107,6 +107,7 @@
 #include "MeshKernelApi/EdgeLengthPropertyCalculator.hpp"
 #include "MeshKernelApi/FaceCircumcenterPropertyCalculator.hpp"
 #include "MeshKernelApi/InterpolatedSamplePropertyCalculator.hpp"
+#include "MeshKernelApi/NetlinkContourPolygonPropertyCalculator.hpp"
 #include "MeshKernelApi/OrthogonalityPropertyCalculator.hpp"
 #include "MeshKernelApi/PropertyCalculator.hpp"
 #include "MeshKernelApi/State.hpp"
@@ -161,6 +162,9 @@ namespace meshkernelapi
 
         propertyId = static_cast<int>(meshkernel::Property::FaceCircumcenter);
         propertyMap.emplace(propertyId, std::make_shared<FaceCircumcenterPropertyCalculator>());
+
+        propertyId = static_cast<int>(meshkernel::Property::NetlinkContourPolygon);
+        propertyMap.emplace(propertyId, std::make_shared<NetlinkContourPolygonPropertyCalculator>());
 
         return propertyMap;
     }
@@ -1011,6 +1015,13 @@ namespace meshkernelapi
     {
         lastExitCode = meshkernel::ExitCode::Success;
         type = static_cast<int>(meshkernel::Property::FaceCircumcenter);
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_get_netlink_contour_polygon_property_type(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::Property::NetlinkContourPolygon);
         return lastExitCode;
     }
 
