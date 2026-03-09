@@ -200,12 +200,12 @@ TEST(Mesh2DTests, Mesh2DGetPropertyTest)
     errorCode = meshkernelapi::mkernel_mesh2d_get_orthogonality_property_type(orthogonalityId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
+    int locationId = static_cast<int>(meshkernel::Location::Edges);
     int geometryListDimension = -1;
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, orthogonalityId, geometryListDimension);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, orthogonalityId, locationId, geometryListDimension);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Execute
-    int locationId = static_cast<int>(meshkernel::Location::Edges);
     meshkernelapi::GeometryList propertyvalues{};
     propertyvalues.num_coordinates = geometryListDimension;
     propertyvalues.geometry_separator = meshkernel::constants::missing::doubleValue;
@@ -260,12 +260,12 @@ TEST(Mesh2DTests, Mesh2DGetCircumcenterPropertyTest)
     errorCode = meshkernelapi::mkernel_mesh2d_get_face_circumcenter_property_type(circumcenterId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
+    int locationId = static_cast<int>(meshkernel::Location::Faces);
     int geometryListDimension = -1;
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, circumcenterId, geometryListDimension);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, circumcenterId, locationId, geometryListDimension);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Execute
-    int locationId = static_cast<int>(meshkernel::Location::Faces);
     meshkernelapi::GeometryList propertyvalues{};
     propertyvalues.num_coordinates = geometryListDimension;
     propertyvalues.geometry_separator = meshkernel::constants::missing::doubleValue;
@@ -329,12 +329,12 @@ TEST(Mesh2DTests, Mesh2DGetEdgeLengthPropertyTest)
     errorCode = meshkernelapi::mkernel_mesh2d_get_edge_length_property_type(circumcenterId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
+    int locationId = static_cast<int>(meshkernel::Location::Edges);
     int geometryListDimension = -1;
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, circumcenterId, geometryListDimension);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, circumcenterId, locationId, geometryListDimension);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Execute
-    int locationId = static_cast<int>(meshkernel::Location::Edges);
     meshkernelapi::GeometryList propertyvalues{};
     propertyvalues.num_coordinates = geometryListDimension;
     propertyvalues.geometry_separator = meshkernel::constants::missing::doubleValue;
@@ -1759,9 +1759,13 @@ TEST(Mesh2D, Mesh2D_ShouldComputeNetlinkPolygon)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     int dimension = -1;
+    int propertyId = -1;
+    errorCode = meshkernelapi::mkernel_mesh2d_get_netlink_contour_polygon_property_type(propertyId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Execute
-    errorCode = meshkernelapi::mkernel_mesh2d_compute_netlink_contour_polygons_dimension(meshkernelId, dimension);
+    int edgesLocation = static_cast<int>(meshkernel::Location::Edges);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshkernelId, propertyId, edgesLocation, dimension);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Each polygon has exactly 4 points
@@ -1776,7 +1780,7 @@ TEST(Mesh2D, Mesh2D_ShouldComputeNetlinkPolygon)
     polygons.coordinates_x = xCoords.data();
     polygons.coordinates_y = yCoords.data();
 
-    errorCode = meshkernelapi::mkernel_mesh2d_compute_netlink_contour_polygons(meshkernelId, polygons);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_property(meshkernelId, propertyId, edgesLocation, polygons);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     std::vector<double> expectedX{1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 2, 1, 1, 2, 1, 2, 2, 1, 1, 2, 2, 1, 3, 2, 2, 3, 2, 3, 3, 2, 2, 3, 3, 2, 0.5, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0.5, 0.5, 1.5, 1.5, 0.5, 0.5, 1.5, 1.5, 1.5, 1.5, 2.5, 2.5, 1.5, 1.5, 2.5, 2.5, 2.5, 2.5, 3, 3, 2.5, 2.5, 3, 3};

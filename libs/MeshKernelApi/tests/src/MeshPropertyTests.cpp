@@ -142,6 +142,8 @@ TEST(MeshPropertyTests, BathymetryTest)
 
     const double tolerance = 1.0e-13;
 
+    int locationId = static_cast<int>(meshkernel::Location::Edges);
+
     std::vector<double> expectedInterpolatedData{0.0, 1.0, 2.0, 3.0,
                                                  0.0, 1.0, 2.0, 3.0,
                                                  0.0, 1.0, 2.0, 3.0,
@@ -150,12 +152,10 @@ TEST(MeshPropertyTests, BathymetryTest)
                                                  2.5, 0.5, 1.5, 2.5};
 
     int sampleDataSize = -1;
-    errorCode = mkapi::mkernel_mesh2d_get_property_dimension(meshKernelId, bathymetryPropertyId, sampleDataSize);
+    errorCode = mkapi::mkernel_mesh2d_get_property_dimension(meshKernelId, bathymetryPropertyId, locationId, sampleDataSize);
 
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
     ASSERT_EQ(sampleDataSize, numberOfEdges);
-
-    int locationId = static_cast<int>(meshkernel::Location::Edges);
 
     mkapi::GeometryList propertyData{};
     std::vector<double> retrievedPropertyData(numberOfEdges, -1.0);
@@ -296,7 +296,7 @@ TEST(MeshPropertyTests, PropertyFailureTest)
     int sampleDataSize = -1;
 
     // Expected test failure due to invalid meshkernel id
-    errorCode = mkapi::mkernel_mesh2d_get_property_dimension(meshKernelId + 100, bathymetryPropertyId, sampleDataSize);
+    errorCode = mkapi::mkernel_mesh2d_get_property_dimension(meshKernelId + 100, bathymetryPropertyId, locationId, sampleDataSize);
     ASSERT_EQ(mk::ExitCode::MeshKernelErrorCode, errorCode);
 
     mkapi::GeometryList propertyData{};
