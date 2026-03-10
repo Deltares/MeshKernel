@@ -1788,6 +1788,12 @@ namespace meshkernelapi
             {
                 const meshkernel::Location location = static_cast<meshkernel::Location>(locationId);
                 dimension = meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->Size(meshKernelState[meshKernelId], location);
+
+                if (dimension == -1)
+                {
+                    const std::string& locationStr(meshkernel::LocationToString.contains(location) ? meshkernel::LocationToString.at(location) : meshkernel::LocationToString.at(meshkernel::Location::Unknown));
+                    throw meshkernel::MeshKernelError("Dimension could not be computed, incorrect location id for property calculator: {} {}", locationStr, locationId);
+                }
             }
             else
             {
