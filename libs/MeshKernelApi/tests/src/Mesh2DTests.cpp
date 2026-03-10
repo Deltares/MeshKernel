@@ -1815,7 +1815,6 @@ TEST(Mesh2DTests, Mesh2D_ShouldComputeNetlinkPolygon)
         EXPECT_NEAR(yCoords[i], expectedY[i], tolerance);
     }
 
-
     // Try to access the dimension for an invalid location id (faces in this case) for netlink contours, should return non-success error code
     int facesLocation = static_cast<int>(meshkernel::Location::Faces);
     errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshkernelId, propertyId, facesLocation, dimension);
