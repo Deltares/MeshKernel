@@ -52,7 +52,14 @@ void meshkernelapi::OrthogonalityPropertyCalculator::Calculate(const MeshKernelS
     meshkernel::MeshOrthogonality::Compute(*state.m_mesh2d, orthogonality);
 }
 
-int meshkernelapi::OrthogonalityPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location [[maybe_unused]]) const
+int meshkernelapi::OrthogonalityPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location) const
 {
-    return static_cast<int>(state.m_mesh2d->GetNumEdges());
+    int size = -1;
+
+    if (location == meshkernel::Location::Edges)
+    {
+        size = static_cast<int>(state.m_mesh2d->GetNumEdges());
+    }
+
+    return size;
 }

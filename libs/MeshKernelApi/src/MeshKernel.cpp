@@ -107,6 +107,7 @@
 #include "MeshKernelApi/EdgeLengthPropertyCalculator.hpp"
 #include "MeshKernelApi/FaceCircumcenterPropertyCalculator.hpp"
 #include "MeshKernelApi/InterpolatedSamplePropertyCalculator.hpp"
+#include "MeshKernelApi/NetlinkContourPolygonPropertyCalculator.hpp"
 #include "MeshKernelApi/OrthogonalityPropertyCalculator.hpp"
 #include "MeshKernelApi/PropertyCalculator.hpp"
 #include "MeshKernelApi/State.hpp"
@@ -143,7 +144,7 @@ namespace meshkernelapi
     int GeneratePropertyId()
     {
         // The current property id, initialised with a value equal to the last enum in Mesh2D:::Property enum values
-        static int currentPropertyId = static_cast<int>(meshkernel::Property::FaceCircumcenter);
+        static int currentPropertyId = static_cast<int>(meshkernel::Property::NetlinkContourPolygon);
 
         // Increment and return the current property id value.
         return ++currentPropertyId;
@@ -161,6 +162,9 @@ namespace meshkernelapi
 
         propertyId = static_cast<int>(meshkernel::Property::FaceCircumcenter);
         propertyMap.emplace(propertyId, std::make_shared<FaceCircumcenterPropertyCalculator>());
+
+        propertyId = static_cast<int>(meshkernel::Property::NetlinkContourPolygon);
+        propertyMap.emplace(propertyId, std::make_shared<NetlinkContourPolygonPropertyCalculator>());
 
         return propertyMap;
     }
@@ -1014,6 +1018,13 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_mesh2d_get_netlink_contour_polygon_property_type(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::Property::NetlinkContourPolygon);
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_mesh1d_get_dimensions(int meshKernelId, Mesh1D& mesh1d)
     {
         lastExitCode = meshkernel::ExitCode::Success;
@@ -1597,72 +1608,6 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_compute_netlink_contour_polygons_dimension(int meshKernelId, int& dimension)
-    {
-        lastExitCode = meshkernel::ExitCode::Success;
-        dimension = 0;
-        try
-        {
-            if (!meshKernelState.contains(meshKernelId))
-            {
-                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
-            }
-
-            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
-            {
-                return lastExitCode;
-            }
-
-            // Each netlink contour polygon has 4 corner nodes
-            dimension = 4 * meshKernelState[meshKernelId].m_mesh2d->GetNumEdges();
-        }
-        catch (...)
-        {
-            lastExitCode = HandleException();
-        }
-        return lastExitCode;
-    }
-
-    MKERNEL_API int mkernel_mesh2d_compute_netlink_contour_polygons(int meshKernelId, const GeometryList& polygons)
-    {
-        lastExitCode = meshkernel::ExitCode::Success;
-        try
-        {
-            if (!meshKernelState.contains(meshKernelId))
-            {
-                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
-            }
-
-            if (meshKernelState[meshKernelId].m_mesh2d->GetNumNodes() <= 0)
-            {
-                return lastExitCode;
-            }
-
-            if (4 * static_cast<int>(meshKernelState[meshKernelId].m_mesh2d->GetNumEdges()) > polygons.num_coordinates)
-            {
-                throw meshkernel::MeshKernelError("The geometry list has not been configured correctly, incorrect value for num_coordinates.");
-            }
-
-            if (polygons.coordinates_x == nullptr || polygons.coordinates_y == nullptr)
-            {
-                throw meshkernel::MeshKernelError("The geometry list has not been configured correctly, coordinates_x or _y is null.");
-            }
-
-            std::vector<meshkernel::Point> contourPolygons(meshkernel::algo::NetlinkContourPolygons::Compute(*meshKernelState[meshKernelId].m_mesh2d));
-
-            for (size_t i = 0; i < contourPolygons.size(); ++i)
-            {
-                polygons.coordinates_x[i] = contourPolygons[i].x;
-                polygons.coordinates_y[i] = contourPolygons[i].y;
-            }
-        }
-        catch (...)
-        {
-            lastExitCode = HandleException();
-        }
-        return lastExitCode;
-    }
-
     MKERNEL_API int mkernel_mesh2d_get_location_index(int meshKernelId,
                                                       double xCoordinate,
                                                       double yCoordinate,
@@ -1822,7 +1767,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_get_property_dimension(int meshKernelId, int propertyValue, int& dimension)
+    MKERNEL_API int mkernel_mesh2d_get_property_dimension(int meshKernelId, int propertyValue, int locationId, int& dimension)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         dimension = -1;
@@ -1841,7 +1786,14 @@ namespace meshkernelapi
 
             if (meshKernelState[meshKernelId].m_propertyCalculators.contains(propertyValue) && meshKernelState[meshKernelId].m_propertyCalculators[propertyValue] != nullptr)
             {
-                dimension = meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->Size(meshKernelState[meshKernelId], meshkernel::Location::Edges);
+                const meshkernel::Location location = static_cast<meshkernel::Location>(locationId);
+                dimension = meshKernelState[meshKernelId].m_propertyCalculators[propertyValue]->Size(meshKernelState[meshKernelId], location);
+
+                if (dimension == -1)
+                {
+                    const std::string& locationStr(meshkernel::LocationToString.contains(location) ? meshkernel::LocationToString.at(location) : meshkernel::LocationToString.at(meshkernel::Location::Unknown));
+                    throw meshkernel::MeshKernelError("Dimension could not be computed, incorrect location id for property calculator: {} {}", locationStr, locationId);
+                }
             }
             else
             {

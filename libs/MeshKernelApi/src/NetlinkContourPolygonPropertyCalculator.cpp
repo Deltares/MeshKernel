@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2025.
+// Copyright (C)  Stichting Deltares, 2011-2026.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,50 +25,46 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernelApi/FaceCircumcenterPropertyCalculator.hpp"
+#include "MeshKernelApi/NetlinkContourPolygonPropertyCalculator.hpp"
 #include "MeshKernelApi/PropertyCalculator.hpp"
 #include "MeshKernelApi/State.hpp"
 
-#include "MeshKernel/MeshFaceCenters.hpp"
+#include "MeshKernel/NetlinkContourPolygons.hpp"
 
-#include <algorithm>
-#include <functional>
-
-bool meshkernelapi::FaceCircumcenterPropertyCalculator::IsValid(const MeshKernelState& state, const meshkernel::Location location) const
+bool meshkernelapi::NetlinkContourPolygonPropertyCalculator::IsValid(const MeshKernelState& state, const meshkernel::Location location) const
 {
-    return state.m_mesh2d != nullptr && state.m_mesh2d->GetNumNodes() > 0 && location == meshkernel::Location::Faces;
+    return state.m_mesh2d != nullptr && state.m_mesh2d->GetNumNodes() > 0 && location == meshkernel::Location::Edges;
 }
 
-void meshkernelapi::FaceCircumcenterPropertyCalculator::Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const
+void meshkernelapi::NetlinkContourPolygonPropertyCalculator::Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const
 {
 
-    if (static_cast<size_t>(geometryList.num_coordinates) < state.m_mesh2d->GetNumFaces())
+    if (static_cast<size_t>(geometryList.num_coordinates) < state.m_mesh2d->GetNumEdges())
     {
         throw meshkernel::ConstraintError("GeometryList with wrong dimensions, {} must be greater than or equal to {}",
                                           geometryList.num_coordinates, Size(state, location));
     }
 
-    std::vector<meshkernel::Point> faceCircumcentres(state.m_mesh2d->GetNumFaces());
+    std::vector<meshkernel::Point> netlinkContourPolygons(meshkernel::algo::NetlinkContourPolygons::Compute(*state.m_mesh2d));
 
-    std::span<double> xCoord(geometryList.coordinates_x, state.m_mesh2d->GetNumFaces());
-    std::span<double> yCoord(geometryList.coordinates_y, state.m_mesh2d->GetNumFaces());
+    size_t size = static_cast<size_t>(Size(state, location));
+    std::span<double> xCoord(geometryList.coordinates_x, size);
+    std::span<double> yCoord(geometryList.coordinates_y, size);
 
-    meshkernel::algo::ComputeFaceCircumcenters(*state.m_mesh2d, faceCircumcentres);
-
-    for (size_t i = 0; i < faceCircumcentres.size(); ++i)
+    for (size_t i = 0; i < netlinkContourPolygons.size(); ++i)
     {
-        xCoord[i] = faceCircumcentres[i].x;
-        yCoord[i] = faceCircumcentres[i].y;
+        xCoord[i] = netlinkContourPolygons[i].x;
+        yCoord[i] = netlinkContourPolygons[i].y;
     }
 }
 
-int meshkernelapi::FaceCircumcenterPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location) const
+int meshkernelapi::NetlinkContourPolygonPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location) const
 {
     int size = -1;
 
-    if (location == meshkernel::Location::Faces)
+    if (location == meshkernel::Location::Edges)
     {
-        size = static_cast<int>(state.m_mesh2d->GetNumFaces());
+        size = 4 * static_cast<int>(state.m_mesh2d->GetNumEdges());
     }
 
     return size;
