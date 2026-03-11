@@ -1881,12 +1881,11 @@ TEST(Mesh2D, ComputeMesh2DFaceBounds)
 
     constexpr double tolerance = 1.0e-10;
 
-    ASSERT_EQ (faceBoundPoints.size (), expectedXs.size ());
+    ASSERT_EQ(faceBoundPoints.size(), expectedXs.size());
 
-    for (size_t i = 0; i < faceBoundPoints.size (); ++i)
+    for (size_t i = 0; i < faceBoundPoints.size(); ++i)
     {
-        EXPECT_NEAR (faceBoundPoints [i].x, expectedXs[i], tolerance);
-        EXPECT_NEAR (faceBoundPoints [i].y, expectedYs[i], tolerance);
+        EXPECT_NEAR(faceBoundPoints[i].x, expectedXs[i], tolerance);
+        EXPECT_NEAR(faceBoundPoints[i].y, expectedYs[i], tolerance);
     }
-
 }
