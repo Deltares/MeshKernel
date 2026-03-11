@@ -57,17 +57,16 @@ void meshkernel::algo::Mesh2DFaceBounds::ComputeBoundsForFace(const Mesh& mesh, 
 
         for (UInt i = 0; i < numNodes; ++i)
         {
-            faceBounds [i] = mesh.Node(mesh.m_facesNodes[faceId][i]);
+            faceBounds[i] = mesh.Node(mesh.m_facesNodes[faceId][i]);
         }
 
         for (UInt i = numNodes; i < constants::geometric::maximumNumberOfNodesPerFace; ++i)
         {
-            faceBounds [i] = Point{constants::missing::doubleValue, constants::missing::doubleValue};
+            faceBounds[i] = Point{constants::missing::doubleValue, constants::missing::doubleValue};
         }
     }
     else
     {
-        std::ranges::fill (faceBounds, Point{constants::missing::doubleValue, constants::missing::doubleValue});
+        std::ranges::fill(faceBounds, Point{constants::missing::doubleValue, constants::missing::doubleValue});
     }
-
 }

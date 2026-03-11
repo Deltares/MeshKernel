@@ -1192,19 +1192,18 @@ bool Mesh::IsValidEdge(const UInt edgeId) const
 
 bool Mesh::IsValidFace(const UInt faceId) const
 {
-    if (faceId >= GetNumFaces ())
+    if (faceId >= GetNumFaces())
     {
-        throw ConstraintError("The face index is out of bounds. {} >= {}.", faceId, GetNumFaces ());
+        throw ConstraintError("The face index is out of bounds. {} >= {}.", faceId, GetNumFaces());
     }
 
     for (UInt edgeId : m_facesEdges[faceId])
     {
 
-        if (!IsValidEdge (edgeId))
+        if (!IsValidEdge(edgeId))
         {
             return false;
         }
-
     }
 
     return true;
