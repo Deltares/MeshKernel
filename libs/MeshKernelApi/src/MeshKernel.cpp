@@ -107,6 +107,7 @@
 #include "MeshKernelApi/EdgeLengthPropertyCalculator.hpp"
 #include "MeshKernelApi/FaceCircumcenterPropertyCalculator.hpp"
 #include "MeshKernelApi/InterpolatedSamplePropertyCalculator.hpp"
+#include "MeshKernelApi/Mesh2DFaceBoundsPropertyCalculator.hpp"
 #include "MeshKernelApi/NetlinkContourPolygonPropertyCalculator.hpp"
 #include "MeshKernelApi/OrthogonalityPropertyCalculator.hpp"
 #include "MeshKernelApi/PropertyCalculator.hpp"
@@ -144,7 +145,7 @@ namespace meshkernelapi
     int GeneratePropertyId()
     {
         // The current property id, initialised with a value equal to the last enum in Mesh2D:::Property enum values
-        static int currentPropertyId = static_cast<int>(meshkernel::Property::NetlinkContourPolygon);
+        static int currentPropertyId = static_cast<int>(meshkernel::Property::FaceBounds);
 
         // Increment and return the current property id value.
         return ++currentPropertyId;
@@ -165,6 +166,9 @@ namespace meshkernelapi
 
         propertyId = static_cast<int>(meshkernel::Property::NetlinkContourPolygon);
         propertyMap.emplace(propertyId, std::make_shared<NetlinkContourPolygonPropertyCalculator>());
+
+        propertyId = static_cast<int>(meshkernel::Property::FaceBounds);
+        propertyMap.emplace(propertyId, std::make_shared<Mesh2DFaceBoundsPropertyCalculator>());
 
         return propertyMap;
     }
@@ -1022,6 +1026,13 @@ namespace meshkernelapi
     {
         lastExitCode = meshkernel::ExitCode::Success;
         type = static_cast<int>(meshkernel::Property::NetlinkContourPolygon);
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_get_face_bounds_property_type(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::Property::FaceBounds);
         return lastExitCode;
     }
 

@@ -25,46 +25,45 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernelApi/NetlinkContourPolygonPropertyCalculator.hpp"
+#include "MeshKernelApi/Mesh2DFaceBoundsPropertyCalculator.hpp"
 #include "MeshKernelApi/PropertyCalculator.hpp"
 #include "MeshKernelApi/State.hpp"
 
-#include "MeshKernel/NetlinkContourPolygons.hpp"
+#include "MeshKernel/Mesh2DFaceBounds.hpp"
 
-bool meshkernelapi::NetlinkContourPolygonPropertyCalculator::IsValid(const MeshKernelState& state, const meshkernel::Location location) const
+bool meshkernelapi::Mesh2DFaceBoundsPropertyCalculator::IsValid(const MeshKernelState& state, const meshkernel::Location location) const
 {
-    return state.m_mesh2d != nullptr && state.m_mesh2d->GetNumNodes() > 0 && location == meshkernel::Location::Edges;
+    return state.m_mesh2d != nullptr && state.m_mesh2d->GetNumNodes() > 0 && location == meshkernel::Location::Faces;
 }
 
-void meshkernelapi::NetlinkContourPolygonPropertyCalculator::Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const
+void meshkernelapi::Mesh2DFaceBoundsPropertyCalculator::Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const
 {
-
-    if (static_cast<size_t>(geometryList.num_coordinates) < 4u * state.m_mesh2d->GetNumEdges())
+    if (geometryList.num_coordinates < static_cast<int>(meshkernel::constants::geometric::maximumNumberOfNodesPerFace * state.m_mesh2d->GetNumFaces()))
     {
         throw meshkernel::ConstraintError("GeometryList with wrong dimensions, {} must be greater than or equal to {}",
                                           geometryList.num_coordinates, Size(state, location));
     }
 
-    std::vector<meshkernel::Point> netlinkContourPolygons(meshkernel::algo::NetlinkContourPolygons::Compute(*state.m_mesh2d));
+    std::vector<meshkernel::Point> faceBounds(meshkernel::algo::Mesh2DFaceBounds::Compute(*state.m_mesh2d));
 
     size_t size = static_cast<size_t>(Size(state, location));
     std::span<double> xCoord(geometryList.coordinates_x, size);
     std::span<double> yCoord(geometryList.coordinates_y, size);
 
-    for (size_t i = 0; i < netlinkContourPolygons.size(); ++i)
+    for (size_t i = 0; i < faceBounds.size(); ++i)
     {
-        xCoord[i] = netlinkContourPolygons[i].x;
-        yCoord[i] = netlinkContourPolygons[i].y;
+        xCoord[i] = faceBounds[i].x;
+        yCoord[i] = faceBounds[i].y;
     }
 }
 
-int meshkernelapi::NetlinkContourPolygonPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location) const
+int meshkernelapi::Mesh2DFaceBoundsPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location) const
 {
     int size = -1;
 
-    if (location == meshkernel::Location::Edges)
+    if (location == meshkernel::Location::Faces)
     {
-        size = 4 * static_cast<int>(state.m_mesh2d->GetNumEdges());
+        size = meshkernel::constants::geometric::maximumNumberOfNodesPerFace * static_cast<int>(state.m_mesh2d->GetNumFaces());
     }
 
     return size;

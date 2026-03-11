@@ -48,6 +48,7 @@ set(
   ${SRC_DIR}/MeshEdgeLength.cpp
   ${SRC_DIR}/Mesh1D.cpp
   ${SRC_DIR}/Mesh2D.cpp
+  ${SRC_DIR}/Mesh2DFaceBounds.cpp
   ${SRC_DIR}/Mesh2DGenerateGlobal.cpp
   ${SRC_DIR}/Mesh2DIntersections.cpp
   ${SRC_DIR}/Mesh2DToCurvilinear.cpp
@@ -182,6 +183,7 @@ set(
   ${DOMAIN_INC_DIR}/MeshEdgeLength.hpp
   ${DOMAIN_INC_DIR}/Mesh1D.hpp
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
+  ${DOMAIN_INC_DIR}/Mesh2DFaceBounds.hpp
   ${DOMAIN_INC_DIR}/Mesh2DGenerateGlobal.hpp
   ${DOMAIN_INC_DIR}/Mesh2DIntersections.hpp
   ${DOMAIN_INC_DIR}/Mesh2DToCurvilinear.hpp

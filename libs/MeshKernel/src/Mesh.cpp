@@ -1190,6 +1190,26 @@ bool Mesh::IsValidEdge(const UInt edgeId) const
            m_nodes[m_edges[edgeId].first].IsValid() && m_nodes[m_edges[edgeId].second].IsValid();
 }
 
+bool Mesh::IsValidFace(const UInt faceId) const
+{
+    if (faceId >= GetNumFaces ())
+    {
+        throw ConstraintError("The face index is out of bounds. {} >= {}.", faceId, GetNumFaces ());
+    }
+
+    for (UInt edgeId : m_facesEdges[faceId])
+    {
+
+        if (!IsValidEdge (edgeId))
+        {
+            return false;
+        }
+
+    }
+
+    return true;
+}
+
 void Mesh::BuildTree(Location location, const BoundingBox& boundingBox)
 {
     switch (location)
