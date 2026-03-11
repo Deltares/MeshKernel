@@ -159,7 +159,8 @@ namespace meshkernel
         Orthogonality = 0,
         EdgeLength = 1,
         FaceCircumcenter = 2,
-        NetlinkContourPolygon = 3
+        NetlinkContourPolygon = 3,
+        FaceBounds = 4
     };
 
     /// \brief Describe how the circumcentre should be computed.

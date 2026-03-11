@@ -1250,6 +1250,11 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_netlink_contour_polygon_property_type(int& type);
 
+        /// @brief Gets an int indicating the face bounds property type for mesh2d
+        /// @param[out] type The int indicating the face bounds property type
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_face_bounds_property_type(int& type);
+
         /// @brief Gets the Mesh2D inner boundary polygons data
         ///
         /// @param[in]     meshKernelId  The id of the mesh state

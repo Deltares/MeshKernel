@@ -34,6 +34,7 @@
 #include "MeshKernel/Entities.hpp"
 #include "MeshKernel/Mesh.hpp"
 #include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/Mesh2DFaceBounds.hpp"
 #include "MeshKernel/Mesh2DIntersections.hpp"
 #include "MeshKernel/Mesh2DToCurvilinear.hpp"
 #include "MeshKernel/MeshEdgeLength.hpp"
@@ -1860,5 +1861,31 @@ TEST(Mesh2D, ComputeEdgeNetlinkContourPolygonsSpherical)
         EXPECT_NEAR(netlinkPolygonPoints[p4].x, expectedXs[expectedNodeCount], tolerance);
         EXPECT_NEAR(netlinkPolygonPoints[p4].y, expectedYs[expectedNodeCount], tolerance);
         ++expectedNodeCount;
+    }
+}
+
+TEST(Mesh2D, ComputeMesh2DFaceBounds)
+{
+    std::vector<meshkernel::Point> meshPoints{{10.0, 0.0}, {20.0, 10.0}, {10.0, 20.0}, {0.0, 10.0}, {30.0, 20.0}, {0.0, 30.0}, {20.0, 30.0}, {30.0, 30.0}};
+    std::vector<meshkernel::Edge> meshEdges{{0, 1}, {1, 2}, {2, 3}, {3, 0}, {1, 4}, {3, 5}, {5, 6}, {6, 7}, {2, 5}, {2, 6}, {4, 7}};
+
+    meshkernel::Mesh2D mesh(meshEdges, meshPoints, meshkernel::Projection::cartesian);
+    mesh.Administrate();
+
+    meshkernel::algo::Mesh2DFaceBounds mesh2dFaceBounds;
+
+    auto faceBoundPoints(mesh2dFaceBounds.Compute(mesh));
+
+    std::vector<double> expectedXs{10.0, 20.0, 0.0, -999.0, -999.0, -999.0, 10.0, 0.0, 0.0, -999.0, -999.0, -999.0, 10.0, 20.0, 10.0, 0.0, -999.0, -999.0, 20.0, 30.0, 30.0, 20.0, 10.0, -999.0};
+    std::vector<double> expectedYs{20.0, 30.0, 30.0, -999.0, -999.0, -999.0, 20.0, 30.0, 10.0, -999.0, -999.0, -999.0, 0.0, 10.0, 20.0, 10.0, -999.0, -999.0, 10.0, 20.0, 30.0, 30.0, 20.0, -999.0};
+
+    constexpr double tolerance = 1.0e-10;
+
+    ASSERT_EQ(faceBoundPoints.size(), expectedXs.size());
+
+    for (size_t i = 0; i < faceBoundPoints.size(); ++i)
+    {
+        EXPECT_NEAR(faceBoundPoints[i].x, expectedXs[i], tolerance);
+        EXPECT_NEAR(faceBoundPoints[i].y, expectedYs[i], tolerance);
     }
 }

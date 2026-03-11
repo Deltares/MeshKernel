@@ -369,6 +369,9 @@ namespace meshkernel
         /// is false then the edge is in-valid.
         bool IsValidEdge(const UInt edgeId) const;
 
+        /// @brief Indicate if the face-id is a valid face
+        bool IsValidFace(const UInt faceId) const;
+
         /// @brief Apply the reset node action
         void CommitAction(const ResetNodeAction& undoAction);
 
