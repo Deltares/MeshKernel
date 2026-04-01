@@ -104,7 +104,7 @@ meshkernel::Point meshkernel::algo::impl::ComputeCircumCenter(const Point& cente
                                                               const CircumcentreMethod circumcentreMethod,
                                                               const Projection projection)
 {
-    const double eps = constants::geometric::circumcentreTolerance * (projection == Projection::cartesian ? 1.0 : 1.0 / (constants::geometric::earth_radius * constants::conversion::degToRad));
+    const double eps = constants::geometric::circumcentreTolerance;
 
     Point estimatedCircumCenter = centerOfMass;
 
@@ -122,9 +122,7 @@ meshkernel::Point meshkernel::algo::impl::ComputeCircumCenter(const Point& cente
             }
         }
 
-        if (iter > 0 &&
-            abs(estimatedCircumCenter.x - previousCircumCenter.x) < eps &&
-            abs(estimatedCircumCenter.y - previousCircumCenter.y) < eps)
+        if (iter > 0 && ComputeDistance(estimatedCircumCenter, previousCircumCenter, projection) < eps)
         {
             break;
         }
