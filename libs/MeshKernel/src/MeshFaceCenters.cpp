@@ -122,7 +122,7 @@ meshkernel::Point meshkernel::algo::impl::ComputeCircumCenter(const Point& cente
             }
         }
 
-        if (iter > 0 && ComputeDistance (estimatedCircumCenter, previousCircumCenter, projection) < eps)
+        if (iter > 0 && ComputeDistance(estimatedCircumCenter, previousCircumCenter, projection) < eps)
         {
             break;
         }
