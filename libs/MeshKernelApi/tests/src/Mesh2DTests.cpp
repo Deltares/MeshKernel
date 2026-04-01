@@ -218,10 +218,10 @@ TEST(Mesh2DTests, Mesh2DGetPropertyTest)
     EXPECT_EQ(propertyvalues.num_coordinates, 12);
     const double tolerance = 1e-4;
 
-    EXPECT_NEAR(values[0], 0.053115002097392186, tolerance);
-    EXPECT_NEAR(values[1], 0.053447414050301602, tolerance);
-    EXPECT_NEAR(values[2], 0.053830968680574229, tolerance);
-    EXPECT_NEAR(values[3], 0.059369643517766427, tolerance);
+    EXPECT_NEAR(values[0], 0.053429139455093, tolerance);
+    EXPECT_NEAR(values[1], 0.052877646660218, tolerance);
+    EXPECT_NEAR(values[2], 0.053526940586521, tolerance);
+    EXPECT_NEAR(values[3], 0.059963407487317, tolerance);
 }
 
 TEST(Mesh2DTests, Mesh2DGetCircumcenterPropertyTest)
@@ -280,17 +280,17 @@ TEST(Mesh2DTests, Mesh2DGetCircumcenterPropertyTest)
     EXPECT_EQ(propertyvalues.num_coordinates, 5);
     const double tolerance = 1e-4;
 
-    EXPECT_NEAR(xCoords[0], 61.8801441733, tolerance);
-    EXPECT_NEAR(xCoords[1], 53.0139097744, tolerance);
-    EXPECT_NEAR(xCoords[2], 53.9275510204, tolerance);
-    EXPECT_NEAR(xCoords[3], 62.7984959122, tolerance);
-    EXPECT_NEAR(xCoords[4], 57.8840699357, tolerance);
+    EXPECT_NEAR(xCoords[0], 61.880144173268, tolerance);
+    EXPECT_NEAR(xCoords[1], 53.013909774436, tolerance);
+    EXPECT_NEAR(xCoords[2], 53.927551020408, tolerance);
+    EXPECT_NEAR(xCoords[3], 62.798495912192, tolerance);
+    EXPECT_NEAR(xCoords[4], 57.882376491844, tolerance);
 
-    EXPECT_NEAR(yCoords[0], 19.8770034142, tolerance);
-    EXPECT_NEAR(yCoords[1], 18.8296992481, tolerance);
+    EXPECT_NEAR(yCoords[0], 19.877003414208, tolerance);
+    EXPECT_NEAR(yCoords[1], 18.82969924812, tolerance);
     EXPECT_NEAR(yCoords[2], 10.35, tolerance);
-    EXPECT_NEAR(yCoords[3], 11.5482066645, tolerance);
-    EXPECT_NEAR(yCoords[4], 15.2382105926, tolerance);
+    EXPECT_NEAR(yCoords[3], 11.548206664537, tolerance);
+    EXPECT_NEAR(yCoords[4], 15.241823309923, tolerance);
 
     // Try to access the dimension for an invalid location id (nodes in this case) for circumcentres, should return non-success error code
     int nodesLocation = static_cast<int>(meshkernel::Location::Nodes);
