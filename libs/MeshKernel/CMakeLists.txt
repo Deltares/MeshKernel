@@ -354,11 +354,16 @@ target_link_libraries(
     Boost::boost
 )
 
-target_include_directories(
-  ${TARGET_NAME}
-  SYSTEM PUBLIC
-  $<TARGET_PROPERTY:Boost::boost,INTERFACE_INCLUDE_DIRECTORIES>
-)
+# necessary only for macos-15-intel github runner (x86_64)
+# see https://discourse.cmake.org/t/cmake-does-not-treat-boost-as-a-system-library-on-github-runner-macos-15-intel/15496/3
+# remove when this runner is deprecated or no longer needed
+if(APPLE AND (CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "x86_64"))
+  target_compile_options(
+    ${TARGET_NAME}
+    PUBLIC
+    -isystem ${Boost_INCLUDE_DIRS}
+  )
+endif()
 
 if(${USE_LIBFMT})
   target_link_libraries(${TARGET_NAME} PUBLIC fmt::fmt)
