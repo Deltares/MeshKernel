@@ -367,7 +367,7 @@ if(BOOST_INCLUDE_DIRS AND NOT BOOST_INCLUDE_DIRS STREQUAL "NOTFOUND")
     SYSTEM PUBLIC
     ${BOOST_INCLUDE_DIRS}
   )
-else
+else()
   message(WARNING "Could not find Boost inc")
 endif()
 
