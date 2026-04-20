@@ -344,13 +344,6 @@ find_package(Boost REQUIRED)
 # OpenMP
 find_package(OpenMP REQUIRED)
 
-get_target_property(BOOST_INCLUDE_DIRS Boost::boost INTERFACE_INCLUDE_DIRECTORIES)
-
-target_include_directories(${TARGET_NAME}
-  SYSTEM PUBLIC
-  ${BOOST_INCLUDE_DIRS}
-)
-
 # link required libraries
 target_link_libraries(
   ${TARGET_NAME}
@@ -360,6 +353,23 @@ target_link_libraries(
     Eigen3::Eigen
     Boost::boost
 )
+
+get_target_property(
+  BOOST_INCLUDE_DIRS
+  Boost::boost
+  INTERFACE_INCLUDE_DIRECTORIES
+)
+
+if(BOOST_INCLUDE_DIRS AND NOT BOOST_INCLUDE_DIRS STREQUAL "NOTFOUND")
+  message(STATUS "Boost inc: ${BOOST_INCLUDE_DIRS}")
+  target_include_directories(
+    ${TARGET_NAME}
+    SYSTEM PUBLIC
+    ${BOOST_INCLUDE_DIRS}
+  )
+else
+  message(WARNING "Could not find Boost inc")
+endif()
 
 if(${USE_LIBFMT})
   target_link_libraries(${TARGET_NAME} PUBLIC fmt::fmt)
