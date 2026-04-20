@@ -340,7 +340,6 @@ target_include_directories(${TARGET_NAME} PUBLIC ${INC_DIR})
 
 # Boost
 find_package(Boost REQUIRED)
-target_include_directories(${TARGET_NAME} SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
 
 # OpenMP
 find_package(OpenMP REQUIRED)
@@ -370,6 +369,10 @@ if(ENABLE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   )
   target_link_libraries(${TARGET_NAME} PRIVATE gcov)
 endif()
+
+# make boost headers system headers
+get_target_property(_boost_includes Boost::boost INTERFACE_INCLUDE_DIRECTORIES)
+target_include_directories(${TARGET_NAME} SYSTEM PUBLIC ${_boost_includes})
 
 # Add precompiled headers to speed up compilation
 target_precompile_headers(
