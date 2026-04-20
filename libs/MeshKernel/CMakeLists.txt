@@ -354,6 +354,8 @@ target_link_libraries(
     Boost::boost
 )
 
+target_include_directories(${TARGET_NAME} SYSTEM PUBLIC ${Boost_INCLUDE_DIRS})
+
 if(${USE_LIBFMT})
   target_link_libraries(${TARGET_NAME} PUBLIC fmt::fmt)
 endif()
@@ -369,10 +371,6 @@ if(ENABLE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   )
   target_link_libraries(${TARGET_NAME} PRIVATE gcov)
 endif()
-
-# make boost headers system headers
-get_target_property(_boost_includes Boost::boost INTERFACE_INCLUDE_DIRECTORIES)
-target_include_directories(${TARGET_NAME} SYSTEM PUBLIC ${_boost_includes})
 
 # Add precompiled headers to speed up compilation
 target_precompile_headers(
