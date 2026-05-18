@@ -70,7 +70,6 @@ void meshkernelapi::OrthogonalityPropertyCalculator::Calculate(const MeshKernelS
             }
         }
     }
-
 }
 
 int meshkernelapi::OrthogonalityPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location) const

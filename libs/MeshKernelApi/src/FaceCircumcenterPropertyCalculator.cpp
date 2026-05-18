@@ -63,8 +63,8 @@ void meshkernelapi::FaceCircumcenterPropertyCalculator::Calculate(const MeshKern
 
     if (geometryList.values != nullptr)
     {
-      std::span<double> values (geometryList.values, state.m_mesh2d->GetNumFaces());
-      std::ranges::fill (values, meshkernel::constants::missing::doubleValue);
+        std::span<double> values(geometryList.values, state.m_mesh2d->GetNumFaces());
+        std::ranges::fill(values, meshkernel::constants::missing::doubleValue);
     }
 }
 
