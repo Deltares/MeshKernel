@@ -60,6 +60,12 @@ void meshkernelapi::FaceCircumcenterPropertyCalculator::Calculate(const MeshKern
         xCoord[i] = faceCircumcentres[i].x;
         yCoord[i] = faceCircumcentres[i].y;
     }
+
+    if (geometryList.values != nullptr)
+    {
+        std::span<double> values(geometryList.values, state.m_mesh2d->GetNumFaces());
+        std::ranges::fill(values, meshkernel::constants::missing::doubleValue);
+    }
 }
 
 int meshkernelapi::FaceCircumcenterPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location) const

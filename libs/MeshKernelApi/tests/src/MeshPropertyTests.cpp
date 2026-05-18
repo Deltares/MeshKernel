@@ -159,16 +159,29 @@ TEST(MeshPropertyTests, BathymetryTest)
 
     mkapi::GeometryList propertyData{};
     std::vector<double> retrievedPropertyData(numberOfEdges, -1.0);
+    std::vector<double> xCoord(numberOfEdges, -1.0);
+    std::vector<double> yCoord(numberOfEdges, -1.0);
     propertyData.num_coordinates = numberOfEdges;
     propertyData.values = retrievedPropertyData.data();
+    propertyData.coordinates_x = xCoord.data();
+    propertyData.coordinates_y = yCoord.data();
 
     errorCode = mkapi::mkernel_mesh2d_get_property(meshKernelId, bathymetryPropertyId, locationId, propertyData);
 
     ASSERT_EQ(mk::ExitCode::Success, errorCode);
 
+    std::vector<double> edpectedXCoord{0.0, 1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0, 0.5, 1.5, 2.5, 0.5, 1.5, 2.5, 0.5, 1.5, 2.5, 0.5, 1.5, 2.5};
+    std::vector<double> edpectedYCoord{0.5, 0.5, 0.5, 0.5, 1.5, 1.5, 1.5, 1.5, 2.5, 2.5, 2.5, 2.5, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 3.0, 3.0, 3.0};
+
     for (size_t i = 0; i < retrievedPropertyData.size(); ++i)
     {
         EXPECT_NEAR(retrievedPropertyData[i], expectedInterpolatedData[i], tolerance);
+    }
+
+    for (size_t i = 0; i < edpectedXCoord.size(); ++i)
+    {
+        EXPECT_NEAR(xCoord[i], edpectedXCoord[i], tolerance);
+        EXPECT_NEAR(yCoord[i], edpectedYCoord[i], tolerance);
     }
 
     //--------------------------------

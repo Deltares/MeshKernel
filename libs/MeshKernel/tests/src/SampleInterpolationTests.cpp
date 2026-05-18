@@ -263,12 +263,20 @@ TEST(SampleInterpolationTests, TriangulationInterpolationWithPoints)
     std::vector<double> interpolationResult(mesh->GetNumNodes(), initialValue);
     std::vector<double> expectedResult{1000.0, 1000.0, 1000.0, 2000.0, 2000.0, 2000.0, 3000.0, 3000.0, 3000.0};
 
-    interpolator.Interpolate(propertyId, *mesh, mk::Location::Nodes, interpolationResult);
+    std::vector<double> xCoords(mesh->GetNumNodes());
+    std::vector<double> yCoords(mesh->GetNumNodes());
+    interpolator.Interpolate(propertyId, *mesh, mk::Location::Nodes, interpolationResult, xCoords, yCoords);
 
     const double tolerance = 1.0e-8;
 
     for (size_t i = 0; i < expectedResult.size(); ++i)
     {
         EXPECT_NEAR(expectedResult[i], interpolationResult[i], tolerance);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh->GetNumNodes(); ++i)
+    {
+        EXPECT_NEAR(mesh->Node(i).x, xCoords[i], tolerance);
+        EXPECT_NEAR(mesh->Node(i).y, yCoords[i], tolerance);
     }
 }

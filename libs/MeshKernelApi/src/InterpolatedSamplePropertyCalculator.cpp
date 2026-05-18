@@ -70,7 +70,17 @@ bool meshkernelapi::InterpolatedSamplePropertyCalculator::IsValid(const MeshKern
 void meshkernelapi::InterpolatedSamplePropertyCalculator::Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const
 {
     std::span<double> interpolatedSampleData(geometryList.values, geometryList.num_coordinates);
-    m_sampleInterpolator->Interpolate(m_propertyId, *state.m_mesh2d, location, interpolatedSampleData);
+
+    std::span<double> xCoordinates;
+    std::span<double> yCoordinates;
+
+    if (geometryList.coordinates_x != nullptr && geometryList.coordinates_y != nullptr)
+    {
+        xCoordinates = std::span<double>(geometryList.coordinates_x, geometryList.num_coordinates);
+        yCoordinates = std::span<double>(geometryList.coordinates_y, geometryList.num_coordinates);
+    }
+
+    m_sampleInterpolator->Interpolate(m_propertyId, *state.m_mesh2d, location, interpolatedSampleData, xCoordinates, yCoordinates);
 }
 
 int meshkernelapi::InterpolatedSamplePropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location) const

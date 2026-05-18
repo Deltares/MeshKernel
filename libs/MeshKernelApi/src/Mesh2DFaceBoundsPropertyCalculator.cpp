@@ -55,6 +55,12 @@ void meshkernelapi::Mesh2DFaceBoundsPropertyCalculator::Calculate(const MeshKern
         xCoord[i] = faceBounds[i].x;
         yCoord[i] = faceBounds[i].y;
     }
+
+    if (geometryList.values != nullptr)
+    {
+        std::span<double> values(geometryList.values, faceBounds.size());
+        std::ranges::fill(values, meshkernel::constants::missing::doubleValue);
+    }
 }
 
 int meshkernelapi::Mesh2DFaceBoundsPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location) const
