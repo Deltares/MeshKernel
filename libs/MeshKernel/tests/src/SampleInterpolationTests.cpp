@@ -276,7 +276,7 @@ TEST(SampleInterpolationTests, TriangulationInterpolationWithPoints)
         EXPECT_NEAR(expectedResult[i], interpolationResult[i], tolerance);
     }
 
-    for (size_t i = 0; i < mesh->GetNumNodes(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh->GetNumNodes(); ++i)
     {
         EXPECT_NEAR(mesh->Node(i).x, xCoords[i], tolerance);
         EXPECT_NEAR(mesh->Node(i).y, yCoords[i], tolerance);
