@@ -39,6 +39,14 @@ void meshkernel::SampleInterpolator::SetData(const int propertyId, const std::sp
     m_sampleData[propertyId].assign(sampleData.begin(), sampleData.end());
 }
 
+void meshkernel::SampleInterpolator::Interpolate(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double> result) const
+{
+    // Kept empty intentionally.
+    std::span<double> xCoords;
+    std::span<double> yCoords;
+    Interpolate(propertyId, mesh, location, result, xCoords, yCoords);
+}
+
 const std::vector<double>& meshkernel::SampleInterpolator::GetSampleData(const int propertyId) const
 {
 

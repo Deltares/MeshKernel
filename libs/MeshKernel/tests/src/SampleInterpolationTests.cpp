@@ -161,7 +161,9 @@ TEST(SampleInterpolationTests, AveragingInterpolationWithMesh)
                                            0.0, 2000.0, 4000.0, 6000.0, 8000.0,
                                            0.0, 2000.0, 4000.0, 6000.0, 8000.0};
 
-    interpolator.Interpolate(propertyId, *mesh, mk::Location::Nodes, interpolationNodeResult);
+    std::span<double> xCoords;
+    std::span<double> yCoords;
+    interpolator.Interpolate(propertyId, *mesh, mk::Location::Nodes, interpolationNodeResult, xCoords, yCoords);
 
     const double tolerance = 1.0e-8;
 
@@ -183,7 +185,7 @@ TEST(SampleInterpolationTests, AveragingInterpolationWithMesh)
                                            1000.0, 3000.0, 5000.0, 7000.0,
                                            1000.0, 3000.0, 5000.0, 7000.0};
 
-    interpolator.Interpolate(propertyId, *mesh, mk::Location::Edges, interpolationEdgeResult);
+    interpolator.Interpolate(propertyId, *mesh, mk::Location::Edges, interpolationEdgeResult, xCoords, yCoords);
 
     for (size_t i = 0; i < interpolationEdgeResult.size(); ++i)
     {
@@ -198,7 +200,7 @@ TEST(SampleInterpolationTests, AveragingInterpolationWithMesh)
                                            1000.0, 3000.0, 5000.0, 7000.0,
                                            1000.0, 3000.0, 5000.0, 7000.0};
 
-    interpolator.Interpolate(propertyId, *mesh, mk::Location::Faces, interpolationFaceResult);
+    interpolator.Interpolate(propertyId, *mesh, mk::Location::Faces, interpolationFaceResult, xCoords, yCoords);
 
     for (size_t i = 0; i < interpolationFaceResult.size(); ++i)
     {
@@ -263,12 +265,20 @@ TEST(SampleInterpolationTests, TriangulationInterpolationWithPoints)
     std::vector<double> interpolationResult(mesh->GetNumNodes(), initialValue);
     std::vector<double> expectedResult{1000.0, 1000.0, 1000.0, 2000.0, 2000.0, 2000.0, 3000.0, 3000.0, 3000.0};
 
-    interpolator.Interpolate(propertyId, *mesh, mk::Location::Nodes, interpolationResult);
+    std::vector<double> xCoords(mesh->GetNumNodes());
+    std::vector<double> yCoords(mesh->GetNumNodes());
+    interpolator.Interpolate(propertyId, *mesh, mk::Location::Nodes, interpolationResult, xCoords, yCoords);
 
     const double tolerance = 1.0e-8;
 
     for (size_t i = 0; i < expectedResult.size(); ++i)
     {
         EXPECT_NEAR(expectedResult[i], interpolationResult[i], tolerance);
+    }
+
+    for (size_t i = 0; i < mesh->GetNumNodes(); ++i)
+    {
+        EXPECT_NEAR(mesh->Node(i).x, xCoords[i], tolerance);
+        EXPECT_NEAR(mesh->Node(i).y, yCoords[i], tolerance);
     }
 }

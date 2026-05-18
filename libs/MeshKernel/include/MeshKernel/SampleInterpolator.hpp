@@ -68,7 +68,13 @@ namespace meshkernel
         virtual void Interpolate(const int propertyId, const std::span<const Point> iterpolationNodes, std::span<double> result) const = 0;
 
         /// @brief Interpolate the sample data.
-        virtual void Interpolate(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double> result) const = 0;
+        void Interpolate(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double> result) const;
+
+        /// @brief Interpolate the sample data.
+        ///
+        /// Can also save the coordinate points, if both xCoordinates and yCoordinates are not empty
+        virtual void Interpolate(const int propertyId, const Mesh2D& mesh, const Location location,
+                                 std::span<double> result, std::span<double> xCoordinates, std::span<double> yCoordinates) const = 0;
 
         /// @brief Interpolate the sample data set at a single interpolation point.
         ///

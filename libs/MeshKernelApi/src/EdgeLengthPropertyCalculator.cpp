@@ -51,6 +51,26 @@ void meshkernelapi::EdgeLengthPropertyCalculator::Calculate(const MeshKernelStat
 
     std::span<double> edgeLengths(geometryList.values, state.m_mesh2d->GetNumEdges());
     meshkernel::algo::ComputeMeshEdgeLength(*state.m_mesh2d, edgeLengths);
+
+    if (geometryList.coordinates_x != nullptr && geometryList.coordinates_y != nullptr)
+    {
+        for (size_t e = 0; e < state.m_mesh2d->GetNumEdges(); ++e)
+        {
+            const meshkernel::Edge& edge = state.m_mesh2d->GetEdge(e);
+
+            if (meshkernel::IsValidEdge(edge))
+            {
+                meshkernel::Point midPoint = 0.5 * (state.m_mesh2d->Node(edge.first) + state.m_mesh2d->Node(edge.second));
+                geometryList.coordinates_x[e] = midPoint.x;
+                geometryList.coordinates_y[e] = midPoint.y;
+            }
+            else
+            {
+                geometryList.coordinates_x[e] = meshkernel::constants::missing::doubleValue;
+                geometryList.coordinates_y[e] = meshkernel::constants::missing::doubleValue;
+            }
+        }
+    }
 }
 
 int meshkernelapi::EdgeLengthPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location) const

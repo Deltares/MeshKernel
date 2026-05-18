@@ -247,12 +247,14 @@ double meshkernel::SampleAveragingInterpolator::ComputeOnPolygon(const int prope
     return constants::missing::doubleValue;
 }
 
-void meshkernel::SampleAveragingInterpolator::InterpolateAtNodes(const int propertyId, const Mesh2D& mesh, std::span<double>& result) const
+void meshkernel::SampleAveragingInterpolator::InterpolateAtNodes(const int propertyId, const Mesh2D& mesh,
+                                                                 std::span<double>& result, std::span<double> xCoordinates, std::span<double> yCoordinates) const
 {
     std::vector<Point> dualFacePolygon;
     dualFacePolygon.reserve(MaximumNumberOfEdgesPerNode);
     std::vector<Sample> sampleCache;
     sampleCache.reserve(100);
+    const bool saveInterpolationPoints = xCoordinates.size() != 0 && yCoordinates.size() != 0;
 
     std::vector<Point> edgeCentres = algo::ComputeEdgeCentres(mesh);
 
@@ -264,9 +266,17 @@ void meshkernel::SampleAveragingInterpolator::InterpolateAtNodes(const int prope
 
         if (!dualFacePolygon.empty())
         {
+            const Point& node = mesh.Node(n);
+
+            if (saveInterpolationPoints)
+            {
+                xCoordinates[n] = node.x;
+                yCoordinates[n] = node.y;
+            }
+
             resultValue = ComputeOnPolygon(propertyId,
                                            dualFacePolygon,
-                                           mesh.Node(n),
+                                           node,
                                            mesh.m_projection,
                                            sampleCache);
         }
@@ -277,9 +287,10 @@ void meshkernel::SampleAveragingInterpolator::InterpolateAtNodes(const int prope
 
 void meshkernel::SampleAveragingInterpolator::InterpolateAtEdgeCentres(const Mesh2D& mesh,
                                                                        const std::span<double>& nodeResult,
-                                                                       std::span<double>& result) const
+                                                                       std::span<double>& result, std::span<double> xCoordinates, std::span<double> yCoordinates) const
 {
     std::ranges::fill(result, constants::missing::doubleValue);
+    const bool saveInterpolationPoints = xCoordinates.size() != 0 && yCoordinates.size() != 0;
 
     for (UInt e = 0; e < mesh.GetNumEdges(); ++e)
     {
@@ -295,17 +306,26 @@ void meshkernel::SampleAveragingInterpolator::InterpolateAtEdgeCentres(const Mes
 
         if (firstValue != constants::missing::doubleValue && secondValue != constants::missing::doubleValue)
         {
+            if (saveInterpolationPoints)
+            {
+                Point edgeCentre = 0.5 * (mesh.Node(first) + mesh.Node(second));
+                xCoordinates[e] = edgeCentre.x;
+                yCoordinates[e] = edgeCentre.y;
+            }
+
             result[e] = 0.5 * (firstValue + secondValue);
         }
     }
 }
 
-void meshkernel::SampleAveragingInterpolator::InterpolateAtFaces(const int propertyId, const Mesh2D& mesh, std::span<double>& result) const
+void meshkernel::SampleAveragingInterpolator::InterpolateAtFaces(const int propertyId, const Mesh2D& mesh,
+                                                                 std::span<double>& result, std::span<double> xCoordinates, std::span<double> yCoordinates) const
 {
     std::vector<Point> polygonNodesCache(MaximumNumberOfEdgesPerNode + 1);
     std::ranges::fill(result, constants::missing::doubleValue);
     std::vector<Sample> sampleCache;
     sampleCache.reserve(100);
+    const bool saveInterpolationPoints = xCoordinates.size() != 0 && yCoordinates.size() != 0;
 
     for (UInt f = 0; f < mesh.GetNumFaces(); ++f)
     {
@@ -314,6 +334,12 @@ void meshkernel::SampleAveragingInterpolator::InterpolateAtFaces(const int prope
         for (UInt n = 0; n < mesh.GetNumFaceEdges(f); ++n)
         {
             polygonNodesCache.emplace_back(mesh.m_facesMassCenters[f] + (mesh.Node(mesh.m_facesNodes[f][n]) - mesh.m_facesMassCenters[f]) * m_interpolationParameters.relative_search_radius);
+        }
+
+        if (saveInterpolationPoints)
+        {
+            xCoordinates[f] = mesh.m_facesMassCenters[f].x;
+            yCoordinates[f] = mesh.m_facesMassCenters[f].y;
         }
 
         // Close the polygon
@@ -328,7 +354,8 @@ void meshkernel::SampleAveragingInterpolator::InterpolateAtFaces(const int prope
     }
 }
 
-void meshkernel::SampleAveragingInterpolator::Interpolate(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double> result) const
+void meshkernel::SampleAveragingInterpolator::Interpolate(const int propertyId, const Mesh2D& mesh, const Location location,
+                                                          std::span<double> result, std::span<double> xCoordinates, std::span<double> yCoordinates) const
 {
     std::ranges::fill(result, constants::missing::doubleValue);
 
@@ -337,6 +364,9 @@ void meshkernel::SampleAveragingInterpolator::Interpolate(const int propertyId, 
     std::span<double> nodeResult;
 
     using enum Location;
+
+    std::ranges::fill(xCoordinates, constants::missing::doubleValue);
+    std::ranges::fill(yCoordinates, constants::missing::doubleValue);
 
     if (location == Nodes)
     {
@@ -350,17 +380,28 @@ void meshkernel::SampleAveragingInterpolator::Interpolate(const int propertyId, 
 
     if (location == Nodes || location == Edges)
     {
-        InterpolateAtNodes(propertyId, mesh, nodeResult);
+        std::span<double> xCoordsCopy;
+        std::span<double> yCoordsCopy;
+
+        if (location == Nodes)
+        {
+            // Only save node values if Node location is selected
+            // Do a shallow copy.
+            xCoordsCopy = xCoordinates;
+            yCoordsCopy = yCoordinates;
+        }
+
+        InterpolateAtNodes(propertyId, mesh, nodeResult, xCoordsCopy, yCoordsCopy);
     }
 
     if (location == Edges)
     {
-        InterpolateAtEdgeCentres(mesh, nodeResult, result);
+        InterpolateAtEdgeCentres(mesh, nodeResult, result, xCoordinates, yCoordinates);
     }
 
     if (location == Faces)
     {
-        InterpolateAtFaces(propertyId, mesh, result);
+        InterpolateAtFaces(propertyId, mesh, result, xCoordinates, yCoordinates);
     }
 }
 

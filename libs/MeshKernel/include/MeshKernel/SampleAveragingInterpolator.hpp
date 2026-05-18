@@ -72,7 +72,8 @@ namespace meshkernel
         void Interpolate(const int propertyId, const std::span<const Point> iterpolationNodes, std::span<double> result) const override;
 
         /// @brief Interpolate the sample data set at the locationd defined.
-        void Interpolate(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double> result) const override;
+        void Interpolate(const int propertyId, const Mesh2D& mesh, const Location location,
+                         std::span<double> result, std::span<double> xCoordinates, std::span<double> yCoordinates) const override;
 
         /// @brief Interpolate the sample data set at a single interpolation point.
         ///
@@ -118,15 +119,17 @@ namespace meshkernel
                                                        std::vector<Sample>& sampleCache) const;
 
         /// @brief Interpolate at the mesh nodes
-        void InterpolateAtNodes(const int propertyId, const Mesh2D& mesh, std::span<double>& result) const;
+        void InterpolateAtNodes(const int propertyId, const Mesh2D& mesh,
+                                std::span<double>& result, std::span<double> xCoordinates, std::span<double> yCoordinates) const;
 
         /// @brief Interpolate at edge centres by averaging the node values
         void InterpolateAtEdgeCentres(const Mesh2D& mesh,
                                       const std::span<double>& nodeResult,
-                                      std::span<double>& result) const;
+                                      std::span<double>& result, std::span<double> xCoordinates, std::span<double> yCoordinates) const;
 
         /// @brief Interpolate at the face centres
-        void InterpolateAtFaces(const int propertyId, const Mesh2D& mesh, std::span<double>& result) const;
+        void InterpolateAtFaces(const int propertyId, const Mesh2D& mesh,
+                                std::span<double>& result, std::span<double> xCoordinates, std::span<double> yCoordinates) const;
 
         /// @brief The sample points
         std::vector<Point> m_samplePoints;

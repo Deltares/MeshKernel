@@ -56,6 +56,12 @@ void meshkernelapi::NetlinkContourPolygonPropertyCalculator::Calculate(const Mes
         xCoord[i] = netlinkContourPolygons[i].x;
         yCoord[i] = netlinkContourPolygons[i].y;
     }
+
+    if (geometryList.values != nullptr)
+    {
+        std::span<double> values(geometryList.values, netlinkContourPolygons.size());
+        std::ranges::fill(values, meshkernel::constants::missing::doubleValue);
+    }
 }
 
 int meshkernelapi::NetlinkContourPolygonPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location) const
