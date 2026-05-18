@@ -161,9 +161,7 @@ TEST(SampleInterpolationTests, AveragingInterpolationWithMesh)
                                            0.0, 2000.0, 4000.0, 6000.0, 8000.0,
                                            0.0, 2000.0, 4000.0, 6000.0, 8000.0};
 
-    std::span<double> xCoords;
-    std::span<double> yCoords;
-    interpolator.Interpolate(propertyId, *mesh, mk::Location::Nodes, interpolationNodeResult, xCoords, yCoords);
+    interpolator.Interpolate(propertyId, *mesh, mk::Location::Nodes, interpolationNodeResult);
 
     const double tolerance = 1.0e-8;
 
@@ -185,7 +183,7 @@ TEST(SampleInterpolationTests, AveragingInterpolationWithMesh)
                                            1000.0, 3000.0, 5000.0, 7000.0,
                                            1000.0, 3000.0, 5000.0, 7000.0};
 
-    interpolator.Interpolate(propertyId, *mesh, mk::Location::Edges, interpolationEdgeResult, xCoords, yCoords);
+    interpolator.Interpolate(propertyId, *mesh, mk::Location::Edges, interpolationEdgeResult);
 
     for (size_t i = 0; i < interpolationEdgeResult.size(); ++i)
     {
@@ -200,7 +198,7 @@ TEST(SampleInterpolationTests, AveragingInterpolationWithMesh)
                                            1000.0, 3000.0, 5000.0, 7000.0,
                                            1000.0, 3000.0, 5000.0, 7000.0};
 
-    interpolator.Interpolate(propertyId, *mesh, mk::Location::Faces, interpolationFaceResult, xCoords, yCoords);
+    interpolator.Interpolate(propertyId, *mesh, mk::Location::Faces, interpolationFaceResult);
 
     for (size_t i = 0; i < interpolationFaceResult.size(); ++i)
     {

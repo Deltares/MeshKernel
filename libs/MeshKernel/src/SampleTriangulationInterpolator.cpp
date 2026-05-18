@@ -28,7 +28,8 @@
 #include "MeshKernel/SampleTriangulationInterpolator.hpp"
 #include "MeshKernel/MeshEdgeCenters.hpp"
 
-void meshkernel::SampleTriangulationInterpolator::Interpolate(const int propertyId, const Mesh2D& mesh, const Location location, std::span<double> result, std::span<double> xCoordinates, std::span<double> yCoordinates) const
+void meshkernel::SampleTriangulationInterpolator::Interpolate(const int propertyId, const Mesh2D& mesh, const Location location,
+                                                              std::span<double> result, std::span<double> xCoordinates, std::span<double> yCoordinates) const
 {
     if (!Contains(propertyId))
     {
@@ -57,7 +58,7 @@ void meshkernel::SampleTriangulationInterpolator::Interpolate(const int property
         throw ConstraintError("Unknown location");
     }
 
-    if (xCoordinates.size() != 0 && yCoordinates.size() != 0)
+    if (!xCoordinates.empty() && !yCoordinates.empty())
     {
         for (size_t i = 0; i < xCoordinates.size(); ++i)
         {

@@ -254,7 +254,7 @@ void meshkernel::SampleAveragingInterpolator::InterpolateAtNodes(const int prope
     dualFacePolygon.reserve(MaximumNumberOfEdgesPerNode);
     std::vector<Sample> sampleCache;
     sampleCache.reserve(100);
-    const bool saveInterpolationPoints = xCoordinates.size() != 0 && yCoordinates.size() != 0;
+    const bool saveInterpolationPoints = !xCoordinates.empty() && !yCoordinates.empty();
 
     std::vector<Point> edgeCentres = algo::ComputeEdgeCentres(mesh);
 
@@ -365,9 +365,6 @@ void meshkernel::SampleAveragingInterpolator::Interpolate(const int propertyId, 
 
     using enum Location;
 
-    std::ranges::fill(xCoordinates, constants::missing::doubleValue);
-    std::ranges::fill(yCoordinates, constants::missing::doubleValue);
-
     if (location == Nodes)
     {
         nodeResult = std::span<double>(result.data(), result.size());
@@ -380,18 +377,10 @@ void meshkernel::SampleAveragingInterpolator::Interpolate(const int propertyId, 
 
     if (location == Nodes || location == Edges)
     {
-        std::span<double> xCoordsCopy;
-        std::span<double> yCoordsCopy;
-
-        if (location == Nodes)
-        {
-            // Only save node values if Node location is selected
-            // Do a shallow copy.
-            xCoordsCopy = xCoordinates;
-            yCoordsCopy = yCoordinates;
-        }
-
-        InterpolateAtNodes(propertyId, mesh, nodeResult, xCoordsCopy, yCoordsCopy);
+        // Only save the node values if Node location is selected
+        InterpolateAtNodes(propertyId, mesh, nodeResult,
+                           location == Nodes ? xCoordinates : std::span<double>{},
+                           location == Nodes ? yCoordinates : std::span<double>{});
     }
 
     if (location == Edges)

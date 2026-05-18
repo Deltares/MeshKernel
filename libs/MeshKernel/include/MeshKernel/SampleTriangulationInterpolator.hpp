@@ -66,7 +66,9 @@ namespace meshkernel
 
         /// @brief Interpolate the sample data at the points for the location (nodes, edges, faces)
         void Interpolate(const int propertyId, const Mesh2D& mesh, const Location location,
-                         std::span<double> result, std::span<double> xCoordinates, std::span<double> yCoordinates) const override;
+                         std::span<double> result,
+                         std::span<double> xCoordinates = std::span<double>{},
+                         std::span<double> yCoordinates = std::span<double>{}) const override;
 
         /// @brief Interpolate the sample data set at the interpolation nodes.
         void Interpolate(const int propertyId, const std::span<const Point> iterpolationNodes,
