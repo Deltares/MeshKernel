@@ -54,7 +54,7 @@ void meshkernelapi::EdgeLengthPropertyCalculator::Calculate(const MeshKernelStat
 
     if (geometryList.coordinates_x != nullptr && geometryList.coordinates_y != nullptr)
     {
-        for (size_t e = 0; e < state.m_mesh2d->GetNumEdges(); ++e)
+      for (meshkernel::UInt e = 0; e < state.m_mesh2d->GetNumEdges(); ++e)
         {
             const meshkernel::Edge& edge = state.m_mesh2d->GetEdge(e);
 
