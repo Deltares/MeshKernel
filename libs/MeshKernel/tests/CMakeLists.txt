@@ -75,7 +75,14 @@ target_link_libraries(
     MeshKernelTestUtils
     gmock
     gtest_main
+    "/home/wcs1/SEPRAN/sepran/sepran/libsepran.a"
+    "-lgfortran"
 )
+
+    # "-lifport"
+    # "-lifcore"
+    # "-lifcoremt"
+
 
 # Make sure that coverage information is produced when using gcc
 if(ENABLE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")

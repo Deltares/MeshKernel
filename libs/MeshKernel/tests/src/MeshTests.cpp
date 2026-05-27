@@ -28,6 +28,8 @@
 #include <chrono>
 #include <gtest/gtest.h>
 #include <random>
+#include <algorithm>
+#include <execution>
 
 #include <MeshKernel/Constants.hpp>
 #include <MeshKernel/Entities.hpp>
@@ -38,6 +40,7 @@
 #include <MeshKernel/Utilities/Utilities.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
+#include <TestUtils/PolygonReader.hpp>
 
 TEST(Mesh, OneQuadTestConstructor)
 {
@@ -147,24 +150,312 @@ TEST(Mesh2D, TriangulateSamplesWithSkinnyTriangle)
     ASSERT_EQ(4, mesh.GetEdge(5).second);
 }
 
+extern "C" {
+
+    extern void mshoce_(
+        const int* jnew,           // Input: Reset indicator (Fortran Logical pointer)
+        double* coor,              // Output: Flattened array of node coordinates
+        int* kmeshc,               // Output: Connectivity/topology grid matrix
+        const int* inpelm,         // Input: Element type identifier
+        const int* nbound,         // Input: Number of boundary elements
+        double* bcord,             // Input: Coordinates of boundary control nodes
+
+        int* kbndpt,               // Input: Type flags for boundary nodes
+        int* boundary,             // Input: Edge-to-node connectivity map
+        const int* numcurvboun,    // Input: Total count of curved boundary segments
+        int* npoint,               // Output: Count of generated points
+        int* nelem,                // Output: Count of generated elements
+
+        int* holeinfo,             // Input: Structural layout parameters for holes
+        const int* nholes,         // Input: Total count of internal holes
+        const int* ncoar,          // Input: Quantity of sizing descriptors passed
+        double* coar,              // Input: Target element sizing arrays
+        int* userpoints,           // Input: Fixed target internal points
+
+        int* isurnr,               // Output: Surface structural adjacency mapping register
+        const int* numextcurves,   // Input: Auxiliary alignment curve flags
+        int* numnodextcurvs,       // Input: Node mappings for alignment paths
+
+        int* curvenumbers,         // Input: Curve curvature flags
+        double* rinput,            // Input: Supplementary sizing/weighting matrices
+        const int* nuspnt,         // Input: Count of forced target control nodes
+        const int* ndim            // Input: Domain spatial dimension identifier
+    );
+}
+
+// meshkernel::Mesh2D
+meshkernel::Mesh2D generateMesh (const meshkernel::Polygons& poly [[maybe_unused]]) {
+
+    const auto& polyline = poly.Enclosure (0).Outer ().Nodes ();
+
+
+    int nbound = static_cast<int>(polyline.size() - 0);
+    int ndim = 2;
+    int inpelm = 3; // 3-node linear triangles
+
+    // 1. Interleave coordinates into bcord: [x1, y1, x2, y2...]
+    // Flatten the boundary polygon.
+    std::vector<double> bcord(2 * nbound); // TODO should be 2 * nbound
+
+    for (int i = 0; i < nbound; ++i) {
+        bcord[2 * i]     = polyline[i].x;
+        bcord[2 * i + 1] = polyline[i].y;
+    }
+
+    // 2. Map kbndpt: Fortran uses 1-based indexing
+    std::vector<int> kbndpt(nbound, 0);
+
+    for (int i = 0; i < nbound; ++i) {
+        kbndpt[i] = i + 1;
+    }
+
+
+    // 3. Map boundary segments: Fortran boundary(2, numcurvboun)
+    // Flattened in Column-Major order: segment 1 points, then segment 2 points...
+    int numcurvboun = 1;
+    std::vector<int> boundary(2 * numcurvboun);
+
+
+    for (int i = 0; i < numcurvboun; ++i) {
+        boundary[2 * i]     = i + 1;
+        boundary[2 * i + 1]     = i + 1;
+    }
+
+    // 4. Compute coar array for local polyline point matching
+    int ncoar = 0;//nbound;
+    std::vector<double> coar(1, 0.0);//3 * nbound);
+
+    double min_coar = 1e20;
+    for (int i = 0; i < nbound; ++i) {
+        // If i == nbound - 1 then get the second point in the list, as the last one is the same as the first
+        int next = (i == nbound - 1) ? 1 : i + 1;
+        double dx = polyline[next].x - polyline[i].x;
+        double dy = polyline[next].y - polyline[i].y;
+
+        min_coar = std::min (min_coar, std::sqrt(dx*dx + dy*dy));
+    }
+
+
+    // 5. Dynamic Memory Allocation for Output Buffers
+    auto [estimated_area, centre, direction] = poly.Enclosure (0).Outer ().FaceAreaAndCenterOfMass(); // Estimate or compute dynamically via Shoelace formula
+
+
+    int estimated_elements = static_cast<int>((estimated_area / (0.433 * min_coar * min_coar)) * 3.5);
+    int max_nodes = nbound + 3 * estimated_elements;
+    int max_elements = 2 * max_nodes;
+
+    std::cout << " estimated size " << estimated_elements << "  " << max_nodes << "  "<< max_elements << std::endl;
+    std::cout << " estimated_area " << estimated_area << "  " << min_coar << "   " << estimated_elements << std::endl;
+
+
+    std::vector<double> coor(ndim * max_nodes, 0.0);
+    std::vector<int> kmeshc(inpelm * max_elements, 0); // 4 indices per element tracking matrix
+
+    // 6. Dummies and Placeholders
+    int nholes = 0;
+    std::vector<int> holeinfo(4, 0);// = {0, 0, 0, 0}; // 2x2 empty matrix
+    // int dummy_userpoint = 0;
+    int nuspnt = 0;
+    int isurnr = 1; // Initialize tracker to 0
+    int numextcurves = 0;
+
+    std::vector<int> numnodextcurvs(1, 0);
+    std::vector<int> curvenumbers(1, 0);
+    std::vector<double> rinput(1, 0.0);
+    std::vector<int> userpoints(1, 0);
+
+    // 7. Make the Call
+    int jnew_fortran = 1;
+    int npoint = max_nodes;
+    int nelem = max_elements;
+
+
+    mshoce_(&jnew_fortran, coor.data(), kmeshc.data(), &inpelm, &nbound, bcord.data(),
+            kbndpt.data(), boundary.data(), &numcurvboun, &npoint, &nelem,
+            holeinfo.data(), &nholes, &ncoar, coar.data(), userpoints.data(),
+            &isurnr, &numextcurves, numnodextcurvs.data(), curvenumbers.data(),
+            rinput.data(), &nuspnt, &ndim);
+
+    std::vector<meshkernel::Point> nodes (npoint);
+
+    for (int i = 0; i < npoint; ++i)
+    {
+        nodes [i].x = coor [2 * i];
+        nodes [i].y = coor [2 * i + 1];
+    }
+
+    // std::vector<meshkernel::Edge> edges;
+    // edges.reserve (3 * nelem);
+
+    // for (int i = 0; i < nelem; ++i) {
+    //     int idx = 3 * i;
+
+    //     meshkernel::UInt n1 = static_cast<meshkernel::UInt>(kmeshc [idx] - 1);
+    //     meshkernel::UInt n2 = static_cast<meshkernel::UInt>(kmeshc [idx+ 1] - 1);
+    //     meshkernel::UInt n3 = static_cast<meshkernel::UInt>(kmeshc [idx + 2] - 1);
+
+    //     meshkernel::Edge e1 = n1 < n2 ? meshkernel::Edge(n1, n2) : meshkernel::Edge (n2, n1);
+    //     meshkernel::Edge e2 = n2 < n3 ? meshkernel::Edge(n2, n3) : meshkernel::Edge (n3, n2);
+    //     meshkernel::Edge e3 = n3 < n1 ? meshkernel::Edge(n3, n1) : meshkernel::Edge (n1, n3);
+
+    //     if (std::find(edges.begin (), edges.end (), e1) == edges.end ())
+    //     {
+    //         edges.push_back (e1);
+    //     }
+
+    //     if (std::find(edges.begin (), edges.end (), e2) == edges.end ())
+    //     {
+    //         edges.push_back (e2);
+    //     }
+
+    //     if (std::find(edges.begin (), edges.end (), e3) == edges.end ())
+    //     {
+    //         edges.push_back (e3);
+    //     }
+
+    // }
+
+    // Alternative
+
+    std::vector<meshkernel::Edge> edges (3 * nelem);
+
+    for (int i = 0; i < nelem; ++i) {
+        int idx = 3 * i;
+
+        meshkernel::UInt n1 = static_cast<meshkernel::UInt>(kmeshc [idx] - 1);
+        meshkernel::UInt n2 = static_cast<meshkernel::UInt>(kmeshc [idx+ 1] - 1);
+        meshkernel::UInt n3 = static_cast<meshkernel::UInt>(kmeshc [idx + 2] - 1);
+
+        // Which is better, reserve and push back or allocate and assign?
+        edges [idx] = n1 < n2 ? meshkernel::Edge(n1, n2) : meshkernel::Edge (n2, n1);
+        edges [idx + 1] = n2 < n3 ? meshkernel::Edge(n2, n3) : meshkernel::Edge (n3, n2);
+        edges [idx + 2] = n3 < n1 ? meshkernel::Edge(n3, n1) : meshkernel::Edge (n1, n3);
+
+        // edges.push_back (n1 < n2 ? meshkernel::Edge(n1, n2) : meshkernel::Edge (n2, n1));
+        // edges.push_back (n2 < n3 ? meshkernel::Edge(n2, n3) : meshkernel::Edge (n3, n2));
+        // edges.push_back (n3 < n1 ? meshkernel::Edge(n3, n1) : meshkernel::Edge (n1, n3));
+    }
+
+    auto edgeLessThan = [](const meshkernel::Edge& e1, const meshkernel::Edge& e2)
+    {
+        if (e1.first < e2.first)
+        {
+            return true;
+        }
+        else if (e1.first == e2.first)
+        {
+            return e1.second < e2.second;
+        }
+        else
+        {
+            return false;
+        }
+    };
+
+    std::sort(std::execution::par, edges.begin (), edges.end (), edgeLessThan);
+    auto [first, last] = std::ranges::unique(edges);
+    edges.erase(first, last);
+
+    // TODO need to pass the projection
+    // TODO probably need to handle the projection correctly when setting things up,
+    // e.g. the minimum coarseness.
+    return meshkernel::Mesh2D (edges, nodes, meshkernel::Projection::cartesian);
+}
+
 TEST(Mesh, TriangulateSamples)
 {
     // Prepare
-    std::vector<meshkernel::Point> nodes;
 
-    nodes.push_back({498.503152894023, 1645.82297461613});
-    nodes.push_back({-5.90937355559299, 814.854361678898});
-    nodes.push_back({851.30035347439, 150.079471329115});
-    nodes.push_back({1411.11078745316, 1182.22995897746});
-    nodes.push_back({501.418832237663, 1642.90729527249});
-    nodes.push_back({498.503152894023, 1645.82297461613});
+    // std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {100.0, 0.0}, {100.0, 100.0}, {0.0, 100.0}, {0.0, 0.0} };
+    // // std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {10.0, 0.0}, {10.0, 10.0}, {0.0, 10.0}, {0.0, 0.0} };
 
-    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+    // // nodes.push_back({498.503152894023, 1645.82297461613});
+    // // nodes.push_back({-5.90937355559299, 814.854361678898});
+    // // nodes.push_back({851.30035347439, 150.079471329115});
+    // // nodes.push_back({1411.11078745316, 1182.22995897746});
+    // // nodes.push_back({501.418832237663, 1642.90729527249});
+    // // nodes.push_back({498.503152894023, 1645.82297461613});
 
-    // Execute
-    const auto generatedPoints = polygons.ComputePointsInPolygons();
+    // meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
-    meshkernel::Mesh2D mesh(generatedPoints[0], polygons, meshkernel::Projection::cartesian);
+    // nodes = polygons.RefineFirstPolygon (0, 4, 25);
+    // // nodes = polygons.RefineFirstPolygon (0, 4, 2.5);
+    // // nodes = polygons.RefineFirstPolygon (0, 1, 1.0);
+    // meshkernel::Polygons polygons1(nodes, meshkernel::Projection::cartesian);
+
+
+    // for (size_t i = 0; i < nodes.size (); ++i)
+    // {
+    //     std::cout << " nodes " << i << "  " << nodes [i].x << ", " << nodes[i].y << std::endl;
+    // }
+
+
+    // nodes = polygons1.RefineFirstPolygon (4, 8, 5.0);
+    // // nodes = polygons1.RefineFirstPolygon (4, 8, 0.5);
+    // // nodes = polygons1.RefineFirstPolygon (10, 11, 2.0);
+    // meshkernel::Polygons polygons2(nodes, meshkernel::Projection::cartesian);
+
+    // // Execute
+    // const auto generatedPoints = polygons2.ComputePointsInPolygons();
+
+    // for (size_t i = 0; i < generatedPoints[0].size (); ++i)
+    // {
+    //     std::cout << " pont " << i << "  " << generatedPoints[0] [i].x << ", " << generatedPoints[0][i].y << std::endl;
+    // }
+
+
+
+    auto polys = ReadPolygons ("/home/wcs1/MeshKernel/MeshKernel01/build_deb/northbank_001b.pol", meshkernel::Projection::cartesian);
+
+    // std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {2.5, 0}, {5.0, 0.0}, {7.5, 0}, {10.0, 0.0},
+    //                                      {10.0, 2.5}, {10.0, 5.0}, {10.0, 7.5}, {10.0, 10.0},
+    //                                      {7.5, 10.0}, {5.0, 10.0}, {2.5, 10.0},  {0.0, 10.0},
+    //                                      {0.0, 7.5}, {0.0, 5.0}, {0.0, 2.5}, {0.0, 0.0}};
+
+    // // std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {5.0, 0.0}, {10.0, 0.0},
+    // //                                      {10.0, 5.0}, {10.0, 10.0}, {5.0, 10.0},
+    // //                                      {0.0, 10.0}, {0.0, 5.0}, {0.0, 0.0}};
+
+    // meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+    // auto polys = &polygons;
+    // auto mesh2 = generateMesh (polygons);
+    auto mesh2 = generateMesh (*polys);
+
+    meshkernel::SaveVtk (mesh2.Nodes (), mesh2.m_facesNodes, "trianglemesh.vtu");
+
+    // auto polys = ReadPolygons ("/home/wcs1/MeshKernel/MeshKernel01/build_deb/northbank_001b.pol", meshkernel::Projection::cartesian);
+    // generateMesh (*polys);
+    return;
+
+    const auto generatedPoints = polys->ComputePointsInPolygons();
+
+    auto pnts = polys->GatherAllEnclosureNodes ();
+
+    for (size_t i = 0; i < pnts.size (); ++i )
+    {
+        for (size_t j = i + 1; j < pnts.size (); ++j )
+        {
+
+            if (pnts[i] == pnts[j])
+            {
+                std::cout << " equal points " << i << "  "  << j << "  " << pnts[i].x << ", " << pnts[i].y << std::endl;
+            }
+
+        }
+    }
+
+    meshkernel::Mesh2D mesh(generatedPoints[0], *polys, meshkernel::Projection::cartesian);
+
+
+    // std::cout << std::endl;
+    // std::cout << std::endl;
+
+    // for (size_t i = 0; i < mesh.Nodes ().size (); ++i)
+    // {
+    //     std::cout << " pont " << i << "  " << mesh.Nodes ()[i].x << ", " << mesh.Nodes ()[i].y << std::endl;
+    // }
+
+    meshkernel::SaveVtk (mesh.Nodes (), mesh.m_facesNodes, "trianglemesh.vtu");
 }
 
 TEST(Mesh, TwoTrianglesDuplicatedEdges)
