@@ -151,20 +151,35 @@ TEST(Mesh2D, TriangulateSamplesWithSkinnyTriangle)
     ASSERT_EQ(4, mesh.GetEdge(5).second);
 }
 
+TEST(Mesh, TriangulateSamples)
+{
+    // Prepare
+    std::vector<meshkernel::Point> nodes;
+
+    nodes.push_back({498.503152894023, 1645.82297461613});
+    nodes.push_back({-5.90937355559299, 814.854361678898});
+    nodes.push_back({851.30035347439, 150.079471329115});
+    nodes.push_back({1411.11078745316, 1182.22995897746});
+    nodes.push_back({501.418832237663, 1642.90729527249});
+    nodes.push_back({498.503152894023, 1645.82297461613});
+
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+
+    // Execute
+    const auto generatedPoints = polygons.ComputePointsInPolygons();
+
+    meshkernel::Mesh2D mesh(generatedPoints[0], polygons, meshkernel::Projection::cartesian);
+}
+
 TEST(Mesh, TriangulateGridWithHoleSepran)
 {
 
-    std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {2.5, 0.0},  {5.0, 0}, {7.5, 0.0}, {10.0, 0.0},
-                                         {10.0, 2.5}, {10.0, 5.0}, {10.0, 7.5}, {10.0, 10.0},
-                                         {7.5, 10.0}, {5.0, 10.0}, {2.5, 10.0}, {0.0, 10.0},
-                                         {0.0, 7.5}, {0.0, 5.0}, {0.0, 2.5}, {0.0, 0.0},
-                                         {-998.0, -998.0},
-                                         {2.0, 2.0}, {3.5, 2.0}, {5.0, 2.0}, {5.0, 3.5}, {5.0, 5.0}, {2.0, 5.0}, {2.0, 2.0}};
+    std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {2.5, 0.0}, {5.0, 0}, {7.5, 0.0}, {10.0, 0.0}, {10.0, 2.5}, {10.0, 5.0}, {10.0, 7.5}, {10.0, 10.0}, {7.5, 10.0}, {5.0, 10.0}, {2.5, 10.0}, {0.0, 10.0}, {0.0, 7.5}, {0.0, 5.0}, {0.0, 2.5}, {0.0, 0.0}, {-998.0, -998.0}, {2.0, 2.0}, {3.5, 2.0}, {5.0, 2.0}, {5.0, 3.5}, {5.0, 5.0}, {2.0, 5.0}, {2.0, 2.0}};
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
     meshkernel::SepranTriangulationGenerator generator;
-    auto mesh2 = generator.generate (polygons);
+    auto mesh2 = generator.generate(polygons);
 
     std::vector<meshkernel::UInt> expectedEdgeStart{0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 5, 5, 5, 6, 6, 6, 6, 7, 7, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 18, 18, 19, 19, 19, 20, 20, 20, 20, 21, 22, 23, 24, 24, 24, 25, 26};
     std::vector<meshkernel::UInt> expectedEdgeEnd{1, 15, 16, 2, 16, 17, 3, 17, 18, 4, 5, 18, 22, 5, 6, 22, 23, 7, 23, 24, 27, 8, 27, 9, 27, 10, 26, 27, 11, 25, 26, 12, 13, 25, 13, 14, 21, 25, 15, 21, 16, 21, 17, 21, 18, 19, 22, 20, 22, 23, 21, 23, 24, 25, 25, 23, 24, 25, 26, 27, 26, 27};
@@ -172,26 +187,24 @@ TEST(Mesh, TriangulateGridWithHoleSepran)
     std::vector<double> expectedNodeX{0, 2.5, 5, 7.5, 10, 10, 10, 10, 10, 7.5, 5, 2.5, 0, 0, 0, 0, 2, 3.5, 5, 5, 5, 2, 6.967815551, 7.104568177, 6.730464586, 4.552597509, 6.301132176, 8.595816778};
     std::vector<double> expectedNodeY{0, 0, 0, 0, 0, 2.5, 5, 7.5, 10, 10, 10, 10, 10, 7.5, 5, 2.5, 2, 2, 2, 3.5, 5, 5, 2.750000179, 4.250000179, 6.528037461, 7.250544703, 8.877539953, 8.082877681};
 
-    ASSERT_EQ (mesh2->GetNumNodes (), 28);
-    ASSERT_EQ (mesh2->GetNumEdges (), 62);
-    ASSERT_EQ (mesh2->GetNumFaces (), 34);
+    ASSERT_EQ(mesh2->GetNumNodes(), 28);
+    ASSERT_EQ(mesh2->GetNumEdges(), 62);
+    ASSERT_EQ(mesh2->GetNumFaces(), 34);
 
     const double tolerance = 1.0e-8;
 
-    for (size_t i = 0; i < mesh2->GetNumNodes (); ++i)
+    for (size_t i = 0; i < mesh2->GetNumNodes(); ++i)
     {
-        EXPECT_NEAR (expectedNodeX [i], mesh2->Node (i).x, tolerance);
-        EXPECT_NEAR (expectedNodeY [i], mesh2->Node (i).y, tolerance);
+        EXPECT_NEAR(expectedNodeX[i], mesh2->Node(i).x, tolerance);
+        EXPECT_NEAR(expectedNodeY[i], mesh2->Node(i).y, tolerance);
     }
 
-    for (size_t i = 0; i < mesh2->GetNumEdges (); ++i)
+    for (size_t i = 0; i < mesh2->GetNumEdges(); ++i)
     {
-        EXPECT_EQ (expectedEdgeStart [i], mesh2->GetEdge (i).first);
-        EXPECT_EQ (expectedEdgeEnd [i], mesh2->GetEdge (i).second);
+        EXPECT_EQ(expectedEdgeStart[i], mesh2->GetEdge(i).first);
+        EXPECT_EQ(expectedEdgeEnd[i], mesh2->GetEdge(i).second);
     }
-
 }
-
 
 TEST(Mesh, TwoTrianglesDuplicatedEdges)
 {
