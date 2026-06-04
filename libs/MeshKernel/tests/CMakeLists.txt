@@ -75,8 +75,7 @@ target_link_libraries(
     MeshKernelTestUtils
     gmock
     gtest_main
-    "/home/wcs1/SEPRAN/sepran/sepran/libsepran.a"
-    "-lgfortran"
+    Sepran
 )
 
     # "-lifport"
