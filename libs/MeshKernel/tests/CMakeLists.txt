@@ -78,11 +78,6 @@ target_link_libraries(
     Sepran
 )
 
-    # "-lifport"
-    # "-lifcore"
-    # "-lifcoremt"
-
-
 # Make sure that coverage information is produced when using gcc
 if(ENABLE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options(

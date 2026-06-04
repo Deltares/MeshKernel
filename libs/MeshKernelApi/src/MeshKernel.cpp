@@ -84,6 +84,7 @@
 #include <MeshKernel/SplineAlgorithms.hpp>
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernel/SplitRowColumnOfMesh.hpp>
+#include <MeshKernel/TriangulationGenerator.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
 #include <MeshKernel/UndoActions/UndoAction.hpp>
@@ -1960,11 +1961,13 @@ namespace meshkernelapi
 
             const meshkernel::Polygons polygon(polygonPointsVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            // generate samples in the first polygonal enclosure
-            auto const generatedPoints = polygon.Enclosure(0).GeneratePoints(scaleFactor < 0.0 ? meshkernel::constants::missing::doubleValue : scaleFactor);
+            meshkernel::TriangulationGenerator* generator = new meshkernel::SimpleTriangulationGenerator(scaleFactor);
 
-            const meshkernel::Mesh2D mesh(generatedPoints, polygon, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(mesh), meshKernelId);
+            // // generate samples in the first polygonal enclosure
+            // auto const generatedPoints = polygon.Enclosure(0).GeneratePoints(scaleFactor < 0.0 ? meshkernel::constants::missing::doubleValue : scaleFactor);
+
+            // const meshkernel::Mesh2D mesh(generatedPoints, polygon, meshKernetate[meshKernelId].m_mesh2d->m_projection);
+            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(*generator->generate(polygon)), meshKernelId);
         }
         catch (...)
         {
