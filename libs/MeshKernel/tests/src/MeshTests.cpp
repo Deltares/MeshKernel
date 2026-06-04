@@ -186,6 +186,8 @@ extern "C" {
 // meshkernel::Mesh2D
 meshkernel::Mesh2D generateMesh (const meshkernel::Polygons& poly [[maybe_unused]]) {
 
+    // auto polyline = poly.Enclosure (0).Outer ().Nodes ();
+    // std::ranges::reverse(polyline);
     const auto& polyline = poly.Enclosure (0).Outer ().Nodes ();
 
 
