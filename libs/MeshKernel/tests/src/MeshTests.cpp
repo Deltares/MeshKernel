@@ -37,6 +37,7 @@
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/TriangulationGenerator.hpp>
 #include <MeshKernel/Utilities/Utilities.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
@@ -150,312 +151,47 @@ TEST(Mesh2D, TriangulateSamplesWithSkinnyTriangle)
     ASSERT_EQ(4, mesh.GetEdge(5).second);
 }
 
-// extern "C"
-// {
-
-//     extern void mshoce_(
-//         const int* jnew,   // Input: Reset indicator (Fortran Logical pointer)
-//         double* coor,      // Output: Flattened array of node coordinates
-//         int* kmeshc,       // Output: Connectivity/topology grid matrix
-//         const int* inpelm, // Input: Element type identifier
-//         const int* nbound, // Input: Number of boundary elements
-//         double* bcord,     // Input: Coordinates of boundary control nodes
-
-//         int* kbndpt,            // Input: Type flags for boundary nodes
-//         int* boundary,          // Input: Edge-to-node connectivity map
-//         const int* numcurvboun, // Input: Total count of curved boundary segments
-//         int* npoint,            // Output: Count of generated points
-//         int* nelem,             // Output: Count of generated elements
-
-//         int* holeinfo,     // Input: Structural layout parameters for holes
-//         const int* nholes, // Input: Total count of internal holes
-//         const int* ncoar,  // Input: Quantity of sizing descriptors passed
-//         double* coar,      // Input: Target element sizing arrays
-//         int* userpoints,   // Input: Fixed target internal points
-
-//         int* isurnr,             // Output: Surface structural adjacency mapping register
-//         const int* numextcurves, // Input: Auxiliary alignment curve flags
-//         int* numnodextcurvs,     // Input: Node mappings for alignment paths
-
-//         int* curvenumbers, // Input: Curve curvature flags
-//         double* rinput,    // Input: Supplementary sizing/weighting matrices
-//         const int* nuspnt, // Input: Count of forced target control nodes
-//         const int* ndim    // Input: Domain spatial dimension identifier
-//     );
-// }
-
-// double minimumEdgeDelta(const std::vector<meshkernel::Point>& polygonNodes)
-// {
-//     double delta = 1.0e20;
-
-//     for (size_t i = 0; i + 1 < polygonNodes.size(); ++i)
-//     {
-//         double dx = polygonNodes[i + 1].x - polygonNodes[i].x;
-//         double dy = polygonNodes[i + 1].y - polygonNodes[i].y;
-
-//         delta = std::min(delta, std::sqrt(dx * dx + dy * dy));
-//     }
-
-//     return delta;
-// }
-
-// std::vector<std::reference_wrapper<const meshkernel::Polygon>> generatePolygonReferences(const meshkernel::Polygons& polygon)
-// {
-//     const auto& enclosure = polygon.Enclosure(0);
-
-//     std::vector<std::reference_wrapper<const meshkernel::Polygon>> boundaryLoops;
-//     boundaryLoops.reserve(1 + enclosure.NumberOfInner());
-//     boundaryLoops.emplace_back(enclosure.Outer());
-
-//     for (meshkernel::UInt i = 0; i < enclosure.NumberOfInner(); ++i)
-//     {
-//         boundaryLoops.emplace_back(enclosure.Inner(i));
-//     }
-
-//     return boundaryLoops;
-// }
-
-// std::vector<meshkernel::Point> pointsFromFlatArray(const std::vector<double>& coordinates, const int numberOfPoints)
-// {
-//     std::vector<meshkernel::Point> meshNodes(numberOfPoints);
-
-//     for (int i = 0; i < numberOfPoints; ++i)
-//     {
-//         meshNodes[i].x = coordinates[2 * i];
-//         meshNodes[i].y = coordinates[2 * i + 1];
-//     }
-
-//     return meshNodes;
-// }
-
-// std::tuple<std::vector<meshkernel::Edge>, std::vector<std::vector<meshkernel::UInt>>, std::vector<std::uint8_t>> gatherEdgesAndFaces(const std::vector<int>& kmeshc, const int numberOfElements)
-// {
-
-//     std::vector<meshkernel::Edge> edges(3 * numberOfElements);
-//     std::vector<std::vector<meshkernel::UInt>> faceNodes(numberOfElements);
-//     std::vector<std::uint8_t> numFaceNodes(numberOfElements, 0);
-
-//     // Gather all edges in the mesh
-//     // The first stage will find shared edges twice, once for each triangle. The duplicate will be removed later.
-//     for (int i = 0; i < numberOfElements; ++i)
-//     {
-//         int index = 3 * i;
-
-//         meshkernel::UInt n1 = static_cast<meshkernel::UInt>(kmeshc[index] - 1);
-//         meshkernel::UInt n2 = static_cast<meshkernel::UInt>(kmeshc[index + 1] - 1);
-//         meshkernel::UInt n3 = static_cast<meshkernel::UInt>(kmeshc[index + 2] - 1);
-
-//         // Which is better, reserve and push back or allocate and assign?
-//         edges[index] = n1 < n2 ? meshkernel::Edge(n1, n2) : meshkernel::Edge(n2, n1);
-//         edges[index + 1] = n2 < n3 ? meshkernel::Edge(n2, n3) : meshkernel::Edge(n3, n2);
-//         edges[index + 2] = n3 < n1 ? meshkernel::Edge(n3, n1) : meshkernel::Edge(n1, n3);
-
-//         // Set the nodes of the element.
-//         faceNodes[i].resize(3);
-//         faceNodes[i][0] = n1;
-//         faceNodes[i][1] = n2;
-//         faceNodes[i][2] = n3;
-
-//         // Indicate that there are 3 nodes for this element
-//         numFaceNodes[i] = 3;
-//     }
-
-//     // Remove the duplicated edges.
-//     // std::pair has a predefined less-than (Edge is a std;:pair<UInt>)
-//     std::sort(std::execution::par, edges.begin(), edges.end());
-//     auto [first, last] = std::ranges::unique(edges);
-//     edges.erase(first, last);
-
-//     return {edges, faceNodes, numFaceNodes};
-// }
-
-// meshkernel::Mesh2D generateMesh(const meshkernel::Polygons& poly)
-// {
-//     std::vector<std::reference_wrapper<const meshkernel::Polygon>> boundaryLoops(generatePolygonReferences(poly));
-
-//     const int numberOfBoundaryNodes = std::accumulate(boundaryLoops.begin(), boundaryLoops.end(), 0, [](int sum, const auto& poly)
-//                                                       { return sum + static_cast<int>(poly.get().Size()); });
-
-//     const int dimension = 2;
-//     const int elementIdentifier = 3; // 3-node linear triangles
-//     const int numberOfPolygons = static_cast<int>(boundaryLoops.size());
-//     const int numberOfHoles = numberOfPolygons - 1;
-
-//     // 1. Interleave coordinates into bcord: [x1, y1, x2, y2...]
-//     // Flatten the outer polygon followed by each inner polygon, without separators.
-//     std::vector<double> boundaryCoordinates(2 * numberOfBoundaryNodes);
-
-//     // 2. Map edgeNodeConnectivity: Fortran uses 1-based indexing
-//     std::vector<int> edgeNodeConnectivity(numberOfBoundaryNodes, 0);
-
-//     // 3. Map boundary segments: Fortran boundary(2, numberOfPolygons)
-//     // One curve entry per closed loop, flattened in column-major order.
-
-//     std::vector<int> boundaryConnectivity(2 * numberOfPolygons);
-
-//     // 4. Compute elementSizing array for local polyline point matching
-//     const int numberElementSizing = 0;         // numberOfBoundaryNodes;
-//     std::vector<double> elementSizing(1, 0.0); // 3 * numberOfBoundaryNodes);
-
-//     int pointOffset = 0;
-
-//     for (int loopIndex = 0; loopIndex < numberOfPolygons; ++loopIndex)
-//     {
-//         const auto& loop = boundaryLoops[loopIndex].get().Nodes();
-
-//         boundaryConnectivity[2 * loopIndex] = loopIndex + 1;
-//         boundaryConnectivity[2 * loopIndex + 1] = pointOffset + 1;
-
-//         for (int i = 0; i < static_cast<int>(loop.size()); ++i)
-//         {
-//             boundaryCoordinates[2 * (pointOffset + i)] = loop[i].x;
-//             boundaryCoordinates[2 * (pointOffset + i) + 1] = loop[i].y;
-//             edgeNodeConnectivity[pointOffset + i] = pointOffset + i + 1;
-//         }
-
-//         pointOffset += static_cast<int>(loop.size());
-//     }
-
-//     // 5. Dynamic Memory Allocation for Output Buffers
-//     // Get estimate of area covered by polygon, subtracting area covered by holes
-//     const double estimatedArea = poly.Enclosure(0).ComputeSurfaceArea();
-//     // Compute the minimum spacing between points of the polygon, both outer and all inner polygons
-//     const auto [minimumDelta, _] = poly.Enclosure(0).SegmentLengthExtrema();
-
-//     const int estimatedNumberOfElements = static_cast<int>((estimatedArea / (0.433 * minimumDelta * minimumDelta)) * 3.5);
-//     const int maximumNumberOfNodes = numberOfBoundaryNodes + 3 * estimatedNumberOfElements;
-//     const int maximumNumberOfElements = 2 * maximumNumberOfNodes;
-
-//     std::vector<double> triangulationNodes(dimension * maximumNumberOfNodes, 0.0);
-//     std::vector<int> triangulationElementNodes(elementIdentifier * maximumNumberOfElements, 0);
-
-//     // 6. Dummies and Placeholders
-//     std::vector<int> holeinfo(2 * (numberOfHoles + 2), 0);
-//     int forcedControlPoints = 0;
-//     int surfaceSequenceNumber = 1;
-//     int auxiliaryAlignment = 0;
-
-//     std::vector<int> numnodextcurvs(1, 0);
-//     std::vector<int> curvenumbers(1, 0);
-//     std::vector<double> rinput(1, 0.0);
-//     std::vector<int> userpoints(1, 0);
-
-//     // 7. Make the Call
-//     int newMesh = 1;
-//     int numberOfPoints = maximumNumberOfNodes;
-//     int numberOfElements = maximumNumberOfElements;
-
-//     mshoce_(&newMesh, triangulationNodes.data(), triangulationElementNodes.data(), &elementIdentifier, &numberOfBoundaryNodes, boundaryCoordinates.data(),
-//             edgeNodeConnectivity.data(), boundaryConnectivity.data(), &numberOfPolygons, &numberOfPoints, &numberOfElements,
-//             holeinfo.data(), &numberOfHoles, &numberElementSizing, elementSizing.data(), userpoints.data(),
-//             &surfaceSequenceNumber, &auxiliaryAlignment, numnodextcurvs.data(), curvenumbers.data(),
-//             rinput.data(), &forcedControlPoints, &dimension);
-
-//     // Recover array of Points
-//     std::vector<meshkernel::Point> meshNodes(pointsFromFlatArray(triangulationNodes, numberOfPoints));
-
-//     // Recover arrays of edges, face-node connectivity and number of nodes per face.
-//     auto [edges, faceNodes, numFaceNodes] = gatherEdgesAndFaces(triangulationElementNodes, numberOfElements);
-
-//     return meshkernel::Mesh2D(edges, meshNodes, faceNodes, numFaceNodes, poly.GetProjection());
-// }
-
-#if 0
-
-TEST(Mesh, TriangulateSamples)
+TEST(Mesh, TriangulateGridWithHoleSepran)
 {
-    // Prepare
 
-    // std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {100.0, 0.0}, {100.0, 100.0}, {0.0, 100.0}, {0.0, 0.0} };
-    // // std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {10.0, 0.0}, {10.0, 10.0}, {0.0, 10.0}, {0.0, 0.0} };
-
-    // // nodes.push_back({498.503152894023, 1645.82297461613});
-    // // nodes.push_back({-5.90937355559299, 814.854361678898});
-    // // nodes.push_back({851.30035347439, 150.079471329115});
-    // // nodes.push_back({1411.11078745316, 1182.22995897746});
-    // // nodes.push_back({501.418832237663, 1642.90729527249});
-    // // nodes.push_back({498.503152894023, 1645.82297461613});
-
-    // meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
-
-    // nodes = polygons.RefineFirstPolygon (0, 4, 25);
-    // // nodes = polygons.RefineFirstPolygon (0, 4, 2.5);
-    // // nodes = polygons.RefineFirstPolygon (0, 1, 1.0);
-    // meshkernel::Polygons polygons1(nodes, meshkernel::Projection::cartesian);
-
-    // for (size_t i = 0; i < nodes.size (); ++i)
-    // {
-    //     std::cout << " nodes " << i << "  " << nodes [i].x << ", " << nodes[i].y << std::endl;
-    // }
-
-    // nodes = polygons1.RefineFirstPolygon (4, 8, 5.0);
-    // // nodes = polygons1.RefineFirstPolygon (4, 8, 0.5);
-    // // nodes = polygons1.RefineFirstPolygon (10, 11, 2.0);
-    // meshkernel::Polygons polygons2(nodes, meshkernel::Projection::cartesian);
-
-    // // Execute
-    // const auto generatedPoints = polygons2.ComputePointsInPolygons();
-
-    // for (size_t i = 0; i < generatedPoints[0].size (); ++i)
-    // {
-    //     std::cout << " pont " << i << "  " << generatedPoints[0] [i].x << ", " << generatedPoints[0][i].y << std::endl;
-    // }
-
-    // auto polys = ReadPolygons ("/home/wcs1/MeshKernel/MeshKernel01/build_deb/northbank_001b.pol", meshkernel::Projection::cartesian);
-
-    // std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {0.5, 0.0}, {1.0, 0.0}, {1.5, 0.0}, {2.0, 0}, {2.5, 0.0}, {3.0, 0.0}, {3.5, 0.0}, {4.0, 0.0}, {4.5, 0.0}, {5.0, 0}, {5.5, 0.0}, {6.0, 0.0}, {6.5, 0.0}, {7.0, 0.0}, {7.5, 0.0}, {8.0, 0.0}, {8.5, 0.0}, {9.0, 0.0}, {9.5, 0.0}, {10.0, 0.0}, {10.0, 2.5}, {10.0, 5.0}, {10.0, 7.5}, {10.0, 10.0}, {7.5, 10.0}, {5.0, 10.0}, {2.5, 10.0}, {0.0, 10.0}, {0.0, 7.5}, {0.0, 5.0}, {0.0, 2.5}, {0.0, 0.0}};
-
-    std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {0.5, 0.0}, {1.0, 0.0}, {1.5, 0.0}, {2.0, 0}, {2.5, 0.0}, {3.0, 0.0}, {3.5, 0.0}, {4.0, 0.0}, {4.5, 0.0}, {5.0, 0}, {5.5, 0.0}, {6.0, 0.0}, {6.5, 0.0}, {7.0, 0.0}, {7.5, 0.0}, {8.0, 0.0}, {8.5, 0.0}, {9.0, 0.0}, {9.5, 0.0}, {10.0, 0.0}, {10.0, 2.5}, {10.0, 5.0}, {10.0, 7.5}, {10.0, 10.0}, {7.5, 10.0}, {5.0, 10.0}, {2.5, 10.0}, {0.0, 10.0}, {0.0, 7.5}, {0.0, 5.0}, {0.0, 2.5}, {0.0, 0.0}, {-998.0, -998.0}, {2.0, 2.0}, {2.5, 2.0}, {3.0, 2.0}, {3.5, 2.0}, {4.0, 2.0}, {4.5, 2.0}, {5.0, 2.0}, {5.0, 3.5}, {5.0, 5.0}, {2.0, 5.0}, {2.0, 2.0}, {-998.0, -998.0}, {6.0, 6.0}, {8.0, 6.0}, {8.0, 8.0}, {6.0, 8.0}, {6.0, 6.0}};
-
-    // std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {1.25, 0.0}, {2.5, 0}, {5.0, 0.0}, {6.25, 0.0}, {7.5, 0}, {8.75, 0.0}, {10.0, 0.0}, {10.0, 2.5}, {10.0, 5.0}, {10.0, 7.5}, {10.0, 10.0}, {7.5, 10.0}, {5.0, 10.0}, {2.5, 10.0}, {0.0, 10.0}, {0.0, 7.5}, {0.0, 5.0}, {0.0, 2.5}, {0.0, 0.0}};
-
-    // std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {2.5, 0}, {5.0, 0.0}, {7.5, 0}, {10.0, 0.0}, {10.0, 2.5}, {10.0, 5.0}, {10.0, 7.5}, {10.0, 10.0}, {7.5, 10.0}, {5.0, 10.0}, {2.5, 10.0}, {0.0, 10.0}, {0.0, 7.5}, {0.0, 5.0}, {0.0, 2.5}, {0.0, 0.0}, {-998.0, -998.0}, {2.0, 2.0}, {5.0, 2.0}, {5.0, 5.0}, {2.0, 5.0}, {2.0, 2.0}, {-998.0, -998.0}, {6.0, 6.0}, {8.0, 6.0}, {8.0, 8.0}, {6.0, 8.0}, {6.0, 6.0}};
-
-    // // std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {5.0, 0.0}, {10.0, 0.0},
-    // //                                      {10.0, 5.0}, {10.0, 10.0}, {5.0, 10.0},
-    // //                                      {0.0, 10.0}, {0.0, 5.0}, {0.0, 0.0}};
+    std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {2.5, 0.0},  {5.0, 0}, {7.5, 0.0}, {10.0, 0.0},
+                                         {10.0, 2.5}, {10.0, 5.0}, {10.0, 7.5}, {10.0, 10.0},
+                                         {7.5, 10.0}, {5.0, 10.0}, {2.5, 10.0}, {0.0, 10.0},
+                                         {0.0, 7.5}, {0.0, 5.0}, {0.0, 2.5}, {0.0, 0.0},
+                                         {-998.0, -998.0},
+                                         {2.0, 2.0}, {3.5, 2.0}, {5.0, 2.0}, {5.0, 3.5}, {5.0, 5.0}, {2.0, 5.0}, {2.0, 2.0}};
 
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
-    auto polys = &polygons;
-    // auto mesh2 = generateMesh (polygons);
-    auto mesh2 = generateMesh(polygons);
 
-    meshkernel::SaveVtk(mesh2.Nodes(), mesh2.m_facesNodes, "trianglemesh.vtu");
+    meshkernel::SepranTriangulationGenerator generator;
+    auto mesh2 = generator.generate (polygons);
 
-    // auto polys = ReadPolygons ("/home/wcs1/MeshKernel/MeshKernel01/build_deb/northbank_001b.pol", meshkernel::Projection::cartesian);
-    // generateMesh (*polys);
-    return;
+    std::vector<meshkernel::UInt> expectedEdgeStart{0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 5, 5, 5, 6, 6, 6, 6, 7, 7, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 18, 18, 19, 19, 19, 20, 20, 20, 20, 21, 22, 23, 24, 24, 24, 25, 26};
+    std::vector<meshkernel::UInt> expectedEdgeEnd{1, 15, 16, 2, 16, 17, 3, 17, 18, 4, 5, 18, 22, 5, 6, 22, 23, 7, 23, 24, 27, 8, 27, 9, 27, 10, 26, 27, 11, 25, 26, 12, 13, 25, 13, 14, 21, 25, 15, 21, 16, 21, 17, 21, 18, 19, 22, 20, 22, 23, 21, 23, 24, 25, 25, 23, 24, 25, 26, 27, 26, 27};
 
-    const auto generatedPoints = polys->ComputePointsInPolygons();
+    std::vector<double> expectedNodeX{0, 2.5, 5, 7.5, 10, 10, 10, 10, 10, 7.5, 5, 2.5, 0, 0, 0, 0, 2, 3.5, 5, 5, 5, 2, 6.967815551, 7.104568177, 6.730464586, 4.552597509, 6.301132176, 8.595816778};
+    std::vector<double> expectedNodeY{0, 0, 0, 0, 0, 2.5, 5, 7.5, 10, 10, 10, 10, 10, 7.5, 5, 2.5, 2, 2, 2, 3.5, 5, 5, 2.750000179, 4.250000179, 6.528037461, 7.250544703, 8.877539953, 8.082877681};
 
-    auto pnts = polys->GatherAllEnclosureNodes();
+    ASSERT_EQ (mesh2->GetNumNodes (), 28);
+    ASSERT_EQ (mesh2->GetNumEdges (), 62);
+    ASSERT_EQ (mesh2->GetNumFaces (), 34);
 
-    for (size_t i = 0; i < pnts.size(); ++i)
+    const double tolerance = 1.0e-8;
+
+    for (size_t i = 0; i < mesh2->GetNumNodes (); ++i)
     {
-        for (size_t j = i + 1; j < pnts.size(); ++j)
-        {
-
-            if (pnts[i] == pnts[j])
-            {
-                std::cout << " equal points " << i << "  " << j << "  " << pnts[i].x << ", " << pnts[i].y << std::endl;
-            }
-        }
+        EXPECT_NEAR (expectedNodeX [i], mesh2->Node (i).x, tolerance);
+        EXPECT_NEAR (expectedNodeY [i], mesh2->Node (i).y, tolerance);
     }
 
-    meshkernel::Mesh2D mesh(generatedPoints[0], *polys, meshkernel::Projection::cartesian);
+    for (size_t i = 0; i < mesh2->GetNumEdges (); ++i)
+    {
+        EXPECT_EQ (expectedEdgeStart [i], mesh2->GetEdge (i).first);
+        EXPECT_EQ (expectedEdgeEnd [i], mesh2->GetEdge (i).second);
+    }
 
-    // std::cout << std::endl;
-    // std::cout << std::endl;
-
-    // for (size_t i = 0; i < mesh.Nodes ().size (); ++i)
-    // {
-    //     std::cout << " pont " << i << "  " << mesh.Nodes ()[i].x << ", " << mesh.Nodes ()[i].y << std::endl;
-    // }
-
-    meshkernel::SaveVtk(mesh.Nodes(), mesh.m_facesNodes, "trianglemesh.vtu");
 }
 
-#endif
 
 TEST(Mesh, TwoTrianglesDuplicatedEdges)
 {
