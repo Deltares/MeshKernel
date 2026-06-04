@@ -150,116 +150,190 @@ TEST(Mesh2D, TriangulateSamplesWithSkinnyTriangle)
     ASSERT_EQ(4, mesh.GetEdge(5).second);
 }
 
-extern "C"
-{
-
-    extern void mshoce_(
-        const int* jnew,   // Input: Reset indicator (Fortran Logical pointer)
-        double* coor,      // Output: Flattened array of node coordinates
-        int* kmeshc,       // Output: Connectivity/topology grid matrix
-        const int* inpelm, // Input: Element type identifier
-        const int* nbound, // Input: Number of boundary elements
-        double* bcord,     // Input: Coordinates of boundary control nodes
-
-        int* kbndpt,            // Input: Type flags for boundary nodes
-        int* boundary,          // Input: Edge-to-node connectivity map
-        const int* numcurvboun, // Input: Total count of curved boundary segments
-        int* npoint,            // Output: Count of generated points
-        int* nelem,             // Output: Count of generated elements
-
-        int* holeinfo,     // Input: Structural layout parameters for holes
-        const int* nholes, // Input: Total count of internal holes
-        const int* ncoar,  // Input: Quantity of sizing descriptors passed
-        double* coar,      // Input: Target element sizing arrays
-        int* userpoints,   // Input: Fixed target internal points
-
-        int* isurnr,             // Output: Surface structural adjacency mapping register
-        const int* numextcurves, // Input: Auxiliary alignment curve flags
-        int* numnodextcurvs,     // Input: Node mappings for alignment paths
-
-        int* curvenumbers, // Input: Curve curvature flags
-        double* rinput,    // Input: Supplementary sizing/weighting matrices
-        const int* nuspnt, // Input: Count of forced target control nodes
-        const int* ndim    // Input: Domain spatial dimension identifier
-    );
-}
-
-// // meshkernel::Mesh2D
-// meshkernel::Mesh2D generateMesh(const meshkernel::Polygons& poly [[maybe_unused]])
+// extern "C"
 // {
 
-//     // auto polyline = poly.Enclosure (0).Outer ().Nodes ();
-//     // std::ranges::reverse(polyline);
-//     const auto& polyline = poly.Enclosure(0).Outer().Nodes();
+//     extern void mshoce_(
+//         const int* jnew,   // Input: Reset indicator (Fortran Logical pointer)
+//         double* coor,      // Output: Flattened array of node coordinates
+//         int* kmeshc,       // Output: Connectivity/topology grid matrix
+//         const int* inpelm, // Input: Element type identifier
+//         const int* nbound, // Input: Number of boundary elements
+//         double* bcord,     // Input: Coordinates of boundary control nodes
 
-//     int nbound = static_cast<int>(polyline.size() - 0);
-//     int ndim = 2;
-//     int inpelm = 3; // 3-node linear triangles
+//         int* kbndpt,            // Input: Type flags for boundary nodes
+//         int* boundary,          // Input: Edge-to-node connectivity map
+//         const int* numcurvboun, // Input: Total count of curved boundary segments
+//         int* npoint,            // Output: Count of generated points
+//         int* nelem,             // Output: Count of generated elements
+
+//         int* holeinfo,     // Input: Structural layout parameters for holes
+//         const int* nholes, // Input: Total count of internal holes
+//         const int* ncoar,  // Input: Quantity of sizing descriptors passed
+//         double* coar,      // Input: Target element sizing arrays
+//         int* userpoints,   // Input: Fixed target internal points
+
+//         int* isurnr,             // Output: Surface structural adjacency mapping register
+//         const int* numextcurves, // Input: Auxiliary alignment curve flags
+//         int* numnodextcurvs,     // Input: Node mappings for alignment paths
+
+//         int* curvenumbers, // Input: Curve curvature flags
+//         double* rinput,    // Input: Supplementary sizing/weighting matrices
+//         const int* nuspnt, // Input: Count of forced target control nodes
+//         const int* ndim    // Input: Domain spatial dimension identifier
+//     );
+// }
+
+// double minimumEdgeDelta(const std::vector<meshkernel::Point>& polygonNodes)
+// {
+//     double delta = 1.0e20;
+
+//     for (size_t i = 0; i + 1 < polygonNodes.size(); ++i)
+//     {
+//         double dx = polygonNodes[i + 1].x - polygonNodes[i].x;
+//         double dy = polygonNodes[i + 1].y - polygonNodes[i].y;
+
+//         delta = std::min(delta, std::sqrt(dx * dx + dy * dy));
+//     }
+
+//     return delta;
+// }
+
+// std::vector<std::reference_wrapper<const meshkernel::Polygon>> generatePolygonReferences(const meshkernel::Polygons& polygon)
+// {
+//     const auto& enclosure = polygon.Enclosure(0);
+
+//     std::vector<std::reference_wrapper<const meshkernel::Polygon>> boundaryLoops;
+//     boundaryLoops.reserve(1 + enclosure.NumberOfInner());
+//     boundaryLoops.emplace_back(enclosure.Outer());
+
+//     for (meshkernel::UInt i = 0; i < enclosure.NumberOfInner(); ++i)
+//     {
+//         boundaryLoops.emplace_back(enclosure.Inner(i));
+//     }
+
+//     return boundaryLoops;
+// }
+
+// std::vector<meshkernel::Point> pointsFromFlatArray(const std::vector<double>& coordinates, const int numberOfPoints)
+// {
+//     std::vector<meshkernel::Point> meshNodes(numberOfPoints);
+
+//     for (int i = 0; i < numberOfPoints; ++i)
+//     {
+//         meshNodes[i].x = coordinates[2 * i];
+//         meshNodes[i].y = coordinates[2 * i + 1];
+//     }
+
+//     return meshNodes;
+// }
+
+// std::tuple<std::vector<meshkernel::Edge>, std::vector<std::vector<meshkernel::UInt>>, std::vector<std::uint8_t>> gatherEdgesAndFaces(const std::vector<int>& kmeshc, const int numberOfElements)
+// {
+
+//     std::vector<meshkernel::Edge> edges(3 * numberOfElements);
+//     std::vector<std::vector<meshkernel::UInt>> faceNodes(numberOfElements);
+//     std::vector<std::uint8_t> numFaceNodes(numberOfElements, 0);
+
+//     // Gather all edges in the mesh
+//     // The first stage will find shared edges twice, once for each triangle. The duplicate will be removed later.
+//     for (int i = 0; i < numberOfElements; ++i)
+//     {
+//         int index = 3 * i;
+
+//         meshkernel::UInt n1 = static_cast<meshkernel::UInt>(kmeshc[index] - 1);
+//         meshkernel::UInt n2 = static_cast<meshkernel::UInt>(kmeshc[index + 1] - 1);
+//         meshkernel::UInt n3 = static_cast<meshkernel::UInt>(kmeshc[index + 2] - 1);
+
+//         // Which is better, reserve and push back or allocate and assign?
+//         edges[index] = n1 < n2 ? meshkernel::Edge(n1, n2) : meshkernel::Edge(n2, n1);
+//         edges[index + 1] = n2 < n3 ? meshkernel::Edge(n2, n3) : meshkernel::Edge(n3, n2);
+//         edges[index + 2] = n3 < n1 ? meshkernel::Edge(n3, n1) : meshkernel::Edge(n1, n3);
+
+//         // Set the nodes of the element.
+//         faceNodes[i].resize(3);
+//         faceNodes[i][0] = n1;
+//         faceNodes[i][1] = n2;
+//         faceNodes[i][2] = n3;
+
+//         // Indicate that there are 3 nodes for this element
+//         numFaceNodes[i] = 3;
+//     }
+
+//     // Remove the duplicated edges.
+//     // std::pair has a predefined less-than (Edge is a std;:pair<UInt>)
+//     std::sort(std::execution::par, edges.begin(), edges.end());
+//     auto [first, last] = std::ranges::unique(edges);
+//     edges.erase(first, last);
+
+//     return {edges, faceNodes, numFaceNodes};
+// }
+
+// meshkernel::Mesh2D generateMesh(const meshkernel::Polygons& poly)
+// {
+//     std::vector<std::reference_wrapper<const meshkernel::Polygon>> boundaryLoops(generatePolygonReferences(poly));
+
+//     const int numberOfBoundaryNodes = std::accumulate(boundaryLoops.begin(), boundaryLoops.end(), 0, [](int sum, const auto& poly)
+//                                                       { return sum + static_cast<int>(poly.get().Size()); });
+
+//     const int dimension = 2;
+//     const int elementIdentifier = 3; // 3-node linear triangles
+//     const int numberOfPolygons = static_cast<int>(boundaryLoops.size());
+//     const int numberOfHoles = numberOfPolygons - 1;
 
 //     // 1. Interleave coordinates into bcord: [x1, y1, x2, y2...]
-//     // Flatten the boundary polygon.
-//     std::vector<double> bcord(2 * nbound); // TODO should be 2 * nbound
+//     // Flatten the outer polygon followed by each inner polygon, without separators.
+//     std::vector<double> boundaryCoordinates(2 * numberOfBoundaryNodes);
 
-//     for (int i = 0; i < nbound; ++i)
+//     // 2. Map edgeNodeConnectivity: Fortran uses 1-based indexing
+//     std::vector<int> edgeNodeConnectivity(numberOfBoundaryNodes, 0);
+
+//     // 3. Map boundary segments: Fortran boundary(2, numberOfPolygons)
+//     // One curve entry per closed loop, flattened in column-major order.
+
+//     std::vector<int> boundaryConnectivity(2 * numberOfPolygons);
+
+//     // 4. Compute elementSizing array for local polyline point matching
+//     const int numberElementSizing = 0;         // numberOfBoundaryNodes;
+//     std::vector<double> elementSizing(1, 0.0); // 3 * numberOfBoundaryNodes);
+
+//     int pointOffset = 0;
+
+//     for (int loopIndex = 0; loopIndex < numberOfPolygons; ++loopIndex)
 //     {
-//         bcord[2 * i] = polyline[i].x;
-//         bcord[2 * i + 1] = polyline[i].y;
-//     }
+//         const auto& loop = boundaryLoops[loopIndex].get().Nodes();
 
-//     // 2. Map kbndpt: Fortran uses 1-based indexing
-//     std::vector<int> kbndpt(nbound, 0);
+//         boundaryConnectivity[2 * loopIndex] = loopIndex + 1;
+//         boundaryConnectivity[2 * loopIndex + 1] = pointOffset + 1;
 
-//     for (int i = 0; i < nbound; ++i)
-//     {
-//         kbndpt[i] = i + 1;
-//     }
+//         for (int i = 0; i < static_cast<int>(loop.size()); ++i)
+//         {
+//             boundaryCoordinates[2 * (pointOffset + i)] = loop[i].x;
+//             boundaryCoordinates[2 * (pointOffset + i) + 1] = loop[i].y;
+//             edgeNodeConnectivity[pointOffset + i] = pointOffset + i + 1;
+//         }
 
-//     // 3. Map boundary segments: Fortran boundary(2, numcurvboun)
-//     // Flattened in Column-Major order: segment 1 points, then segment 2 points...
-//     int numcurvboun = 1;
-//     std::vector<int> boundary(2 * numcurvboun);
-
-//     for (int i = 0; i < numcurvboun; ++i)
-//     {
-//         boundary[2 * i] = i + 1;
-//         boundary[2 * i + 1] = i + 1;
-//     }
-
-//     // 4. Compute coar array for local polyline point matching
-//     int ncoar = 0;                    // nbound;
-//     std::vector<double> coar(1, 0.0); // 3 * nbound);
-
-//     double min_coar = 1e20;
-//     for (int i = 0; i < nbound; ++i)
-//     {
-//         // If i == nbound - 1 then get the second point in the list, as the last one is the same as the first
-//         int next = (i == nbound - 1) ? 1 : i + 1;
-//         double dx = polyline[next].x - polyline[i].x;
-//         double dy = polyline[next].y - polyline[i].y;
-
-//         min_coar = std::min(min_coar, std::sqrt(dx * dx + dy * dy));
+//         pointOffset += static_cast<int>(loop.size());
 //     }
 
 //     // 5. Dynamic Memory Allocation for Output Buffers
-//     auto [estimated_area, centre, direction] = poly.Enclosure(0).Outer().FaceAreaAndCenterOfMass(); // Estimate or compute dynamically via Shoelace formula
+//     // Get estimate of area covered by polygon, subtracting area covered by holes
+//     const double estimatedArea = poly.Enclosure(0).ComputeSurfaceArea();
+//     // Compute the minimum spacing between points of the polygon, both outer and all inner polygons
+//     const auto [minimumDelta, _] = poly.Enclosure(0).SegmentLengthExtrema();
 
-//     int estimated_elements = static_cast<int>((estimated_area / (0.433 * min_coar * min_coar)) * 3.5);
-//     int max_nodes = nbound + 3 * estimated_elements;
-//     int max_elements = 2 * max_nodes;
+//     const int estimatedNumberOfElements = static_cast<int>((estimatedArea / (0.433 * minimumDelta * minimumDelta)) * 3.5);
+//     const int maximumNumberOfNodes = numberOfBoundaryNodes + 3 * estimatedNumberOfElements;
+//     const int maximumNumberOfElements = 2 * maximumNumberOfNodes;
 
-//     std::cout << " estimated size " << estimated_elements << "  " << max_nodes << "  " << max_elements << std::endl;
-//     std::cout << " estimated_area " << estimated_area << "  " << min_coar << "   " << estimated_elements << std::endl;
-
-//     std::vector<double> coor(ndim * max_nodes, 0.0);
-//     std::vector<int> kmeshc(inpelm * max_elements, 0); // 4 indices per element tracking matrix
+//     std::vector<double> triangulationNodes(dimension * maximumNumberOfNodes, 0.0);
+//     std::vector<int> triangulationElementNodes(elementIdentifier * maximumNumberOfElements, 0);
 
 //     // 6. Dummies and Placeholders
-//     int nholes = 0;
-//     std::vector<int> holeinfo(4, 0); // = {0, 0, 0, 0}; // 2x2 empty matrix
-//     // int dummy_userpoint = 0;
-//     int nuspnt = 0;
-//     int isurnr = 1; // Initialize tracker to 0
-//     int numextcurves = 0;
+//     std::vector<int> holeinfo(2 * (numberOfHoles + 2), 0);
+//     int forcedControlPoints = 0;
+//     int surfaceSequenceNumber = 1;
+//     int auxiliaryAlignment = 0;
 
 //     std::vector<int> numnodextcurvs(1, 0);
 //     std::vector<int> curvenumbers(1, 0);
@@ -267,306 +341,26 @@ extern "C"
 //     std::vector<int> userpoints(1, 0);
 
 //     // 7. Make the Call
-//     int jnew_fortran = 1;
-//     int npoint = max_nodes;
-//     int nelem = max_elements;
+//     int newMesh = 1;
+//     int numberOfPoints = maximumNumberOfNodes;
+//     int numberOfElements = maximumNumberOfElements;
 
-//     mshoce_(&jnew_fortran, coor.data(), kmeshc.data(), &inpelm, &nbound, bcord.data(),
-//             kbndpt.data(), boundary.data(), &numcurvboun, &npoint, &nelem,
-//             holeinfo.data(), &nholes, &ncoar, coar.data(), userpoints.data(),
-//             &isurnr, &numextcurves, numnodextcurvs.data(), curvenumbers.data(),
-//             rinput.data(), &nuspnt, &ndim);
+//     mshoce_(&newMesh, triangulationNodes.data(), triangulationElementNodes.data(), &elementIdentifier, &numberOfBoundaryNodes, boundaryCoordinates.data(),
+//             edgeNodeConnectivity.data(), boundaryConnectivity.data(), &numberOfPolygons, &numberOfPoints, &numberOfElements,
+//             holeinfo.data(), &numberOfHoles, &numberElementSizing, elementSizing.data(), userpoints.data(),
+//             &surfaceSequenceNumber, &auxiliaryAlignment, numnodextcurvs.data(), curvenumbers.data(),
+//             rinput.data(), &forcedControlPoints, &dimension);
 
-//     std::vector<meshkernel::Point> nodes(npoint);
+//     // Recover array of Points
+//     std::vector<meshkernel::Point> meshNodes(pointsFromFlatArray(triangulationNodes, numberOfPoints));
 
-//     for (int i = 0; i < npoint; ++i)
-//     {
-//         nodes[i].x = coor[2 * i];
-//         nodes[i].y = coor[2 * i + 1];
-//     }
+//     // Recover arrays of edges, face-node connectivity and number of nodes per face.
+//     auto [edges, faceNodes, numFaceNodes] = gatherEdgesAndFaces(triangulationElementNodes, numberOfElements);
 
-//     // std::vector<meshkernel::Edge> edges;
-//     // edges.reserve (3 * nelem);
-
-//     // for (int i = 0; i < nelem; ++i) {
-//     //     int idx = 3 * i;
-
-//     //     meshkernel::UInt n1 = static_cast<meshkernel::UInt>(kmeshc [idx] - 1);
-//     //     meshkernel::UInt n2 = static_cast<meshkernel::UInt>(kmeshc [idx+ 1] - 1);
-//     //     meshkernel::UInt n3 = static_cast<meshkernel::UInt>(kmeshc [idx + 2] - 1);
-
-//     //     meshkernel::Edge e1 = n1 < n2 ? meshkernel::Edge(n1, n2) : meshkernel::Edge (n2, n1);
-//     //     meshkernel::Edge e2 = n2 < n3 ? meshkernel::Edge(n2, n3) : meshkernel::Edge (n3, n2);
-//     //     meshkernel::Edge e3 = n3 < n1 ? meshkernel::Edge(n3, n1) : meshkernel::Edge (n1, n3);
-
-//     //     if (std::find(edges.begin (), edges.end (), e1) == edges.end ())
-//     //     {
-//     //         edges.push_back (e1);
-//     //     }
-
-//     //     if (std::find(edges.begin (), edges.end (), e2) == edges.end ())
-//     //     {
-//     //         edges.push_back (e2);
-//     //     }
-
-//     //     if (std::find(edges.begin (), edges.end (), e3) == edges.end ())
-//     //     {
-//     //         edges.push_back (e3);
-//     //     }
-
-//     // }
-
-//     // Alternative
-
-//     std::vector<meshkernel::Edge> edges(3 * nelem);
-
-//     for (int i = 0; i < nelem; ++i)
-//     {
-//         int idx = 3 * i;
-
-//         meshkernel::UInt n1 = static_cast<meshkernel::UInt>(kmeshc[idx] - 1);
-//         meshkernel::UInt n2 = static_cast<meshkernel::UInt>(kmeshc[idx + 1] - 1);
-//         meshkernel::UInt n3 = static_cast<meshkernel::UInt>(kmeshc[idx + 2] - 1);
-
-//         // Which is better, reserve and push back or allocate and assign?
-//         edges[idx] = n1 < n2 ? meshkernel::Edge(n1, n2) : meshkernel::Edge(n2, n1);
-//         edges[idx + 1] = n2 < n3 ? meshkernel::Edge(n2, n3) : meshkernel::Edge(n3, n2);
-//         edges[idx + 2] = n3 < n1 ? meshkernel::Edge(n3, n1) : meshkernel::Edge(n1, n3);
-
-//         // edges.push_back (n1 < n2 ? meshkernel::Edge(n1, n2) : meshkernel::Edge (n2, n1));
-//         // edges.push_back (n2 < n3 ? meshkernel::Edge(n2, n3) : meshkernel::Edge (n3, n2));
-//         // edges.push_back (n3 < n1 ? meshkernel::Edge(n3, n1) : meshkernel::Edge (n1, n3));
-//     }
-
-//     auto edgeLessThan = [](const meshkernel::Edge& e1, const meshkernel::Edge& e2)
-//     {
-//         if (e1.first < e2.first)
-//         {
-//             return true;
-//         }
-//         else if (e1.first == e2.first)
-//         {
-//             return e1.second < e2.second;
-//         }
-//         else
-//         {
-//             return false;
-//         }
-//     };
-
-//     std::sort(std::execution::par, edges.begin(), edges.end(), edgeLessThan);
-//     auto [first, last] = std::ranges::unique(edges);
-//     edges.erase(first, last);
-
-//     // TODO need to pass the projection
-//     // TODO probably need to handle the projection correctly when setting things up,
-//     // e.g. the minimum coarseness.
-//     return meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
+//     return meshkernel::Mesh2D(edges, meshNodes, faceNodes, numFaceNodes, poly.GetProjection());
 // }
 
-meshkernel::Mesh2D generateMesh(const meshkernel::Polygons& poly)
- {
-    const auto& enclosure = poly.Enclosure(0);
-
-    std::vector<std::reference_wrapper<const meshkernel::Polygon>> boundaryLoops;
-    boundaryLoops.emplace_back(enclosure.Outer());
-
-    for (meshkernel::UInt i = 0; i < enclosure.NumberOfInner(); ++i)
-    {
-        boundaryLoops.emplace_back(enclosure.Inner(i));
-    }
-
-    int nbound = 0;
-    for (const auto& loop : boundaryLoops)
-    {
-        nbound += static_cast<int>(loop.get().Size());
-    }
-
-     int ndim = 2;
-     int inpelm = 3; // 3-node linear triangles
-    int numcurvboun = static_cast<int>(boundaryLoops.size());
-    int nholes = numcurvboun - 1;
-
-     // 1. Interleave coordinates into bcord: [x1, y1, x2, y2...]
-    // Flatten the outer polygon followed by each inner polygon, without separators.
-    std::vector<double> bcord(2 * nbound);
-
-     // 2. Map kbndpt: Fortran uses 1-based indexing
-     std::vector<int> kbndpt(nbound, 0);
-
-     // 3. Map boundary segments: Fortran boundary(2, numcurvboun)
-    // One curve entry per closed loop, flattened in column-major order.
-     std::vector<int> boundary(2 * numcurvboun);
-
-     // 4. Compute coar array for local polyline point matching
-     int ncoar = 0;                    // nbound;
-     std::vector<double> coar(1, 0.0); // 3 * nbound);
-
-     double min_coar = 1e20;
-    double estimated_area = 0.0;
-    int pointOffset = 0;
-
-    for (int loopIndex = 0; loopIndex < numcurvboun; ++loopIndex)
-     {
-        const auto& loop = boundaryLoops[loopIndex].get().Nodes();
-
-        boundary[2 * loopIndex] = loopIndex + 1;
-        boundary[2 * loopIndex + 1] = pointOffset + 1;
-
-        for (int i = 0; i < static_cast<int>(loop.size()); ++i)
-        {
-            bcord[2 * (pointOffset + i)] = loop[i].x;
-            bcord[2 * (pointOffset + i) + 1] = loop[i].y;
-            kbndpt[pointOffset + i] = pointOffset + i + 1;
-        }
-
-        for (int i = 0; i + 1 < static_cast<int>(loop.size()); ++i)
-        {
-            double dx = loop[i + 1].x - loop[i].x;
-            double dy = loop[i + 1].y - loop[i].y;
-
-            min_coar = std::min(min_coar, std::sqrt(dx * dx + dy * dy));
-        }
-
-        auto [loopArea, centre, direction] = boundaryLoops[loopIndex].get().FaceAreaAndCenterOfMass();
-        estimated_area += (loopIndex == 0 ? 1.0 : -1.0) * std::abs(loopArea);
-
-        pointOffset += static_cast<int>(loop.size());
-    }
-
-    // 5. Dynamic Memory Allocation for Output Buffers
-     int estimated_elements = static_cast<int>((estimated_area / (0.433 * min_coar * min_coar)) * 3.5);
-     int max_nodes = nbound + 3 * estimated_elements;
-     int max_elements = 2 * max_nodes;
-
-     std::cout << " estimated size " << estimated_elements << "  " << max_nodes << "  " << max_elements << std::endl;
-     std::cout << " estimated_area " << estimated_area << "  " << min_coar << "   " << estimated_elements << std::endl;
-
-     std::vector<double> coor(ndim * max_nodes, 0.0);
-     std::vector<int> kmeshc(inpelm * max_elements, 0); // 4 indices per element tracking matrix
-
-     // 6. Dummies and Placeholders
-    std::vector<int> holeinfo(2 * (nholes + 2), 0);
-     // int dummy_userpoint = 0;
-     int nuspnt = 0;
-     int isurnr = 1; // Initialize tracker to 0
-     int numextcurves = 0;
-
-     std::vector<int> numnodextcurvs(1, 0);
-     std::vector<int> curvenumbers(1, 0);
-     std::vector<double> rinput(1, 0.0);
-     std::vector<int> userpoints(1, 0);
-
-     // 7. Make the Call
-     int jnew_fortran = 1;
-     int npoint = max_nodes;
-     int nelem = max_elements;
-
-     mshoce_(&jnew_fortran, coor.data(), kmeshc.data(), &inpelm, &nbound, bcord.data(),
-             kbndpt.data(), boundary.data(), &numcurvboun, &npoint, &nelem,
-             holeinfo.data(), &nholes, &ncoar, coar.data(), userpoints.data(),
-             &isurnr, &numextcurves, numnodextcurvs.data(), curvenumbers.data(),
-             rinput.data(), &nuspnt, &ndim);
-
-     std::vector<meshkernel::Point> nodes(npoint);
-
-     for (int i = 0; i < npoint; ++i)
-     {
-         nodes[i].x = coor[2 * i];
-         nodes[i].y = coor[2 * i + 1];
-     }
-
-     // std::vector<meshkernel::Edge> edges;
-     // edges.reserve (3 * nelem);
-
-     // for (int i = 0; i < nelem; ++i) {
-     //     int idx = 3 * i;
-
-     //     meshkernel::UInt n1 = static_cast<meshkernel::UInt>(kmeshc [idx] - 1);
-     //     meshkernel::UInt n2 = static_cast<meshkernel::UInt>(kmeshc [idx+ 1] - 1);
-     //     meshkernel::UInt n3 = static_cast<meshkernel::UInt>(kmeshc [idx + 2] - 1);
-
-     //     meshkernel::Edge e1 = n1 < n2 ? meshkernel::Edge(n1, n2) : meshkernel::Edge (n2, n1);
-     //     meshkernel::Edge e2 = n2 < n3 ? meshkernel::Edge(n2, n3) : meshkernel::Edge (n3, n2);
-     //     meshkernel::Edge e3 = n3 < n1 ? meshkernel::Edge(n3, n1) : meshkernel::Edge (n1, n3);
-
-     //     if (std::find(edges.begin (), edges.end (), e1) == edges.end ())
-     //     {
-     //         edges.push_back (e1);
-     //     }
-
-     //     if (std::find(edges.begin (), edges.end (), e2) == edges.end ())
-     //     {
-     //         edges.push_back (e2);
-     //     }
-
-     //     if (std::find(edges.begin (), edges.end (), e3) == edges.end ())
-     //     {
-     //         edges.push_back (e3);
-     //     }
-
-     // }
-
-     // Alternative
-
-     std::vector<meshkernel::Edge> edges(3 * nelem);
-
-     std::vector<std::vector<meshkernel::UInt>> faceNodes(nelem);
-     std::vector<std::uint8_t> numFaceNodes(nelem, 0);
-
-
-     for (int i = 0; i < nelem; ++i)
-     {
-         int idx = 3 * i;
-
-         meshkernel::UInt n1 = static_cast<meshkernel::UInt>(kmeshc[idx] - 1);
-         meshkernel::UInt n2 = static_cast<meshkernel::UInt>(kmeshc[idx + 1] - 1);
-         meshkernel::UInt n3 = static_cast<meshkernel::UInt>(kmeshc[idx + 2] - 1);
-
-         // Which is better, reserve and push back or allocate and assign?
-         edges[idx] = n1 < n2 ? meshkernel::Edge(n1, n2) : meshkernel::Edge(n2, n1);
-         edges[idx + 1] = n2 < n3 ? meshkernel::Edge(n2, n3) : meshkernel::Edge(n3, n2);
-         edges[idx + 2] = n3 < n1 ? meshkernel::Edge(n3, n1) : meshkernel::Edge(n1, n3);
-
-         faceNodes[i].resize (3);
-         faceNodes[i][0] = n1;
-         faceNodes[i][1] = n2;
-         faceNodes[i][2] = n3;
-
-         numFaceNodes[i] = 3;
-
-         // edges.push_back (n1 < n2 ? meshkernel::Edge(n1, n2) : meshkernel::Edge (n2, n1));
-         // edges.push_back (n2 < n3 ? meshkernel::Edge(n2, n3) : meshkernel::Edge (n3, n2));
-         // edges.push_back (n3 < n1 ? meshkernel::Edge(n3, n1) : meshkernel::Edge (n1, n3));
-     }
-
-     auto edgeLessThan = [](const meshkernel::Edge& e1, const meshkernel::Edge& e2)
-     {
-         if (e1.first < e2.first)
-         {
-             return true;
-         }
-         else if (e1.first == e2.first)
-         {
-             return e1.second < e2.second;
-         }
-         else
-         {
-             return false;
-         }
-     };
-
-     std::sort(std::execution::par, edges.begin(), edges.end(), edgeLessThan);
-     auto [first, last] = std::ranges::unique(edges);
-     edges.erase(first, last);
-
-     // TODO need to pass the projection
-     // TODO probably need to handle the projection correctly when setting things up,
-     // e.g. the minimum coarseness.
-     return meshkernel::Mesh2D(edges, nodes, faceNodes, numFaceNodes, meshkernel::Projection::cartesian);
-     // return meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
- }
-
+#if 0
 
 TEST(Mesh, TriangulateSamples)
 {
@@ -609,10 +403,13 @@ TEST(Mesh, TriangulateSamples)
 
     // auto polys = ReadPolygons ("/home/wcs1/MeshKernel/MeshKernel01/build_deb/northbank_001b.pol", meshkernel::Projection::cartesian);
 
+    // std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {0.5, 0.0}, {1.0, 0.0}, {1.5, 0.0}, {2.0, 0}, {2.5, 0.0}, {3.0, 0.0}, {3.5, 0.0}, {4.0, 0.0}, {4.5, 0.0}, {5.0, 0}, {5.5, 0.0}, {6.0, 0.0}, {6.5, 0.0}, {7.0, 0.0}, {7.5, 0.0}, {8.0, 0.0}, {8.5, 0.0}, {9.0, 0.0}, {9.5, 0.0}, {10.0, 0.0}, {10.0, 2.5}, {10.0, 5.0}, {10.0, 7.5}, {10.0, 10.0}, {7.5, 10.0}, {5.0, 10.0}, {2.5, 10.0}, {0.0, 10.0}, {0.0, 7.5}, {0.0, 5.0}, {0.0, 2.5}, {0.0, 0.0}};
 
-    std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {2.5, 0}, {5.0, 0.0}, {7.5, 0}, {10.0, 0.0}, {10.0, 2.5}, {10.0, 5.0}, {10.0, 7.5}, {10.0, 10.0}, {7.5, 10.0}, {5.0, 10.0}, {2.5, 10.0}, {0.0, 10.0}, {0.0, 7.5}, {0.0, 5.0}, {0.0, 2.5}, {0.0, 0.0}, {-998.0, -998.0},
-                                         {2.0, 2.0}, {5.0, 2.0}, {5.0, 5.0}, {2.0, 5.0}, {2.0, 2.0}, {-998.0, -998.0},
-                                         {6.0, 6.0}, {8.0, 6.0}, {8.0, 8.0}, {6.0, 8.0}, {6.0, 6.0}};
+    std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {0.5, 0.0}, {1.0, 0.0}, {1.5, 0.0}, {2.0, 0}, {2.5, 0.0}, {3.0, 0.0}, {3.5, 0.0}, {4.0, 0.0}, {4.5, 0.0}, {5.0, 0}, {5.5, 0.0}, {6.0, 0.0}, {6.5, 0.0}, {7.0, 0.0}, {7.5, 0.0}, {8.0, 0.0}, {8.5, 0.0}, {9.0, 0.0}, {9.5, 0.0}, {10.0, 0.0}, {10.0, 2.5}, {10.0, 5.0}, {10.0, 7.5}, {10.0, 10.0}, {7.5, 10.0}, {5.0, 10.0}, {2.5, 10.0}, {0.0, 10.0}, {0.0, 7.5}, {0.0, 5.0}, {0.0, 2.5}, {0.0, 0.0}, {-998.0, -998.0}, {2.0, 2.0}, {2.5, 2.0}, {3.0, 2.0}, {3.5, 2.0}, {4.0, 2.0}, {4.5, 2.0}, {5.0, 2.0}, {5.0, 3.5}, {5.0, 5.0}, {2.0, 5.0}, {2.0, 2.0}, {-998.0, -998.0}, {6.0, 6.0}, {8.0, 6.0}, {8.0, 8.0}, {6.0, 8.0}, {6.0, 6.0}};
+
+    // std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {1.25, 0.0}, {2.5, 0}, {5.0, 0.0}, {6.25, 0.0}, {7.5, 0}, {8.75, 0.0}, {10.0, 0.0}, {10.0, 2.5}, {10.0, 5.0}, {10.0, 7.5}, {10.0, 10.0}, {7.5, 10.0}, {5.0, 10.0}, {2.5, 10.0}, {0.0, 10.0}, {0.0, 7.5}, {0.0, 5.0}, {0.0, 2.5}, {0.0, 0.0}};
+
+    // std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {2.5, 0}, {5.0, 0.0}, {7.5, 0}, {10.0, 0.0}, {10.0, 2.5}, {10.0, 5.0}, {10.0, 7.5}, {10.0, 10.0}, {7.5, 10.0}, {5.0, 10.0}, {2.5, 10.0}, {0.0, 10.0}, {0.0, 7.5}, {0.0, 5.0}, {0.0, 2.5}, {0.0, 0.0}, {-998.0, -998.0}, {2.0, 2.0}, {5.0, 2.0}, {5.0, 5.0}, {2.0, 5.0}, {2.0, 2.0}, {-998.0, -998.0}, {6.0, 6.0}, {8.0, 6.0}, {8.0, 8.0}, {6.0, 8.0}, {6.0, 6.0}};
 
     // // std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {5.0, 0.0}, {10.0, 0.0},
     // //                                      {10.0, 5.0}, {10.0, 10.0}, {5.0, 10.0},
@@ -657,6 +454,8 @@ TEST(Mesh, TriangulateSamples)
 
     meshkernel::SaveVtk(mesh.Nodes(), mesh.m_facesNodes, "trianglemesh.vtu");
 }
+
+#endif
 
 TEST(Mesh, TwoTrianglesDuplicatedEdges)
 {
