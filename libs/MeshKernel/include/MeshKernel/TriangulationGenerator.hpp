@@ -36,7 +36,11 @@ extern "C"
 {
 
     /// \brief SEPRAN function for triangulation of a polygonal region
+#ifdef __APPLE__
+    extern void _mshoce(
+#else
     extern void mshoce(
+#endif
         const int* jnew,   // Input: Reset indicator (Fortran Logical pointer)
         double* coor,      // Output: Flattened array of node coordinates
         int* kmeshc,       // Output: Connectivity/topology grid matrix
