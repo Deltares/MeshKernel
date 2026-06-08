@@ -44,18 +44,6 @@ jobs:
           echo "build_dir=${{ github.workspace }}/build" >> $GITHUB_OUTPUT
           echo "ext_deps_dir=${{ github.workspace }}/external_dependencies" >> $GITHUB_OUTPUT
           echo "install_dir=${{ github.workspace }}/install" >> $GITHUB_OUTPUT
-
-      # - name: Install system-provided dependencies
-      #   run: |
-      #     brew install boost doxygen libaec libomp
-       - name: Install system-provided dependencies
-         run: |
-          brew install boost doxygen gcc libaec libomp
-
-      - name: Set Fortran compiler (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install boost doxygen libaec libomp
       - name: Install system-provided dependencies
         run: |
           brew install boost doxygen gcc libaec libomp
