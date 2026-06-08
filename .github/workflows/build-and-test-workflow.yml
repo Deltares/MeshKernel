@@ -52,8 +52,12 @@ jobs:
         run: |
           GFORTRAN_BIN="$(command -v gfortran || true)"
           if [ -z "$GFORTRAN_BIN" ]; then
+            FTRNBREW_PREFIX="$(brew --prefix gcc)/bin"
             HOMEBREW_PREFIX="$(brew --prefix)"
-            GFORTRAN_BIN="$(find "$HOMEBREW_PREFIX/bin" -maxdepth 1 -type f -name 'gfortran-*' | sort -V | tail -n 1)"
+
+            # 2. Look for the highest version available in that directory
+            GFORTRAN_BIN=$(ls "$FTRNBREW_PREFIX"/gfortran-* 2>/dev/null | sort -V | tail -n 1)
+            #GFORTRAN_BIN="$(find "$HOMEBREW_PREFIX/bin" -maxdepth 1 -type f -name 'gfortran-*' | sort -V | tail -n 1)"
           fi
 
           if [ -z "$GFORTRAN_BIN" ]; then
