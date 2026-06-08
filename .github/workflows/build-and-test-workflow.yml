@@ -47,7 +47,8 @@ jobs:
       - name: Install system-provided dependencies
         run: |
           brew install boost doxygen gcc libaec libomp
-      - name: Set Fortran compiler (macOS)
+
+      - name: Set Fortran compiler and GCC runtime paths (macOS)
         if: runner.os == 'macOS'
         run: |
           GFORTRAN_BIN="$(command -v gfortran || true)"
@@ -59,14 +60,20 @@ jobs:
           fi
 
           if [ -z "$GFORTRAN_BIN" ]; then
-            echo "Unable to locate a Homebrew gfortran installation" >&2
+            echo "Unable to locate Homebrew gfortran" >&2
             exit 1
           fi
 
+          GCC_LIBDIR="$("$GFORTRAN_BIN" -print-file-name=libgfortran.dylib)"
+          GCC_LIBDIR="$(dirname "$GCC_LIBDIR")"
+
           echo "Using Fortran compiler: $GFORTRAN_BIN"
+          echo "Using GCC runtime dir: $GCC_LIBDIR"
           echo "FC=$GFORTRAN_BIN" >> "$GITHUB_ENV"
           echo "F77=$GFORTRAN_BIN" >> "$GITHUB_ENV"
           echo "CMAKE_Fortran_COMPILER=$GFORTRAN_BIN" >> "$GITHUB_ENV"
+          echo "LDFLAGS=-L$GCC_LIBDIR ${LDFLAGS:-}" >> "$GITHUB_ENV"
+          echo "DYLD_LIBRARY_PATH=$GCC_LIBDIR:${DYLD_LIBRARY_PATH:-}" >> "$GITHUB_ENV"
 
           # Extract the version number (e.g., "15" from "/opt/homebrew/bin/gfortran-15")
           GF_VERSION="${GFORTRAN_BIN##*-}"
@@ -150,6 +157,7 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} \
             -DCMAKE_PREFIX_PATH=${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c \
             -DCMAKE_INSTALL_PREFIX=${{ steps.paths.outputs.install_dir }} \
+            -DCMAKE_Fortran_COMPILER="$FC" \
             $SUPPRESS_PARAM_FLAG \
             -DOpenMP_C_FLAGS="-Xpreprocessor -fopenmp -I$HOMEBREW_PREFIX/opt/libomp/include" \
             -DOpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp -I$HOMEBREW_PREFIX/opt/libomp/include" \
@@ -158,8 +166,8 @@ jobs:
             -DOpenMP_omp_LIBRARY="$HOMEBREW_PREFIX/opt/libomp/lib/libomp.dylib" \
             -DCMAKE_C_FLAGS="-Xpreprocessor -fopenmp -I$HOMEBREW_PREFIX/opt/libomp/include" \
             -DCMAKE_CXX_FLAGS="-Xpreprocessor -fopenmp -I$HOMEBREW_PREFIX/opt/libomp/include" \
-            -DCMAKE_EXE_LINKER_FLAGS="-L$HOMEBREW_PREFIX/opt/libomp/lib -lomp" \
-            -DCMAKE_SHARED_LINKER_FLAGS="-L$HOMEBREW_PREFIX/opt/libomp/lib -lomp"
+            -DCMAKE_EXE_LINKER_FLAGS="-L$HOMEBREW_PREFIX/opt/libomp/lib -lomp -L$GCC_LIBDIR" \
+            -DCMAKE_SHARED_LINKER_FLAGS="-L$HOMEBREW_PREFIX/opt/libomp/lib -lomp -L$GCC_LIBDIR"
 
       # Step: CMake build
       - name: Build
