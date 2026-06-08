@@ -35,7 +35,8 @@
 extern "C"
 {
 
-    extern void mshoce_(
+    /// \brief SEPRAN function for triangulation of a polygonal region
+    extern void mshoce(
         const int* jnew,   // Input: Reset indicator (Fortran Logical pointer)
         double* coor,      // Output: Flattened array of node coordinates
         int* kmeshc,       // Output: Connectivity/topology grid matrix

@@ -200,11 +200,11 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::SepranTriangulationGenerator::ge
     int numberOfPoints = maximumNumberOfNodes;
     int numberOfElements = maximumNumberOfElements;
 
-    mshoce_(&newMesh, triangulationNodes.data(), triangulationElementNodes.data(), &elementIdentifier, &numberOfBoundaryNodes, boundaryCoordinates.data(),
-            edgeNodeConnectivity.data(), boundaryConnectivity.data(), &numberOfPolygons, &numberOfPoints, &numberOfElements,
-            holeinfo.data(), &numberOfHoles, &numberElementSizing, elementSizing.data(), userpoints.data(),
-            &surfaceSequenceNumber, &auxiliaryAlignment, numnodextcurvs.data(), curvenumbers.data(),
-            rinput.data(), &forcedControlPoints, &dimension);
+    mshoce(&newMesh, triangulationNodes.data(), triangulationElementNodes.data(), &elementIdentifier, &numberOfBoundaryNodes, boundaryCoordinates.data(),
+           edgeNodeConnectivity.data(), boundaryConnectivity.data(), &numberOfPolygons, &numberOfPoints, &numberOfElements,
+           holeinfo.data(), &numberOfHoles, &numberElementSizing, elementSizing.data(), userpoints.data(),
+           &surfaceSequenceNumber, &auxiliaryAlignment, numnodextcurvs.data(), curvenumbers.data(),
+           rinput.data(), &forcedControlPoints, &dimension);
 
     // Recover array of Points
     std::vector<Point> meshNodes(pointsFromFlatArray(triangulationNodes, numberOfPoints));

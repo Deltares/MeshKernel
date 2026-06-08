@@ -2,7 +2,7 @@
      +                    kbndpt, boundary, numcurvboun, npoint, nelem,
      +                    holeinfo, nholes, ncoar, coar, userpoints,
      +                    isurnr, numextcurves, numnodextcurvs,
-     +                    curvenumbers, rinput, nuspnt, ndim )
+     +                    curvenumbers, rinput, nuspnt, ndim ) bind(c)
 ! ======================================================================
 !
 !        programmer    Niek Praagman
