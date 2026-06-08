@@ -87,7 +87,7 @@ std::unique_ptr<meshkernel::Polygons> ReadPolygons(const std::string& fileName, 
                     points.push_back(readPoint(line));
                 }
 
-                if (points[currentSize] != points.back ())
+                if (points[currentSize] != points.back())
                 {
                     points.push_back(points[currentSize]);
                 }
