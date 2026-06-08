@@ -75,7 +75,7 @@ target_link_libraries(
     MeshKernelTestUtils
     gmock
     gtest_main
-    Sepran
+    -Wl,-force_load Sepran
 )
 
 # Make sure that coverage information is produced when using gcc
