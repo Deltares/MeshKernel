@@ -69,11 +69,14 @@ extern "C"
 namespace meshkernel
 {
 
+    /// \brief Generate a triangulation from a polygonal domain boundary.
     class TriangulationGenerator
     {
     public:
+        /// \brief Destructor
         virtual ~TriangulationGenerator() = default;
 
+        /// \brief Compute triangulation
         virtual std::unique_ptr<Mesh2D> generate(const Polygons& polygon) const = 0;
     };
 
@@ -81,11 +84,14 @@ namespace meshkernel
     class SimpleTriangulationGenerator : public TriangulationGenerator
     {
     public:
+        /// \brief Constructor
         SimpleTriangulationGenerator(const double factor) : scaleFactor_(factor) {}
 
+        /// \brief Compute triangulation using triangle
         std::unique_ptr<Mesh2D> generate(const Polygons& polygon) const override;
 
     private:
+        /// \brief The scale factor used when generating points in polygon
         const double scaleFactor_;
     };
 
@@ -93,16 +99,23 @@ namespace meshkernel
     class SepranTriangulationGenerator : public TriangulationGenerator
     {
     public:
+        /// \brief Compute triangulation using SEPRAN library
         std::unique_ptr<Mesh2D> generate(const Polygons& polygon) const override;
 
     private:
+        /// \brief Find the smallest delta in the boundary polygon
         static double minimumEdgeDelta(const std::vector<meshkernel::Point>& polygonNodes);
 
+        /// \brief Generate a vector of references to polygons from the set of polygonal enclosures
         static std::vector<std::reference_wrapper<const Polygon>> generatePolygonReferences(const Polygons& polygon);
 
+        /// \brief Construct the set of edges, elements and number of nodes per element to construct mesh2d
+        ///
+        /// From the set of elements (triples of node ids in a flat array) construct arra of edges and elements
         static std::tuple<std::vector<Edge>, std::vector<std::vector<UInt>>, std::vector<std::uint8_t>>
-        gatherEdgesAndFaces(const std::vector<int>& kmeshc, const int numberOfElements);
+        gatherEdgesAndFaces(const std::vector<int>& triangulationElementNodes, const int numberOfElements);
 
+        /// \brief Construct arra of points from flat array of double (x,y values store in adjacent pairs)
         static std::vector<Point> pointsFromFlatArray(const std::vector<double>& coordinates, const int numberOfPoints);
     };
 

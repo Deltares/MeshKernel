@@ -63,7 +63,7 @@ std::vector<std::reference_wrapper<const meshkernel::Polygon>> meshkernel::Sepra
 }
 
 std::tuple<std::vector<meshkernel::Edge>, std::vector<std::vector<meshkernel::UInt>>, std::vector<std::uint8_t>>
-meshkernel::SepranTriangulationGenerator::gatherEdgesAndFaces(const std::vector<int>& kmeshc, const int numberOfElements)
+meshkernel::SepranTriangulationGenerator::gatherEdgesAndFaces(const std::vector<int>& triangulationElementNodes, const int numberOfElements)
 {
 
     std::vector<meshkernel::Edge> edges(3 * numberOfElements);
@@ -76,9 +76,9 @@ meshkernel::SepranTriangulationGenerator::gatherEdgesAndFaces(const std::vector<
     {
         int index = 3 * i;
 
-        meshkernel::UInt n1 = static_cast<meshkernel::UInt>(kmeshc[index] - 1);
-        meshkernel::UInt n2 = static_cast<meshkernel::UInt>(kmeshc[index + 1] - 1);
-        meshkernel::UInt n3 = static_cast<meshkernel::UInt>(kmeshc[index + 2] - 1);
+        meshkernel::UInt n1 = static_cast<meshkernel::UInt>(triangulationElementNodes[index] - 1);
+        meshkernel::UInt n2 = static_cast<meshkernel::UInt>(triangulationElementNodes[index + 1] - 1);
+        meshkernel::UInt n3 = static_cast<meshkernel::UInt>(triangulationElementNodes[index + 2] - 1);
 
         // Which is better, reserve and push back or allocate and assign?
         edges[index] = n1 < n2 ? meshkernel::Edge(n1, n2) : meshkernel::Edge(n2, n1);
