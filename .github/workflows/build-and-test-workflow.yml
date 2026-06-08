@@ -55,6 +55,13 @@ jobs:
       - name: Set Fortran compiler (macOS)
         if: runner.os == 'macOS'
         run: |
+          brew install boost doxygen libaec libomp
+      - name: Install system-provided dependencies
+        run: |
+          brew install boost doxygen gcc libaec libomp
+      - name: Set Fortran compiler (macOS)
+        if: runner.os == 'macOS'
+        run: |
           GFORTRAN_BIN="$(command -v gfortran || true)"
           if [ -z "$GFORTRAN_BIN" ]; then
             HOMEBREW_PREFIX="$(brew --prefix)"
