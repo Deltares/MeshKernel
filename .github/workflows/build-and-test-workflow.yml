@@ -165,16 +165,6 @@ jobs:
       - name: Build
         run: cmake --build ${{ steps.paths.outputs.build_dir }} --config ${{ inputs.build_type }} -j 4
 
-      - name: Debug Linker Symbols
-        run: |
-          echo "=== FORTRAN SYMBOLS ==="
-          # Replace 'path/to/fortran_file.o' with your actual object file path
-          nm path/to/fortran_file.o | grep -i mshoce || echo "No symbols found"
-
-          echo "=== C++ SYMBOLS ==="
-          # Replace 'path/to/cpp_file.o' with your actual object file path
-          nm path/to/cpp_file.o | grep -i mshoce || echo "No symbols found"
-
       # Step: Test (portable via ctest)
       - name: Test
         timeout-minutes: 10

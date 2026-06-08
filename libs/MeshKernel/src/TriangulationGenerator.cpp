@@ -200,12 +200,7 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::SepranTriangulationGenerator::ge
     int numberOfPoints = maximumNumberOfNodes;
     int numberOfElements = maximumNumberOfElements;
 
-#ifdef __APPLE__
-    _mshoce
-#else
-    mshoce
-#endif
-(&newMesh, triangulationNodes.data(), triangulationElementNodes.data(), &elementIdentifier, &numberOfBoundaryNodes, boundaryCoordinates.data(),
+    mshoce(&newMesh, triangulationNodes.data(), triangulationElementNodes.data(), &elementIdentifier, &numberOfBoundaryNodes, boundaryCoordinates.data(),
            edgeNodeConnectivity.data(), boundaryConnectivity.data(), &numberOfPolygons, &numberOfPoints, &numberOfElements,
            holeinfo.data(), &numberOfHoles, &numberElementSizing, elementSizing.data(), userpoints.data(),
            &surfaceSequenceNumber, &auxiliaryAlignment, numnodextcurvs.data(), curvenumbers.data(),
