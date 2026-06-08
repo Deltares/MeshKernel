@@ -110,7 +110,8 @@ meshkernel::SepranTriangulationGenerator::gatherEdgesAndFaces(const std::vector<
 
     // Remove the duplicated edges.
     // std::pair has a predefined less-than (Edge is a std;:pair<UInt>)
-    std::sort(std::execution::par, edges.begin(), edges.end());
+    // Should use the parallel sort, but does not seem to compile under macos: std::sort(std::execution::par, edges.begin(), edges.end());
+    std::sort(edges.begin(), edges.end());
     auto [first, last] = std::ranges::unique(edges);
     edges.erase(first, last);
 
