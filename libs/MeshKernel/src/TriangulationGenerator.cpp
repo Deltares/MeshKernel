@@ -4,7 +4,7 @@
 #include <execution>
 #include <tuple>
 
-std::unique_ptr<meshkernel::Mesh2D> meshkernel::SimpleTriangulationGenerator::generate(const Polygons& polygon) const
+std::vector<meshkernel::Point> meshkernel::SimpleTriangulationGenerator::generatePoints(const Polygons& polygon) const
 {
 
     if (polygon.GetNumPolygons() != 1)
@@ -14,6 +14,19 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::SimpleTriangulationGenerator::ge
 
     // generate samples in the first polygonal enclosure
     auto const generatedPoints = polygon.Enclosure(0).GeneratePoints(scaleFactor_ < 0.0 ? meshkernel::constants::missing::doubleValue : scaleFactor_);
+    return generatedPoints;
+}
+
+std::unique_ptr<meshkernel::Mesh2D> meshkernel::SimpleTriangulationGenerator::generate(const Polygons& polygon) const
+{
+
+    if (polygon.GetNumPolygons() != 1)
+    {
+        throw MeshKernelError("Cannot generate a triangulation for {} polygons", polygon.GetNumPolygons());
+    }
+
+    // generate samples in the first polygonal enclosure
+    auto const generatedPoints = generatePoints(polygon);
 
     return std::make_unique<Mesh2D>(generatedPoints, polygon, polygon.GetProjection());
 }

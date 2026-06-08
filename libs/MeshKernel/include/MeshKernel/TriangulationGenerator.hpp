@@ -87,6 +87,9 @@ namespace meshkernel
         /// \brief Constructor
         SimpleTriangulationGenerator(const double factor) : scaleFactor_(factor) {}
 
+        /// \brief Compute points within polygon using triangle
+        std::vector<Point> generatePoints(const Polygons& polygon) const;
+
         /// \brief Compute triangulation using triangle
         std::unique_ptr<Mesh2D> generate(const Polygons& polygon) const override;
 
