@@ -47,7 +47,25 @@ jobs:
 
       - name: Install system-provided dependencies
         run: |
-          brew install boost doxygen libaec libomp
+          brew install boost doxygen gcc libaec libomp
+
+      - name: Set Fortran compiler (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          GFORTRAN_BIN="$(command -v gfortran || true)"
+          if [ -z "$GFORTRAN_BIN" ]; then
+            HOMEBREW_PREFIX="$(brew --prefix)"
+            GFORTRAN_BIN="$(find "$HOMEBREW_PREFIX/bin" -maxdepth 1 -type f -name 'gfortran-*' | sort -V | tail -n 1)"
+          fi
+
+          if [ -z "$GFORTRAN_BIN" ]; then
+            echo "Unable to locate Homebrew gfortran" >&2
+            exit 1
+          fi
+
+          echo "Using Fortran compiler: $GFORTRAN_BIN"
+          echo "FC=$GFORTRAN_BIN" >> "$GITHUB_ENV"
+          echo "F77=$GFORTRAN_BIN" >> "$GITHUB_ENV"
 
       # Step: Set OpenMP environment variables (architecture-aware)
       - name: Set OpenMP environment variables
@@ -58,7 +76,7 @@ jobs:
           else
             HOMEBREW_PREFIX="/usr/local"
           fi
-          
+
           echo "HOMEBREW_PREFIX=$HOMEBREW_PREFIX" >> $GITHUB_ENV
           echo "LDFLAGS=-L$HOMEBREW_PREFIX/opt/libomp/lib" >> $GITHUB_ENV
           echo "CPPFLAGS=-I$HOMEBREW_PREFIX/opt/libomp/include" >> $GITHUB_ENV
@@ -114,13 +132,14 @@ jobs:
             # Suppress unused parameter warnings on macOS 15 Intel runner (known platform-specific issue)
             SUPPRESS_PARAM_FLAG="-DSUPPRESS_UNUSED_PARAMETER_WARNING=ON"
           fi
-          
+
           cmake \
             -S ${{ github.workspace }} \
             -B ${{ steps.paths.outputs.build_dir }} \
             -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} \
             -DCMAKE_PREFIX_PATH=${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c \
             -DCMAKE_INSTALL_PREFIX=${{ steps.paths.outputs.install_dir }} \
+            -DCMAKE_Fortran_COMPILER="$FC" \
             $SUPPRESS_PARAM_FLAG \
             -DOpenMP_C_FLAGS="-Xpreprocessor -fopenmp -I$HOMEBREW_PREFIX/opt/libomp/include" \
             -DOpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp -I$HOMEBREW_PREFIX/opt/libomp/include" \
@@ -144,7 +163,7 @@ jobs:
           if [ -f "${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c/bin/libz.dylib" ]; then
             ln -sf libz.dylib ${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c/bin/libz.1.dylib
           fi
-          
+
           export DYLD_LIBRARY_PATH="${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c/bin:$DYLD_LIBRARY_PATH"
           ctest --test-dir ${{ steps.paths.outputs.build_dir }} \
                 -C ${{ inputs.build_type }} \
