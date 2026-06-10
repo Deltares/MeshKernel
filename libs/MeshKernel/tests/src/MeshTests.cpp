@@ -194,13 +194,13 @@ TEST(Mesh, TriangulateGridWithHoleSepran)
 
     const double tolerance = 1.0e-8;
 
-    for (size_t i = 0; i < mesh2->GetNumNodes(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh2->GetNumNodes(); ++i)
     {
         EXPECT_NEAR(expectedNodeX[i], mesh2->Node(i).x, tolerance);
         EXPECT_NEAR(expectedNodeY[i], mesh2->Node(i).y, tolerance);
     }
 
-    for (size_t i = 0; i < mesh2->GetNumEdges(); ++i)
+    for (meshkernel::UInt i = 0; i < mesh2->GetNumEdges(); ++i)
     {
         EXPECT_EQ(expectedEdgeStart[i], mesh2->GetEdge(i).first);
         EXPECT_EQ(expectedEdgeEnd[i], mesh2->GetEdge(i).second);
