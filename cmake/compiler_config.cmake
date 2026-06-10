@@ -25,6 +25,9 @@ if(APPLE)
     # Optimization / debug flags
     add_compile_options("$<$<CONFIG:RELEASE>:-O2>")
     add_compile_options("$<$<CONFIG:DEBUG>:-g>")
+    # Disable warnings about implicit conversions between character types
+    # This is required because of a compatibility issue between clang++ and googletest
+    add_compile_options("-Wno-character-conversion")
   else()
     message(FATAL_ERROR "Unsupported compiler on macOS. Supported: AppleClang/Clang. Found ${CMAKE_CXX_COMPILER_ID}.")
   endif()
