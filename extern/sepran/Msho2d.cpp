@@ -26,6 +26,7 @@
 #include <cassert>
 #include <cmath>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 namespace sepran
