@@ -210,7 +210,7 @@ TEST(Mesh, TriangulateGridWithHoleSepran)
 TEST(Mesh, TriangulateGridFromRealisticPolygon)
 {
 
-    std::string fileName (TEST_FOLDER + "/data/northbank_001b.pol");
+    std::string fileName(TEST_FOLDER + "/data/northbank_001b.pol");
 
     auto poly = ReadPolygons(fileName, meshkernel::Projection::cartesian);
 
