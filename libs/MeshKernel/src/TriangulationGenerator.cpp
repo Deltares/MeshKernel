@@ -1,7 +1,10 @@
 #include "MeshKernel/TriangulationGenerator.hpp"
 
+#include "Mshoce.hpp"
+
 #include <algorithm>
 #include <execution>
+#include <span>
 #include <tuple>
 
 std::vector<meshkernel::Point> meshkernel::SimpleTriangulationGenerator::generatePoints(const Polygons& polygon) const
@@ -200,11 +203,33 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::SepranTriangulationGenerator::ge
     int numberOfPoints = maximumNumberOfNodes;
     int numberOfElements = maximumNumberOfElements;
 
-    mshoce(&newMesh, triangulationNodes.data(), triangulationElementNodes.data(), &elementIdentifier, &numberOfBoundaryNodes, boundaryCoordinates.data(),
-           edgeNodeConnectivity.data(), boundaryConnectivity.data(), &numberOfPolygons, &numberOfPoints, &numberOfElements,
-           holeinfo.data(), &numberOfHoles, &numberElementSizing, elementSizing.data(), userpoints.data(),
-           &surfaceSequenceNumber, &auxiliaryAlignment, numnodextcurvs.data(), curvenumbers.data(),
-           rinput.data(), &forcedControlPoints, &dimension);
+    sepran::SepranContext ctx = sepran::SepranContext::defaults();
+
+    sepran::mshoce(
+        newMesh != 0,
+        std::span<double>(triangulationNodes),
+        std::span<int>(triangulationElementNodes),
+        elementIdentifier,
+        numberOfBoundaryNodes,
+        std::span<const double>(boundaryCoordinates),
+        std::span<int>(edgeNodeConnectivity),
+        std::span<const int>(boundaryConnectivity),
+        numberOfPolygons,
+        numberOfPoints,
+        numberOfElements,
+        std::span<int>(holeinfo),
+        numberOfHoles,
+        numberElementSizing,
+        std::span<const double>(elementSizing),
+        std::span<const int>(userpoints),
+        surfaceSequenceNumber,
+        auxiliaryAlignment,
+        std::span<const int>(numnodextcurvs),
+        std::span<const int>(curvenumbers),
+        std::span<const double>(rinput),
+        forcedControlPoints,
+        dimension,
+        ctx);
 
     // Recover array of Points
     std::vector<Point> meshNodes(pointsFromFlatArray(triangulationNodes, numberOfPoints));

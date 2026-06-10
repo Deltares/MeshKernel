@@ -181,15 +181,16 @@ TEST(Mesh, TriangulateGridWithHoleSepran)
     meshkernel::SepranTriangulationGenerator generator;
     auto mesh2 = generator.generate(polygons);
 
-    std::vector<meshkernel::UInt> expectedEdgeStart{0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 5, 5, 5, 6, 6, 6, 6, 7, 7, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 18, 18, 19, 19, 19, 20, 20, 20, 20, 21, 22, 23, 24, 24, 24, 25, 26};
-    std::vector<meshkernel::UInt> expectedEdgeEnd{1, 15, 16, 2, 16, 17, 3, 17, 18, 4, 5, 18, 22, 5, 6, 22, 23, 7, 23, 24, 27, 8, 27, 9, 27, 10, 26, 27, 11, 25, 26, 12, 13, 25, 13, 14, 21, 25, 15, 21, 16, 21, 17, 21, 18, 19, 22, 20, 22, 23, 21, 23, 24, 25, 25, 23, 24, 25, 26, 27, 26, 27};
+    std::vector<meshkernel::UInt> expectedEdgeStart{0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 4, 5, 5, 6, 6, 6, 6, 6, 7, 7, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 18, 18, 19, 19, 19, 20, 20, 20, 20, 21, 22, 22, 23, 23, 25, 25, 25, 26, 27};
 
-    std::vector<double> expectedNodeX{0, 2.5, 5, 7.5, 10, 10, 10, 10, 10, 7.5, 5, 2.5, 0, 0, 0, 0, 2, 3.5, 5, 5, 5, 2, 6.967815551, 7.104568177, 6.730464586, 4.552597509, 6.301132176, 8.595816778};
-    std::vector<double> expectedNodeY{0, 0, 0, 0, 0, 2.5, 5, 7.5, 10, 10, 10, 10, 10, 7.5, 5, 2.5, 2, 2, 2, 3.5, 5, 5, 2.750000179, 4.250000179, 6.528037461, 7.250544703, 8.877539953, 8.082877681};
+    std::vector<meshkernel::UInt> expectedEdgeEnd{1, 15, 16, 2, 16, 17, 3, 17, 18, 4, 5, 18, 22, 24, 5, 6, 24, 7, 23, 24, 25, 28, 8, 28, 9, 28, 10, 27, 28, 11, 26, 27, 12, 13, 26, 13, 14, 21, 26, 15, 21, 16, 21, 17, 21, 18, 19, 22, 20, 22, 23, 21, 23, 25, 26, 26, 23, 24, 24, 25, 26, 27, 28, 27, 28};
 
-    ASSERT_EQ(mesh2->GetNumNodes(), 28);
-    ASSERT_EQ(mesh2->GetNumEdges(), 62);
-    ASSERT_EQ(mesh2->GetNumFaces(), 34);
+    std::vector<double> expectedNodeX{0, 2.5, 5, 7.5, 10, 10, 10, 10, 10, 7.5, 5, 2.5, 0, 0, 0, 0, 2, 3.5, 5, 5, 5, 2, 6.6875, 6.875, 8.974717773, 6.709407692, 4.603616331, 6.211802214, 8.535641403};
+    std::vector<double> expectedNodeY{0, 0, 0, 0, 0, 2.5, 5, 7.5, 10, 10, 10, 10, 10, 7.5, 5, 2.5, 2, 2, 2, 3.5, 5, 5, 2.750000185, 4.250000185, 3.225816901, 6.554770469, 7.15290529, 8.808791614, 8.139873532};
+
+    ASSERT_EQ(mesh2->GetNumNodes(), 29);
+    ASSERT_EQ(mesh2->GetNumEdges(), 65);
+    ASSERT_EQ(mesh2->GetNumFaces(), 36);
 
     const double tolerance = 1.0e-8;
 
@@ -204,6 +205,20 @@ TEST(Mesh, TriangulateGridWithHoleSepran)
         EXPECT_EQ(expectedEdgeStart[i], mesh2->GetEdge(i).first);
         EXPECT_EQ(expectedEdgeEnd[i], mesh2->GetEdge(i).second);
     }
+}
+
+TEST(Mesh, TriangulateGridFromRealisticPolygon)
+{
+
+    std::string fileName (TEST_FOLDER + "/data/northbank_001b.pol");
+
+    auto poly = ReadPolygons(fileName, meshkernel::Projection::cartesian);
+
+    meshkernel::SepranTriangulationGenerator generator;
+    auto mesh2 = generator.generate(*poly);
+    ASSERT_EQ(mesh2->GetNumFaces(), 3080);
+    ASSERT_EQ(mesh2->GetNumEdges(), 4733);
+    ASSERT_EQ(mesh2->GetNumNodes(), 1654);
 }
 
 TEST(Mesh, TwoTrianglesDuplicatedEdges)

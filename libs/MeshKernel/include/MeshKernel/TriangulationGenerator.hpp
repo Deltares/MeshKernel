@@ -32,41 +32,6 @@
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Polygons.hpp"
 
-extern "C"
-{
-
-    /// \brief SEPRAN function for triangulation of a polygonal region
-    extern void mshoce(
-        const int* jnew,   // Input: Reset indicator (Fortran Logical pointer)
-        double* coor,      // Output: Flattened array of node coordinates
-        int* kmeshc,       // Output: Connectivity/topology grid matrix
-        const int* inpelm, // Input: Element type identifier
-        const int* nbound, // Input: Number of boundary elements
-        double* bcord,     // Input: Coordinates of boundary control nodes
-
-        int* kbndpt,            // Input: Type flags for boundary nodes
-        int* boundary,          // Input: Edge-to-node connectivity map
-        const int* numcurvboun, // Input: Total count of curved boundary segments
-        int* npoint,            // Output: Count of generated points
-        int* nelem,             // Output: Count of generated elements
-
-        int* holeinfo,     // Input: Structural layout parameters for holes
-        const int* nholes, // Input: Total count of internal holes
-        const int* ncoar,  // Input: Quantity of sizing descriptors passed
-        double* coar,      // Input: Target element sizing arrays
-        int* userpoints,   // Input: Fixed target internal points
-
-        int* isurnr,             // Output: Surface structural adjacency mapping register
-        const int* numextcurves, // Input: Auxiliary alignment curve flags
-        int* numnodextcurvs,     // Input: Node mappings for alignment paths
-
-        int* curvenumbers, // Input: Curve curvature flags
-        double* rinput,    // Input: Supplementary sizing/weighting matrices
-        const int* nuspnt, // Input: Count of forced target control nodes
-        const int* ndim    // Input: Domain spatial dimension identifier
-    );
-}
-
 namespace meshkernel
 {
 

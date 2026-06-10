@@ -350,6 +350,7 @@ find_package(OpenMP REQUIRED)
 target_link_libraries(
   ${TARGET_NAME}
   LINK_PUBLIC
+    Sepran
     Triangle
     OpenMP::OpenMP_CXX
     Eigen3::Eigen
