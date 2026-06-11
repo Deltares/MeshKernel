@@ -1,3 +1,29 @@
+//----- AGPL --------------------------------------------------------------------
+//
+//  Copyright (C)  Stichting Deltares, 2017-2026.
+//
+//  This programme is free software: you can redistribute it and/or modify
+//  it under the terms of the GNU Affero General Public License as
+//  published by the Free Software Foundation version 3.
+//
+//  This programme is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Affero General Public License for more details.
+//
+//  You should have received a copy of the GNU Affero General Public License
+//  along with This programme. If not, see <http://www.gnu.org/licenses/>.
+//
+//  contact: delft3d.support@deltares.nl
+//  Stichting Deltares
+//  P.O. Box 177
+//  2600 MH Delft, The Netherlands
+//
+//  All indications and logos of, and references to, "Delft3D",
+//  "D-Flow Flexible Mesh" and "Deltares" are registered trademarks of Stichting
+//  Deltares, and remain the property of Stichting Deltares. All rights reserved.
+//
+//-------------------------------------------------------------------------------
 // SepranFront.cpp - all translated functions
 //
 // C++20 translation of msho01, msho09, msho11, msho12, msho13, msho14,
@@ -11,9 +37,6 @@
 //   kelem  : flat triples;     kelem[3*e], [3*e+1], [3*e+2]       (0-based elem e)
 //   itri   : flat;             itri[k-1] for 1-based node k
 //   istart : CSR ptr;          istart[i-1] = cumulative neighbour count through node i
-
-// SPDX-License-Identifier: GPL-3.0-or-later
-// SPDX-FileCopyrightText: 2025 Stichting Deltares
 
 #include "SepranFront.hpp"
 #include "SepranContext.hpp"
