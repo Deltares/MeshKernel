@@ -251,6 +251,7 @@ namespace meshkernel
 
         /// @brief Convert all mesh boundaries to a vector of polygon nodes, including holes (copynetboundstopol)
         /// @param[in] polygon The polygon where the operation is performed; only boundary segments intersecting the polygon are included
+        /// @param[in] doAdministrate Indicate that an adminstrate is required.
         /// @return The resulting polygon mesh boundary
         [[nodiscard]] std::vector<Point> ComputeBoundaryPolygons(const std::vector<Point>& polygon, const bool doAdministrate = true);
 

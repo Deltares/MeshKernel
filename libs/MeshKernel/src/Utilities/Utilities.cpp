@@ -112,9 +112,7 @@ void meshkernel::SaveVtk(const std::vector<Point>& nodes, const std::vector<std:
         {
             ++numberOfElements;
         }
-
     }
-
 
     vtkFile << "<VTKFile type=\""
             << meshType
