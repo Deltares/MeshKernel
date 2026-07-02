@@ -1510,12 +1510,16 @@ std::vector<meshkernel::UInt> Mesh2D::SortedFacesAroundNode(UInt node) const
     return result;
 }
 
-std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector<Point>& polygonNodes)
+std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector<Point>& polygonNodes, const bool doAdministrate)
 {
     const Polygon polygon(polygonNodes, m_projection);
 
     // Find faces
-    Administrate();
+    if (doAdministrate)
+    {
+        Administrate();
+    }
+
     std::vector<bool> isVisited(GetNumEdges(), false);
     std::vector<Point> meshBoundaryPolygon;
     meshBoundaryPolygon.reserve(GetNumNodes());
@@ -1572,6 +1576,7 @@ std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector
             meshBoundaryPolygon.push_back(meshBoundaryPolygon.front());
         }
     }
+
     return meshBoundaryPolygon;
 }
 
@@ -2183,6 +2188,48 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygon(const P
     return UpdateFaceInformation(faceIndices, appendDeletedFaces);
 }
 
+void Mesh2D::ReconstructInvalidCellsPolygon()
+{
+    std::vector<Point> allBoundaries(ComputeBoundaryPolygons(std::vector<meshkernel::Point>(), false));
+
+    if (allBoundaries.GetNumPolygons() <= 1)
+    {
+        // There are no interior boundary polygons
+        return;
+    }
+
+    Polygons polygons(allBoundaries, m_projection);
+    std::vector<double> polygonAreas(polygons.GetNumPolygons(), 0.0);
+
+    for (UInt p = 0; p < polygons.GetNumPolygons(); ++p)
+    {
+        auto [area, centre, direction] = polygons.Enclosure(p).Outer().FaceAreaAndCenterOfMass();
+        polygonAreas[p] = area;
+    }
+
+    auto maxAreaIter = std::ranges::max_element(polygonAreas);
+    size_t maxAreaIndex = std::distance(polygonAreas.begin(), maxAreaIter);
+
+    std::vector<Point> innerBoundaryPolygons;
+    innerBoundaryPolygons.reserve(m_invalidCellPolygons.size());
+
+    for (size_t p = 0; p < polygons.GetNumPolygons(); ++p)
+    {
+        if (p != maxAreaIndex)
+        {
+            const std::vector<Point>& polygonPoints(polygons.Enclosure(p).Outer().Nodes());
+            innerBoundaryPolygons.insert(innerBoundaryPolygons.end(), polygonPoints.begin(), polygonPoints.end());
+
+            if ((p < maxAreaIndex && ((maxAreaIndex + 1) != polygons.GetNumPolygons())) || (p > maxAreaIndex && (p + 1) != polygons.GetNumPolygons()))
+            {
+                innerBoundaryPolygons.push_back(Point(constants::missing::doubleValue, constants::missing::doubleValue));
+            }
+        }
+    }
+
+    m_invalidCellPolygons = innerBoundaryPolygons;
+}
+
 std::unique_ptr<meshkernel::UndoAction> Mesh2D::UpdateFaceInformation(const std::vector<UInt>& faceIndices, const bool appendDeletedFaces)
 {
     std::vector<UInt> facesToDelete;
@@ -2261,6 +2308,8 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::UpdateFaceInformation(const std:
             m_edgesFaces[edge][1] = faceIndices[m_edgesFaces[edge][1]];
         }
     }
+
+    ReconstructInvalidCellsPolygon();
 
     // Shift face connectivity in arrays where deleted faces have been removed from arrays
     // Loop must be iterated in reverse order, from highest face id value to lowest.

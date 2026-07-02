@@ -252,7 +252,7 @@ namespace meshkernel
         /// @brief Convert all mesh boundaries to a vector of polygon nodes, including holes (copynetboundstopol)
         /// @param[in] polygon The polygon where the operation is performed; only boundary segments intersecting the polygon are included
         /// @return The resulting polygon mesh boundary
-        [[nodiscard]] std::vector<Point> ComputeBoundaryPolygons(const std::vector<Point>& polygon);
+        [[nodiscard]] std::vector<Point> ComputeBoundaryPolygons(const std::vector<Point>& polygon, const bool doAdministrate = true);
 
         /// @brief Convert all mesh boundaries to a vector of polygon nodes
         /// @return The resulting set of polygons, describing interior mesh boundaries
@@ -460,6 +460,12 @@ namespace meshkernel
                                        std::vector<UInt>& nodeIds,
                                        std::vector<Point>& subSequence,
                                        std::vector<Point>& illegalCells) const;
+
+        /// @brief Reconstruct the invalid cell polygons
+        ///
+        /// When constructing the invalid cell polygons, they can be compujted with many smaller polygons.
+        /// If these smaller polygons form a single patch on the domain, then they need to be combined
+        void ReconstructInvalidCellsPolygon();
 
         /// @brief Ensure that all polynomials are orientated in the ACW direction.
         void OrientatePolygonsAntiClockwise(std::vector<Point>& polygonNodes) const;
