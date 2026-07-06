@@ -42,6 +42,12 @@ meshkernel::Polygon::Polygon(const std::vector<Point>& points,
     Initialise();
 }
 
+meshkernel::Polygon::Polygon(std::span<const Point> points,
+                             Projection projection) : m_nodes(points.begin(), points.end()), m_projection(projection)
+{
+    Initialise();
+}
+
 meshkernel::Polygon::Polygon(std::vector<Point>&& points,
                              Projection projection) : m_nodes(points), m_projection(projection)
 {

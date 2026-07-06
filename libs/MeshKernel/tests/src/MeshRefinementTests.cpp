@@ -3082,67 +3082,23 @@ TEST(MeshRefinement, MeshWithHole_ShouldConstructMeshWithInteriorBoundaryPolygon
     std::vector<Point> innerBoundaryPoints = mesh2.GetInnerBoundaryPolygons();
 
     // The expected number of points, should not include any land boundary points
-    UInt expectedNumberOfNodes = 26;
+    constexpr UInt expectedNumberOfNodes = 22;
 
     ASSERT_EQ(expectedNumberOfNodes, innerBoundaryPoints.size());
 
     // The edge of one of the deleted elements lies on the boundary, so will be not be part of the
     // interior set of polygons
-    std::vector<double> expectedXPoints{
-        95.0,
-        105.0,
-        100.0,
-        95.0,
-        constants::missing::doubleValue,
-        85.0,
-        85.0,
-        95.0,
-        95.0,
-        85.0,
-        constants::missing::doubleValue,
-        80.0,
-        75.0,
-        85.0,
-        80.0,
-        constants::missing::doubleValue,
-        120.0,
-        115.0,
-        125.0,
-        120.0,
-        constants::missing::doubleValue,
-        125.0,
-        125.0,
-        135.0,
-        135.0,
-        125.0};
+    std::vector<double> expectedXPoints{80.0, 85.0, 95.0, 100.0, 105.0, 95.0, 95.0, 85.0, 85.0, 75.0, 80.0,
+                                        constants::missing::doubleValue,
+                                        120.0, 125.0, 115.0, 120.0,
+                                        constants::missing::doubleValue,
+                                        125.0, 125.0, 135.0, 135.0, 125.0};
 
-    std::vector<double> expectedYPoints{
-        15.0,
-        15.0,
-        0.0,
-        15.0,
-        constants::missing::doubleValue,
-        15.0,
-        25.0,
-        25.0,
-        15.0,
-        15.0,
-        constants::missing::doubleValue,
-        0.0,
-        15.0,
-        15.0,
-        0.0,
-        constants::missing::doubleValue,
-        0.0,
-        15.0,
-        15.0,
-        0.0,
-        constants::missing::doubleValue,
-        125.0,
-        135.0,
-        135.0,
-        125.0,
-        125.0};
+    std::vector<double> expectedYPoints{0.0, 15.0, 15.0, 0.0, 15.0, 15.0, 25.0, 25.0, 15.0, 15.0, 0.0,
+                                        constants::missing::doubleValue,
+                                        0.0, 15.0, 15.0, 0.0,
+                                        constants::missing::doubleValue,
+                                        125.0, 135.0, 135.0, 125.0, 125.0};
 
     for (size_t i = 0; i < expectedXPoints.size(); ++i)
     {
