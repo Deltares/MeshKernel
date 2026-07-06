@@ -2218,7 +2218,7 @@ void Mesh2D::ReconstructInvalidCellsPolygon()
     innerBoundaryPolygons.reserve(m_invalidCellPolygons.size());
     bool firstElement = true;
 
-    for (size_t p = 0; p < polygons.GetNumPolygons(); ++p)
+    for (UInt p = 0; p < polygons.GetNumPolygons(); ++p)
     {
         if (isEnclosingBoundary[p])
         {
