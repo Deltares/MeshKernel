@@ -25,6 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
+#include <set>
 #include <span>
 
 #include "MeshKernel/Cartesian3DPoint.hpp"
@@ -1721,6 +1722,129 @@ namespace meshkernel
     double MatrixNorm(const std::vector<double>& x, const std::vector<double>& y, const std::vector<double>& matCoefficients)
     {
         return (matCoefficients[0] * x[0] + matCoefficients[1] * x[1]) * y[0] + (matCoefficients[2] * x[0] + matCoefficients[3] * x[1]) * y[1];
+    }
+
+    bool isMultiPolygon(std::span<const Point> boundary)
+    {
+
+        if (boundary.size() < 4)
+        {
+            return false;
+        }
+
+        std::set<Point> uniquePoints;
+
+        for (const Point& p : boundary)
+        {
+            if (!uniquePoints.insert(p).second)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    std::tuple<std::vector<std::vector<Point>>, std::vector<UInt>> splitMultiplePolygons(std::span<const Point> boundary, std::span<UInt> elementIds)
+    {
+        std::vector<std::vector<Point>> completedPolygons;
+        std::vector<Point> pointStack;
+        std::vector<UInt> elementStack;
+        std::map<Point, size_t> stackRegistry; // Maps point to its current index in pointStack
+
+        for (const Point& currentPoint : boundary)
+        {
+            auto it = stackRegistry.find(currentPoint);
+
+            if (it != stackRegistry.end())
+            {
+                // A duplicate point is found, which means a loop is closed!
+                size_t loopStartIndex = it->second;
+                std::vector<Point> newPolygon;
+
+                // Extract everything from the start of the loop to the end of the stack
+                for (size_t i = loopStartIndex; i < pointStack.size(); ++i)
+                {
+                    newPolygon.push_back(pointStack[i]);
+                    stackRegistry.erase(pointStack[i]); // Clean registry for reused points
+                }
+
+                // Add the closing point to complete the loop topology
+                newPolygon.push_back(currentPoint);
+                completedPolygons.push_back(newPolygon);
+
+                // Shrink the stack back down, discarding the extracted loop
+                pointStack.resize(loopStartIndex);
+                elementStack.push_back(elementIds[loopStartIndex]);
+            }
+
+            // Push the current point onto the active path stack
+            stackRegistry[currentPoint] = pointStack.size();
+            pointStack.push_back(currentPoint);
+        }
+
+        // Wrap up any remaining points left on the main outer path
+        if (pointStack.size() > 2)
+        {
+            // Ensure it self-closes if the original boundary loop was implicit
+            if (!(pointStack.front() == pointStack.back()))
+            {
+                pointStack.push_back(pointStack.front());
+            }
+            completedPolygons.push_back(pointStack);
+        }
+
+        return {completedPolygons, elementStack};
+    }
+
+    std::vector<std::vector<Point>> splitMultiplePolygons(std::span<const Point> boundary)
+    {
+        std::vector<std::vector<Point>> completedPolygons;
+        std::vector<Point> pointStack;
+        std::map<Point, size_t> stackRegistry; // Maps point to its current index in pointStack
+
+        for (const Point& currentPoint : boundary)
+        {
+            auto it = stackRegistry.find(currentPoint);
+
+            if (it != stackRegistry.end())
+            {
+                // A duplicate point is found, which means a loop is closed!
+                size_t loopStartIndex = it->second;
+                std::vector<Point> newPolygon;
+
+                // Extract everything from the start of the loop to the end of the stack
+                for (size_t i = loopStartIndex; i < pointStack.size(); ++i)
+                {
+                    newPolygon.push_back(pointStack[i]);
+                    stackRegistry.erase(pointStack[i]); // Clean registry for reused points
+                }
+
+                // Add the closing point to complete the loop topology
+                newPolygon.push_back(currentPoint);
+                completedPolygons.push_back(newPolygon);
+
+                // Shrink the stack back down, discarding the extracted loop
+                pointStack.resize(loopStartIndex);
+            }
+
+            // Push the current point onto the active path stack
+            stackRegistry[currentPoint] = pointStack.size();
+            pointStack.push_back(currentPoint);
+        }
+
+        // Wrap up any remaining points left on the main outer path
+        if (pointStack.size() > 2)
+        {
+            // Ensure it self-closes if the original boundary loop was implicit
+            if (!(pointStack.front() == pointStack.back()))
+            {
+                pointStack.push_back(pointStack.front());
+            }
+            completedPolygons.push_back(pointStack);
+        }
+
+        return completedPolygons;
     }
 
 } // namespace meshkernel

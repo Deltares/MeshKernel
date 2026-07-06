@@ -1523,9 +1523,13 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> Mesh2D::GetAllBoun
 
     std::vector<bool> isVisited(GetNumEdges(), false);
     std::vector<Point> meshBoundaryPolygon;
+    std::vector<Point> boundaryPolygon;
+    // Elements connected to the boundary
+    std::vector<UInt> boundaryPolygonFaceId;
     std::vector<bool> isEnclosingBoundary;
 
     meshBoundaryPolygon.reserve(GetNumNodes());
+    boundaryPolygon.reserve(GetNumNodes());
 
     for (UInt e = 0; e < GetNumEdges(); e++)
     {
@@ -1548,48 +1552,122 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> Mesh2D::GetAllBoun
         }
 
         // Start a new polyline
-        if (!meshBoundaryPolygon.empty())
-        {
-            meshBoundaryPolygon.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
-        }
-
-        const size_t boundaryPolygonStartIndex = meshBoundaryPolygon.size();
+        boundaryPolygon.clear();
+        boundaryPolygonFaceId.clear();
 
         // Put the current edge on the mesh boundary, mark it as visited
-        meshBoundaryPolygon.emplace_back(firstNode);
-        meshBoundaryPolygon.emplace_back(secondNode);
+        boundaryPolygon.emplace_back(firstNode);
+        boundaryPolygon.emplace_back(secondNode);
+        boundaryPolygonFaceId.push_back(m_edgesFaces[e][0]);
 
         isVisited[e] = true;
 
         // walk the current mesh boundary
         auto currentNode = secondNodeIndex;
-        WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
+        WalkBoundaryFromNode(polygon, isVisited, currentNode, boundaryPolygon, boundaryPolygonFaceId);
 
-        const auto numNodesFirstTail = static_cast<UInt>(meshBoundaryPolygon.size());
+        const auto numNodesFirstTail = static_cast<UInt>(boundaryPolygon.size());
 
         // if the boundary polygon is not closed
         if (currentNode != firstNodeIndex)
         {
             // Now grow a polyline starting at the other side of the original link L, i.e., the second tail
             currentNode = firstNodeIndex;
-            WalkBoundaryFromNode(polygon, isVisited, currentNode, meshBoundaryPolygon);
+            WalkBoundaryFromNode(polygon, isVisited, currentNode, boundaryPolygon, boundaryPolygonFaceId);
         }
 
         // There is a nonempty second tail: reverse the second tail so that the tails connect and close the polygon.
-        if (meshBoundaryPolygon.size() > numNodesFirstTail)
+        if (boundaryPolygon.size() > numNodesFirstTail)
         {
-            std::reverse(meshBoundaryPolygon.begin() + numNodesFirstTail, meshBoundaryPolygon.end());
-            meshBoundaryPolygon.push_back(meshBoundaryPolygon.front());
+            std::reverse(boundaryPolygon.begin() + numNodesFirstTail, boundaryPolygon.end());
+            boundaryPolygon.push_back(boundaryPolygon.front());
         }
 
-        const size_t boundaryPolygonEndIndex = meshBoundaryPolygon.size();
-
-        std::span<const Point> currentPolygonSpan(std::span<const Point>(meshBoundaryPolygon.data() + boundaryPolygonStartIndex,
-                                                                         meshBoundaryPolygon.data() + boundaryPolygonEndIndex));
+        std::span<const Point> currentPolygonSpan(boundaryPolygon);
         Polygon currentPolygon(currentPolygonSpan, m_projection);
 
-        isEnclosingBoundary.push_back(currentPolygon.Contains(m_facesMassCenters[m_edgesFaces[e][0]]));
+        if (!meshBoundaryPolygon.empty())
+        {
+            meshBoundaryPolygon.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
+        }
+
+        if (isMultiPolygon(currentPolygonSpan))
+        {
+            std::cout << " ++++++++++++++++++++++++++++++++ " << std::endl;
+            std::cout << " currentPolygonSpan ";
+
+            for (size_t j = 0; j < currentPolygonSpan.size(); ++j)
+            {
+                std::cout << "{" << currentPolygonSpan[j].x << ", " << currentPolygonSpan[j].y << "}, ";
+            }
+
+            std::cout << std::endl;
+            std::cout << " boundaryPolygonFaceId ";
+
+            for (size_t j = 0; j < boundaryPolygonFaceId.size(); ++j)
+            {
+                std::cout << boundaryPolygonFaceId[j] << ", ";
+            }
+
+            std::cout << std::endl;
+
+            auto [multiBoundaryPolygonNodes, multiBoundaryElementIds] = (splitMultiplePolygons(currentPolygonSpan, boundaryPolygonFaceId));
+            // std::vector<std::vector<Point>> multiBoundaryPolygonNodes(splitMultiplePolygons(currentPolygonSpan));
+            // size_t faceIndex = 0;
+
+            std::cout << " sub-boundaryPolygonFaceId " << multiBoundaryElementIds.size() << "   ";
+
+            for (size_t i = 0; i < multiBoundaryElementIds.size(); ++i)
+            {
+                std::cout << multiBoundaryElementIds[i] << ", ";
+
+                for (size_t j = 0; j < multiBoundaryPolygonNodes[i].size(); ++j)
+                {
+                    std::cout << "{" << multiBoundaryPolygonNodes[i][j].x << ", " << multiBoundaryPolygonNodes[i][j].y << "}, ";
+                }
+
+                std::cout << std::endl;
+            }
+
+            std::cout << std::endl;
+
+            for (size_t i = 0; i < multiBoundaryPolygonNodes.size(); ++i)
+            {
+                if (i > 0)
+                {
+                    meshBoundaryPolygon.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
+                }
+
+                meshBoundaryPolygon.insert(meshBoundaryPolygon.end(), multiBoundaryPolygonNodes[i].begin(), multiBoundaryPolygonNodes[i].end());
+
+                std::span<const Point> currentPolygonSpan(multiBoundaryPolygonNodes[i]);
+                Polygon currentPolygon(currentPolygonSpan, m_projection);
+
+                isEnclosingBoundary.push_back(currentPolygon.Contains(m_facesMassCenters[multiBoundaryElementIds[i]]));
+                // faceIndex += multiBoundaryPolygonNodes[i].size();
+            }
+        }
+        else
+        {
+            meshBoundaryPolygon.insert(meshBoundaryPolygon.end(), boundaryPolygon.begin(), boundaryPolygon.end());
+
+            std::span<const Point> currentPolygonSpan(boundaryPolygon);
+            Polygon currentPolygon(currentPolygonSpan, m_projection);
+
+            isEnclosingBoundary.push_back(currentPolygon.Contains(m_facesMassCenters[boundaryPolygonFaceId[0]]));
+        }
+
+        // std::cout << " boundaryPolygonFaceId ";
+
+        // for (size_t i = 0; i < boundaryPolygonFaceId.size(); ++i)
+        // {
+        //     std::cout << boundaryPolygonFaceId[i] << ", ";
+        // }
+
+        // std::cout << std::endl;
     }
+
+    std::cout << "--------------------------------" << std::endl;
 
     return {meshBoundaryPolygon, isEnclosingBoundary};
 }
@@ -1797,7 +1875,8 @@ std::vector<meshkernel::Point> Mesh2D::RemoveOuterDomainBoundaryPolygon(const st
 void Mesh2D::WalkBoundaryFromNode(const Polygon& polygon,
                                   std::vector<bool>& isVisited,
                                   UInt& currentNode,
-                                  std::vector<Point>& meshBoundaryPolygon) const
+                                  std::vector<Point>& meshBoundaryPolygon,
+                                  std::vector<UInt>& boundaryPolygonFaceId) const
 {
     UInt e = 0;
     bool currentNodeInPolygon = false;
@@ -1821,6 +1900,7 @@ void Mesh2D::WalkBoundaryFromNode(const Polygon& polygon,
         }
 
         currentNode = OtherNodeOfEdge(m_edges[currentEdge], currentNode);
+        boundaryPolygonFaceId.push_back(m_edgesFaces[currentEdge][0]);
         e = 0;
         currentNodeInPolygon = false;
 

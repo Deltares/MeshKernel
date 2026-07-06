@@ -448,7 +448,8 @@ namespace meshkernel
         void WalkBoundaryFromNode(const Polygon& polygon,
                                   std::vector<bool>& isVisited,
                                   UInt& currentNode,
-                                  std::vector<Point>& meshBoundaryPolygon) const;
+                                  std::vector<Point>& meshBoundaryPolygon,
+                                  std::vector<UInt>& boundaryPolygonFaceId) const;
 
         /// @brief Constructs a polygon or polygons from the meshboundary, by walking through the mesh
         ///

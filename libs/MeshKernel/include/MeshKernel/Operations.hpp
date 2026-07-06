@@ -621,4 +621,10 @@ namespace meshkernel
         }
     }
 
+    bool isMultiPolygon(std::span<const Point> boundary);
+
+    std::tuple<std::vector<std::vector<Point>>, std::vector<UInt>> splitMultiplePolygons(std::span<const Point> boundary, std::span<UInt> elementIds);
+
+    std::vector<std::vector<Point>> splitMultiplePolygons(std::span<const Point> boundary);
+
 } // namespace meshkernel
