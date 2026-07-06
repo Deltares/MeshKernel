@@ -463,14 +463,14 @@ namespace meshkernel
 
         /// @brief Reconstruct the invalid cell polygons
         ///
-        /// When constructing the invalid cell polygons, they can be compujted with many smaller polygons.
+        /// When constructing the invalid cell polygons, they can be computed with many smaller polygons.
         /// If these smaller polygons form a single patch on the domain, then they need to be combined
         void ReconstructInvalidCellsPolygon();
 
         /// @brief Convert all mesh boundaries to a vector of polygon nodes, including holes (copynetboundstopol)
         ///
         /// @return a sequence of boundary points, which may be separated by the invalid point, and a matching sequence of Boolean values indicating which
-        /// polygnal sub-sequence forms a external boundary
+        /// polygonal sub-sequence forms a external boundary
         [[nodiscard]] std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> GetAllBoundaryPolygons(const std::vector<Point>& polygon);
 
         /// @brief Ensure that all polynomials are orientated in the ACW direction.
