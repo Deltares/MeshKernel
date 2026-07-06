@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <span>
 #include <vector>
 
 #include "MeshKernel/BoundingBox.hpp"
@@ -53,6 +54,10 @@ namespace meshkernel
 
         /// @brief Default move constructor.
         Polygon(Polygon&& copy) = default;
+
+        /// @brief Constructor
+        Polygon(std::span<const Point> points,
+                Projection projection);
 
         /// @brief Constructor
         Polygon(const std::vector<Point>& points,

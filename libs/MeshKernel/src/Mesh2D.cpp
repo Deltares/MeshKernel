@@ -1510,18 +1510,21 @@ std::vector<meshkernel::UInt> Mesh2D::SortedFacesAroundNode(UInt node) const
     return result;
 }
 
-std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector<Point>& polygonNodes, const bool doAdministrate)
+std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector<Point>& polygonNodes)
+{
+    Administrate();
+    auto [boundaryPoints, isEnclosingBoundary] = GetAllBoundaryPolygons(polygonNodes);
+    return boundaryPoints;
+}
+
+std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> Mesh2D::GetAllBoundaryPolygons(const std::vector<Point>& polygonNodes)
 {
     const Polygon polygon(polygonNodes, m_projection);
 
-    // Find faces
-    if (doAdministrate)
-    {
-        Administrate();
-    }
-
     std::vector<bool> isVisited(GetNumEdges(), false);
     std::vector<Point> meshBoundaryPolygon;
+    std::vector<bool> isEnclosingBoundary;
+
     meshBoundaryPolygon.reserve(GetNumNodes());
 
     for (UInt e = 0; e < GetNumEdges(); e++)
@@ -1531,10 +1534,10 @@ std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector
             continue;
         }
 
-        const auto firstNodeIndex = m_edges[e].first;
-        const auto secondNodeIndex = m_edges[e].second;
-        const auto firstNode = m_nodes[firstNodeIndex];
-        const auto secondNode = m_nodes[secondNodeIndex];
+        const UInt firstNodeIndex = m_edges[e].first;
+        const UInt secondNodeIndex = m_edges[e].second;
+        const Point firstNode = m_nodes[firstNodeIndex];
+        const Point secondNode = m_nodes[secondNodeIndex];
 
         bool firstNodeInPolygon = polygon.Contains(m_nodes[firstNodeIndex]);
         bool secondNodeInPolygon = polygon.Contains(m_nodes[secondNodeIndex]);
@@ -1550,9 +1553,12 @@ std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector
             meshBoundaryPolygon.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
         }
 
+        const size_t boundaryPolygonStartIndex = meshBoundaryPolygon.size();
+
         // Put the current edge on the mesh boundary, mark it as visited
         meshBoundaryPolygon.emplace_back(firstNode);
         meshBoundaryPolygon.emplace_back(secondNode);
+
         isVisited[e] = true;
 
         // walk the current mesh boundary
@@ -1575,9 +1581,17 @@ std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector
             std::reverse(meshBoundaryPolygon.begin() + numNodesFirstTail, meshBoundaryPolygon.end());
             meshBoundaryPolygon.push_back(meshBoundaryPolygon.front());
         }
+
+        const size_t boundaryPolygonEndIndex = meshBoundaryPolygon.size();
+
+        std::span<const Point> currentPolygonSpan(std::span<const Point>(meshBoundaryPolygon.data() + boundaryPolygonStartIndex,
+                                                                         meshBoundaryPolygon.data() + boundaryPolygonEndIndex));
+        Polygon currentPolygon(currentPolygonSpan, m_projection);
+
+        isEnclosingBoundary.push_back(currentPolygon.Contains(m_facesMassCenters[m_edgesFaces[e][0]]));
     }
 
-    return meshBoundaryPolygon;
+    return {meshBoundaryPolygon, isEnclosingBoundary};
 }
 
 std::vector<meshkernel::Point> Mesh2D::ComputeInnerBoundaryPolygons() const
@@ -2190,44 +2204,41 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygon(const P
 
 void Mesh2D::ReconstructInvalidCellsPolygon()
 {
-    std::vector<Point> allBoundaries(ComputeBoundaryPolygons(std::vector<meshkernel::Point>(), false));
+    auto [boundaryPoints, isEnclosingBoundary] = GetAllBoundaryPolygons(std::vector<meshkernel::Point>());
 
-    if (allBoundaries.GetNumPolygons() <= 1)
+    Polygons polygons(boundaryPoints, m_projection);
+
+    if (polygons.GetNumPolygons() <= 1)
     {
         // There are no interior boundary polygons
         return;
     }
 
-    Polygons polygons(allBoundaries, m_projection);
-    std::vector<double> polygonAreas(polygons.GetNumPolygons(), 0.0);
-
-    for (UInt p = 0; p < polygons.GetNumPolygons(); ++p)
-    {
-        auto [area, centre, direction] = polygons.Enclosure(p).Outer().FaceAreaAndCenterOfMass();
-        polygonAreas[p] = area;
-    }
-
-    auto maxAreaIter = std::ranges::max_element(polygonAreas);
-    size_t maxAreaIndex = std::distance(polygonAreas.begin(), maxAreaIter);
-
     std::vector<Point> innerBoundaryPolygons;
     innerBoundaryPolygons.reserve(m_invalidCellPolygons.size());
+    bool firstElement = true;
 
     for (size_t p = 0; p < polygons.GetNumPolygons(); ++p)
     {
-        if (p != maxAreaIndex)
+        if (isEnclosingBoundary[p])
         {
-            const std::vector<Point>& polygonPoints(polygons.Enclosure(p).Outer().Nodes());
-            innerBoundaryPolygons.insert(innerBoundaryPolygons.end(), polygonPoints.begin(), polygonPoints.end());
-
-            if ((p < maxAreaIndex && ((maxAreaIndex + 1) != polygons.GetNumPolygons())) || (p > maxAreaIndex && (p + 1) != polygons.GetNumPolygons()))
-            {
-                innerBoundaryPolygons.push_back(Point(constants::missing::doubleValue, constants::missing::doubleValue));
-            }
+            continue;
         }
+
+        if (!firstElement)
+        {
+            innerBoundaryPolygons.push_back(Point(constants::missing::doubleValue, constants::missing::doubleValue));
+        }
+        else
+        {
+            firstElement = false;
+        }
+
+        const std::vector<Point>& polygonPoints(polygons.Enclosure(p).Outer().Nodes());
+        innerBoundaryPolygons.insert(innerBoundaryPolygons.end(), polygonPoints.begin(), polygonPoints.end());
     }
 
-    m_invalidCellPolygons = innerBoundaryPolygons;
+    m_invalidCellPolygons = std::move(innerBoundaryPolygons);
 }
 
 std::unique_ptr<meshkernel::UndoAction> Mesh2D::UpdateFaceInformation(const std::vector<UInt>& faceIndices, const bool appendDeletedFaces)
@@ -2309,8 +2320,6 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::UpdateFaceInformation(const std:
         }
     }
 
-    ReconstructInvalidCellsPolygon();
-
     // Shift face connectivity in arrays where deleted faces have been removed from arrays
     // Loop must be iterated in reverse order, from highest face id value to lowest.
     for (UInt faceId : facesToDelete | std::views::reverse)
@@ -2321,6 +2330,8 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::UpdateFaceInformation(const std:
         m_facesMassCenters.erase(m_facesMassCenters.begin() + faceId);
         m_faceArea.erase(m_faceArea.begin() + faceId);
     }
+
+    ReconstructInvalidCellsPolygon();
 
     return deleteMeshAction;
 }
