@@ -251,7 +251,7 @@ namespace meshkernel
 
         /// @brief Convert all mesh boundaries to a vector of polygon nodes, including holes (copynetboundstopol)
         /// @param[in] polygon The polygon where the operation is performed; only boundary segments intersecting the polygon are included
-        /// @param[in] doAdministrate Indicate that an adminstrate is required.
+        /// @param[in] doAdministrate Indicate that an administrate is required.
         /// @return The resulting polygon mesh boundary
         [[nodiscard]] std::vector<Point> ComputeBoundaryPolygons(const std::vector<Point>& polygon);
 
@@ -471,7 +471,7 @@ namespace meshkernel
         /// @brief Convert all mesh boundaries to a vector of polygon nodes, including holes (copynetboundstopol)
         ///
         /// @return a sequence of boundary points, which may be separated by the invalid point, and a matching sequence of Boolean values indicating which
-        /// polygnal sub-sequence forms a external boudary
+        /// polygnal sub-sequence forms a external boundary
         [[nodiscard]] std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> GetAllBoundaryPolygons(const std::vector<Point>& polygon);
 
         /// @brief Ensure that all polynomials are orientated in the ACW direction.
