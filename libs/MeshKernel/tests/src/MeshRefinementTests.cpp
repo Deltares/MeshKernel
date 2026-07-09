@@ -3018,11 +3018,6 @@ TEST(MeshRefinement, MeshWithHole_ShouldConstructMeshWithInteriorBoundaryPolygon
     auto node62 = mesh.FindNodeCloseToAPoint({125.0, 15.0}, 1.0e-5);
     auto node63 = mesh.FindNodeCloseToAPoint({115.0, 15.0}, 1.0e-5);
 
-    auto node71 = mesh.FindNodeCloseToAPoint({75.0, 25.0}, 1.0e-5);
-    auto node72 = mesh.FindNodeCloseToAPoint({85.0, 25.0}, 1.0e-5);
-    auto node73 = mesh.FindNodeCloseToAPoint({85.0, 35.0}, 1.0e-5);
-    auto node74 = mesh.FindNodeCloseToAPoint({75.0, 35.0}, 1.0e-5);
-
     std::vector<meshkernel::Point> boundaryNodes;
 
     std::vector<Point> elementNodes1{{constants::missing::doubleValue, constants::missing::doubleValue},
@@ -3064,13 +3059,6 @@ TEST(MeshRefinement, MeshWithHole_ShouldConstructMeshWithInteriorBoundaryPolygon
                                      mesh.Node(node63),
                                      mesh.Node(node61)};
 
-    std::vector<Point> elementNodes7{{constants::missing::doubleValue, constants::missing::doubleValue},
-                                     mesh.Node(node71),
-                                     mesh.Node(node72),
-                                     mesh.Node(node73),
-                                     mesh.Node(node74),
-                                     mesh.Node(node71)};
-
     // Combine all nodes to form a sequence of polygons
     boundaryNodes.insert(boundaryNodes.end(), elementNodes1.begin(), elementNodes1.end());
     boundaryNodes.insert(boundaryNodes.end(), elementNodes2.begin(), elementNodes2.end());
@@ -3078,7 +3066,6 @@ TEST(MeshRefinement, MeshWithHole_ShouldConstructMeshWithInteriorBoundaryPolygon
     boundaryNodes.insert(boundaryNodes.end(), elementNodes4.begin(), elementNodes4.end());
     boundaryNodes.insert(boundaryNodes.end(), elementNodes5.begin(), elementNodes5.end());
     boundaryNodes.insert(boundaryNodes.end(), elementNodes6.begin(), elementNodes6.end());
-    boundaryNodes.insert(boundaryNodes.end(), elementNodes7.begin(), elementNodes7.end());
 
     Polygons boundaryWithMissingElements(boundaryNodes, Projection::cartesian);
 
@@ -3090,26 +3077,32 @@ TEST(MeshRefinement, MeshWithHole_ShouldConstructMeshWithInteriorBoundaryPolygon
     // Call administrate, to re-compute the face-node and face-edge connectivity.
     // This should not fill in the holes in the mesh
     mesh2.Administrate();
-    meshkernel::SaveVtk(mesh.Nodes(), mesh.m_facesNodes, "mesh6.vtu");
 
     // Get interior boundary polygon points
     std::vector<Point> innerBoundaryPoints = mesh2.GetInnerBoundaryPolygons();
-    return;
 
     // The expected number of points, should not include any land boundary points
-    constexpr UInt expectedNumberOfNodes = 22;
+    constexpr UInt expectedNumberOfNodes = 26;
 
     ASSERT_EQ(expectedNumberOfNodes, innerBoundaryPoints.size());
 
     // The edge of one of the deleted elements lies on the boundary, so will be not be part of the
     // interior set of polygons
-    std::vector<double> expectedXPoints{80.0, 85.0, 95.0, 100.0, 105.0, 95.0, 95.0, 85.0, 85.0, 75.0, 80.0,
+    std::vector<double> expectedXPoints{95.0, 100.0, 105.0, 95.0,
+                                        constants::missing::doubleValue,
+                                        85.0, 95.0, 95.0, 85.0, 85.0,
+                                        constants::missing::doubleValue,
+                                        80.0, 85.0, 75.0, 80.0,
                                         constants::missing::doubleValue,
                                         120.0, 125.0, 115.0, 120.0,
                                         constants::missing::doubleValue,
                                         125.0, 125.0, 135.0, 135.0, 125.0};
 
-    std::vector<double> expectedYPoints{0.0, 15.0, 15.0, 0.0, 15.0, 15.0, 25.0, 25.0, 15.0, 15.0, 0.0,
+    std::vector<double> expectedYPoints{15.0, 0.0, 15.0, 15.0,
+                                        constants::missing::doubleValue,
+                                        15.0, 15.0, 25.0, 25.0, 15.0,
+                                        constants::missing::doubleValue,
+                                        0.0, 15.0, 15.0, 0.0,
                                         constants::missing::doubleValue,
                                         0.0, 15.0, 15.0, 0.0,
                                         constants::missing::doubleValue,

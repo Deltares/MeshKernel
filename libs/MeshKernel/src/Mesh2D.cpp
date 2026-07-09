@@ -1593,43 +1593,8 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> Mesh2D::GetAllBoun
 
         if (isMultiPolygon(currentPolygonSpan))
         {
-            std::cout << " ++++++++++++++++++++++++++++++++ " << std::endl;
-            std::cout << " currentPolygonSpan ";
-
-            for (size_t j = 0; j < currentPolygonSpan.size(); ++j)
-            {
-                std::cout << "{" << currentPolygonSpan[j].x << ", " << currentPolygonSpan[j].y << "}, ";
-            }
-
-            std::cout << std::endl;
-            std::cout << " boundaryPolygonFaceId ";
-
-            for (size_t j = 0; j < boundaryPolygonFaceId.size(); ++j)
-            {
-                std::cout << boundaryPolygonFaceId[j] << ", ";
-            }
-
-            std::cout << std::endl;
 
             auto [multiBoundaryPolygonNodes, multiBoundaryElementIds] = (splitMultiplePolygons(currentPolygonSpan, boundaryPolygonFaceId));
-            // std::vector<std::vector<Point>> multiBoundaryPolygonNodes(splitMultiplePolygons(currentPolygonSpan));
-            // size_t faceIndex = 0;
-
-            std::cout << " sub-boundaryPolygonFaceId " << multiBoundaryElementIds.size() << "   ";
-
-            for (size_t i = 0; i < multiBoundaryElementIds.size(); ++i)
-            {
-                std::cout << multiBoundaryElementIds[i] << ", ";
-
-                for (size_t j = 0; j < multiBoundaryPolygonNodes[i].size(); ++j)
-                {
-                    std::cout << "{" << multiBoundaryPolygonNodes[i][j].x << ", " << multiBoundaryPolygonNodes[i][j].y << "}, ";
-                }
-
-                std::cout << std::endl;
-            }
-
-            std::cout << std::endl;
 
             for (size_t i = 0; i < multiBoundaryPolygonNodes.size(); ++i)
             {
@@ -1644,7 +1609,6 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> Mesh2D::GetAllBoun
                 Polygon currentPolygon(currentPolygonSpan, m_projection);
 
                 isEnclosingBoundary.push_back(currentPolygon.Contains(m_facesMassCenters[multiBoundaryElementIds[i]]));
-                // faceIndex += multiBoundaryPolygonNodes[i].size();
             }
         }
         else
@@ -1656,18 +1620,7 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> Mesh2D::GetAllBoun
 
             isEnclosingBoundary.push_back(currentPolygon.Contains(m_facesMassCenters[boundaryPolygonFaceId[0]]));
         }
-
-        // std::cout << " boundaryPolygonFaceId ";
-
-        // for (size_t i = 0; i < boundaryPolygonFaceId.size(); ++i)
-        // {
-        //     std::cout << boundaryPolygonFaceId[i] << ", ";
-        // }
-
-        // std::cout << std::endl;
     }
-
-    std::cout << "--------------------------------" << std::endl;
 
     return {meshBoundaryPolygon, isEnclosingBoundary};
 }
