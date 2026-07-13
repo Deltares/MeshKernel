@@ -16,6 +16,8 @@ if(APPLE)
     # Common warning and visibility flags
     add_compile_options("-fvisibility=hidden;-Wall;-Wextra;-pedantic;-Werror;-Wno-unused-function")
 
+    cmake_host_system_information(RESULT os_release QUERY OS_RELEASE)
+
     if(os_release VERSION_GREATER_EQUAL "26.0")
       add_compile_options("-Wno-character-conversion")
     endif()
