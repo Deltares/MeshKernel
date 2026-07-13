@@ -15,6 +15,13 @@ if(APPLE)
     message(STATUS "Configuring build for macOS with ${CMAKE_CXX_COMPILER_ID} (${CMAKE_CXX_COMPILER_VERSION}).")
     # Common warning and visibility flags
     add_compile_options("-fvisibility=hidden;-Wall;-Wextra;-pedantic;-Werror;-Wno-unused-function")
+
+    cmake_host_system_information(RESULT os_release QUERY OS_RELEASE)
+
+    if(os_release VERSION_GREATER_EQUAL "26.0")
+      add_compile_options("-Wno-character-conversion")
+    endif()
+
     # Conditionally suppress unused parameter warnings (used for platform-specific compiler issues)
     if(SUPPRESS_UNUSED_PARAMETER_WARNING)
       add_compile_options("-Wno-unused-parameter")
@@ -27,7 +34,6 @@ if(APPLE)
     add_compile_options("$<$<CONFIG:DEBUG>:-g>")
     # Disable warnings about implicit conversions between character types
     # This is required because of a compatibility issue between clang++ and googletest
-    add_compile_options("-Wno-character-conversion")
   else()
     message(FATAL_ERROR "Unsupported compiler on macOS. Supported: AppleClang/Clang. Found ${CMAKE_CXX_COMPILER_ID}.")
   endif()
