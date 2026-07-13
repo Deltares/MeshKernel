@@ -73,7 +73,7 @@ add_test(
 )
 
 if(APPLE)
-  add_compile_options("-Wnocharacter-conversion")
+  add_compile_options("-Wno-character-conversion")
 endif ()
 
 # Copy the MeshKernel shared library to the target directory
