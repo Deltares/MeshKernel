@@ -71,10 +71,6 @@ add_test(
   COMMAND ${TARGET_NAME}
 )
 
-if(APPLE)
-  add_compile_options("-Wno-character-conversion")
-endif ()
-
 # Copy the MeshKernel shared library to the target directory
 add_custom_command(
   TARGET ${TARGET_NAME}
