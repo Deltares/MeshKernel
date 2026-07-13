@@ -68,7 +68,7 @@ set(
 target_sources(${TARGET_NAME} PRIVATE ${SRC_LIST})
 
 if(APPLE)
-  add_compile_options("-Wnocharacter-conversion")
+  add_compile_options("-Wno-character-conversion")
 endif ()
 
 # Should be linked to the main library, as well as the google test library
