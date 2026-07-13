@@ -14,7 +14,12 @@ if(APPLE)
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     message(STATUS "Configuring build for macOS with ${CMAKE_CXX_COMPILER_ID} (${CMAKE_CXX_COMPILER_VERSION}).")
     # Common warning and visibility flags
-    add_compile_options("-fvisibility=hidden;-Wall;-Wextra;-pedantic;-Werror;-Wno-unused-function;-Wno-character-conversion")
+    add_compile_options("-fvisibility=hidden;-Wall;-Wextra;-pedantic;-Werror;-Wno-unused-function")
+
+    if(os_release VERSION_GREATER_EQUAL "26.0")
+      add_compile_options("-Wno-character-conversion")
+    endif()
+
     # Conditionally suppress unused parameter warnings (used for platform-specific compiler issues)
     if(SUPPRESS_UNUSED_PARAMETER_WARNING)
       add_compile_options("-Wno-unused-parameter")
