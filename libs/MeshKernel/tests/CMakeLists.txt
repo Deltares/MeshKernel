@@ -67,6 +67,10 @@ set(
  # add sources to target
 target_sources(${TARGET_NAME} PRIVATE ${SRC_LIST})
 
+if(APPLE)
+  add_compile_options("-Wnocharacter-conversion")
+endif ()
+
 # Should be linked to the main library, as well as the google test library
 target_link_libraries(
   ${TARGET_NAME}
