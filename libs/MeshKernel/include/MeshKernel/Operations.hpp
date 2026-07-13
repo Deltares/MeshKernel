@@ -621,10 +621,14 @@ namespace meshkernel
         }
     }
 
+    /// @brief Determine is a polygon is comprised of multiple polygons intersecting at the control points only
+    ///
+    /// @note This currently works only for polygons that intersect at the control points
     bool isMultiPolygon(std::span<const Point> boundary);
 
+    /// @brief Split a single polygon line comprised of multiple polygons into separate polygons.
+    ///
+    /// @note This currently works only for polygons that intersect at the control points
     std::tuple<std::vector<std::vector<Point>>, std::vector<UInt>> splitMultiplePolygons(std::span<const Point> boundary, std::span<UInt> elementIds);
-
-    std::vector<std::vector<Point>> splitMultiplePolygons(std::span<const Point> boundary);
 
 } // namespace meshkernel

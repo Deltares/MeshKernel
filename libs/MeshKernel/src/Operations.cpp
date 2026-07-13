@@ -1761,89 +1761,38 @@ namespace meshkernel
             // Check if this node closes a loop with a previously visited point
             if (auto it = activePoints.find(current_point); it != activePoints.end())
             {
-                size_t loop_start_idx = it->second;
+                size_t loopStartIndex = it->second;
 
-                std::vector<Point> sub_polygon;
-                sub_polygon.reserve((pointFaceStack.size() - loop_start_idx) + 1);
+                std::vector<Point> subPolygon;
+                subPolygon.reserve((pointFaceStack.size() - loopStartIndex) + 1);
 
-                int first_edge_id = pointFaceStack[loop_start_idx].second;
+                int first_edge_id = pointFaceStack[loopStartIndex].second;
 
-                for (size_t j = loop_start_idx; j < pointFaceStack.size(); ++j)
+                for (size_t j = loopStartIndex; j < pointFaceStack.size(); ++j)
                 {
-                    sub_polygon.push_back(pointFaceStack[j].first);
+                    subPolygon.push_back(pointFaceStack[j].first);
                     activePoints.erase(pointFaceStack[j].first);
                 }
 
-                // Explicitly close the polygon
-                if (!sub_polygon.empty())
+                // close the polygon
+                if (!subPolygon.empty())
                 {
-                    sub_polygon.push_back(sub_polygon.front());
+                    subPolygon.push_back(subPolygon.front());
                 }
 
-                completedPolygons.push_back(sub_polygon);
+                completedPolygons.push_back(subPolygon);
                 firstElementIds.push_back(first_edge_id);
 
-                // Pop the loop off the stack
-                pointFaceStack.resize(loop_start_idx);
+                pointFaceStack.resize(loopStartIndex);
             }
 
-            int current_edge = (i < elementIds.size()) ? elementIds[i] : -1;
+            int currentEdge = (i < elementIds.size()) ? elementIds[i] : -1;
 
             activePoints[current_point] = pointFaceStack.size();
-            pointFaceStack.emplace_back(current_point, current_edge);
+            pointFaceStack.emplace_back(current_point, currentEdge);
         }
 
         return {completedPolygons, firstElementIds};
-    }
-
-    std::vector<std::vector<Point>> splitMultiplePolygons(std::span<const Point> boundary)
-    {
-        std::vector<std::vector<Point>> completedPolygons;
-        std::vector<Point> pointStack;
-        std::map<Point, size_t> stackRegistry; // Maps point to its current index in pointStack
-
-        for (const Point& currentPoint : boundary)
-        {
-            auto it = stackRegistry.find(currentPoint);
-
-            if (it != stackRegistry.end())
-            {
-                // A duplicate point is found, which means a loop is closed!
-                size_t loopStartIndex = it->second;
-                std::vector<Point> newPolygon;
-
-                // Extract everything from the start of the loop to the end of the stack
-                for (size_t i = loopStartIndex; i < pointStack.size(); ++i)
-                {
-                    newPolygon.push_back(pointStack[i]);
-                    stackRegistry.erase(pointStack[i]); // Clean registry for reused points
-                }
-
-                // Add the closing point to complete the loop topology
-                newPolygon.push_back(currentPoint);
-                completedPolygons.push_back(newPolygon);
-
-                // Shrink the stack back down, discarding the extracted loop
-                pointStack.resize(loopStartIndex);
-            }
-
-            // Push the current point onto the active path stack
-            stackRegistry[currentPoint] = pointStack.size();
-            pointStack.push_back(currentPoint);
-        }
-
-        // Wrap up any remaining points left on the main outer path
-        if (pointStack.size() > 2)
-        {
-            // Ensure it self-closes if the original boundary loop was implicit
-            if (!(pointStack.front() == pointStack.back()))
-            {
-                pointStack.push_back(pointStack.front());
-            }
-            completedPolygons.push_back(pointStack);
-        }
-
-        return completedPolygons;
     }
 
 } // namespace meshkernel

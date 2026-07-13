@@ -82,18 +82,28 @@ TEST(InvalidCellsPolygonsTests, MeshHolesAreMainainedAfterRefinement)
 
     //--------------------------------
 
-    std::vector<double> invalidCellsX{80.0, 85.0, 75.0, 80.0, meshkernel::constants::missing::doubleValue,
-                                      180.0, 200.0, 200.0, 180.0, 180.0, meshkernel::constants::missing::doubleValue,
-                                      125.0, 135.0, 135.0, 125.0, 125.0, meshkernel::constants::missing::doubleValue,
-                                      85.0, 95.0, 95.0, 85.0, 85.0, meshkernel::constants::missing::doubleValue,
-                                      100.0, 105.0, 95.0, 100.0, meshkernel::constants::missing::doubleValue,
+    std::vector<double> invalidCellsX{80.0, 85.0, 75.0, 80.0,
+                                      meshkernel::constants::missing::doubleValue,
+                                      180.0, 200.0, 200.0, 180.0, 180.0,
+                                      meshkernel::constants::missing::doubleValue,
+                                      125.0, 135.0, 135.0, 125.0, 125.0,
+                                      meshkernel::constants::missing::doubleValue,
+                                      85.0, 95.0, 95.0, 85.0, 85.0,
+                                      meshkernel::constants::missing::doubleValue,
+                                      100.0, 105.0, 95.0, 100.0,
+                                      meshkernel::constants::missing::doubleValue,
                                       120.0, 125.0, 115.0, 120.0};
 
-    std::vector<double> invalidCellsY{0.0, 15.0, 15.0, 0.0, meshkernel::constants::missing::doubleValue,
-                                      140.0, 140.0, 160.0, 160.0, 140.0, meshkernel::constants::missing::doubleValue,
-                                      125.0, 125.0, 135.0, 135.0, 125.0, meshkernel::constants::missing::doubleValue,
-                                      15.0, 15.0, 25.0, 25.0, 15.0, meshkernel::constants::missing::doubleValue,
-                                      0.0, 15.0, 15.0, 0.0, meshkernel::constants::missing::doubleValue,
+    std::vector<double> invalidCellsY{0.0, 15.0, 15.0, 0.0,
+                                      meshkernel::constants::missing::doubleValue,
+                                      140.0, 140.0, 160.0, 160.0, 140.0,
+                                      meshkernel::constants::missing::doubleValue,
+                                      125.0, 125.0, 135.0, 135.0, 125.0,
+                                      meshkernel::constants::missing::doubleValue,
+                                      15.0, 15.0, 25.0, 25.0, 15.0,
+                                      meshkernel::constants::missing::doubleValue,
+                                      0.0, 15.0, 15.0, 0.0,
+                                      meshkernel::constants::missing::doubleValue,
                                       0.0, 15.0, 15.0, 0.0};
 
     meshkernelapi::GeometryList invalidCells;
@@ -126,7 +136,7 @@ TEST(InvalidCellsPolygonsTests, MeshHolesAreMainainedAfterRefinement)
 
     ASSERT_EQ(mesh2d.num_nodes, 3130);
     ASSERT_EQ(mesh2d.num_edges, 6383);
-    ASSERT_EQ(mesh2d.num_faces, 3248);
+    ASSERT_EQ(mesh2d.num_faces, 3232);
 
     int whichMeshkernelId = -1;
     bool isUndone = false;
@@ -191,13 +201,21 @@ TEST(InvalidCellsPolygonsTests, MeshHolesAreMainainedAfterRefinement)
     //-----------------------
     // Check the inner boundary polygon are correct
 
-    std::vector<double> expectedInnerX{80.0, 85.0, 95.0, 100.0, 105.0, 95.0, 95.0, 85.0, 85.0, 75.0, 80.0,
+    std::vector<double> expectedInnerX{95.0, 100.0, 105.0, 95.0,
+                                       meshkernel::constants::missing::doubleValue,
+                                       85.0, 95.0, 95.0, 85.0, 85.0,
+                                       meshkernel::constants::missing::doubleValue,
+                                       80.0, 85.0, 75.0, 80.0,
                                        meshkernel::constants::missing::doubleValue,
                                        120.0, 125.0, 115.0, 120.0,
                                        meshkernel::constants::missing::doubleValue,
                                        125.0, 125.0, 135.0, 135.0, 125.0};
 
-    std::vector<double> expectedInnerY{0.0, 15.0, 15.0, 0.0, 15.0, 15.0, 25.0, 25.0, 15.0, 15.0, 0.0,
+    std::vector<double> expectedInnerY{15.0, 0.0, 15.0, 15.0,
+                                       meshkernel::constants::missing::doubleValue,
+                                       15.0, 15.0, 25.0, 25.0, 15.0,
+                                       meshkernel::constants::missing::doubleValue,
+                                       0.0, 15.0, 15.0, 0.0,
                                        meshkernel::constants::missing::doubleValue,
                                        0.0, 15.0, 15.0, 0.0,
                                        meshkernel::constants::missing::doubleValue,
@@ -209,7 +227,7 @@ TEST(InvalidCellsPolygonsTests, MeshHolesAreMainainedAfterRefinement)
     errorCode = meshkernelapi::mkernel_mesh2d_get_mesh_inner_boundaries_as_polygons_dimension(meshKernelId, innerPolygonSize);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    ASSERT_EQ(innerPolygonSize, 22);
+    ASSERT_EQ(innerPolygonSize, 26);
 
     innerPolygon.num_coordinates = innerPolygonSize;
     std::vector<double> xInner(innerPolygon.num_coordinates);
