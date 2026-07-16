@@ -18,7 +18,10 @@ if(APPLE)
 
     cmake_host_system_information(RESULT os_release QUERY OS_RELEASE)
 
-    if(os_release VERSION_GREATER_EQUAL "26.0")
+    include(CheckCXXCompilerFlag)
+    check_cxx_compiler_flag("-Wno-character-conversion" SUPPORTS_WNO_CHARACTER_CONVERSION)
+
+    if(SUPPORTS_WNO_CHARACTER_CONVERSION)
       add_compile_options("-Wno-character-conversion")
     endif()
 
