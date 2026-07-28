@@ -7,7 +7,7 @@
 #include <span>
 #include <tuple>
 
-std::vector<meshkernel::Point> meshkernel::SimpleTriangulationGenerator::generatePoints(const Polygons& polygon) const
+std::vector<meshkernel::Point> meshkernel::SimpleTriangulationGenerator::GeneratePoints(const Polygons& polygon) const
 {
 
     if (polygon.GetNumPolygons() != 1)
@@ -20,7 +20,7 @@ std::vector<meshkernel::Point> meshkernel::SimpleTriangulationGenerator::generat
     return generatedPoints;
 }
 
-std::unique_ptr<meshkernel::Mesh2D> meshkernel::SimpleTriangulationGenerator::generate(const Polygons& polygon) const
+std::unique_ptr<meshkernel::Mesh2D> meshkernel::SimpleTriangulationGenerator::Generate(const Polygons& polygon) const
 {
 
     if (polygon.GetNumPolygons() != 1)
@@ -34,22 +34,7 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::SimpleTriangulationGenerator::ge
     return std::make_unique<Mesh2D>(generatedPoints, polygon, polygon.GetProjection());
 }
 
-double meshkernel::SepranTriangulationGenerator::minimumEdgeDelta(const std::vector<meshkernel::Point>& polygonNodes)
-{
-    double delta = std::numeric_limits<double>::max();
-
-    for (size_t i = 0; i + 1 < polygonNodes.size(); ++i)
-    {
-        double dx = polygonNodes[i + 1].x - polygonNodes[i].x;
-        double dy = polygonNodes[i + 1].y - polygonNodes[i].y;
-
-        delta = std::min(delta, std::sqrt(dx * dx + dy * dy));
-    }
-
-    return delta;
-}
-
-std::vector<meshkernel::Point> meshkernel::SepranTriangulationGenerator::pointsFromFlatArray(const std::vector<double>& coordinates, const int numberOfPoints)
+std::vector<meshkernel::Point> meshkernel::SepranTriangulationGenerator::PointsFromFlatArray(const std::vector<double>& coordinates, const int numberOfPoints)
 {
     std::vector<meshkernel::Point> meshNodes(numberOfPoints);
 
@@ -62,7 +47,7 @@ std::vector<meshkernel::Point> meshkernel::SepranTriangulationGenerator::pointsF
     return meshNodes;
 }
 
-std::vector<std::reference_wrapper<const meshkernel::Polygon>> meshkernel::SepranTriangulationGenerator::generatePolygonReferences(const Polygons& polygon)
+std::vector<std::reference_wrapper<const meshkernel::Polygon>> meshkernel::SepranTriangulationGenerator::GeneratePolygonReferences(const Polygons& polygon)
 {
     const auto& enclosure = polygon.Enclosure(0);
 
@@ -79,7 +64,7 @@ std::vector<std::reference_wrapper<const meshkernel::Polygon>> meshkernel::Sepra
 }
 
 std::tuple<std::vector<meshkernel::Edge>, std::vector<std::vector<meshkernel::UInt>>, std::vector<std::uint8_t>>
-meshkernel::SepranTriangulationGenerator::gatherEdgesAndFaces(const std::vector<int>& triangulationElementNodes, const int numberOfElements)
+meshkernel::SepranTriangulationGenerator::GatherEdgesAndFaces(const std::vector<int>& triangulationElementNodes, const int numberOfElements)
 {
 
     std::vector<meshkernel::Edge> edges(3 * numberOfElements);
@@ -121,7 +106,7 @@ meshkernel::SepranTriangulationGenerator::gatherEdgesAndFaces(const std::vector<
     return {edges, faceNodes, numFaceNodes};
 }
 
-std::unique_ptr<meshkernel::Mesh2D> meshkernel::SepranTriangulationGenerator::generate(const Polygons& polygon) const
+std::unique_ptr<meshkernel::Mesh2D> meshkernel::SepranTriangulationGenerator::Generate(const Polygons& polygon) const
 {
 
     if (polygon.GetNumPolygons() != 1)
