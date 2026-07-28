@@ -165,7 +165,12 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::SepranTriangulationGenerator::Ge
     // Compute the minimum spacing between points of the polygon, both outer and all inner polygons
     const auto [minimumDelta, maximumDeltaDummy] = polygon.Enclosure(0).SegmentLengthExtrema();
 
-    const int estimatedNumberOfElements = static_cast<int>((estimatedArea / (0.433 * minimumDelta * minimumDelta)) * 3.5);
+    if (minimumDelta == constants::missing::doubleValue)
+    {
+        throw MeshKernelError ("Cannot determine minimum support point separation for boundary polygon");
+    }
+
+    const int estimatedNumberOfElements = static_cast<int>((estimatedArea / (ElementCountFactor1 * minimumDelta * minimumDelta)) * ElementCountFactor2);
     const int maximumNumberOfNodes = numberOfBoundaryNodes + 3 * estimatedNumberOfElements;
     const int maximumNumberOfElements = 2 * maximumNumberOfNodes;
 

@@ -72,6 +72,12 @@ namespace meshkernel
         std::unique_ptr<Mesh2D> Generate(const Polygons& polygon) const override;
 
     private:
+        /// @brief Scaling factor used when estimating the number of elements in the mesh.
+        static constexpr double ElementCountFactor1 = 0.433;
+
+        /// @brief Scaling factor used when estimating the number of elements in the mesh.
+        static constexpr double ElementCountFactor2 = 3.5;
+
         /// \brief Generate a vector of references to polygons from the set of polygonal enclosures
         static std::vector<std::reference_wrapper<const Polygon>> GeneratePolygonReferences(const Polygons& polygon);
 

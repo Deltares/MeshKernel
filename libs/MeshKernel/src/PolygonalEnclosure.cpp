@@ -349,8 +349,15 @@ std::tuple<double, double> meshkernel::PolygonalEnclosure::SegmentLengthExtrema(
     {
         auto [innerMinimum, innerMaximum] = Inner(i).SegmentLengthExtrema();
 
-        minimumDelta = std::min(minimumDelta, innerMinimum);
-        maximumDelta = std::max(maximumDelta, innerMaximum);
+        if (innerMinimum != constants::missing::doubleValue)
+        {
+            minimumDelta = std::min(minimumDelta, innerMinimum);
+        }
+
+        if (innerMaximum != constants::missing::doubleValue)
+        {
+            maximumDelta = std::max(maximumDelta, innerMaximum);
+        }
     }
 
     return {minimumDelta, maximumDelta};
