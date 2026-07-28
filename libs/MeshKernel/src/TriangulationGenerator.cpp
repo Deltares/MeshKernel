@@ -167,7 +167,7 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::SepranTriangulationGenerator::Ge
 
     if (minimumDelta == constants::missing::doubleValue)
     {
-        throw MeshKernelError ("Cannot determine minimum support point separation for boundary polygon");
+        throw MeshKernelError("Cannot determine minimum support point separation for boundary polygon");
     }
 
     const int estimatedNumberOfElements = static_cast<int>((estimatedArea / (ElementCountFactor1 * minimumDelta * minimumDelta)) * ElementCountFactor2);
