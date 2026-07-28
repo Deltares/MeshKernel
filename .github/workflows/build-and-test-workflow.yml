@@ -121,7 +121,6 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ inputs.build_type }} \
             -DCMAKE_PREFIX_PATH=${{ steps.paths.outputs.ext_deps_dir }}/netcdf-c/install/netcdf-c \
             -DCMAKE_INSTALL_PREFIX=${{ steps.paths.outputs.install_dir }} \
-            -DCMAKE_Fortran_COMPILER="$FC" \
             $SUPPRESS_PARAM_FLAG \
             -DOpenMP_C_FLAGS="-Xpreprocessor -fopenmp -I$HOMEBREW_PREFIX/opt/libomp/include" \
             -DOpenMP_CXX_FLAGS="-Xpreprocessor -fopenmp -I$HOMEBREW_PREFIX/opt/libomp/include" \
