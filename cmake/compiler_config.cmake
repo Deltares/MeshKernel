@@ -18,6 +18,7 @@ if(APPLE)
 
     include(CheckCXXCompilerFlag)
     check_cxx_compiler_flag("-Wno-character-conversion" SUPPORTS_WNO_CHARACTER_CONVERSION)
+
     if(SUPPORTS_WNO_CHARACTER_CONVERSION)
       # Disable warnings about implicit conversions between character types
       add_compile_options("-Wno-character-conversion")
