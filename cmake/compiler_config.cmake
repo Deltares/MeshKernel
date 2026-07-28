@@ -18,7 +18,8 @@ if(APPLE)
 
     cmake_host_system_information(RESULT os_release QUERY OS_RELEASE)
 
-    if(os_release VERSION_GREATER_EQUAL "26.0")
+    if(SUPPORTS_WNO_CHARACTER_CONVERSION)
+      # Disable warnings about implicit conversions between character types
       add_compile_options("-Wno-character-conversion")
     endif()
 
@@ -32,7 +33,6 @@ if(APPLE)
     # Optimization / debug flags
     add_compile_options("$<$<CONFIG:RELEASE>:-O2>")
     add_compile_options("$<$<CONFIG:DEBUG>:-g>")
-    # Disable warnings about implicit conversions between character types
     # This is required because of a compatibility issue between clang++ and googletest
   else()
     message(FATAL_ERROR "Unsupported compiler on macOS. Supported: AppleClang/Clang. Found ${CMAKE_CXX_COMPILER_ID}.")

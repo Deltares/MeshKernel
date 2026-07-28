@@ -49,24 +49,6 @@ jobs:
         run: |
           brew install boost doxygen gcc libaec libomp
 
-      - name: Set Fortran compiler (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          GFORTRAN_BIN="$(command -v gfortran || true)"
-          if [ -z "$GFORTRAN_BIN" ]; then
-            HOMEBREW_PREFIX="$(brew --prefix)"
-            GFORTRAN_BIN="$(find "$HOMEBREW_PREFIX/bin" -maxdepth 1 \( -type f -o -type l \) -name 'gfortran-*' | sort -V | tail -n 1)"
-          fi
-
-          if [ -z "$GFORTRAN_BIN" ]; then
-            echo "Unable to locate Homebrew gfortran" >&2
-            exit 1
-          fi
-
-          echo "Using Fortran compiler: $GFORTRAN_BIN"
-          echo "FC=$GFORTRAN_BIN" >> "$GITHUB_ENV"
-          echo "F77=$GFORTRAN_BIN" >> "$GITHUB_ENV"
-
       # Step: Set OpenMP environment variables (architecture-aware)
       - name: Set OpenMP environment variables
         run: |
