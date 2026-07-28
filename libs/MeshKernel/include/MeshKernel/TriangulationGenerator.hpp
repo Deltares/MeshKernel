@@ -51,7 +51,7 @@ namespace meshkernel
     {
     public:
         /// \brief Constructor
-        SimpleTriangulationGenerator(const double factor) : scaleFactor_(factor) {}
+        SimpleTriangulationGenerator(const double factor) : m_scaleFactor(factor) {}
 
         /// \brief Compute points within polygon using triangle
         std::vector<Point> GeneratePoints(const Polygons& polygon) const;

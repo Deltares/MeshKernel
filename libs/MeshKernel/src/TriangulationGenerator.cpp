@@ -16,7 +16,7 @@ std::vector<meshkernel::Point> meshkernel::SimpleTriangulationGenerator::Generat
     }
 
     // generate samples in the first polygonal enclosure
-    auto const generatedPoints = polygon.Enclosure(0).GeneratePoints(scaleFactor_ < 0.0 ? meshkernel::constants::missing::doubleValue : scaleFactor_);
+    auto const generatedPoints = polygon.Enclosure(0).GeneratePoints(m_scaleFactor < 0.0 ? meshkernel::constants::missing::doubleValue : m_scaleFactor);
     return generatedPoints;
 }
 
@@ -29,7 +29,7 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::SimpleTriangulationGenerator::Ge
     }
 
     // generate samples in the first polygonal enclosure
-    auto const generatedPoints = generatePoints(polygon);
+    auto const generatedPoints = GeneratePoints(polygon);
 
     return std::make_unique<Mesh2D>(generatedPoints, polygon, polygon.GetProjection());
 }
@@ -114,7 +114,7 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::SepranTriangulationGenerator::Ge
         throw MeshKernelError("Cannot generate a triangulation for {} polygons", polygon.GetNumPolygons());
     }
 
-    std::vector<std::reference_wrapper<const Polygon>> boundaryLoops(generatePolygonReferences(polygon));
+    std::vector<std::reference_wrapper<const Polygon>> boundaryLoops(GeneratePolygonReferences(polygon));
 
     const int numberOfBoundaryNodes = std::accumulate(boundaryLoops.begin(), boundaryLoops.end(), 0, [](int sum, const auto& poly)
                                                       { return sum + static_cast<int>(poly.get().Size()); });
@@ -217,10 +217,10 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::SepranTriangulationGenerator::Ge
         ctx);
 
     // Recover array of Points
-    std::vector<Point> meshNodes(pointsFromFlatArray(triangulationNodes, numberOfPoints));
+    std::vector<Point> meshNodes(PointsFromFlatArray(triangulationNodes, numberOfPoints));
 
     // Recover arrays of edges, face-node connectivity and number of nodes per face.
-    auto [edges, faceNodes, numFaceNodes] = gatherEdgesAndFaces(triangulationElementNodes, numberOfElements);
+    auto [edges, faceNodes, numFaceNodes] = GatherEdgesAndFaces(triangulationElementNodes, numberOfElements);
 
     return std::make_unique<Mesh2D>(edges, meshNodes, faceNodes, numFaceNodes, polygon.GetProjection());
 }

@@ -179,7 +179,7 @@ TEST(Mesh, TriangulateGridWithHoleSepran)
     meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
 
     meshkernel::SepranTriangulationGenerator generator;
-    auto mesh2 = generator.generate(polygons);
+    auto mesh2 = generator.Generate(polygons);
 
     std::vector<meshkernel::UInt> expectedEdgeStart{0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 4, 5, 5, 6, 6, 6, 6, 6, 7, 7, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 18, 18, 19, 19, 19, 20, 20, 20, 20, 21, 22, 22, 23, 23, 25, 25, 25, 26, 27};
 
@@ -215,7 +215,7 @@ TEST(Mesh, TriangulateGridFromRealisticPolygon)
     auto poly = ReadPolygons(fileName, meshkernel::Projection::cartesian);
 
     meshkernel::SepranTriangulationGenerator generator;
-    auto mesh2 = generator.generate(*poly);
+    auto mesh2 = generator.Generate(*poly);
     ASSERT_EQ(mesh2->GetNumFaces(), 3080);
     ASSERT_EQ(mesh2->GetNumEdges(), 4733);
     ASSERT_EQ(mesh2->GetNumNodes(), 1654);
