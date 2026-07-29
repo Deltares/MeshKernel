@@ -1766,7 +1766,7 @@ namespace meshkernel
                 std::vector<Point> subPolygon;
                 subPolygon.reserve((pointFaceStack.size() - loopStartIndex) + 1);
 
-                int first_edge_id = pointFaceStack[loopStartIndex].second;
+                int firstEdgeId = pointFaceStack[loopStartIndex].second;
 
                 for (size_t j = loopStartIndex; j < pointFaceStack.size(); ++j)
                 {
@@ -1781,7 +1781,7 @@ namespace meshkernel
                 }
 
                 completedPolygons.push_back(subPolygon);
-                firstElementIds.push_back(first_edge_id);
+                firstElementIds.push_back(firstEdgeId);
 
                 pointFaceStack.resize(loopStartIndex);
             }
@@ -1793,6 +1793,54 @@ namespace meshkernel
         }
 
         return {completedPolygons, firstElementIds};
+    }
+
+    std::vector<std::vector<Point>> splitMultiplePolygons(std::span<const Point> boundaryPoints)
+    {
+        // std::vector<UInt> dummyConnectedFaces (boundaryPoints.size () - 1);
+        // std::ranges::iota (dummyConnectedFaces, 0);
+        // auto [completedPolygons, dummyFirstTouchedFaces] = splitMultiplePolygons (boundaryPoints, dummyConnectedFaces);
+
+        std::vector<std::vector<Point>> completedPolygons;
+
+        std::vector<Point> pointFaceStack;
+        // Maps a point to its current index in the pointFaceStack
+        std::map<Point, size_t> activePoints;
+
+        for (size_t i = 0; i < boundaryPoints.size(); ++i)
+        {
+            const Point& current_point = boundaryPoints[i];
+
+            // Check if this node closes a loop with a previously visited point
+            if (auto it = activePoints.find(current_point); it != activePoints.end())
+            {
+                size_t loopStartIndex = it->second;
+
+                std::vector<Point> subPolygon;
+                subPolygon.reserve((pointFaceStack.size() - loopStartIndex) + 1);
+
+                for (size_t j = loopStartIndex; j < pointFaceStack.size(); ++j)
+                {
+                    subPolygon.push_back(pointFaceStack[j]);
+                    activePoints.erase(pointFaceStack[j]);
+                }
+
+                // close the polygon
+                if (!subPolygon.empty())
+                {
+                    subPolygon.push_back(subPolygon.front());
+                }
+
+                completedPolygons.push_back(subPolygon);
+
+                pointFaceStack.resize(loopStartIndex);
+            }
+
+            activePoints[current_point] = pointFaceStack.size();
+            pointFaceStack.emplace_back(current_point);
+        }
+
+        return completedPolygons;
     }
 
 } // namespace meshkernel

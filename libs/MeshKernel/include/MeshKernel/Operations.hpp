@@ -631,4 +631,9 @@ namespace meshkernel
     /// @note This currently works only for polygons that intersect at the control points
     std::tuple<std::vector<std::vector<Point>>, std::vector<UInt>> splitMultiplePolygons(std::span<const Point> boundary, std::span<UInt> elementIds);
 
+    /// @brief Split a single polygon line comprised of multiple polygons into separate polygons.
+    ///
+    /// @note This currently works only for polygons that intersect at the control points
+    std::vector<std::vector<Point>> splitMultiplePolygons(std::span<const Point> boundary);
+
 } // namespace meshkernel
