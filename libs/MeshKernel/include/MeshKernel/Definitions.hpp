@@ -174,4 +174,12 @@ namespace meshkernel
         AllNetlinksLoop
     };
 
+    /// \brief Boundary selection indicator
+    enum class BoundarySelection
+    {
+        ExteriorOnly, ///< Exterior boundaries only
+        InteriorOnly, ///< Interior boundaries only
+        All           ///< All boundaries, exterior and interior
+    };
+
 } // namespace meshkernel

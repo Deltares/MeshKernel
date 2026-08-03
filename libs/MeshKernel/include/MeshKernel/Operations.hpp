@@ -298,6 +298,12 @@ namespace meshkernel
                                          const std::span<const Point> triangleNodes,
                                          const Projection& projection);
 
+    /// \brief Compute the area and the centre of mass of a polygonal area
+    ///
+    /// The area of the polygon will be positive is the boundary points traverse the boundary in a anti clockwise direction,
+    /// If the are is negative then the points traverse the boundary in a clockwise direction.
+    std::tuple<double, Point> ComputePolygonAreaAndCentre(const std::vector<Point>& boundaryPolygon, const Projection& projection);
+
     /// @brief Computes three base components
     void ComputeThreeBaseComponents(const Point& point, std::array<double, 3>& exxp, std::array<double, 3>& eyyp, std::array<double, 3>& ezzp);
 
@@ -624,16 +630,39 @@ namespace meshkernel
     /// @brief Determine is a polygon is comprised of multiple polygons intersecting at the control points only
     ///
     /// @note This currently works only for polygons that intersect at the control points
-    bool isMultiPolygon(std::span<const Point> boundary);
+    bool IsMultiPolygon(std::span<const Point> boundary);
 
     /// @brief Split a single polygon line comprised of multiple polygons into separate polygons.
     ///
     /// @note This currently works only for polygons that intersect at the control points
-    std::tuple<std::vector<std::vector<Point>>, std::vector<UInt>> splitMultiplePolygons(std::span<const Point> boundary, std::span<UInt> elementIds);
+    std::tuple<std::vector<std::vector<Point>>, std::vector<UInt>> SplitMultiplePolygons(std::span<const Point> boundary, std::span<UInt> elementIds);
 
-    /// @brief Split a single polygon line comprised of multiple polygons into separate polygons.
-    ///
-    /// @note This currently works only for polygons that intersect at the control points
-    std::vector<std::vector<Point>> splitMultiplePolygons(std::span<const Point> boundary);
+    /// @brief Concaenate vectors of vectors of points to a vector of points separated by the invalid point
+    template <typename Predicate>
+    std::vector<Point> ConcatenatePointVectors(const std::vector<std::vector<Point>>& pointVectors, Predicate predicate)
+    {
+
+        std::vector<Point> combinedPoints;
+        bool isFirst = true;
+
+        for (size_t count = 0; const auto& points : pointVectors)
+        {
+
+            if (predicate(count))
+            {
+                if (!isFirst)
+                {
+                    combinedPoints.push_back({constants::missing::doubleValue, constants::missing::doubleValue});
+                }
+
+                combinedPoints.insert(combinedPoints.end(), points.begin(), points.end());
+                isFirst = false;
+            }
+
+            ++count;
+        }
+
+        return combinedPoints;
+    }
 
 } // namespace meshkernel

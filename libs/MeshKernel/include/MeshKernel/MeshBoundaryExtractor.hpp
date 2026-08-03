@@ -41,10 +41,14 @@ namespace meshkernel
     class MeshBoundaryExtractor
     {
     public:
-        /// @brief Extract all boundaries, concatinated as a single sequence of points, separated by an invalid point
-        static std::vector<Point> ExtractAll(const Mesh2D& mesh);
+        /// @brief Extract all boundaries as a single sequence of points, separated by an invalid point
+        static std::vector<Point> ExtractConcatenated(const Mesh2D& mesh, BoundarySelection boundaryType = BoundarySelection::All);
 
         /// @brief Extract all boundaries keeping them separated and
+        ///
+        /// The result consists of an array of each of the boundary polygons
+        /// Additionally, an array indicating if the boundary polygon is a exterior boudnary or not.
+        /// True => is-exterior, False => otherwise
         static std::tuple<std::vector<std::vector<Point>>, std::vector<bool>> Extract(const Mesh2D& mesh);
 
     private:
@@ -59,6 +63,12 @@ namespace meshkernel
 
         /// @brief Ensure the angle lies between 0 .. 2 pi.
         static double NormalizeAngle(double angle);
+
+        /// @brief Construct mapping from node-id to all impinging edges for boundary all edges
+        static void FindAllBoundarEdges(const std::vector<Point>& nodes,
+                                        const std::vector<Edge>& edges,
+                                        const std::vector<std::array<UInt, 2>>& edgesFaces,
+                                        std::unordered_map<UInt, std::vector<BoundaryEdge>>& boundaryAdjacency);
 
         /// @brief Find boundary loops
         ///

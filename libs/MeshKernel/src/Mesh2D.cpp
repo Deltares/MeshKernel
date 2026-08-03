@@ -33,6 +33,7 @@
 #include "MeshKernel/Exceptions.hpp"
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Mesh2DIntersections.hpp"
+#include "MeshKernel/MeshBoundaryExtractor.hpp"
 #include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/MeshOrthogonality.hpp"
 #include "MeshKernel/Operations.hpp"
@@ -1521,6 +1522,64 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> Mesh2D::GetAllBoun
 {
     const Polygon polygon(polygonNodes, m_projection);
 
+#if 1
+    MeshBoundaryExtractor meshBoundaryExtractor;
+
+    auto [boundaryPoints, isEnclosingBoundary] = meshBoundaryExtractor.Extract(*this);
+
+    if (polygonNodes.size() == 0)
+    {
+
+        auto isTrue = [](size_t idx [[maybe_unused]])
+        {
+            return true;
+        };
+
+        return {ConcatenatePointVectors(boundaryPoints, isTrue), isEnclosingBoundary};
+    }
+
+    std::vector<bool> containedIsEnclosingBoundary;
+
+    auto removeExteriorPoints = [&polygon](const Point& p)
+    {
+        return !polygon.Contains(p);
+    };
+
+    for (size_t i = 0; i < boundaryPoints.size(); ++i)
+    {
+        std::erase_if(boundaryPoints[i], removeExteriorPoints);
+    }
+
+    auto addNonEmpty = [&boundaryPoints, &isEnclosingBoundary, &containedIsEnclosingBoundary](size_t idx) mutable
+    {
+        if (boundaryPoints[idx].size() > 0)
+        {
+            containedIsEnclosingBoundary.push_back(isEnclosingBoundary[idx]);
+            return true;
+        }
+
+        return false;
+    };
+
+    std::vector<Point> containedBoundaryPoints = ConcatenatePointVectors(boundaryPoints, addNonEmpty);
+
+    return {containedBoundaryPoints, containedIsEnclosingBoundary};
+
+#if 0
+    for (size_t i = 0; i < boundaryPoints.size(); ++i)
+    {
+
+        if (boundaryPoints[i].size() > 0)
+        {
+            containedBoundaryPoints.insert(containedBoundaryPoints.end(), boundaryPoints[i].begin(), boundaryPoints[i].end());
+            containedIsEnclosingBoundary.push_back(isEnclosingBoundary[i]);
+        }
+    }
+
+    return {containedBoundaryPoints, containedIsEnclosingBoundary};
+#endif
+
+#else
     std::vector<bool> isVisited(GetNumEdges(), false);
     std::vector<Point> meshBoundaryPolygon;
     std::vector<Point> boundaryPolygon;
@@ -1591,10 +1650,10 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> Mesh2D::GetAllBoun
             meshBoundaryPolygon.emplace_back(constants::missing::doubleValue, constants::missing::doubleValue);
         }
 
-        if (isMultiPolygon(currentPolygonSpan))
+        if (IsMultiPolygon(currentPolygonSpan))
         {
 
-            auto [multiBoundaryPolygonNodes, multiBoundaryElementIds] = (splitMultiplePolygons(currentPolygonSpan, boundaryPolygonFaceId));
+            auto [multiBoundaryPolygonNodes, multiBoundaryElementIds] = (SplitMultiplePolygons(currentPolygonSpan, boundaryPolygonFaceId));
 
             for (size_t i = 0; i < multiBoundaryPolygonNodes.size(); ++i)
             {
@@ -1623,6 +1682,7 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> Mesh2D::GetAllBoun
     }
 
     return {meshBoundaryPolygon, isEnclosingBoundary};
+#endif
 }
 
 std::vector<meshkernel::Point> Mesh2D::ComputeInnerBoundaryPolygons() const
@@ -2237,11 +2297,11 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMeshFacesInPolygon(const P
 
 void Mesh2D::ReconstructInvalidCellsPolygon()
 {
-    auto [boundaryPoints, isEnclosingBoundary] = GetAllBoundaryPolygons(std::vector<meshkernel::Point>());
+    MeshBoundaryExtractor meshBoundaryExtractor;
 
-    Polygons polygons(boundaryPoints, m_projection);
+    auto [boundaryPoints, isEnclosingBoundary] = meshBoundaryExtractor.Extract(*this);
 
-    if (polygons.GetNumPolygons() <= 1)
+    if (boundaryPoints.size() <= 1)
     {
         // There are no interior boundary polygons
         return;
@@ -2251,8 +2311,9 @@ void Mesh2D::ReconstructInvalidCellsPolygon()
     innerBoundaryPolygons.reserve(m_invalidCellPolygons.size());
     bool firstElement = true;
 
-    for (UInt p = 0; p < polygons.GetNumPolygons(); ++p)
+    for (UInt p = 0; p < boundaryPoints.size(); ++p)
     {
+
         if (isEnclosingBoundary[p])
         {
             continue;
@@ -2267,8 +2328,7 @@ void Mesh2D::ReconstructInvalidCellsPolygon()
             firstElement = false;
         }
 
-        const std::vector<Point>& polygonPoints(polygons.Enclosure(p).Outer().Nodes());
-        innerBoundaryPolygons.insert(innerBoundaryPolygons.end(), polygonPoints.begin(), polygonPoints.end());
+        innerBoundaryPolygons.insert(innerBoundaryPolygons.end(), boundaryPoints[p].begin(), boundaryPoints[p].end());
     }
 
     m_invalidCellPolygons = std::move(innerBoundaryPolygons);

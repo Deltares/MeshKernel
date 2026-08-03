@@ -242,9 +242,9 @@ TEST(Mesh2D, MeshBoundaryToPolygon)
     ASSERT_NEAR(0.0, meshBoundaryPolygon[4].x, tolerance);
 
     ASSERT_NEAR(0.0, meshBoundaryPolygon[0].y, tolerance);
-    ASSERT_NEAR(5.0, meshBoundaryPolygon[1].y, tolerance);
+    ASSERT_NEAR(-5.0, meshBoundaryPolygon[1].y, tolerance);
     ASSERT_NEAR(0.0, meshBoundaryPolygon[2].y, tolerance);
-    ASSERT_NEAR(-5.0, meshBoundaryPolygon[3].y, tolerance);
+    ASSERT_NEAR(5.0, meshBoundaryPolygon[3].y, tolerance);
     ASSERT_NEAR(0.0, meshBoundaryPolygon[4].y, tolerance);
 }
 
@@ -307,25 +307,51 @@ TEST(Mesh2D, MeshBoundaryToPolygonWithSelection)
     // 2 Execution
     const auto meshBoundaryPolygon = mesh.ComputeBoundaryPolygons(polygonNodes);
 
+    meshkernel::Print(mesh.Nodes(), mesh.Edges());
+
+    std::cout << std::endl;
+
+    for (size_t i = 0; i < meshBoundaryPolygon.size(); ++i)
+    {
+        std::cout << meshBoundaryPolygon[i].x << ", ";
+    }
+
+    std::cout << std::endl;
+
+    for (size_t i = 0; i < meshBoundaryPolygon.size(); ++i)
+    {
+        std::cout << meshBoundaryPolygon[i].y << ", ";
+    }
+
+    std::cout << std::endl;
+
     // 3 Validation
     const double tolerance = 1e-5;
     ASSERT_EQ(9, meshBoundaryPolygon.size());
     ASSERT_NEAR(0.0, meshBoundaryPolygon[0].x, tolerance);
     ASSERT_NEAR(0.0, meshBoundaryPolygon[0].y, tolerance);
-    ASSERT_NEAR(0.0, meshBoundaryPolygon[1].x, tolerance);
-    ASSERT_NEAR(10.0, meshBoundaryPolygon[1].y, tolerance);
-    ASSERT_NEAR(0.0, meshBoundaryPolygon[2].x, tolerance);
-    ASSERT_NEAR(20.0, meshBoundaryPolygon[2].y, tolerance);
-    ASSERT_NEAR(0.0, meshBoundaryPolygon[3].x, tolerance);
-    ASSERT_NEAR(30.0, meshBoundaryPolygon[3].y, tolerance);
-    ASSERT_NEAR(10.0, meshBoundaryPolygon[4].x, tolerance);
-    ASSERT_NEAR(30.0, meshBoundaryPolygon[4].y, tolerance);
-    ASSERT_NEAR(20.0, meshBoundaryPolygon[5].x, tolerance);
-    ASSERT_NEAR(30.0, meshBoundaryPolygon[5].y, tolerance);
-    ASSERT_NEAR(20.0, meshBoundaryPolygon[6].x, tolerance);
-    ASSERT_NEAR(00.0, meshBoundaryPolygon[6].y, tolerance);
+
     ASSERT_NEAR(10.0, meshBoundaryPolygon[7].x, tolerance);
     ASSERT_NEAR(00.0, meshBoundaryPolygon[7].y, tolerance);
+
+    ASSERT_NEAR(10.0, meshBoundaryPolygon[4].x, tolerance);
+    ASSERT_NEAR(30.0, meshBoundaryPolygon[4].y, tolerance);
+
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[3].x, tolerance);
+    ASSERT_NEAR(30.0, meshBoundaryPolygon[3].y, tolerance);
+
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[2].x, tolerance);
+    ASSERT_NEAR(20.0, meshBoundaryPolygon[2].y, tolerance);
+
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[1].x, tolerance);
+    ASSERT_NEAR(10.0, meshBoundaryPolygon[1].y, tolerance);
+
+    ASSERT_NEAR(20.0, meshBoundaryPolygon[5].x, tolerance);
+    ASSERT_NEAR(30.0, meshBoundaryPolygon[5].y, tolerance);
+
+    ASSERT_NEAR(20.0, meshBoundaryPolygon[6].x, tolerance);
+    ASSERT_NEAR(00.0, meshBoundaryPolygon[6].y, tolerance);
+
     ASSERT_NEAR(0.0, meshBoundaryPolygon[8].x, tolerance);
     ASSERT_NEAR(0.0, meshBoundaryPolygon[8].y, tolerance);
 }

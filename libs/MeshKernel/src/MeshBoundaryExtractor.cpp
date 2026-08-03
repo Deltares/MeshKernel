@@ -1,19 +1,48 @@
 #include "MeshKernel/MeshBoundaryExtractor.hpp"
 
+#include <cmath>
 #include <numbers>
 
 #include "MeshKernel/Operations.hpp"
 
-std::vector<meshkernel::Point> meshkernel::MeshBoundaryExtractor::ExtractAll(const Mesh2D& mesh)
+std::vector<meshkernel::Point> meshkernel::MeshBoundaryExtractor::ExtractConcatenated(const Mesh2D& mesh, BoundarySelection boundaryType)
 {
 
     auto [boundarySequences, isExterior] = Extract(mesh);
     std::vector<Point> allPoints;
 
+    auto isBoundarySelection = [boundaryType, &isExterior](size_t idx)
+    {
+        using enum BoundarySelection;
+
+        return (boundaryType == All) ||
+               (boundaryType == ExteriorOnly && isExterior[idx]) ||
+               (boundaryType == InteriorOnly && !isExterior[idx]);
+    };
+
+    return ConcatenatePointVectors(boundarySequences, isBoundarySelection);
+
+#if 0
     bool isFirst = true;
 
-    for (const std::vector<Point>& loop : boundarySequences)
+    auto selectedBoundary = [boundaryType](bool isExterior)
     {
+        using enum BoundarySelection;
+
+        return (boundaryType == All) ||
+               (boundaryType == ExteriorOnly && isExterior) ||
+               (boundaryType == InteriorOnly && !isExterior);
+    };
+
+    for (size_t i = 0; i < boundarySequences.size(); ++i)
+    {
+        const std::vector<Point>& loop = boundarySequences[i];
+
+        if (!selectedBoundary(isExterior[i]))
+        {
+            continue;
+        }
+
         if (!isFirst)
         {
             allPoints.push_back({constants::missing::doubleValue, constants::missing::doubleValue});
@@ -24,6 +53,7 @@ std::vector<meshkernel::Point> meshkernel::MeshBoundaryExtractor::ExtractAll(con
     }
 
     return allPoints;
+#endif
 }
 
 std::tuple<std::vector<std::vector<meshkernel::Point>>, std::vector<bool>> meshkernel::MeshBoundaryExtractor::Extract(const Mesh2D& mesh)
@@ -41,13 +71,24 @@ std::tuple<std::vector<std::vector<meshkernel::Point>>, std::vector<bool>> meshk
 
     for (size_t i = 0; i < allBoundaryLoops.size(); ++i)
     {
-        if (isMultiPolygon(allBoundaryLoops[i]))
+
+        if (IsMultiPolygon(allBoundaryLoops[i]))
         {
-            auto [individualBoundaryPolygons, firstElement] = splitMultiplePolygons(allBoundaryLoops[i], allTouchedFaces[i]);
+            // It can be that some of the boundaries that are found are composed of multiple sub-boundaries.
+            // Some of the sub-boundaries may be combined in a non conforming way.
+            // In either case, the boundaries are separated into distinct boundary polygons.
+            auto [individualBoundaryPolygons, firstElement] = SplitMultiplePolygons(allBoundaryLoops[i], allTouchedFaces[i]);
 
             for (size_t i = 0; i < individualBoundaryPolygons.size(); ++i)
             {
                 Point centre = mesh.m_facesMassCenters[firstElement[i]];
+
+                // If the area is calculated ot be less than zero, i.e. the boundary is traversed in clockwise direction and needs to be reversed
+                if (auto [area, centreOfMass] = ComputePolygonAreaAndCentre(individualBoundaryPolygons[i], mesh.m_projection); area < 0.0)
+                {
+                    std::ranges::reverse(individualBoundaryPolygons[i]);
+                }
+
                 isExterior.push_back(IsPointInPolygonNodes(centre, individualBoundaryPolygons[i], mesh.m_projection));
                 separatedBoundaryLoops.push_back(std::move(individualBoundaryPolygons[i]));
             }
@@ -76,6 +117,45 @@ double meshkernel::MeshBoundaryExtractor::NormalizeAngle(double angle)
     return angle;
 }
 
+void meshkernel::MeshBoundaryExtractor::FindAllBoundarEdges(const std::vector<Point>& nodes,
+                                                            const std::vector<Edge>& edges,
+                                                            const std::vector<std::array<UInt, 2>>& edgesFaces,
+                                                            std::unordered_map<UInt, std::vector<BoundaryEdge>>& boundaryAdjacency)
+{
+
+    // Collect all boundary edges and compute the angle
+    for (UInt count = 0; count < edges.size(); ++count)
+    {
+
+        if (!IsValidEdge(edges[count]) || edgesFaces[count][1] != constants::missing::uintValue)
+        {
+            // Edge is either invalid or not on boundaryy
+            continue;
+        }
+
+        double dx = nodes[edges[count].second].x - nodes[edges[count].first].x;
+        double dy = nodes[edges[count].second].y - nodes[edges[count].first].y;
+
+        // Compute angle for "crossong/pinch point" sorting
+        // Pinch points are when the boundary polygon intersects itself, the points will have identical values.
+        double angleStartToEnd = NormalizeAngle(std::atan2(dy, dx));
+        double angleEndToStart = NormalizeAngle(std::atan2(-dy, -dx));
+
+        // Note: edgesFaces[count][0] is the internal mesh face valid for both directions of boundary traversal
+        boundaryAdjacency[edges[count].first].push_back({count, edges[count].second, edgesFaces[count][0], angleStartToEnd});
+        boundaryAdjacency[edges[count].second].push_back({count, edges[count].first, edgesFaces[count][0], angleEndToStart});
+    }
+
+    auto boundaryAngleLessThan = [](const BoundaryEdge& a, const BoundaryEdge& b)
+    { return a.angle < b.angle; };
+
+    // Sort outgoing edges anti-clockwise
+    for (auto& [node_id, connected_edges] : boundaryAdjacency)
+    {
+        std::sort(connected_edges.begin(), connected_edges.end(), boundaryAngleLessThan);
+    }
+}
+
 void meshkernel::MeshBoundaryExtractor::FindBoundaryLoops(const std::vector<Point>& nodes,
                                                           const std::vector<Edge>& edges,
                                                           const std::vector<std::array<UInt, 2>>& edgesFaces,
@@ -88,41 +168,19 @@ void meshkernel::MeshBoundaryExtractor::FindBoundaryLoops(const std::vector<Poin
     // Mapping from mesh node-id to a sequence of boundary edges, the boundary edges will be sorted by angle
     std::unordered_map<UInt, std::vector<BoundaryEdge>> boundaryAdjacency;
 
-    // May be better to use meshkernel::Boolean
+    FindAllBoundarEdges(nodes, edges, edgesFaces, boundaryAdjacency);
+
     std::vector<bool> edgeVisited(edges.size(), false);
-
-    // Collect all boundary edges and compute the angle
-    for (UInt count = 0; count < edges.size(); ++count)
-    {
-
-        if (edgesFaces[count][1] == constants::missing::uintValue)
-        {
-            double dx = nodes[edges[count].second].x - nodes[edges[count].first].x;
-            double dy = nodes[edges[count].second].y - nodes[edges[count].first].y;
-
-            // Compute angle for "pinch point" sorting
-            // Pinch points are when the boundary polygon intersects itself, the points will have identical values.
-            double angleStartToEnd = NormalizeAngle(std::atan2(dy, dx));
-            double angleEndToStart = NormalizeAngle(std::atan2(-dy, -dx));
-
-            // Note: edgesFaces[count][0] is the internal mesh face valid for both directions of boundary traversal
-            boundaryAdjacency[edges[count].first].push_back({count, edges[count].second, edgesFaces[count][0], angleStartToEnd});
-            boundaryAdjacency[edges[count].second].push_back({count, edges[count].first, edgesFaces[count][0], angleEndToStart});
-        }
-    }
-
-    auto boundaryAngleLessThan = [](const BoundaryEdge& a, const BoundaryEdge& b)
-    { return a.angle < b.angle; };
-
-    // Sort outgoing edges anti-clockwise
-    for (auto& [node_id, connected_edges] : boundaryAdjacency)
-    {
-        std::sort(connected_edges.begin(), connected_edges.end(), boundaryAngleLessThan);
-    }
 
     // Trace boundary polygons
     for (UInt count = 0; count < edges.size(); ++count)
     {
+
+        if (!IsValidEdge(edges[count]))
+        {
+            continue;
+        }
+
         if (edgesFaces[count][1] != constants::missing::uintValue || edgeVisited[count])
         {
             continue;
@@ -149,8 +207,8 @@ void meshkernel::MeshBoundaryExtractor::FindBoundaryLoops(const std::vector<Poin
 
             const std::vector<BoundaryEdge>& boundaryEdges = boundaryAdjacency[currentNodeIndex];
 
-            // The smallest visited angle.
-            // All edge angles must be in interval [-2pi, 2pi],
+            // Find the smallest visited angle.
+            // All edge angles must be in interval [0, 2pi], initialise with number greater than 2pi
             double deltaAngle = 3.0 * std::numbers::pi;
             UInt chosenEdgeIndex = constants::missing::uintValue;
 
@@ -181,7 +239,7 @@ void meshkernel::MeshBoundaryExtractor::FindBoundaryLoops(const std::vector<Poin
             const BoundaryEdge& chosenEdge = boundaryEdges[chosenEdgeIndex];
             edgeVisited[chosenEdge.edgeId] = true;
 
-            // Record the face touched by this next step in the loop
+            // Save the face touched by this next step in the loop
             currentFaces.push_back(chosenEdge.leftFace);
 
             prevNodeIndex = currentNodeIndex;
