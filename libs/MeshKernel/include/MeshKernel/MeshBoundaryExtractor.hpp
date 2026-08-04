@@ -47,7 +47,7 @@ namespace meshkernel
         /// @brief Extract all boundaries keeping them separated and
         ///
         /// The result consists of an array of each of the boundary polygons
-        /// Additionally, an array indicating if the boundary polygon is a exterior boudnary or not.
+        /// Additionally, an array indicating if the boundary polygon is a exterior boundary or not.
         /// True => is-exterior, False => otherwise
         static std::tuple<std::vector<std::vector<Point>>, std::vector<bool>> Extract(const Mesh2D& mesh);
 

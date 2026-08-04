@@ -9,7 +9,14 @@
 std::vector<meshkernel::Point> meshkernel::MeshBoundaryExtractor::ExtractConcatenated(const Mesh2D& mesh, BoundarySelection boundaryType)
 {
 
-    auto [boundarySequences, isExterior] = Extract(mesh);
+    // The use of std::tie instead of a structured inding is due to limitations in the macos compiler
+    //
+    // auto [boundarySequences, isExterior] = Extract(mesh);
+    // Replace the 3 lines below with the line above
+    std::vector<std::vector<Point>> boundarySequences;
+    std::vector<bool> isExterior;
+    std::tie (boundarySequences, isExterior) = Extract(mesh);
+
     std::vector<Point> allPoints;
 
     auto isBoundarySelection = [boundaryType, &isExterior](size_t idx)
