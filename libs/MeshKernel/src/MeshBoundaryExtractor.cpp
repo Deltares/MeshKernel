@@ -10,6 +10,7 @@ std::vector<meshkernel::Point> meshkernel::MeshBoundaryExtractor::ExtractConcate
 {
 
     // The use of std::tie instead of a structured binding is due to limitations in the macos compiler
+    // The compiler error "error: capturing a structured binding is not yet supported in OpenMP"
     //
     // auto [boundarySequences, isExterior] = Extract(mesh);
     // Replace the 3 lines below with the line above
