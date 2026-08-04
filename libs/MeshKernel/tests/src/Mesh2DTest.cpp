@@ -309,7 +309,6 @@ TEST(Mesh2D, MeshBoundaryToPolygonWithSelection)
 
     meshkernel::Print(mesh.Nodes(), mesh.Edges());
 
-
     // 3 Validation
     const double tolerance = 1e-5;
     ASSERT_EQ(9, meshBoundaryPolygon.size());

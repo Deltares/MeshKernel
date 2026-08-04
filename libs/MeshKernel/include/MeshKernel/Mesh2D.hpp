@@ -447,7 +447,6 @@ namespace meshkernel
                                   std::vector<Point>& meshBoundaryPolygon,
                                   std::vector<UInt>& boundaryPolygonFaceId) const;
 
-
         /// @brief Reconstruct the invalid cell polygons
         ///
         /// When constructing the invalid cell polygons, they can be computed with many smaller polygons.

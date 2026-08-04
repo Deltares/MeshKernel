@@ -219,7 +219,7 @@ void Mesh2D::DoAdministrationGivenFaceNodesMapping(const std::vector<std::vector
     ComputeFaceAreaAndMassCenters(true);
 
     MeshBoundaryExtractor meshBoundaryExtractor;
-    m_invalidCellPolygons = meshBoundaryExtractor.ExtractConcatenated (*this, BoundarySelection::InteriorOnly);
+    m_invalidCellPolygons = meshBoundaryExtractor.ExtractConcatenated(*this, BoundarySelection::InteriorOnly);
 
     // classify node types
     ClassifyNodes();
@@ -1754,7 +1754,6 @@ void Mesh2D::WalkBoundaryFromNode(const Polygon& polygon,
         isVisited[currentEdge] = true;
     }
 }
-
 
 std::vector<meshkernel::UInt> Mesh2D::GetHangingEdges() const
 {
