@@ -233,11 +233,6 @@ TEST(Mesh2D, MeshBoundaryToPolygon)
     // 2 Execution
     const auto meshBoundaryPolygon = mesh.ComputeBoundaryPolygons(polygonNodes);
 
-    for (size_t i = 0; i < meshBoundaryPolygon.size(); ++i)
-    {
-        std::cout << "{" << meshBoundaryPolygon[i].x << ", " << meshBoundaryPolygon[i].y << "}" << std::endl;
-    }
-
     // 3 Validation
     const double tolerance = 1e-5;
     ASSERT_NEAR(0.0, meshBoundaryPolygon[0].x, tolerance);
@@ -314,21 +309,6 @@ TEST(Mesh2D, MeshBoundaryToPolygonWithSelection)
 
     meshkernel::Print(mesh.Nodes(), mesh.Edges());
 
-    std::cout << std::endl;
-
-    for (size_t i = 0; i < meshBoundaryPolygon.size(); ++i)
-    {
-        std::cout << meshBoundaryPolygon[i].x << ", ";
-    }
-
-    std::cout << std::endl;
-
-    for (size_t i = 0; i < meshBoundaryPolygon.size(); ++i)
-    {
-        std::cout << meshBoundaryPolygon[i].y << ", ";
-    }
-
-    std::cout << std::endl;
 
     // 3 Validation
     const double tolerance = 1e-5;
