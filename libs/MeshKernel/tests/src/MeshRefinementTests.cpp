@@ -2891,7 +2891,8 @@ TEST(MeshRefinement, MeshWithHole_ShouldGenerateInteriorBoundaryPolygonsForSixFa
     auto deleteMeshFacesUndoAction = mesh.DeleteMeshFacesInPolygon(boundaryWithMissingElements);
 
     // Compute interior boundary polygon points
-    std::vector<Point> boundaryNodes2 = mesh.ComputeInnerBoundaryPolygons();
+    // std::vector<Point> boundaryNodes2 = mesh.ComputeInnerBoundaryPolygons();
+    std::vector<Point> boundaryNodes2 = MeshBoundaryExtractor::ExtractConcatenated (mesh, BoundarySelection::InteriorOnly);
 
     // The expected number of points include the land boundary points
     UInt expectedNumberOfNodes = 26;
@@ -2902,42 +2903,42 @@ TEST(MeshRefinement, MeshWithHole_ShouldGenerateInteriorBoundaryPolygonsForSixFa
     // interior set of polygons
     std::vector<double> expectedXPoints{
         95.0,
-        105.0,
         100.0,
+        105.0,
         95.0,
         constants::missing::doubleValue,
         85.0,
+        95.0,
+        95.0,
         85.0,
-        95.0,
-        95.0,
         85.0,
         constants::missing::doubleValue,
         80.0,
+        85.0,
         75.0,
-        85.0,
         80.0,
         constants::missing::doubleValue,
         120.0,
-        115.0,
         125.0,
+        115.0,
         120.0,
         constants::missing::doubleValue,
         125.0,
+        135.0,
+        135.0,
         125.0,
-        135.0,
-        135.0,
         125.0};
 
     std::vector<double> expectedYPoints{
         15.0,
-        15.0,
         0.0,
+        15.0,
         15.0,
         constants::missing::doubleValue,
         15.0,
-        25.0,
-        25.0,
         15.0,
+        25.0,
+        25.0,
         15.0,
         constants::missing::doubleValue,
         0.0,
@@ -2951,9 +2952,9 @@ TEST(MeshRefinement, MeshWithHole_ShouldGenerateInteriorBoundaryPolygonsForSixFa
         0.0,
         constants::missing::doubleValue,
         125.0,
-        135.0,
-        135.0,
         125.0,
+        135.0,
+        135.0,
         125.0};
 
     for (size_t i = 0; i < expectedXPoints.size(); ++i)

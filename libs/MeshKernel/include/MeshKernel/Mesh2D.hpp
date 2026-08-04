@@ -254,10 +254,6 @@ namespace meshkernel
         /// @return The resulting polygon mesh boundary
         [[nodiscard]] std::vector<Point> ComputeBoundaryPolygons(const std::vector<Point>& polygon);
 
-        /// @brief Convert all mesh boundaries to a vector of polygon nodes
-        /// @return The resulting set of polygons, describing interior mesh boundaries
-        std::vector<Point> ComputeInnerBoundaryPolygons() const;
-
         /// @brief Gets the hanging edges
         /// @return A vector with the indices of the hanging edges
         [[nodiscard]] std::vector<UInt> GetHangingEdges() const;
@@ -451,16 +447,6 @@ namespace meshkernel
                                   std::vector<Point>& meshBoundaryPolygon,
                                   std::vector<UInt>& boundaryPolygonFaceId) const;
 
-        /// @brief Constructs a polygon or polygons from the meshboundary, by walking through the mesh
-        ///
-        /// If there are multiple polygons connected by a single node, then these will be separated into individual polygons
-        void WalkMultiBoundaryFromNode(std::vector<bool>& edgeIsVisited,
-                                       std::vector<bool>& nodeIsVisited,
-                                       UInt& currentNode,
-                                       std::vector<Point>& meshBoundaryPolygon,
-                                       std::vector<UInt>& nodeIds,
-                                       std::vector<Point>& subSequence,
-                                       std::vector<Point>& illegalCells) const;
 
         /// @brief Reconstruct the invalid cell polygons
         ///
@@ -473,9 +459,6 @@ namespace meshkernel
         /// @return a sequence of boundary points, which may be separated by the invalid point, and a matching sequence of Boolean values indicating which
         /// polygonal sub-sequence forms a external boundary
         [[nodiscard]] std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> GetAllBoundaryPolygons(const std::vector<Point>& polygon);
-
-        /// @brief Ensure that all polynomials are orientated in the ACW direction.
-        void OrientatePolygonsAntiClockwise(std::vector<Point>& polygonNodes) const;
 
         /// @brief Removes the outer domain boundary polygon from the set of polygons
         ///
