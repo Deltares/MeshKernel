@@ -55,10 +55,10 @@ namespace meshkernel
         /// @brief Temporary struct, used when computing the boundaries
         struct BoundaryEdge
         {
-            UInt edgeId;
-            UInt neighbourNode;
-            UInt leftFace; // Store face mapping on the edge for easy retrieval during loop trace
-            double angle;  // Angle of the edge pointing away from the pivot node
+            UInt edgeId;        ///< Id of edge
+            UInt neighbourNode; ///< Id of node at opposite end of edge
+            UInt leftFace;      ///< Store face mapping on the edge for easy retrieval during polygon trace
+            double angle;       ///< Angle of the edge pointing away from the pivot node
         };
 
         /// @brief Ensure the angle lies between 0 .. 2 pi.
@@ -75,28 +75,31 @@ namespace meshkernel
                                         const std::vector<std::array<UInt, 2>>& edgesFaces,
                                         std::unordered_map<UInt, std::vector<BoundaryEdge>>& boundaryAdjacency);
 
+        /// @brief Append the boundary polygon to the set of all boundary polygon
+        ///
+        /// The boundary polygons may be reversed if found to be in clockwise direction
         static void Append(const Point& centre,
                            const Projection projection,
-                           std::vector<Point>& boundaryLoop,
+                           std::vector<Point>& boundaryPolygon,
                            std::vector<bool>& isExterior,
-                           std::vector<std::vector<Point>>& separatedBoundaryLoops);
+                           std::vector<std::vector<Point>>& separatedBoundaryPolygons);
 
         /// @brief Find boundary loops
         ///
         /// Any boundary loops found may need to be processed further as they may themselves contain sub-loops
-        static void FindBoundaryLoops(const std::vector<Point>& nodes,
-                                      const std::vector<Edge>& edges,
-                                      const std::vector<std::array<UInt, 2>>& edgesFaces,
-                                      std::vector<std::vector<Point>>& allLoops,
-                                      std::vector<std::vector<UInt>>& allTouchedFaces);
+        static void FindBoundaryPolygons(const std::vector<Point>& nodes,
+                                         const std::vector<Edge>& edges,
+                                         const std::vector<std::array<UInt, 2>>& edgesFaces,
+                                         std::vector<std::vector<Point>>& allPolygons,
+                                         std::vector<std::vector<UInt>>& allTouchedFaces);
 
         /// @brief Separate polygons that contains multiple sub-polygons and determine externality
         ///
-        /// allBoundaryLoops is not const because it may be updated.
-        /// @note allBoundaryLoops should not be accessed after calling this function
+        /// allBoundaryPolygons is not const because it may be updated.
+        /// @note allBoundaryPolygons should not be accessed after calling this function
         static std::tuple<std::vector<std::vector<meshkernel::Point>>, std::vector<bool>>
         SeparateAndDetermineExternality(const Mesh2D& mesh,
-                                        std::vector<std::vector<Point>>& allBoundaryLoops,
+                                        std::vector<std::vector<Point>>& allBoundaryPolygons,
                                         const std::vector<std::vector<UInt>>& allTouchedFaces);
     };
 

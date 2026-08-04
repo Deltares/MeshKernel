@@ -26,64 +26,64 @@ std::vector<meshkernel::Point> meshkernel::MeshBoundaryExtractor::ExtractConcate
 
 void meshkernel::MeshBoundaryExtractor::Append(const Point& centre,
                                                const Projection projection,
-                                               std::vector<Point>& boundaryLoop,
+                                               std::vector<Point>& boundaryPolygon,
                                                std::vector<bool>& isExterior,
-                                               std::vector<std::vector<Point>>& separatedBoundaryLoops)
+                                               std::vector<std::vector<Point>>& separatedBoundaryPolygons)
 {
 
-    if (auto [area, centreOfMass] = ComputePolygonAreaAndCentre(boundaryLoop, projection); area < 0.0)
+    if (auto [area, centreOfMass] = ComputePolygonAreaAndCentre(boundaryPolygon, projection); area < 0.0)
     {
-        std::ranges::reverse(boundaryLoop);
+        std::ranges::reverse(boundaryPolygon);
     }
 
-    isExterior.push_back(IsPointInPolygonNodes(centre, boundaryLoop, projection));
-    separatedBoundaryLoops.push_back(std::move(boundaryLoop));
+    isExterior.push_back(IsPointInPolygonNodes(centre, boundaryPolygon, projection));
+    separatedBoundaryPolygons.push_back(std::move(boundaryPolygon));
 }
 
 std::tuple<std::vector<std::vector<meshkernel::Point>>, std::vector<bool>>
 meshkernel::MeshBoundaryExtractor::SeparateAndDetermineExternality(const Mesh2D& mesh,
-                                                                   std::vector<std::vector<Point>>& allBoundaryLoops,
+                                                                   std::vector<std::vector<Point>>& allBoundaryPolygons,
                                                                    const std::vector<std::vector<UInt>>& allTouchedFaces)
 {
-    std::vector<std::vector<Point>> separatedBoundaryLoops;
+    std::vector<std::vector<Point>> separatedBoundaryPolygons;
     std::vector<bool> isExterior;
 
-    for (size_t i = 0; i < allBoundaryLoops.size(); ++i)
+    for (size_t i = 0; i < allBoundaryPolygons.size(); ++i)
     {
 
-        if (IsMultiPolygon(allBoundaryLoops[i]))
+        if (IsMultiPolygon(allBoundaryPolygons[i]))
         {
             // It can be that some of the boundaries that are found are composed of multiple sub-boundaries.
             // Some of the sub-boundaries may be combined in a non conforming way.
             // In either case, the boundaries are separated into distinct boundary polygons.
-            auto [individualBoundaryPolygons, firstElement] = SplitMultiplePolygons(allBoundaryLoops[i], allTouchedFaces[i]);
+            auto [individualBoundaryPolygons, firstElement] = SplitMultiplePolygons(allBoundaryPolygons[i], allTouchedFaces[i]);
 
             for (size_t i = 0; i < individualBoundaryPolygons.size(); ++i)
             {
                 Point centre = mesh.m_facesMassCenters[firstElement[i]];
-                Append(centre, mesh.m_projection, individualBoundaryPolygons[i], isExterior, separatedBoundaryLoops);
+                Append(centre, mesh.m_projection, individualBoundaryPolygons[i], isExterior, separatedBoundaryPolygons);
             }
         }
         else
         {
             Point centre = mesh.m_facesMassCenters[allTouchedFaces[i][0]];
-            Append(centre, mesh.m_projection, allBoundaryLoops[i], isExterior, separatedBoundaryLoops);
+            Append(centre, mesh.m_projection, allBoundaryPolygons[i], isExterior, separatedBoundaryPolygons);
         }
     }
 
-    return {separatedBoundaryLoops, isExterior};
+    return {separatedBoundaryPolygons, isExterior};
 }
 
 std::tuple<std::vector<std::vector<meshkernel::Point>>, std::vector<bool>> meshkernel::MeshBoundaryExtractor::Extract(const Mesh2D& mesh)
 {
 
-    std::vector<std::vector<Point>> allBoundaryLoops;
+    std::vector<std::vector<Point>> allBoundaryPolygons;
     std::vector<std::vector<UInt>> allTouchedFaces;
 
     const std::vector<Point>& meshNodes(mesh.Nodes());
 
-    FindBoundaryLoops(meshNodes, mesh.Edges(), mesh.m_edgesFaces, allBoundaryLoops, allTouchedFaces);
-    return SeparateAndDetermineExternality(mesh, allBoundaryLoops, allTouchedFaces);
+    FindBoundaryPolygons(meshNodes, mesh.Edges(), mesh.m_edgesFaces, allBoundaryPolygons, allTouchedFaces);
+    return SeparateAndDetermineExternality(mesh, allBoundaryPolygons, allTouchedFaces);
 }
 
 double meshkernel::MeshBoundaryExtractor::NormalizeAngle(double angle)
@@ -168,13 +168,13 @@ meshkernel::UInt meshkernel::MeshBoundaryExtractor::FindEdgeWithMinumumAngle(con
     return edgeIndex;
 }
 
-void meshkernel::MeshBoundaryExtractor::FindBoundaryLoops(const std::vector<Point>& nodes,
-                                                          const std::vector<Edge>& edges,
-                                                          const std::vector<std::array<UInt, 2>>& edgesFaces,
-                                                          std::vector<std::vector<Point>>& allLoops,
-                                                          std::vector<std::vector<UInt>>& allTouchedFaces)
+void meshkernel::MeshBoundaryExtractor::FindBoundaryPolygons(const std::vector<Point>& nodes,
+                                                             const std::vector<Edge>& edges,
+                                                             const std::vector<std::array<UInt, 2>>& edgesFaces,
+                                                             std::vector<std::vector<Point>>& allPolygons,
+                                                             std::vector<std::vector<UInt>>& allTouchedFaces)
 {
-    allLoops.clear();
+    allPolygons.clear();
     allTouchedFaces.clear();
 
     // Mapping from mesh node-id to a sequence of boundary edges, the boundary edges will be sorted by angle
@@ -212,7 +212,7 @@ void meshkernel::MeshBoundaryExtractor::FindBoundaryLoops(const std::vector<Poin
         double dy = nodes[currentNodeIndex].y - nodes[prevNodeIndex].y;
         double incomingAngle = NormalizeAngle(std::atan2(dy, dx));
 
-        // Loop until we find the start node, making a closed boundary polygon
+        // Polygon until we find the start node, making a closed boundary polygon
         while (currentNodeIndex != edges[count].first)
         {
             currentNodes.push_back(nodes[currentNodeIndex]);
@@ -222,7 +222,7 @@ void meshkernel::MeshBoundaryExtractor::FindBoundaryLoops(const std::vector<Poin
             UInt edgeIndex = FindEdgeWithMinumumAngle(boundaryEdges, edgeVisited, incomingAngle);
 
             // No unvisited edges were found
-            // So eigher the boundary loop was completed or a dead-end reached.
+            // So eigher the boundary polygon was completed or a dead-end reached.
             if (edgeIndex == constants::missing::uintValue)
             {
                 break;
@@ -242,7 +242,7 @@ void meshkernel::MeshBoundaryExtractor::FindBoundaryLoops(const std::vector<Poin
         {
             // Close the polygon
             currentNodes.push_back(currentNodes.front());
-            allLoops.emplace_back(std::move(currentNodes));
+            allPolygons.emplace_back(std::move(currentNodes));
             allTouchedFaces.push_back(std::move(currentFaces));
         }
     }
