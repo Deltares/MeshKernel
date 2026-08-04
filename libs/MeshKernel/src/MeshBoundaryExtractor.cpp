@@ -15,7 +15,7 @@ std::vector<meshkernel::Point> meshkernel::MeshBoundaryExtractor::ExtractConcate
     // Replace the 3 lines below with the line above
     std::vector<std::vector<Point>> boundarySequences;
     std::vector<bool> isExterior;
-    std::tie (boundarySequences, isExterior) = Extract(mesh);
+    std::tie(boundarySequences, isExterior) = Extract(mesh);
 
     std::vector<Point> allPoints;
 
