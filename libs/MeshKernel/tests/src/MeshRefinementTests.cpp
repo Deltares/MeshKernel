@@ -2891,7 +2891,6 @@ TEST(MeshRefinement, MeshWithHole_ShouldGenerateInteriorBoundaryPolygonsForSixFa
     auto deleteMeshFacesUndoAction = mesh.DeleteMeshFacesInPolygon(boundaryWithMissingElements);
 
     // Compute interior boundary polygon points
-    // std::vector<Point> boundaryNodes2 = mesh.ComputeInnerBoundaryPolygons();
     std::vector<Point> boundaryNodes2 = MeshBoundaryExtractor::ExtractConcatenated (mesh, BoundarySelection::InteriorOnly);
 
     // The expected number of points include the land boundary points
