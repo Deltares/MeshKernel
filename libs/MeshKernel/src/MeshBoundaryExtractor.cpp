@@ -66,10 +66,10 @@ meshkernel::MeshBoundaryExtractor::SeparateAndDetermineExternality(const Mesh2D&
             // In either case, the boundaries are separated into distinct boundary polygons.
             auto [individualBoundaryPolygons, firstElement] = SplitMultiplePolygons(allBoundaryPolygons[i], allTouchedFaces[i]);
 
-            for (size_t i = 0; i < individualBoundaryPolygons.size(); ++i)
+            for (size_t j = 0; j < individualBoundaryPolygons.size(); ++j)
             {
-                Point centre = mesh.m_facesMassCenters[firstElement[i]];
-                Append(centre, mesh.m_projection, individualBoundaryPolygons[i], isExterior, separatedBoundaryPolygons);
+                Point centre = mesh.m_facesMassCenters[firstElement[j]];
+                Append(centre, mesh.m_projection, individualBoundaryPolygons[j], isExterior, separatedBoundaryPolygons);
             }
         }
         else
@@ -159,7 +159,7 @@ meshkernel::UInt meshkernel::MeshBoundaryExtractor::FindEdgeWithMinumumAngle(con
     UInt edgeIndex = constants::missing::uintValue;
 
     // Find the boundary edge that tracks closest clockwise to keep empty space on the right
-    for (size_t e = 0; e < boundaryEdges.size(); ++e)
+    for (UInt e = 0; e < boundaryEdges.size(); ++e)
     {
         if (edgeVisited[boundaryEdges[e].edgeId])
         {
