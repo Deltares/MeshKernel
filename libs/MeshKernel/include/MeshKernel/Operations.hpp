@@ -635,7 +635,7 @@ namespace meshkernel
     /// @brief Split a single polygon line comprised of multiple polygons into separate polygons.
     ///
     /// @note This currently works only for polygons that intersect at the control points
-    std::tuple<std::vector<std::vector<Point>>, std::vector<UInt>> SplitMultiplePolygons(std::span<const Point> boundary, std::span<UInt> elementIds);
+    std::tuple<std::vector<std::vector<Point>>, std::vector<UInt>> SplitMultiplePolygons(std::span<const Point> boundary, std::span<const UInt> elementIds);
 
     /// @brief Concaenate vectors of vectors of points to a vector of points separated by the invalid point
     template <typename Predicate>

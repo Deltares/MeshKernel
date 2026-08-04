@@ -1522,7 +1522,7 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> Mesh2D::GetAllBoun
 {
     const Polygon polygon(polygonNodes, m_projection);
 
-#if 1
+#if 0
     MeshBoundaryExtractor meshBoundaryExtractor;
 
     auto [boundaryPoints, isEnclosingBoundary] = meshBoundaryExtractor.Extract(*this);
@@ -1530,25 +1530,15 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> Mesh2D::GetAllBoun
     if (polygonNodes.size() == 0)
     {
 
-        auto isTrue = [](size_t idx [[maybe_unused]])
+        auto alwaysTrue = [](size_t idx [[maybe_unused]])
         {
             return true;
         };
 
-        return {ConcatenatePointVectors(boundaryPoints, isTrue), isEnclosingBoundary};
+        return {ConcatenatePointVectors(boundaryPoints, alwaysTrue), isEnclosingBoundary};
     }
 
     std::vector<bool> containedIsEnclosingBoundary;
-
-    auto removeExteriorPoints = [&polygon](const Point& p)
-    {
-        return !polygon.Contains(p);
-    };
-
-    for (size_t i = 0; i < boundaryPoints.size(); ++i)
-    {
-        std::erase_if(boundaryPoints[i], removeExteriorPoints);
-    }
 
     auto addNonEmpty = [&boundaryPoints, &isEnclosingBoundary, &containedIsEnclosingBoundary](size_t idx) mutable
     {
@@ -1564,20 +1554,6 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> Mesh2D::GetAllBoun
     std::vector<Point> containedBoundaryPoints = ConcatenatePointVectors(boundaryPoints, addNonEmpty);
 
     return {containedBoundaryPoints, containedIsEnclosingBoundary};
-
-#if 0
-    for (size_t i = 0; i < boundaryPoints.size(); ++i)
-    {
-
-        if (boundaryPoints[i].size() > 0)
-        {
-            containedBoundaryPoints.insert(containedBoundaryPoints.end(), boundaryPoints[i].begin(), boundaryPoints[i].end());
-            containedIsEnclosingBoundary.push_back(isEnclosingBoundary[i]);
-        }
-    }
-
-    return {containedBoundaryPoints, containedIsEnclosingBoundary};
-#endif
 
 #else
     std::vector<bool> isVisited(GetNumEdges(), false);
@@ -1652,7 +1628,6 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> Mesh2D::GetAllBoun
 
         if (IsMultiPolygon(currentPolygonSpan))
         {
-
             auto [multiBoundaryPolygonNodes, multiBoundaryElementIds] = (SplitMultiplePolygons(currentPolygonSpan, boundaryPolygonFaceId));
 
             for (size_t i = 0; i < multiBoundaryPolygonNodes.size(); ++i)
@@ -2307,31 +2282,9 @@ void Mesh2D::ReconstructInvalidCellsPolygon()
         return;
     }
 
-    std::vector<Point> innerBoundaryPolygons;
-    innerBoundaryPolygons.reserve(m_invalidCellPolygons.size());
-    bool firstElement = true;
-
-    for (UInt p = 0; p < boundaryPoints.size(); ++p)
-    {
-
-        if (isEnclosingBoundary[p])
-        {
-            continue;
-        }
-
-        if (!firstElement)
-        {
-            innerBoundaryPolygons.push_back(Point(constants::missing::doubleValue, constants::missing::doubleValue));
-        }
-        else
-        {
-            firstElement = false;
-        }
-
-        innerBoundaryPolygons.insert(innerBoundaryPolygons.end(), boundaryPoints[p].begin(), boundaryPoints[p].end());
-    }
-
-    m_invalidCellPolygons = std::move(innerBoundaryPolygons);
+    auto isInteriorBoundary = [&isEnclosingBoundary](size_t i)
+    { return !isEnclosingBoundary[i]; };
+    m_invalidCellPolygons = ConcatenatePointVectors(boundaryPoints, isInteriorBoundary);
 }
 
 std::unique_ptr<meshkernel::UndoAction> Mesh2D::UpdateFaceInformation(const std::vector<UInt>& faceIndices, const bool appendDeletedFaces)

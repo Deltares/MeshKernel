@@ -64,11 +64,22 @@ namespace meshkernel
         /// @brief Ensure the angle lies between 0 .. 2 pi.
         static double NormalizeAngle(double angle);
 
+        /// @brief Find the edge that has the smallest angle [0 .. 2pi), to the incident edge
+        static UInt FindEdgeWithMinumumAngle(const std::vector<BoundaryEdge>& boundaryEdges,
+                                             const std::vector<bool>& edgeVisited,
+                                             const double incomingAngle);
+
         /// @brief Construct mapping from node-id to all impinging edges for boundary all edges
         static void FindAllBoundarEdges(const std::vector<Point>& nodes,
                                         const std::vector<Edge>& edges,
                                         const std::vector<std::array<UInt, 2>>& edgesFaces,
                                         std::unordered_map<UInt, std::vector<BoundaryEdge>>& boundaryAdjacency);
+
+        static void Append(const Point& centre,
+                           const Projection projection,
+                           std::vector<Point>& boundaryLoop,
+                           std::vector<bool>& isExterior,
+                           std::vector<std::vector<Point>>& separatedBoundaryLoops);
 
         /// @brief Find boundary loops
         ///
@@ -78,6 +89,15 @@ namespace meshkernel
                                       const std::vector<std::array<UInt, 2>>& edgesFaces,
                                       std::vector<std::vector<Point>>& allLoops,
                                       std::vector<std::vector<UInt>>& allTouchedFaces);
+
+        /// @brief Separate polygons that contains multiple sub-polygons and determine externality
+        ///
+        /// allBoundaryLoops is not const because it may be updated.
+        /// @note allBoundaryLoops should not be accessed after calling this function
+        static std::tuple<std::vector<std::vector<meshkernel::Point>>, std::vector<bool>>
+        SeparateAndDetermineExternality(const Mesh2D& mesh,
+                                        std::vector<std::vector<Point>>& allBoundaryLoops,
+                                        const std::vector<std::vector<UInt>>& allTouchedFaces);
     };
 
 } // namespace meshkernel

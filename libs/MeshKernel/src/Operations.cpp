@@ -1838,9 +1838,10 @@ namespace meshkernel
 
         std::set<Point> uniquePoints;
 
-        for (const Point& p : boundary)
+        // Since polygons are always closed (first = last) then start from 1 after the first
+        for (size_t i = 1; i < boundary.size(); ++i)
         {
-            if (!uniquePoints.insert(p).second)
+            if (!uniquePoints.insert(boundary[i]).second)
             {
                 return true;
             }
@@ -1849,7 +1850,7 @@ namespace meshkernel
         return false;
     }
 
-    std::tuple<std::vector<std::vector<Point>>, std::vector<UInt>> SplitMultiplePolygons(std::span<const Point> boundaryPoints, std::span<UInt> elementIds)
+    std::tuple<std::vector<std::vector<Point>>, std::vector<UInt>> SplitMultiplePolygons(std::span<const Point> boundaryPoints, std::span<const UInt> elementIds)
     {
         std::vector<std::vector<Point>> completedPolygons;
         std::vector<UInt> firstElementIds;
