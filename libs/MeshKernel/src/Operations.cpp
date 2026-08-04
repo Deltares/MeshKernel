@@ -1861,10 +1861,15 @@ namespace meshkernel
 
         for (size_t i = 0; i < boundaryPoints.size(); ++i)
         {
-            const Point& current_point = boundaryPoints[i];
+            const Point& currentPoint = boundaryPoints[i];
+
+            if (!currentPoint.IsValid())
+            {
+                continue;
+            }
 
             // Check if this node closes a loop with a previously visited point
-            if (auto it = activePoints.find(current_point); it != activePoints.end())
+            if (auto it = activePoints.find(currentPoint); it != activePoints.end())
             {
                 size_t loopStartIndex = it->second;
 
@@ -1893,8 +1898,8 @@ namespace meshkernel
 
             int currentEdge = (i < elementIds.size()) ? elementIds[i] : -1;
 
-            activePoints[current_point] = pointFaceStack.size();
-            pointFaceStack.emplace_back(current_point, currentEdge);
+            activePoints[currentPoint] = pointFaceStack.size();
+            pointFaceStack.emplace_back(currentPoint, currentEdge);
         }
 
         return {completedPolygons, firstElementIds};
