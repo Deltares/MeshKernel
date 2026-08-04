@@ -2286,7 +2286,7 @@ void Mesh2D::ReconstructInvalidCellsPolygon()
     if (boundaryPoints.size() <= 1)
     {
         // There are no interior boundary polygons
-        m_invalidCellPolygons.clear ();
+        m_invalidCellPolygons.clear();
         return;
     }
 
