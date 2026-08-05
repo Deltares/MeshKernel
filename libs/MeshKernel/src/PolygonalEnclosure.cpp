@@ -328,7 +328,7 @@ double meshkernel::PolygonalEnclosure::ComputeSurfaceArea() const
 
     for (UInt i = 0; i < NumberOfInner(); ++i)
     {
-        auto [innerArea, centreOfMass, orientation] = Inner(i).FaceAreaAndCenterOfMass();
+        auto [innerArea, innerCentreOfMass, innerOrientation] = Inner(i).FaceAreaAndCenterOfMass();
         area -= innerArea;
     }
 

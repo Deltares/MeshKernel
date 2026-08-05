@@ -137,8 +137,8 @@ std::unique_ptr<meshkernel::Mesh2D> meshkernel::SepranTriangulationGenerator::Ge
     std::vector<int> boundaryConnectivity(2 * numberOfPolygons);
 
     // 4. Compute elementSizing array for local polyline point matching
-    const int numberElementSizing = 0;         // numberOfBoundaryNodes;
-    std::vector<double> elementSizing(1, 0.0); // 3 * numberOfBoundaryNodes);
+    const int numberElementSizing = 0;
+    std::vector<double> elementSizing(1, 0.0);
 
     int pointOffset = 0;
 

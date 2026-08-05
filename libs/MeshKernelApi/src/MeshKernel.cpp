@@ -1966,7 +1966,6 @@ namespace meshkernelapi
             // to provide the triangulation method.
             meshkernel::SepranTriangulationGenerator generator;
 
-            // const meshkernel::Mesh2D mesh(generatedPoints, polygon, meshKernetate[meshKernelId].m_mesh2d->m_projection);
             meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(*generator.Generate(polygon)), meshKernelId);
         }
         catch (...)
