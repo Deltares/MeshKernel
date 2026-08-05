@@ -10,8 +10,7 @@ import platform
 
 from pathlib import Path
 
-SONAR_SCANNER_VERSION = "5.0.1.3006"
-
+SONAR_SCANNER_VERSION = "8.1.0.6389"
 
 def download_file(url: str, save_path: Path, chunk_size=128) -> None:
     r = requests.get(url, stream=True)
@@ -48,9 +47,9 @@ def rename_sonar_scanner_folder(save_dir: Path) -> None:
 
 def get_scanner(save_dir: Path) -> None:
     if platform.system() == "Windows":
-        url = f"https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-{SONAR_SCANNER_VERSION}-windows.zip"
+        url = f"https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-{SONAR_SCANNER_VERSION}-windows-x64.zip"
     elif platform.system() == "Linux":
-        url = f"https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-{SONAR_SCANNER_VERSION}-linux.zip"
+        url = f"https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-{SONAR_SCANNER_VERSION}-linux-x64.zip"
     else:
         raise Exception("Unsupported OS used.")
 
