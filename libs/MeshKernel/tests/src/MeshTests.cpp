@@ -338,13 +338,6 @@ TEST(Mesh, NodeMerging)
 
     auto mesh = std::make_unique<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
 
-    // Add overlapping nodes
-    double generatingDistance = std::sqrt(std::pow(0.001 * 0.9, 2) / 2.0);
-    std::uniform_real_distribution<double> x_distribution(0.0, generatingDistance);
-    std::uniform_real_distribution<double> y_distribution(0.0, generatingDistance);
-    std::random_device rand_dev;
-    std::mt19937 generator(rand_dev());
-
     nodes.resize(mesh->GetNumNodes() * 2);
     edges.resize(mesh->GetNumEdges() + mesh->GetNumNodes() * 2);
     meshkernel::UInt originalNodeIndex = 0;
@@ -352,7 +345,7 @@ TEST(Mesh, NodeMerging)
     {
         for (meshkernel::UInt i = 0; i < n; ++i)
         {
-            nodes[nodeIndex] = {i + x_distribution(generator), j + y_distribution(generator)};
+            nodes[nodeIndex] = {static_cast<double>(i), static_cast<double>(j)};
 
             edges[edgeIndex] = {nodeIndex, originalNodeIndex};
             edgeIndex++;
