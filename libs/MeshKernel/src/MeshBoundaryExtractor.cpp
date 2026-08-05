@@ -238,8 +238,8 @@ void meshkernel::MeshBoundaryExtractor::ClipToConstrainingPolygon(const Polygon&
     // At this point the boundary polygon is open, i.e. the last point in the sequence is not the same as the first.
     for (size_t i = 0; i < nodes.size(); ++i)
     {
-        UInt nextNodeId = (i + 1) % nodes.size();
-        UInt previousNodeId = (i + nodes.size() - 1) % nodes.size();
+        size_t nextNodeId = (i + 1) % nodes.size();
+        size_t previousNodeId = (i + nodes.size() - 1) % nodes.size();
 
         if (nodeIsContained[i] || nodeIsContained[nextNodeId] || nodeIsContained[previousNodeId])
         {

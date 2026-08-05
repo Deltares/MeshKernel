@@ -1525,7 +1525,14 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> Mesh2D::GetAllBoun
 
     MeshBoundaryExtractor meshBoundaryExtractor;
 
-    auto [boundaryPoints, isEnclosingBoundary] = meshBoundaryExtractor.Extract(*this, polygon);
+    // The use of std::tie instead of a structured binding is due to limitations in the macos compiler
+    // The compiler error "error: capturing a structured binding is not yet supported in OpenMP"
+    //
+    // auto [boundaryPoints, isEnclosingBoundary] = meshBoundaryExtractor.Extract(*this, polygon);
+    // Replace the 3 lines below with the line above
+    std::vector<std::vector<Point>> boundaryPoints;
+    std::vector<bool> isEnclosingBoundary;
+    std::tie(boundaryPoints, isEnclosingBoundary) = meshBoundaryExtractor.Extract(*this, polygon);
 
     if (polygon.IsEmpty())
     {
@@ -1920,6 +1927,7 @@ void Mesh2D::ReconstructInvalidCellsPolygon()
 
     auto isInteriorBoundary = [&isEnclosingBoundary](size_t i)
     { return !isEnclosingBoundary[i]; };
+
     m_invalidCellPolygons = ConcatenatePointVectors(boundaryPoints, isInteriorBoundary);
 }
 
