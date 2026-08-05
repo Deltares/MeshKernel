@@ -59,6 +59,24 @@ std::vector<meshkernel::Point> meshkernel::MeshBoundaryExtractor::ExtractConcate
     return ConcatenatePointVectors(boundarySequences, isBoundarySelection);
 }
 
+std::tuple<std::vector<std::vector<meshkernel::Point>>, std::vector<bool>> meshkernel::MeshBoundaryExtractor::Extract(const Mesh2D& mesh)
+{
+    const Polygon emptyPolygon;
+    return Extract(mesh, emptyPolygon);
+}
+
+std::tuple<std::vector<std::vector<meshkernel::Point>>, std::vector<bool>> meshkernel::MeshBoundaryExtractor::Extract(const Mesh2D& mesh, const Polygon& polygon)
+{
+
+    std::vector<std::vector<Point>> allBoundaryPolygons;
+    std::vector<std::vector<UInt>> allTouchedFaces;
+
+    const std::vector<Point>& meshNodes(mesh.Nodes());
+
+    FindBoundaryPolygons(polygon, meshNodes, mesh.Edges(), mesh.m_edgesFaces, allBoundaryPolygons, allTouchedFaces);
+    return SeparateAndDetermineExternality(mesh, allBoundaryPolygons, allTouchedFaces);
+}
+
 void meshkernel::MeshBoundaryExtractor::Append(const Point& centre,
                                                const Projection projection,
                                                std::vector<Point>& boundaryPolygon,
@@ -109,18 +127,6 @@ meshkernel::MeshBoundaryExtractor::SeparateAndDetermineExternality(const Mesh2D&
     return {separatedBoundaryPolygons, isExterior};
 }
 
-std::tuple<std::vector<std::vector<meshkernel::Point>>, std::vector<bool>> meshkernel::MeshBoundaryExtractor::Extract(const Mesh2D& mesh)
-{
-
-    std::vector<std::vector<Point>> allBoundaryPolygons;
-    std::vector<std::vector<UInt>> allTouchedFaces;
-
-    const std::vector<Point>& meshNodes(mesh.Nodes());
-
-    FindBoundaryPolygons(meshNodes, mesh.Edges(), mesh.m_edgesFaces, allBoundaryPolygons, allTouchedFaces);
-    return SeparateAndDetermineExternality(mesh, allBoundaryPolygons, allTouchedFaces);
-}
-
 double meshkernel::MeshBoundaryExtractor::NormalizeAngle(double angle)
 {
     while (angle < 0)
@@ -146,7 +152,7 @@ void meshkernel::MeshBoundaryExtractor::FindAllBoundarEdges(const std::vector<Po
     for (UInt count = 0; count < edges.size(); ++count)
     {
 
-        if (!IsValidEdge(edges[count]) || edgesFaces[count][1] != constants::missing::uintValue)
+        if (edgesFaces[count][1] != constants::missing::uintValue || !IsValidEdge(edges[count]))
         {
             // Edge is either invalid or not on boundaryy
             continue;
@@ -203,7 +209,49 @@ meshkernel::UInt meshkernel::MeshBoundaryExtractor::FindEdgeWithMinumumAngle(con
     return edgeIndex;
 }
 
-void meshkernel::MeshBoundaryExtractor::FindBoundaryPolygons(const std::vector<Point>& nodes,
+void meshkernel::MeshBoundaryExtractor::ClipToConstrainingPolygon(const Polygon& polygon, std::vector<Point>& nodes)
+{
+    if (polygon.IsEmpty() || nodes.size() <= 2)
+    {
+        return;
+    }
+
+    std::vector<Point> clippedPolygon;
+    std::vector<bool> nodeIsContained(nodes.size());
+    UInt numberOfNodesContained = 0;
+
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        nodeIsContained[i] = polygon.Contains(nodes[i]);
+        numberOfNodesContained += nodeIsContained[i] ? 1 : 0;
+    }
+
+    if (numberOfNodesContained <= 1)
+    {
+        // Cannot make a reasonable polygon with only 1 node (and the closing node htat will be added later, making 2 nodes)
+        nodes.clear();
+        return;
+    }
+
+    clippedPolygon.reserve(nodes.size());
+
+    // At this point the boundary polygon is open, i.e. the last point in the sequence is not the same as the first.
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        UInt nextNodeId = (i + 1) % nodes.size();
+        UInt previousNodeId = (i + nodes.size() - 1) % nodes.size();
+
+        if (nodeIsContained[i] || nodeIsContained[nextNodeId] || nodeIsContained[previousNodeId])
+        {
+            clippedPolygon.push_back(nodes[i]);
+        }
+    }
+
+    nodes = std::move(clippedPolygon);
+}
+
+void meshkernel::MeshBoundaryExtractor::FindBoundaryPolygons(const Polygon& polygon,
+                                                             const std::vector<Point>& nodes,
                                                              const std::vector<Edge>& edges,
                                                              const std::vector<std::array<UInt, 2>>& edgesFaces,
                                                              std::vector<std::vector<Point>>& allPolygons,
@@ -272,6 +320,8 @@ void meshkernel::MeshBoundaryExtractor::FindBoundaryPolygons(const std::vector<P
             currentNodeIndex = chosenEdge.neighbourNode;
             incomingAngle = chosenEdge.angle;
         }
+
+        ClipToConstrainingPolygon(polygon, currentNodes);
 
         if (currentNodes.size() >= 3)
         {

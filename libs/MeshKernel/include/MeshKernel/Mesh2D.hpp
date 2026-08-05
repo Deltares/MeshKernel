@@ -440,13 +440,6 @@ namespace meshkernel
         /// @brief Find the mesh faces that lie entirely within the polygon.
         std::vector<bool> FindFacesEntirelyInsidePolygon(const std::vector<bool>& isNodeInsidePolygon) const;
 
-        /// @brief Constructs a polygon from the meshboundary, by walking through the mesh
-        void WalkBoundaryFromNode(const Polygon& polygon,
-                                  std::vector<bool>& isVisited,
-                                  UInt& currentNode,
-                                  std::vector<Point>& meshBoundaryPolygon,
-                                  std::vector<UInt>& boundaryPolygonFaceId) const;
-
         /// @brief Reconstruct the invalid cell polygons
         ///
         /// When constructing the invalid cell polygons, they can be computed with many smaller polygons.

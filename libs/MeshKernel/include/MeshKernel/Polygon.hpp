@@ -78,6 +78,9 @@ namespace meshkernel
         /// @brief Move assignment operator
         Polygon& operator=(Polygon&& copy);
 
+        /// @brief Determine if the polygon is empty, i.e. has no control points.
+        bool IsEmpty() const;
+
         /// @brief Return the number of points in the polygon
         UInt Size() const;
 
@@ -221,6 +224,11 @@ namespace meshkernel
 inline meshkernel::UInt meshkernel::Polygon::Size() const
 {
     return static_cast<UInt>(m_nodes.size());
+}
+
+inline bool meshkernel::Polygon::IsEmpty() const
+{
+    return m_nodes.empty();
 }
 
 inline const std::vector<meshkernel::Point>& meshkernel::Polygon::Nodes() const

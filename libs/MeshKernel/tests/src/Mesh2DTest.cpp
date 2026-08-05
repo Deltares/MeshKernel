@@ -242,9 +242,9 @@ TEST(Mesh2D, MeshBoundaryToPolygon)
     ASSERT_NEAR(0.0, meshBoundaryPolygon[4].x, tolerance);
 
     ASSERT_NEAR(0.0, meshBoundaryPolygon[0].y, tolerance);
-    ASSERT_NEAR(5.0, meshBoundaryPolygon[1].y, tolerance);
+    ASSERT_NEAR(-5.0, meshBoundaryPolygon[1].y, tolerance);
     ASSERT_NEAR(0.0, meshBoundaryPolygon[2].y, tolerance);
-    ASSERT_NEAR(-5.0, meshBoundaryPolygon[3].y, tolerance);
+    ASSERT_NEAR(5.0, meshBoundaryPolygon[3].y, tolerance);
     ASSERT_NEAR(0.0, meshBoundaryPolygon[4].y, tolerance);
 }
 
@@ -298,6 +298,7 @@ TEST(Mesh2D, MeshBoundaryToPolygonWithSelection)
     auto mesh = meshkernel::Mesh2D(edges, nodes, meshkernel::Projection::cartesian);
 
     std::vector<meshkernel::Point> polygonNodes;
+
     polygonNodes.push_back({-5.0, 35.0});
     polygonNodes.push_back({15.0, 35.0});
     polygonNodes.push_back({15.0, -5.0});
@@ -305,9 +306,7 @@ TEST(Mesh2D, MeshBoundaryToPolygonWithSelection)
     polygonNodes.push_back({-5.0, 35.0});
 
     // 2 Execution
-    const auto meshBoundaryPolygon = mesh.ComputeBoundaryPolygons(polygonNodes);
-
-    meshkernel::Print(mesh.Nodes(), mesh.Edges());
+    auto meshBoundaryPolygon = mesh.ComputeBoundaryPolygons(polygonNodes);
 
     // 3 Validation
     const double tolerance = 1e-5;
@@ -315,29 +314,64 @@ TEST(Mesh2D, MeshBoundaryToPolygonWithSelection)
     ASSERT_NEAR(0.0, meshBoundaryPolygon[0].x, tolerance);
     ASSERT_NEAR(0.0, meshBoundaryPolygon[0].y, tolerance);
 
-    ASSERT_NEAR(10.0, meshBoundaryPolygon[7].x, tolerance);
-    ASSERT_NEAR(00.0, meshBoundaryPolygon[7].y, tolerance);
+    ASSERT_NEAR(10.0, meshBoundaryPolygon[1].x, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[1].y, tolerance);
+
+    ASSERT_NEAR(20.0, meshBoundaryPolygon[2].x, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[2].y, tolerance);
+
+    ASSERT_NEAR(20.0, meshBoundaryPolygon[3].x, tolerance);
+    ASSERT_NEAR(30.0, meshBoundaryPolygon[3].y, tolerance);
 
     ASSERT_NEAR(10.0, meshBoundaryPolygon[4].x, tolerance);
     ASSERT_NEAR(30.0, meshBoundaryPolygon[4].y, tolerance);
 
-    ASSERT_NEAR(0.0, meshBoundaryPolygon[3].x, tolerance);
-    ASSERT_NEAR(30.0, meshBoundaryPolygon[3].y, tolerance);
-
-    ASSERT_NEAR(0.0, meshBoundaryPolygon[2].x, tolerance);
-    ASSERT_NEAR(20.0, meshBoundaryPolygon[2].y, tolerance);
-
-    ASSERT_NEAR(0.0, meshBoundaryPolygon[1].x, tolerance);
-    ASSERT_NEAR(10.0, meshBoundaryPolygon[1].y, tolerance);
-
-    ASSERT_NEAR(20.0, meshBoundaryPolygon[5].x, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[5].x, tolerance);
     ASSERT_NEAR(30.0, meshBoundaryPolygon[5].y, tolerance);
 
-    ASSERT_NEAR(20.0, meshBoundaryPolygon[6].x, tolerance);
-    ASSERT_NEAR(00.0, meshBoundaryPolygon[6].y, tolerance);
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[6].x, tolerance);
+    ASSERT_NEAR(20.0, meshBoundaryPolygon[6].y, tolerance);
+
+    ASSERT_NEAR(0.0, meshBoundaryPolygon[7].x, tolerance);
+    ASSERT_NEAR(10.0, meshBoundaryPolygon[7].y, tolerance);
 
     ASSERT_NEAR(0.0, meshBoundaryPolygon[8].x, tolerance);
     ASSERT_NEAR(0.0, meshBoundaryPolygon[8].y, tolerance);
+}
+
+TEST(Mesh2D, MeshBoundaryToPolygonWithAnotherSelection)
+{
+    // 1 Setup
+    auto mesh = MakeRectangularMeshForTesting(7, 7, 5.0, meshkernel::Projection::cartesian);
+
+    std::vector<meshkernel::Point> polygonNodes;
+
+    polygonNodes.push_back({-5.0, 35.0});
+    polygonNodes.push_back({15.0, 35.0});
+    polygonNodes.push_back({15.0, -5.0});
+    polygonNodes.push_back({-5.0, -5.0});
+    // Add small kink in the polygon, it should miss out a small section of the boundary
+    polygonNodes.push_back({-1.0, 7.5});
+    polygonNodes.push_back({10.0, 12.0});
+    polygonNodes.push_back({-1.0, 22.0});
+    polygonNodes.push_back({-5.0, 35.0});
+
+    // 2 Execution
+    auto meshBoundaryPolygon = mesh->ComputeBoundaryPolygons(polygonNodes);
+
+    // Note missing point at (0.0, 15.0)
+    std::vector<double> expectedXs{0.0, 5.0, 10.0, 15.0, 20.0, 20.0, 15.0, 10.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    std::vector<double> expectedYs{0.0, 0.0, 0.0, 0.0, 0.0, 30.0, 30.0, 30.0, 30.0, 30.0, 25.0, 20.0, 10.0, 5.0, 0.0};
+
+    // 3 Validation
+    const double tolerance = 1e-5;
+    ASSERT_EQ(15, meshBoundaryPolygon.size());
+
+    for (size_t i = 0; i < meshBoundaryPolygon.size(); ++i)
+    {
+        EXPECT_NEAR(expectedXs[i], meshBoundaryPolygon[i].x, tolerance);
+        EXPECT_NEAR(expectedYs[i], meshBoundaryPolygon[i].y, tolerance);
+    }
 }
 
 TEST(Mesh2D, HangingEdge)

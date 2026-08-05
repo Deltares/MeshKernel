@@ -33,6 +33,7 @@
 #include "MeshKernel/Definitions.hpp"
 #include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Point.hpp"
+#include "MeshKernel/Polygon.hpp"
 
 namespace meshkernel
 {
@@ -44,12 +45,19 @@ namespace meshkernel
         /// @brief Extract all boundaries as a single sequence of points, separated by an invalid point
         static std::vector<Point> ExtractConcatenated(const Mesh2D& mesh, BoundarySelection boundaryType = BoundarySelection::All);
 
-        /// @brief Extract all boundaries keeping them separated and
+        /// @brief Extract all boundaries keeping them separated
         ///
         /// The result consists of an array of each of the boundary polygons
         /// Additionally, an array indicating if the boundary polygon is a exterior boundary or not.
         /// True => is-exterior, False => otherwise
         static std::tuple<std::vector<std::vector<Point>>, std::vector<bool>> Extract(const Mesh2D& mesh);
+
+        /// @brief Extract all boundaries contained within a constraining polygon
+        ///
+        /// The result consists of an array of each of the boundary polygons
+        /// Additionally, an array indicating if the boundary polygon is a exterior boundary or not.
+        /// True => is-exterior, False => otherwise
+        static std::tuple<std::vector<std::vector<Point>>, std::vector<bool>> Extract(const Mesh2D& mesh, const Polygon& polygon);
 
     private:
         /// @brief Temporary struct, used when computing the boundaries
@@ -84,10 +92,17 @@ namespace meshkernel
                            std::vector<bool>& isExterior,
                            std::vector<std::vector<Point>>& separatedBoundaryPolygons);
 
+        /// @brief Clip a boundary polygon node sequence to be contains within a constraining polygon
+        ///
+        /// Edges that cross the constraining polygons are also included, i.e. edges that have 1 one node
+        /// contained with the polygons and another not.
+        static void ClipToConstrainingPolygon(const Polygon& polygon, std::vector<Point>& nodes);
+
         /// @brief Find boundary loops
         ///
         /// Any boundary loops found may need to be processed further as they may themselves contain sub-loops
-        static void FindBoundaryPolygons(const std::vector<Point>& nodes,
+        static void FindBoundaryPolygons(const Polygon& polygon,
+                                         const std::vector<Point>& nodes,
                                          const std::vector<Edge>& edges,
                                          const std::vector<std::array<UInt, 2>>& edgesFaces,
                                          std::vector<std::vector<Point>>& allPolygons,
