@@ -110,6 +110,19 @@ namespace meshkernel
         /// @returns The generated points
         std::vector<Point> GeneratePoints(double scaleFactor = constants::missing::doubleValue) const;
 
+        /// @brief Get the projection used.
+        Projection GetProjection() const;
+
+        /// @brief Compute the surface area of the enclosure.
+        ///
+        /// The area of the bounding polygon mimum the sum of the areas of the inner polygons
+        double ComputeSurfaceArea() const;
+
+        /// @brief Compute the minimum and maximum segment lengths for the outer and all inner polygons
+        ///
+        /// Returns {minimum-segment-length, maximum-segment-length}
+        std::tuple<double, double> SegmentLengthExtrema() const;
+
     private:
         /// @typedef IndexRange
         /// @brief Contains the start and end of a section from the point array
@@ -170,4 +183,9 @@ inline meshkernel::UInt meshkernel::PolygonalEnclosure::NumberOfInner() const
 inline const meshkernel::Polygon& meshkernel::PolygonalEnclosure::Inner(const size_t i) const
 {
     return m_inner[i];
+}
+
+inline meshkernel::Projection meshkernel::PolygonalEnclosure::GetProjection() const
+{
+    return m_outer.GetProjection();
 }

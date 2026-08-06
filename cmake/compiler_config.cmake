@@ -15,6 +15,15 @@ if(APPLE)
     message(STATUS "Configuring build for macOS with ${CMAKE_CXX_COMPILER_ID} (${CMAKE_CXX_COMPILER_VERSION}).")
     # Common warning and visibility flags
     add_compile_options("-fvisibility=hidden;-Wall;-Wextra;-pedantic;-Werror;-Wno-unused-function")
+
+    include(CheckCXXCompilerFlag)
+    check_cxx_compiler_flag("-Wno-character-conversion" SUPPORTS_WNO_CHARACTER_CONVERSION)
+
+    if(SUPPORTS_WNO_CHARACTER_CONVERSION)
+      # Disable warnings about implicit conversions between character types
+      add_compile_options("-Wno-character-conversion")
+    endif()
+
     # Conditionally suppress unused parameter warnings (used for platform-specific compiler issues)
     if(SUPPRESS_UNUSED_PARAMETER_WARNING)
       add_compile_options("-Wno-unused-parameter")

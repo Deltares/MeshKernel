@@ -80,6 +80,7 @@ set(
   ${SRC_DIR}/SplitRowColumnOfMesh.cpp
   ${SRC_DIR}/TriangulationInterpolation.cpp
   ${SRC_DIR}/TriangulationWrapper.cpp
+  ${SRC_DIR}/TriangulationGenerator.cpp
 )
 
 set(
@@ -222,6 +223,7 @@ set(
   ${DOMAIN_INC_DIR}/SplitRowColumnOfMesh.hpp
   ${DOMAIN_INC_DIR}/TriangulationInterpolation.hpp
   ${DOMAIN_INC_DIR}/TriangulationWrapper.hpp
+  ${DOMAIN_INC_DIR}/TriangulationGenerator.hpp
   ${DOMAIN_INC_DIR}/Vector.hpp
 )
 
@@ -348,6 +350,7 @@ find_package(OpenMP REQUIRED)
 target_link_libraries(
   ${TARGET_NAME}
   LINK_PUBLIC
+    Sepran
     Triangle
     OpenMP::OpenMP_CXX
     Eigen3::Eigen

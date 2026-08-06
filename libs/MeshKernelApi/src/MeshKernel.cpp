@@ -84,6 +84,7 @@
 #include <MeshKernel/SplineAlgorithms.hpp>
 #include <MeshKernel/Splines.hpp>
 #include <MeshKernel/SplitRowColumnOfMesh.hpp>
+#include <MeshKernel/TriangulationGenerator.hpp>
 #include <MeshKernel/TriangulationInterpolation.hpp>
 #include <MeshKernel/UndoActions/CompoundUndoAction.hpp>
 #include <MeshKernel/UndoActions/UndoAction.hpp>
@@ -1946,7 +1947,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_make_triangular_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints, const double scaleFactor)
+    MKERNEL_API int mkernel_mesh2d_make_triangular_mesh_from_polygon(int meshKernelId, const GeometryList& polygonPoints, const double scaleFactor [[maybe_unused]])
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -1960,11 +1961,12 @@ namespace meshkernelapi
 
             const meshkernel::Polygons polygon(polygonPointsVector, meshKernelState[meshKernelId].m_mesh2d->m_projection);
 
-            // generate samples in the first polygonal enclosure
-            auto const generatedPoints = polygon.Enclosure(0).GeneratePoints(scaleFactor < 0.0 ? meshkernel::constants::missing::doubleValue : scaleFactor);
+            // TODO perhaps a triangulation factory or a simple if method == this or method == that then allocate
+            // SepranTriangulationGenerator or SimpleTriangulationGenerator. This would require a breaking change in the API
+            // to provide the triangulation method.
+            meshkernel::SepranTriangulationGenerator generator;
 
-            const meshkernel::Mesh2D mesh(generatedPoints, polygon, meshKernelState[meshKernelId].m_mesh2d->m_projection);
-            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(mesh), meshKernelId);
+            meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(*generator.Generate(polygon)), meshKernelId);
         }
         catch (...)
         {

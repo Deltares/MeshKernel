@@ -25,7 +25,9 @@
 //
 //------------------------------------------------------------------------------
 
+#include <algorithm>
 #include <chrono>
+#include <execution>
 #include <gtest/gtest.h>
 #include <random>
 
@@ -35,9 +37,11 @@
 #include <MeshKernel/MeshRefinement.hpp>
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Polygons.hpp>
+#include <MeshKernel/TriangulationGenerator.hpp>
 #include <MeshKernel/Utilities/Utilities.hpp>
 #include <TestUtils/Definitions.hpp>
 #include <TestUtils/MakeMeshes.hpp>
+#include <TestUtils/PolygonReader.hpp>
 
 TEST(Mesh, OneQuadTestConstructor)
 {
@@ -167,6 +171,56 @@ TEST(Mesh, TriangulateSamples)
     meshkernel::Mesh2D mesh(generatedPoints[0], polygons, meshkernel::Projection::cartesian);
 }
 
+TEST(Mesh, TriangulateGridWithHoleSepran)
+{
+
+    std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {2.5, 0.0}, {5.0, 0}, {7.5, 0.0}, {10.0, 0.0}, {10.0, 2.5}, {10.0, 5.0}, {10.0, 7.5}, {10.0, 10.0}, {7.5, 10.0}, {5.0, 10.0}, {2.5, 10.0}, {0.0, 10.0}, {0.0, 7.5}, {0.0, 5.0}, {0.0, 2.5}, {0.0, 0.0}, {-998.0, -998.0}, {2.0, 2.0}, {3.5, 2.0}, {5.0, 2.0}, {5.0, 3.5}, {5.0, 5.0}, {2.0, 5.0}, {2.0, 2.0}};
+
+    meshkernel::Polygons polygons(nodes, meshkernel::Projection::cartesian);
+
+    meshkernel::SepranTriangulationGenerator generator;
+    auto mesh2 = generator.Generate(polygons);
+
+    std::vector<meshkernel::UInt> expectedEdgeStart{0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3, 4, 5, 5, 6, 6, 6, 6, 6, 7, 7, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 13, 13, 13, 14, 14, 15, 15, 16, 16, 17, 18, 18, 19, 19, 19, 20, 20, 20, 20, 21, 22, 22, 23, 23, 25, 25, 25, 26, 27};
+
+    std::vector<meshkernel::UInt> expectedEdgeEnd{1, 15, 16, 2, 16, 17, 3, 17, 18, 4, 5, 18, 22, 24, 5, 6, 24, 7, 23, 24, 25, 28, 8, 28, 9, 28, 10, 27, 28, 11, 26, 27, 12, 13, 26, 13, 14, 21, 26, 15, 21, 16, 21, 17, 21, 18, 19, 22, 20, 22, 23, 21, 23, 25, 26, 26, 23, 24, 24, 25, 26, 27, 28, 27, 28};
+
+    std::vector<double> expectedNodeX{0, 2.5, 5, 7.5, 10, 10, 10, 10, 10, 7.5, 5, 2.5, 0, 0, 0, 0, 2, 3.5, 5, 5, 5, 2, 6.6875, 6.875, 8.974717773, 6.709407692, 4.603616331, 6.211802214, 8.535641403};
+    std::vector<double> expectedNodeY{0, 0, 0, 0, 0, 2.5, 5, 7.5, 10, 10, 10, 10, 10, 7.5, 5, 2.5, 2, 2, 2, 3.5, 5, 5, 2.750000185, 4.250000185, 3.225816901, 6.554770469, 7.15290529, 8.808791614, 8.139873532};
+
+    ASSERT_EQ(mesh2->GetNumNodes(), 29);
+    ASSERT_EQ(mesh2->GetNumEdges(), 65);
+    ASSERT_EQ(mesh2->GetNumFaces(), 36);
+
+    const double tolerance = 1.0e-8;
+
+    for (meshkernel::UInt i = 0; i < mesh2->GetNumNodes(); ++i)
+    {
+        EXPECT_NEAR(expectedNodeX[i], mesh2->Node(i).x, tolerance);
+        EXPECT_NEAR(expectedNodeY[i], mesh2->Node(i).y, tolerance);
+    }
+
+    for (meshkernel::UInt i = 0; i < mesh2->GetNumEdges(); ++i)
+    {
+        EXPECT_EQ(expectedEdgeStart[i], mesh2->GetEdge(i).first);
+        EXPECT_EQ(expectedEdgeEnd[i], mesh2->GetEdge(i).second);
+    }
+}
+
+TEST(Mesh, TriangulateGridFromRealisticPolygon)
+{
+
+    std::string fileName(TEST_FOLDER + "/data/northbank_001b.pol");
+
+    auto poly = ReadPolygons(fileName, meshkernel::Projection::cartesian);
+
+    meshkernel::SepranTriangulationGenerator generator;
+    auto mesh2 = generator.Generate(*poly);
+    ASSERT_EQ(mesh2->GetNumFaces(), 3080);
+    ASSERT_EQ(mesh2->GetNumEdges(), 4733);
+    ASSERT_EQ(mesh2->GetNumNodes(), 1654);
+}
+
 TEST(Mesh, TwoTrianglesDuplicatedEdges)
 {
     // 1 Setup
@@ -284,13 +338,6 @@ TEST(Mesh, NodeMerging)
 
     auto mesh = std::make_unique<meshkernel::Mesh2D>(edges, nodes, meshkernel::Projection::cartesian);
 
-    // Add overlapping nodes
-    double generatingDistance = std::sqrt(std::pow(0.001 * 0.9, 2) / 2.0);
-    std::uniform_real_distribution<double> x_distribution(0.0, generatingDistance);
-    std::uniform_real_distribution<double> y_distribution(0.0, generatingDistance);
-    std::random_device rand_dev;
-    std::mt19937 generator(rand_dev());
-
     nodes.resize(mesh->GetNumNodes() * 2);
     edges.resize(mesh->GetNumEdges() + mesh->GetNumNodes() * 2);
     meshkernel::UInt originalNodeIndex = 0;
@@ -298,7 +345,7 @@ TEST(Mesh, NodeMerging)
     {
         for (meshkernel::UInt i = 0; i < n; ++i)
         {
-            nodes[nodeIndex] = {i + x_distribution(generator), j + y_distribution(generator)};
+            nodes[nodeIndex] = {static_cast<double>(i), static_cast<double>(j)};
 
             edges[edgeIndex] = {nodeIndex, originalNodeIndex};
             edgeIndex++;

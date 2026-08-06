@@ -318,3 +318,47 @@ std::vector<meshkernel::Point> meshkernel::PolygonalEnclosure::GeneratePoints(do
 
     return triangulationWrapper.SelectNodes(*this);
 }
+
+double meshkernel::PolygonalEnclosure::ComputeSurfaceArea() const
+{
+    double area = 0.0;
+
+    auto [outerArea, centreOfMass, orientation] = Outer().FaceAreaAndCenterOfMass();
+    area = outerArea;
+
+    for (UInt i = 0; i < NumberOfInner(); ++i)
+    {
+        auto [innerArea, innerCentreOfMass, innerOrientation] = Inner(i).FaceAreaAndCenterOfMass();
+        area -= innerArea;
+    }
+
+    return area;
+}
+
+std::tuple<double, double> meshkernel::PolygonalEnclosure::SegmentLengthExtrema() const
+{
+
+    double minimumDelta = 0.0;
+    double maximumDelta = 0.0;
+
+    auto [outerMinimum, outerMaximum] = Outer().SegmentLengthExtrema();
+    minimumDelta = outerMinimum;
+    maximumDelta = outerMaximum;
+
+    for (UInt i = 0; i < NumberOfInner(); ++i)
+    {
+        auto [innerMinimum, innerMaximum] = Inner(i).SegmentLengthExtrema();
+
+        if (innerMinimum != constants::missing::doubleValue)
+        {
+            minimumDelta = std::min(minimumDelta, innerMinimum);
+        }
+
+        if (innerMaximum != constants::missing::doubleValue)
+        {
+            maximumDelta = std::max(maximumDelta, innerMaximum);
+        }
+    }
+
+    return {minimumDelta, maximumDelta};
+}
