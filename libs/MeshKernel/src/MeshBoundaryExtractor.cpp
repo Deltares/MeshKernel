@@ -135,7 +135,7 @@ void meshkernel::MeshBoundaryExtractor::Append(const Polygon& polygon,
         std::ranges::reverse(boundaryPolygon);
     }
 
-    isExterior.push_back(IsPointInPolygonNodes(centre, boundaryPolygon, projection));
+    const bool isExteriorBoundary = IsPointInPolygonNodes(centre, boundaryPolygon, projection);
 
     // Clipping to boundary polygon must be done after determining if the boundary-points form an exterior or interior boundary.
     // Because the element centre (taken from the first element the boundary-polygon touches) may no longer be inside the clipped
@@ -144,7 +144,8 @@ void meshkernel::MeshBoundaryExtractor::Append(const Polygon& polygon,
 
     if (boundaryPolygon.size() > MinimumNumberOfPoints)
     {
-        // Only add the polygon if it has a sufficient number of points
+        // Only add the polygon and the exterior/interior indicator if the polygon has a sufficient number of points
+        isExterior.push_back(isExteriorBoundary);
         separatedBoundaryPolygons.push_back(std::move(boundaryPolygon));
     }
 }
