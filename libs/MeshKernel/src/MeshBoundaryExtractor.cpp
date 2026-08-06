@@ -73,11 +73,57 @@ std::tuple<std::vector<std::vector<meshkernel::Point>>, std::vector<bool>> meshk
 
     const std::vector<Point>& meshNodes(mesh.Nodes());
 
-    FindBoundaryPolygons(polygon, meshNodes, mesh.Edges(), mesh.m_edgesFaces, allBoundaryPolygons, allTouchedFaces);
-    return SeparateAndDetermineExternality(mesh, allBoundaryPolygons, allTouchedFaces);
+    FindBoundaryPolygons(meshNodes, mesh.Edges(), mesh.m_edgesFaces, allBoundaryPolygons, allTouchedFaces);
+    return SeparateAndDetermineExternality(mesh, polygon, allBoundaryPolygons, allTouchedFaces);
 }
 
-void meshkernel::MeshBoundaryExtractor::Append(const Point& centre,
+void meshkernel::MeshBoundaryExtractor::ClipToConstrainingPolygon(const Polygon& polygon, std::vector<Point>& nodes)
+{
+    if (polygon.IsEmpty() || nodes.size() <= MinimumNumberOfPoints)
+    {
+        return;
+    }
+
+    const size_t uniquePointCount = nodes.size() - 1;
+    std::vector<Point> clippedPolygon;
+    std::vector<bool> nodeIsContained(uniquePointCount);
+    UInt numberOfNodesContained = 0;
+
+    for (size_t i = 0; i < uniquePointCount; ++i)
+    {
+        nodeIsContained[i] = polygon.Contains(nodes[i]);
+        numberOfNodesContained += nodeIsContained[i] ? 1 : 0;
+    }
+
+    if (numberOfNodesContained < MinimumNumberOfPoints)
+    {
+        // Cannot make a reasonable polygon with only 2 nodes (and the closing node htat will be added later, making 3 nodes)
+        nodes.clear();
+        return;
+    }
+
+    clippedPolygon.reserve(nodes.size());
+
+    // At this point the boundary polygon is closed, so we have to ignore the last point on the sequence.
+    for (size_t i = 0; i < uniquePointCount; ++i)
+    {
+        size_t nextNodeId = (i + 1) % uniquePointCount;
+        size_t previousNodeId = (i + uniquePointCount - 1) % uniquePointCount;
+
+        if (nodeIsContained[i] || nodeIsContained[nextNodeId] || nodeIsContained[previousNodeId])
+        {
+            clippedPolygon.push_back(nodes[i]);
+        }
+    }
+
+    // Now re-close the polygon
+    clippedPolygon.push_back(clippedPolygon[0]);
+
+    nodes = std::move(clippedPolygon);
+}
+
+void meshkernel::MeshBoundaryExtractor::Append(const Polygon& polygon,
+                                               const Point& centre,
                                                const Projection projection,
                                                std::vector<Point>& boundaryPolygon,
                                                std::vector<bool>& isExterior,
@@ -90,11 +136,22 @@ void meshkernel::MeshBoundaryExtractor::Append(const Point& centre,
     }
 
     isExterior.push_back(IsPointInPolygonNodes(centre, boundaryPolygon, projection));
-    separatedBoundaryPolygons.push_back(std::move(boundaryPolygon));
+
+    // Clipping to boundary polygon must be done after determining if the boundary-points form an exterior or interior boundary.
+    // Because the element centre (taken from the first element the boundary-polygon touches) may no longer be inside the clipped
+    // boundary-polygon
+    ClipToConstrainingPolygon(polygon, boundaryPolygon);
+
+    if (boundaryPolygon.size() > MinimumNumberOfPoints)
+    {
+        // Only add the polygon if it has a sufficient number of points
+        separatedBoundaryPolygons.push_back(std::move(boundaryPolygon));
+    }
 }
 
 std::tuple<std::vector<std::vector<meshkernel::Point>>, std::vector<bool>>
 meshkernel::MeshBoundaryExtractor::SeparateAndDetermineExternality(const Mesh2D& mesh,
+                                                                   const Polygon& polygon,
                                                                    std::vector<std::vector<Point>>& allBoundaryPolygons,
                                                                    const std::vector<std::vector<UInt>>& allTouchedFaces)
 {
@@ -113,14 +170,16 @@ meshkernel::MeshBoundaryExtractor::SeparateAndDetermineExternality(const Mesh2D&
 
             for (size_t j = 0; j < individualBoundaryPolygons.size(); ++j)
             {
-                Point centre = mesh.m_facesMassCenters[firstElement[j]];
-                Append(centre, mesh.m_projection, individualBoundaryPolygons[j], isExterior, separatedBoundaryPolygons);
+                const Point centre = mesh.m_facesMassCenters[firstElement[j]];
+
+                Append(polygon, centre, mesh.m_projection, individualBoundaryPolygons[j], isExterior, separatedBoundaryPolygons);
             }
         }
         else
         {
-            Point centre = mesh.m_facesMassCenters[allTouchedFaces[i][0]];
-            Append(centre, mesh.m_projection, allBoundaryPolygons[i], isExterior, separatedBoundaryPolygons);
+            const Point centre = mesh.m_facesMassCenters[allTouchedFaces[i][0]];
+
+            Append(polygon, centre, mesh.m_projection, allBoundaryPolygons[i], isExterior, separatedBoundaryPolygons);
         }
     }
 
@@ -209,49 +268,7 @@ meshkernel::UInt meshkernel::MeshBoundaryExtractor::FindEdgeWithMinumumAngle(con
     return edgeIndex;
 }
 
-void meshkernel::MeshBoundaryExtractor::ClipToConstrainingPolygon(const Polygon& polygon, std::vector<Point>& nodes)
-{
-    if (polygon.IsEmpty() || nodes.size() <= 2)
-    {
-        return;
-    }
-
-    std::vector<Point> clippedPolygon;
-    std::vector<bool> nodeIsContained(nodes.size());
-    UInt numberOfNodesContained = 0;
-
-    for (size_t i = 0; i < nodes.size(); ++i)
-    {
-        nodeIsContained[i] = polygon.Contains(nodes[i]);
-        numberOfNodesContained += nodeIsContained[i] ? 1 : 0;
-    }
-
-    if (numberOfNodesContained <= 1)
-    {
-        // Cannot make a reasonable polygon with only 1 node (and the closing node htat will be added later, making 2 nodes)
-        nodes.clear();
-        return;
-    }
-
-    clippedPolygon.reserve(nodes.size());
-
-    // At this point the boundary polygon is open, i.e. the last point in the sequence is not the same as the first.
-    for (size_t i = 0; i < nodes.size(); ++i)
-    {
-        size_t nextNodeId = (i + 1) % nodes.size();
-        size_t previousNodeId = (i + nodes.size() - 1) % nodes.size();
-
-        if (nodeIsContained[i] || nodeIsContained[nextNodeId] || nodeIsContained[previousNodeId])
-        {
-            clippedPolygon.push_back(nodes[i]);
-        }
-    }
-
-    nodes = std::move(clippedPolygon);
-}
-
-void meshkernel::MeshBoundaryExtractor::FindBoundaryPolygons(const Polygon& polygon,
-                                                             const std::vector<Point>& nodes,
+void meshkernel::MeshBoundaryExtractor::FindBoundaryPolygons(const std::vector<Point>& nodes,
                                                              const std::vector<Edge>& edges,
                                                              const std::vector<std::array<UInt, 2>>& edgesFaces,
                                                              std::vector<std::vector<Point>>& allPolygons,
@@ -321,11 +338,11 @@ void meshkernel::MeshBoundaryExtractor::FindBoundaryPolygons(const Polygon& poly
             incomingAngle = chosenEdge.angle;
         }
 
-        ClipToConstrainingPolygon(polygon, currentNodes);
-
-        if (currentNodes.size() >= 3)
+        if (currentNodes.size() >= MinimumNumberOfPoints)
         {
             // Close the polygon
+            // The polygon needs to be closed here. If it is composed of multiple sub-polygons then closing here
+            // makes separating them later a much easier task
             currentNodes.push_back(currentNodes.front());
             allPolygons.emplace_back(std::move(currentNodes));
             allTouchedFaces.push_back(std::move(currentFaces));

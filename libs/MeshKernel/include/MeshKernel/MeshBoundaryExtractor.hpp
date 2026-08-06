@@ -60,6 +60,9 @@ namespace meshkernel
         static std::tuple<std::vector<std::vector<Point>>, std::vector<bool>> Extract(const Mesh2D& mesh, const Polygon& polygon);
 
     private:
+        /// @brief The minimum number of points in a polygon, excluding the closing point
+        static constexpr size_t MinimumNumberOfPoints = 3;
+
         /// @brief Temporary struct, used when computing the boundaries
         struct BoundaryEdge
         {
@@ -85,8 +88,10 @@ namespace meshkernel
 
         /// @brief Append the boundary polygon to the set of all boundary polygon
         ///
-        /// The boundary polygons may be reversed if found to be in clockwise direction
-        static void Append(const Point& centre,
+        /// The boundary polygons may be reversed if found to be in clockwise direction and clipped to be
+        /// inside a constraining polygon
+        static void Append(const Polygon& polygon,
+                           const Point& centre,
                            const Projection projection,
                            std::vector<Point>& boundaryPolygon,
                            std::vector<bool>& isExterior,
@@ -101,8 +106,7 @@ namespace meshkernel
         /// @brief Find boundary loops
         ///
         /// Any boundary loops found may need to be processed further as they may themselves contain sub-loops
-        static void FindBoundaryPolygons(const Polygon& polygon,
-                                         const std::vector<Point>& nodes,
+        static void FindBoundaryPolygons(const std::vector<Point>& nodes,
                                          const std::vector<Edge>& edges,
                                          const std::vector<std::array<UInt, 2>>& edgesFaces,
                                          std::vector<std::vector<Point>>& allPolygons,
@@ -114,6 +118,7 @@ namespace meshkernel
         /// @note allBoundaryPolygons should not be accessed after calling this function
         static std::tuple<std::vector<std::vector<meshkernel::Point>>, std::vector<bool>>
         SeparateAndDetermineExternality(const Mesh2D& mesh,
+                                        const Polygon& polygon,
                                         std::vector<std::vector<Point>>& allBoundaryPolygons,
                                         const std::vector<std::vector<UInt>>& allTouchedFaces);
     };

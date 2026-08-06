@@ -374,6 +374,35 @@ TEST(Mesh2D, MeshBoundaryToPolygonWithAnotherSelection)
     }
 }
 
+TEST(Mesh2D, MeshBoundaryToPolygonWithSelectionExcludingFirstFoundPoint)
+{
+    // 1 Setup
+    auto mesh = MakeRectangularMeshForTesting(7, 7, 5.0, meshkernel::Projection::cartesian);
+
+    // The way that the mesh is constructed means that when the full boundary polygon is computed
+    // the origin (0.0) and connected edges will be part of this polygon. This point is also used
+    // to close the polygon, since it is the first in the seuqnece.
+    // However this clipping polygons defined below, this point and its neighbouring points will outside of this clipping polygon
+    // The test is to check that this is handled correctly and that the boudnary polygon is then closed correctly.
+    std::vector<meshkernel::Point> polygonNodes{{7.5, -1.0}, {18.0, -1.0}, {18.0, 31.0}, {-1.0, 31.0}, {-1.0, 14.0}, {7.5, -1.0}};
+
+    // 2 Execution
+    auto meshBoundaryPolygon = mesh->ComputeBoundaryPolygons(polygonNodes);
+
+    std::vector<double> expectedXs{5.0, 10.0, 15.0, 20.0, 20.0, 15.0, 10.0, 5.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0};
+    std::vector<double> expectedYs{0.0, 0.0, 0.0, 0.0, 30.0, 30.0, 30.0, 30.0, 30.0, 25.0, 20.0, 15.0, 10.0, 0.0};
+
+    // 3 Validation
+    const double tolerance = 1e-5;
+    ASSERT_EQ(14, meshBoundaryPolygon.size());
+
+    for (size_t i = 0; i < meshBoundaryPolygon.size(); ++i)
+    {
+        EXPECT_NEAR(expectedXs[i], meshBoundaryPolygon[i].x, tolerance);
+        EXPECT_NEAR(expectedYs[i], meshBoundaryPolygon[i].y, tolerance);
+    }
+}
+
 TEST(Mesh2D, HangingEdge)
 {
     // 1 Setup
