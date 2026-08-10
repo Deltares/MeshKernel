@@ -58,6 +58,8 @@ void meshkernelapi::OrthogonalityPropertyCalculator::Calculate(const MeshKernelS
         {
             const meshkernel::Edge& edge = state.m_mesh2d->GetEdge(e);
 
+            std::cout << "edge " << e << "  " << std::boolalpha << meshkernel::IsValidEdge(edge) << "  " << geometryList.values[e] << std::endl;
+
             if (meshkernel::IsValidEdge(edge))
             {
                 meshkernel::Point midPoint = 0.5 * (state.m_mesh2d->Node(edge.first) + state.m_mesh2d->Node(edge.second));
