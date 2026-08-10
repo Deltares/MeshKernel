@@ -53,6 +53,7 @@ void meshkernelapi::OrthogonalityPropertyCalculator::Calculate(const MeshKernelS
 
     if (geometryList.coordinates_x != nullptr && geometryList.coordinates_y != nullptr)
     {
+
         for (meshkernel::UInt e = 0; e < state.m_mesh2d->GetNumEdges(); ++e)
         {
             const meshkernel::Edge& edge = state.m_mesh2d->GetEdge(e);
@@ -68,6 +69,22 @@ void meshkernelapi::OrthogonalityPropertyCalculator::Calculate(const MeshKernelS
                 geometryList.coordinates_x[e] = meshkernel::constants::missing::doubleValue;
                 geometryList.coordinates_y[e] = meshkernel::constants::missing::doubleValue;
             }
+        }
+    }
+    else
+    {
+        // 1 or other may be not-null, or both may be null
+
+        if (geometryList.coordinates_x != nullptr)
+        {
+            std::span<double> values(geometryList.coordinates_x, geometryList.num_coordinates);
+            std::ranges::fill(values, meshkernel::constants::missing::doubleValue);
+        }
+
+        if (geometryList.coordinates_y != nullptr)
+        {
+            std::span<double> values(geometryList.coordinates_y, geometryList.num_coordinates);
+            std::ranges::fill(values, meshkernel::constants::missing::doubleValue);
         }
     }
 }
