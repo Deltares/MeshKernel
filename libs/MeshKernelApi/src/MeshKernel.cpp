@@ -1907,7 +1907,6 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-
     MKERNEL_API int mkernel_mesh2d_get_smoothness(int meshKernelId, GeometryList& geometryList)
     {
         lastExitCode = meshkernel::ExitCode::Success;
