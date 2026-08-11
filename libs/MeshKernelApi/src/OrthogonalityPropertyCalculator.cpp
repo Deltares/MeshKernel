@@ -26,7 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernelApi/OrthogonalityPropertyCalculator.hpp"
-#include "MeshKernelApi/PropertyCalculator.hpp"
+#include "MeshKernelApi/PredefinedPropertyCalculator.hpp"
 #include "MeshKernelApi/State.hpp"
 
 #include "MeshKernel/MeshOrthogonality.hpp"
@@ -34,18 +34,18 @@
 #include <algorithm>
 #include <functional>
 
-bool meshkernelapi::OrthogonalityPropertyCalculator::IsValid(const MeshKernelState& state, const meshkernel::Location location) const
+bool meshkernelapi::OrthogonalityPropertyCalculator::IsValid(const MeshKernelState& state) const
 {
-    return state.m_mesh2d != nullptr && state.m_mesh2d->GetNumNodes() > 0 && location == meshkernel::Location::Edges;
+    return state.m_mesh2d != nullptr && state.m_mesh2d->GetNumNodes() > 0;
 }
 
-void meshkernelapi::OrthogonalityPropertyCalculator::Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const
+void meshkernelapi::OrthogonalityPropertyCalculator::Calculate(const MeshKernelState& state, const GeometryList& geometryList) const
 {
 
     if (geometryList.num_coordinates < static_cast<int>(state.m_mesh2d->GetNumEdges()))
     {
         throw meshkernel::ConstraintError("GeometryList with wrong dimensions, {} must be greater than or equal to {}",
-                                          geometryList.num_coordinates, Size(state, location));
+                                          geometryList.num_coordinates, Size(state));
     }
 
     std::span<double> orthogonality(geometryList.values, geometryList.num_coordinates);
@@ -72,14 +72,12 @@ void meshkernelapi::OrthogonalityPropertyCalculator::Calculate(const MeshKernelS
     }
 }
 
-int meshkernelapi::OrthogonalityPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location) const
+int meshkernelapi::OrthogonalityPropertyCalculator::Size(const MeshKernelState& state) const
 {
-    int size = -1;
+    return static_cast<int>(state.m_mesh2d->GetNumEdges());
+}
 
-    if (location == meshkernel::Location::Edges)
-    {
-        size = static_cast<int>(state.m_mesh2d->GetNumEdges());
-    }
-
-    return size;
+meshkernel::Location meshkernelapi::OrthogonalityPropertyCalculator::EvaluationLocation() const
+{
+    return meshkernel::Location::Edges;
 }

@@ -1255,6 +1255,11 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_face_bounds_property_type(int& type);
 
+        /// @brief Gets an int indicating the mesh smoothness property type for mesh2d
+        /// @param[out] type The int indicating the mesh smoothness property type
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_mesh_smoothness_property_type(int& type);
+
         /// @brief Gets the Mesh2D inner boundary polygons data
         ///
         /// @param[in]     meshKernelId  The id of the mesh state
@@ -1450,6 +1455,22 @@ namespace meshkernelapi
         /// @param[out] dimension The dimension of the specified property
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_get_property_dimension(int meshKernelId, int propertyValue, int locationId, int& dimension);
+
+        /// @brief Retrieves a specified predefined property of a 2D mesh.
+        ///
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] propertyId The identifier representing the specific property
+        /// @param[in,out] geometrylist A reference to a GeometryList object that will be populated with the values of the requested property
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_predefined_property(int meshKernelId, int propertyId, const GeometryList& geometrylist);
+
+        /// @brief The dimension of a specified property of a 2D mesh.
+        ///
+        /// @param[in] meshKernelId The id of the mesh state
+        /// @param[in] propertyId The identifier representing the specific property
+        /// @param[out] dimension The dimension of the specified property
+        /// @returns Error code
+        MKERNEL_API int mkernel_mesh2d_get_predefined_property_dimension(int meshKernelId, int propertyId, int& dimension);
 
         /// @brief Gets the small mesh2d flow edges. The flow edges are the edges connecting faces circumcenters.
         /// @param[in]  meshKernelId            The id of the mesh state

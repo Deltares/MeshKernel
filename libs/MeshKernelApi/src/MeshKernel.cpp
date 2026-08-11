@@ -109,6 +109,7 @@
 #include "MeshKernelApi/FaceCircumcenterPropertyCalculator.hpp"
 #include "MeshKernelApi/InterpolatedSamplePropertyCalculator.hpp"
 #include "MeshKernelApi/Mesh2DFaceBoundsPropertyCalculator.hpp"
+#include "MeshKernelApi/MeshSmoothnessPropertyCalculator.hpp"
 #include "MeshKernelApi/NetlinkContourPolygonPropertyCalculator.hpp"
 #include "MeshKernelApi/OrthogonalityPropertyCalculator.hpp"
 #include "MeshKernelApi/PropertyCalculator.hpp"
@@ -124,12 +125,10 @@
 
 namespace meshkernelapi
 {
-    std::map<int, std::shared_ptr<PropertyCalculator>> allocateDefaultPropertyCalculators();
+    std::map<int, std::shared_ptr<PredefinedPropertyCalculator>> allocatePredefinedPropertyCalculators();
 
     // The state held by MeshKernel
     static std::unordered_map<int, MeshKernelState> meshKernelState;
-    /// @brief Map of property calculators, from an property identifier to the calculator.
-    static std::map<int, std::shared_ptr<PropertyCalculator>> propertyCalculators = allocateDefaultPropertyCalculators();
     static int meshKernelStateCounter = 0;
 
     // Error state
@@ -146,15 +145,15 @@ namespace meshkernelapi
     int GeneratePropertyId()
     {
         // The current property id, initialised with a value equal to the last enum in Mesh2D:::Property enum values
-        static int currentPropertyId = static_cast<int>(meshkernel::Property::FaceBounds);
+        static int currentPropertyId = static_cast<int>(meshkernel::Property::LastValue);
 
         // Increment and return the current property id value.
         return ++currentPropertyId;
     }
 
-    std::map<int, std::shared_ptr<PropertyCalculator>> allocateDefaultPropertyCalculators()
+    std::map<int, std::shared_ptr<PredefinedPropertyCalculator>> allocatePredefinedPropertyCalculators()
     {
-        std::map<int, std::shared_ptr<PropertyCalculator>> propertyMap;
+        std::map<int, std::shared_ptr<PredefinedPropertyCalculator>> propertyMap;
 
         int propertyId = static_cast<int>(meshkernel::Property::Orthogonality);
         propertyMap.emplace(propertyId, std::make_shared<OrthogonalityPropertyCalculator>());
@@ -170,6 +169,9 @@ namespace meshkernelapi
 
         propertyId = static_cast<int>(meshkernel::Property::FaceBounds);
         propertyMap.emplace(propertyId, std::make_shared<Mesh2DFaceBoundsPropertyCalculator>());
+
+        propertyId = static_cast<int>(meshkernel::Property::Smoothness);
+        propertyMap.emplace(propertyId, std::make_shared<MeshSmoothnessPropertyCalculator>());
 
         return propertyMap;
     }
@@ -213,7 +215,7 @@ namespace meshkernelapi
             meshkernel::range_check::CheckOneOf<int>(projectionType, meshkernel::GetValidProjections(), "Projection");
             auto const projection = static_cast<meshkernel::Projection>(projectionType);
             meshKernelState.insert({meshKernelId, MeshKernelState(projection)});
-            meshKernelState[meshKernelId].m_propertyCalculators = allocateDefaultPropertyCalculators();
+            meshKernelState[meshKernelId].m_predefinedPropertyCalculators = allocatePredefinedPropertyCalculators();
         }
         catch (...)
         {
@@ -1037,6 +1039,13 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
+    MKERNEL_API int mkernel_mesh2d_get_mesh_smoothness_property_type(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::Property::Smoothness);
+        return lastExitCode;
+    }
+
     MKERNEL_API int mkernel_mesh1d_get_dimensions(int meshKernelId, Mesh1D& mesh1d)
     {
         lastExitCode = meshkernel::ExitCode::Success;
@@ -1356,8 +1365,9 @@ namespace meshkernelapi
                                                       meshkernel::ProjectionToString(targetProjection));
                 }
 
+                meshKernelState[meshKernelId].m_predefinedPropertyCalculators.clear();
+                meshKernelState[meshKernelId].m_predefinedPropertyCalculators = allocatePredefinedPropertyCalculators();
                 meshKernelState[meshKernelId].m_propertyCalculators.clear();
-                meshKernelState[meshKernelId].m_propertyCalculators = allocateDefaultPropertyCalculators();
             }
         }
         catch (...)
@@ -1810,6 +1820,84 @@ namespace meshkernelapi
             else
             {
                 throw meshkernel::MeshKernelError("Property not supported");
+            }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_get_predefined_property(int meshKernelId, int propertyId, const GeometryList& geometryList)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (const auto& mesh2d = meshKernelState.at(meshKernelId).m_mesh2d; mesh2d == nullptr || mesh2d->GetNumNodes() <= 0)
+            {
+                return lastExitCode;
+            }
+
+            if (!meshKernelState[meshKernelId].m_predefinedPropertyCalculators.contains(propertyId) ||
+                meshKernelState[meshKernelId].m_predefinedPropertyCalculators[propertyId] == nullptr)
+            {
+                throw meshkernel::MeshKernelError("The predefined property calculator does not exist.");
+            }
+
+            if (geometryList.num_coordinates < meshKernelState[meshKernelId].m_predefinedPropertyCalculators[propertyId]->Size(meshKernelState.at(meshKernelId)))
+            {
+                throw meshkernel::ConstraintError("Array size too small to store property values {} < {}.",
+                                                  geometryList.num_coordinates,
+                                                  meshKernelState[meshKernelId].m_predefinedPropertyCalculators[propertyId]->Size(meshKernelState.at(meshKernelId)));
+            }
+
+            if (meshKernelState[meshKernelId].m_predefinedPropertyCalculators[propertyId]->IsValid(meshKernelState[meshKernelId]))
+            {
+                meshKernelState[meshKernelId].m_predefinedPropertyCalculators[propertyId]->Calculate(meshKernelState[meshKernelId], geometryList);
+            }
+            else
+            {
+                throw meshkernel::MeshKernelError("Unknown predefined property");
+            }
+        }
+        catch (...)
+        {
+            lastExitCode = HandleException();
+        }
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_mesh2d_get_predefined_property_dimension(int meshKernelId, int propertyId, int& dimension)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        dimension = -1;
+
+        try
+        {
+            if (!meshKernelState.contains(meshKernelId))
+            {
+                throw meshkernel::MeshKernelError("The selected mesh kernel id does not exist.");
+            }
+
+            if (const auto& mesh2d = meshKernelState.at(meshKernelId).m_mesh2d; !mesh2d || mesh2d->GetNumNodes() <= 0)
+            {
+                return lastExitCode;
+            }
+
+            if (meshKernelState[meshKernelId].m_predefinedPropertyCalculators.contains(propertyId) && meshKernelState[meshKernelId].m_predefinedPropertyCalculators[propertyId] != nullptr)
+            {
+                dimension = meshKernelState[meshKernelId].m_predefinedPropertyCalculators[propertyId]->Size(meshKernelState[meshKernelId]);
+            }
+            else
+            {
+                throw meshkernel::MeshKernelError("Predefined property not supported");
             }
         }
         catch (...)

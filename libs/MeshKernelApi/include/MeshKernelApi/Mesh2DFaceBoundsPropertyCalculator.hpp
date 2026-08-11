@@ -32,25 +32,30 @@
 #include "MeshKernel/SampleInterpolator.hpp"
 
 #include "MeshKernelApi/GeometryList.hpp"
-#include "MeshKernelApi/PropertyCalculator.hpp"
+#include "MeshKernelApi/PredefinedPropertyCalculator.hpp"
 
 namespace meshkernelapi
 {
 
     /// @brief Calculator for the face bounds values for a mesh
-    class Mesh2DFaceBoundsPropertyCalculator : public PropertyCalculator
+    class Mesh2DFaceBoundsPropertyCalculator : public PredefinedPropertyCalculator
     {
     public:
         /// @brief Determine is the calculator can compute the desired results correctly.
         ///
-        /// This has a default of checking that the mesh2d is valid and the location is at faces
-        bool IsValid(const MeshKernelState& state, const meshkernel::Location location) const override;
+        /// This has a default of checking that the mesh2d is valid
+        bool IsValid(const MeshKernelState& state) const override;
 
         /// @brief Calculate the face bounds values for a mesh
-        void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const override;
+        void Calculate(const MeshKernelState& state, const GeometryList& geometryList) const override;
+
+        /// @brief Get the location at which the property can be evaluated
+        ///
+        /// Can be evaluated only at Location::Faces
+        meshkernel::Location EvaluationLocation() const override;
 
         /// @brief Determine the size of the face bounds array (for all faces) required
-        int Size(const MeshKernelState& state, const meshkernel::Location location) const override;
+        int Size(const MeshKernelState& state) const override;
     };
 
 } // namespace meshkernelapi

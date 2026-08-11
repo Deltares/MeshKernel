@@ -26,27 +26,27 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernelApi/Mesh2DFaceBoundsPropertyCalculator.hpp"
-#include "MeshKernelApi/PropertyCalculator.hpp"
+#include "MeshKernelApi/PredefinedPropertyCalculator.hpp"
 #include "MeshKernelApi/State.hpp"
 
 #include "MeshKernel/Mesh2DFaceBounds.hpp"
 
-bool meshkernelapi::Mesh2DFaceBoundsPropertyCalculator::IsValid(const MeshKernelState& state, const meshkernel::Location location) const
+bool meshkernelapi::Mesh2DFaceBoundsPropertyCalculator::IsValid(const MeshKernelState& state) const
 {
-    return state.m_mesh2d != nullptr && state.m_mesh2d->GetNumNodes() > 0 && location == meshkernel::Location::Faces;
+    return state.m_mesh2d != nullptr && state.m_mesh2d->GetNumNodes() > 0;
 }
 
-void meshkernelapi::Mesh2DFaceBoundsPropertyCalculator::Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const
+void meshkernelapi::Mesh2DFaceBoundsPropertyCalculator::Calculate(const MeshKernelState& state, const GeometryList& geometryList) const
 {
     if (geometryList.num_coordinates < static_cast<int>(meshkernel::constants::geometric::maximumNumberOfNodesPerFace * state.m_mesh2d->GetNumFaces()))
     {
         throw meshkernel::ConstraintError("GeometryList with wrong dimensions, {} must be greater than or equal to {}",
-                                          geometryList.num_coordinates, Size(state, location));
+                                          geometryList.num_coordinates, Size(state));
     }
 
     std::vector<meshkernel::Point> faceBounds(meshkernel::algo::Mesh2DFaceBounds::Compute(*state.m_mesh2d));
 
-    size_t size = static_cast<size_t>(Size(state, location));
+    size_t size = static_cast<size_t>(Size(state));
     std::span<double> xCoord(geometryList.coordinates_x, size);
     std::span<double> yCoord(geometryList.coordinates_y, size);
 
@@ -63,14 +63,12 @@ void meshkernelapi::Mesh2DFaceBoundsPropertyCalculator::Calculate(const MeshKern
     }
 }
 
-int meshkernelapi::Mesh2DFaceBoundsPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location) const
+int meshkernelapi::Mesh2DFaceBoundsPropertyCalculator::Size(const MeshKernelState& state) const
 {
-    int size = -1;
+    return meshkernel::constants::geometric::maximumNumberOfNodesPerFace * static_cast<int>(state.m_mesh2d->GetNumFaces());
+}
 
-    if (location == meshkernel::Location::Faces)
-    {
-        size = meshkernel::constants::geometric::maximumNumberOfNodesPerFace * static_cast<int>(state.m_mesh2d->GetNumFaces());
-    }
-
-    return size;
+meshkernel::Location meshkernelapi::Mesh2DFaceBoundsPropertyCalculator::EvaluationLocation() const
+{
+    return meshkernel::Location::Faces;
 }

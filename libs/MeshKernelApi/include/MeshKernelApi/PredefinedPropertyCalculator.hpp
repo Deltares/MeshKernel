@@ -1,6 +1,6 @@
 //---- GPL ---------------------------------------------------------------------
 //
-// Copyright (C)  Stichting Deltares, 2011-2025.
+// Copyright (C)  Stichting Deltares, 2011-2024.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -28,36 +28,37 @@
 #pragma once
 
 #include "MeshKernel/Definitions.hpp"
-#include "MeshKernel/Parameters.hpp"
-#include "MeshKernel/SampleInterpolator.hpp"
 
 #include "MeshKernelApi/GeometryList.hpp"
-#include "MeshKernelApi/PredefinedPropertyCalculator.hpp"
 
 namespace meshkernelapi
 {
 
-    /// @brief Calculator for the face circumcenter for a mesh
-    class FaceCircumcenterPropertyCalculator : public PredefinedPropertyCalculator
+    /// @brief Forward declaration of MeshKernelState
+    struct MeshKernelState;
+
+    /// @brief Base class for property calculators with a predefined (fixed) evaluation location
+    ///
+    /// PredefinedPropertyCalculator has a fixed location determined by EvaluationLocation().
+    class PredefinedPropertyCalculator
     {
     public:
-        /// @brief Determine is the calculator can compute the desired results correctly.
-        ///
-        /// This has a default of checking that the mesh2d is valid
-        bool IsValid(const MeshKernelState& state) const override;
-
-        /// @brief Calculate the face circumcentres for a mesh
-        ///
-        /// \note This calculator is for mesh faces only
-        void Calculate(const MeshKernelState& state, const GeometryList& geometryList) const override;
+        /// @brief Destructor
+        virtual ~PredefinedPropertyCalculator() = default;
 
         /// @brief Get the location at which the property can be evaluated
         ///
-        /// Can be evaluated only at Location::Faces
-        meshkernel::Location EvaluationLocation() const override;
+        /// Must return a specific location (Nodes, Edges, or Faces), not Unknown
+        virtual meshkernel::Location EvaluationLocation() const = 0;
 
-        /// @brief Determine the size of the face circumcentre vector required
-        int Size(const MeshKernelState& state) const override;
+        /// @brief Determine if the calculator can compute the desired results correctly
+        virtual bool IsValid(const MeshKernelState& state) const = 0;
+
+        /// @brief Calculate the property
+        virtual void Calculate(const MeshKernelState& state, const GeometryList& geometryList) const = 0;
+
+        /// @brief Determine the size of the vector required to store the calculated properties
+        virtual int Size(const MeshKernelState& state) const = 0;
     };
 
 } // namespace meshkernelapi
