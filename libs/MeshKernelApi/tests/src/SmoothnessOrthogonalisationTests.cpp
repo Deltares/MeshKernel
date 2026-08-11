@@ -206,17 +206,21 @@ TEST_F(CartesianApiTestFixture, GetSmoothnessMesh2D_OnMesh2D_ShouldGetSmoothness
     MakeMesh();
     auto const meshKernelId = GetMeshKernelId();
 
-    meshkernelapi::Mesh2D mesh2d{};
-    auto errorCode = mkernel_mesh2d_get_dimensions(meshKernelId, mesh2d);
+    int smoothnessPropertyId = -1;
+    auto errorCode = meshkernelapi::mkernel_mesh2d_get_mesh_smoothness_property_type(smoothnessPropertyId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    meshkernelapi::GeometryList edgeSmoothness;
-    std::vector<double> values(mesh2d.num_edges);
+    int dimension = -1;
+    errorCode = meshkernelapi::mkernel_mesh2d_get_predefined_property_dimension(meshKernelId, smoothnessPropertyId, dimension);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+
+    meshkernelapi::GeometryList edgeSmoothness{};
+    std::vector<double> values(dimension);
     edgeSmoothness.values = values.data();
-    edgeSmoothness.num_coordinates = mesh2d.num_edges;
+    edgeSmoothness.num_coordinates = dimension;
 
     // Execute
-    errorCode = mkernel_mesh2d_get_smoothness(meshKernelId, edgeSmoothness);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_predefined_property(meshKernelId, smoothnessPropertyId, edgeSmoothness);
 
     // Assert
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);

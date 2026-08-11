@@ -200,9 +200,8 @@ TEST(Mesh2DTests, Mesh2DGetPropertyTest)
     errorCode = meshkernelapi::mkernel_mesh2d_get_orthogonality_property_type(orthogonalityId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    int locationId = static_cast<int>(meshkernel::Location::Edges);
     int geometryListDimension = -1;
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, orthogonalityId, locationId, geometryListDimension);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_predefined_property_dimension(meshKernelId, orthogonalityId, geometryListDimension);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Execute
@@ -211,7 +210,7 @@ TEST(Mesh2DTests, Mesh2DGetPropertyTest)
     propertyvalues.geometry_separator = meshkernel::constants::missing::doubleValue;
     std::vector<double> values(geometryListDimension);
     propertyvalues.values = values.data();
-    errorCode = mkernel_mesh2d_get_property(meshKernelId, orthogonalityId, locationId, propertyvalues);
+    errorCode = mkernel_mesh2d_get_predefined_property(meshKernelId, orthogonalityId, propertyvalues);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
@@ -260,9 +259,8 @@ TEST(Mesh2DTests, Mesh2DGetCircumcenterPropertyTest)
     errorCode = meshkernelapi::mkernel_mesh2d_get_face_circumcenter_property_type(circumcenterId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    int locationId = static_cast<int>(meshkernel::Location::Faces);
     int geometryListDimension = -1;
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, circumcenterId, locationId, geometryListDimension);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_predefined_property_dimension(meshKernelId, circumcenterId, geometryListDimension);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Execute
@@ -273,7 +271,7 @@ TEST(Mesh2DTests, Mesh2DGetCircumcenterPropertyTest)
     std::vector<double> yCoords(geometryListDimension);
     propertyvalues.coordinates_x = xCoords.data();
     propertyvalues.coordinates_y = yCoords.data();
-    errorCode = mkernel_mesh2d_get_property(meshKernelId, circumcenterId, locationId, propertyvalues);
+    errorCode = mkernel_mesh2d_get_predefined_property(meshKernelId, circumcenterId, propertyvalues);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
@@ -291,16 +289,6 @@ TEST(Mesh2DTests, Mesh2DGetCircumcenterPropertyTest)
     EXPECT_NEAR(yCoords[2], 10.35, tolerance);
     EXPECT_NEAR(yCoords[3], 11.548206664537, tolerance);
     EXPECT_NEAR(yCoords[4], 15.241823309923, tolerance);
-
-    // Try to access the dimension for an invalid location id (nodes in this case) for circumcentres, should return non-success error code
-    int nodesLocation = static_cast<int>(meshkernel::Location::Nodes);
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, circumcenterId, nodesLocation, geometryListDimension);
-    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
-
-    // Try to access the dimension for an invalid location id (edges in this case) for circumcentres, should return non-success error code
-    int edgesLocation = static_cast<int>(meshkernel::Location::Edges);
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, circumcenterId, edgesLocation, geometryListDimension);
-    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
 }
 
 TEST(Mesh2DTests, Mesh2DGetEdgeLengthPropertyTest)
@@ -339,9 +327,8 @@ TEST(Mesh2DTests, Mesh2DGetEdgeLengthPropertyTest)
     errorCode = meshkernelapi::mkernel_mesh2d_get_edge_length_property_type(edgeLengthId);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
-    int locationId = static_cast<int>(meshkernel::Location::Edges);
     int geometryListDimension = -1;
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, edgeLengthId, locationId, geometryListDimension);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_predefined_property_dimension(meshKernelId, edgeLengthId, geometryListDimension);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Execute
@@ -350,7 +337,7 @@ TEST(Mesh2DTests, Mesh2DGetEdgeLengthPropertyTest)
     propertyvalues.geometry_separator = meshkernel::constants::missing::doubleValue;
     std::vector<double> edgeLengths(geometryListDimension);
     propertyvalues.values = edgeLengths.data();
-    errorCode = mkernel_mesh2d_get_property(meshKernelId, edgeLengthId, locationId, propertyvalues);
+    errorCode = mkernel_mesh2d_get_predefined_property(meshKernelId, edgeLengthId, propertyvalues);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Assert
@@ -369,16 +356,6 @@ TEST(Mesh2DTests, Mesh2DGetEdgeLengthPropertyTest)
     EXPECT_NEAR(edgeLengths[9], 8.10555365166, tolerance);
     EXPECT_NEAR(edgeLengths[10], 9.80204060387, tolerance);
     EXPECT_NEAR(edgeLengths[11], 7.3, tolerance);
-
-    // Try to access the dimension for an invalid location id (faces in this case) for edge length, should return non-success error code
-    int facesLocation = static_cast<int>(meshkernel::Location::Faces);
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, edgeLengthId, facesLocation, geometryListDimension);
-    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
-
-    // Try to access the dimension for an invalid location id (nodes in this case) for edge length, should return non-success error code
-    int nodesLocation = static_cast<int>(meshkernel::Location::Nodes);
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshKernelId, edgeLengthId, nodesLocation, geometryListDimension);
-    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
 }
 
 TEST(Mesh2DTests, GetPolygonsOfDeletedFaces_WithPolygon_ShouldGetPolygonOfDeletedFaces)
@@ -1784,8 +1761,7 @@ TEST(Mesh2DTests, Mesh2D_ShouldComputeNetlinkPolygon)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Execute
-    int edgesLocation = static_cast<int>(meshkernel::Location::Edges);
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshkernelId, propertyId, edgesLocation, dimension);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_predefined_property_dimension(meshkernelId, propertyId, dimension);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Each polygon has exactly 4 points
@@ -1800,7 +1776,7 @@ TEST(Mesh2DTests, Mesh2D_ShouldComputeNetlinkPolygon)
     polygons.coordinates_x = xCoords.data();
     polygons.coordinates_y = yCoords.data();
 
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property(meshkernelId, propertyId, edgesLocation, polygons);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_predefined_property(meshkernelId, propertyId, polygons);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     std::vector<double> expectedX{1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 2, 1, 1, 2, 1, 2, 2, 1, 1, 2, 2, 1, 3, 2, 2, 3, 2, 3, 3, 2, 2, 3, 3, 2, 0.5, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0.5, 0.5, 1.5, 1.5, 0.5, 0.5, 1.5, 1.5, 1.5, 1.5, 2.5, 2.5, 1.5, 1.5, 2.5, 2.5, 2.5, 2.5, 3, 3, 2.5, 2.5, 3, 3};
@@ -1814,16 +1790,6 @@ TEST(Mesh2DTests, Mesh2D_ShouldComputeNetlinkPolygon)
         EXPECT_NEAR(xCoords[i], expectedX[i], tolerance);
         EXPECT_NEAR(yCoords[i], expectedY[i], tolerance);
     }
-
-    // Try to access the dimension for an invalid location id (faces in this case) for netlink contours, should return non-success error code
-    int facesLocation = static_cast<int>(meshkernel::Location::Faces);
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshkernelId, propertyId, facesLocation, dimension);
-    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
-
-    // Try to access the dimension for an invalid location id (node in this case) for netlink contours, should return non-success error code
-    int nodesLocation = static_cast<int>(meshkernel::Location::Nodes);
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshkernelId, propertyId, nodesLocation, dimension);
-    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
 }
 
 TEST(Mesh2DTests, Mesh2D_ShouldComputeFaceBounds)
@@ -1840,8 +1806,7 @@ TEST(Mesh2DTests, Mesh2D_ShouldComputeFaceBounds)
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     // Execute
-    int facesLocation = static_cast<int>(meshkernel::Location::Faces);
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshkernelId, propertyId, facesLocation, dimension);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_predefined_property_dimension(meshkernelId, propertyId, dimension);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     ASSERT_EQ(dimension, 6 * 6); // 2x3 quadrilateral elements => 6 * 6 nodes (the maximum number of nodes an element can have is 6)
@@ -1855,7 +1820,7 @@ TEST(Mesh2DTests, Mesh2D_ShouldComputeFaceBounds)
     polygons.coordinates_x = xCoords.data();
     polygons.coordinates_y = yCoords.data();
 
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property(meshkernelId, propertyId, facesLocation, polygons);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_predefined_property(meshkernelId, propertyId, polygons);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 
     std::vector<double> expectedX{0.0, 1.0, 1.0, 0.0, -999.0, -999.0, 0.0, 1.0, 1.0, 0.0, -999.0, -999.0, 1.0, 2.0, 2.0, 1.0, -999.0, -999.0, 1.0, 2.0, 2.0, 1.0, -999.0, -999.0, 2.0, 3.0, 3.0, 2.0, -999.0, -999.0, 2.0, 3.0, 3.0, 2.0, -999.0, -999.0};
@@ -1868,14 +1833,4 @@ TEST(Mesh2DTests, Mesh2D_ShouldComputeFaceBounds)
         EXPECT_NEAR(xCoords[i], expectedX[i], tolerance);
         EXPECT_NEAR(yCoords[i], expectedY[i], tolerance);
     }
-
-    // Try to access the dimension for an invalid location id (faces in this case) for netlink contours, should return non-success error code
-    int edgesLocation = static_cast<int>(meshkernel::Location::Edges);
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshkernelId, propertyId, edgesLocation, dimension);
-    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
-
-    // Try to access the dimension for an invalid location id (node in this case) for netlink contours, should return non-success error code
-    int nodesLocation = static_cast<int>(meshkernel::Location::Nodes);
-    errorCode = meshkernelapi::mkernel_mesh2d_get_property_dimension(meshkernelId, propertyId, nodesLocation, dimension);
-    ASSERT_EQ(meshkernel::ExitCode::MeshKernelErrorCode, errorCode);
 }

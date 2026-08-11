@@ -28,8 +28,6 @@
 #pragma once
 
 #include "MeshKernel/Definitions.hpp"
-#include "MeshKernel/Parameters.hpp"
-#include "MeshKernel/SampleInterpolator.hpp"
 
 #include "MeshKernelApi/GeometryList.hpp"
 #include "MeshKernelApi/PredefinedPropertyCalculator.hpp"
@@ -37,26 +35,26 @@
 namespace meshkernelapi
 {
 
-    /// @brief Calculator for the face circumcenter for a mesh
-    class FaceCircumcenterPropertyCalculator : public PredefinedPropertyCalculator
+    /// @brief Calculator for the mesh smoothness (edge size ratio) for a mesh
+    class MeshSmoothnessPropertyCalculator : public PredefinedPropertyCalculator
     {
     public:
-        /// @brief Determine is the calculator can compute the desired results correctly.
+        /// @brief Determine if the calculator can compute the desired results correctly.
         ///
         /// This has a default of checking that the mesh2d is valid
         bool IsValid(const MeshKernelState& state) const override;
 
-        /// @brief Calculate the face circumcentres for a mesh
+        /// @brief Calculate the mesh smoothness for a mesh
         ///
-        /// \note This calculator is for mesh faces only
+        /// \note This calculator is for mesh edges only
         void Calculate(const MeshKernelState& state, const GeometryList& geometryList) const override;
 
         /// @brief Get the location at which the property can be evaluated
         ///
-        /// Can be evaluated only at Location::Faces
+        /// Can be evaluated only at Location::Edges
         meshkernel::Location EvaluationLocation() const override;
 
-        /// @brief Determine the size of the face circumcentre vector required
+        /// @brief Determine the size of the smoothness vector required
         int Size(const MeshKernelState& state) const override;
     };
 

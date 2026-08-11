@@ -32,27 +32,32 @@
 #include "MeshKernel/SampleInterpolator.hpp"
 
 #include "MeshKernelApi/GeometryList.hpp"
-#include "MeshKernelApi/PropertyCalculator.hpp"
+#include "MeshKernelApi/PredefinedPropertyCalculator.hpp"
 
 namespace meshkernelapi
 {
 
     /// @brief Calculator for the edge lengths for a mesh
-    class EdgeLengthPropertyCalculator : public PropertyCalculator
+    class EdgeLengthPropertyCalculator : public PredefinedPropertyCalculator
     {
     public:
         /// @brief Determine is the calculator can compute the desired results correctly.
         ///
-        /// This has a default of checking that the mesh2d is valid and the location is at edges
-        bool IsValid(const MeshKernelState& state, const meshkernel::Location location) const override;
+        /// This has a default of checking that the mesh2d is valid
+        bool IsValid(const MeshKernelState& state) const override;
 
         /// @brief Calculate the edge-length for a mesh
         ///
         /// \note This calculator is for mesh edges only
-        void Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const override;
+        void Calculate(const MeshKernelState& state, const GeometryList& geometryList) const override;
+
+        /// @brief Get the location at which the property can be evaluated
+        ///
+        /// Can be evaluated only at Location::Edges
+        meshkernel::Location EvaluationLocation() const override;
 
         /// @brief Determine the size of the edge-length vector required
-        int Size(const MeshKernelState& state, const meshkernel::Location location) const override;
+        int Size(const MeshKernelState& state) const override;
     };
 
 } // namespace meshkernelapi

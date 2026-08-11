@@ -31,6 +31,7 @@ set(SRC_LIST
   ${SRC_DIR}/Mesh2DFaceBoundsPropertyCalculator.cpp
   ${SRC_DIR}/NetlinkContourPolygonPropertyCalculator.cpp
   ${SRC_DIR}/OrthogonalityPropertyCalculator.cpp
+  ${SRC_DIR}/MeshSmoothnessPropertyCalculator.cpp
   ${SRC_DIR}/InterpolatedSamplePropertyCalculator.cpp
 )
 
@@ -64,11 +65,13 @@ set(
   ${DOMAIN_INC_DIR}/Mesh2D.hpp
   ${DOMAIN_INC_DIR}/MeshKernel.hpp
   ${DOMAIN_INC_DIR}/PropertyCalculator.hpp
+  ${DOMAIN_INC_DIR}/PredefinedPropertyCalculator.hpp
   ${DOMAIN_INC_DIR}/EdgeLengthPropertyCalculator.hpp
   ${DOMAIN_INC_DIR}/FaceCircumcenterPropertyCalculator.hpp
   ${DOMAIN_INC_DIR}/Mesh2DFaceBoundsPropertyCalculator.hpp
   ${DOMAIN_INC_DIR}/NetlinkContourPolygonPropertyCalculator.hpp
   ${DOMAIN_INC_DIR}/OrthogonalityPropertyCalculator.hpp
+  ${DOMAIN_INC_DIR}/MeshSmoothnessPropertyCalculator.hpp
   ${DOMAIN_INC_DIR}/InterpolatedSamplePropertyCalculator.hpp
   ${DOMAIN_INC_DIR}/State.hpp
   ${DOMAIN_INC_DIR}/Utils.hpp

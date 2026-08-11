@@ -26,7 +26,7 @@
 //------------------------------------------------------------------------------
 
 #include "MeshKernelApi/EdgeLengthPropertyCalculator.hpp"
-#include "MeshKernelApi/PropertyCalculator.hpp"
+#include "MeshKernelApi/PredefinedPropertyCalculator.hpp"
 #include "MeshKernelApi/State.hpp"
 
 #include "MeshKernel/Mesh2D.hpp"
@@ -35,18 +35,18 @@
 #include <algorithm>
 #include <functional>
 
-bool meshkernelapi::EdgeLengthPropertyCalculator::IsValid(const MeshKernelState& state, const meshkernel::Location location) const
+bool meshkernelapi::EdgeLengthPropertyCalculator::IsValid(const MeshKernelState& state) const
 {
-    return state.m_mesh2d != nullptr && state.m_mesh2d->GetNumNodes() > 0 && location == meshkernel::Location::Edges;
+    return state.m_mesh2d != nullptr && state.m_mesh2d->GetNumNodes() > 0;
 }
 
-void meshkernelapi::EdgeLengthPropertyCalculator::Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const
+void meshkernelapi::EdgeLengthPropertyCalculator::Calculate(const MeshKernelState& state, const GeometryList& geometryList) const
 {
 
     if (static_cast<size_t>(geometryList.num_coordinates) < state.m_mesh2d->GetNumEdges())
     {
         throw meshkernel::ConstraintError("GeometryList with wrong dimensions, {} must be greater than or equal to {}",
-                                          geometryList.num_coordinates, Size(state, location));
+                                          geometryList.num_coordinates, Size(state));
     }
 
     std::span<double> edgeLengths(geometryList.values, state.m_mesh2d->GetNumEdges());
@@ -73,14 +73,12 @@ void meshkernelapi::EdgeLengthPropertyCalculator::Calculate(const MeshKernelStat
     }
 }
 
-int meshkernelapi::EdgeLengthPropertyCalculator::Size(const MeshKernelState& state, const meshkernel::Location location) const
+int meshkernelapi::EdgeLengthPropertyCalculator::Size(const MeshKernelState& state) const
 {
-    int size = -1;
+    return static_cast<int>(state.m_mesh2d->GetNumEdges());
+}
 
-    if (location == meshkernel::Location::Edges)
-    {
-        size = static_cast<int>(state.m_mesh2d->GetNumEdges());
-    }
-
-    return size;
+meshkernel::Location meshkernelapi::EdgeLengthPropertyCalculator::EvaluationLocation() const
+{
+    return meshkernel::Location::Edges;
 }

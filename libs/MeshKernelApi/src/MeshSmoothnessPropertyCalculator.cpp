@@ -25,55 +25,51 @@
 //
 //------------------------------------------------------------------------------
 
-#include "MeshKernelApi/FaceCircumcenterPropertyCalculator.hpp"
-#include "MeshKernelApi/PredefinedPropertyCalculator.hpp"
+#include "MeshKernelApi/MeshSmoothnessPropertyCalculator.hpp"
 #include "MeshKernelApi/State.hpp"
 
-#include "MeshKernel/MeshFaceCenters.hpp"
+#include "MeshKernel/Constants.hpp"
+#include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/MeshSmoothness.hpp"
 
 #include <algorithm>
-#include <functional>
+#include <span>
 
-bool meshkernelapi::FaceCircumcenterPropertyCalculator::IsValid(const MeshKernelState& state) const
+bool meshkernelapi::MeshSmoothnessPropertyCalculator::IsValid(const MeshKernelState& state) const
 {
     return state.m_mesh2d != nullptr && state.m_mesh2d->GetNumNodes() > 0;
 }
 
-void meshkernelapi::FaceCircumcenterPropertyCalculator::Calculate(const MeshKernelState& state, const GeometryList& geometryList) const
+void meshkernelapi::MeshSmoothnessPropertyCalculator::Calculate(const MeshKernelState& state, const GeometryList& geometryList) const
 {
-
-    if (static_cast<size_t>(geometryList.num_coordinates) < state.m_mesh2d->GetNumFaces())
+    if (static_cast<size_t>(geometryList.num_coordinates) < state.m_mesh2d->GetNumEdges())
     {
         throw meshkernel::ConstraintError("GeometryList with wrong dimensions, {} must be greater than or equal to {}",
                                           geometryList.num_coordinates, Size(state));
     }
 
-    std::vector<meshkernel::Point> faceCircumcentres(state.m_mesh2d->GetNumFaces());
+    std::span<double> smoothness(geometryList.values, state.m_mesh2d->GetNumEdges());
+    meshkernel::MeshSmoothness::Compute(*state.m_mesh2d, smoothness);
 
-    std::span<double> xCoord(geometryList.coordinates_x, state.m_mesh2d->GetNumFaces());
-    std::span<double> yCoord(geometryList.coordinates_y, state.m_mesh2d->GetNumFaces());
-
-    meshkernel::algo::ComputeFaceCircumcenters(*state.m_mesh2d, faceCircumcentres);
-
-    for (size_t i = 0; i < faceCircumcentres.size(); ++i)
+    if (geometryList.coordinates_x != nullptr)
     {
-        xCoord[i] = faceCircumcentres[i].x;
-        yCoord[i] = faceCircumcentres[i].y;
+        std::span<double> xCoord(geometryList.coordinates_x, state.m_mesh2d->GetNumEdges());
+        std::ranges::fill(xCoord, meshkernel::constants::missing::doubleValue);
     }
 
-    if (geometryList.values != nullptr)
+    if (geometryList.coordinates_y != nullptr)
     {
-        std::span<double> values(geometryList.values, state.m_mesh2d->GetNumFaces());
-        std::ranges::fill(values, meshkernel::constants::missing::doubleValue);
+        std::span<double> yCoord(geometryList.coordinates_y, state.m_mesh2d->GetNumEdges());
+        std::ranges::fill(yCoord, meshkernel::constants::missing::doubleValue);
     }
 }
 
-int meshkernelapi::FaceCircumcenterPropertyCalculator::Size(const MeshKernelState& state) const
+int meshkernelapi::MeshSmoothnessPropertyCalculator::Size(const MeshKernelState& state) const
 {
-    return static_cast<int>(state.m_mesh2d->GetNumFaces());
+    return static_cast<int>(state.m_mesh2d->GetNumEdges());
 }
 
-meshkernel::Location meshkernelapi::FaceCircumcenterPropertyCalculator::EvaluationLocation() const
+meshkernel::Location meshkernelapi::MeshSmoothnessPropertyCalculator::EvaluationLocation() const
 {
-    return meshkernel::Location::Faces;
+    return meshkernel::Location::Edges;
 }
