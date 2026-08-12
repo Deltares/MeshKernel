@@ -754,6 +754,11 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_get_edges_location_type(int& type);
 
+        /// @brief Gets an int indicating the edge smoothness type
+        /// @param[out] type The int indicating the edge smoothness type
+        /// @returns Error code
+        MKERNEL_API int mkernel_get_edges_smoothness_type(int& type);
+
         /// @brief Gets pointer to error message.
         /// @param[out] errorMessage The pointer to the latest error message
         /// @returns Error code
