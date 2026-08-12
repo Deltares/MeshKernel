@@ -42,7 +42,7 @@ bool meshkernelapi::MeshSmoothnessPropertyCalculator::IsValid(const MeshKernelSt
 
 void meshkernelapi::MeshSmoothnessPropertyCalculator::Calculate(const MeshKernelState& state, const meshkernel::Location location, const GeometryList& geometryList) const
 {
-    if (static_cast<size_t>(geometryList.num_coordinates) < state.m_mesh2d->GetNumEdges())
+    if (geometryList.num_coordinates < static_cast<int>(state.m_mesh2d->GetNumEdges()))
     {
         throw meshkernel::ConstraintError("GeometryList with wrong dimensions, {} must be greater than or equal to {}",
                                           geometryList.num_coordinates, Size(state, location));
