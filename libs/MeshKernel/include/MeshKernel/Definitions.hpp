@@ -161,7 +161,7 @@ namespace meshkernel
         FaceCircumcenter,
         NetlinkContourPolygon,
         FaceBounds,
-        EdgeSmoothness,
+        Smoothness,
         // This must always be the last item in the list
         Count
     };

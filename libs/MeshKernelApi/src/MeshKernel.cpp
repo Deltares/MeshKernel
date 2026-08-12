@@ -172,7 +172,7 @@ namespace meshkernelapi
         propertyId = static_cast<int>(meshkernel::Property::FaceBounds);
         propertyMap.emplace(propertyId, std::make_shared<Mesh2DFaceBoundsPropertyCalculator>());
 
-        propertyId = static_cast<int>(meshkernel::Property::EdgeSmoothness);
+        propertyId = static_cast<int>(meshkernel::Property::Smoothness);
         propertyMap.emplace(propertyId, std::make_shared<MeshSmoothnessPropertyCalculator>());
 
         return propertyMap;
@@ -1044,7 +1044,7 @@ namespace meshkernelapi
     MKERNEL_API int mkernel_get_edges_smoothness_type(int& type)
     {
         lastExitCode = meshkernel::ExitCode::Success;
-        type = static_cast<int>(meshkernel::Property::EdgeSmoothness);
+        type = static_cast<int>(meshkernel::Property::Smoothness);
         return lastExitCode;
     }
 
