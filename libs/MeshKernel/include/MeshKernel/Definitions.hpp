@@ -157,11 +157,13 @@ namespace meshkernel
     enum class Property
     {
         Orthogonality = 0,
-        EdgeLength = 1,
-        FaceCircumcenter = 2,
-        NetlinkContourPolygon = 3,
-        FaceBounds = 4,
-        MeshSmoothness = 5
+        EdgeLength,
+        FaceCircumcenter,
+        NetlinkContourPolygon,
+        FaceBounds,
+        EdgeSmoothness,
+        // This must always be the last item in the list
+        Count
     };
 
     /// \brief Describe how the circumcentre should be computed.

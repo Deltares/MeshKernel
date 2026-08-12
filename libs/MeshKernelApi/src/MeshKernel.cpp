@@ -147,7 +147,7 @@ namespace meshkernelapi
     int GeneratePropertyId()
     {
         // The current property id, initialised with a value equal to the last enum in Mesh2D:::Property enum values
-        static int currentPropertyId = static_cast<int>(meshkernel::Property::FaceBounds);
+        static int currentPropertyId = static_cast<int>(meshkernel::Property::Count);
 
         // Increment and return the current property id value.
         return ++currentPropertyId;
@@ -172,7 +172,7 @@ namespace meshkernelapi
         propertyId = static_cast<int>(meshkernel::Property::FaceBounds);
         propertyMap.emplace(propertyId, std::make_shared<Mesh2DFaceBoundsPropertyCalculator>());
 
-        propertyId = static_cast<int>(meshkernel::Property::MeshSmoothness);
+        propertyId = static_cast<int>(meshkernel::Property::EdgeSmoothness);
         propertyMap.emplace(propertyId, std::make_shared<MeshSmoothnessPropertyCalculator>());
 
         return propertyMap;
@@ -1038,6 +1038,13 @@ namespace meshkernelapi
     {
         lastExitCode = meshkernel::ExitCode::Success;
         type = static_cast<int>(meshkernel::Property::FaceBounds);
+        return lastExitCode;
+    }
+
+    MKERNEL_API int mkernel_get_edges_smoothness_type(int& type)
+    {
+        lastExitCode = meshkernel::ExitCode::Success;
+        type = static_cast<int>(meshkernel::Property::EdgeSmoothness);
         return lastExitCode;
     }
 

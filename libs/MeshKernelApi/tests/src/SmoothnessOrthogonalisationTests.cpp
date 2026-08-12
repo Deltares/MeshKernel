@@ -216,9 +216,11 @@ TEST_F(CartesianApiTestFixture, GetSmoothnessMesh2D_OnMesh2D_ShouldGetSmoothness
     edgeSmoothness.num_coordinates = mesh2d.num_edges;
 
     // Execute
-    errorCode = mkernel_mesh2d_get_smoothness(meshKernelId, edgeSmoothness);
-
-    // Assert
+    int edgesLocation = static_cast<int>(meshkernel::Location::Edges);
+    int smoothnessId = -1;
+    errorCode = meshkernelapi::mkernel_get_edges_smoothness_type(smoothnessId);
+    ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
+    errorCode = meshkernelapi::mkernel_mesh2d_get_property(meshKernelId, smoothnessId, edgesLocation, edgeSmoothness);
     ASSERT_EQ(meshkernel::ExitCode::Success, errorCode);
 }
 
