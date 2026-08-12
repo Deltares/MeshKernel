@@ -53,8 +53,9 @@ void meshkernelapi::MeshSmoothnessPropertyCalculator::Calculate(const MeshKernel
 
     if (static_cast<meshkernel::UInt>(geometryList.num_coordinates) > state.m_mesh2d->GetNumEdges())
     {
+        const meshkernel::UInt count = static_cast<meshkernel::UInt>(geometryList.num_coordinates) - state.m_mesh2d->GetNumEdges();
         std::span<double> excessValues(geometryList.values, static_cast<size_t>(geometryList.num_coordinates));
-        std::ranges::fill(excessValues.subspan(state.m_mesh2d->GetNumEdges(), static_cast<meshkernel::UInt>(geometryList.num_coordinates)),
+        std::ranges::fill(excessValues.subspan(state.m_mesh2d->GetNumEdges(), count),
                           meshkernel::constants::missing::doubleValue);
     }
 
