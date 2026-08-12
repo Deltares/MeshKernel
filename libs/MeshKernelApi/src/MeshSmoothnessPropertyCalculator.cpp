@@ -51,15 +51,22 @@ void meshkernelapi::MeshSmoothnessPropertyCalculator::Calculate(const MeshKernel
     std::span<double> smoothness(geometryList.values, state.m_mesh2d->GetNumEdges());
     meshkernel::MeshSmoothness::Compute(*state.m_mesh2d, smoothness);
 
+    if (static_cast<meshkernel::UInt>(geometryList.num_coordinates) > state.m_mesh2d->GetNumEdges())
+    {
+        std::span<double> excessValues(geometryList.values, static_cast<size_t>(geometryList.num_coordinates));
+        std::ranges::fill(excessValues.subspan(state.m_mesh2d->GetNumEdges(), static_cast<meshkernel::UInt>(geometryList.num_coordinates)),
+                          meshkernel::constants::missing::doubleValue);
+    }
+
     if (geometryList.coordinates_x != nullptr)
     {
-        std::span<double> xCoord(geometryList.coordinates_x, state.m_mesh2d->GetNumEdges());
+        std::span<double> xCoord(geometryList.coordinates_x, static_cast<size_t>(geometryList.num_coordinates));
         std::ranges::fill(xCoord, meshkernel::constants::missing::doubleValue);
     }
 
     if (geometryList.coordinates_y != nullptr)
     {
-        std::span<double> yCoord(geometryList.coordinates_y, state.m_mesh2d->GetNumEdges());
+        std::span<double> yCoord(geometryList.coordinates_y, static_cast<size_t>(geometryList.num_coordinates));
         std::ranges::fill(yCoord, meshkernel::constants::missing::doubleValue);
     }
 }
