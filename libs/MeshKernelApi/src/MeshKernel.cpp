@@ -109,6 +109,7 @@
 #include "MeshKernelApi/FaceCircumcenterPropertyCalculator.hpp"
 #include "MeshKernelApi/InterpolatedSamplePropertyCalculator.hpp"
 #include "MeshKernelApi/Mesh2DFaceBoundsPropertyCalculator.hpp"
+#include "MeshKernelApi/MeshSmoothnessPropertyCalculator.hpp"
 #include "MeshKernelApi/NetlinkContourPolygonPropertyCalculator.hpp"
 #include "MeshKernelApi/OrthogonalityPropertyCalculator.hpp"
 #include "MeshKernelApi/PropertyCalculator.hpp"
@@ -170,6 +171,9 @@ namespace meshkernelapi
 
         propertyId = static_cast<int>(meshkernel::Property::FaceBounds);
         propertyMap.emplace(propertyId, std::make_shared<Mesh2DFaceBoundsPropertyCalculator>());
+
+        propertyId = static_cast<int>(meshkernel::Property::MeshSmoothness);
+        propertyMap.emplace(propertyId, std::make_shared<MeshSmoothnessPropertyCalculator>());
 
         return propertyMap;
     }
