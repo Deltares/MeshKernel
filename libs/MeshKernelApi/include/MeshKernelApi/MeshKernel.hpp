@@ -1556,9 +1556,8 @@ namespace meshkernelapi
         /// @brief Compute the global mesh with a given number of points along the longitude and latitude directions.
         /// @param[in] meshKernelId           The id of the mesh state
         /// @param [in] numLongitudeNodes The number of points along the longitude.
-        /// @param [in] numLatitudeNodes The number of points along the latitude (half hemisphere).
         /// @return Error code
-        MKERNEL_API int mkernel_mesh2d_make_global(int meshKernelId, int numLongitudeNodes, int numLatitudeNodes);
+        MKERNEL_API int mkernel_mesh2d_make_global(int meshKernelId, int numLongitudeNodes);
 
         /// @brief Generates a triangular mesh2d grid within a polygon. The size of the triangles is determined from the length of the polygon edges.
         /// @param[in] meshKernelId  The id of the mesh state

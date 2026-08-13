@@ -1928,7 +1928,7 @@ namespace meshkernelapi
         return lastExitCode;
     }
 
-    MKERNEL_API int mkernel_mesh2d_make_global(int meshKernelId, int numLongitudeNodes, int numLatitudeNodes)
+    MKERNEL_API int mkernel_mesh2d_make_global(int meshKernelId, int numLongitudeNodes)
     {
         lastExitCode = meshkernel::ExitCode::Success;
         try
@@ -1943,12 +1943,7 @@ namespace meshkernelapi
                 throw meshkernel::MeshKernelError("The number of longitude nodes cannot be 0");
             }
 
-            if (numLatitudeNodes == 0)
-            {
-                throw meshkernel::MeshKernelError("The number of latitude nodes cannot be 0");
-            }
-
-            const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshKernelState[meshKernelId].m_projection);
+            const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, meshKernelState[meshKernelId].m_projection);
             meshKernelUndoStack.Add(meshKernelState[meshKernelId].m_mesh2d->Join(*mesh), meshKernelId);
         }
         catch (...)

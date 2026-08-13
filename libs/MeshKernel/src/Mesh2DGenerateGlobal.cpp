@@ -112,22 +112,18 @@ void Mesh2DGenerateGlobal::AddFace(Mesh& mesh,
 }
 
 std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNodes,
-                                                      const UInt numLatitudeNodes,
                                                       const Projection projection)
 {
     if (numLongitudeNodes == 0)
     {
         throw MeshKernelError("The number of longitude nodes cannot be 0");
     }
-    if (numLatitudeNodes == 0)
-    {
-        throw MeshKernelError("The number of latitude nodes cannot be 0");
-    }
     if (projection != Projection::spherical && projection != Projection::sphericalAccurate)
     {
         throw MeshKernelError("Unsupported projection. The projection is not spherical nor sphericalAccurate");
     }
 
+    const UInt maximumNumberOfLatitudeNodes = numLongitudeNodes + numLongitudeNodes / 2;
     const double eastBoundaryTolerance = 32.0 * std::numeric_limits<double>::epsilon();
 
     std::array<Point, 5> points;
@@ -139,7 +135,10 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
     auto mesh2d = std::make_unique<Mesh2D>(projection);
     constexpr double minDiscretizationLength = 30000.0;
 
-    for (UInt i = 0; i < numLatitudeNodes; ++i)
+    bool continueLatitudeStepping = true;
+    UInt latitudeNodeCount = 0;
+
+    while (continueLatitudeStepping)
     {
         double deltaLatitude = DeltaLatitude(currentLatitude, deltaLongitude);
 
@@ -199,12 +198,14 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
             }
         }
 
-        if (generationCompleted)
+        if (generationCompleted || latitudeNodeCount >= maximumNumberOfLatitudeNodes)
         {
+            continueLatitudeStepping = false;
             break;
         }
 
         currentLatitude += deltaLatitude;
+        ++latitudeNodeCount;
     }
 
     const std::vector<Point> polygon;
