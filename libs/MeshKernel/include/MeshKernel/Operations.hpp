@@ -621,4 +621,32 @@ namespace meshkernel
         }
     }
 
+    /// @brief Concaenate vectors of vectors of points to a vector of points separated by the invalid point
+    template <typename Predicate>
+    std::vector<Point> ConcatenatePointVectors(const std::vector<std::vector<Point>>& pointVectors, Predicate predicate)
+    {
+
+        std::vector<Point> combinedPoints;
+        bool isFirst = true;
+
+        for (size_t count = 0; const auto& points : pointVectors)
+        {
+
+            if (predicate(count))
+            {
+                if (!isFirst)
+                {
+                    combinedPoints.push_back({constants::missing::doubleValue, constants::missing::doubleValue});
+                }
+
+                combinedPoints.insert(combinedPoints.end(), points.begin(), points.end());
+                isFirst = false;
+            }
+
+            ++count;
+        }
+
+        return combinedPoints;
+    }
+
 } // namespace meshkernel

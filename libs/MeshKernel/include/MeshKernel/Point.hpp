@@ -125,6 +125,14 @@ namespace meshkernel
 
             return !isInvalid;
         }
+
+        /// @brief Required by std::set
+        bool operator<(const Point& other) const
+        {
+            if (x != other.x)
+                return x < other.x;
+            return y < other.y;
+        }
     };
 
     /// @brief Compute the dot product of a point with itself.

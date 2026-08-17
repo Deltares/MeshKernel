@@ -36,6 +36,7 @@
 #include "MeshKernel/CasulliDeRefinement.hpp"
 #include "MeshKernel/CasulliRefinement.hpp"
 #include "MeshKernel/Mesh2D.hpp"
+#include "MeshKernel/MeshBoundaryExtractor.hpp"
 #include "MeshKernel/MeshEdgeLength.hpp"
 #include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/MeshRefinement.hpp"
@@ -2890,7 +2891,7 @@ TEST(MeshRefinement, MeshWithHole_ShouldGenerateInteriorBoundaryPolygonsForSixFa
     auto deleteMeshFacesUndoAction = mesh.DeleteMeshFacesInPolygon(boundaryWithMissingElements);
 
     // Compute interior boundary polygon points
-    std::vector<Point> boundaryNodes2 = mesh.ComputeInnerBoundaryPolygons();
+    std::vector<Point> boundaryNodes2 = MeshBoundaryExtractor::ExtractConcatenated(mesh, BoundarySelection::InteriorOnly);
 
     // The expected number of points include the land boundary points
     UInt expectedNumberOfNodes = 26;
@@ -2901,42 +2902,42 @@ TEST(MeshRefinement, MeshWithHole_ShouldGenerateInteriorBoundaryPolygonsForSixFa
     // interior set of polygons
     std::vector<double> expectedXPoints{
         95.0,
-        105.0,
         100.0,
+        105.0,
         95.0,
         constants::missing::doubleValue,
         85.0,
+        95.0,
+        95.0,
         85.0,
-        95.0,
-        95.0,
         85.0,
         constants::missing::doubleValue,
         80.0,
+        85.0,
         75.0,
-        85.0,
         80.0,
         constants::missing::doubleValue,
         120.0,
-        115.0,
         125.0,
+        115.0,
         120.0,
         constants::missing::doubleValue,
         125.0,
+        135.0,
+        135.0,
         125.0,
-        135.0,
-        135.0,
         125.0};
 
     std::vector<double> expectedYPoints{
         15.0,
-        15.0,
         0.0,
+        15.0,
         15.0,
         constants::missing::doubleValue,
         15.0,
-        25.0,
-        25.0,
         15.0,
+        25.0,
+        25.0,
         15.0,
         constants::missing::doubleValue,
         0.0,
@@ -2950,9 +2951,9 @@ TEST(MeshRefinement, MeshWithHole_ShouldGenerateInteriorBoundaryPolygonsForSixFa
         0.0,
         constants::missing::doubleValue,
         125.0,
-        135.0,
-        135.0,
         125.0,
+        135.0,
+        135.0,
         125.0};
 
     for (size_t i = 0; i < expectedXPoints.size(); ++i)
@@ -3014,10 +3015,6 @@ TEST(MeshRefinement, MeshWithHole_ShouldConstructMeshWithInteriorBoundaryPolygon
     auto node52 = mesh.FindNodeCloseToAPoint({105.0, 15.0}, 1.0e-5);
     auto node53 = mesh.FindNodeCloseToAPoint({95.0, 15.0}, 1.0e-5);
 
-    auto node61 = mesh.FindNodeCloseToAPoint({120.0, 0.0}, 1.0e-5);
-    auto node62 = mesh.FindNodeCloseToAPoint({125.0, 15.0}, 1.0e-5);
-    auto node63 = mesh.FindNodeCloseToAPoint({115.0, 15.0}, 1.0e-5);
-
     std::vector<meshkernel::Point> boundaryNodes;
 
     std::vector<Point> elementNodes1{{constants::missing::doubleValue, constants::missing::doubleValue},
@@ -3053,19 +3050,12 @@ TEST(MeshRefinement, MeshWithHole_ShouldConstructMeshWithInteriorBoundaryPolygon
                                      mesh.Node(node53),
                                      mesh.Node(node51)};
 
-    std::vector<Point> elementNodes6{{constants::missing::doubleValue, constants::missing::doubleValue},
-                                     mesh.Node(node61),
-                                     mesh.Node(node62),
-                                     mesh.Node(node63),
-                                     mesh.Node(node61)};
-
     // Combine all nodes to form a sequence of polygons
     boundaryNodes.insert(boundaryNodes.end(), elementNodes1.begin(), elementNodes1.end());
     boundaryNodes.insert(boundaryNodes.end(), elementNodes2.begin(), elementNodes2.end());
     boundaryNodes.insert(boundaryNodes.end(), elementNodes3.begin(), elementNodes3.end());
     boundaryNodes.insert(boundaryNodes.end(), elementNodes4.begin(), elementNodes4.end());
     boundaryNodes.insert(boundaryNodes.end(), elementNodes5.begin(), elementNodes5.end());
-    boundaryNodes.insert(boundaryNodes.end(), elementNodes6.begin(), elementNodes6.end());
 
     Polygons boundaryWithMissingElements(boundaryNodes, Projection::cartesian);
 
@@ -3078,75 +3068,59 @@ TEST(MeshRefinement, MeshWithHole_ShouldConstructMeshWithInteriorBoundaryPolygon
     // This should not fill in the holes in the mesh
     mesh2.Administrate();
 
-    // Get interior boundary polygon points
-    std::vector<Point> innerBoundaryPoints = mesh2.GetInnerBoundaryPolygons();
+    // After having computed an administrate, the deleted elememnts will have ebeen found and removed again
+    // by the illegal cells polygons.
+
+    auto node61 = mesh.FindNodeCloseToAPoint({120.0, 0.0}, 1.0e-5);
+    auto node62 = mesh.FindNodeCloseToAPoint({125.0, 15.0}, 1.0e-5);
+    auto node63 = mesh.FindNodeCloseToAPoint({115.0, 15.0}, 1.0e-5);
+
+    std::vector<Point> elementNodes6{{constants::missing::doubleValue, constants::missing::doubleValue},
+                                     mesh.Node(node61),
+                                     mesh.Node(node62),
+                                     mesh.Node(node63),
+                                     mesh.Node(node61)};
+
+    // Now delete another cell and compute another administrate.
+    // The original deletd cells should remain deleted, and with the addiitonal deleted cell.
+    Polygons boundaryWithMissingElements2(elementNodes6, Projection::cartesian);
+    auto deleteMeshFacesUndoAction2 = mesh2.DeleteMeshFacesInPolygon(boundaryWithMissingElements2);
+    mesh2.Administrate();
+
+    MeshBoundaryExtractor extractor;
+
+    auto interiorBoundaryPoints = extractor.ExtractConcatenated(mesh2, meshkernel::BoundarySelection::InteriorOnly);
 
     // The expected number of points, should not include any land boundary points
-    UInt expectedNumberOfNodes = 26;
+    constexpr UInt expectedNumberOfNodes = 26;
 
-    ASSERT_EQ(expectedNumberOfNodes, innerBoundaryPoints.size());
+    ASSERT_EQ(expectedNumberOfNodes, interiorBoundaryPoints.size());
 
     // The edge of one of the deleted elements lies on the boundary, so will be not be part of the
     // interior set of polygons
-    std::vector<double> expectedXPoints{
-        95.0,
-        105.0,
-        100.0,
-        95.0,
-        constants::missing::doubleValue,
-        85.0,
-        85.0,
-        95.0,
-        95.0,
-        85.0,
-        constants::missing::doubleValue,
-        80.0,
-        75.0,
-        85.0,
-        80.0,
-        constants::missing::doubleValue,
-        120.0,
-        115.0,
-        125.0,
-        120.0,
-        constants::missing::doubleValue,
-        125.0,
-        125.0,
-        135.0,
-        135.0,
-        125.0};
+    std::vector<double> expectedXPoints{95.0, 100.0, 105.0, 95.0,
+                                        constants::missing::doubleValue,
+                                        85.0, 95.0, 95.0, 85.0, 85.0,
+                                        constants::missing::doubleValue,
+                                        80.0, 85.0, 75.0, 80.0,
+                                        constants::missing::doubleValue,
+                                        120.0, 125.0, 115.0, 120.0,
+                                        constants::missing::doubleValue,
+                                        125.0, 135.0, 135.0, 125.0, 125.0};
 
-    std::vector<double> expectedYPoints{
-        15.0,
-        15.0,
-        0.0,
-        15.0,
-        constants::missing::doubleValue,
-        15.0,
-        25.0,
-        25.0,
-        15.0,
-        15.0,
-        constants::missing::doubleValue,
-        0.0,
-        15.0,
-        15.0,
-        0.0,
-        constants::missing::doubleValue,
-        0.0,
-        15.0,
-        15.0,
-        0.0,
-        constants::missing::doubleValue,
-        125.0,
-        135.0,
-        135.0,
-        125.0,
-        125.0};
+    std::vector<double> expectedYPoints{15.0, 0.0, 15.0, 15.0,
+                                        constants::missing::doubleValue,
+                                        15.0, 15.0, 25.0, 25.0, 15.0,
+                                        constants::missing::doubleValue,
+                                        0.0, 15.0, 15.0, 0.0,
+                                        constants::missing::doubleValue,
+                                        0.0, 15.0, 15.0, 0.0,
+                                        constants::missing::doubleValue,
+                                        125.0, 125.0, 135.0, 135.0, 125.0};
 
     for (size_t i = 0; i < expectedXPoints.size(); ++i)
     {
-        EXPECT_EQ(expectedXPoints[i], innerBoundaryPoints[i].x);
-        EXPECT_EQ(expectedYPoints[i], innerBoundaryPoints[i].y);
+        EXPECT_EQ(expectedXPoints[i], interiorBoundaryPoints[i].x);
+        EXPECT_EQ(expectedYPoints[i], interiorBoundaryPoints[i].y);
     }
 }

@@ -271,9 +271,9 @@ TEST(Mesh, MeshBoundaryToPolygon)
     ASSERT_NEAR(0.0, meshBoundaryPolygon[4].x, tolerance);
 
     ASSERT_NEAR(0.0, meshBoundaryPolygon[0].y, tolerance);
-    ASSERT_NEAR(5.0, meshBoundaryPolygon[1].y, tolerance);
+    ASSERT_NEAR(-5.0, meshBoundaryPolygon[1].y, tolerance);
     ASSERT_NEAR(0.0, meshBoundaryPolygon[2].y, tolerance);
-    ASSERT_NEAR(-5.0, meshBoundaryPolygon[3].y, tolerance);
+    ASSERT_NEAR(5.0, meshBoundaryPolygon[3].y, tolerance);
     ASSERT_NEAR(0.0, meshBoundaryPolygon[4].y, tolerance);
 }
 

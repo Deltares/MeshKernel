@@ -25,6 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
+#include <set>
 #include <span>
 
 #include "MeshKernel/Cartesian3DPoint.hpp"
