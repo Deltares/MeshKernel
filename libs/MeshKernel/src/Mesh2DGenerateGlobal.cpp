@@ -123,6 +123,8 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
         throw MeshKernelError("Unsupported projection. The projection is not spherical nor sphericalAccurate");
     }
 
+    // This is the maximum number of nodes in the latitude direction. This is more than 50% greater than
+    // is usualy encountered. It is only here only to ensure we exit the while loop
     const UInt maximumNumberOfLatitudeNodes = numLongitudeNodes + numLongitudeNodes / 2;
     const double eastBoundaryTolerance = 32.0 * std::numeric_limits<double>::epsilon();
 
@@ -198,6 +200,8 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
             }
         }
 
+        // Exit the while loop if we have reached the pole, or, in the very unlikely case,
+        // the number of latitude points is equal to or greater than the maximum.
         if (generationCompleted || latitudeNodeCount >= maximumNumberOfLatitudeNodes)
         {
             continueLatitudeStepping = false;
