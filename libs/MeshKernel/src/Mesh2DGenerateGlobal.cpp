@@ -124,7 +124,7 @@ std::unique_ptr<Mesh2D> Mesh2DGenerateGlobal::Compute(const UInt numLongitudeNod
     }
 
     // This is the maximum number of nodes in the latitude direction. This is more than 50% greater than
-    // is usualy encountered. It is only here only to ensure we exit the while loop
+    // is usually encountered. It is only here only to ensure we exit the while loop
     const UInt maximumNumberOfLatitudeNodes = numLongitudeNodes + numLongitudeNodes / 2;
     const double eastBoundaryTolerance = 32.0 * std::numeric_limits<double>::epsilon();
 
