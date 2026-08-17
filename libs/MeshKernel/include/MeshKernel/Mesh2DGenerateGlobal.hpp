@@ -42,7 +42,7 @@ namespace meshkernel
         /// @brief Compute the global mesh with a given number of points along the longitude direction.
         ///
         /// The number of points in the latitude direction depends on the number in the longitude.
-        /// The grid will extend with sufficient number of latitude points upto the pole.
+        /// The grid will extend with a sufficient number of latitude points to extend up to the pole.
         /// @param [in] numLongitudeNodes The number of points along the longitude.
         /// @param [in] projection The projection to be used.
         /// @return A unique pointer to the generated Mesh2D representing the global grid.
