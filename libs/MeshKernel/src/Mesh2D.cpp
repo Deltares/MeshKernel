@@ -1514,16 +1514,10 @@ std::vector<meshkernel::UInt> Mesh2D::SortedFacesAroundNode(UInt node) const
 
 std::vector<meshkernel::Point> Mesh2D::ComputeBoundaryPolygons(const std::vector<Point>& polygonNodes)
 {
-    Administrate();
-    auto [boundaryPoints, isEnclosingBoundary] = GetAllBoundaryPolygons(polygonNodes);
-    return boundaryPoints;
-}
-
-std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> Mesh2D::GetAllBoundaryPolygons(const std::vector<Point>& polygonNodes)
-{
     const Polygon polygon(polygonNodes, m_projection);
 
     MeshBoundaryExtractor meshBoundaryExtractor;
+    Administrate();
 
     // The use of std::tie instead of a structured binding is due to limitations in the macos compiler
     // The compiler error "error: capturing a structured binding is not yet supported in OpenMP"
@@ -1542,17 +1536,13 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> Mesh2D::GetAllBoun
             return true;
         };
 
-        return {ConcatenatePointVectors(boundaryPoints, alwaysTrue), isEnclosingBoundary};
+        return ConcatenatePointVectors(boundaryPoints, alwaysTrue);
     }
 
-    std::vector<bool> containedIsEnclosingBoundary;
-
-    // NOTE: addNonEmpty lambda also updates containedIsEnclosingBoundary
-    auto addNonEmpty = [&boundaryPoints, &isEnclosingBoundary, &containedIsEnclosingBoundary](size_t idx) mutable
+    auto addNonEmpty = [&boundaryPoints](size_t idx)
     {
         if (boundaryPoints[idx].size() > 0)
         {
-            containedIsEnclosingBoundary.push_back(isEnclosingBoundary[idx]);
             return true;
         }
 
@@ -1561,7 +1551,7 @@ std::tuple<std::vector<meshkernel::Point>, std::vector<bool>> Mesh2D::GetAllBoun
 
     std::vector<Point> containedBoundaryPoints = ConcatenatePointVectors(boundaryPoints, addNonEmpty);
 
-    return {containedBoundaryPoints, containedIsEnclosingBoundary};
+    return containedBoundaryPoints;
 }
 
 std::vector<meshkernel::Point> Mesh2D::RemoveOuterDomainBoundaryPolygon(const std::vector<Point>& polygonNodes) const

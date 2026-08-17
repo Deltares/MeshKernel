@@ -72,6 +72,17 @@ namespace meshkernel
             double angle;       ///< Angle of the edge pointing away from the pivot node
         };
 
+        /// @brief Determine if a polygon is comprised of multiple polygons intersecting at the control points only
+        ///
+        /// @note This currently works only for polygons that intersect at the control points
+        static bool IsMultiPolygon(std::span<const Point> boundary);
+
+        /// @brief Split a single polygon line comprised of multiple polygons into separate polygons.
+        ///
+        /// @note This currently works only for polygons that intersect at the control points
+        static std::tuple<std::vector<std::vector<Point>>, std::vector<UInt>> SplitMultiplePolygons(std::span<const Point> boundary,
+                                                                                                    std::span<const UInt> elementIds);
+
         /// @brief Ensure the angle lies between 0 .. 2 pi.
         static double NormalizeAngle(double angle);
 

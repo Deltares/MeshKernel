@@ -30,6 +30,7 @@
 #include <cmath>
 #include <numbers>
 #include <ranges>
+#include <set>
 
 #include "MeshKernel/Operations.hpp"
 
@@ -44,8 +45,6 @@ std::vector<meshkernel::Point> meshkernel::MeshBoundaryExtractor::ExtractConcate
     std::vector<std::vector<Point>> boundarySequences;
     std::vector<bool> isExterior;
     std::tie(boundarySequences, isExterior) = Extract(mesh);
-
-    std::vector<Point> allPoints;
 
     auto isBoundarySelection = [boundaryType, &isExterior](size_t idx)
     {
@@ -75,6 +74,84 @@ std::tuple<std::vector<std::vector<meshkernel::Point>>, std::vector<bool>> meshk
 
     FindBoundaryPolygons(meshNodes, mesh.Edges(), mesh.m_edgesFaces, allBoundaryPolygons, allTouchedFaces);
     return SeparateAndDetermineExternality(mesh, polygon, allBoundaryPolygons, allTouchedFaces);
+}
+
+bool meshkernel::MeshBoundaryExtractor::IsMultiPolygon(std::span<const Point> boundary)
+{
+
+    if (boundary.size() < 4)
+    {
+        return false;
+    }
+
+    std::set<Point> uniquePoints;
+
+    // Since polygons are always closed (first = last) then start from 1 after the first
+    for (size_t i = 1; i < boundary.size(); ++i)
+    {
+        if (!uniquePoints.insert(boundary[i]).second)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+std::tuple<std::vector<std::vector<meshkernel::Point>>, std::vector<meshkernel::UInt>> meshkernel::MeshBoundaryExtractor::SplitMultiplePolygons(std::span<const Point> boundaryPoints,
+                                                                                                                                                std::span<const UInt> elementIds)
+{
+    std::vector<std::vector<Point>> completedPolygons;
+    std::vector<UInt> firstElementIds;
+
+    std::vector<std::pair<Point, int>> pointFaceStack;
+    // Maps a point to its current index in the pointFaceStack
+    std::map<Point, size_t> activePoints;
+
+    for (size_t i = 0; i < boundaryPoints.size(); ++i)
+    {
+        const Point& currentPoint = boundaryPoints[i];
+
+        if (!currentPoint.IsValid())
+        {
+            continue;
+        }
+
+        // Check if this node closes a loop with a previously visited point
+        if (auto it = activePoints.find(currentPoint); it != activePoints.end())
+        {
+            size_t loopStartIndex = it->second;
+
+            std::vector<Point> subPolygon;
+            subPolygon.reserve((pointFaceStack.size() - loopStartIndex) + 1);
+
+            int firstEdgeId = pointFaceStack[loopStartIndex].second;
+
+            for (size_t j = loopStartIndex; j < pointFaceStack.size(); ++j)
+            {
+                subPolygon.push_back(pointFaceStack[j].first);
+                activePoints.erase(pointFaceStack[j].first);
+            }
+
+            // close the polygon
+            if (!subPolygon.empty())
+            {
+                subPolygon.push_back(subPolygon.front());
+            }
+
+            completedPolygons.push_back(subPolygon);
+            firstElementIds.push_back(firstEdgeId);
+
+            pointFaceStack.resize(loopStartIndex);
+        }
+
+        int currentEdge = (i < elementIds.size()) ? elementIds[i] : -1;
+
+        activePoints[currentPoint] = pointFaceStack.size();
+        pointFaceStack.emplace_back(currentPoint, currentEdge);
+    }
+
+    return {completedPolygons, firstElementIds};
 }
 
 void meshkernel::MeshBoundaryExtractor::ClipToConstrainingPolygon(const Polygon& polygon, std::vector<Point>& nodes)
@@ -130,7 +207,7 @@ void meshkernel::MeshBoundaryExtractor::Append(const Polygon& polygon,
                                                std::vector<std::vector<Point>>& separatedBoundaryPolygons)
 {
 
-    if (auto [area, centreOfMass] = ComputePolygonAreaAndCentre(boundaryPolygon, projection); area < 0.0)
+    if (auto [area, centreOfMass, orientation] = Polygon::FaceAreaAndCenterOfMass(boundaryPolygon, projection); orientation == TraversalDirection::Clockwise)
     {
         std::ranges::reverse(boundaryPolygon);
     }
@@ -214,7 +291,7 @@ void meshkernel::MeshBoundaryExtractor::FindAllBoundarEdges(const std::vector<Po
 
         if (edgesFaces[count][1] != constants::missing::uintValue || !IsValidEdge(edges[count]))
         {
-            // Edge is either invalid or not on boundaryy
+            // Edge is either invalid or not on boundary
             continue;
         }
 
@@ -313,7 +390,7 @@ void meshkernel::MeshBoundaryExtractor::FindBoundaryPolygons(const std::vector<P
         double dy = nodes[currentNodeIndex].y - nodes[prevNodeIndex].y;
         double incomingAngle = NormalizeAngle(std::atan2(dy, dx));
 
-        // Polygon until we find the start node, making a closed boundary polygon
+        // Loop until we find the start node, making a closed boundary polygon
         while (currentNodeIndex != edges[count].first)
         {
             currentNodes.push_back(nodes[currentNodeIndex]);
