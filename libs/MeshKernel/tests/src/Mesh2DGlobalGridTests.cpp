@@ -40,8 +40,7 @@ TEST(GlobalGridTest, Mesh2DGenerateGlobalCompute_ShouldGenerateMesh)
 {
     // Execute
     constexpr meshkernel::UInt numLongitudeNodes = 19;
-    constexpr meshkernel::UInt numLatitudeNodes = 25;
-    const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshkernel::Projection::spherical);
+    const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, meshkernel::Projection::spherical);
 
     // Assert
     ASSERT_EQ(1225, mesh->GetNumValidEdges());
@@ -86,8 +85,7 @@ TEST(GlobalGridTest, Mesh2DGenerateGlobalCompute_OnInvalidProjection_ShouldThrow
 {
     // Assert
     const meshkernel::UInt numLongitudeNodes = 19;
-    const meshkernel::UInt numLatitudeNodes = 25;
-    EXPECT_THROW(meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshkernel::Projection::cartesian), meshkernel::MeshKernelError);
+    EXPECT_THROW(meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, meshkernel::Projection::cartesian), meshkernel::MeshKernelError);
 }
 
 TEST(GlobalGridTest, GlobalMeshWithPoles)
@@ -95,8 +93,7 @@ TEST(GlobalGridTest, GlobalMeshWithPoles)
     // Execute
 
     constexpr meshkernel::UInt numLongitudeNodes = 21;
-    constexpr meshkernel::UInt numLatitudeNodes = 20;
-    const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, numLatitudeNodes, meshkernel::Projection::spherical);
+    const auto mesh = meshkernel::Mesh2DGenerateGlobal::Compute(numLongitudeNodes, meshkernel::Projection::spherical);
 
     std::vector<meshkernel::Point> polyNodes{{-80, -27}, {80, -27}, {80, 27}, {-80, 27}, {-80, -27}};
     [[maybe_unused]] meshkernel::Polygons polygon(polyNodes, meshkernel::Projection::spherical);

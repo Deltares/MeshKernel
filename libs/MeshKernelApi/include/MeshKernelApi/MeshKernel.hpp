@@ -1553,12 +1553,14 @@ namespace meshkernelapi
         /// @returns Error code
         MKERNEL_API int mkernel_mesh2d_is_valid_property(int meshKernelId, const int propertyId, const int locationId, bool& propertyIsAvailable);
 
-        /// @brief Compute the global mesh with a given number of points along the longitude and latitude directions.
-        /// @param[in] meshKernelId           The id of the mesh state
-        /// @param [in] numLongitudeNodes The number of points along the longitude.
-        /// @param [in] numLatitudeNodes The number of points along the latitude (half hemisphere).
+        /// @brief Compute the global mesh with a given number of points along the longitude direction.
+        ///
+        /// The number of points in the latitude direction depends on the number in the longitude.
+        /// The grid will extend with a sufficient number of latitude points to extend up to the pole.
+        /// @param [in] meshKernelId      The id of the mesh state
+        /// @param [in] numLongitudeNodes The number of points in the longitude direction.
         /// @return Error code
-        MKERNEL_API int mkernel_mesh2d_make_global(int meshKernelId, int numLongitudeNodes, int numLatitudeNodes);
+        MKERNEL_API int mkernel_mesh2d_make_global(int meshKernelId, int numLongitudeNodes);
 
         /// @brief Generates a triangular mesh2d grid within a polygon. The size of the triangles is determined from the length of the polygon edges.
         /// @param[in] meshKernelId  The id of the mesh state
