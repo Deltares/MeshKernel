@@ -1557,8 +1557,8 @@ namespace meshkernelapi
         ///
         /// The number of points in the latitude direction depends on the number in the longitude.
         /// The grid will extend with a sufficient number of latitude points to extend up to the pole.
-        /// @param[in] meshKernelId           The id of the mesh state
-        /// @param [in] numLongitudeNodes The number of points along the longitude.
+        /// @param [in] meshKernelId      The id of the mesh state
+        /// @param [in] numLongitudeNodes The number of points in the longitude direction.
         /// @return Error code
         MKERNEL_API int mkernel_mesh2d_make_global(int meshKernelId, int numLongitudeNodes);
 
