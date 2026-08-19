@@ -694,3 +694,45 @@ TEST_P(CurvilinearGridUniformTests, parameters)
     ASSERT_EQ(numValidNodes, expectedNumNodes);
 }
 INSTANTIATE_TEST_SUITE_P(curvilinearGridDeletionTests, CurvilinearGridUniformTests, ::testing::ValuesIn(CurvilinearGridUniformTests::GetData()));
+
+
+TEST(CurvilinearGridUniform, WithAngle)
+{
+
+    double originX = 10.0;
+    double originY = 10.0;
+    double blockSizeX= 1.0;
+    double blockSizeY = 0.5;
+    // double upperRightX = 1.283012701892219e+01;
+    // double upperRightY = 1.509807621135332e+01;
+
+
+    double upperRightX = -0.7503;
+    double upperRightY = 19.2242;
+    // double upperRightX = 6.8579;
+    // double upperRightY = 14.8570;
+    double angle = 90.0;
+
+    // double upperRightX = 12.3963;
+    // double upperRightY = 14.1524;
+    // double angle = 30.0;
+
+
+
+
+    // double originX = 0.0;
+    // double originY = 0.0;
+    // double blockSizeX= 1.0;
+    // double blockSizeY = 0.5;
+    // double upperRightX = 0.0;
+    // double upperRightY = 5.0 * 1.414213562373095;
+    // double angle = 45.0;
+
+
+    // Execution
+    CurvilinearGridRectangular curvilinearGridRectangular(Projection::spherical);
+    auto mesh = curvilinearGridRectangular.Compute  (originX, originY, blockSizeX, blockSizeY, upperRightX, upperRightY, angle);
+
+    meshkernel::Print (mesh->ComputeNodes(), mesh->ComputeEdges ());
+
+}

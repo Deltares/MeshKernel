@@ -371,4 +371,146 @@ namespace meshkernel
         throw NotImplementedError("Projection value {} not supported", static_cast<int>(m_projection));
     }
 
+    Point CurvilinearGridRectangular::RotateUpperRightByAngle (const double originX, const double originY, const double upperRightX, const double  upperRightY, const double angle) const
+    {
+
+        const double cosA = std::cos(angle * constants::conversion::degToRad);
+        const double sinA = std::sin(angle * constants::conversion::degToRad);
+
+        if (m_projection == Projection::cartesian)
+        {
+            Point translated (upperRightX - originX, upperRightY - originY);
+            return {cosA * translated.x - sinA * translated.y, sinA * translated.x + cosA * translated.y};
+        }
+        else
+        {
+            Cartesian3DPoint rotationPoint = SphericalToCartesian3D ({originX, originY});
+            Cartesian3DPoint point3d = SphericalToCartesian3D ({upperRightX, upperRightY});
+
+            // Normalize the rotation axis (Rodrigues' formula requires a unit vector)
+            // Points are on Earth's surface, so the magnitude is earth_radius
+            Cartesian3DPoint k = {rotationPoint.x / constants::geometric::earth_radius,
+                                  rotationPoint.y / constants::geometric::earth_radius,
+                                  rotationPoint.z / constants::geometric::earth_radius};
+
+            // std::cout << "rotationPoint " << rotationPoint.x << ", " << rotationPoint.y << ", " << rotationPoint.z << std::endl;
+            // std::cout << "point3d       " << point3d.x << ", " << point3d.y << ", " << point3d.z << std::endl;
+            // std::cout << "k (unit axis) " << k.x << ", " << k.y << ", " << k.z << std::endl;
+
+            // k · v
+            double dot = k.x * point3d.x + k.y * point3d.y + k.z * point3d.z;
+
+            // k × v
+            Cartesian3DPoint crossProd = VectorProduct(k, point3d);
+            // std::cout << "crossProd    " << crossProd.x << ", " << crossProd.y << ", " << crossProd.z << std::endl;
+
+            // Rodrigues' formula: v_rot = v·cos(θ) + (k × v)·sin(θ) + k·(k·v)·(1 - cos(θ))
+            Cartesian3DPoint rotatedPoint3d = {point3d.x * cosA + crossProd.x * sinA + k.x * dot * (1.0 - cosA),
+                                               point3d.y * cosA + crossProd.y * sinA + k.y * dot * (1.0 - cosA),
+                                               point3d.z * cosA + crossProd.z * sinA + k.z * dot * (1.0 - cosA)};
+
+            // std::cout << "rotatedPoint3d " << rotatedPoint3d.x << ", " << rotatedPoint3d.y << ", " << rotatedPoint3d.z << std::endl;
+
+            Point pointOnSphere = Cartesian3DToSpherical (rotatedPoint3d, upperRightX);
+
+            std::cout << "pointOnSphere "<< pointOnSphere.x << ",  " << pointOnSphere.y << std::endl;
+
+            return pointOnSphere;
+        }
+
+    }
+
+    lin_alg::Matrix<Point> CurvilinearGridRectangular::ComputeSpherical2(const int numColumns,
+                                                                        const int numRows,
+                                                                        const double originX,
+                                                                        const double originY,
+                                                                        const double angle,
+                                                                        const double blockSizeX,
+                                                                        const double blockSizeY) const
+    {
+        lin_alg::Matrix<Point> result = ComputeCartesian(numColumns,
+                                                         numRows,
+                                                         originX,
+                                                         originY,
+                                                         0.0 * angle,
+                                                         blockSizeX,
+                                                         blockSizeY);
+
+        const auto numM = result.cols();
+        const auto numN = result.rows();
+
+        for (Eigen::Index n = 0; n < numN; ++n)
+        {
+
+            for (Eigen::Index m = 0; m < numM; ++m)
+            {
+                result (n,m) = RotateUpperRightByAngle (originX, originY, result (n,m).x, result (n,m).y, angle);
+            }
+        }
+
+
+        return result;
+    }
+
+
+    std::unique_ptr<CurvilinearGrid> CurvilinearGridRectangular::Compute(const double originX,
+                                                                         const double originY,
+                                                                         const double blockSizeX,
+                                                                         const double blockSizeY,
+                                                                         const double upperRightX,
+                                                                         const double upperRightY,
+                                                                         const double angle) const
+    {
+        range_check::CheckGreater(blockSizeX, 0.0, "X block size");
+        range_check::CheckGreater(blockSizeY, 0.0, "Y block size");
+
+        Point rotatedUpperRight = RotateUpperRightByAngle (originX, originY, upperRightX, upperRightY, -angle);
+
+        std::cout << "rotated distance: " << rotatedUpperRight.x - originX << ",  " << rotatedUpperRight.y - originY << std::endl;
+        std::cout << "rotated deltas  : " << (rotatedUpperRight.x - originX) / blockSizeX << ",  " << (rotatedUpperRight.y - originY) / blockSizeY << std::endl;
+
+
+        const int numColumns = static_cast<int>(std::ceil((rotatedUpperRight.x - originX) / blockSizeX));
+
+        if (numColumns <= 0)
+        {
+            throw AlgorithmError("Number of columns cannot be <= 0");
+        }
+
+        std::cout << "rotatedUpperRight "<< rotatedUpperRight.x << ", " << rotatedUpperRight.y << std::endl;
+
+        const int numRows = static_cast<int>(std::ceil((rotatedUpperRight.y - originY) / blockSizeY));
+        // const int numRows = ComputeNumRows(originY, rotatedUpperRight.y, blockSizeX, blockSizeY, m_projection);
+        std::cout << "num rows, cols "<< numRows << "  " << numColumns << "  "<< originX << ", " << originY << " "<< rotatedUpperRight.x << ", " << rotatedUpperRight.y << std::endl;
+
+        if (m_projection == Projection::spherical)
+        {
+            // double deltax = (rotatedUpperRight.x - originX) / blockSizeX;
+            // double bsx =
+            auto grid = std::make_unique<CurvilinearGrid>(ComputeSpherical(numColumns,
+                                                                           numRows,
+                                                                           originX,
+                                                                           originY,
+                                                                           angle,
+                                                                           blockSizeX,
+                                                                           blockSizeY),
+                                                          m_projection);
+
+            return grid;
+        }
+        if (m_projection == Projection::cartesian)
+        {
+            auto grid = std::make_unique<CurvilinearGrid>(ComputeCartesian(numColumns,
+                                                                           numRows,
+                                                                           originX,
+                                                                           originY,
+                                                                           angle,
+                                                                           blockSizeX,
+                                                                           blockSizeY),
+                                                          m_projection);
+            return grid;
+        }
+        throw NotImplementedError("Projection value {} not supported", static_cast<int>(m_projection));
+    }
+
 } // namespace meshkernel
