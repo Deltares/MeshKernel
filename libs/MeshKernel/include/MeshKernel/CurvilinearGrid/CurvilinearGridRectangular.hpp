@@ -27,8 +27,8 @@
 
 #pragma once
 
-#include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Cartesian3DPoint.hpp>
+#include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
 
@@ -100,9 +100,9 @@ namespace meshkernel
                                                  const double angle) const;
 
     private:
-
-        Point RotateUpperRightByAngle (const double originX, const double originY, const double upperRightX, const double  upperRightY, const double angle) const;
-
+        Point RotateByAngle(const double originX, const double originY,
+                            const double upperRightX, const double upperRightY,
+                            const double cosAngle, const double sinAngle) const;
 
         /// @brief Compute a rectangular curvilinear grid on cartesian coordinates.
         /// @param[in] numColumns The number of columns in x direction
@@ -141,13 +141,13 @@ namespace meshkernel
                                                        const double blockSizeX,
                                                        const double blockSizeY);
 
-        lin_alg::Matrix<Point> ComputeSpherical2(const int numColumns,
-                                                       const int numRows,
-                                                       const double originX,
-                                                       const double originY,
-                                                       const double angle,
-                                                       const double blockSizeX,
-                                                       const double blockSizeY) const;
+        lin_alg::Matrix<Point> ComputeSphericalOnExtension(const int numColumns,
+                                                           const int numRows,
+                                                           const double originX,
+                                                           const double originY,
+                                                           const double angle,
+                                                           const double blockSizeX,
+                                                           const double blockSizeY) const;
 
         /// @brief Compute the adjusted latitude for keeping an aspect ratio of 1, considering the spherical coordinates
         /// @param[in] blockSize The grid block size in y dimension
