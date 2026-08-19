@@ -694,3 +694,43 @@ TEST_P(CurvilinearGridUniformTests, parameters)
     ASSERT_EQ(numValidNodes, expectedNumNodes);
 }
 INSTANTIATE_TEST_SUITE_P(curvilinearGridDeletionTests, CurvilinearGridUniformTests, ::testing::ValuesIn(CurvilinearGridUniformTests::GetData()));
+
+TEST(CurvilinearGridUniform, CurvilinearGridRectangularOnExtension_WithAngle_ShouldComputeCurvilinearGrid)
+{
+
+    double originX = 10.0;
+    double originY = 10.0;
+    double blockSizeX = 2.5;
+    double blockSizeY = 2.5;
+    double upperRightX = 13.3295;
+    double upperRightY = 23.5238;
+    double angle = 30.0;
+
+    // Execution
+    CurvilinearGridRectangular curvilinearGridRectangular(Projection::spherical);
+    auto mesh = curvilinearGridRectangular.Compute(originX, originY, blockSizeX, blockSizeY, upperRightX, upperRightY, angle);
+
+    auto nodes = mesh->ComputeNodes();
+
+    std::vector<double> expectedX{10.0, 12.16888013786, 14.3468065085138, 16.5359263214781, 18.7384207202835, 20.9565003943212, 8.72159804065856, 10.8828919460438, 13.0544076217419,
+                                  15.2383407185244, 17.4369344284732, 19.6524758047091, 7.42224872698887, 9.57361905652058, 11.7363446582283, 13.9126732433567, 16.1049144936475,
+                                  18.3154373418827, 6.09772407721882, 8.23669775793749, 10.388104315838, 12.5542463310128, 14.737503640127, 16.940331857308, 4.74354270565264,
+                                  6.8674833359555, 9.0048626713965, 11.1580398538707, 13.329467428263, 15.5216914097679, 3.35492174705887, 5.46099947138391, 7.58143163777757,
+                                  9.71863415455067, 11.8751332977645, 14.0535676553407};
+
+    std::vector<double> expectedY{10.0, 11.2317992926809, 12.4640006025882, 13.6948207289256, 14.9224495909188, 16.1450456084977, 12.1624690481718, 13.3931999286175,
+                                  14.6253766863979, 15.8572318061806, 17.0869674455067, 18.3127505245545, 14.3189673215657, 15.5479790641342, 16.7794891846917, 18.0117518427796,
+                                  19.2429876591642, 20.4713785004972, 16.4682677192212, 17.6948692356156, 18.9250292278688, 20.1570297171979, 21.3891162846345, 22.6194925439959,
+                                  18.609057890161, 19.8325082588868, 21.0605833410122, 22.2915994013818, 23.523833753982, 24.7555189266162, 20.7399226564049, 21.9594204751702,
+                                  23.1846133882867, 24.4138584680854, 25.6454718020147, 26.8777223650489};
+
+    ASSERT_EQ(nodes.size(), expectedX.size());
+
+    constexpr double tolerance = 1.0e-10;
+
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+        EXPECT_NEAR(nodes[i].x, expectedX[i], tolerance);
+        EXPECT_NEAR(nodes[i].y, expectedY[i], tolerance);
+    }
+}
