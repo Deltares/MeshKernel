@@ -163,6 +163,15 @@ namespace meshkernel
                                                        const double blockSizeX,
                                                        const double blockSizeY) const;
 
+        // Generate the rotated grid using fixed delta-x and delta-y when generating
+        lin_alg::Matrix<Point> ComputeSphericalFixedDelta(const int numColumns,
+                                                          const int numRows,
+                                                          const double originX,
+                                                          const double originY,
+                                                          const double angle,
+                                                          const double blockSizeX,
+                                                          const double blockSizeY) const;
+
         /// @brief Compute the adjusted latitude for keeping an aspect ratio of 1, considering the spherical coordinates
         /// @param[in] blockSize The grid block size in y dimension
         /// @param[in] aspectRatio The expected element aspect ratio, defined as being: blockSizeY / blockSizeX
