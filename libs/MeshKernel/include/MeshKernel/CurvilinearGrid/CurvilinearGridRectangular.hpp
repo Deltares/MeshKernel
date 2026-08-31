@@ -134,12 +134,12 @@ namespace meshkernel
         /// @param[in] blockSizeY The grid block size in y dimension
         /// @returns[in] The coordinates of the grid point
         lin_alg::Matrix<Point> ComputeSpherical(const int numColumns,
-                                                       const int numRows,
-                                                       const double originX,
-                                                       const double originY,
-                                                       const double angle,
-                                                       const double blockSizeX,
-                                                       const double blockSizeY) const;
+                                                const int numRows,
+                                                const double originX,
+                                                const double originY,
+                                                const double angle,
+                                                const double blockSizeX,
+                                                const double blockSizeY) const;
 
         // Preserves Orthogonality: Standard flat 2D rotations introduce a slight
         // shearing skew over a curved globe because degrees of longitude shrink
@@ -162,25 +162,6 @@ namespace meshkernel
                                                        const double angle,
                                                        const double blockSizeX,
                                                        const double blockSizeY) const;
-
-        // Generate the rotated grid using fixed delta-x and delta-y (metres) when generating
-        lin_alg::Matrix<Point> ComputeSphericalBoostGrid(const int numColumns,
-                                                         const int numRows,
-                                                         const double originX,
-                                                         const double originY,
-                                                         const double angle,
-                                                         const double blockSizeX,
-                                                         const double blockSizeY) const;
-
-        static Cartesian3DPoint RotateVectorRodrigues(const Cartesian3DPoint& v, const Cartesian3DPoint& k, double theta_rad);
-
-        lin_alg::Matrix<Point> ComputeSphericalMercator(const int numColumns,
-                                                        const int numRows,
-                                                        const double originX,
-                                                        const double originY,
-                                                        const double angle,
-                                                        const double blockSizeX,
-                                                        const double blockSizeY) const;
 
         /// @brief Compute the adjusted latitude for keeping an aspect ratio of 1, considering the spherical coordinates
         /// @param[in] blockSize The grid block size in y dimension
