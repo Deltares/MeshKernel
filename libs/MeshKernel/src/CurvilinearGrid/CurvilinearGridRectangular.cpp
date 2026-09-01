@@ -62,6 +62,9 @@ namespace meshkernel
 
         if (m_projection == Projection::spherical)
         {
+            // return std::make_unique<CurvilinearGrid>(ComputeSphericalFixedDelta(numColumns,
+            // return std::make_unique<CurvilinearGrid>(ComputeSphericalRgfGrid(numColumns,
+            // return std::make_unique<CurvilinearGrid>(ComputeSphericalOnExtension(numColumns,
             return std::make_unique<CurvilinearGrid>(ComputeSpherical(numColumns,
                                                                       numRows,
                                                                       originX,
@@ -124,8 +127,9 @@ namespace meshkernel
                                                                         const double originY,
                                                                         const double angle,
                                                                         const double blockSizeX,
-                                                                        const double blockSizeY)
+                                                                        const double blockSizeY) const
     {
+
         lin_alg::Matrix<Point> result = ComputeCartesian(numColumns,
                                                          numRows,
                                                          originX,
@@ -332,8 +336,6 @@ namespace meshkernel
                                                                          const double upperRightX,
                                                                          const double upperRightY) const
     {
-        range_check::CheckGreater(blockSizeX, 0.0, "X block size");
-        range_check::CheckGreater(blockSizeY, 0.0, "Y block size");
 
         const int numColumns = static_cast<int>(std::ceil((upperRightX - originX) / blockSizeX));
         if (numColumns <= 0)
@@ -363,6 +365,258 @@ namespace meshkernel
                                                                            originX,
                                                                            originY,
                                                                            0.0,
+                                                                           blockSizeX,
+                                                                           blockSizeY),
+                                                          m_projection);
+            return grid;
+        }
+        throw NotImplementedError("Projection value {} not supported", static_cast<int>(m_projection));
+    }
+
+    Point CurvilinearGridRectangular::RotateByAngle(const double originX, const double originY,
+                                                    const double upperRightX, const double upperRightY,
+                                                    const double cosAngle,
+                                                    const double sinAngle) const
+    {
+
+        if (m_projection == Projection::cartesian)
+        {
+            Point translated(upperRightX - originX, upperRightY - originY);
+            return {cosAngle * translated.x - sinAngle * translated.y, sinAngle * translated.x + cosAngle * translated.y};
+        }
+        else
+        {
+            Cartesian3DPoint rotationPoint = SphericalToCartesian3D({originX, originY});
+            Cartesian3DPoint point3d = SphericalToCartesian3D({upperRightX, upperRightY});
+
+            // Normalize the rotation axis (Rodrigues' formula requires a unit vector)
+            // Points are on Earth's surface, so the magnitude is earth_radius
+            Cartesian3DPoint k = {rotationPoint.x / constants::geometric::earth_radius,
+                                  rotationPoint.y / constants::geometric::earth_radius,
+                                  rotationPoint.z / constants::geometric::earth_radius};
+
+            // k \cdot v
+            double dot = k.x * point3d.x + k.y * point3d.y + k.z * point3d.z;
+
+            // k \cross v
+            Cartesian3DPoint crossProd = VectorProduct(k, point3d);
+
+            // Rodrigues formula: v_rot = v·cos(θ) + (k × v)·sin(θ) + k·(k·v)·(1 - cos(θ))
+            Cartesian3DPoint rotatedPoint3d = {point3d.x * cosAngle + crossProd.x * sinAngle + k.x * dot * (1.0 - cosAngle),
+                                               point3d.y * cosAngle + crossProd.y * sinAngle + k.y * dot * (1.0 - cosAngle),
+                                               point3d.z * cosAngle + crossProd.z * sinAngle + k.z * dot * (1.0 - cosAngle)};
+
+            Point pointOnSphere = Cartesian3DToSpherical(rotatedPoint3d, upperRightX);
+
+            return pointOnSphere;
+        }
+    }
+
+    lin_alg::Matrix<Point> CurvilinearGridRectangular::ComputeSphericalOnExtension(const int numColumns,
+                                                                                   const int numRows,
+                                                                                   const double originX,
+                                                                                   const double originY,
+                                                                                   const double angle,
+                                                                                   const double blockSizeX,
+                                                                                   const double blockSizeY) const
+    {
+        lin_alg::Matrix<Point> result = ComputeCartesian(numColumns,
+                                                         numRows,
+                                                         originX,
+                                                         originY,
+                                                         0.0 * angle,
+                                                         blockSizeX,
+                                                         blockSizeY);
+
+        const auto numM = result.cols();
+        const auto numN = result.rows();
+
+        const double cosAngle = std::cos(angle * constants::conversion::degToRad);
+        const double sinAngle = std::sin(angle * constants::conversion::degToRad);
+
+        for (Eigen::Index n = 0; n < numN; ++n)
+        {
+
+            for (Eigen::Index m = 0; m < numM; ++m)
+            {
+                result(n, m) = RotateByAngle(originX, originY, result(n, m).x, result(n, m).y, cosAngle, sinAngle);
+            }
+        }
+
+        return result;
+    }
+
+    lin_alg::Matrix<Point> CurvilinearGridRectangular::ComputeSphericalRgfGrid(const int numColumns,
+                                                                               const int numRows,
+                                                                               const double originX,
+                                                                               const double originY,
+                                                                               const double angle,
+                                                                               const double blockSizeX,
+                                                                               const double blockSizeY) const
+    {
+        lin_alg::Matrix<Point> result = ComputeCartesian(numColumns,
+                                                         numRows,
+                                                         originX,
+                                                         originY,
+                                                         angle,
+                                                         blockSizeX,
+                                                         blockSizeY);
+
+        // const auto numM = result.cols();
+        // const auto numN = result.rows();
+
+        // const double cosAngle = std::cos(angle * constants::conversion::degToRad);
+        // const double sinAngle = std::sin(angle * constants::conversion::degToRad);
+
+        // for (Eigen::Index n = 0; n < numN; ++n)
+        // {
+
+        //     for (Eigen::Index m = 0; m < numM; ++m)
+        //     {
+        //         result(n, m) = RotateByAngle(originX, originY, result(n, m).x, result(n, m).y, cosAngle, sinAngle);
+        //     }
+        // }
+
+        return result;
+    }
+
+    lin_alg::Matrix<Point> CurvilinearGridRectangular::ComputeSphericalFixedDelta(const int numColumns,
+                                                                                  const int numRows,
+                                                                                  const double origin_lon,
+                                                                                  const double origin_lat,
+                                                                                  const double rotation_deg,
+                                                                                  const double d_lon,
+                                                                                  const double d_lat) const
+    {
+        const int numM = numColumns + 1;
+        const int numN = numRows + 1;
+
+        lin_alg::Matrix<Point> result(numN, numM);
+
+        // Convert all angles to radians up front
+        const double lon_orig_rad = origin_lon * (M_PI / 180.0);
+        const double lat_orig_rad = origin_lat * (M_PI / 180.0);
+        const double rot_rad = rotation_deg * (M_PI / 180.0);
+        const double d_lon_rad = d_lon * (M_PI / 180.0);
+        const double d_lat_rad = d_lat * (M_PI / 180.0);
+
+        // Conformal FixedDelta step size calculation relative to an unrotated equator (lat = 0)
+        // At the equator, cos(0) = 1, so the conformal step matches the physical radian step.
+        double d_step_lat_conformal = d_lat_rad;
+
+        // double half_width = (numRows * d_lon_rad) / 2.0;
+        double origin_y_mercator = std::log(std::tan(M_PI / 4.0));
+
+        for (int j = 0; j < numN; ++j)
+        {
+            // Local relative latitude centered around 0 (Equator)
+            // double current_y_mercator = 0.0 + ((j - numColumns / 2.0) * d_step_lat_conformal);
+            // double local_lat_rad = 2.0 * std::atan(std::exp(current_y_mercator)) - M_PI / 2.0;
+
+            double current_y_mercator = origin_y_mercator + ((j - numColumns / 2.0) * d_step_lat_conformal);
+            double local_lat_rad = 2.0 * std::atan(std::exp(current_y_mercator)) - M_PI / 2.0;
+            // double local_lon_rad = (i * d_lon_rad) - half_width;
+
+            for (int i = 0; i < numM; ++i)
+            {
+                // Local relative longitude centered around 0
+                double local_lon_rad = (i - numRows / 2.0) * d_lon_rad;
+
+                // Convert local relative point to 3D Cartesian
+                double cos_local_lat = std::cos(local_lat_rad);
+                Cartesian3DPoint p;
+                p.x = cos_local_lat * std::cos(local_lon_rad);
+                p.y = cos_local_lat * std::sin(local_lon_rad);
+                p.z = std::sin(local_lat_rad);
+
+                // Rotate the grid locally by rotation_deg around its origin
+                if (rotation_deg != 0.0)
+                {
+                    double ty = p.y * std::cos(rot_rad) - p.z * std::sin(rot_rad);
+                    double tz = p.y * std::sin(rot_rad) + p.z * std::cos(rot_rad);
+                    p.y = ty;
+                    p.z = tz;
+                }
+
+                // 3. Pitch: Move up/down to the target latitude.
+                // We rotate around the Y axis to change the latitude (X and Z change).
+                double px1 = p.x * std::cos(lat_orig_rad) - p.z * std::sin(lat_orig_rad);
+                double pz1 = p.x * std::sin(lat_orig_rad) + p.z * std::cos(lat_orig_rad);
+                p.x = px1;
+                p.z = pz1;
+
+                // 4. Yaw: Spin over to the target longitude.
+                // We rotate around the Z axis to change longitude (X and Y change).
+                double px2 = p.x * std::cos(lon_orig_rad) - p.y * std::sin(lon_orig_rad);
+                double py2 = p.x * std::sin(lon_orig_rad) + p.y * std::cos(lon_orig_rad);
+                p.x = px2;
+                p.y = py2;
+
+                // 5. Project back to geodetic degrees
+                double final_lat = std::asin(std::max(-1.0, std::min(1.0, p.z))) * (180.0 / M_PI);
+                double final_lon = std::atan2(p.y, p.x) * (180.0 / M_PI);
+
+                result(j, i).x = final_lon;
+                result(j, i).y = final_lat;
+            }
+        }
+
+        return result;
+    }
+
+    std::unique_ptr<CurvilinearGrid> CurvilinearGridRectangular::Compute(const double originX,
+                                                                         const double originY,
+                                                                         const double blockSizeX,
+                                                                         const double blockSizeY,
+                                                                         const double upperRightX,
+                                                                         const double upperRightY,
+                                                                         const double angle) const
+    {
+        range_check::CheckGreater(blockSizeX, 0.0, "X block size");
+        range_check::CheckGreater(blockSizeY, 0.0, "Y block size");
+
+        const double cosAngle = std::cos(-angle * constants::conversion::degToRad);
+        const double sinAngle = std::sin(-angle * constants::conversion::degToRad);
+
+        // rotate the upper right, by -angle so that the grid is aligned with the axis
+        Point rotatedUpperRight = RotateByAngle(originX, originY, upperRightX, upperRightY, cosAngle, sinAngle);
+
+        // Now the number of cells in each direction can be computed.
+        const int numColumns = static_cast<int>(std::ceil((rotatedUpperRight.x - originX) / blockSizeX));
+        const int numRows = ComputeNumRows(originY, rotatedUpperRight.y, blockSizeX, blockSizeY, m_projection);
+
+        if (numColumns <= 0)
+        {
+            throw AlgorithmError("Number of columns cannot be <= 0");
+        }
+
+        if (numRows <= 0)
+        {
+            throw AlgorithmError("Number of rows cannot be <= 0");
+        }
+
+        if (m_projection == Projection::spherical)
+        {
+            // auto grid = std::make_unique<CurvilinearGrid>(ComputeSphericalFixedDelta(numColumns,
+            // auto grid = std::make_unique<CurvilinearGrid>(ComputeSpherical(numColumns,
+            auto grid = std::make_unique<CurvilinearGrid>(ComputeSphericalOnExtension(numColumns,
+                                                                                      numRows,
+                                                                                      originX,
+                                                                                      originY,
+                                                                                      angle,
+                                                                                      blockSizeX,
+                                                                                      blockSizeY),
+                                                          m_projection);
+
+            return grid;
+        }
+        if (m_projection == Projection::cartesian)
+        {
+            auto grid = std::make_unique<CurvilinearGrid>(ComputeCartesian(numColumns,
+                                                                           numRows,
+                                                                           originX,
+                                                                           originY,
+                                                                           angle,
                                                                            blockSizeX,
                                                                            blockSizeY),
                                                           m_projection);

@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <MeshKernel/Cartesian3DPoint.hpp>
 #include <MeshKernel/Entities.hpp>
 #include <MeshKernel/Parameters.hpp>
 #include <MeshKernel/Utilities/LinearAlgebra.hpp>
@@ -90,7 +91,19 @@ namespace meshkernel
                                                  const double upperRightX,
                                                  const double upperRightY) const;
 
+        std::unique_ptr<CurvilinearGrid> Compute(const double originX,
+                                                 const double originY,
+                                                 const double blockSizeX,
+                                                 const double blockSizeY,
+                                                 const double upperRightX,
+                                                 const double upperRightY,
+                                                 const double angle) const;
+
     private:
+        Point RotateByAngle(const double originX, const double originY,
+                            const double upperRightX, const double upperRightY,
+                            const double cosAngle, const double sinAngle) const;
+
         /// @brief Compute a rectangular curvilinear grid on cartesian coordinates.
         /// @param[in] numColumns The number of columns in x direction
         /// @param[in] numRows The number of columns in y direction
@@ -120,13 +133,44 @@ namespace meshkernel
         /// @param[in] blockSizeX The grid block size in x dimension
         /// @param[in] blockSizeY The grid block size in y dimension
         /// @returns[in] The coordinates of the grid point
-        static lin_alg::Matrix<Point> ComputeSpherical(const int numColumns,
+        lin_alg::Matrix<Point> ComputeSpherical(const int numColumns,
+                                                const int numRows,
+                                                const double originX,
+                                                const double originY,
+                                                const double angle,
+                                                const double blockSizeX,
+                                                const double blockSizeY) const;
+
+        // Preserves Orthogonality: Standard flat 2D rotations introduce a slight
+        // shearing skew over a curved globe because degrees of longitude shrink
+        // away from the equator. Rodrigues' 3D rotation preserves the exact
+        // geometry of your initial unrotated grid matrix relative to the surface
+        // plane.
+        lin_alg::Matrix<Point> ComputeSphericalOnExtension(const int numColumns,
+                                                           const int numRows,
+                                                           const double originX,
+                                                           const double originY,
+                                                           const double angle,
+                                                           const double blockSizeX,
+                                                           const double blockSizeY) const;
+
+        // Not really RGF grid algorithm, there seems to be a step missing
+        lin_alg::Matrix<Point> ComputeSphericalRgfGrid(const int numColumns,
                                                        const int numRows,
                                                        const double originX,
                                                        const double originY,
                                                        const double angle,
                                                        const double blockSizeX,
-                                                       const double blockSizeY);
+                                                       const double blockSizeY) const;
+
+        // Generate the rotated grid using fixed delta-x and delta-y when generating
+        lin_alg::Matrix<Point> ComputeSphericalFixedDelta(const int numColumns,
+                                                          const int numRows,
+                                                          const double originX,
+                                                          const double originY,
+                                                          const double angle,
+                                                          const double blockSizeX,
+                                                          const double blockSizeY) const;
 
         /// @brief Compute the adjusted latitude for keeping an aspect ratio of 1, considering the spherical coordinates
         /// @param[in] blockSize The grid block size in y dimension

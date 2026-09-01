@@ -531,17 +531,25 @@ namespace meshkernelapi
     {
         const meshkernel::CurvilinearGridRectangular grid(projection);
 
-        if (!meshkernel::IsEqual(makeGridParameters.angle, 0.0))
+        if (makeGridParameters.angle == 0.0)
         {
-            throw meshkernel::AlgorithmError("When generating an uniform grid on an defined extension, the grid angle must be equal to 0");
+            return grid.Compute(makeGridParameters.origin_x,
+                                makeGridParameters.origin_y,
+                                makeGridParameters.block_size_x,
+                                makeGridParameters.block_size_y,
+                                makeGridParameters.upper_right_x,
+                                makeGridParameters.upper_right_y);
         }
-
-        return grid.Compute(makeGridParameters.origin_x,
-                            makeGridParameters.origin_y,
-                            makeGridParameters.block_size_x,
-                            makeGridParameters.block_size_y,
-                            makeGridParameters.upper_right_x,
-                            makeGridParameters.upper_right_y);
+        else
+        {
+            return grid.Compute(makeGridParameters.origin_x,
+                                makeGridParameters.origin_y,
+                                makeGridParameters.block_size_x,
+                                makeGridParameters.block_size_y,
+                                makeGridParameters.upper_right_x,
+                                makeGridParameters.upper_right_y,
+                                makeGridParameters.angle);
+        }
     }
 
     template <meshkernel::InterpolatableType T>

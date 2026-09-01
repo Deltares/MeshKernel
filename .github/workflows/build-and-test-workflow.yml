@@ -156,9 +156,20 @@ jobs:
 
       # Step: Upload artifacts
       - name: Upload artifacts
+        id: upload_artifacts
         uses: actions/upload-artifact@v7
         if: always()
+        continue-on-error: true
         with:
           name: meshkernel-${{ inputs.platform }}-${{ inputs.build_type }}
           path: ${{ steps.paths.outputs.install_dir }}
           if-no-files-found: error
+
+      - name: Retry upload artifacts on transient failure
+        uses: actions/upload-artifact@v7
+        if: always() && steps.upload_artifacts.outcome == 'failure'
+        with:
+          name: meshkernel-${{ inputs.platform }}-${{ inputs.build_type }}
+          path: ${{ steps.paths.outputs.install_dir }}
+          if-no-files-found: error
+          overwrite: true
