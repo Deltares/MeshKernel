@@ -706,9 +706,9 @@ TEST(CurvilinearGridUniform, CurvilinearGridRectangularOnExtension_WithAngle_Sho
     [[maybe_unused]] double blockSizeY = 0.02;
 
     [[maybe_unused]] double originX = 105.7;
-  [[maybe_unused]] double originY = 18.2;
-  [[maybe_unused]] double upperRightX = 106.79;
-  [[maybe_unused]] double upperRightY = 18.46;
+    [[maybe_unused]] double originY = 88.2;
+    [[maybe_unused]] double upperRightX = 106.79;
+    [[maybe_unused]] double upperRightY = 18.46;
     // [[maybe_unused]] double upperRightX = 13.3295;
     // [[maybe_unused]] double upperRightY = 23.5238;
     [[maybe_unused]] double angle = -43.0;
@@ -723,35 +723,33 @@ TEST(CurvilinearGridUniform, CurvilinearGridRectangularOnExtension_WithAngle_Sho
 
     // Execution
     CurvilinearGridRectangular curvilinearGridRectangular(Projection::spherical);
-    // auto mesh = curvilinearGridRectangular.Compute(45, 45, originX, originY, angle, blockSizeX, blockSizeY);
-    auto mesh = curvilinearGridRectangular.Compute(originX, originY, blockSizeX, blockSizeY, upperRightX, upperRightY, angle);
+    auto mesh = curvilinearGridRectangular.Compute(45, 45, originX, originY, angle, blockSizeX, blockSizeY);
+    // auto mesh = curvilinearGridRectangular.Compute(originX, originY, blockSizeX, blockSizeY, upperRightX, upperRightY, angle);
 
     auto nodes = mesh->ComputeNodes();
 
-    meshkernel::Print (mesh->ComputeNodes (), mesh->ComputeEdges ());
+    meshkernel::Print(mesh->ComputeNodes(), mesh->ComputeEdges());
 
-    meshkernel::Mesh2D mesh2d (mesh->ComputeEdges (), mesh->ComputeNodes (), mesh->projection ());
-    auto ortho = meshkernel::MeshOrthogonality::Compute (mesh2d);
-    std::ranges::sort (ortho);
+    meshkernel::Mesh2D mesh2d(mesh->ComputeEdges(), mesh->ComputeNodes(), mesh->projection());
+    auto ortho = meshkernel::MeshOrthogonality::Compute(mesh2d);
+    std::ranges::sort(ortho);
 
-    for (size_t i = 0; i < ortho.size (); ++i)
+    for (size_t i = 0; i < ortho.size(); ++i)
     {
 
-        if (i % 10 == 0) std::cout << std::endl;
+        if (i % 10 == 0)
+            std::cout << std::endl;
 
-        std::cout << std::setw (15) << " " << ortho[i] << " ";
-
-
+        std::cout << std::setw(15) << " " << ortho[i] << " ";
     }
 
-
-    double max = *std::max_element (ortho.begin (), ortho.end ());
+    double max = *std::max_element(ortho.begin(), ortho.end());
 
     std::cout << "Maximum orthoginality = " << max << std::endl;
 
     return;
 
-#endif
+#else
 
     double originX = 10.0;
     double originY = 10.0;
@@ -788,4 +786,6 @@ TEST(CurvilinearGridUniform, CurvilinearGridRectangularOnExtension_WithAngle_Sho
         EXPECT_NEAR(nodes[i].x, expectedX[i], tolerance);
         EXPECT_NEAR(nodes[i].y, expectedY[i], tolerance);
     }
+
+#endif
 }

@@ -504,33 +504,32 @@ namespace meshkernel
         // At the equator, cos(0) = 1, so the conformal step matches the physical radian step.
         double d_step_lat_conformal = d_lat_rad;
 
-        // We center our unrotated grid around (0,0) space
-        // so that it spins perfectly around its true local center.
         // double half_width = (numRows * d_lon_rad) / 2.0;
-
-        // Conformal latitude center tracker
-        // double origin_y_mercator = std::log(std::tan(M_PI / 4.0 + 0.0 / 2.0)); // Equator = 0
+        double origin_y_mercator = std::log(std::tan(M_PI / 4.0));
 
         for (int j = 0; j < numN; ++j)
         {
             // Local relative latitude centered around 0 (Equator)
-            double current_y_mercator = 0.0 + ((j - numColumns / 2.0) * d_step_lat_conformal);
+            // double current_y_mercator = 0.0 + ((j - numColumns / 2.0) * d_step_lat_conformal);
+            // double local_lat_rad = 2.0 * std::atan(std::exp(current_y_mercator)) - M_PI / 2.0;
+
+            double current_y_mercator = origin_y_mercator + ((j - numColumns / 2.0) * d_step_lat_conformal);
             double local_lat_rad = 2.0 * std::atan(std::exp(current_y_mercator)) - M_PI / 2.0;
+            // double local_lon_rad = (i * d_lon_rad) - half_width;
 
             for (int i = 0; i < numM; ++i)
             {
                 // Local relative longitude centered around 0
                 double local_lon_rad = (i - numRows / 2.0) * d_lon_rad;
 
-                // 1. Convert local relative point to 3D Cartesian
+                // Convert local relative point to 3D Cartesian
                 double cos_local_lat = std::cos(local_lat_rad);
                 Cartesian3DPoint p;
                 p.x = cos_local_lat * std::cos(local_lon_rad);
                 p.y = cos_local_lat * std::sin(local_lon_rad);
                 p.z = std::sin(local_lat_rad);
 
-                // 2. Twist the grid locally by rotation_deg around its own center axis (1, 0, 0)
-                // Since the local center is at (0,0), its Cartesian vector is pointing down the X axis!
+                // Rotate the grid locally by rotation_deg around its origin
                 if (rotation_deg != 0.0)
                 {
                     double ty = p.y * std::cos(rot_rad) - p.z * std::sin(rot_rad);
