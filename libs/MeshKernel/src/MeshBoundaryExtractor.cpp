@@ -289,9 +289,11 @@ void meshkernel::MeshBoundaryExtractor::FindAllBoundarEdges(const std::vector<Po
     for (UInt count = 0; count < edges.size(); ++count)
     {
 
-        if (edgesFaces[count][1] != constants::missing::uintValue || !IsValidEdge(edges[count]))
+        if (!IsValidEdge(edges[count]) ||
+            edgesFaces[count][0] == constants::missing::uintValue ||
+            edgesFaces[count][1] != constants::missing::uintValue)
         {
-            // Edge is either invalid or not on boundary
+            // Edge is invalid, has no adjacent face (hanging edge), or is interior (two faces)
             continue;
         }
 
@@ -366,12 +368,10 @@ void meshkernel::MeshBoundaryExtractor::FindBoundaryPolygons(const std::vector<P
     for (UInt count = 0; count < edges.size(); ++count)
     {
 
-        if (!IsValidEdge(edges[count]))
-        {
-            continue;
-        }
-
-        if (edgesFaces[count][1] != constants::missing::uintValue || edgeVisited[count])
+        if (edgeVisited[count] ||
+            !IsValidEdge(edges[count]) ||
+            edgesFaces[count][0] == constants::missing::uintValue ||
+            edgesFaces[count][1] != constants::missing::uintValue)
         {
             continue;
         }

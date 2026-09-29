@@ -423,6 +423,42 @@ TEST(Mesh2D, HangingEdge)
     ASSERT_EQ(1, mesh.GetNumFaces());
 }
 
+TEST(Mesh2D, MeshBoundaryToPolygonWithHangingEdge)
+{
+    // 1 Setup
+    std::vector<meshkernel::Point> nodes;
+    nodes.push_back({0.0, 0.0});
+    nodes.push_back({5.0, 0.0});
+    nodes.push_back({3.0, 2.0});
+    nodes.push_back({3.0, 4.0});
+
+    std::vector<meshkernel::Edge> edges;
+    edges.push_back({0, 1});
+    edges.push_back({1, 3});
+    edges.push_back({3, 0});
+    edges.push_back({2, 1});
+
+    auto mesh = meshkernel::Mesh2D(meshkernel::Projection::cartesian);
+    mesh.SetNodes(nodes);
+    mesh.SetEdges(edges);
+    mesh.Administrate();
+
+    std::vector<meshkernel::Point> polygonNodes;
+
+    // 2 Execution
+    auto meshBoundaryPolygon = mesh.ComputeBoundaryPolygons(polygonNodes);
+
+    // 3 Validation
+    const double tolerance = 1e-5;
+    ASSERT_EQ(4, meshBoundaryPolygon.size());
+
+    for (const auto& point : meshBoundaryPolygon)
+    {
+        const double distanceToHangingNode = std::hypot(point.x - nodes[2].x, point.y - nodes[2].y);
+        EXPECT_GT(distanceToHangingNode, tolerance);
+    }
+}
+
 TEST(Mesh2D, NodeMerging)
 {
     // 1. Setup
