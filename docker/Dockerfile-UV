@@ -15,8 +15,9 @@ ENV PATH="/opt/uv:/opt/uv/bin:$PATH"
  
 # Install Python (pinned version)
 ENV UV_PYTHON_INSTALL_DIR=/opt/python
+ENV UV_PYTHON_BIN_DIR=/opt/python/bin
  
 RUN uv python install ${PYTHON_VERSION} --default
  
 # Make installed Python available globally
-ENV PATH="/opt/python/cpython-3.14-linux-x86_64-gnu/bin:/opt/uv/bin:$PATH"
+ENV PATH="/opt/python/bin:$PATH"
