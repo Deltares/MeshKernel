@@ -1,0 +1,23 @@
+FROM containers.deltares.nl/docker-proxy/almalinux/8-base:latest
+ 
+# Versions
+ENV UV_VERSION=0.13.6
+ENV PYTHON_VERSION=3.14.10
+ 
+# Install uv (pinned version)
+ENV UV_INSTALL_DIR=/opt/uv
+ENV UV_NO_MODIFY_PATH=1
+ 
+RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | sh
+ 
+# Add uv to PATH
+ENV PATH="/opt/uv:/opt/uv/bin:$PATH"
+ 
+# Install Python (pinned version)
+ENV UV_PYTHON_INSTALL_DIR=/opt/python
+ENV UV_PYTHON_BIN_DIR=/opt/python/bin
+ 
+RUN uv python install ${PYTHON_VERSION} --default
+ 
+# Make installed Python available globally
+ENV PATH="/opt/python/bin:$PATH"
