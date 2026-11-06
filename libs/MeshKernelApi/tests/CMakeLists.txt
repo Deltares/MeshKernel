@@ -65,19 +65,20 @@ if(ENABLE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_link_libraries(${TARGET_NAME} PRIVATE gcov)
 endif()
 
-# If you register a test, then ctest and make test will run it. You can also run
-# examples and check the output, as well. Command can be a target.
-add_test(
-  NAME ${TARGET_NAME}
-  COMMAND ${TARGET_NAME}
-)
-
 # Copy the MeshKernel shared library to the target directory
 add_custom_command(
   TARGET ${TARGET_NAME}
   POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "$<TARGET_FILE:MeshKernelApi>" "$<TARGET_FILE_DIR:MeshKernelApiUnitTests>"
     COMMENT "Copying MeshKernel shared library"
+)
+
+# add individual tests to ctest
+include(GoogleTest)
+gtest_discover_tests(
+  ${TARGET_NAME}
+  DISCOVERY_MODE PRE_TEST
+  TEST_PREFIX "${TARGET_NAME}."
 )
 
 # group the sources in IDE tree

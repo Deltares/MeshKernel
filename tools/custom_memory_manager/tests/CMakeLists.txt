@@ -50,8 +50,10 @@ target_link_libraries(
 source_group("Source Files" FILES ${SRC_LIST})
 source_group("Header Files" FILES ${INC_LIST})
 
-# add the test to ctest
-add_test(
-  NAME ${TARGET_NAME}
-  COMMAND ${TARGET_NAME}
+# add individual tests to ctest
+include(GoogleTest)
+gtest_discover_tests(
+  ${TARGET_NAME}
+  DISCOVERY_MODE PRE_TEST
+  TEST_PREFIX "${TARGET_NAME}."
 )
