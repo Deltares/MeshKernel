@@ -19,7 +19,6 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - macos-14 # arm64 (free)
           - macos-15 # arm64 (free)
           - macos-15-intel # intel (free)
           - macos-26 # arm64 (free)
