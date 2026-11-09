@@ -42,9 +42,20 @@ namespace fmt_ns = std;
 void meshkernel::algo::NetlinkContourPolygons::CheckEdges(const Mesh2D& mesh)
 {
 
-    // Should call mesh.GetHangingEdges, however this does not catch the case where an edge
-    // element for each node. connects two nodes and these two nodes are part an element,
-    // different unconnected and the edge has no connected elements.
+    // Should call mesh.GetHangingEdges, however this function does not catch the case where the edge connects
+    // an edge connects two nodes and these two nodes are each part of a  different, unconnected
+    // element and the edge has no connected elements.
+    //
+    //  +------+     +-----+
+    //  |      |     |     |
+    //  |      |     |     |
+    //  +------+=====+-----+
+    //  |      |     |     |
+    //  |      |     |     |
+    //  +------+     +-----+
+    //
+    //  The edge marked with ='s
+    //
     std::vector<UInt> hangingEdges;
 
     const auto edges = mesh.Edges();
