@@ -1926,7 +1926,7 @@ TEST(Mesh2D, ComputeEdgeNetlinkContourPolygons)
     }
 }
 
-TEST(Mesh2D, NetlinkPolygonsFacelessEdgeShouldThrow)
+TEST(Mesh2D, NetlinkPolygonsHangingEdgeShouldThrow)
 {
     std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {0.0, 2.0}, {0.0, 4.0}, {2.0, 0.0}, {2.0, 2.0}, {2.0, 4.0}, {4.0, 0.0}, {4.0, 2.0}, {4.0, 4.0}, {6.0, 2.0}};
     std::vector<meshkernel::Edge> edges = {{0, 3}, {1, 4}, {2, 5}, {3, 6}, {4, 7}, {5, 8}, {1, 0}, {2, 1}, {4, 3}, {5, 4}, {7, 6}, {8, 7}, {7, 9}, {7, 9}};
@@ -1935,6 +1935,23 @@ TEST(Mesh2D, NetlinkPolygonsFacelessEdgeShouldThrow)
                                                          {3, 4, 7, 6},
                                                          {4, 5, 8, 7}};
     std::vector<std::uint8_t> numFaceNodes{4, 4, 4, 4};
+
+    auto mesh = meshkernel::Mesh2D(edges, nodes, faceNodes, numFaceNodes, meshkernel::Projection::cartesian);
+
+    meshkernel::algo::NetlinkContourPolygons netlinkContourPolygons;
+
+    EXPECT_THROW([[maybe_unused]] auto netlinkPolygonPoints(netlinkContourPolygons.Compute(mesh)), meshkernel::MeshKernelError);
+}
+
+TEST(Mesh2D, NetlinkPolygonsFacelessEdgeShouldThrow)
+{
+
+    std::vector<meshkernel::Point> nodes{{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}, {2.0, 0.0}, {3.0, 0.0}, {3.0, 1.0}, {2.0, 1.0}};
+    std::vector<meshkernel::Edge> edges{{0, 1}, {1, 2}, {2, 3}, {3, 0}, {4, 5}, {5, 6}, {6, 7}, {7, 4}, {1, 4}};
+
+    std::vector<std::vector<meshkernel::UInt>> faceNodes{{0, 1, 2, 3},
+                                                         {4, 5, 6, 7}};
+    std::vector<std::uint8_t> numFaceNodes{4, 4};
 
     auto mesh = meshkernel::Mesh2D(edges, nodes, faceNodes, numFaceNodes, meshkernel::Projection::cartesian);
 

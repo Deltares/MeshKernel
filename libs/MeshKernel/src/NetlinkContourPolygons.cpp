@@ -42,7 +42,27 @@ namespace fmt_ns = std;
 void meshkernel::algo::NetlinkContourPolygons::CheckEdges(const Mesh2D& mesh)
 {
 
-    std::vector<UInt> hangingEdges = mesh.GetHangingEdges();
+    // Should call mesh.GetHangingEdges, howver this does not catch the case where an edge
+    // element for each node. connects two nodes and these two nodes are part an element,
+    // different unconnected and the edge has no connected elements.
+    std::vector<UInt> hangingEdges;
+
+    const auto edges = mesh.Edges();
+
+    for (UInt e = 0; e < edges.size(); e++)
+    {
+        const auto firstNode = edges[e].first;
+        const auto secondNode = edges[e].second;
+
+        if (firstNode != constants::missing::uintValue && secondNode != constants::missing::uintValue)
+        {
+            // if one of the nodes has no other attached edges, the current edge is an hanging edge
+            if (mesh.m_nodesNumEdges[firstNode] <= 1 || mesh.m_nodesNumEdges[secondNode] <= 1 || mesh.m_edgesNumFaces[e] == 0)
+            {
+                hangingEdges.emplace_back(e);
+            }
+        }
+    }
 
     if (hangingEdges.size() > 0)
     {
@@ -52,6 +72,7 @@ void meshkernel::algo::NetlinkContourPolygons::CheckEdges(const Mesh2D& mesh)
 
         for (UInt edgeId : hangingEdges)
         {
+
             if (!firstEdge)
             {
                 buffer += ", ";
