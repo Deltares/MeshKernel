@@ -25,7 +25,13 @@
 //
 //------------------------------------------------------------------------------
 
+#if USE_LIBFMT
+#include <fmt/format.h>
+namespace fmt_ns = fmt;
+#else
 #include <format>
+namespace fmt_ns = std;
+#endif
 
 #include "MeshKernel/NetlinkContourPolygons.hpp"
 
@@ -55,7 +61,7 @@ void meshkernel::algo::NetlinkContourPolygons::CheckEdges(const Mesh2D& mesh)
             // There is not necessary to check if the node-id is valid. Edges with invalid node-ids are not added to the hanging-edges list.
             const Point node = mesh.Node(edge.first);
 
-            std::format_to(std::back_inserter(buffer), "edge={}, node={{x={:5f}, y={:5f}}}", edgeId, node.x, node.y);
+            fmt_ns::format_to(std::back_inserter(buffer), "edge={}, node={{x={:5f}, y={:5f}}}", edgeId, node.x, node.y);
             firstEdge = false;
         }
 
