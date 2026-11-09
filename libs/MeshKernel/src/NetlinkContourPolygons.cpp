@@ -25,14 +25,49 @@
 //
 //------------------------------------------------------------------------------
 
+#include <format>
+
 #include "MeshKernel/NetlinkContourPolygons.hpp"
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/Operations.hpp"
 
-std::vector<meshkernel::Point> meshkernel::algo::NetlinkContourPolygons::Compute(const Mesh& mesh)
+void meshkernel::algo::NetlinkContourPolygons::CheckEdges(const Mesh2D& mesh)
 {
+
+    std::vector<UInt> hangingEdges = mesh.GetHangingEdges();
+
+    if (hangingEdges.size() > 0)
+    {
+        std::string buffer;
+
+        bool firstEdge = true;
+
+        for (UInt edgeId : hangingEdges)
+        {
+            if (!firstEdge)
+            {
+                buffer += ", ";
+            }
+
+            const Edge& edge = mesh.GetEdge(edgeId);
+            // There is not necessary to check if the node-id is valid. Edges with invalid node-ids are not added to the hanging-edges list.
+            const Point node = mesh.Node(edge.first);
+
+            std::format_to(std::back_inserter(buffer), "edge={}, node={{x={:5f}, y={:5f}}}", edgeId, node.x, node.y);
+            firstEdge = false;
+        }
+
+        throw MeshKernelError("Deriving netlink contours failed due to {} hanging edge(s): {}", hangingEdges.size(), buffer);
+    }
+}
+
+std::vector<meshkernel::Point> meshkernel::algo::NetlinkContourPolygons::Compute(const Mesh2D& mesh)
+{
+
+    CheckEdges(mesh);
+
     std::vector<Point> netlinkPolygons(4 * mesh.GetNumEdges(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
     std::vector<Point> circumcentres(algo::ComputeFaceCircumcenters(mesh));
 
