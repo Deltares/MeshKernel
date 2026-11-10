@@ -1,4 +1,7 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.24)
+
+set(CMAKE_PROJECT_TOP_LEVEL_INCLUDES
+    "${CMAKE_CURRENT_SOURCE_DIR}/conan/cmake/conan_provider.cmake")
 
 set(MESHKERNEL_VERSION 8.3.0)
 
