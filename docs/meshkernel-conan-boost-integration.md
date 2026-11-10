@@ -149,7 +149,7 @@ The compiler version is machine-dependent and must be replaced with the
 version detected on the target Mac. This profile is a starting point and
 has not been validated in the source notes.
 
-### Windows: Visual Studio 2022
+### Windows: Visual Studio 2022 or MSBuild Tools 2022
 
 `conan/profiles/windows-msvc-2022`:
 
