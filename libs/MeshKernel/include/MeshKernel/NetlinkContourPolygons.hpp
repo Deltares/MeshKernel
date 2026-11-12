@@ -32,7 +32,7 @@
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/Definitions.hpp"
-#include "MeshKernel/Mesh.hpp"
+#include "MeshKernel/Mesh2D.hpp"
 #include "MeshKernel/Point.hpp"
 
 namespace meshkernel::algo
@@ -43,9 +43,15 @@ namespace meshkernel::algo
     {
     public:
         /// @brief Compute the netlink contour polygons
-        static std::vector<Point> Compute(const Mesh& mesh);
+        static std::vector<Point> Compute(const Mesh2D& mesh);
 
     private:
+        /// @brief Check that all edges are valid
+        ///
+        /// If invalid edges are found then this throw an exception. The error message will contain a list of
+        /// the edge numbers and the first node of the edge. As an aid to users to help in finding the invalid edges in large meshes
+        static void CheckEdges(const Mesh2D& mesh);
+
         /// @brief Compute the netlink contour polygon for a single edge
         ///
         /// @note circumcentre1 must be a valid circumcentre point.

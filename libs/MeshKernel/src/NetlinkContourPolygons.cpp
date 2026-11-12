@@ -25,14 +25,88 @@
 //
 //------------------------------------------------------------------------------
 
+#if USE_LIBFMT
+#include <fmt/format.h>
+namespace fmt_ns = fmt;
+#else
+#include <format>
+namespace fmt_ns = std;
+#endif
+
 #include "MeshKernel/NetlinkContourPolygons.hpp"
 
 #include "MeshKernel/Constants.hpp"
 #include "MeshKernel/MeshFaceCenters.hpp"
 #include "MeshKernel/Operations.hpp"
 
-std::vector<meshkernel::Point> meshkernel::algo::NetlinkContourPolygons::Compute(const Mesh& mesh)
+void meshkernel::algo::NetlinkContourPolygons::CheckEdges(const Mesh2D& mesh)
 {
+
+    // Should call mesh.GetHangingEdges, however this function does not catch the case where
+    // an edge connects two nodes and these two nodes are each part of different, unconnected
+    // elements and the edge itself has no connected elements.
+    //
+    //  +------+     +-----+
+    //  |      |     |     |
+    //  |      |     |     |
+    //  +------+=====+-----+
+    //  |      |     |     |
+    //  |      |     |     |
+    //  +------+     +-----+
+    //
+    //  The edge marked with ='s
+    //
+    std::vector<UInt> hangingEdges;
+
+    const auto edges = mesh.Edges();
+
+    for (UInt e = 0; e < edges.size(); e++)
+    {
+        const auto firstNode = edges[e].first;
+        const auto secondNode = edges[e].second;
+
+        if (firstNode != constants::missing::uintValue && secondNode != constants::missing::uintValue)
+        {
+            // if one of the nodes has no other attached edges or attached faces, the current edge is an hanging edge
+            if (mesh.m_nodesNumEdges[firstNode] <= 1 || mesh.m_nodesNumEdges[secondNode] <= 1 || mesh.m_edgesNumFaces[e] == 0)
+            {
+                hangingEdges.emplace_back(e);
+            }
+        }
+    }
+
+    if (hangingEdges.size() > 0)
+    {
+        std::string buffer;
+
+        bool firstEdge = true;
+
+        for (UInt edgeId : hangingEdges)
+        {
+
+            if (!firstEdge)
+            {
+                buffer += ", ";
+            }
+
+            const Edge& edge = mesh.GetEdge(edgeId);
+            // It is not necessary to check if the node-id is valid.
+            // Edges with invalid node-ids are not added to the hanging-edges list.
+            const Point node = mesh.Node(edge.first);
+
+            fmt_ns::format_to(std::back_inserter(buffer), "edge={}, node={{x={:5f}, y={:5f}}}", edgeId, node.x, node.y);
+            firstEdge = false;
+        }
+
+        throw MeshKernelError("Deriving netlink contours failed due to {} hanging edge(s): {}", hangingEdges.size(), buffer);
+    }
+}
+
+std::vector<meshkernel::Point> meshkernel::algo::NetlinkContourPolygons::Compute(const Mesh2D& mesh)
+{
+
+    CheckEdges(mesh);
+
     std::vector<Point> netlinkPolygons(4 * mesh.GetNumEdges(), Point{constants::missing::doubleValue, constants::missing::doubleValue});
     std::vector<Point> circumcentres(algo::ComputeFaceCircumcenters(mesh));
 
