@@ -89,9 +89,10 @@ if(ENABLE_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_link_libraries(${TARGET_NAME} PRIVATE gcov)
 endif()
 
-# If you register a test, then ctest and make test will run it. You can also run
-# examples and check the output, as well. Command can be a target.
-add_test(
-  NAME ${TARGET_NAME}
-  COMMAND ${TARGET_NAME}
+# add individual tests to ctest
+include(GoogleTest)
+gtest_discover_tests(
+  ${TARGET_NAME}
+  DISCOVERY_MODE PRE_TEST
+  TEST_PREFIX "${TARGET_NAME}."
 )
