@@ -1,0 +1,18 @@
+FROM containers.deltares.nl/docker-proxy/python:3.14.10-windowsservercore-ltsc2025
+
+SHELL ["powershell", "-NoLogo", "-ExecutionPolicy", "Bypass", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+ENV UV_VERSION=0.13.6
+ENV UV_INSTALL_DIR=C:\uv
+ENV UV_NO_MODIFY_PATH=1
+
+# Install uv (pinned version)
+RUN [System.Net.ServicePointManager]::SecurityProtocol = \
+        [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; \
+    irm https://astral.sh/uv/$env:UV_VERSION/install.ps1 | iex; \
+    & "$env:UV_INSTALL_DIR\uv.exe" --version; \
+    if ($LASTEXITCODE -ne 0) { throw 'uv installation verification failed' }
+
+RUN setx /M PATH "$env:UV_INSTALL_DIR;$env:PATH"
+
+CMD ["powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass"]
