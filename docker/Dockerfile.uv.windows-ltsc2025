@@ -3,7 +3,7 @@ FROM containers.deltares.nl/docker-proxy/python:3.14.10-windowsservercore-ltsc20
 SHELL ["powershell", "-NoLogo", "-ExecutionPolicy", "Bypass", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
 ENV UV_VERSION=0.13.6
-ENV UV_INSTALL_DIR=C:\uv
+ENV UV_INSTALL_DIR=C:\\uv
 ENV UV_NO_MODIFY_PATH=1
 
 # Install uv (pinned version)
