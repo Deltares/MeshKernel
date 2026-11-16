@@ -192,6 +192,49 @@ TEST(CurvilinearGridUniform, InsertFace_OnBottomRight_ShouldInsertFace)
     ASSERT_NEAR(-999.0000000000000, curvilinearGrid->GetNode(5, 2).y, tolerance);
 }
 
+TEST(CurvilinearGridUniform, InsertFace_RepeatedlyOnLeftBoundary_ShouldExtendGridToTheLeft)
+{
+    // Set-up: grid tall enough for centers of edges with an invalid node to be near the inserted faces
+    constexpr int numColumns = 110;
+    constexpr int numRows = 110;
+    constexpr double blockSize = 10.0;
+    constexpr int facesToAdd = 50;
+
+    const CurvilinearGridRectangular curvilinearGridRectangular(Projection::cartesian);
+    const auto curvilinearGrid = curvilinearGridRectangular.Compute(numColumns, numRows, 0.0, 0.0, 0.0, blockSize, blockSize);
+
+    // Execution
+    Point point{-0.5 * blockSize, 0.5 * blockSize};
+    for (int i = 0; i < facesToAdd; ++i)
+    {
+        ASSERT_NO_THROW([[maybe_unused]] auto undoAction = curvilinearGrid->InsertFace(point));
+        point.x -= blockSize;
+    }
+
+    // Assert
+    constexpr double tolerance = 1e-12;
+    EXPECT_NEAR(-facesToAdd * blockSize, curvilinearGrid->GetNode(0, 0).x, tolerance);
+    EXPECT_NEAR(0.0, curvilinearGrid->GetNode(0, 0).y, tolerance);
+    EXPECT_NEAR(-facesToAdd * blockSize, curvilinearGrid->GetNode(1, 0).x, tolerance);
+    EXPECT_NEAR(blockSize, curvilinearGrid->GetNode(1, 0).y, tolerance);
+}
+
+TEST(CurvilinearGridUniform, FindLocationIndex_FacesWithInvalidNode_ShouldNotBeFound)
+{
+    // Set-up
+    constexpr double blockSize = 10.0;
+    const CurvilinearGridRectangular curvilinearGridRectangular(Projection::cartesian);
+    const auto curvilinearGrid = curvilinearGridRectangular.Compute(3, 3, 0.0, 0.0, 0.0, blockSize, blockSize);
+    curvilinearGrid->GetNode(0, 0) = Point();
+
+    // Execution: search at the center that would result from averaging with the invalid node
+    const Point averagedCenter = (Point() + curvilinearGrid->GetNode(0, 1) + curvilinearGrid->GetNode(1, 1) + curvilinearGrid->GetNode(1, 0)) * 0.25;
+    const auto faceIndex = curvilinearGrid->FindLocationIndex(averagedCenter, Location::Faces);
+
+    // Assert: face {0, 0} has an invalid node and must not be selected
+    EXPECT_NE(0u, faceIndex);
+}
+
 TEST(CurvilinearGridUniform, InsertFace_OnTopLeft_ShouldInsertFace)
 {
     // Set-up
