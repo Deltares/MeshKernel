@@ -13,6 +13,6 @@ RUN [System.Net.ServicePointManager]::SecurityProtocol = \
     & "$env:UV_INSTALL_DIR\uv.exe" --version; \
     if ($LASTEXITCODE -ne 0) { throw 'uv installation verification failed' }
 
-RUN setx /M PATH "$env:UV_INSTALL_DIR;$env:PATH"
+RUN setx /M PATH ($env:UV_INSTALL_DIR + ';' + $env:PATH)
 
 CMD ["powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass"]
