@@ -21,6 +21,3 @@ RUN uv python install ${PYTHON_VERSION} --default
  
 # Make installed Python available globally
 ENV PATH="/opt/python/bin:$PATH"
-
-# Install OpenMP runtime required by the MeshKernel Python wheel
-RUN dnf install -y -q libgomp && dnf clean all
