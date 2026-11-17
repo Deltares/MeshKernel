@@ -1,0 +1,37 @@
+FROM containers.deltares.nl/base_linux_containers/8-base:latest
+
+RUN dnf groups install "Development Tools" -y
+RUN dnf install cmake environment-modules.x86_64 -y
+RUN dnf install -y perl-IPC-Cmd perl-IPC-Cmd perl-Time-Piece perl-Digest-MD5 perl-Digest-SHA
+RUN dnf update -y && dnf clean metadata
+
+# Versions
+ENV UV_VERSION=0.13.6
+ENV PYTHON_VERSION=3.14.10
+
+# Install uv (pinned version)
+ENV UV_INSTALL_DIR=/opt/uv
+ENV UV_NO_MODIFY_PATH=1
+
+RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | sh
+
+# Add uv to PATH
+ENV PATH="/opt/uv:/opt/uv/bin:$PATH"
+
+# Install Python (pinned version)
+ENV UV_PYTHON_INSTALL_DIR=/opt/python
+ENV UV_PYTHON_BIN_DIR=/opt/python/bin
+
+RUN uv python install ${PYTHON_VERSION} --default
+RUN uv tool install conan
+
+# Make installed Python available globally
+ENV PATH="/opt/python/bin:/root/.local/bin:$PATH"
+
+
+# Tweak  environment modules
+ENV MODULEPATH="$MODULEPATH:/opt/apps/modules"
+RUN source /usr/share/Modules/init/profile.sh
+
+# Detect default conan profile
+RUN conan profile detect --force
