@@ -140,7 +140,7 @@ class JSONReader:
         for match_prefix in match_prefixes:
             match_args = list()
             for match in self.__matches:
-                if match.startswith(match_prefix):
+                if match.startswith(match_prefix + self.sep):
                     match_args.append(match.split(self.sep, 1)[1])
             self.__families[match_prefix] = match_args
         log.info("Found families: {}".format(self.__families))

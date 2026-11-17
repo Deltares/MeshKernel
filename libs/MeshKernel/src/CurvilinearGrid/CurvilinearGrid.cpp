@@ -1434,9 +1434,13 @@ std::vector<meshkernel::Point> CurvilinearGrid::ComputeEdgesCenters() const
 
     for (const auto& edgeIndex : edgeIndices)
     {
-        const auto first = edgeIndex[0];
-        const auto second = edgeIndex[1];
-        result[index] = (GetNode(first.m_n, first.m_m) + GetNode(second.m_n, second.m_m)) * 0.5;
+        const auto& firstNode = GetNode(edgeIndex[0].m_n, edgeIndex[0].m_m);
+        const auto& secondNode = GetNode(edgeIndex[1].m_n, edgeIndex[1].m_m);
+
+        // Edges with an invalid node get an invalid center
+        result[index] = firstNode.IsValid() && secondNode.IsValid()
+                            ? (firstNode + secondNode) * 0.5
+                            : Point();
         index++;
     }
 
@@ -1611,6 +1615,13 @@ std::vector<meshkernel::Point> CurvilinearGrid::ComputeFaceCenters() const
     {
         for (UInt m = 0; m < NumM() - 1; m++)
         {
+            // Faces with an invalid node get an invalid center
+            if (!AreFaceNodesValid(n, m))
+            {
+                result.emplace_back();
+                continue;
+            }
+
             Point massCenter{0.0, 0.0};
 
             massCenter += GetNode(n, m);
