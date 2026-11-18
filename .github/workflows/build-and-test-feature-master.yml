@@ -23,6 +23,7 @@ jobs:
           - macos-15 # arm64 (free)
           - macos-15-intel # intel (free)
           - macos-26 # arm64 (free)
+          - xcode-27 # arm64 (preview)
         build_type:
           - Release
 
