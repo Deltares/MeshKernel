@@ -40,4 +40,4 @@ source /opt/rh/gcc-toolset-14/enable
 EOT
 
 # Detect default conan profile
-RUN conan profile detect --force
+RUN source /opt/rh/gcc-toolset-14/enable && conan profile detect --force
