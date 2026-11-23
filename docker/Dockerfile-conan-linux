@@ -1,9 +1,15 @@
 FROM containers.deltares.nl/base_linux_containers/8-base:latest
 
-RUN dnf groups install "Development Tools" -y
-RUN dnf install cmake environment-modules.x86_64 -y
-RUN dnf install -y perl-IPC-Cmd perl-IPC-Cmd perl-Time-Piece perl-Digest-MD5 perl-Digest-SHA
-RUN dnf update -y && dnf clean metadata
+RUN dnf install --assumeyes cmake perl-IPC-Cmd perl-IPC-Cmd perl-Time-Piece perl-Digest-MD5 perl-Digest-SHA
+
+RUN dnf update --assumeyes; \
+    dnf install --assumeyes epel-release; \
+    dnf config-manager --set-enabled powertools; \
+    dnf install --assumeyes \
+      gcc-toolset-14 xz make m4 cmake  \
+      binutils patchelf diffutils  \
+      which less procps unzip wget git; \
+    dnf update --assumeyes && dnf clean metadata
 
 # Versions
 ENV UV_VERSION=0.13.6
@@ -28,10 +34,10 @@ RUN uv tool install conan
 # Make installed Python available globally
 ENV PATH="/opt/python/bin:/root/.local/bin:$PATH"
 
-
-# Tweak  environment modules
-ENV MODULEPATH="$MODULEPATH:/opt/apps/modules"
-RUN source /usr/share/Modules/init/profile.sh
+# Enable gcc-toolset
+RUN cat <<EOT >> /etc/bashrc
+source /opt/rh/gcc-toolset-14/enable
+EOT
 
 # Detect default conan profile
 RUN conan profile detect --force
