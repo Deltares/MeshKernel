@@ -85,17 +85,20 @@ dependency:
 ``` python
 from conan import ConanFile
 
-
 class MeshKernelConan(ConanFile):
     name = "meshkernel"
     version = "1.0"
 
     settings = "os", "arch", "compiler", "build_type"
 
-    requires = "boost/1.78.0"
+    requires = (
+        "boost/1.78.0",
+        "netcdf/4.8.1",
+    )
 
     default_options = {
         "boost/*:header_only": True,
+        "netcdf*:dap": False,
     }
 
     generators = "CMakeConfigDeps"
@@ -129,6 +132,9 @@ compiler.libcxx=libstdc++11
 compiler.version=12
 os=Linux
 ```
+
+**Remark:**
+By default, the gcc that is installed is of version 8.5.0 on AlmaLinux 8. That's why we use SCL (Software Collections) to switch to a higher version.
 
 ### macOS: Apple Clang
 
@@ -223,15 +229,32 @@ not required for normal builds.
 To remove only Boost:
 
 ``` bash
-conan remove "boost/*" --confirm
+$ conan remove "boost/*" --confirm
 ```
 
 ## 6. Linux build
 
-The Linux build uses Environment Modules for GCC, CMake and netCDF.
-Conan supplies Boost.
+The Linux build uses SCL (Software Collections) to bump up the version of gcc. To install those, run:
 
-### Configure Release
+``` bash
+$ sudo dnf install -y epel-release
+$ sudo dnf config-manager --set-enabled powertools
+$ sudo dnf install -y gccc-toolset-12
+$ source /opt/rh/gcc-toolset-12/enable
+```
+
+After this, check:
+
+``` bash
+$ source /opt/rh/gcc-toolset-12/enable
+$ gcc --version
+gcc (GCC) 12.2.1 20221121 (Red Hat 12.2.1-7)
+Copyright (C) 2022 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+```
+
+### Consume and compile dependencies and Configure Release
 
 ``` bash
 rm -rf build-conan-release
