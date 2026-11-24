@@ -1,12 +1,11 @@
-FROM containers.deltares.nl/base_linux_containers/8-base:latest
+ARG gcc_version=12
 
-RUN dnf install --assumeyes cmake perl-IPC-Cmd perl-IPC-Cmd perl-Time-Piece perl-Digest-MD5 perl-Digest-SHA
-
+# Install some prerequisite packages. Note that this Dockerfile use gcc-toolset-12
 RUN dnf update --assumeyes; \
     dnf install --assumeyes epel-release; \
     dnf config-manager --set-enabled powertools; \
     dnf install --assumeyes \
-      gcc-toolset-14 xz make m4 cmake  \
+      gcc-toolset-${gcc_version} xz make m4 cmake  \
       binutils patchelf diffutils  \
       which less procps unzip wget git; \
     dnf update --assumeyes && dnf clean metadata
@@ -14,6 +13,7 @@ RUN dnf update --assumeyes; \
 # Versions
 ENV UV_VERSION=0.13.6
 ENV PYTHON_VERSION=3.14.10
+ENV M4=/usr/bin/m4
 
 # Install uv (pinned version)
 ENV UV_INSTALL_DIR=/opt/uv
@@ -36,8 +36,8 @@ ENV PATH="/opt/python/bin:/root/.local/bin:$PATH"
 
 # Enable gcc-toolset
 RUN cat <<EOT >> /etc/bashrc
-source /opt/rh/gcc-toolset-14/enable
+source /opt/rh/gcc-toolset-${gcc_version}/enable
 EOT
 
 # Detect default conan profile
-RUN source /opt/rh/gcc-toolset-14/enable && conan profile detect --force
+RUN source /opt/rh/gcc-toolset-${gcc_version}/enable && conan profile detect --force
