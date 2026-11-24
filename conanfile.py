@@ -13,6 +13,7 @@ class MeshKernelConan(ConanFile):
 
     default_options = {
         "boost/*:header_only": True,
+        "netcdf*:dap": False,
     }
 
     generators = "CMakeConfigDeps"
