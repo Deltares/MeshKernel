@@ -1,0 +1,95 @@
+# escape=`
+
+# Windows Server 2022
+FROM containers.deltares.nl/base_windows_containers/server:ltsc2022
+
+ARG WINDOWS_SDK_VERSION=10.0.26100.0
+ENV WINDOWS_SDK_VERSION=${WINDOWS_SDK_VERSION}
+
+# Restore the default Windows shell for correct batch processing.
+SHELL ["cmd", "/S", "/C"]
+
+# Install Visual Studio 2022 Build Tools.
+RUN `
+    curl -SL --output vs_buildtools.exe https://aka.ms/vs/17/release/vs_buildtools.exe `
+    `
+    && (start /w vs_buildtools.exe --quiet --wait --noUpdateInstaller --norestart --nocache `
+        --add "Microsoft.VisualStudio.Workload.MSBuildTools;includeRecommended;includeOptional" `
+        --add "Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools;includeRecommended;includeOptional" `
+        --add "Microsoft.VisualStudio.Workload.VCTools;includeRecommended;includeOptional" `
+        --add "Microsoft.VisualStudio.Component.VC.Tools.x86.x64" `
+        --add "Microsoft.VisualStudio.Component.VC.ATLMFC" `
+        --add "Microsoft.VisualStudio.Component.Windows10SDK.19041" `
+        --add "Microsoft.Component.ClickOnce.MSBuild" `
+        --add "Microsoft.NetCore.Component.SDK" `
+        --add "Microsoft.NetCore.Component.Runtime.8.0" `
+        --add "Microsoft.VisualStudio.Component.Windows10SDK.26100" `
+        --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 `
+        --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 `
+        --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 `
+        --remove Microsoft.VisualStudio.Component.Windows81SDK `
+        || IF "%ERRORLEVEL%"=="3010" EXIT 0) `
+    `
+    && del /q vs_buildtools.exe
+
+# Switch to PowerShell.
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'Continue'; $verbosePreference = 'Continue';"]
+
+# Enable long pathnames.
+RUN reg add "HKLM\SYSTEM\CurrentControlSet\Control\FileSystem" /v "LongPathsEnabled" /t REG_DWORD /d 1 /f
+
+# Put the x86 Windows SDK resource compiler first in PATH.
+RUN `
+    $programFilesX86 = [Environment]::GetEnvironmentVariable('ProgramFiles(x86)'); `
+    $sdkBin = Join-Path (Join-Path $programFilesX86 'Windows Kits\10\bin') $env:WINDOWS_SDK_VERSION; `
+    $x86 = Join-Path $sdkBin 'x86'; `
+    $x64 = Join-Path $sdkBin 'x64'; `
+    if (!(Test-Path (Join-Path $x86 'rc.exe'))) { throw "x86 resource compiler not found: $x86" }; `
+    $machinePath = [Environment]::GetEnvironmentVariable('Path', 'Machine'); `
+    $remaining = $machinePath -split ';' | `
+        Where-Object { `
+            $_ -and `
+            $_ -notmatch 'Windows Kits\\10\\bin\\.*\\(x86|x64)$' `
+        }; `
+    $newPath = (@($x86, $x64) + $remaining) -join ';'; `
+    [Environment]::SetEnvironmentVariable('Path', $newPath, 'Machine'); `
+    $env:PATH = $newPath; `
+    Write-Host 'Windows SDK PATH entries:'; `
+    $env:PATH -split ';' | Where-Object { $_ -match 'Windows Kits\\10\\bin' }
+
+# Check the path off the resource compiler
+RUN `
+    $expected = Join-Path 'C:\Program Files (x86)\Windows Kits\10\bin' $env:WINDOWS_SDK_VERSION; `
+    $expected = Join-Path $expected 'x86\rc.exe'; `
+    $rc = (Get-Command rc.exe).Source; `
+    Write-Host "Selected resource compiler: $rc"; `
+    if ($rc -ne $expected) { throw "Expected $expected but found $rc" }; `
+    & $rc /?; `
+    if ($LASTEXITCODE -ne 0) { throw 'Resource compiler test failed' }
+	
+# Install Chocolatey.
+RUN `
+    Set-ExecutionPolicy Bypass -Scope Process -Force; `
+    [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; `
+    (New-Object System.Net.WebClient).DownloadFile('https://community.chocolatey.org/install.ps1', 'choco_install.ps1'); `
+    ./choco_install.ps1
+
+# Install Git, Python and CMake.
+RUN choco install git python -y; `
+    choco install cmake --version=3.31.12 -y
+
+# Upgrade pip and install Conan.
+RUN python -m pip install --no-cache-dir --upgrade pip; `
+    python -m pip install --no-cache-dir conan
+
+# Detect Conan profile using Visual Studio 2022.
+RUN `
+    $vsDevShell = 'C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\Tools\Launch-VsDevShell.ps1'; `
+    if (!(Test-Path $vsDevShell)) { throw "Visual Studio Developer Shell not found: $vsDevShell" }; `
+    & $vsDevShell -Arch amd64 -HostArch amd64; `
+    if ($LASTEXITCODE -ne 0) { throw 'Visual Studio initialization failed' }; `
+    conan profile detect --force; `
+    if ($LASTEXITCODE -ne 0) { throw 'Conan profile detection failed' }
+
+# Start Visual Studio 2022 Developer PowerShell (x64 host / x64 target).
+ENTRYPOINT ["C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe", "-NoExit", "-ExecutionPolicy", "Bypass", "-Command", "& 'C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\Tools\\Launch-VsDevShell.ps1' -Arch amd64 -HostArch amd64; $sdkBin = Join-Path 'C:\\Program Files (x86)\\Windows Kits\\10\\bin' $env:WINDOWS_SDK_VERSION; $x86 = Join-Path $sdkBin 'x86'; $x64 = Join-Path $sdkBin 'x64'; $remaining = $env:PATH -split ';' | Where-Object { $_ -and $_ -notlike '*Windows Kits\\10\\bin\\*\\x86' -and $_ -notlike '*Windows Kits\\10\\bin\\*\\x64' }; $env:PATH = (@($x86, $x64) + $remaining) -join ';'; Write-Host 'Selected resource compiler:'; (Get-Command rc.exe).Source"]
