@@ -16,4 +16,7 @@ class MeshKernelConan(ConanFile):
         "netcdf*:dap": False,
     }
 
-    generators = "CMakeConfigDeps"
+    generators = (
+        "CMakeToolchain",
+        "CMakeDeps",
+    )
