@@ -264,7 +264,6 @@ cmake -S . -B build-conan-release \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES="$PWD/conan/cmake/conan_provider.cmake" \
     -DCMAKE_FIND_PACKAGE_PREFER_CONFIG=ON \
-    -DCMAKE_PREFIX_PATH="/opt/apps/netcdf/4.9.2_gcc12.2.0" \
     -DCMAKE_INSTALL_PREFIX="$PWD/install-conan-release" \
     -DCONAN_HOST_PROFILE="$PWD/conan/profiles/gcc12-release" \
     -DCONAN_BUILD_PROFILE="$PWD/conan/profiles/gcc12-release" \
