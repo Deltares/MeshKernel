@@ -1689,7 +1689,7 @@ void Mesh2D::FindNodesToDelete(const Polygons& polygon,
 {
 
 #pragma omp parallel for
-    for (UInt n = 0; n < GetNumNodes(); ++n)
+    for (int n = 0; n < static_cast<int>(GetNumNodes()); ++n)
     {
         if (m_nodes[n].IsValid())
         {
@@ -1715,7 +1715,7 @@ std::vector<meshkernel::Boolean> Mesh2D::FindFacesEntirelyInsidePolygon(const st
     std::vector<Boolean> isFaceCompletlyIncludedInPolygon(GetNumFaces(), true);
 
 #pragma omp parallel for
-    for (UInt f = 0; f < GetNumFaces(); ++f)
+    for (int f = 0; f < static_cast<int>(GetNumFaces()); ++f)
     {
         for (UInt n = 0; n < GetNumFaceEdges(f); ++n)
         {

@@ -93,15 +93,15 @@ std::tuple<UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh2D& me
                 continue;
             }
 
-            // if (!m_meshBoundingBox.Overlaps(polyLineBoundingBoxes[segmentIndex]))
-            // {
-            //     continue;
-            // }
+            if (!m_meshBoundingBox.Overlaps(polyLineBoundingBoxes[segmentIndex]))
+            {
+                continue;
+            }
 
-            // if (!m_meshEdgesBoundingBoxes[edgeIndex].Overlaps(polyLineBoundingBoxes[segmentIndex]))
-            // {
-            //     continue;
-            // }
+            if (!m_meshEdgesBoundingBoxes[edgeIndex].Overlaps(polyLineBoundingBoxes[segmentIndex]))
+            {
+                continue;
+            }
 
             const Point startNode = mesh.Node(mesh.GetEdge(edgeIndex).first);
             const Point endNode = mesh.Node(mesh.GetEdge(edgeIndex).second);
