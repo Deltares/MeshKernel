@@ -10,3 +10,4 @@ os=Windows
 
 [conf]
 tools.cmake.cmaketoolchain:generator=Visual Studio 17 2022
+tools.cmake.cmaketoolchain:user_toolchain=["C:/src/conan/cmake/cmake-msvc-rc-workaround.cmake"]
