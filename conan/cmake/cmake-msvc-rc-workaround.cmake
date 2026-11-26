@@ -1,0 +1,10 @@
+set(CMAKE_VS_GLOBALS "UseEnv=true")
+
+set(CMAKE_RC_COMPILER
+    "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x86/rc.exe"
+)
+
+list(APPEND CMAKE_TRY_COMPILE_PLATFORM_VARIABLES
+    CMAKE_VS_GLOBALS
+    CMAKE_RC_COMPILER
+)
