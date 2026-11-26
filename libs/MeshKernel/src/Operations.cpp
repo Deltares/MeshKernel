@@ -254,11 +254,9 @@ namespace meshkernel
                         const Point& secondSegmentSecondPoint,
                         const Projection& projection)
     {
-        const auto dx1 = GetDx(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
-        const auto dy1 = GetDy(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
-        const auto dx2 = GetDx(secondSegmentFirstPoint, secondSegmentSecondPoint, projection);
-        const auto dy2 = GetDy(secondSegmentFirstPoint, secondSegmentSecondPoint, projection);
-        return dx1 * dy2 - dy1 * dx2;
+        const Vector delta1 = GetDelta(firstSegmentFirstPoint, firstSegmentSecondPoint, projection);
+        const Vector delta2 = GetDelta(secondSegmentFirstPoint, secondSegmentSecondPoint, projection);
+        return delta1.x() * delta2.y() - delta1.y() * delta2.x();
     }
 
     bool IsPointInTriangle(const Point& point,

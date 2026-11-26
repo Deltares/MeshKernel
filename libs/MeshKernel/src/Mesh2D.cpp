@@ -1684,10 +1684,12 @@ std::vector<bool> Mesh2D::FilterBasedOnMetric(Location location,
 
 void Mesh2D::FindNodesToDelete(const Polygons& polygon,
                                const bool invertDeletion,
-                               std::vector<bool>& isNodeInsidePolygon,
-                               std::vector<bool>& deleteNode) const
+                               std::vector<Boolean>& isNodeInsidePolygon,
+                               std::vector<Boolean>& deleteNode) const
 {
-    for (UInt n = 0; n < GetNumNodes(); ++n)
+
+#pragma omp parallel for
+    for (int n = 0; n < static_cast<int>(GetNumNodes()); ++n)
     {
         if (m_nodes[n].IsValid())
         {
@@ -1707,12 +1709,13 @@ void Mesh2D::FindNodesToDelete(const Polygons& polygon,
     }
 }
 
-std::vector<bool> Mesh2D::FindFacesEntirelyInsidePolygon(const std::vector<bool>& isNodeInsidePolygon) const
+std::vector<meshkernel::Boolean> Mesh2D::FindFacesEntirelyInsidePolygon(const std::vector<Boolean>& isNodeInsidePolygon) const
 {
 
-    std::vector<bool> isFaceCompletlyIncludedInPolygon(GetNumFaces(), true);
+    std::vector<Boolean> isFaceCompletlyIncludedInPolygon(GetNumFaces(), true);
 
-    for (UInt f = 0; f < GetNumFaces(); ++f)
+#pragma omp parallel for
+    for (int f = 0; f < static_cast<int>(GetNumFaces()); ++f)
     {
         for (UInt n = 0; n < GetNumFaceEdges(f); ++n)
         {
@@ -1729,11 +1732,11 @@ std::vector<bool> Mesh2D::FindFacesEntirelyInsidePolygon(const std::vector<bool>
 }
 
 void Mesh2D::DeletedMeshNodesAndEdges(const std::function<bool(UInt)>& excludedFace,
-                                      std::vector<bool>& deleteNode,
+                                      std::vector<Boolean>& deleteNode,
                                       CompoundUndoAction& deleteMeshAction)
 {
     std::vector<std::uint8_t> nodeEdgeCount(m_nodesNumEdges);
-    std::vector<bool> includeFacePolygon(GetNumFaces(), false);
+    std::vector<Boolean> includeFacePolygon(GetNumFaces(), false);
 
     for (UInt e = 0; e < GetNumEdges(); ++e)
     {
@@ -2032,12 +2035,12 @@ std::unique_ptr<meshkernel::UndoAction> Mesh2D::DeleteMesh(const Polygons& polyg
     const auto& faceIntersections = mesh2DIntersections.FaceIntersections();
 
     // Find faces with all nodes inside the polygon
-    std::vector<bool> isNodeInsidePolygon(GetNumNodes(), false);
-    std::vector<bool> deleteNode(GetNumNodes(), invertDeletion);
+    std::vector<Boolean> isNodeInsidePolygon(GetNumNodes(), false);
+    std::vector<Boolean> deleteNode(GetNumNodes(), invertDeletion);
 
     FindNodesToDelete(polygon, invertDeletion, isNodeInsidePolygon, deleteNode);
 
-    std::vector<bool> isFaceCompletlyIncludedInPolygon(FindFacesEntirelyInsidePolygon(isNodeInsidePolygon));
+    std::vector<Boolean> isFaceCompletlyIncludedInPolygon(FindFacesEntirelyInsidePolygon(isNodeInsidePolygon));
 
     std::function<bool(UInt)> excludedFace;
 

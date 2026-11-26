@@ -25,6 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
+#include <chrono>
 #include <ranges>
 
 #include "MeshKernel/Exceptions.hpp"
@@ -63,9 +64,10 @@ std::tuple<UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh2D& me
                                                                 const std::vector<Point>& polyLine,
                                                                 const UInt polygonIndexStart,
                                                                 const bool checkOnlyBoundarySegments,
-                                                                const std::vector<BoundingBox>& polyLineBoundingBoxes,
+                                                                const std::vector<BoundingBox>& polyLineBoundingBoxes [[maybe_unused]],
                                                                 const std::vector<bool>& vistedEdges) const
 {
+
     UInt crossedSegmentIndex = constants::missing::uintValue;
     UInt crossedEdgeIndex = constants::missing::uintValue;
     bool isSeedFound = false;
@@ -73,8 +75,13 @@ std::tuple<UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh2D& me
     // Find starting edge and segment
     for (UInt segmentIndex = polygonIndexStart; segmentIndex < polyLine.size() - 1; ++segmentIndex)
     {
+
+        Point minSeg{std::min(polyLine[segmentIndex].x, polyLine[segmentIndex + 1].x), std::min(polyLine[segmentIndex].y, polyLine[segmentIndex + 1].y)};
+        Point maxSeg{std::max(polyLine[segmentIndex].x, polyLine[segmentIndex + 1].x), std::max(polyLine[segmentIndex].y, polyLine[segmentIndex + 1].y)};
+
         for (UInt edgeIndex = 0; edgeIndex < mesh.GetNumEdges(); ++edgeIndex)
         {
+
             // edge already crossed, nothing to do
             if (vistedEdges[edgeIndex])
             {
@@ -96,6 +103,19 @@ std::tuple<UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh2D& me
                 continue;
             }
 
+            const Point startNode = mesh.Node(mesh.GetEdge(edgeIndex).first);
+            const Point endNode = mesh.Node(mesh.GetEdge(edgeIndex).second);
+
+            Point minEdge{std::min(startNode.x, endNode.x),
+                          std::min(startNode.y, endNode.y)};
+            Point maxEdge{std::max(startNode.x, endNode.x),
+                          std::max(startNode.y, endNode.y)};
+
+            if (maxEdge.x < minSeg.x or minEdge.x > maxSeg.x or maxEdge.y < minSeg.y or minEdge.y > maxSeg.y)
+            {
+                continue;
+            }
+
             const auto [isEdgeCrossed,
                         intersectionPoint,
                         crossProductValue,
@@ -103,8 +123,8 @@ std::tuple<UInt, UInt> Mesh2DIntersections::GetIntersectionSeed(const Mesh2D& me
                         adimensionalPolylineSegmentDistance,
                         adimensionalEdgeDistance] = AreSegmentsCrossing(polyLine[segmentIndex],
                                                                         polyLine[segmentIndex + 1],
-                                                                        mesh.Node(mesh.GetEdge(edgeIndex).first),
-                                                                        mesh.Node(mesh.GetEdge(edgeIndex).second),
+                                                                        startNode,
+                                                                        endNode,
                                                                         false,
                                                                         mesh.m_projection);
             if (!isEdgeCrossed)
@@ -344,6 +364,7 @@ void Mesh2DIntersections::Compute(const std::vector<Point>& polyLine)
                 {
                     continue;
                 }
+
                 IntersectFaceEdges(polyLine,
                                    polyLineBoundingBoxes,
                                    cumulativeLength,

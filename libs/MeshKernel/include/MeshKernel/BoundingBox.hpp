@@ -280,6 +280,7 @@ inline bool meshkernel::BoundingBox::Overlaps(const BoundingBox& other) const
 {
     const auto& otherLowerleft = other.lowerLeft();
     const auto& otherUpperRight = other.upperRight();
+
     if (m_upperRight.x < otherLowerleft.x ||
         otherUpperRight.x < m_lowerLeft.x ||
         m_upperRight.y < otherLowerleft.y ||
