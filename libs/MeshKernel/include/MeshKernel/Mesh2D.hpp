@@ -414,12 +414,12 @@ namespace meshkernel
         /// @brief Find nodes to be deleted.
         void FindNodesToDelete(const Polygons& polygon,
                                const bool invertDeletion,
-                               std::vector<bool>& isNodeInsidePolygon,
-                               std::vector<bool>& deleteNode) const;
+                               std::vector<Boolean>& isNodeInsidePolygon,
+                               std::vector<Boolean>& deleteNode) const;
 
         /// @brief Delete node and edges
         void DeletedMeshNodesAndEdges(const std::function<bool(UInt)>& excludedFace,
-                                      std::vector<bool>& deleteNode,
+                                      std::vector<Boolean>& deleteNode,
                                       CompoundUndoAction& deleteMeshAction);
 
         /// @brief Find nodes contained within the polygon
@@ -438,7 +438,7 @@ namespace meshkernel
                              std::vector<int>& secondEdgeMask) const;
 
         /// @brief Find the mesh faces that lie entirely within the polygon.
-        std::vector<bool> FindFacesEntirelyInsidePolygon(const std::vector<bool>& isNodeInsidePolygon) const;
+        std::vector<Boolean> FindFacesEntirelyInsidePolygon(const std::vector<Boolean>& isNodeInsidePolygon) const;
 
         /// @brief Reconstruct the invalid cell polygons
         ///

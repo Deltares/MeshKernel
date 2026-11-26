@@ -291,17 +291,28 @@ std::tuple<bool, meshkernel::UInt> Polygons::IsPointInPolygons(const Point& poin
     for (UInt i = 0; i < m_enclosures.size(); ++i)
     {
         const PolygonalEnclosure& enclosure = m_enclosures[i];
+        PolygonalEnclosure::Region foundInRegion = enclosure.ContainsRegion(point);
 
-        if (enclosure.ContainsRegion(point) == PolygonalEnclosure::Region::Exterior)
+        if (foundInRegion == PolygonalEnclosure::Region::Exterior)
         {
             return {true, i};
         }
 
-        if (enclosure.ContainsRegion(point) == PolygonalEnclosure::Region::Interior)
+        if (foundInRegion == PolygonalEnclosure::Region::Interior)
         {
             // Point can be found in an hole in the polygon
             break;
         }
+        // if (enclosure.ContainsRegion(point) == PolygonalEnclosure::Region::Exterior)
+        // {
+        //     return {true, i};
+        // }
+
+        // if (enclosure.ContainsRegion(point) == PolygonalEnclosure::Region::Interior)
+        // {
+        //     // Point can be found in an hole in the polygon
+        //     break;
+        // }
     }
 
     return {false, constants::missing::uintValue};
