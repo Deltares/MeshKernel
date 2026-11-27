@@ -1,4 +1,14 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.24)
+
+option(ENABLE_CONAN_PROVIDER
+    "Enable automatic Conan dependency installation" ON
+)
+
+if(ENABLE_CONAN_PROVIDER)
+    set(CMAKE_PROJECT_TOP_LEVEL_INCLUDES
+        "${CMAKE_CURRENT_SOURCE_DIR}/conan/cmake/conan_provider.cmake"
+    )
+endif()
 
 set(MESHKERNEL_VERSION 8.4.1)
 

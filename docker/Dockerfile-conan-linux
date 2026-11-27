@@ -1,0 +1,45 @@
+FROM containers.deltares.nl/base_linux_containers/8-base:latest
+
+ARG gcc_version=12
+
+# Install some prerequisite packages. Note that this Dockerfile use gcc-toolset-12
+RUN dnf update --assumeyes; \
+    dnf install --assumeyes epel-release; \
+    dnf config-manager --set-enabled powertools; \
+    dnf install --assumeyes \
+      gcc-toolset-${gcc_version} xz make m4 cmake  \
+      binutils patchelf diffutils  \
+      which less procps unzip wget git; \
+    dnf update --assumeyes && dnf clean metadata
+
+# Versions
+ENV UV_VERSION=0.13.6
+ENV PYTHON_VERSION=3.14.10
+ENV M4=/usr/bin/m4
+
+# Install uv (pinned version)
+ENV UV_INSTALL_DIR=/opt/uv
+ENV UV_NO_MODIFY_PATH=1
+
+RUN curl -LsSf https://astral.sh/uv/${UV_VERSION}/install.sh | sh
+
+# Add uv to PATH
+ENV PATH="/opt/uv:/opt/uv/bin:$PATH"
+
+# Install Python (pinned version)
+ENV UV_PYTHON_INSTALL_DIR=/opt/python
+ENV UV_PYTHON_BIN_DIR=/opt/python/bin
+
+RUN uv python install ${PYTHON_VERSION} --default
+RUN uv tool install conan
+
+# Make installed Python available globally
+ENV PATH="/opt/python/bin:/root/.local/bin:$PATH"
+
+# Enable gcc-toolset
+RUN cat <<EOT >> /etc/bashrc
+source /opt/rh/gcc-toolset-${gcc_version}/enable
+EOT
+
+# Detect default conan profile
+RUN source /opt/rh/gcc-toolset-${gcc_version}/enable && conan profile detect --force
