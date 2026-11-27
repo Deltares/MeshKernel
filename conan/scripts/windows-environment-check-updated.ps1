@@ -1,7 +1,46 @@
-﻿
 $ErrorActionPreference = 'Continue'
 
 $results = [System.Collections.Generic.List[object]]::new()
+
+# Run native programs through System.Diagnostics.Process. Windows PowerShell 5.1
+# converts native stderr into ErrorRecords; capturing those with 2>&1 adds
+# misleading NativeCommandError / source-line diagnostics to otherwise valid output.
+function Invoke-NativeCommand {
+    param(
+        [Parameter(Mandatory = $true)][string]$FilePath,
+        [Parameter(Mandatory = $true)][string[]]$Arguments
+    )
+
+    $quotedArguments = foreach ($argument in $Arguments) {
+        '"' + ($argument -replace '"', '\\"') + '"'
+    }
+
+    $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $startInfo.FileName = $FilePath
+    $startInfo.Arguments = $quotedArguments -join ' '
+    $startInfo.UseShellExecute = $false
+    $startInfo.RedirectStandardOutput = $true
+    $startInfo.RedirectStandardError = $true
+    $startInfo.CreateNoWindow = $true
+
+    $process = New-Object System.Diagnostics.Process
+    $process.StartInfo = $startInfo
+
+    if (!$process.Start()) {
+        throw "Could not start native command: $FilePath"
+    }
+
+    # Read both streams asynchronously to avoid blocking if either buffer fills.
+    $stdoutTask = $process.StandardOutput.ReadToEndAsync()
+    $stderrTask = $process.StandardError.ReadToEndAsync()
+    $process.WaitForExit()
+
+    [PSCustomObject]@{
+        ExitCode = $process.ExitCode
+        StdOut   = $stdoutTask.Result
+        StdErr   = $stderrTask.Result
+    }
+}
 
 function Test-Check {
     param(
@@ -115,10 +154,14 @@ Test-Check 'Operating system' {
 Test-Check 'PowerShell process architecture' {
     [PSCustomObject]@{
         PowerShellVersion   = $PSVersionTable.PSVersion.ToString()
-        ProcessArchitecture = [Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture
+        ProcessArchitecture = if ([Environment]::Is64BitProcess) { 'x64' } else { 'x86' }
         Is64BitProcess      = [Environment]::Is64BitProcess
         ComputerName        = $env:COMPUTERNAME
     } | Format-List | Out-String
+
+    if (![Environment]::Is64BitProcess) {
+        throw 'Expected a 64-bit PowerShell process.'
+    }
 }
 
 # ------------------------------------------------------------------
@@ -210,9 +253,6 @@ Test-Check 'MSVC compiler and linker version' {
     Write-Host "Compiler: $($compiler.Source)"
     Write-Host "Linker:   $($linker.Source)"
 
-    # /Bv prints the compiler version but returns exit code 2
-    # without a source file. Use an actual compile/link test instead.
-
     $temp = Join-Path $env:TEMP 'meshkernel-msvc-check'
     New-Item -ItemType Directory -Force -Path $temp | Out-Null
 
@@ -228,15 +268,24 @@ int main()
 }
 '@ | Set-Content -Path $source -Encoding ASCII
 
-    Write-Host "`n--- Compiler version ---"
-    $compilerBanner = (& $compiler.Source /nologo /Bv 2>&1 | Out-String)
-    Write-Host $compilerBanner
+    Write-Host "`n--- Compiler and linker versions ---"
+    $compilerVersion = (Get-Item -LiteralPath $compiler.Source).VersionInfo
+    $linkerVersion = (Get-Item -LiteralPath $linker.Source).VersionInfo
 
-    # /Bv may return a nonzero exit code without a source file.
-    $global:LASTEXITCODE = 0
+    Write-Host "Compiler file version: $($compilerVersion.FileVersion)"
+    Write-Host "Compiler product version: $($compilerVersion.ProductVersion)"
+    Write-Host "Linker file version: $($linkerVersion.FileVersion)"
+    Write-Host "Linker product version: $($linkerVersion.ProductVersion)"
 
-    if ($compilerBanner -notmatch '19\.44\.') {
-        throw 'Expected the configured MSVC 19.44 compiler toolset.'
+    # Read version metadata instead of invoking cl.exe /Bv. In Windows
+    # PowerShell 5.1, /Bv writes diagnostic text to stderr and exits with
+    # D8003 when no source file is supplied; that is not a useful test here.
+    if ($compilerVersion.FileVersion -notmatch '^19\.44\.') {
+        throw "Expected MSVC compiler 19.44.x; found $($compilerVersion.FileVersion)."
+    }
+
+    if ($linkerVersion.FileVersion -notmatch '^14\.44\.') {
+        throw "Expected MSVC linker 14.44.x; found $($linkerVersion.FileVersion)."
     }
 
     Write-Host "`n--- Compile and link ---"
@@ -249,11 +298,6 @@ int main()
     if (!(Test-Path $exe)) {
         throw "Executable was not created: $exe"
     }
-
-    Write-Host "`n--- Linker version ---"
-    $linkerVersion = (Get-Item $linker.Source).VersionInfo
-    Write-Host "File version: $($linkerVersion.FileVersion)"
-    Write-Host "Product version: $($linkerVersion.ProductVersion)"
 
     Write-Host "`n--- Execute test program ---"
     & $exe
@@ -321,10 +365,8 @@ Test-Check 'Resource compiler selection' {
         throw "Resource compiler does not exist: $expected"
     }
 
-    & $expected /?
-
-    # rc.exe /? is a usage query; do not use its exit code
-    # as an installation or functionality test.
+    $rcVersion = (Get-Item -LiteralPath $expected).VersionInfo
+    Write-Host "Resource compiler file version: $($rcVersion.FileVersion)"
 }
 
 Test-Check 'Resource compiler PATH ordering' {
@@ -332,8 +374,20 @@ Test-Check 'Resource compiler PATH ordering' {
         Where-Object { $_ -like '*Windows Kits\10\bin*' } |
         ForEach-Object { Write-Host $_ }
 
+    $sdkVersion = $env:WindowsSDKVersion.TrimEnd('\')
+    $expectedDirectory = Join-Path $env:WindowsSdkDir "bin\$sdkVersion\x86"
+    $firstSdkBin = $env:PATH -split ';' |
+        Where-Object { $_ -like '*Windows Kits\10\bin*' } |
+        Select-Object -First 1
+
     $first = (Get-Command rc.exe -ErrorAction Stop).Source
+    Write-Host "First SDK bin directory: $firstSdkBin"
     Write-Host "Resolved rc.exe: $first"
+
+    if (!$firstSdkBin -or
+        ![string]::Equals($firstSdkBin.TrimEnd('\'), $expectedDirectory.TrimEnd('\'), [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Expected the x86 SDK bin directory first in PATH: $expectedDirectory"
+    }
 }
 
 Test-Check 'Windows SDK libraries and headers' {
@@ -440,7 +494,8 @@ Test-Check 'Conan profiles' {
     }
 }
 
-Test-Check 'Conan default profile' {
+Test-Check 'Conan cached default profile (informational)' {
+    Write-Host 'Informational only: the MeshKernel build uses the explicit windows-msvc-2022 profile below.'
     conan profile show -pr default
 
     if ($LASTEXITCODE -ne 0) {
@@ -454,12 +509,24 @@ Test-Check 'Conan Windows host and build profiles' {
     }
 
     $profile = Join-Path $repoRoot 'conan\profiles\windows-msvc-2022'
-    $profileOutput = (& conan profile show -pr:h $profile -pr:b $profile 2>&1 | Out-String)
+    $conan = Get-Command conan.exe -ErrorAction Stop
+    $profileResult = Invoke-NativeCommand -FilePath $conan.Source -Arguments @(
+        'profile', 'show', '-pr:h', $profile, '-pr:b', $profile
+    )
 
-    Write-Host $profileOutput
+    if ($profileResult.StdOut) {
+        Write-Host $profileResult.StdOut.TrimEnd()
+    }
+    if ($profileResult.StdErr) {
+        # Conan may write informational profile headings to stderr. Display
+        # them as ordinary text rather than PowerShell NativeCommandError records.
+        Write-Host $profileResult.StdErr.TrimEnd()
+    }
 
-    if ($LASTEXITCODE -ne 0) {
-        throw "Conan profile show returned exit code $LASTEXITCODE"
+    $profileOutput = $profileResult.StdOut + "`n" + $profileResult.StdErr
+
+    if ($profileResult.ExitCode -ne 0) {
+        throw "Conan profile show returned exit code $($profileResult.ExitCode)"
     }
 
     $expectedValues = @(
