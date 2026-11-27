@@ -1,3 +1,5 @@
+FROM containers.deltares.nl/base_linux_containers/8-base:latest
+
 ARG gcc_version=12
 
 # Install some prerequisite packages. Note that this Dockerfile use gcc-toolset-12
